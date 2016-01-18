@@ -46,9 +46,17 @@
 
 ![整体架构图1](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
 
+# 相关文档
+
+[使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
+[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
+[架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
+[使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
+[未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
+
 # Quick Start
 
-## 引入maven依赖
+## 引入maven依赖(暂时还未放入中央仓库，等稳定后再部署)
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->
 <dependency>
