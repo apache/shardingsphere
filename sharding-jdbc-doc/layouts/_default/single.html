@@ -1,0 +1,28 @@
+{{ partial "head.html" . }}
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+{{ partial "nav.html" . }}
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 {{ .Content }}
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 {{ .TableOfContents }}
+	</div><!-- /.doc-sidebar -->
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+{{ partial "footer.html" . }}

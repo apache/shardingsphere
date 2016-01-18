@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="500px" height="500px" viewBox="0 0 500 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15857) - http://www.bohemiancoding.com/sketch -->
+    <title>app-icon-board</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.07 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path id="path-2" d="M358.425522,314.612533 C386.918372,292.429159 386.914634,256.459893 358.425522,234.27943 L241.487748,143.236439 C212.994898,121.053065 166.795121,121.055976 138.306009,143.236439 L21.3682358,234.27943 C-7.12461463,256.462804 -7.12087586,292.43207 21.3682358,314.612533 L138.306009,405.655524 C166.79886,427.838898 212.998637,427.835987 241.487748,405.655524 L358.425522,314.612533 Z"></path>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.07 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path id="path-4" d="M358.425522,251.312533 C386.918372,229.129159 386.914634,193.159893 358.425522,170.97943 L241.487748,79.9364388 C212.994898,57.753065 166.795121,57.7559759 138.306009,79.9364388 L21.3682358,170.97943 C-7.12461463,193.162804 -7.12087586,229.13207 21.3682358,251.312533 L138.306009,342.355524 C166.79886,364.538898 212.998637,364.535987 241.487748,342.355524 L358.425522,251.312533 Z"></path>
+        <linearGradient x1="48.3081043%" y1="100%" x2="48.3081043%" y2="0%" id="linearGradient-5">
+            <stop stop-color="#FBAD3F" offset="0%"></stop>
+            <stop stop-color="#FF3727" offset="100%"></stop>
+        </linearGradient>
+        <path id="path-6" d="M358.425522,188.012533 C386.918372,165.829159 386.914634,129.859893 358.425522,107.67943 L241.487748,16.6364388 C212.994898,-5.54693499 166.795121,-5.54402414 138.306009,16.6364388 L21.3682358,107.67943 C-7.12461463,129.862804 -7.12087586,165.83207 21.3682358,188.012533 L138.306009,279.055524 C166.79886,301.238898 212.998637,301.235987 241.487748,279.055524 L358.425522,188.012533 Z"></path>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-7">
+            <feOffset dx="0" dy="5" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.07 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path id="path-8" d="M200.994876,73.9239587 C263.044575,114.073764 244.072268,164.565185 244.072268,164.565185 C244.072268,164.565185 250.763903,172.169315 254.10972,181.598436 C257.455537,191.027557 257.418671,202.585834 256.81034,202.889999 C256.20201,203.194165 248.358468,189.810896 234.643147,189.810896 C220.927827,189.810896 213.95991,202.889999 189.626699,202.889999 C134.8381,202.889999 111.076041,157.949594 111.076041,157.949594 C111.076041,157.949594 135.181133,175.210967 160.426846,174.602637 C185.672559,173.994306 192.668351,166.694342 192.668351,166.694342 C192.668351,166.694342 181.380146,157.248766 161.947669,138.254896 C142.515192,119.261027 124.231186,93.0863657 124.231186,93.0863657 C124.231186,93.0863657 153.524357,116.302646 162.92028,123.131903 C172.316203,129.961159 181.712126,136.150173 181.712126,136.150173 C181.712126,136.150173 172.612293,126.333119 166.205982,118.436791 C159.799671,110.540463 143.393593,86.6988967 143.393593,86.6988967 C143.393593,86.6988967 168.55586,109.416546 180.003776,118.436789 C191.451693,127.457032 213.351587,142.665292 213.351587,142.665292 C213.351587,142.665292 226.544752,112.552938 200.994876,73.9239587 Z"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="app-icon-board" sketch:type="MSArtboardGroup" transform="translate(-150.000000, -1.000000)">
+            <g id="icon" sketch:type="MSLayerGroup" transform="translate(210.000000, 40.000000)">
+                <g id="Bottom" filter="url(#filter-1)" stroke-width="2">
+                    <use stroke="#333333" fill="#333333" fill-rule="evenodd" sketch:type="MSShapeGroup" xlink:href="#path-2"></use>
+                    <use stroke-opacity="0.1" stroke="#363338" fill="none" xlink:href="#path-2"></use>
+                </g>
+                <g id="Middle" filter="url(#filter-3)" stroke-width="2">
+                    <use stroke="#666666" fill="#666666" fill-rule="evenodd" sketch:type="MSShapeGroup" xlink:href="#path-4"></use>
+                    <use stroke-opacity="0.1" stroke="#363338" fill="none" xlink:href="#path-4"></use>
+                </g>
+                <g id="Top">
+                    <use stroke="#42C88A" stroke-width="2" fill="url(#linearGradient-5)" sketch:type="MSShapeGroup" xlink:href="#path-6"></use>
+                    <use stroke-opacity="0.1" stroke="#000000" stroke-width="1" fill="#42C88A" xlink:href="#path-6"></use>
+                </g>
+                <g id="countour" filter="url(#filter-7)" stroke="#363338" stroke-width="2" opacity="0.5">
+                    <use fill="#363338" fill-rule="evenodd" sketch:type="MSShapeGroup" xlink:href="#path-8"></use>
+                    <use stroke-opacity="0.1" fill="none" xlink:href="#path-8"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

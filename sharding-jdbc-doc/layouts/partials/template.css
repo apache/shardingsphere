@@ -1,0 +1,36 @@
+.navbar {
+    border-color: {{ .Site.Params.first_border_color }};
+}
+
+.content-section-a,
+footer,
+.navbar {
+  background-color: {{ .Site.Params.first_color }};
+  color: {{ .Site.Params.first_text_color }};
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+  color: {{ .Site.Params.header_link_color }};
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+  color: {{ .Site.Params.header_link_hover_color }};
+}
+
+.content-section-b {
+  background-color: {{ .Site.Params.second_color }};
+  color: {{ .Site.Params.second_text_color }};
+}
+
+body {
+  color: {{ .Site.Params.header_text_color }};
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+  color: {{ .Site.Params.header_text_color }};
+}

@@ -1,0 +1,195 @@
+/**
+ * Copyright 1999-2015 dangdang.com.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
+package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
+
+import java.util.List;
+
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLOrderBy;
+import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
+import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import com.google.common.base.Optional;
+
+/**
+ * MySQL的SELECT语句访问器.
+ * 
+ * @author gaohongtao, zhangliang
+ */
+public class MySQLSelectVisitor extends AbstractMySQLVisitor {
+    
+    private static final String AUTO_GEN_TOKE_KEY = "sharding_auto_gen";
+    
+    // TODO 封装到方法内部
+    private int itemIndex;
+    
+    @Override
+    protected void printSelectList(final List<SQLSelectItem> selectList) {
+        super.printSelectList(selectList);
+        // TODO 提炼成print，或者是否不应该由token的方式替换？
+        getSQLBuilder().appendToken(AUTO_GEN_TOKE_KEY, false);
+    }
+    
+    @Override
+    public boolean visit(final MySqlSelectQueryBlock x) {
+        if (x.getFrom() instanceof SQLExprTableSource) {
+            SQLExprTableSource tableExpr = (SQLExprTableSource) x.getFrom();
+            getParseContext().setCurrentTable(tableExpr.getExpr().toString(), Optional.fromNullable(tableExpr.getAlias()));
+        }
+        return super.visit(x);
+    }
+    
+    /**
+     * 解析 {@code SELECT item1,item2 FROM }中的item.
+     * 
+     * @param x SELECT item 表达式
+     * @return true表示继续遍历AST, false表示终止遍历AST
+     */
+    // TODO SELECT * 导致index不准，不支持SELECT *，且生产环境不建议使用SELECT *
+    public boolean visit(final SQLSelectItem x) {
+        itemIndex++;
+        return super.visit(x);
+    }
+    
+    @Override
+    public boolean visit(final SQLAggregateExpr x) {
+        if (!(x.getParent() instanceof SQLSelectItem)) {
+            return super.visit(x);
+        }
+        AggregationType aggregationType;
+        try {
+            aggregationType = AggregationType.valueOf(x.getMethodName().toUpperCase());
+        } catch (final IllegalArgumentException ex) {
+            return super.visit(x);
+        }
+        StringBuilder expression = new StringBuilder();
+        x.accept(new MySqlOutputVisitor(expression));
+        // TODO index获取不准，考虑使用别名替换
+        AggregationColumn column = new AggregationColumn(expression.toString(), aggregationType, Optional.fromNullable(((SQLSelectItem) x.getParent()).getAlias()), 
+                null == x.getOption() ? Optional.<String>absent() : Optional.of(x.getOption().toString()), itemIndex);
+        getParseContext().getParsedResult().getMergeContext().getAggregationColumns().add(column);
+        if (AggregationType.AVG.equals(aggregationType)) {
+            getParseContext().addDerivedColumnsForAvgColumn(column);
+            // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+        }
+        return super.visit(x);
+    }
+    
+    public boolean visit(final SQLOrderBy x) {
+        for (SQLSelectOrderByItem each : x.getItems()) {
+            SQLExpr expr = each.getExpr();
+            OrderByType orderByType = null == each.getType() ? OrderByType.ASC : OrderByType.valueOf(each.getType());
+            if (expr instanceof SQLIntegerExpr) {
+                getParseContext().addOrderByColumn(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
+            } else if (expr instanceof SQLIdentifierExpr) {
+                getParseContext().addOrderByColumn(((SQLIdentifierExpr) expr).getName(), orderByType);
+            } else if (expr instanceof SQLPropertyExpr) {
+                getParseContext().addOrderByColumn(((SQLPropertyExpr) expr).getName(), orderByType);
+            }
+        }
+        return super.visit(x);
+    }
+    
+    /**
+     * 将GROUP BY列放入parseResult.
+     * 直接返回false,防止重复解析GROUP BY表达式.
+     * 
+     * @param x GROUP BY 表达式
+     * @return false 停止遍历AST
+     */
+    @Override
+    public boolean visit(final MySqlSelectGroupByExpr x) {
+        String alias = getParseContext().generateDerivedColumnAlias();
+        OrderByType orderByType = null == x.getType() ? OrderByType.ASC : OrderByType.valueOf(x.getType());
+        if (x.getExpr() instanceof SQLPropertyExpr) {
+            SQLPropertyExpr expr = (SQLPropertyExpr) x.getExpr();
+            getParseContext().addGroupByColumns(expr.toString(), alias, orderByType);
+        } else if (x.getExpr() instanceof SQLIdentifierExpr) {
+            SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
+            getParseContext().addGroupByColumns(expr.getName(), alias, orderByType);
+        } else {
+            return super.visit(x);
+        }
+        return super.visit(x);
+    }
+    
+    /**
+     * LIMIT 解析.
+     * 
+     * @param x LIMIT表达式
+     * @return false 停止遍历AST
+     */
+    @Override
+    public boolean visit(final MySqlSelectQueryBlock.Limit x) {
+        print("LIMIT ");
+        int offset = 0;
+        if (null != x.getOffset()) {
+            if (x.getOffset() instanceof SQLNumericLiteralExpr) {
+                offset = ((SQLNumericLiteralExpr) x.getOffset()).getNumber().intValue();
+                print("0, ");
+            } else {
+                offset = ((Number) getParameters().get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
+                getParameters().set(((SQLVariantRefExpr) x.getOffset()).getIndex(), 0);
+                print("?, ");
+            }
+        }
+        int rowCount;
+        if (x.getRowCount() instanceof SQLNumericLiteralExpr) {
+            rowCount = ((SQLNumericLiteralExpr) x.getRowCount()).getNumber().intValue();
+            print(rowCount + offset);
+        } else {
+            rowCount = ((Number) getParameters().get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
+            getParameters().set(((SQLVariantRefExpr) x.getRowCount()).getIndex(), rowCount + offset);
+            print("?");
+        }
+        getParseContext().getParsedResult().getMergeContext().setLimit(new Limit(offset, rowCount));
+        return false;
+    }
+    
+    @Override
+    public void endVisit(final SQLSelectStatement x) {
+        StringBuilder derivedSelectItems = new StringBuilder();
+        for (AggregationColumn aggregationColumn : getParseContext().getParsedResult().getMergeContext().getAggregationColumns()) {
+            for (AggregationColumn derivedColumn : aggregationColumn.getDerivedColumns()) {
+                derivedSelectItems.append(", ").append(derivedColumn.getExpression()).append(" AS ").append(derivedColumn.getAlias().get());
+            }
+        }
+        for (GroupByColumn each : getParseContext().getParsedResult().getMergeContext().getGroupByColumns()) {
+            derivedSelectItems.append(", ").append(each.getName()).append(" AS ").append(each.getAlias());
+        }
+        if (0 != derivedSelectItems.length()) {
+            getSQLBuilder().buildSQL(AUTO_GEN_TOKE_KEY, derivedSelectItems.toString());
+        }
+        super.endVisit(x);
+    }
+}

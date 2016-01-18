@@ -1,0 +1,29 @@
+<section id="intro">
+	<!-- Header -->
+	<div class="intro-header">
+
+		<div class="container header-container">
+
+			<div class="row">
+				<div class="intro-image col-md-4"></div>
+				<div class="intro-message col-md-6">
+					<h1>{{ .Site.Title }}</h1>
+					<h3>{{ .Site.Params.description }}</h3>
+
+					{{ if (isset .Site.Params "github_project_name") }}
+					{{ $user := .Site.Params.github_user_name }}
+					{{ $repo := .Site.Params.github_project_name }}
+
+					<iframe class="github-btn" src="https://ghbtns.com/github-btn.html?user={{ $user }}&repo={{ $repo  }}&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+					{{ end }}
+
+					<hr class="intro-divider">
+				</div>
+			</div>
+
+		</div>
+		<!-- /.container -->
+
+	</div>
+	<!-- /.intro-header -->
+</section>

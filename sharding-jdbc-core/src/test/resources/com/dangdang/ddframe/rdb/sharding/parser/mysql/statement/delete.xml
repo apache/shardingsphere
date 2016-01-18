@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertDelete" sql="DELETE FROM `order` WHERE order_id IN (1, 2, 3)" expected-sql="DELETE FROM [Token(order)] WHERE order_id IN (1, 2, 3)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="IN">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+    
+    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3" expected-sql="DELETE FROM [Token(order)] o WHERE order_id BETWEEN 1 AND 3">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+</asserts>
