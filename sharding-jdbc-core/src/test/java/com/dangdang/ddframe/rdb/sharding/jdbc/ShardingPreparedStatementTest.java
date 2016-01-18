@@ -196,13 +196,13 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1 ,3101);
-            pstmt.setInt(2 ,11);
-            pstmt.setString(3 ,"BATCH");
+            pstmt.setInt(1, 3101);
+            pstmt.setInt(2, 11);
+            pstmt.setString(3, "BATCH");
             pstmt.addBatch();
-            pstmt.setInt(1 ,3102);
-            pstmt.setInt(2 ,12);
-            pstmt.setString(3 ,"BATCH");
+            pstmt.setInt(1, 3102);
+            pstmt.setInt(2, 12);
+            pstmt.setString(3, "BATCH");
             pstmt.addBatch();
             int[] result = pstmt.executeBatch();
             for (int each : result) {

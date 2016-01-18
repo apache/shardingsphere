@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;

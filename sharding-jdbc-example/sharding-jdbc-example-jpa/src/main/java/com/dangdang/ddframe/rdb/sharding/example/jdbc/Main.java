@@ -33,7 +33,7 @@ public final class Main {
         System.out.println(orderRepository.selectAll());
         System.out.println("--------------");
         
-        for (int i = 10000;i < 10010; i++) {
+        for (int i = 10000; i < 10010; i++) {
             Order order = new Order();
             order.setOrderId(i);
             order.setUserId(51);
