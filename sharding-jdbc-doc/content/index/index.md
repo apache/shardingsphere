@@ -46,7 +46,11 @@ index = true
 
 # 整体架构图
 
+<<<<<<< HEAD
 ![整体架构图1](img/architecture.png)
+=======
+![整体架构图1](../img/architecture.png)
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 
 # Quick Start
 

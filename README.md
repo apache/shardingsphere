@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+`Sharding-JDBC`是当当应用框架`ddframe`中，关系型数据库模块`dd-rdb`中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。
+`Sharding-JDBC`继`dubbox`和`elastic-job`之后，是`ddframe`系列开源的第三个产品。
+
+[![Hex.pm](http://dangdangdotcom.github.io/elastic-job/images/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 # 主要贡献者
 
 * 张亮 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) zhangliang@dangdang.com
@@ -5,10 +13,16 @@
 * 曹昊 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) caohao@dangdang.com
 * 岳令 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) yueling@dangdang.com
 
+<<<<<<< HEAD
 **讨论QQ群：**xxx（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）
 
 # 简介
 `Sharding-JDBC`是当当应用框架`ddframe`中，关系型数据库模块`dd-rdb`中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。
+=======
+**讨论QQ群：**532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）
+
+# 简介
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 
 `Sharding-JDBC`直接封装`JDBC API`，可以理解为增强版的`JDBC`驱动，旧代码迁移成本几乎为零：
 
@@ -41,11 +55,31 @@
 
 # 整体架构图
 
+<<<<<<< HEAD
 ![整体架构图1](../img/architecture.png)
 
 # Quick Start
 
 ## 引入maven依赖
+=======
+![整体架构图1](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
+
+# 相关文档
+
+[使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
+
+[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
+
+[架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
+
+[使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
+
+[未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
+
+# Quick Start
+
+## 引入maven依赖(暂时还未放入中央仓库，等稳定后再部署)
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->
 <dependency>

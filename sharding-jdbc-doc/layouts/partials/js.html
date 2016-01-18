@@ -1,4 +1,5 @@
 <!-- jQuery Version 1.11.0 -->
+<<<<<<< HEAD
 <script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>5
 
 <!-- Plugin JavaScript -->
@@ -9,3 +10,32 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="js/prism.js"></script>
+=======
+<script src="/js/jquery-1.11.0.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="/js/jquery.easing.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="js/landing-page.js"></script>
+<script src="/js/prism.js"></script>
+
+{{ if isset .Site.Params "googleAnalytics" }}
+
+<!-- Google Analytics -->
+<!--<script>-->
+	<!--(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){-->
+		<!--(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new-->
+		<!--Date();a=s.createElement(o),-->
+		<!--m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)-->
+	<!--})(window,document,'script','//www.google-analytics.com/analytics.js','ga');-->
+
+	<!--ga('create', '{{ .Site.Params.googleAnalytics }}', 'auto');-->
+	<!--ga('send', 'pageview');-->
+<!--</script>-->
+
+{{ end }}
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
