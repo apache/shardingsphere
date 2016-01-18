@@ -1,4 +1,5 @@
 `Sharding-JDBC`是当当应用框架`ddframe`中，关系型数据库模块`dd-rdb`中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。
+`Sharding-JDBC`继`dubbox`和`elastic-job`之后，是`ddframe`系列开源的第三个产品。
 
 [![Hex.pm](http://dangdangdotcom.github.io/elastic-job/images/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
