@@ -41,7 +41,7 @@
 
 # 整体架构图
 
-![整体架构图1](../img/architecture.png)
+![整体架构图1](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
 
 # Quick Start
 
