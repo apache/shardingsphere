@@ -2,38 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/</loc>
+    <loc>/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/index/</loc>
+    <loc>/index/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</loc>
+    <loc>/post/user_guide/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</loc>
+    <loc>/post/features/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</loc>
+    <loc>/post/architecture/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/</loc>
+    <loc>/post/restriction/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</loc>
+    <loc>/post/roadmap/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
   

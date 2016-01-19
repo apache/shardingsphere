@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Indexes on Sharding-JDBC</title>
-    <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
-    <description>Recent content in Indexes on Sharding-JDBC</description>
+    <title>Indexes on </title>
+    <link>/index/</link>
+    <description>Recent content in Indexes on </description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
     <lastBuildDate>Fri, 08 Jan 2016 16:14:21 +0800</lastBuildDate>
-    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="/index/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title></title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+      <link>/index/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/index/</guid>
+      <guid>/index/</guid>
       <description>
 
 &lt;h1 id=&#34;主要贡献者:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;主要贡献者&lt;/h1&gt;
@@ -57,7 +56,7 @@
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;功能&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Cobar(MyCAT)&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Cobar&lt;/th&gt;
 &lt;th align=&#34;right&#34;&gt;Cobar-client&lt;/th&gt;
 &lt;th align=&#34;right&#34;&gt;TDDL&lt;/th&gt;
 &lt;th align=&#34;right&#34;&gt;Sharding-JDBC&lt;/th&gt;
@@ -127,7 +126,12 @@
 
 &lt;h1 id=&#34;整体架构图:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;整体架构图&lt;/h1&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; HEAD&lt;/p&gt;
+
+&lt;h1 id=&#34;整体架构图1-img-architecture-png:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&#34;../img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;
+&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70&lt;/p&gt;
 
 &lt;h1 id=&#34;quick-start:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;Quick Start&lt;/h1&gt;
 

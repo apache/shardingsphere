@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
     <base href="/sharding-jdbc/"/>
     <title>使用指南</title>
     
@@ -13,51 +14,64 @@
 
     
     <link href="css/landing-page.css" rel="stylesheet">
+=======
+    <title>使用指南</title>
+    
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    
+    <link href="/css/landing-page.css" rel="stylesheet">
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 
     
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
     <style>
     .navbar {
-    border-color: #e7e7e7;
+    border-color: ;
 }
 
 .content-section-a,
 footer,
 .navbar {
-  background-color: #f8f8f8;
-  color: #333;
+  background-color: ;
+  color: ;
 }
 
 .navbar a:link,
 .navbar-default .navbar-nav>li>a {
-  color: #777;
+  color: ;
 }
 
 .navbar a:hover,
 .navbar-default .navbar-nav>li>a:hover {
-  color: rgb(51, 51, 51);
+  color: ;
 }
 
 .content-section-b {
-  background-color: white;
-  color: #333;
+  background-color: ;
+  color: ;
 }
 
 body {
-  color: rgb(51, 51, 51);
+  color: ;
 }
 
 .header-container h1,
 .header-container h2,
 .header-container h3,
 .header-container h4 {
-  color: rgb(51, 51, 51);
+  color: ;
 }
 
   </style>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
     <link href="css/prism.css" rel="stylesheet">
     <link href="css/table.css" rel="stylesheet">
+=======
+    <link href="/css/prism.css" rel="stylesheet">
+    <link href="/css/table.css" rel="stylesheet">
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 </head>
 <body>
 
@@ -77,19 +91,19 @@ body {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+            <a class="page-scroll navbar-brand" href="#intro"></a>
         </div>
         
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                    <a class="page-scroll" href=>Github</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                    <a class="page-scroll" href=>Docs</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                    <a class="page-scroll" href=>DangDang</a>
                 </li>
             </ul>
         </div>
@@ -235,7 +249,12 @@ dataSourceMap.put(&quot;ds_1&quot;, createDataSource(&quot;ds_1&quot;));
 
 <h3 id="数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2">数据源策略与表策略</h3>
 
-<p><img src="img/StrategyClass.900.png" alt="策略类图" />
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+
+<h1 id="策略类图-img-strategyclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2"><img src="img/StrategyClass.900.png" alt="策略类图" /></h1>
+
+<p><img src="/img/StrategyClass.900.png" alt="策略类图" />
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 Sharding-JDBC认为对于分片策略存有两种维度
 - 数据源分片策略<code>DatabaseShardingStrategy</code>：数据被分配的目标数据源
 - 表分片策略<code>TableShardingStrategy</code>：数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的
@@ -294,7 +313,12 @@ Sharding-JDBC认为对于分片策略存有两种维度
 <h3 id="分片算法:74c632aa9613b8dd6b95bfab1ba313e2">分片算法</h3>
 
 <p>分片算法接口类图关系如下：
-<img src="img/AlgorithmClass.900.png" alt="算法" /></p>
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
+
+<h1 id="算法-img-algorithmclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2"><img src="img/AlgorithmClass.900.png" alt="算法" /></h1>
+
+<p><img src="/img/AlgorithmClass.900.png" alt="算法" />
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70</p>
 
 <h3 id="绑定表:74c632aa9613b8dd6b95bfab1ba313e2">绑定表</h3>
 
@@ -548,9 +572,21 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 <li><a href="#策略配置:74c632aa9613b8dd6b95bfab1ba313e2">策略配置</a>
 <ul>
 <li><a href="#数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2">数据源策略与表策略</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#策略类图-img-strategyclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2"><img src="img/StrategyClass.900.png" alt="策略类图" /></a>
+<ul>
+<li>
+<ul>
 <li><a href="#全局默认策略与特定表策略:74c632aa9613b8dd6b95bfab1ba313e2">全局默认策略与特定表策略</a></li>
 <li><a href="#分片键:74c632aa9613b8dd6b95bfab1ba313e2">分片键</a></li>
 <li><a href="#分片算法:74c632aa9613b8dd6b95bfab1ba313e2">分片算法</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#算法-img-algorithmclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2"><img src="img/AlgorithmClass.900.png" alt="算法" /></a>
+<ul>
+<li>
+<ul>
 <li><a href="#绑定表:74c632aa9613b8dd6b95bfab1ba313e2">绑定表</a></li>
 </ul></li>
 <li><a href="#分片算法详解:74c632aa9613b8dd6b95bfab1ba313e2">分片算法详解</a>
@@ -585,6 +621,7 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
     </div>
 </footer>
 
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 <script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>5
 
 
@@ -595,6 +632,21 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 
 
 <script src="js/prism.js"></script>
+=======
+<script src="/js/jquery-1.11.0.js"></script>
+
+
+<script src="/js/jquery.easing.min.js"></script>
+
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<script src="js/landing-page.js"></script>
+<script src="/js/prism.js"></script>
+
+
+>>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 
 </body>
 </html>
