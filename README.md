@@ -58,6 +58,8 @@
 
 [使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
 
+[压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
+
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
 
 # Quick Start
