@@ -1,8 +1,3 @@
-+++
-date = "2016-01-08T16:14:21+08:00"
-index = true
-+++
-
 # 主要贡献者
 
 * 张亮 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) zhangliang@dangdang.com
