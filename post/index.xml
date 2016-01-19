@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on </title>
-    <link>/post/</link>
-    <description>Recent content in Posts on </description>
+    <title>Posts on Sharding-JDBC</title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/post/</link>
+    <description>Recent content in Posts on Sharding-JDBC</description>
     <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
     <lastBuildDate>Fri, 08 Jan 2016 16:14:21 +0800</lastBuildDate>
-    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>使用指南</title>
-      <link>/post/user_guide/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>/post/user_guide/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</guid>
       <description>
 
 &lt;h1 id=&#34;使用指南:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;使用指南&lt;/h1&gt;
@@ -142,12 +143,7 @@ dataSourceMap.put(&amp;quot;ds_1&amp;quot;, createDataSource(&amp;quot;ds_1&amp;
 
 &lt;h3 id=&#34;数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据源策略与表策略&lt;/h3&gt;
 
-&lt;p&gt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; HEAD&lt;/p&gt;
-
-&lt;h1 id=&#34;策略类图-img-strategyclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;&lt;img src=&#34;img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;&lt;/h1&gt;
-
-&lt;p&gt;&lt;img src=&#34;/img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;
-&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
+&lt;p&gt;&lt;img src=&#34;img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;
 Sharding-JDBC认为对于分片策略存有两种维度
 - 数据源分片策略&lt;code&gt;DatabaseShardingStrategy&lt;/code&gt;：数据被分配的目标数据源
 - 表分片策略&lt;code&gt;TableShardingStrategy&lt;/code&gt;：数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的
@@ -205,13 +201,9 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 &lt;h3 id=&#34;分片算法:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片算法&lt;/h3&gt;
 
-&lt;p&gt;分片算法接口类图关系如下：
-&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; HEAD&lt;/p&gt;
+&lt;p&gt;分片算法接口类图关系如下：&lt;/p&gt;
 
-&lt;h1 id=&#34;算法-img-algorithmclass-900-png:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;&lt;img src=&#34;img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;&lt;/h1&gt;
-
-&lt;p&gt;&lt;img src=&#34;/img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;
-&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;绑定表:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;绑定表&lt;/h3&gt;
 
@@ -450,10 +442,10 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     
     <item>
       <title>详细功能列表</title>
-      <link>/post/features/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>/post/features/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</guid>
       <description>
 
 &lt;h1 id=&#34;详细功能列表:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;详细功能列表&lt;/h1&gt;
@@ -511,16 +503,15 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     
     <item>
       <title>架构图</title>
-      <link>/post/architecture/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>/post/architecture/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</guid>
       <description>
 
 &lt;h1 id=&#34;架构图:1bf455b3a3c6e1e40be41ef6023b75eb&#34;&gt;架构图&lt;/h1&gt;
 
-&lt;p&gt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt;&amp;lt; HEAD
-&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;img/parse.png&#34; alt=&#34;SQL解析&#34; /&gt;&lt;/p&gt;
 
@@ -528,27 +519,16 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;p&gt;&lt;img src=&#34;img/execute.png&#34; alt=&#34;SQL执行&#34; /&gt;&lt;/p&gt;
 
-&lt;h1 id=&#34;结果归并-img-merge-png:1bf455b3a3c6e1e40be41ef6023b75eb&#34;&gt;&lt;img src=&#34;img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;&lt;/h1&gt;
-
-&lt;p&gt;&lt;img src=&#34;../img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../img/parse.png&#34; alt=&#34;SQL解析&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../img/route.png&#34; alt=&#34;SQL路由&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../img/execute.png&#34; alt=&#34;SQL执行&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;
-&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt; d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>使用限制</title>
-      <link>/post/restriction/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>/post/restriction/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/</guid>
       <description>
 
 &lt;h1 id=&#34;使用限制:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;使用限制&lt;/h1&gt;
@@ -631,10 +611,10 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     
     <item>
       <title>未来线路规划</title>
-      <link>/post/roadmap/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>/post/roadmap/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</guid>
       <description>
 
 &lt;h1 id=&#34;未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;未来线路规划&lt;/h1&gt;
@@ -647,7 +627,9 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;li&gt;SQL Hint，可指定某SQL在某具体库表执行，基于业务规则而非SQL解析路由&lt;/li&gt;
 &lt;li&gt;小表广播&lt;/li&gt;
 &lt;li&gt;HA相关&lt;/li&gt;
+&lt;li&gt;流量控制&lt;/li&gt;
 &lt;li&gt;数据库建表工具&lt;/li&gt;
+&lt;li&gt;数据迁移&lt;/li&gt;
 &lt;li&gt;复杂SQL解析支持，如子查询，存储过程等&lt;/li&gt;
 &lt;li&gt;Oracle， SQLServer，DB2支持&lt;/li&gt;
 &lt;li&gt;配置中心&lt;/li&gt;

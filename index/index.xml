@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Indexes on </title>
-    <link>/index/</link>
-    <description>Recent content in Indexes on </description>
+    <title>Indexes on Sharding-JDBC</title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+    <description>Recent content in Indexes on Sharding-JDBC</description>
     <generator>Hugo -- gohugo.io</generator>
-    <atom:link href="/index/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title></title>
-      <link>/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/index/</guid>
       <description>
 
 &lt;h1 id=&#34;主要贡献者:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;主要贡献者&lt;/h1&gt;
@@ -24,7 +25,7 @@
 &lt;li&gt;岳令 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; yueling@dangdang.com&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;strong&gt;讨论QQ群：&lt;/strong&gt;xxx（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;讨论QQ群：&lt;/strong&gt;532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）&lt;/p&gt;
 
 &lt;h1 id=&#34;简介:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;简介&lt;/h1&gt;
 
