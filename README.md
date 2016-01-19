@@ -32,7 +32,7 @@
 
 以下是常见的分库分表产品和`Sharding-JDBC`的对比：
 
-| 功能          | Cobar(MyCAT)  | Cobar-client  | TDDL        | Sharding-JDBC  |
+| 功能          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
 | ------------- |:-------------:| -------------:| -----------:|---------------:|
 | 分库          | 有            | 有             | 未开源      | 有              |
 | 分表          | 无            | 无             | 未开源      | 有              |
