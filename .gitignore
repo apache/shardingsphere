@@ -25,15 +25,7 @@ logs/
 *.diff
 *.patch
 *.tmp
-<<<<<<< HEAD
 
 # system ignore
 .DS_Store
 Thumbs.db
-=======
-
-# system ignore
-.DS_Store
-Thumbs.db
-
->>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
