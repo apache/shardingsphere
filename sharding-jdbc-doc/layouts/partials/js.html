@@ -9,3 +9,24 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="js/prism.js"></script>
+
+{{ if isset .Params "chart" }}
+<script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
+<script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
+<script src="data/chart.js"></script>
+<script>
+
+    $("canvas").each(function(){
+        var data =  chartData[$(this).attr("id")];
+        $(data.datasets).each(function(index, obj){
+            $.extend(obj, charStyle[index])
+        })
+        new Chart(this.getContext("2d"),{
+            type: 'line',
+            data: data
+        });
+    })
+</script>
+
+
+{{ end }}
