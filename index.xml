@@ -782,6 +782,173 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     </item>
     
     <item>
+      <title>压力测试报告</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</guid>
+      <description>
+
+&lt;h1 id=&#34;压力测试报告:da68abc810593941936aaba3d62b3b96&#34;&gt;压力测试报告&lt;/h1&gt;
+
+&lt;h2 id=&#34;测试目的:da68abc810593941936aaba3d62b3b96&#34;&gt;测试目的&lt;/h2&gt;
+
+&lt;p&gt;对&lt;code&gt;Sharding-JDBC&lt;/code&gt;进行性能测试，客观、公正评估系统的性能，目的有三:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;对比&lt;code&gt;Sharding-JDBC&lt;/code&gt;和&lt;code&gt;JDBC&lt;/code&gt;的性能。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;是否通过扩展数据库解决&lt;code&gt;JDBC&lt;/code&gt;吞吐量不足的问题。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;的稳定性。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;测试数据库配置:da68abc810593941936aaba3d62b3b96&#34;&gt;测试数据库配置&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据库实例&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;DB1&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;DB2&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;操作系统&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;centOS5.4&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;centOS5.4&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;CPU&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2C四核&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2C四核&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;内存&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32GB&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32GB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;硬盘&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;250G*2_RAID1+600G*4_RAID10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;250G*2_RAID1+600G*4_RAID10&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Mysql版本&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.5.19&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.5.19&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据表字段数量&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;70&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据表行数&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1000万&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1000万&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;网络拓扑:da68abc810593941936aaba3d62b3b96&#34;&gt;网络拓扑&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;img/stress_test_arch.png&#34; alt=&#34;网络拓扑图&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;单库情况下sharding-jdbc与jdbc性能对比:da68abc810593941936aaba3d62b3b96&#34;&gt;单库情况下Sharding-JDBC与JDBC性能对比&lt;/h2&gt;
+
+&lt;p&gt;测试结论：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查询操作，Sharding-JDBC的TPS为JDBC的TPS的99.8%&lt;/li&gt;
+&lt;li&gt;插入操作，Sharding-JDBC的TPS为JDBC的TPS的90.2%&lt;/li&gt;
+&lt;li&gt;更新操作，Sharding-JDBC的TPS为JDBC的TPS的93.1%&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;查询:da68abc810593941936aaba3d62b3b96&#34;&gt;查询&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareQuery&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;插入:da68abc810593941936aaba3d62b3b96&#34;&gt;插入&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareInsert&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;更新:da68abc810593941936aaba3d62b3b96&#34;&gt;更新&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareUpdate&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h2 id=&#34;sharding-jdbc单库与双库性能对比:da68abc810593941936aaba3d62b3b96&#34;&gt;Sharding-JDBC单库与双库性能对比&lt;/h2&gt;
+
+&lt;p&gt;对比测试：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;单库用例中所有数据全部在DB1中&lt;/li&gt;
+&lt;li&gt;双库用例中所有数据均匀分布在DB1与DB2中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;结论：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;TPS双库比单库可以增加大约94%的性能&lt;/li&gt;
+&lt;li&gt;TPS双库比单库可以增加大约50%的性能&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;查询-1:da68abc810593941936aaba3d62b3b96&#34;&gt;查询&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleQuery&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;插入-1:da68abc810593941936aaba3d62b3b96&#34;&gt;插入&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleInsert&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;更新-1:da68abc810593941936aaba3d62b3b96&#34;&gt;更新&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleUpdate&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h2 id=&#34;sharding-jdbc疲劳测试:da68abc810593941936aaba3d62b3b96&#34;&gt;Sharding-JDBC疲劳测试&lt;/h2&gt;
+
+&lt;p&gt;经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生fullgc。
+&lt;canvas id=&#34;fatigueTest&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>未来线路规划</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
