@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 baseurl = "http://dangdangdotcom.github.io/sharding-jdbc"
-=======
-baseurl = "http://dangdangdotcom.github.io"
->>>>>>> d2aa9f588f5ed3f3bb4b93f956bb07d35ba29e70
 languageCode = "en-us"
 title = "Sharding-JDBC"
 
