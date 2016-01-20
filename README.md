@@ -2,8 +2,8 @@
 
 `Sharding-JDBC`继`dubbox`和`elastic-job`之后，是`ddframe`系列开源的第三个产品。
 
-[![Hex.pm](http://dangdangdotcom.github.io/elastic-job/images/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-
+**License:** [![Hex.pm](http://dangdangdotcom.github.io/elastic-job/images/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)<br/>
+**Continuous Integration:** [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc) <br/>
 # 主要贡献者
 
 * 张亮 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) zhangliang@dangdang.com
@@ -56,7 +56,11 @@
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
+[阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/sourceCodeGuide.html)
+
 [使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
+
+[压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
 
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
 
