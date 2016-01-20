@@ -910,8 +910,9 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;p&gt;结论：&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;TPS双库比单库可以增加大约94%的性能&lt;/li&gt;
-&lt;li&gt;TPS双库比单库可以增加大约50%的性能&lt;/li&gt;
+&lt;li&gt;查询操作，TPS双库比单库可以增加大约94%的性能&lt;/li&gt;
+&lt;li&gt;插入操作，TPS双库比单库可以增加大约60%的性能&lt;/li&gt;
+&lt;li&gt;更新操作，TPS双库比单库可以增加大约89%的性能&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&#34;查询-1:da68abc810593941936aaba3d62b3b96&#34;&gt;查询&lt;/h3&gt;
