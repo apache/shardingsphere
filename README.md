@@ -56,6 +56,8 @@
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
+[阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/sourceCodeGuide.html)
+
 [使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
 
 [压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
