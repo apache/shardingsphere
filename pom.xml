@@ -65,6 +65,7 @@
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
+        <coveralls-maven-plugin.version>4.1.0</coveralls-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>2.16</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
@@ -498,6 +499,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>${cobertura-maven-plugin.version}</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <quiet>true</quiet>
+                    <format>xml</format>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>com/dangdang/**/*Test.class</exclude>
+                            <exclude>com/dangdang/**/Test*.class</exclude>
+                        </excludes>
+                    </instrumentation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>${coveralls-maven-plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
     
@@ -527,22 +550,6 @@
                 <version>${maven-jxr-plugin.version}</version>
                 <configuration>
                     <aggregate>true</aggregate>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>${cobertura-maven-plugin.version}</version>
-                <configuration>
-                    <aggregate>true</aggregate>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <quiet>true</quiet>
-                    <instrumentation>
-                        <excludes>
-                            <exclude>com/dangdang/**/*Test.class</exclude>
-                            <exclude>com/dangdang/**/Test*.class</exclude>
-                        </excludes>
-                    </instrumentation>
                 </configuration>
             </plugin>
             <plugin>
