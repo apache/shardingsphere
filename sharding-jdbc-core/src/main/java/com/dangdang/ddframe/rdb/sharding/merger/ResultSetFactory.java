@@ -49,7 +49,7 @@ public final class ResultSetFactory {
      * 获取结果集.
      * 
      * @param resultSets 结果集列表
-     * @param sqlParsedResult SQL解析结果
+     * @param mergeContext 结果归并上下文
      * @return 结果集包装
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {

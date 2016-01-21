@@ -125,9 +125,11 @@ public final class ParseContext {
     /**
      * 将条件对象加入解析上下文.
      * 
-     * @param column 列对象
+     * @param columnName 列名
      * @param operator 操作符
-     * @param values 条件值集合
+     * @param valueExpr 值对象表达式
+     * @param databaseType 数据库类型
+     * @param paramters 通过占位符传进来的参数
      */
     public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> paramters) {
         Comparable<?> value = evalExpression(databaseType, valueExpr, paramters);
