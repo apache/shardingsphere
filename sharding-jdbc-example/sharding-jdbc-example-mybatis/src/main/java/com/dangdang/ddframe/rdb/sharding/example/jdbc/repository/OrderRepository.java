@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.example.jdbc.repository;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
-import org.springframework.transaction.annotation.Transactional;
 
 
 public interface OrderRepository {
