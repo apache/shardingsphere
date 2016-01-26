@@ -143,7 +143,7 @@ dataSourceMap.put(&amp;quot;ds_1&amp;quot;, createDataSource(&amp;quot;ds_1&amp;
 
 &lt;h3 id=&#34;数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据源策略与表策略&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;
 Sharding-JDBC认为对于分片策略存有两种维度
 - 数据源分片策略&lt;code&gt;DatabaseShardingStrategy&lt;/code&gt;：数据被分配的目标数据源
 - 表分片策略&lt;code&gt;TableShardingStrategy&lt;/code&gt;：数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的
@@ -155,7 +155,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;TableRule orderTableRule = new TableRule(&amp;quot;t_order&amp;quot;, Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;),
                   new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-                  new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())
+                  new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()),
                   dataSourceRule);
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -203,7 +203,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 &lt;p&gt;分片算法接口类图关系如下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;绑定表:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;绑定表&lt;/h3&gt;
 
@@ -511,15 +511,15 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;h1 id=&#34;架构图:1bf455b3a3c6e1e40be41ef6023b75eb&#34;&gt;架构图&lt;/h1&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/parse.png&#34; alt=&#34;SQL解析&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/parse.png&#34; alt=&#34;SQL解析&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/route.png&#34; alt=&#34;SQL路由&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/route.png&#34; alt=&#34;SQL路由&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/execute.png&#34; alt=&#34;SQL执行&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/execute.png&#34; alt=&#34;SQL执行&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
