@@ -121,7 +121,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 ```java
 TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"),
                   new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()),
-                  new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm())
+                  new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()),
                   dataSourceRule);
 ```
 
