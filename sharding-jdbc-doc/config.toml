@@ -1,4 +1,4 @@
-baseurl = "http://dangdangdotcom.github.io/sharding-jdbc"
+baseurl = "http://dangdangdotcom.github.io/sharding-jdbc/"
 languageCode = "en-us"
 title = "Sharding-JDBC"
 

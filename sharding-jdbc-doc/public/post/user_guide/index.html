@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <base href="/sharding-jdbc/"/>
     <title>使用指南</title>
     
     <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     
     
-    <link href="css/landing-page.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
     
     
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
@@ -56,8 +55,8 @@ body {
 }
 
   </style>
-    <link href="css/prism.css" rel="stylesheet">
-    <link href="css/table.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/prism.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
 </head>
 <body>
 
@@ -235,7 +234,7 @@ dataSourceMap.put(&quot;ds_1&quot;, createDataSource(&quot;ds_1&quot;));
 
 <h3 id="数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2">数据源策略与表策略</h3>
 
-<p><img src="img/StrategyClass.900.png" alt="策略类图" />
+<p><img src="../../img/StrategyClass.900.png" alt="策略类图" />
 Sharding-JDBC认为对于分片策略存有两种维度
 - 数据源分片策略<code>DatabaseShardingStrategy</code>：数据被分配的目标数据源
 - 表分片策略<code>TableShardingStrategy</code>：数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的
@@ -247,7 +246,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 <pre><code class="language-java">TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;),
                   new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-                  new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())
+                  new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()),
                   dataSourceRule);
 </code></pre>
 
@@ -295,7 +294,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 <p>分片算法接口类图关系如下：</p>
 
-<p><img src="img/AlgorithmClass.900.png" alt="算法" /></p>
+<p><img src="../../img/AlgorithmClass.900.png" alt="算法" /></p>
 
 <h3 id="绑定表:74c632aa9613b8dd6b95bfab1ba313e2">绑定表</h3>
 
@@ -595,7 +594,7 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 
-<script src="js/prism.js"></script>
+<script src="http://dangdangdotcom.github.io/sharding-jdbc/js/prism.js"></script>
 
 
 
