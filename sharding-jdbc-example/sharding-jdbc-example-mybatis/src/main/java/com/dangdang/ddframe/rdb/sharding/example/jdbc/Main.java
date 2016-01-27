@@ -30,12 +30,17 @@ public class Main {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.clear();
-        orderService.add();
+        orderService.fooService();
+        orderService.select();
+    
+        //[order_id: 1, user_id: 10, status: UPDATED, order_id: 1, user_id: 11, status: UPDATED]
+        orderService.clear();
         try{
-            orderService.addRollback(); 
+            orderService.fooServiceWithFailure();
         }catch (IllegalArgumentException e){
             System.out.println("roll back");
         }
+        //[]
         orderService.select();
     }
 }

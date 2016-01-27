@@ -26,25 +26,18 @@
     
     <update id="update">
         UPDATE `t_order`
-         SET `status` = #{status,jdbcType=VARCHAR} 
-         WHERE `order_id` = #{orderId} AND `user_id` = #{userId}
+        SET `status` = 'UPDATED'
+        WHERE `order_id` = 1 AND `user_id` in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     
-    <delete id="delete">
-        DELETE FROM `t_order`
-        WHERE `order_id` = #{orderId} AND `user_id` = #{userId}
-    </delete>
     
     <delete id="deleteAll">
         DELETE FROM `t_order`
     </delete>
     
-    <select id="selectById" resultMap="baseResultMap">
-        SELECT
-        <include refid="baseColumnList"/>
-        FROM `t_order`
-        WHERE `order_id` = #{orderId} AND `user_id` = #{userId}
-    </select>
     
     <select id="selectAll" resultMap="baseResultMap">
         SELECT

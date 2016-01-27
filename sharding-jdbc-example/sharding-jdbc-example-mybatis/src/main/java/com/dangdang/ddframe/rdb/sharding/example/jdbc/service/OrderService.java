@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +29,21 @@ public class OrderService {
         orderRepository.deleteAll();
     }
     
-    public void add(){
+    public void fooService() {
         Order criteria = new Order();
         criteria.setUserId(10);
-        criteria.setOrderId(1000);
+        criteria.setOrderId(1);
         criteria.setStatus("INSERT");
         orderRepository.insert(criteria);
-    }
-    
-    public void addRollback(){
-        Order criteria = new Order();
-        criteria.setUserId(12);
-        criteria.setOrderId(1002);
+        criteria.setUserId(11);
+        criteria.setOrderId(1);
         criteria.setStatus("INSERT2");
         orderRepository.insert(criteria);
+        orderRepository.update(Lists.newArrayList(10, 11));
+    }
+    
+    public void fooServiceWithFailure() {
+        fooService();
         throw new IllegalArgumentException("failed");
     }
 }
