@@ -15,7 +15,6 @@
 <script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
 <script src="{{ .Site.BaseURL }}data/chart.js"></script>
 <script>
-
     $("canvas").each(function(){
         var data =  chartData[$(this).attr("id")];
         $(data.datasets).each(function(index, obj){
@@ -27,6 +26,5 @@
         });
     })
 </script>
-
 
 {{ end }}

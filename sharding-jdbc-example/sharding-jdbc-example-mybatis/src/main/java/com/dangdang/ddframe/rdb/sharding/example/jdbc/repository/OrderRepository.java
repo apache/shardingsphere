@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
 
-
 public interface OrderRepository {
     
     void insert(Order model);

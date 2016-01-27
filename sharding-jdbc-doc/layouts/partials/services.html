@@ -3,21 +3,17 @@
 <!-- Page Content -->
  {{ range $index, $element :=  where .Data.Pages "Section" "in" "index" }}
         <div class="container">
-
             <div class="row">
                 <div>
                     <div class="clearfix"></div>
                     {{ .Content }}
                 </div>
             </div>
-
         </div>
         <!-- /.container -->
 {{ end }}
 
-
 <div class="container">
-
     <div class="row">
         <div>
             <div class="clearfix"></div>
@@ -29,8 +25,6 @@
              </ul>
         </div>
     </div>
-
 </div>
 <!-- /.container -->
-
 </section>
