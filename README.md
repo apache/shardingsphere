@@ -72,6 +72,8 @@
 
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
 
+[InfoQ新闻](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
+
 # Quick Start
 
 ## 引入maven依赖(暂时还未放入中央仓库，等稳定后再部署)
