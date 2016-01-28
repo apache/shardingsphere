@@ -524,26 +524,58 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     </item>
     
     <item>
-      <title>使用限制</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/</link>
-      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      <title>目录结构说明</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</link>
+      <pubDate>Thu, 28 Jan 2016 16:14:21 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</guid>
       <description>
 
-&lt;h1 id=&#34;使用限制:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;使用限制&lt;/h1&gt;
+&lt;h1 id=&#34;目录结构说明:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;目录结构说明&lt;/h1&gt;
 
-&lt;h2 id=&#34;jdbc-未支持列表:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;&lt;code&gt;JDBC&lt;/code&gt;未支持列表&lt;/h2&gt;
+&lt;h2 id=&#34;sharding-jdbc-core:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-core&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;分库分表核心模块。&lt;/p&gt;
+
+&lt;h2 id=&#34;sharding-jdbc-spring-待开源:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-spring（待开源）&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;对&lt;code&gt;spring&lt;/code&gt;支持的模块，包括命名空间等。&lt;/p&gt;
+
+&lt;h2 id=&#34;sharding-jdbc-config-待开源:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-config（待开源）&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;动态分片规则配置模块。&lt;/p&gt;
+
+&lt;h2 id=&#34;sharding-jdbc-example:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-example&lt;/h2&gt;
+
+&lt;p&gt;使用示例。有&lt;code&gt;sharding-jdbc-example-jdbc&lt;/code&gt;,&lt;code&gt;sharding-jdbc-example-jpa&lt;/code&gt;和&lt;code&gt;sharding-jdbc-example-mybatis&lt;/code&gt;3个子项目。&lt;/p&gt;
+
+&lt;h2 id=&#34;sharding-jdbc-doc:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-doc&lt;/h2&gt;
+
+&lt;p&gt;使用&lt;code&gt;markdown&lt;/code&gt;生成文档的项目，使用方无需关注。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用限制</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/</guid>
+      <description>
+
+&lt;h1 id=&#34;使用限制:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;使用限制&lt;/h1&gt;
+
+&lt;h2 id=&#34;jdbc-未支持列表:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;JDBC&lt;/code&gt;未支持列表&lt;/h2&gt;
 
 &lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;暂时未支持不常用的&lt;code&gt;JDBC&lt;/code&gt;方法。&lt;/p&gt;
 
-&lt;h3 id=&#34;datasource-接口:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;&lt;code&gt;DataSource&lt;/code&gt;接口&lt;/h3&gt;
+&lt;h3 id=&#34;datasource-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;DataSource&lt;/code&gt;接口&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不支持&lt;code&gt;timeout&lt;/code&gt;相关操作&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;connection-接口:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;&lt;code&gt;Connection&lt;/code&gt;接口&lt;/h3&gt;
+&lt;h3 id=&#34;connection-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;Connection&lt;/code&gt;接口&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不支持存储过程，函数，游标的操作&lt;/li&gt;
@@ -553,14 +585,14 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;li&gt;不支持自定义类型映射&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;statement-和-preparedstatement-接口:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;&lt;code&gt;Statement&lt;/code&gt;和&lt;code&gt;PreparedStatement&lt;/code&gt;接口&lt;/h3&gt;
+&lt;h3 id=&#34;statement-和-preparedstatement-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;Statement&lt;/code&gt;和&lt;code&gt;PreparedStatement&lt;/code&gt;接口&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不支返回多个结果集的语句&lt;/li&gt;
 &lt;li&gt;不支持国际化字符的操作&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;对于-resultset-接口:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;对于&lt;code&gt;ResultSet&lt;/code&gt;接口&lt;/h3&gt;
+&lt;h3 id=&#34;对于-resultset-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;对于&lt;code&gt;ResultSet&lt;/code&gt;接口&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不支持对于结果集指针位置判断&lt;/li&gt;
@@ -570,7 +602,7 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;li&gt;不支持获取&lt;code&gt;Array&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;jdbc-4-1:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;JDBC 4.1&lt;/h3&gt;
+&lt;h3 id=&#34;jdbc-4-1:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;JDBC 4.1&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不支持JDBC 4.1接口新功能&lt;/li&gt;
@@ -578,21 +610,21 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;p&gt;查询所有未支持方法，请阅读&lt;code&gt;com.dangdang.ddframe.rdb.sharding.jdbc.unsupported&lt;/code&gt;包。&lt;/p&gt;
 
-&lt;h2 id=&#34;sql语句限制:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;SQL语句限制&lt;/h2&gt;
+&lt;h2 id=&#34;sql语句限制:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;SQL语句限制&lt;/h2&gt;
 
-&lt;h3 id=&#34;不支持ddl语句:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;不支持DDL语句&lt;/h3&gt;
+&lt;h3 id=&#34;不支持ddl语句:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持DDL语句&lt;/h3&gt;
 
-&lt;h3 id=&#34;不支持子语句:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;不支持子语句&lt;/h3&gt;
+&lt;h3 id=&#34;不支持子语句:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持子语句&lt;/h3&gt;
 
-&lt;h3 id=&#34;不支持-union-和-union-all:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;不支持&lt;code&gt;UNION&lt;/code&gt; 和 &lt;code&gt;UNION ALL&lt;/code&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;不支持-union-和-union-all:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;UNION&lt;/code&gt; 和 &lt;code&gt;UNION ALL&lt;/code&gt;&lt;/h3&gt;
 
-&lt;h3 id=&#34;不支持特殊-insert:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;不支持特殊&lt;code&gt;INSERT&lt;/code&gt;&lt;/h3&gt;
+&lt;h3 id=&#34;不支持特殊-insert:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持特殊&lt;code&gt;INSERT&lt;/code&gt;&lt;/h3&gt;
 
 &lt;p&gt;每条&lt;code&gt;INSERT&lt;/code&gt;语句只能插入一条数据，不支持&lt;code&gt;VALUES&lt;/code&gt;后有多行数据的语句&lt;/p&gt;
 
-&lt;h3 id=&#34;不支持-distinct-聚合:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;不支持&lt;code&gt;DISTINCT&lt;/code&gt;聚合&lt;/h3&gt;
+&lt;h3 id=&#34;不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;DISTINCT&lt;/code&gt;聚合&lt;/h3&gt;
 
-&lt;h3 id=&#34;对于-谨慎使用:e136e3f58c4f85ea1188986eb33d0381&#34;&gt;对于&lt;code&gt;*&lt;/code&gt;谨慎使用&lt;/h3&gt;
+&lt;h3 id=&#34;对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;对于&lt;code&gt;*&lt;/code&gt;谨慎使用&lt;/h3&gt;
 
 &lt;p&gt;一般情况下&lt;code&gt;SELECT&lt;/code&gt;语句中是可以使用&lt;code&gt;*&lt;/code&gt;的，如下的&lt;code&gt;SQL&lt;/code&gt;可以正常在&lt;code&gt;Sharding-JDBC&lt;/code&gt;中使用。&lt;/p&gt;
 

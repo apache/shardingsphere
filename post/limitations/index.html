@@ -24,34 +24,34 @@
 .content-section-a,
 footer,
 .navbar {
-  background-color: #f8f8f8;
-  color: #333;
+    background-color: #f8f8f8;
+    color: #333;
 }
 
 .navbar a:link,
 .navbar-default .navbar-nav>li>a {
-  color: #777;
+    color: #777;
 }
 
 .navbar a:hover,
 .navbar-default .navbar-nav>li>a:hover {
-  color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
 }
 
 .content-section-b {
-  background-color: white;
-  color: #333;
+    background-color: white;
+    color: #333;
 }
 
 body {
-  color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
 }
 
 .header-container h1,
 .header-container h2,
 .header-container h3,
 .header-container h4 {
-  color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
 }
 
   </style>
@@ -108,19 +108,19 @@ body {
               <div class="col-sm-8">
 		 
 
-<h1 id="使用限制:e136e3f58c4f85ea1188986eb33d0381">使用限制</h1>
+<h1 id="使用限制:187f2cad6c4cc3b3972d4d058186f234">使用限制</h1>
 
-<h2 id="jdbc-未支持列表:e136e3f58c4f85ea1188986eb33d0381"><code>JDBC</code>未支持列表</h2>
+<h2 id="jdbc-未支持列表:187f2cad6c4cc3b3972d4d058186f234"><code>JDBC</code>未支持列表</h2>
 
 <p><code>Sharding-JDBC</code>暂时未支持不常用的<code>JDBC</code>方法。</p>
 
-<h3 id="datasource-接口:e136e3f58c4f85ea1188986eb33d0381"><code>DataSource</code>接口</h3>
+<h3 id="datasource-接口:187f2cad6c4cc3b3972d4d058186f234"><code>DataSource</code>接口</h3>
 
 <ul>
 <li>不支持<code>timeout</code>相关操作</li>
 </ul>
 
-<h3 id="connection-接口:e136e3f58c4f85ea1188986eb33d0381"><code>Connection</code>接口</h3>
+<h3 id="connection-接口:187f2cad6c4cc3b3972d4d058186f234"><code>Connection</code>接口</h3>
 
 <ul>
 <li>不支持存储过程，函数，游标的操作</li>
@@ -130,14 +130,14 @@ body {
 <li>不支持自定义类型映射</li>
 </ul>
 
-<h3 id="statement-和-preparedstatement-接口:e136e3f58c4f85ea1188986eb33d0381"><code>Statement</code>和<code>PreparedStatement</code>接口</h3>
+<h3 id="statement-和-preparedstatement-接口:187f2cad6c4cc3b3972d4d058186f234"><code>Statement</code>和<code>PreparedStatement</code>接口</h3>
 
 <ul>
 <li>不支返回多个结果集的语句</li>
 <li>不支持国际化字符的操作</li>
 </ul>
 
-<h3 id="对于-resultset-接口:e136e3f58c4f85ea1188986eb33d0381">对于<code>ResultSet</code>接口</h3>
+<h3 id="对于-resultset-接口:187f2cad6c4cc3b3972d4d058186f234">对于<code>ResultSet</code>接口</h3>
 
 <ul>
 <li>不支持对于结果集指针位置判断</li>
@@ -147,7 +147,7 @@ body {
 <li>不支持获取<code>Array</code></li>
 </ul>
 
-<h3 id="jdbc-4-1:e136e3f58c4f85ea1188986eb33d0381">JDBC 4.1</h3>
+<h3 id="jdbc-4-1:187f2cad6c4cc3b3972d4d058186f234">JDBC 4.1</h3>
 
 <ul>
 <li>不支持JDBC 4.1接口新功能</li>
@@ -155,21 +155,21 @@ body {
 
 <p>查询所有未支持方法，请阅读<code>com.dangdang.ddframe.rdb.sharding.jdbc.unsupported</code>包。</p>
 
-<h2 id="sql语句限制:e136e3f58c4f85ea1188986eb33d0381">SQL语句限制</h2>
+<h2 id="sql语句限制:187f2cad6c4cc3b3972d4d058186f234">SQL语句限制</h2>
 
-<h3 id="不支持ddl语句:e136e3f58c4f85ea1188986eb33d0381">不支持DDL语句</h3>
+<h3 id="不支持ddl语句:187f2cad6c4cc3b3972d4d058186f234">不支持DDL语句</h3>
 
-<h3 id="不支持子语句:e136e3f58c4f85ea1188986eb33d0381">不支持子语句</h3>
+<h3 id="不支持子语句:187f2cad6c4cc3b3972d4d058186f234">不支持子语句</h3>
 
-<h3 id="不支持-union-和-union-all:e136e3f58c4f85ea1188986eb33d0381">不支持<code>UNION</code> 和 <code>UNION ALL</code></h3>
+<h3 id="不支持-union-和-union-all:187f2cad6c4cc3b3972d4d058186f234">不支持<code>UNION</code> 和 <code>UNION ALL</code></h3>
 
-<h3 id="不支持特殊-insert:e136e3f58c4f85ea1188986eb33d0381">不支持特殊<code>INSERT</code></h3>
+<h3 id="不支持特殊-insert:187f2cad6c4cc3b3972d4d058186f234">不支持特殊<code>INSERT</code></h3>
 
 <p>每条<code>INSERT</code>语句只能插入一条数据，不支持<code>VALUES</code>后有多行数据的语句</p>
 
-<h3 id="不支持-distinct-聚合:e136e3f58c4f85ea1188986eb33d0381">不支持<code>DISTINCT</code>聚合</h3>
+<h3 id="不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234">不支持<code>DISTINCT</code>聚合</h3>
 
-<h3 id="对于-谨慎使用:e136e3f58c4f85ea1188986eb33d0381">对于<code>*</code>谨慎使用</h3>
+<h3 id="对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234">对于<code>*</code>谨慎使用</h3>
 
 <p>一般情况下<code>SELECT</code>语句中是可以使用<code>*</code>的，如下的<code>SQL</code>可以正常在<code>Sharding-JDBC</code>中使用。</p>
 
@@ -188,24 +188,24 @@ body {
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
 		 <nav id="TableOfContents">
 <ul>
-<li><a href="#使用限制:e136e3f58c4f85ea1188986eb33d0381">使用限制</a>
+<li><a href="#使用限制:187f2cad6c4cc3b3972d4d058186f234">使用限制</a>
 <ul>
-<li><a href="#jdbc-未支持列表:e136e3f58c4f85ea1188986eb33d0381"><code>JDBC</code>未支持列表</a>
+<li><a href="#jdbc-未支持列表:187f2cad6c4cc3b3972d4d058186f234"><code>JDBC</code>未支持列表</a>
 <ul>
-<li><a href="#datasource-接口:e136e3f58c4f85ea1188986eb33d0381"><code>DataSource</code>接口</a></li>
-<li><a href="#connection-接口:e136e3f58c4f85ea1188986eb33d0381"><code>Connection</code>接口</a></li>
-<li><a href="#statement-和-preparedstatement-接口:e136e3f58c4f85ea1188986eb33d0381"><code>Statement</code>和<code>PreparedStatement</code>接口</a></li>
-<li><a href="#对于-resultset-接口:e136e3f58c4f85ea1188986eb33d0381">对于<code>ResultSet</code>接口</a></li>
-<li><a href="#jdbc-4-1:e136e3f58c4f85ea1188986eb33d0381">JDBC 4.1</a></li>
+<li><a href="#datasource-接口:187f2cad6c4cc3b3972d4d058186f234"><code>DataSource</code>接口</a></li>
+<li><a href="#connection-接口:187f2cad6c4cc3b3972d4d058186f234"><code>Connection</code>接口</a></li>
+<li><a href="#statement-和-preparedstatement-接口:187f2cad6c4cc3b3972d4d058186f234"><code>Statement</code>和<code>PreparedStatement</code>接口</a></li>
+<li><a href="#对于-resultset-接口:187f2cad6c4cc3b3972d4d058186f234">对于<code>ResultSet</code>接口</a></li>
+<li><a href="#jdbc-4-1:187f2cad6c4cc3b3972d4d058186f234">JDBC 4.1</a></li>
 </ul></li>
-<li><a href="#sql语句限制:e136e3f58c4f85ea1188986eb33d0381">SQL语句限制</a>
+<li><a href="#sql语句限制:187f2cad6c4cc3b3972d4d058186f234">SQL语句限制</a>
 <ul>
-<li><a href="#不支持ddl语句:e136e3f58c4f85ea1188986eb33d0381">不支持DDL语句</a></li>
-<li><a href="#不支持子语句:e136e3f58c4f85ea1188986eb33d0381">不支持子语句</a></li>
-<li><a href="#不支持-union-和-union-all:e136e3f58c4f85ea1188986eb33d0381">不支持<code>UNION</code> 和 <code>UNION ALL</code></a></li>
-<li><a href="#不支持特殊-insert:e136e3f58c4f85ea1188986eb33d0381">不支持特殊<code>INSERT</code></a></li>
-<li><a href="#不支持-distinct-聚合:e136e3f58c4f85ea1188986eb33d0381">不支持<code>DISTINCT</code>聚合</a></li>
-<li><a href="#对于-谨慎使用:e136e3f58c4f85ea1188986eb33d0381">对于<code>*</code>谨慎使用</a></li>
+<li><a href="#不支持ddl语句:187f2cad6c4cc3b3972d4d058186f234">不支持DDL语句</a></li>
+<li><a href="#不支持子语句:187f2cad6c4cc3b3972d4d058186f234">不支持子语句</a></li>
+<li><a href="#不支持-union-和-union-all:187f2cad6c4cc3b3972d4d058186f234">不支持<code>UNION</code> 和 <code>UNION ALL</code></a></li>
+<li><a href="#不支持特殊-insert:187f2cad6c4cc3b3972d4d058186f234">不支持特殊<code>INSERT</code></a></li>
+<li><a href="#不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234">不支持<code>DISTINCT</code>聚合</a></li>
+<li><a href="#对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234">对于<code>*</code>谨慎使用</a></li>
 </ul></li>
 </ul></li>
 </ul>
