@@ -3,7 +3,7 @@ languageCode = "en-us"
 title = "Sharding-JDBC"
 
 [params]
-    description = "Sharding-JDBC project."
+    description = "A JDBC driver for shard databases and tables"
     author_url = "https://github.com/dangdangdotcom"
     project_url = "https://github.com/dangdangdotcom/sharding-jdbc"
     project_documentation = "http://dangdangdotcom.github.io/sharding-jdbc"
