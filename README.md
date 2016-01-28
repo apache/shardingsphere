@@ -62,7 +62,7 @@
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
-[目录结构说明](http://dangdangdotcom.github.io/elastic-job/post/directory_structure)
+[目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
 
 [阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/post/source_code_guide)
 
