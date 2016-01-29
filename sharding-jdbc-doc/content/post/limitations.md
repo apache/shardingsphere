@@ -21,7 +21,7 @@ weight = 5
 - 不支持自定义类型映射
 
 ### `Statement`和`PreparedStatement`接口
-- 不支返回多个结果集的语句
+- 不支持返回多结果集的语句（即存储过程，非`SELECT`多条数据）
 - 不支持国际化字符的操作
 
 ### 对于`ResultSet`接口
