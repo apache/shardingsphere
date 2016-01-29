@@ -72,6 +72,8 @@
 
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
 
+[事务支持说明](http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/)
+
 [InfoQ新闻](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
 
 # Quick Start
