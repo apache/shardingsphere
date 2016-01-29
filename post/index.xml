@@ -837,5 +837,29 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 </description>
     </item>
     
+    <item>
+      <title>事务支持说明</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/</link>
+      <pubDate>Fri, 29 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/</guid>
+      <description>
+
+&lt;h1 id=&#34;事务支持说明:2e47673b0e2fecf4f97d6b00d496cdc9&#34;&gt;事务支持说明&lt;/h1&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;目前不支持分布式事务。我们已明确规划roadmap，在未来的一两个版本中会支持最终一致性的柔性事务。&lt;/p&gt;
+
+&lt;p&gt;基于目前状况的事务，有以下几点说明：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库死机，则只有第二个库数据提交。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>
