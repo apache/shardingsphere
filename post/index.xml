@@ -588,7 +588,7 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h3 id=&#34;statement-和-preparedstatement-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;Statement&lt;/code&gt;和&lt;code&gt;PreparedStatement&lt;/code&gt;接口&lt;/h3&gt;
 
 &lt;ul&gt;
-&lt;li&gt;不支返回多个结果集的语句&lt;/li&gt;
+&lt;li&gt;不支持返回多结果集的语句（即存储过程，非&lt;code&gt;SELECT&lt;/code&gt;多条数据）&lt;/li&gt;
 &lt;li&gt;不支持国际化字符的操作&lt;/li&gt;
 &lt;/ul&gt;
 
