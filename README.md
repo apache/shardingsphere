@@ -78,7 +78,7 @@
 
 # Quick Start
 
-## 引入maven依赖(暂时还未放入中央仓库，等稳定后再部署)
+## 引入maven依赖
 
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->
