@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.util.concurrent.*;
-import org.slf4j.Logger;
-
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -34,12 +34,10 @@ import java.util.concurrent.Executors;
  * 
  * @author gaohongtao
  */
+@NoArgsConstructor
+@Slf4j
 public final class ExecutorEngine {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorEngine.class);
-
-    private ExecutorEngine() {
-    }
 
     /**
      * 多线程执行任务.
