@@ -18,9 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.google.common.util.concurrent.*;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,13 +26,21 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 多线程执行框架.
  * 
  * @author gaohongtao
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ExecutorEngine {
 
