@@ -17,6 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.google.common.util.concurrent.*;
+import org.slf4j.Logger;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -25,26 +29,18 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * 多线程执行框架.
  * 
  * @author gaohongtao
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class ExecutorEngine {
-    
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorEngine.class);
+
+    private ExecutorEngine() {
+    }
+
     /**
      * 多线程执行任务.
      * 
@@ -77,7 +73,7 @@ public final class ExecutorEngine {
     
     private static <I, O> ListenableFuture<List<O>> submitFutures(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         Set<ListenableFuture<O>> result = new HashSet<>(inputs.size());
-        ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(inputs.size()));
+        ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
         for (final I each : inputs) {
             result.add(service.submit(new Callable<O>() {
                 
