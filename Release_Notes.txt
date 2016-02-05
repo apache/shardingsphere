@@ -1,6 +1,3 @@
 ﻿版本：1.0.1
-SOA模块：
-1. 修复注册中心Zookeeper多台配置导致不能正确运行的问题
-2. 修复用注解可以触发监控，用xml配置dubbo服务，不能触发监控的问题
-3. 修复api-monitor不能使用profile问题
-。
+解析模块：
+1.修复jpa自动生成order by的sql语句中select的列名被jpa别名改写导致sharding-jdbc无法获取列值的问题。
