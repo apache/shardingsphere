@@ -6,5 +6,5 @@ weight = 9
 
 # Release Notes
 
-## 1.0.1
-1. 修复jpa生成SQL语句与Sharding-JDBC之间的兼容问题。该问题表现为：在order by语句中，jpa会增加select中列的别名，该别名无法正确被Sharding-JDBC识别。
+## 1.0.1-snapshot
+1. 修正JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。
