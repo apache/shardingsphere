@@ -45,6 +45,12 @@ public class OrderRepositoryImpl implements OrderRepository {
         return (List<Order>) entityManager.createQuery("SELECT o FROM Order o").getResultList();
     }
     
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Order> selectOrderBy() {
+        return (List<Order>) entityManager.createQuery("SELECT o FROM Order o order by o.orderId").getResultList();
+    }
+    
     @Override
     public void create(final Order order) {
         entityManager.persist(order);

@@ -23,10 +23,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// CHECKSTYLE:OFF
 @Service
 @Transactional
 public class Main {
     public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.clear();
@@ -35,9 +37,9 @@ public class Main {
     
         //[order_id: 1, user_id: 10, status: UPDATED, order_id: 1, user_id: 11, status: UPDATED]
         orderService.clear();
-        try{
+        try {
             orderService.fooServiceWithFailure();
-        }catch (IllegalArgumentException e){
+        } catch (final IllegalArgumentException e) {
             System.out.println("roll back");
         }
         //[]

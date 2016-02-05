@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -71,6 +72,10 @@ public final class ParseContext {
     private Table currentTable;
     
     private int selectItemsCount;
+    
+    private final Collection<String> selectItems = new HashSet<>();
+    
+    private boolean hasAllColumn;
     
     /**
      * 设置当前正在访问的表.
@@ -125,7 +130,8 @@ public final class ParseContext {
     /**
      * 将条件对象加入解析上下文.
      * 
-     * @param columnName 列名
+     * @param columnName 列名称
+     * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
      * @param databaseType 数据库类型
@@ -272,7 +278,16 @@ public final class ParseContext {
      * @param orderByType 排序类型
      */
     public void addOrderByColumn(final String name, final OrderByType orderByType) {
-        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(getExactlyValue(name), orderByType));
+        String rawName = getExactlyValue(name);
+        String alias = null;
+        if (!containsSelectItem(rawName)) {
+            alias = generateDerivedColumnAlias();
+        }
+        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(rawName, alias, orderByType));
+    }
+    
+    private boolean containsSelectItem(final String selectItem) {
+        return hasAllColumn || selectItems.contains(selectItem);
     }
     
     /**
@@ -296,6 +311,27 @@ public final class ParseContext {
     }
     
     /**
+     * 将当前解析的条件对象归并入解析结果.
+     */
+    public void mergeCurrentConditionContext() {
+        parsedResult.getConditionContexts().add(currentConditionContext);
+    }
+    
+    /**
+     * 注册SELECT语句中声明的列名称或别名.
+     *
+     * @param selectItem SELECT语句中声明的列名称或别名
+     */
+    public void registerSelectItem(final String selectItem) {
+        String rawItemExpr = getExactlyValue(selectItem);
+        if ("*".equals(rawItemExpr)) {
+            hasAllColumn = true;
+            return;
+        }
+        selectItems.add(rawItemExpr);
+    }
+    
+    /**
      * 去掉SQL表达式的特殊字符.
      * 
      * @param value SQL表达式
@@ -303,12 +339,5 @@ public final class ParseContext {
      */
     public String getExactlyValue(final String value) {
         return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
-    }
-    
-    /**
-     * 将当前解析的条件对象归并入解析结果.
-     */
-    public void mergeCurrentConditionContext() {
-        parsedResult.getConditionContexts().add(currentConditionContext);
     }
 }

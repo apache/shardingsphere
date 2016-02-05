@@ -35,6 +35,9 @@ public final class OrderByColumn {
     @XmlAttribute
     private Integer index;
     
+    @XmlAttribute
+    private String alias;
+    
     @XmlAttribute(name = "order-by-type") 
     private String orderByType;
 }

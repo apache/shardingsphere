@@ -38,10 +38,11 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
-
+// CHECKSTYLE:OFF
 public final class Main {
     
     public static void main(final String[] args) throws SQLException {
+        // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
         printSimpleSelect(dataSource);
         System.out.println("--------------");

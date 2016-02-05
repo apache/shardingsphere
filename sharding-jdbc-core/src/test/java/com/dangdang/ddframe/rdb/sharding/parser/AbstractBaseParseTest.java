@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,21 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-
-import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
@@ -53,9 +46,13 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 public abstract class AbstractBaseParseTest {
     
@@ -79,8 +76,8 @@ public abstract class AbstractBaseParseTest {
     
     private final Limit limit;
     
-    public AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL, 
-            final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
+    public AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
+                                 final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
@@ -162,7 +159,7 @@ public abstract class AbstractBaseParseTest {
                 @Override
                 public OrderByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
                     return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase()))
-                        : new OrderByColumn(input.getName(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                            : new OrderByColumn(input.getName(), input.getAlias(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }

@@ -63,10 +63,12 @@ public final class ResultSetUtil {
      * @throws SQLException
      */
     public static Object getValue(final OrderByColumn orderByColumn, final ResultSet resultSet) throws SQLException {
-        Object result;
+        Object result = null;
         if (orderByColumn.getIndex().isPresent()) {
             result = resultSet.getObject(orderByColumn.getIndex().get());
-        } else {
+        } else if (orderByColumn.getAlias().isPresent()) {
+            result = getValue(orderByColumn.getAlias().get(), resultSet);
+        } else if (orderByColumn.getName().isPresent()) {
             result = getValue(orderByColumn.getName().get(), resultSet);
         }
         Preconditions.checkNotNull(result);

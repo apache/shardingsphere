@@ -18,14 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
     
     @Resource
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
     
     @Transactional(readOnly = true)
     public void select() {
         System.out.println(orderRepository.selectAll());
     }
     
-    public void clear(){
+    public void clear() {
         orderRepository.deleteAll();
     }
     

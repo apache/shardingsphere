@@ -39,14 +39,20 @@ public final class OrderByColumn {
     
     private final Optional<Integer> index;
     
+    private final Optional<String> alias;
+    
     private final OrderByType orderByType;
     
+    public OrderByColumn(final String name, final String alias, final OrderByType orderByType) {
+        this(Optional.of(name), Optional.<Integer>absent(), Optional.fromNullable(alias), orderByType);
+    }
+    
     public OrderByColumn(final String name, final OrderByType orderByType) {
-        this(Optional.of(name), Optional.<Integer>absent(), orderByType);
+        this(Optional.of(name), Optional.<Integer>absent(), Optional.<String>absent(), orderByType);
     }
     
     public OrderByColumn(final int index, final OrderByType orderByType) {
-        this(Optional.<String>absent(), Optional.of(index), orderByType);
+        this(Optional.<String>absent(), Optional.of(index), Optional.<String>absent(), orderByType);
     }
     
     /**

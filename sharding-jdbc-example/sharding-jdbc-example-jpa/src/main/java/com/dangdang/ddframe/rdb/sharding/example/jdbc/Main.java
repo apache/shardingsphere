@@ -21,18 +21,22 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
-
+// CHECKSTYLE:OFF
 public final class Main {
     
     public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpaContext.xml");
         OrderRepository orderRepository = applicationContext.getBean(OrderRepository.class);
         System.out.println(orderRepository.selectById(1000));
         System.out.println("--------------");
-        
+    
         System.out.println(orderRepository.selectAll());
         System.out.println("--------------");
-        
+    
+        System.out.println(orderRepository.selectOrderBy());
+        System.out.println("--------------");
+    
         for (int i = 10000; i < 10010; i++) {
             Order order = new Order();
             order.setOrderId(i);
@@ -45,6 +49,15 @@ public final class Main {
             orderRepository.update(order);
             System.out.println(orderRepository.selectById(i));
             System.out.println("--------------");
+        }
+    
+        System.out.println(orderRepository.selectAll());
+        System.out.println("--------------");
+    
+        System.out.println(orderRepository.selectOrderBy());
+        System.out.println("--------------");
+    
+        for (int i = 10000; i < 10010; i++) {
             orderRepository.delete(i);
         }
         applicationContext.close();
