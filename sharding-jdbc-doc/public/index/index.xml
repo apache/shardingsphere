@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Indexes on Sharding-JDBC</title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+    <description>Recent content in Indexes on Sharding-JDBC</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title></title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/index/</guid>
+      <description>
+
+&lt;h1 id=&#34;主要贡献者:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;主要贡献者&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;张亮 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; zhangliang@dangdang.com&lt;/li&gt;
+&lt;li&gt;高洪涛 &lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; gaohongtao@dangdang.com&lt;/li&gt;
+&lt;li&gt;曹昊 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; caohao@dangdang.com&lt;/li&gt;
+&lt;li&gt;岳令 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; yueling@dangdang.com&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;讨论QQ群：&lt;/strong&gt;532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）&lt;/p&gt;
+
+&lt;h1 id=&#34;简介:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;简介&lt;/h1&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;是当当应用框架&lt;code&gt;ddframe&lt;/code&gt;中，关系型数据库模块&lt;code&gt;dd-rdb&lt;/code&gt;中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;直接封装&lt;code&gt;JDBC API&lt;/code&gt;，可以理解为增强版的&lt;code&gt;JDBC&lt;/code&gt;驱动，旧代码迁移成本几乎为零：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可适用于任何基于&lt;code&gt;java&lt;/code&gt;的&lt;code&gt;ORM&lt;/code&gt;框架，如：&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;Hibernate&lt;/code&gt;, &lt;code&gt;Mybatis&lt;/code&gt;, &lt;code&gt;Spring JDBC Template&lt;/code&gt;或直接使用&lt;code&gt;JDBC&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;可基于任何第三方的数据库连接池，如：&lt;code&gt;DBCP&lt;/code&gt;, &lt;code&gt;C3P0&lt;/code&gt;, &lt;code&gt;BoneCP&lt;/code&gt;, &lt;code&gt;Druid&lt;/code&gt;等。&lt;/li&gt;
+&lt;li&gt;理论上可支持任意实现&lt;code&gt;JDBC&lt;/code&gt;规范的数据库。虽然目前仅支持&lt;code&gt;MySQL&lt;/code&gt;，但已有支持&lt;code&gt;Oracle&lt;/code&gt;，&lt;code&gt;SQLServer&lt;/code&gt;，&lt;code&gt;DB2&lt;/code&gt;等数据库的计划。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;定位为轻量级&lt;code&gt;java&lt;/code&gt;框架，使用客户端直连数据库，以&lt;code&gt;jar&lt;/code&gt;包形式提供服务，未使用中间层，无需额外部署，无其他依赖，&lt;code&gt;DBA&lt;/code&gt;也无需改变原有的运维方式。&lt;code&gt;SQL&lt;/code&gt;解析使用&lt;code&gt;Druid&lt;/code&gt;解析器，是目前性能最高的&lt;code&gt;SQL&lt;/code&gt;解析器。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;功能灵活且全面：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;分片策略灵活，可支持&lt;code&gt;=&lt;/code&gt;，&lt;code&gt;BETWEEN&lt;/code&gt;，&lt;code&gt;IN&lt;/code&gt;等多维度分片，也可支持多分片键共用。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SQL&lt;/code&gt;解析功能完善，支持聚合，分组，排序，&lt;code&gt;Limit&lt;/code&gt;，&lt;code&gt;OR&lt;/code&gt;等查询，并且支持&lt;code&gt;Binding Table&lt;/code&gt;以及笛卡尔积的表查询。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以下是常见的分库分表产品和&lt;code&gt;Sharding-JDBC&lt;/code&gt;的对比：&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Cobar&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Cobar-client&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;TDDL&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Sharding-JDBC&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;分库&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;有&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;未开源&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;分表&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;未开源&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;中间层&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;是&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;ORM支持&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅MyBatis&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据库支持&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;仅MySQL&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;异构语言&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;可&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;外部依赖&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Diamond&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;整体架构图:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;整体架构图&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;quick-start:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;Quick Start&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!-- 引入sharding-jdbc核心模块 --&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;规则配置:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;规则配置&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;的分库分表通过规则配置描述，请简单浏览配置全貌：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; ShardingRule shardingRule = new ShardingRule(
+                dataSourceRule, 
+                Arrays.asList(tableRule), 
+                new DatabaseShardingStrategy(&amp;quot;sharding_column_1&amp;quot;, new XXXShardingAlgorithm()),
+                new TableShardingStrategy(&amp;quot;sharding_column_2&amp;quot;, new XXXShardingAlgorithm()));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和&lt;code&gt;tableRule&lt;/code&gt;绑定等。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;详细的规则配置请参考&lt;a href=&#34;post/user_guide&#34;&gt;用户指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;使用基于shardingdatasource的jdbc接口:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;使用基于ShardingDataSource的JDBC接口&lt;/h2&gt;
+
+&lt;p&gt;通过规则配置对象获取&lt;code&gt;ShardingDataSource&lt;/code&gt;，&lt;code&gt;ShardingDataSource&lt;/code&gt;实现自&lt;code&gt;JDBC&lt;/code&gt;的标准接口&lt;code&gt;DataSource&lt;/code&gt;。然后可通过&lt;code&gt;DataSource&lt;/code&gt;选择使用原生&lt;code&gt;JDBC&lt;/code&gt;开发，或者使用&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;MyBatis&lt;/code&gt;等&lt;code&gt;ORM&lt;/code&gt;工具。
+以&lt;code&gt;JDBC&lt;/code&gt;原生实现为例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = new ShardingDataSource(shardingRule);
+String sql = &amp;quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&amp;quot;;
+try (
+        Connection conn = dataSource.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    pstmt.setInt(1, 10);
+    pstmt.setInt(2, 1001);
+    try (ResultSet rs = pstmt.executeQuery()) {
+        while(rs.next()) {
+            System.out.println(rs.getInt(1));
+            System.out.println(rs.getInt(2));
+            System.out.println(rs.getInt(3));
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
