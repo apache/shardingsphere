@@ -61,6 +61,8 @@
 
 # 相关文档
 
+[Release Notes](http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/)
+
 [使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
