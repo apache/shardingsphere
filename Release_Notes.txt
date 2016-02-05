@@ -1,3 +1,0 @@
-﻿版本：1.0.1
-解析模块：
-1.修复jpa自动生成order by的sql语句中select的列名被jpa别名改写导致sharding-jdbc无法获取列值的问题。
