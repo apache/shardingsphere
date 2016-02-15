@@ -83,6 +83,8 @@
 
 [InfoQ新闻](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
 
+[CSDN文章](http://geek.csdn.net/news/detail/55513)
+
 # Quick Start
 
 ## 引入maven依赖
