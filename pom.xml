@@ -507,6 +507,7 @@
                     <quiet>true</quiet>
                     <format>xml</format>
                     <instrumentation>
+                        <ignoreTrivial>true</ignoreTrivial>
                         <excludes>
                             <exclude>com/dangdang/**/*Test.class</exclude>
                             <exclude>com/dangdang/**/Test*.class</exclude>
