@@ -17,20 +17,31 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
-import java.util.Properties;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * 配置类.
  *
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 public final class ShardingConfiguration {
     
-    private final Properties props;
-    
+    private  Map<String,Object> props;
+
+    public ShardingConfiguration() {
+        this.props= Collections.emptyMap();
+    }
+
+    public ShardingConfiguration(Map<String, Object> props) {
+        if(props == null){
+            this.props=Collections.emptyMap();
+        }else {
+            this.props = props;
+        }
+    }
+
+
     /**
      * 获取字符串类型的配置.
      * 
@@ -38,7 +49,11 @@ public final class ShardingConfiguration {
      * @return 配置值
      */
     public String getConfig(final ShardingConfigurationConstant key) {
-        return props.getProperty(key.getKey(), key.getDefaultValue());
+        Object value=props.get(key.getKey());
+        if(value==null){
+            return key.getDefaultValue();
+        }
+        return value.toString();
     }
     
     /**

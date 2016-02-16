@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -49,10 +49,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     private final MetricsContext metricsContext;
     
     public ShardingDataSource(final ShardingRule shardingRule) {
-        this(shardingRule, new Properties());
+        this(shardingRule, null);
     }
     
-    public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
+    public ShardingDataSource(final ShardingRule shardingRule, final Map<String,Object> props) {
         this.shardingRule = shardingRule;
         databaseMetaData = getDatabaseMetaData();
         configuration = new ShardingConfiguration(props);
