@@ -8,6 +8,7 @@
 
     <modules>
         <module>sharding-jdbc-core</module>
+        <module>sharding-jdbc-example</module>
     </modules>
 
     <properties>
