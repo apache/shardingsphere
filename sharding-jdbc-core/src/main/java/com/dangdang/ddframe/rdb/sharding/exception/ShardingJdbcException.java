@@ -29,6 +29,10 @@ public class ShardingJdbcException extends RuntimeException {
     public ShardingJdbcException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
+
+    public ShardingJdbcException(final String message, final Exception cause) {
+        super(message,cause);
+    }
     
     public ShardingJdbcException(final Exception cause) {
         super(cause);
