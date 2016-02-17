@@ -22,13 +22,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.wapper.StatementExecutorWapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -152,7 +152,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         SQLRouteResult sqlRouteResult = sqlRouteEngine.route(sql, Collections.emptyList());
         mergeContext = sqlRouteResult.getMergeContext();
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            result.addStatement(each.getSql(), generateStatement(each.getSql(), each.getDataSource()));
+            result.addStatement(new StatementExecutorWapper(generateStatement(each.getSql(), each.getDataSource()), each));
         }
         return result;
     }
@@ -188,7 +188,12 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public Collection<? extends Statement> getRoutedStatements() throws SQLException {
-        return cachedRoutedStatements.values();
+    public List<? extends Statement> getRoutedStatements() throws SQLException {
+        return new ArrayList<Statement>(cachedRoutedStatements.values());
+    }
+    
+    @Override
+    public void clearRoutedStatements() throws SQLException {
+        cachedRoutedStatements.clear();
     }
 }

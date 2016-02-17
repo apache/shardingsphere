@@ -9,6 +9,7 @@
         <module>sharding-jdbc-example-jdbc</module>
         <module>sharding-jdbc-example-mybatis</module>
         <module>sharding-jdbc-example-jpa</module>
+        <module>sharding-jdbc-example-jdbc-transaction</module>
     </modules>
     
     <properties>
@@ -41,6 +42,11 @@
         <dependency>
             <groupId>com.dangdang</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
+            <version>${sharding-jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>sharding-jdbc-transaction</artifactId>
             <version>${sharding-jdbc.version}</version>
         </dependency>
         
