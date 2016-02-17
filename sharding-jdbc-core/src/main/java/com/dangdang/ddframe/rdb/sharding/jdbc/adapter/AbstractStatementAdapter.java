@@ -48,7 +48,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             each.close();
         }
         closed = true;
-        getRoutedStatements().clear();
+        clearRoutedStatements();
     }
     
     @Override
@@ -159,4 +159,11 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
      * @throws SQLException
      */
     public abstract Collection<? extends Statement> getRoutedStatements() throws SQLException;
+    
+    /**
+     *  清除路由的静态语句对象集合.
+     * 
+     * @throws SQLException
+     */
+    public abstract void clearRoutedStatements() throws SQLException;
 }

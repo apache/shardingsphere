@@ -17,14 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.wapper.PreparedStatementExecutorWapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
     
-    private final Collection<PreparedStatement> preparedStatements;
+    private final List<PreparedStatementExecutorWapper> preparedStatementExecutorWappers;
     
     /**
      * 执行SQL查询.
@@ -48,16 +50,16 @@ public final class PreparedStatementExecutor {
     public List<ResultSet> executeQuery() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
         List<ResultSet> result;
-        if (1 == preparedStatements.size()) {
-            result =  Arrays.asList(preparedStatements.iterator().next().executeQuery());
+        if (1 == preparedStatementExecutorWappers.size()) {
+            result =  Arrays.asList(preparedStatementExecutorWappers.iterator().next().getPreparedStatement().executeQuery());
             MetricsContext.stop(context);
             return result;
         }
-        result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, ResultSet>() {
+        result = ExecutorEngine.execute(preparedStatementExecutorWappers, new ExecuteUnit<PreparedStatementExecutorWapper, ResultSet>() {
             
             @Override
-            public ResultSet execute(final PreparedStatement input) throws Exception {
-                return input.executeQuery();
+            public ResultSet execute(final PreparedStatementExecutorWapper input) throws Exception {
+                return input.getPreparedStatement().executeQuery();
             }
         });
         MetricsContext.stop(context);
@@ -72,17 +74,34 @@ public final class PreparedStatementExecutor {
      */
     public int executeUpdate() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
+        postDMLExecutionEvents();
         int result;
-        if (1 == preparedStatements.size()) {
-            result =  preparedStatements.iterator().next().executeUpdate();
-            MetricsContext.stop(context);
+        if (1 == preparedStatementExecutorWappers.size()) {
+            PreparedStatementExecutorWapper preparedStatementExecutorWapper = preparedStatementExecutorWappers.iterator().next();
+            try {
+                result =  preparedStatementExecutorWapper.getPreparedStatement().executeUpdate();
+            } catch (final SQLException ex) {
+                postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
+                throw ex;
+            } finally {
+                MetricsContext.stop(context);
+            }
+            postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
-        result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Integer>() {
+        result = ExecutorEngine.execute(preparedStatementExecutorWappers, new ExecuteUnit<PreparedStatementExecutorWapper, Integer>() {
             
             @Override
-            public Integer execute(final PreparedStatement input) throws Exception {
-                return input.executeUpdate();
+            public Integer execute(final PreparedStatementExecutorWapper input) throws Exception {
+                int result;
+                try {
+                    result = input.getPreparedStatement().executeUpdate();
+                } catch (final SQLException ex) {
+                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
+                    throw ex;
+                }
+                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
+                return result;
             }
         }, new MergeUnit<Integer, Integer>() {
             
@@ -107,19 +126,53 @@ public final class PreparedStatementExecutor {
      */
     public boolean execute() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
-        if (1 == preparedStatements.size()) {
-            boolean result = preparedStatements.iterator().next().execute();
-            MetricsContext.stop(context);
+        postDMLExecutionEvents();
+        if (1 == preparedStatementExecutorWappers.size()) {
+            boolean result;
+            PreparedStatementExecutorWapper preparedStatementExecutorWapper = preparedStatementExecutorWappers.iterator().next();
+            try {
+                result = preparedStatementExecutorWapper.getPreparedStatement().execute();
+            } catch (final SQLException ex) {
+                postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
+                throw ex;
+            } finally {
+                MetricsContext.stop(context);
+            }
+            postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
-        List<Boolean> result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Boolean>() {
+        List<Boolean> result = ExecutorEngine.execute(preparedStatementExecutorWappers, new ExecuteUnit<PreparedStatementExecutorWapper, Boolean>() {
             
             @Override
-            public Boolean execute(final PreparedStatement input) throws Exception {
-                return input.execute();
+            public Boolean execute(final PreparedStatementExecutorWapper input) throws Exception {
+                boolean result;
+                try {
+                    result = input.getPreparedStatement().execute();
+                } catch (final SQLException ex) {
+                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
+                    throw ex;
+                }
+                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
+                return result;
             }
         });
         MetricsContext.stop(context);
         return result.get(0);
+    }
+    
+    private void postDMLExecutionEvents() {
+        for (PreparedStatementExecutorWapper each : preparedStatementExecutorWappers) {
+            if (each.getDMLExecutionEvent().isPresent()) {
+                DMLExecutionEventBus.post(each.getDMLExecutionEvent().get());
+            }
+        }
+    }
+    
+    private void postDMLExecutionEventsAfterExecution(final PreparedStatementExecutorWapper preparedStatementExecutorWapper, final EventExecutionType eventExecutionType) {
+        if (preparedStatementExecutorWapper.getDMLExecutionEvent().isPresent()) {
+            DMLExecutionEvent event = preparedStatementExecutorWapper.getDMLExecutionEvent().get();
+            event.setEventExecutionType(eventExecutionType);
+            DMLExecutionEventBus.post(event);
+        }
     }
 }
