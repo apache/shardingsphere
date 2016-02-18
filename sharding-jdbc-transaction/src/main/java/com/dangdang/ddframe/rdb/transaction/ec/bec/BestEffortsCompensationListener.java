@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.transaction.ec.bec;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
@@ -63,9 +64,15 @@ public final class BestEffortsCompensationListener {
                     if (compensationSuccess) {
                         return;
                     }
+                    boolean isNewConnection = false;
+                    Connection conn = null;
                     PreparedStatement pstmt = null;
                     try {
-                        Connection conn = EventualConsistencyTransactionManager.getConnection().getConnection(event.getDataSource());
+                        conn = EventualConsistencyTransactionManager.getConnection().getConnection(event.getDataSource());
+                        if (!isValidConnection(conn)) {
+                            conn = EventualConsistencyTransactionManager.getConnection().getNewConnection(event.getDataSource());
+                            isNewConnection = true;
+                        }
                         pstmt = conn.prepareStatement(event.getSql());
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
                             pstmt.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));
@@ -76,18 +83,42 @@ public final class BestEffortsCompensationListener {
                     } catch (final SQLException ex) {
                         log.error(String.format("compensation times %s error, max try times is %s", i + 1, syncMaxCompensationTryTimes), ex);
                     } finally {
-                        if (null != pstmt) {
-                            try {
-                                pstmt.close();
-                            } catch (final SQLException ex) {
-                                log.error("PreparedStatement colsed error:", ex);
-                            }
-                        }
+                        close(isNewConnection, conn, pstmt);
                     }
                 }
                 break;
             default: 
                 throw new UnsupportedOperationException(event.getEventExecutionType().toString());
+        }
+    }
+    
+    private boolean isValidConnection(final Connection conn) {
+        try (PreparedStatement pstmt = conn.prepareStatement("SELECT 1")) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return 1 == rs.getInt("1");
+                }
+                return false;
+            }
+        } catch (final SQLException ex) {
+            return false;
+        }
+    }
+    
+    private void close(final boolean isNewConnection, final Connection conn, final PreparedStatement pstmt) {
+        if (null != pstmt) {
+            try {
+                pstmt.close();
+            } catch (final SQLException ex) {
+                log.error("PreparedStatement colsed error:", ex);
+            }
+        }
+        if (isNewConnection && null != conn) {
+            try {
+                conn.close();
+            } catch (final SQLException ex) {
+                log.error("Connection colsed error:", ex);
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ public final class DMLShardingTablesOnlyTest extends AbstractShardingTablesOnlyD
     
     @Test
     public void assertInsert() throws SQLException, DatabaseUnitException {
-        final String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 PreparedStatement pstmt = connection.prepareStatement(sql);

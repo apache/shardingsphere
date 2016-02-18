@@ -128,14 +128,14 @@ public final class StatementExecutor {
     private int executeUpdate(final Updater updater) throws SQLException {
         Context context = MetricsContext.start("ShardingStatement-executeUpdate");
         postDMLExecutionEvents();
-        int result;
+        int result = 0;
         if (1 == statementExecutorWappers.size()) {
             StatementExecutorWapper statementExecutorWapper = statementExecutorWappers.iterator().next();
             try {
                 result = updater.executeUpdate(statementExecutorWapper.getStatement(), statementExecutorWapper.getSqlExecutionUnit().getSql());
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
-                throw ex;
+                ExecutorExceptionHandler.handleException(ex);
             } finally {
                 MetricsContext.stop(context);
             }
@@ -146,12 +146,12 @@ public final class StatementExecutor {
             
             @Override
             public Integer execute(final StatementExecutorWapper input) throws Exception {
-                int result;
+                int result = 0;
                 try {
                     result = updater.executeUpdate(input.getStatement(), input.getSqlExecutionUnit().getSql());
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    throw ex;
+                    ExecutorExceptionHandler.handleException(ex);
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;
@@ -222,12 +222,12 @@ public final class StatementExecutor {
         postDMLExecutionEvents();
         if (1 == statementExecutorWappers.size()) {
             StatementExecutorWapper statementExecutorWapper = statementExecutorWappers.iterator().next();
-            boolean result;
+            boolean result = false;
             try {
                 result = executor.execute(statementExecutorWapper.getStatement(), statementExecutorWapper.getSqlExecutionUnit().getSql());
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
-                throw ex;
+                ExecutorExceptionHandler.handleException(ex);
             } finally {
                 postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_SUCCESS);
                 MetricsContext.stop(context);
@@ -238,12 +238,12 @@ public final class StatementExecutor {
             
             @Override
             public Boolean execute(final StatementExecutorWapper input) throws Exception {
-                boolean result;
+                boolean result = false;
                 try {
                     result = executor.execute(input.getStatement(), input.getSqlExecutionUnit().getSql());
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    throw ex;
+                    ExecutorExceptionHandler.handleException(ex);
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;

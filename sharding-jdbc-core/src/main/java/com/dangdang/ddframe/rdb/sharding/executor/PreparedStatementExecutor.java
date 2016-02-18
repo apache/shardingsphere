@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
@@ -39,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
     
-    private final List<PreparedStatementExecutorWapper> preparedStatementExecutorWappers;
+    private final Collection<PreparedStatementExecutorWapper> preparedStatementExecutorWappers;
     
     /**
      * 执行SQL查询.
@@ -75,14 +76,14 @@ public final class PreparedStatementExecutor {
     public int executeUpdate() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         postDMLExecutionEvents();
-        int result;
+        int result = 0;
         if (1 == preparedStatementExecutorWappers.size()) {
             PreparedStatementExecutorWapper preparedStatementExecutorWapper = preparedStatementExecutorWappers.iterator().next();
             try {
                 result =  preparedStatementExecutorWapper.getPreparedStatement().executeUpdate();
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
-                throw ex;
+                ExecutorExceptionHandler.handleException(ex);
             } finally {
                 MetricsContext.stop(context);
             }
@@ -93,12 +94,12 @@ public final class PreparedStatementExecutor {
             
             @Override
             public Integer execute(final PreparedStatementExecutorWapper input) throws Exception {
-                int result;
+                int result = 0;
                 try {
                     result = input.getPreparedStatement().executeUpdate();
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    throw ex;
+                    ExecutorExceptionHandler.handleException(ex);
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;
@@ -128,13 +129,13 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
         postDMLExecutionEvents();
         if (1 == preparedStatementExecutorWappers.size()) {
-            boolean result;
+            boolean result = false;
             PreparedStatementExecutorWapper preparedStatementExecutorWapper = preparedStatementExecutorWappers.iterator().next();
             try {
                 result = preparedStatementExecutorWapper.getPreparedStatement().execute();
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
-                throw ex;
+                ExecutorExceptionHandler.handleException(ex);
             } finally {
                 MetricsContext.stop(context);
             }
@@ -145,12 +146,12 @@ public final class PreparedStatementExecutor {
             
             @Override
             public Boolean execute(final PreparedStatementExecutorWapper input) throws Exception {
-                boolean result;
+                boolean result = false;
                 try {
                     result = input.getPreparedStatement().execute();
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    throw ex;
+                    ExecutorExceptionHandler.handleException(ex);
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;

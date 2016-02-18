@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import com.dangdang.ddframe.rdb.transaction.ec.bec.BestEffortsCompensationListener;
@@ -61,14 +62,16 @@ public final class EventualConsistencyTransactionManager {
      * @param type 柔性事务类型
      */
     public static void begin(final Connection connection, final EventualConsistencyTransactionType type) throws SQLException {
+        // TODO 判断如果在传统事务中，则抛异常
         Preconditions.checkArgument(connection instanceof ShardingConnection, "Only ShardingConnection can support eventual consistency transaction.");
         // TODO 目前使用不支持嵌套事务，以后这里需要可配置
         if (null != transactionType.get() || null != transactionId.get()) {
             throw new UnsupportedOperationException("Cannot support nested transaction.");
         }
+        ExecutorExceptionHandler.setExceptionThrown(false);
         EventualConsistencyTransactionManager.connection.set((ShardingConnection) connection);
         previousAutoCommit.set(connection.getAutoCommit());
-        connection.setAutoCommit(false);
+        connection.setAutoCommit(true);
         transactionType.set(type);
         // TODO 替换UUID为更有效率的id生成器
         transactionId.set(UUID.randomUUID().toString());
@@ -79,12 +82,13 @@ public final class EventualConsistencyTransactionManager {
      * 
      * @param connection 数据库连接对象
      */
-    public static void end(final Connection connection) throws SQLException {
-        connection.setAutoCommit(previousAutoCommit.get());
-        EventualConsistencyTransactionManager.connection.remove();
-        previousAutoCommit.remove();
+    public static void end() throws SQLException {
+        ExecutorExceptionHandler.setExceptionThrown(true);
         transactionType.remove();
         transactionId.remove();
+        connection.get().setAutoCommit(previousAutoCommit.get());
+        previousAutoCommit.remove();
+        EventualConsistencyTransactionManager.connection.remove();
     }
     
     /**

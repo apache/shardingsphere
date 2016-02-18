@@ -49,13 +49,22 @@ public final class Main {
     }
     
     private static void updateFailure(final DataSource dataSource) throws SQLException {
-        String sql = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=1";
-        try (
-                Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
+        String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=1";
+        String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
             EventualConsistencyTransactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsCompensation);
-            pstmt.executeUpdate();
-            EventualConsistencyTransactionManager.end(conn);
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
+            pstmt3.executeUpdate();
+        } finally {
+            EventualConsistencyTransactionManager.end();
+            conn.close();
         }
     }
     

@@ -64,12 +64,23 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (connectionMap.containsKey(dataSourceName)) {
             return connectionMap.get(dataSourceName);
         }
+        Connection result = getNewConnection(dataSourceName);
+        connectionMap.put(dataSourceName, result);
+        return result;
+    }
+    
+    /**
+     * 根据数据源名称获取新的数据库连接.
+     * 
+     * @param dataSourceName 数据源名称
+     * @return 新数据库连接
+     */
+    public Connection getNewConnection(final String dataSourceName) throws SQLException {
         Context context = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
-        Connection connection = shardingRule.getDataSourceRule().getDataSource(dataSourceName).getConnection();
+        Connection result = shardingRule.getDataSourceRule().getDataSource(dataSourceName).getConnection();
         MetricsContext.stop(context);
-        replayMethodsInvovation(connection);
-        connectionMap.put(dataSourceName, connection);
-        return connection;
+        replayMethodsInvovation(result);
+        return result;
     }
     
     @Override
