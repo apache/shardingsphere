@@ -13,13 +13,13 @@ import lombok.Setter;
 public final class TransactionConfiguration {
     
     /**
-     * 同步的事务补偿的最大尝试次数.
+     * 同步的事务送达的最大尝试次数.
      */
-    private int syncMaxCompensationTryTimes = 3;
+    private int syncMaxDeliveryTryTimes = 3;
     
     /**
-     * 异步的事务补偿的最大尝试次数.
+     * 异步的事务送达的最大尝试次数.
      */
     // TODO 使用elastic-job做异步重试
-    private int asyncMaxCompensationTryTimes = 3;
+    private int asyncMaxDeliveryTryTimes = 3;
 }

@@ -55,7 +55,7 @@ public final class Main {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
-            EventualConsistencyTransactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsCompensation);
+            EventualConsistencyTransactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsDelivery);
             PreparedStatement pstmt1 = conn.prepareStatement(sql1);
             PreparedStatement pstmt2 = conn.prepareStatement(sql2);
             PreparedStatement pstmt3 = conn.prepareStatement(sql3);

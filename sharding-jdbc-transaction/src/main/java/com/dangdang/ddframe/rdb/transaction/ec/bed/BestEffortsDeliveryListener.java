@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.bec;
+package com.dangdang.ddframe.rdb.transaction.ec.bed;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,19 +34,19 @@ import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 最大努力补偿型事务监听器.
+ * 最大努力送达型事务监听器.
  * 
  * @author zhangliang
  */
 @Slf4j
-public final class BestEffortsCompensationListener {
+public final class BestEffortsDeliveryListener {
     
     private final TransacationLogStorage transacationLogStorage = new MemoryTransacationLogStorage();
     
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DMLExecutionEvent event) {
-        if (EventualConsistencyTransactionType.BestEffortsCompensation != EventualConsistencyTransactionManager.getTransactionType()) {
+        if (EventualConsistencyTransactionType.BestEffortsDelivery != EventualConsistencyTransactionManager.getTransactionType()) {
             return;
         }
         switch (event.getEventExecutionType()) {
@@ -58,10 +58,10 @@ public final class BestEffortsCompensationListener {
                 transacationLogStorage.remove(event.getId());
                 break;
             case EXECUTE_FAILURE: 
-                boolean compensationSuccess = false;
-                int syncMaxCompensationTryTimes = EventualConsistencyTransactionManager.getTransactionConfiguration().getSyncMaxCompensationTryTimes();
-                for (int i = 0; i < syncMaxCompensationTryTimes; i++) {
-                    if (compensationSuccess) {
+                boolean deliverySuccess = false;
+                int syncMaxDeliveryTryTimes = EventualConsistencyTransactionManager.getTransactionConfiguration().getSyncMaxDeliveryTryTimes();
+                for (int i = 0; i < syncMaxDeliveryTryTimes; i++) {
+                    if (deliverySuccess) {
                         return;
                     }
                     boolean isNewConnection = false;
@@ -78,10 +78,10 @@ public final class BestEffortsCompensationListener {
                             pstmt.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));
                         }
                         pstmt.executeUpdate();
-                        compensationSuccess = true;
+                        deliverySuccess = true;
                         transacationLogStorage.remove(event.getId());
                     } catch (final SQLException ex) {
-                        log.error(String.format("compensation times %s error, max try times is %s", i + 1, syncMaxCompensationTryTimes), ex);
+                        log.error(String.format("delivery times %s error, max try times is %s", i + 1, syncMaxDeliveryTryTimes), ex);
                     } finally {
                         close(isNewConnection, conn, pstmt);
                     }

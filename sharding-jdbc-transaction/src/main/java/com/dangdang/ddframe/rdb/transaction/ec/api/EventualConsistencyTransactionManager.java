@@ -24,7 +24,7 @@ import java.util.UUID;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.transaction.ec.bec.BestEffortsCompensationListener;
+import com.dangdang.ddframe.rdb.transaction.ec.bed.BestEffortsDeliveryListener;
 import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
 import com.google.common.base.Preconditions;
 
@@ -41,7 +41,7 @@ import lombok.NoArgsConstructor;
 public final class EventualConsistencyTransactionManager {
     
     static {
-        DMLExecutionEventBus.register(new BestEffortsCompensationListener());
+        DMLExecutionEventBus.register(new BestEffortsDeliveryListener());
     }
     
     @Getter

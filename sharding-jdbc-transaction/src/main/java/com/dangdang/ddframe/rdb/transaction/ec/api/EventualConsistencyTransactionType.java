@@ -25,7 +25,7 @@ package com.dangdang.ddframe.rdb.transaction.ec.api;
 public enum EventualConsistencyTransactionType {
     
     /**
-     * 最大努力补偿型事务.
+     * 最大努力送达型事务.
      * 
      * <p>
      * 使用要求: 
@@ -34,7 +34,7 @@ public enum EventualConsistencyTransactionType {
      * DELETE语句无要求.
      * </p>
      */
-    BestEffortsCompensation, 
+    BestEffortsDelivery, 
     
     /**
      * TCC型事务.
