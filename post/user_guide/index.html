@@ -363,7 +363,7 @@ public Collection&lt;String&gt; doBetweenSharding(final Collection&lt;String&gt;
 
 <p>下面是一个余2的算法的例子，当分片键的值除以2余数就是实际表的结尾。注意注释中提供了一些算法生成SQL的结果，参数<code>tableNames</code>集合中有两个参数<code>t_order_0</code>和<code>t_order_1</code></p>
 
-<pre><code class="language-java"> public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm&lt;Integer&gt; {
+<pre><code class="language-java"> public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm&lt;Integer&gt; {
     
     /**
     *  select * from t_order from t_order where order_id = 11 
@@ -392,9 +392,9 @@ public Collection&lt;String&gt; doBetweenSharding(final Collection&lt;String&gt;
     public Collection&lt;String&gt; doInSharding(final Collection&lt;String&gt; tableNames, final ShardingValue&lt;Integer&gt; shardingValue) {
         Collection&lt;String&gt; result = new LinkedHashSet&lt;&gt;(tableNames.size());
         for (Integer value : shardingValue.getValues()) {
-            for (String dataSourceName : tableNames) {
-                if (dataSourceName.endsWith(value % 2 + &quot;&quot;)) {
-                    result.add(dataSourceName);
+            for (String tableName : tableNames) {
+                if (tableName.endsWith(value % 2 + &quot;&quot;)) {
+                    result.add(tableName);
                 }
             }
         }

@@ -444,7 +444,7 @@ public Collection&amp;lt;String&amp;gt; doBetweenSharding(final Collection&amp;l
 
 &lt;p&gt;下面是一个余2的算法的例子，当分片键的值除以2余数就是实际表的结尾。注意注释中提供了一些算法生成SQL的结果，参数&lt;code&gt;tableNames&lt;/code&gt;集合中有两个参数&lt;code&gt;t_order_0&lt;/code&gt;和&lt;code&gt;t_order_1&lt;/code&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm&amp;lt;Integer&amp;gt; {
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm&amp;lt;Integer&amp;gt; {
     
     /**
     *  select * from t_order from t_order where order_id = 11 
@@ -473,9 +473,9 @@ public Collection&amp;lt;String&amp;gt; doBetweenSharding(final Collection&amp;l
     public Collection&amp;lt;String&amp;gt; doInSharding(final Collection&amp;lt;String&amp;gt; tableNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue) {
         Collection&amp;lt;String&amp;gt; result = new LinkedHashSet&amp;lt;&amp;gt;(tableNames.size());
         for (Integer value : shardingValue.getValues()) {
-            for (String dataSourceName : tableNames) {
-                if (dataSourceName.endsWith(value % 2 + &amp;quot;&amp;quot;)) {
-                    result.add(dataSourceName);
+            for (String tableName : tableNames) {
+                if (tableName.endsWith(value % 2 + &amp;quot;&amp;quot;)) {
+                    result.add(tableName);
                 }
             }
         }
