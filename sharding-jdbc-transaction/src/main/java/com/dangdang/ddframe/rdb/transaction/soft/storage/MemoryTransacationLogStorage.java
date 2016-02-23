@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
 import java.util.ArrayList;
 import java.util.List;

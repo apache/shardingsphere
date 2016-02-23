@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,8 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionType;
-import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class DatabaseTransacationLogStorage implements TransacationLogStorage {
     
-    private final TransactionConfiguration transactionConfiguration;
+    private final SoftTransactionConfiguration transactionConfiguration;
     
     @Override
     public void add(final TransactionLog transactionLog) {
@@ -71,7 +71,7 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
                     Gson gson = new Gson();
                     List<Object> parameters = gson.fromJson(rs.getString(5), new TypeToken<List<Object>>() { }.getType());
                     TransactionLog result = new TransactionLog(
-                            rs.getString(1), "", EventualConsistencyTransactionType.valueOf(rs.getString(2)), rs.getString(3), rs.getString(4), parameters);
+                            rs.getString(1), "", SoftTransactionType.valueOf(rs.getString(2)), rs.getString(3), rs.getString(4), parameters);
                     return result;
                 }
             }

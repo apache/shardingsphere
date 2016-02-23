@@ -37,10 +37,10 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManager;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManagerFactory;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionType;
-import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 // CHECKSTYLE:OFF
 public final class Main {
     
@@ -54,15 +54,15 @@ public final class Main {
         String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
         String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
         String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
-        TransactionConfiguration transactionConfiguration = new TransactionConfiguration();
+        SoftTransactionConfiguration transactionConfiguration = new SoftTransactionConfiguration();
         transactionConfiguration.setTransactionLogDataSource(createTransactionLogDataSource());
-        EventualConsistencyTransactionManagerFactory transactionManagerFactory = new EventualConsistencyTransactionManagerFactory(transactionConfiguration);
+        SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfiguration);
         transactionManagerFactory.init();
-        EventualConsistencyTransactionManager transactionManager = transactionManagerFactory.getTransactionManager();
+        SoftTransactionManager transactionManager = transactionManagerFactory.getTransactionManager();
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
-            transactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsDelivery);
+            transactionManager.begin(conn, SoftTransactionType.BestEffortsDelivery);
             PreparedStatement pstmt1 = conn.prepareStatement(sql1);
             PreparedStatement pstmt2 = conn.prepareStatement(sql2);
             pstmt2.setObject(1, 1000);

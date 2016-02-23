@@ -15,16 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.api;
+package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
-import com.dangdang.ddframe.rdb.transaction.ec.bed.BestEffortsDeliveryListener;
-import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.ec.storage.TransactionLogStroageType;
+import com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryListener;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
@@ -37,14 +36,14 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EventualConsistencyTransactionManagerFactory {
+public final class SoftTransactionManagerFactory {
     
-    private static ThreadLocal<EventualConsistencyTransactionManager> currentTransactionManager = new ThreadLocal<>();
+    private static ThreadLocal<SoftTransactionManager> currentTransactionManager = new ThreadLocal<>();
     
-    private static ThreadLocal<TransactionConfiguration> currentTransactionConfig = new ThreadLocal<>();
+    private static ThreadLocal<SoftTransactionConfiguration> currentTransactionConfig = new ThreadLocal<>();
     
     @Getter
-    private final TransactionConfiguration transactionConfig;
+    private final SoftTransactionConfiguration transactionConfig;
     
     /**
      * 初始化事务管理器工厂.
@@ -77,8 +76,8 @@ public final class EventualConsistencyTransactionManagerFactory {
      * 
      * @return 柔性事务管理器
      */
-    public EventualConsistencyTransactionManager getTransactionManager() {
-        EventualConsistencyTransactionManager result = new EventualConsistencyTransactionManager();
+    public SoftTransactionManager getTransactionManager() {
+        SoftTransactionManager result = new SoftTransactionManager();
         // TODO 目前使用不支持嵌套事务，以后这里需要可配置
         if (getCurrentTransactionManager().isPresent()) {
             throw new UnsupportedOperationException("Cannot support nested transaction.");
@@ -93,7 +92,7 @@ public final class EventualConsistencyTransactionManagerFactory {
      * 
      * @return 当前线程的柔性事务管理器配置
      */
-    public static Optional<TransactionConfiguration> getCurrentTransactionConfiguration() {
+    public static Optional<SoftTransactionConfiguration> getCurrentTransactionConfiguration() {
         return Optional.fromNullable(currentTransactionConfig.get());
     }
     
@@ -102,7 +101,7 @@ public final class EventualConsistencyTransactionManagerFactory {
      * 
      * @return 当前的柔性事务管理器
      */
-    public static Optional<EventualConsistencyTransactionManager> getCurrentTransactionManager() {
+    public static Optional<SoftTransactionManager> getCurrentTransactionManager() {
         return Optional.fromNullable(currentTransactionManager.get());
     }
     

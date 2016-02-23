@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.api;
+package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 /**
  * 柔性事务类型.
  * 
  * @author zhangliang
  */
-public enum EventualConsistencyTransactionType {
+public enum SoftTransactionType {
     
     /**
      * 最大努力送达型事务.

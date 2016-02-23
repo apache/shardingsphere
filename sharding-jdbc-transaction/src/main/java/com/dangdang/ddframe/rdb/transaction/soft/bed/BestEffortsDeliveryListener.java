@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.bed;
+package com.dangdang.ddframe.rdb.transaction.soft.bed;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,13 +24,13 @@ import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManager;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManagerFactory;
-import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionType;
-import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.ec.storage.TransacationLogStorage;
-import com.dangdang.ddframe.rdb.transaction.ec.storage.TransacationLogStorageFactory;
-import com.dangdang.ddframe.rdb.transaction.ec.storage.TransactionLog;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
@@ -50,9 +50,9 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
         if (!isProcessContinuously()) {
             return;
         }
-        TransactionConfiguration transactionConfig = EventualConsistencyTransactionManagerFactory.getCurrentTransactionConfiguration().get();
+        SoftTransactionConfiguration transactionConfig = SoftTransactionManagerFactory.getCurrentTransactionConfiguration().get();
         TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
-        EventualConsistencyTransactionManager transactionManager = EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().get();
+        SoftTransactionManager transactionManager = SoftTransactionManagerFactory.getCurrentTransactionManager().get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE: 
                 transacationLogStorage.add(new TransactionLog(
@@ -96,8 +96,8 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
     }
     
     private boolean isProcessContinuously() {
-        return EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().isPresent()
-                && EventualConsistencyTransactionType.BestEffortsDelivery == EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().get().getTransactionType();
+        return SoftTransactionManagerFactory.getCurrentTransactionManager().isPresent()
+                && SoftTransactionType.BestEffortsDelivery == SoftTransactionManagerFactory.getCurrentTransactionManager().get().getTransactionType();
     }
     
     private boolean isValidConnection(final Connection conn) {

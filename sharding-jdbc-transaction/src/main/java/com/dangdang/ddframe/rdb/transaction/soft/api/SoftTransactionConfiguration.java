@@ -15,23 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.config;
+package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.transaction.ec.storage.TransactionLogStroageType;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 事务配置对象.
+ * 柔性事务配置对象.
  * 
  * @author zhangliang
  */
 @Getter
 @Setter
-public final class TransactionConfiguration {
+public final class SoftTransactionConfiguration {
     
     /**
      * 同步的事务送达的最大尝试次数.

@@ -15,9 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
-import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,7 @@ public final class TransacationLogStorageFactory {
      * @param dataSource 数据源
      * @return 事务日志存储器
      */
-    public static TransacationLogStorage createTransacationLogStorageFactory(final TransactionConfiguration transactionConfiguration) {
+    public static TransacationLogStorage createTransacationLogStorageFactory(final SoftTransactionConfiguration transactionConfiguration) {
         switch (transactionConfiguration.getStroageType()) {
             case MEMORY: 
                 return new MemoryTransacationLogStorage();

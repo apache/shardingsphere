@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.api;
+package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class EventualConsistencyTransactionManager {
+public final class SoftTransactionManager {
     
     private boolean previousAutoCommit;
     
@@ -42,7 +42,7 @@ public final class EventualConsistencyTransactionManager {
     private ShardingConnection connection;
     
     @Getter
-    private EventualConsistencyTransactionType transactionType;
+    private SoftTransactionType transactionType;
     
     @Getter
     private String transactionId;
@@ -53,7 +53,7 @@ public final class EventualConsistencyTransactionManager {
      * @param connection 数据库连接对象
      * @param type 柔性事务类型
      */
-    public void begin(final Connection connection, final EventualConsistencyTransactionType type) throws SQLException {
+    public void begin(final Connection connection, final SoftTransactionType type) throws SQLException {
         // TODO 判断如果在传统事务中，则抛异常
         Preconditions.checkArgument(connection instanceof ShardingConnection, "Only ShardingConnection can support eventual consistency transaction.");
         ExecutorExceptionHandler.setExceptionThrown(false);
@@ -73,6 +73,6 @@ public final class EventualConsistencyTransactionManager {
     public void end() throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(true);
         connection.setAutoCommit(previousAutoCommit);
-        EventualConsistencyTransactionManagerFactory.closeCurrentTransactionManager();
+        SoftTransactionManagerFactory.closeCurrentTransactionManager();
     }
 }

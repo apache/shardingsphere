@@ -15,22 +15,33 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.ec.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage;
+
+import java.util.List;
+
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 事务日志存储类型.
+ * 事务日志.
  * 
  * @author zhangliang
  */
-public enum TransactionLogStroageType {
+@RequiredArgsConstructor
+@Getter
+public final class TransactionLog {
     
-    /**
-     *  内存存储.
-     */
-    MEMORY, 
+    private final String id;
     
-    /**
-     * 数据库存储.
-     */
-    DATABASE
+    private final String transactionId;
+    
+    private final SoftTransactionType transactionType;
+    
+    private final String dataSource;
+    
+    private final String sql;
+    
+    private final List<Object> parameters;
 }
