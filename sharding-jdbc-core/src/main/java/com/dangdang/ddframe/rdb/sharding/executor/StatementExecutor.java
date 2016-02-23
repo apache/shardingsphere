@@ -136,6 +136,7 @@ public final class StatementExecutor {
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
+                return result;
             } finally {
                 MetricsContext.stop(context);
             }
@@ -152,6 +153,7 @@ public final class StatementExecutor {
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
                     ExecutorExceptionHandler.handleException(ex);
+                    return result;
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;
@@ -228,10 +230,11 @@ public final class StatementExecutor {
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
+                return result;
             } finally {
-                postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_SUCCESS);
                 MetricsContext.stop(context);
             }
+            postDMLExecutionEventsAfterExecution(statementExecutorWapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
         List<Boolean> result = ExecutorEngine.execute(statementExecutorWappers, new ExecuteUnit<StatementExecutorWapper, Boolean>() {
@@ -244,6 +247,7 @@ public final class StatementExecutor {
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
                     ExecutorExceptionHandler.handleException(ex);
+                    return result;
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;

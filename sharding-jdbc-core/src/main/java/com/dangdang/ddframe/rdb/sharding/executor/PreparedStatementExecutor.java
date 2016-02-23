@@ -84,6 +84,7 @@ public final class PreparedStatementExecutor {
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
+                return result;
             } finally {
                 MetricsContext.stop(context);
             }
@@ -100,6 +101,7 @@ public final class PreparedStatementExecutor {
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
                     ExecutorExceptionHandler.handleException(ex);
+                    return result;
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;
@@ -136,6 +138,7 @@ public final class PreparedStatementExecutor {
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(preparedStatementExecutorWapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
+                return result;
             } finally {
                 MetricsContext.stop(context);
             }
@@ -152,6 +155,7 @@ public final class PreparedStatementExecutor {
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
                     ExecutorExceptionHandler.handleException(ex);
+                    return result;
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;

@@ -38,7 +38,9 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManager;
+import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManagerFactory;
 import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionType;
+import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
 // CHECKSTYLE:OFF
 public final class Main {
     
@@ -50,20 +52,26 @@ public final class Main {
     
     private static void updateFailure(final DataSource dataSource) throws SQLException {
         String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
-        String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=1";
+        String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
         String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
+        TransactionConfiguration transactionConfiguration = new TransactionConfiguration();
+        transactionConfiguration.setTransactionLogDataSource(createTransactionLogDataSource());
+        EventualConsistencyTransactionManagerFactory transactionManagerFactory = new EventualConsistencyTransactionManagerFactory(transactionConfiguration);
+        transactionManagerFactory.init();
+        EventualConsistencyTransactionManager transactionManager = transactionManagerFactory.getTransactionManager();
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
-            EventualConsistencyTransactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsDelivery);
+            transactionManager.begin(conn, EventualConsistencyTransactionType.BestEffortsDelivery);
             PreparedStatement pstmt1 = conn.prepareStatement(sql1);
             PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            pstmt2.setObject(1, 1000);
             PreparedStatement pstmt3 = conn.prepareStatement(sql3);
             pstmt1.executeUpdate();
             pstmt2.executeUpdate();
             pstmt3.executeUpdate();
         } finally {
-            EventualConsistencyTransactionManager.end();
+            transactionManager.end();
             conn.close();
         }
     }
@@ -90,6 +98,15 @@ public final class Main {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
         result.setUrl(String.format("jdbc:mysql://localhost:3306/%s", dataSourceName));
+        result.setUsername("root");
+        result.setPassword("");
+        return result;
+    }
+    
+    private static DataSource createTransactionLogDataSource() {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
+        result.setUrl("jdbc:mysql://localhost:3306/trans_log");
         result.setUsername("root");
         result.setPassword("");
         return result;

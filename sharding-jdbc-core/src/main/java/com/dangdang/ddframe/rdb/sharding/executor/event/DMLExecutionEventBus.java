@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.google.common.eventbus.EventBus;
 
 import lombok.AccessLevel;
@@ -32,6 +34,8 @@ public final class DMLExecutionEventBus {
     
     private static final EventBus INSTANCE = new EventBus();
     
+    private static final ConcurrentHashMap<String, DMLExecutionEventListener> LISTENERS = new ConcurrentHashMap<>();
+    
     /**
      * 发布DML类SQL执行事件.
      * 
@@ -46,7 +50,10 @@ public final class DMLExecutionEventBus {
      * 
      * @param listener DML类SQL执行事件监听器
      */
-    public static void register(final Object listener) {
-        INSTANCE.register(listener);
+    public static void register(final DMLExecutionEventListener listener) {
+        if (!LISTENERS.containsKey(listener.getName())) {
+            INSTANCE.register(listener);
+            LISTENERS.putIfAbsent(listener.getName(), listener);
+        }
     }
 }

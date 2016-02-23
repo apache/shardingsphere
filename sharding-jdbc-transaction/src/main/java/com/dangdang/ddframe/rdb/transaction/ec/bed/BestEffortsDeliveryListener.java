@@ -23,10 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
 import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManager;
+import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionManagerFactory;
 import com.dangdang.ddframe.rdb.transaction.ec.api.EventualConsistencyTransactionType;
-import com.dangdang.ddframe.rdb.transaction.ec.storage.MemoryTransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.ec.config.TransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.ec.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.ec.storage.TransacationLogStorageFactory;
 import com.dangdang.ddframe.rdb.transaction.ec.storage.TransactionLog;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -39,28 +42,28 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangliang
  */
 @Slf4j
-public final class BestEffortsDeliveryListener {
-    
-    private final TransacationLogStorage transacationLogStorage = new MemoryTransacationLogStorage();
+public final class BestEffortsDeliveryListener implements DMLExecutionEventListener {
     
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DMLExecutionEvent event) {
-        if (EventualConsistencyTransactionType.BestEffortsDelivery != EventualConsistencyTransactionManager.getTransactionType()) {
+        if (!isProcessContinuously()) {
             return;
         }
+        TransactionConfiguration transactionConfig = EventualConsistencyTransactionManagerFactory.getCurrentTransactionConfiguration().get();
+        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
+        EventualConsistencyTransactionManager transactionManager = EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE: 
-                transacationLogStorage.add(new TransactionLog(event.getId(), EventualConsistencyTransactionManager.getTransactionId(), 
-                        EventualConsistencyTransactionManager.getTransactionType(), event.getDataSource(), event.getSql(), event.getParameters()));
-                break;
+                transacationLogStorage.add(new TransactionLog(
+                        event.getId(), transactionManager.getTransactionId(), transactionManager.getTransactionType(), event.getDataSource(), event.getSql(), event.getParameters()));
+                return;
             case EXECUTE_SUCCESS: 
                 transacationLogStorage.remove(event.getId());
-                break;
+                return;
             case EXECUTE_FAILURE: 
                 boolean deliverySuccess = false;
-                int syncMaxDeliveryTryTimes = EventualConsistencyTransactionManager.getTransactionConfiguration().getSyncMaxDeliveryTryTimes();
-                for (int i = 0; i < syncMaxDeliveryTryTimes; i++) {
+                for (int i = 0; i < transactionConfig.getSyncMaxDeliveryTryTimes(); i++) {
                     if (deliverySuccess) {
                         return;
                     }
@@ -68,9 +71,9 @@ public final class BestEffortsDeliveryListener {
                     Connection conn = null;
                     PreparedStatement pstmt = null;
                     try {
-                        conn = EventualConsistencyTransactionManager.getConnection().getConnection(event.getDataSource());
+                        conn = transactionManager.getConnection().getConnection(event.getDataSource());
                         if (!isValidConnection(conn)) {
-                            conn = EventualConsistencyTransactionManager.getConnection().getNewConnection(event.getDataSource());
+                            conn = transactionManager.getConnection().getNewConnection(event.getDataSource());
                             isNewConnection = true;
                         }
                         pstmt = conn.prepareStatement(event.getSql());
@@ -81,15 +84,20 @@ public final class BestEffortsDeliveryListener {
                         deliverySuccess = true;
                         transacationLogStorage.remove(event.getId());
                     } catch (final SQLException ex) {
-                        log.error(String.format("delivery times %s error, max try times is %s", i + 1, syncMaxDeliveryTryTimes), ex);
+                        log.error(String.format("delivery times %s error, max try times is %s", i + 1, transactionConfig.getSyncMaxDeliveryTryTimes()), ex);
                     } finally {
                         close(isNewConnection, conn, pstmt);
                     }
                 }
-                break;
+                return;
             default: 
                 throw new UnsupportedOperationException(event.getEventExecutionType().toString());
         }
+    }
+    
+    private boolean isProcessContinuously() {
+        return EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().isPresent()
+                && EventualConsistencyTransactionType.BestEffortsDelivery == EventualConsistencyTransactionManagerFactory.getCurrentTransactionManager().get().getTransactionType();
     }
     
     private boolean isValidConnection(final Connection conn) {
@@ -120,5 +128,10 @@ public final class BestEffortsDeliveryListener {
                 log.error("Connection colsed error:", ex);
             }
         }
+    }
+    
+    @Override
+    public String getName() {
+        return getClass().getName();
     }
 }
