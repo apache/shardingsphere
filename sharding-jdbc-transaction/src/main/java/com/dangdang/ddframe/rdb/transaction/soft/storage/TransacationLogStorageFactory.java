@@ -40,9 +40,9 @@ public final class TransacationLogStorageFactory {
     public static TransacationLogStorage createTransacationLogStorageFactory(final SoftTransactionConfiguration transactionConfiguration) {
         switch (transactionConfiguration.getStroageType()) {
             case MEMORY: 
-                return new MemoryTransacationLogStorage();
+                return new MemoryTransacationLogStorage(transactionConfiguration);
             case DATABASE: 
-                return new DatabaseTransacationLogStorage(transactionConfiguration);
+                return new DatabaseTransacationLogStorage(transactionConfiguration, transactionConfiguration);
             default: 
                 throw new UnsupportedOperationException(transactionConfiguration.getStroageType().toString());
         }

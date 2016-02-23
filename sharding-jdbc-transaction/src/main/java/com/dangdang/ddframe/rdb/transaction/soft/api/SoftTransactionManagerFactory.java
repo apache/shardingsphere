@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryListener;
+import com.dangdang.ddframe.rdb.transaction.soft.bed.NestedBestEffortsDeliveryJobFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -54,6 +55,9 @@ public final class SoftTransactionManagerFactory {
             Preconditions.checkNotNull(transactionConfig.getTransactionLogDataSource());
             createTable();
         }
+        if (transactionConfig.isNestedJob()) {
+            new NestedBestEffortsDeliveryJobFactory().init();
+        }
     }
     
     private void createTable() throws SQLException {
@@ -63,6 +67,7 @@ public final class SoftTransactionManagerFactory {
                 + "`data_source` VARCHAR(255) NOT NULL, "
                 + "`sql` TEXT NOT NULL, "
                 + "`parameters` TEXT NOT NULL, "
+                + "`async_delivery_try_times` INT NOT NULL DEFAULT 0, "
                 + "PRIMARY KEY (`id`));";
         try (
                 Connection conn = transactionConfig.getTransactionLogDataSource().getConnection();

@@ -22,14 +22,21 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+
+import lombok.RequiredArgsConstructor;
+
 /**
  * 基于内存的事务日志存储器接口.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class MemoryTransacationLogStorage implements TransacationLogStorage {
     
     private static final ConcurrentHashMap<String, TransactionLog> DATA = new ConcurrentHashMap<>();
+    
+    private final SoftTransactionConfiguration transactionConfig;
     
     @Override
     public void add(final TransactionLog transactionLog) {
@@ -67,6 +74,31 @@ public final class MemoryTransacationLogStorage implements TransacationLogStorag
         }
         for (String each : toBeRemoved) {
             DATA.remove(each);
+        }
+    }
+    
+    @Override
+    public List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(final int size) {
+        List<TransactionLog> result = new ArrayList<TransactionLog>();
+        int count = 0;
+        for (TransactionLog each : DATA.values()) {
+            if (count >= size) {
+                break;
+            }
+            if (each.getAsyncDeliveryTryTimes() < transactionConfig.getAsyncMaxDeliveryTryTimes()) {
+                result.add(each);
+            }
+            count++;
+        }
+        return result;
+    }
+    
+    @Override
+    public void increaseAsyncDeliveryTryTimes(final String id) {
+        if (DATA.containsKey(id)) {
+            TransactionLog transactionLog = DATA.get(id);
+            transactionLog.setAsyncDeliveryTryTimes(transactionLog.getAsyncDeliveryTryTimes() + 1);
+            DATA.put(id, transactionLog);
         }
     }
 }

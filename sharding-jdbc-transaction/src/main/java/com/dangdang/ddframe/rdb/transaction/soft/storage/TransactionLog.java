@@ -21,15 +21,16 @@ import java.util.List;
 
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * 事务日志.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public final class TransactionLog {
     
@@ -44,4 +45,7 @@ public final class TransactionLog {
     private final String sql;
     
     private final List<Object> parameters;
+    
+    @Setter
+    private int asyncDeliveryTryTimes;
 }

@@ -60,4 +60,18 @@ public interface TransacationLogStorage {
      * @param transactionId 事务主键
      */
     void removeBatch(String transactionId);
+    
+    /**
+     * 读取异步处理次数小于最大处理次数的事务日志.
+     * 
+     * @param size 获取日志的数量
+     */
+    List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(int size);
+    
+    /**
+     * 增加事务日志异步重试次数.
+     * 
+     * @param id 事务主键
+     */
+    void increaseAsyncDeliveryTryTimes(String id);
 }

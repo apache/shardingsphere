@@ -56,7 +56,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE: 
                 transacationLogStorage.add(new TransactionLog(
-                        event.getId(), transactionManager.getTransactionId(), transactionManager.getTransactionType(), event.getDataSource(), event.getSql(), event.getParameters()));
+                        event.getId(), transactionManager.getTransactionId(), transactionManager.getTransactionType(), event.getDataSource(), event.getSql(), event.getParameters(), 0));
                 return;
             case EXECUTE_SUCCESS: 
                 transacationLogStorage.remove(event.getId());
@@ -84,7 +84,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                         deliverySuccess = true;
                         transacationLogStorage.remove(event.getId());
                     } catch (final SQLException ex) {
-                        log.error(String.format("delivery times %s error, max try times is %s", i + 1, transactionConfig.getSyncMaxDeliveryTryTimes()), ex);
+                        log.error(String.format("Delivery times %s error, max try times is %s", i + 1, transactionConfig.getSyncMaxDeliveryTryTimes()), ex);
                     } finally {
                         close(isNewConnection, conn, pstmt);
                     }

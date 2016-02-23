@@ -15,19 +15,22 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.transaction;
+package com.dangdang.ddframe.rdb.transaction.soft.bed;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
+import com.dangdang.ddframe.job.api.JobExecutionMultipleShardingContext;
+import com.dangdang.ddframe.job.plugin.job.type.dataflow.AbstractIndividualThroughputDataFlowElasticJob;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -35,46 +38,39 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
-// CHECKSTYLE:OFF
-public final class Main {
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 内嵌的最大努力送达型异步作业.
+ * 
+ * @author zhangliang
+ */
+@Slf4j
+public class NestedBestEffortsDeliveryJob extends AbstractIndividualThroughputDataFlowElasticJob<TransactionLog> {
     
-    public static void main(final String[] args) throws SQLException {
-        // CHECKSTYLE:ON
-        DataSource dataSource = getShardingDataSource();
-        updateFailure(dataSource);
-    }
+    // TODO elastic-job支持自定义属性注入
+    @Setter
+    private ShardingDataSource shardingDataSource;
     
-    private static void updateFailure(final DataSource dataSource) throws SQLException {
-        String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
-        String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
-        String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
-        SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration();
+    // TODO elastic-job支持自定义属性注入
+    @Setter
+    private SoftTransactionConfiguration transactionConfig;
+    
+    public NestedBestEffortsDeliveryJob() {
+        try {
+            shardingDataSource = getShardingDataSource();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        transactionConfig = new SoftTransactionConfiguration();
         transactionConfig.setNestedJob(true);
         transactionConfig.setTransactionLogDataSource(createTransactionLogDataSource());
-        SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-        transactionManagerFactory.init();
-        SoftTransactionManager transactionManager = transactionManagerFactory.getTransactionManager();
-        Connection conn = null;
-        try {
-            conn = dataSource.getConnection();
-            transactionManager.begin(conn, SoftTransactionType.BestEffortsDelivery);
-            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
-            pstmt2.setObject(1, 1000);
-            PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-            pstmt1.executeUpdate();
-            pstmt2.executeUpdate();
-            pstmt3.executeUpdate();
-        } finally {
-            transactionManager.end();
-            conn.close();
-        }
     }
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
@@ -111,5 +107,35 @@ public final class Main {
         result.setUsername("root");
         result.setPassword("");
         return result;
+    }
+    
+    @Override
+    public List<TransactionLog> fetchData(final JobExecutionMultipleShardingContext context) {
+        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
+        return transacationLogStorage.findAllForLessThanMaxAsyncProcessTimes(context.getFetchDataCount());
+    }
+    
+    @Override
+    public boolean processData(final JobExecutionMultipleShardingContext context, final TransactionLog data) {
+        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
+        try (
+                Connection conn = shardingDataSource.getConnection().getConnection(data.getDataSource());
+                PreparedStatement pstmt = conn.prepareStatement(data.getSql())) {
+            for (int parameterIndex = 0; parameterIndex < data.getParameters().size(); parameterIndex++) {
+                pstmt.setObject(parameterIndex + 1, data.getParameters().get(parameterIndex));
+            }
+            pstmt.executeUpdate();
+        } catch (final SQLException ex) {
+            transacationLogStorage.increaseAsyncDeliveryTryTimes(data.getId());
+            log.error(String.format("Async delivery times %s error, max try times is %s", data.getAsyncDeliveryTryTimes() + 1, transactionConfig.getAsyncMaxDeliveryTryTimes()), ex);
+            return false;
+        }
+        transacationLogStorage.remove(data.getId());
+        return true;
+    }
+    
+    @Override
+    public boolean isStreamingProcess() {
+        return false;
     }
 }
