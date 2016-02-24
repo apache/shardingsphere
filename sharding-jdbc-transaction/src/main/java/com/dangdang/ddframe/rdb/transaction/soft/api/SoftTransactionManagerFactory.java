@@ -56,7 +56,7 @@ public final class SoftTransactionManagerFactory {
             createTable();
         }
         if (transactionConfig.isNestedJob()) {
-            new NestedBestEffortsDeliveryJobFactory().init();
+            new NestedBestEffortsDeliveryJobFactory(transactionConfig).init();
         }
     }
     

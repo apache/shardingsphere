@@ -19,28 +19,43 @@ package com.dangdang.ddframe.rdb.transaction.soft.bed;
 
 import com.dangdang.ddframe.job.api.JobConfiguration;
 import com.dangdang.ddframe.job.api.JobScheduler;
+import com.dangdang.ddframe.rdb.transaction.soft.api.NestedBestEffortsDeliveryJobConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
 import com.dangdang.ddframe.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 内嵌的最大努力送达型异步作业工厂.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class NestedBestEffortsDeliveryJobFactory {
     
-    private final ZookeeperConfiguration zkConfig = new ZookeeperConfiguration("localhost:4181", "Nested-Best-Efforts-Delivery-Job", 1000, 3000, 3);
-    
-    private final CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(zkConfig);
-    
-    private final JobConfiguration jobConfig = new JobConfiguration("nestedBestEffortsDeliveryJob", NestedBestEffortsDeliveryJob.class, 1, "0/5 * * * * ?");
+    private final SoftTransactionConfiguration transactionConfig;
     
     public void init() {
-        zkConfig.setNestedPort(4181);
-        zkConfig.setNestedDataDir(String.format("target/test_zk_data/%s/", System.nanoTime()));
+        CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(createZookeeperConfiguration(transactionConfig.getNestedBestEffortsDeliveryJobConfiguration()));
         regCenter.init();
-        jobConfig.setFetchDataCount(100);
-        new JobScheduler(regCenter, jobConfig).init();
+        JobScheduler jobScheduler = new JobScheduler(regCenter, createJobConfiguration(transactionConfig.getNestedBestEffortsDeliveryJobConfiguration()));
+        jobScheduler.setField("transactionConfig", transactionConfig);
+        jobScheduler.init();
+    }
+    
+    private ZookeeperConfiguration createZookeeperConfiguration(final NestedBestEffortsDeliveryJobConfiguration config) {
+        ZookeeperConfiguration result = new ZookeeperConfiguration(String.format("localhost:%s", config.getZookeeperPort()), 
+                config.getJobNamespace(), config.getZookeeperBaseSleepTimeMilliseconds(), config.getZookeeperMaxSleepTimeMilliseconds(), config.getZookeeperMaxRetries());
+        result.setNestedPort(config.getZookeeperPort());
+        result.setNestedDataDir(config.getZookeeperDataDir());
+        return result;
+    }
+    
+    private JobConfiguration createJobConfiguration(final NestedBestEffortsDeliveryJobConfiguration config) {
+        JobConfiguration result = new JobConfiguration(config.getJobName(), NestedBestEffortsDeliveryJob.class, 1, config.getCron());
+        result.setFetchDataCount(config.getTransactionLogFetchDataCount());
+        return result;
     }
 }

@@ -19,9 +19,11 @@ package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 import javax.sql.DataSource;
 
+import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -29,9 +31,15 @@ import lombok.Setter;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class SoftTransactionConfiguration {
+    
+    /**
+     * 事务管理器管理的数据源.
+     */
+    private final ShardingDataSource targetDataSource;
     
     /**
      * 同步的事务送达的最大尝试次数.
@@ -58,4 +66,9 @@ public final class SoftTransactionConfiguration {
      * 是否使用内嵌的作业处理异步事务送达.
      */
     private boolean nestedJob;
+    
+    /**
+     * 内嵌的最大努力送达型异步作业配置对象.
+     */
+    private NestedBestEffortsDeliveryJobConfiguration nestedBestEffortsDeliveryJobConfiguration = new NestedBestEffortsDeliveryJobConfiguration();
 }

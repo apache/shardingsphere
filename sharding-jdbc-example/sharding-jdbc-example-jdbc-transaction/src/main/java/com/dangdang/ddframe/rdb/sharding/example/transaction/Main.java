@@ -46,15 +46,15 @@ public final class Main {
     
     public static void main(final String[] args) throws SQLException {
         // CHECKSTYLE:ON
-        DataSource dataSource = getShardingDataSource();
+        ShardingDataSource dataSource = getShardingDataSource();
         updateFailure(dataSource);
     }
     
-    private static void updateFailure(final DataSource dataSource) throws SQLException {
+    private static void updateFailure(final ShardingDataSource dataSource) throws SQLException {
         String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
         String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
         String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
-        SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration();
+        SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
         transactionConfig.setNestedJob(true);
         transactionConfig.setTransactionLogDataSource(createTransactionLogDataSource());
         SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
