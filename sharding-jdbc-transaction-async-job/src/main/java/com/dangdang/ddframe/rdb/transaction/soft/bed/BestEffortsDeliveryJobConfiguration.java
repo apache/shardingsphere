@@ -15,27 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.api;
+package com.dangdang.ddframe.rdb.transaction.soft.bed;
+
+import com.dangdang.ddframe.rdb.transaction.soft.api.AbstractBestEffortsDeliveryJobConfiguration;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 内嵌的最大努力送达型异步作业配置对象.
+ * 最大努力送达型异步作业配置对象.
  * 
  * @author zhangliang
  */
 @Getter
-@Setter
-public final class NestedBestEffortsDeliveryJobConfiguration extends AbstractBestEffortsDeliveryJobConfiguration {
+@RequiredArgsConstructor
+public final class BestEffortsDeliveryJobConfiguration extends AbstractBestEffortsDeliveryJobConfiguration {
     
     /**
-     * 内嵌的注册中心端口号.
+     * 注册中心的连接地址.
      */
-    private int zookeeperPort = 4181;
-    
-    /**
-     * 内嵌的注册中心的数据存放目录.
-     */
-    private String zookeeperDataDir = String.format("target/test_zk_data/%s/", System.nanoTime());
+    private final String zookeeperConnectionString;
 }

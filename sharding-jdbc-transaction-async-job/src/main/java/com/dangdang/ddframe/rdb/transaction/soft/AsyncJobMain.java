@@ -15,10 +15,8 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.transaction;
+package com.dangdang.ddframe.rdb.transaction.soft;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,46 +33,28 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.transaction.soft.api.NestedBestEffortsDeliveryJobConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
-// CHECKSTYLE:OFF
-public final class Main {
+import com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryJobConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.bed.BestEffortsDeliveryJobFactory;
+
+/**
+ * 最大努力送达型异步作业启动入口.
+ * 
+ * @author zhangliang
+ */
+public final class AsyncJobMain {
     
-    private static boolean useNestedJob = false;
-    
+    /**
+     * 启动入口.
+     * 
+     * @param args 启动参数
+     */
+    // TODO 目前先写死，等开源了config模块之后再修改
     public static void main(final String[] args) throws SQLException {
-        // CHECKSTYLE:ON
-        ShardingDataSource dataSource = getShardingDataSource();
-        updateFailure(dataSource);
-    }
-    
-    private static void updateFailure(final ShardingDataSource dataSource) throws SQLException {
-        String sql1 = "UPDATE t_order SET status='UPDATE_1' WHERE user_id=10 AND order_id=1000";
-        String sql2 = "UPDATE t_order SET not_existed_column=1 WHERE user_id=1 AND order_id=?";
-        String sql3 = "UPDATE t_order SET status='UPDATE_2' WHERE user_id=10 AND order_id=1000";
-        SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(getSoftTransactionConfiguration(dataSource));
-        transactionManagerFactory.init();
-        SoftTransactionManager transactionManager = transactionManagerFactory.getTransactionManager();
-        Connection conn = null;
-        try {
-            conn = dataSource.getConnection();
-            transactionManager.begin(conn, SoftTransactionType.BestEffortsDelivery);
-            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
-            pstmt2.setObject(1, 1000);
-            PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-            pstmt1.executeUpdate();
-            pstmt2.executeUpdate();
-            pstmt3.executeUpdate();
-        } finally {
-            transactionManager.end();
-            conn.close();
-        }
+        SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(getShardingDataSource());
+        transactionConfig.setBestEffortsDeliveryJobConfiguration(new BestEffortsDeliveryJobConfiguration("localhost:2181"));
+        transactionConfig.setTransactionLogDataSource(createTransactionLogDataSource());
+        new BestEffortsDeliveryJobFactory(transactionConfig).init();
     }
     
     private static ShardingDataSource getShardingDataSource() throws SQLException {
@@ -110,16 +90,6 @@ public final class Main {
         result.setUrl("jdbc:mysql://localhost:3306/trans_log");
         result.setUsername("root");
         result.setPassword("");
-        return result;
-    }
-    
-    private static SoftTransactionConfiguration getSoftTransactionConfiguration(final ShardingDataSource dataSource) {
-        SoftTransactionConfiguration result = new SoftTransactionConfiguration(dataSource);
-        if (useNestedJob) {
-            result.setNestedJob(true);
-            result.setBestEffortsDeliveryJobConfiguration(new NestedBestEffortsDeliveryJobConfiguration());
-        }
-        result.setTransactionLogDataSource(createTransactionLogDataSource());
         return result;
     }
 }

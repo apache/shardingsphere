@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhangliang
  */
 @Slf4j
-public class NestedBestEffortsDeliveryJob extends AbstractIndividualThroughputDataFlowElasticJob<TransactionLog> {
+public class BestEffortsDeliveryJob extends AbstractIndividualThroughputDataFlowElasticJob<TransactionLog> {
     
     @Setter
     private SoftTransactionConfiguration transactionConfig;

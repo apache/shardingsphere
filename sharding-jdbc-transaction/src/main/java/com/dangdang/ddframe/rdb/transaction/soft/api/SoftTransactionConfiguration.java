@@ -70,5 +70,5 @@ public final class SoftTransactionConfiguration {
     /**
      * 内嵌的最大努力送达型异步作业配置对象.
      */
-    private NestedBestEffortsDeliveryJobConfiguration nestedBestEffortsDeliveryJobConfiguration = new NestedBestEffortsDeliveryJobConfiguration();
+    private AbstractBestEffortsDeliveryJobConfiguration bestEffortsDeliveryJobConfiguration;
 }
