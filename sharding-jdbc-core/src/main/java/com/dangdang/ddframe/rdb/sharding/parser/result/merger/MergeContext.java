@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,6 +42,9 @@ public final class MergeContext {
     
     @Setter
     private Limit limit;
+    
+    @Setter
+    private ExecutorEngine executorEngine;
     
     /**
      * 获取结果集类型.

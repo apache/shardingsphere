@@ -23,17 +23,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfiguration;
+import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationConstant;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,9 +42,19 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * @author gaohongtao
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ExecutorEngine {
+    
+    private final ListeningExecutorService executorService;
+    
+    public ExecutorEngine(final ShardingConfiguration configuration) {
+        executorService = MoreExecutors.listeningDecorator(MoreExecutors.getExitingExecutorService(
+                new ThreadPoolExecutor(configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MIN_IDLE_SIZE, int.class),
+                configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_SIZE, int.class),
+                configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT, long.class),
+                TimeUnit.valueOf(configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT_TIME_UNIT)),
+                new LinkedBlockingQueue<Runnable>())));
+    }
     
     /**
      * 多线程执行任务.
@@ -54,7 +65,7 @@ public final class ExecutorEngine {
      * @param <O> 出参类型
      * @return 执行结果
      */
-    public static <I, O> List<O> execute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
+    public <I, O> List<O> execute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         ListenableFuture<List<O>> futures = submitFutures(inputs, executeUnit);
         addCallback(futures);
         return getFutureResults(futures);
@@ -71,15 +82,14 @@ public final class ExecutorEngine {
      * @param <O> 最终结果类型
      * @return 执行结果
      */
-    public static <I, M, O> O execute(final Collection<I> inputs, final ExecuteUnit<I, M> executeUnit, final MergeUnit<M, O> mergeUnit) {
+    public <I, M, O> O execute(final Collection<I> inputs, final ExecuteUnit<I, M> executeUnit, final MergeUnit<M, O> mergeUnit) {
         return mergeUnit.merge(execute(inputs, executeUnit));
     }
     
-    private static <I, O> ListenableFuture<List<O>> submitFutures(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
+    private <I, O> ListenableFuture<List<O>> submitFutures(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         Set<ListenableFuture<O>> result = new HashSet<>(inputs.size());
-        ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(inputs.size()));
         for (final I each : inputs) {
-            result.add(service.submit(new Callable<O>() {
+            result.add(executorService.submit(new Callable<O>() {
                 
                 @Override
                 public O call() throws Exception {
@@ -87,13 +97,11 @@ public final class ExecutorEngine {
                 }
             }));
         }
-        service.shutdown();
         return Futures.allAsList(result);
     }
     
-    private static <T> void addCallback(final ListenableFuture<T> allFutures) {
+    private <T> void addCallback(final ListenableFuture<T> allFutures) {
         Futures.addCallback(allFutures, new FutureCallback<T>() {
-            
             @Override
             public void onSuccess(final T result) {
                 log.trace("Concurrent execute result success {}", result);
@@ -106,7 +114,7 @@ public final class ExecutorEngine {
         });
     }
     
-    private static <O> O getFutureResults(final ListenableFuture<O> futures) {
+    private <O> O getFutureResults(final ListenableFuture<O> futures) {
         try {
             return futures.get();
         } catch (final InterruptedException | ExecutionException ex) {

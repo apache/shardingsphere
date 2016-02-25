@@ -27,7 +27,6 @@ import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,6 +36,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class StatementExecutor {
+    
+    private final ExecutorEngine executorEngine;
     
     private final Collection<StatementEntity> statements = new ArrayList<>();
     
@@ -65,7 +66,7 @@ public final class StatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        result = ExecutorEngine.execute(statements, new ExecuteUnit<StatementEntity, ResultSet>() {
+        result = executorEngine.execute(statements, new ExecuteUnit<StatementEntity, ResultSet>() {
             
             @Override
             public ResultSet execute(final StatementEntity input) throws Exception {
@@ -131,7 +132,7 @@ public final class StatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        result = ExecutorEngine.execute(statements, new ExecuteUnit<StatementEntity, Integer>() {
+        result = executorEngine.execute(statements, new ExecuteUnit<StatementEntity, Integer>() {
             
             @Override
             public Integer execute(final StatementEntity input) throws Exception {
@@ -206,7 +207,7 @@ public final class StatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        List<Boolean> result = ExecutorEngine.execute(statements, new ExecuteUnit<StatementEntity, Boolean>() {
+        List<Boolean> result = executorEngine.execute(statements, new ExecuteUnit<StatementEntity, Boolean>() {
             
             @Override
             public Boolean execute(final StatementEntity input) throws Exception {

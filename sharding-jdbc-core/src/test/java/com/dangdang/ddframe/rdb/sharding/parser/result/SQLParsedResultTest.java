@@ -42,7 +42,7 @@ public final class SQLParsedResultTest {
                 + "orderByColumns=[OrderByColumn(name=Optional.of(id), index=Optional.absent(), alias=Optional.of(a), orderByType=DESC)], "
                 + "groupByColumns=[GroupByColumn(name=id, alias=d, orderByType=ASC)], "
                 + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], index=-1)], "
-                + "limit=Limit(offset=0, rowCount=10)))"));
+                + "limit=Limit(offset=0, rowCount=10), executorEngine=null))"));
     }
     
     private void generateRouteContext(final RouteContext routeContext) throws IOException {

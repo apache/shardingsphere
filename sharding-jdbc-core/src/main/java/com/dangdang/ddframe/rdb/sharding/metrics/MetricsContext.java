@@ -19,14 +19,13 @@ package com.dangdang.ddframe.rdb.sharding.metrics;
 
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.LoggerFactory;
-
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Slf4jReporter.LoggingLevel;
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.threadlocal.ThreadLocalObjectRepository;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
+import org.slf4j.LoggerFactory;
 
 /**
  * 度量工具上下文.
@@ -35,32 +34,18 @@ import com.google.common.base.Optional;
  */
 public final class MetricsContext {
     
-    private static final ThreadLocal<MetricsContext> CONTEXT = new ThreadLocal<>();
+    private final MetricRegistry metricRegistry;
     
-    private final Optional<MetricRegistry> metricRegistry;
-    
-    public MetricsContext(final boolean enable, final long period, final String packageName) {
-        if (enable) {
-            metricRegistry = Optional.of(new MetricRegistry());
-            Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry.get())
-                    .outputTo(LoggerFactory.getLogger(packageName))
-                    .convertRatesTo(TimeUnit.SECONDS)
-                    .convertDurationsTo(TimeUnit.MILLISECONDS)
-                    .withLoggingLevel(LoggingLevel.DEBUG)
-                    .build();
-            reporter.start(period, TimeUnit.SECONDS);
-        } else {
-            metricRegistry = Optional.absent();
-        }
-    }
-    
-    /**
-     * 注册度量上下文.
-     */
-    public void register() {
-        if (metricRegistry.isPresent() && !this.equals(CONTEXT.get())) {
-            CONTEXT.set(this);
-        }
+    public MetricsContext(final long period, final String packageName) {
+        metricRegistry = new MetricRegistry();
+        Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry)
+                .outputTo(LoggerFactory.getLogger(packageName))
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .withLoggingLevel(LoggingLevel.DEBUG)
+                .build();
+        reporter.start(period, TimeUnit.SECONDS);
+        
     }
     
     /**
@@ -71,7 +56,8 @@ public final class MetricsContext {
      * @return 计时上下文
      */
     public static Context start(final String... name) {
-        return null == CONTEXT.get() ? null : CONTEXT.get().metricRegistry.get().timer(MetricRegistry.name(Joiner.on("-").join(name))).time();
+        MetricsContext context = ThreadLocalObjectRepository.getItem(MetricsContext.class);
+        return null == context ? null : context.metricRegistry.timer(MetricRegistry.name(Joiner.on("-").join(name))).time();
     }
     
     /**

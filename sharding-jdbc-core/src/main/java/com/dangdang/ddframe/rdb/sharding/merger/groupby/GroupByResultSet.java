@@ -73,6 +73,8 @@ public final class GroupByResultSet extends AbstractShardingResultSet {
     
     private final List<String> columnLabels;
     
+    private final ExecutorEngine executorEngine;
+    
     private Iterator<GroupByValue> groupByResultIterator;
     
     @Getter(AccessLevel.PROTECTED)
@@ -86,6 +88,7 @@ public final class GroupByResultSet extends AbstractShardingResultSet {
         resultSetMetaData = getResultSets().iterator().next().getMetaData();
         columnLabels = new ArrayList<>(resultSetMetaData.getColumnCount());
         fillRelatedColumnNames();
+        executorEngine = mergeContext.getExecutorEngine();
     }
     
     private void fillRelatedColumnNames() throws SQLException {
@@ -143,7 +146,7 @@ public final class GroupByResultSet extends AbstractShardingResultSet {
                 return result;
             }
         };
-        Multimap<GroupByKey, GroupByValue> result = ExecutorEngine.execute(getResultSets(), executeUnit, mergeUnit);
+        Multimap<GroupByKey, GroupByValue> result = executorEngine.execute(getResultSets(), executeUnit, mergeUnit);
         log.trace("Mapped result: {}", result);
         return result;
     }

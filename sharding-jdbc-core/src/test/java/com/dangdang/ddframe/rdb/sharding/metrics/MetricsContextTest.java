@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
+import com.dangdang.ddframe.rdb.sharding.threadlocal.ThreadLocalObjectRepository;
 import org.junit.Test;
 
 import com.codahale.metrics.Timer.Context;
@@ -34,8 +35,11 @@ public final class MetricsContextTest {
     }
     
     private void run(final boolean enable) {
-        MetricsContext metricsContext = new MetricsContext(enable, 1000000L, "example");
-        metricsContext.register();
+        if(enable){
+            ThreadLocalObjectRepository repository = new ThreadLocalObjectRepository();
+            repository.addItem(new MetricsContext(1000000L, "example"));
+            repository.open();
+        }
         Context context = MetricsContext.start("example");
         MetricsContext.stop(context);
     }

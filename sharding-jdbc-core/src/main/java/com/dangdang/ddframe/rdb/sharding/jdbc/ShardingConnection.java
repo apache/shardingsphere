@@ -25,34 +25,31 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 支持分片的数据库连接.
  * 
- * @author zhangliang
+ * @author zhangliang,gaohongtao
  */
+@RequiredArgsConstructor
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
-    private final ShardingRule shardingRule;
-    
-    private final DatabaseMetaData metaData;
+    @Getter(AccessLevel.PACKAGE)
+    private final ShardingContext context;
     
     private Map<String, Connection> connectionMap = new HashMap<>();
-    
-    private SQLRouteEngine sqlRouteEngine;
-    
-    public ShardingConnection(final ShardingRule shardingRule, final DatabaseMetaData metaData) throws SQLException {
-        this.shardingRule = shardingRule;
-        this.metaData = metaData;
-        sqlRouteEngine = new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(metaData.getDatabaseProductName()));
-    }
     
     /**
      * 根据数据源名称获取相应的数据库连接.
@@ -65,7 +62,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             return connectionMap.get(dataSourceName);
         }
         Context context = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
-        Connection connection = shardingRule.getDataSourceRule().getDataSource(dataSourceName).getConnection();
+        Connection connection = this.context.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
         MetricsContext.stop(context);
         replayMethodsInvovation(connection);
         connectionMap.put(dataSourceName, connection);
@@ -74,52 +71,104 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return metaData;
+        if (connectionMap.isEmpty()) {
+            return getDatabaseMetaDataFromDataSource(context.getShardingRule().getDataSourceRule().getDataSources());
+        } else {
+            return getDatabaseMetaDataFromConnection(connectionMap.values());
+        }
+    }
+    
+    public static DatabaseMetaData getDatabaseMetaDataFromDataSource(final Collection<DataSource> dataSources) {
+        Collection<Connection> connectionCollection = null;
+        
+        try {
+            connectionCollection = Collections2.transform(dataSources, new Function<DataSource, Connection>() {
+                
+                @Override
+                public Connection apply(final DataSource input) {
+                    try {
+                        return input.getConnection();
+                    } catch (final SQLException e) {
+                        throw new ShardingJdbcException(e);
+                    }
+                }
+            });
+            return getDatabaseMetaDataFromConnection(connectionCollection);
+        } finally {
+            if (null != connectionCollection) {
+                for (Connection each : connectionCollection) {
+                    try {
+                        each.close();
+                    } catch (final SQLException ignored) {
+                    }
+                }
+            }
+        }
+    }
+    
+    private static DatabaseMetaData getDatabaseMetaDataFromConnection(final Collection<Connection> connections) {
+        String databaseProductName = null;
+        DatabaseMetaData result = null;
+        for (Connection each : connections) {
+            String databaseProductNameInEach;
+            DatabaseMetaData metaDataInEach;
+            try {
+                metaDataInEach = each.getMetaData();
+                databaseProductNameInEach = metaDataInEach.getDatabaseProductName();
+            } catch (final SQLException ex) {
+                throw new ShardingJdbcException("Can not get data source DatabaseProductName", ex);
+            }
+            Preconditions.checkState(null == databaseProductName || databaseProductName.equals(databaseProductNameInEach),
+                    String.format("Database type inconsistent with '%s' and '%s'", databaseProductName, databaseProductNameInEach));
+            databaseProductName = databaseProductNameInEach;
+            result = metaDataInEach;
+        }
+        return result;
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql);
+        return new ShardingPreparedStatement(this, sql);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql, resultSetType, resultSetConcurrency);
+        return new ShardingPreparedStatement(this, sql, resultSetType, resultSetConcurrency);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+        return new ShardingPreparedStatement(this, sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final int autoGeneratedKeys) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql, autoGeneratedKeys);
+        return new ShardingPreparedStatement(this, sql, autoGeneratedKeys);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final int[] columnIndexes) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql, columnIndexes);
+        return new ShardingPreparedStatement(this, sql, columnIndexes);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
-        return new ShardingPreparedStatement(sqlRouteEngine, this, sql, columnNames);
+        return new ShardingPreparedStatement(this, sql, columnNames);
     }
     
     @Override
     public Statement createStatement() throws SQLException {
-        return new ShardingStatement(sqlRouteEngine, this);
+        return new ShardingStatement(this);
     }
     
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        return new ShardingStatement(sqlRouteEngine, this, resultSetType, resultSetConcurrency);
+        return new ShardingStatement(this, resultSetType, resultSetConcurrency);
     }
     
     @Override
     public Statement createStatement(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        return new ShardingStatement(sqlRouteEngine, this, resultSetType, resultSetConcurrency, resultSetHoldability);
+        return new ShardingStatement(this, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override
