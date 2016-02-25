@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.bed;
+package com.dangdang.ddframe.rdb.transaction.soft.bed.async;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.NestedBestEffortsDeliveryJobConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.NestedBestEffortsDeliveryJobConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 
 /**

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.bed;
+package com.dangdang.ddframe.rdb.transaction.soft.bed.async;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,9 +24,9 @@ import java.util.List;
 
 import com.dangdang.ddframe.job.api.JobExecutionMultipleShardingContext;
 import com.dangdang.ddframe.job.plugin.job.type.dataflow.AbstractIndividualThroughputDataFlowElasticJob;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 
 import lombok.Setter;
@@ -43,15 +43,16 @@ public class BestEffortsDeliveryJob extends AbstractIndividualThroughputDataFlow
     @Setter
     private SoftTransactionConfiguration transactionConfig;
     
+    @Setter
+    private TransacationLogStorage transacationLogStorage;
+    
     @Override
     public List<TransactionLog> fetchData(final JobExecutionMultipleShardingContext context) {
-        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
-        return transacationLogStorage.findAllForLessThanMaxAsyncProcessTimes(context.getFetchDataCount());
+        return transacationLogStorage.findAllForLessThanMaxAsyncProcessTimes(context.getFetchDataCount(), SoftTransactionType.BestEffortsDelivery);
     }
     
     @Override
     public boolean processData(final JobExecutionMultipleShardingContext context, final TransactionLog data) {
-        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
         try (
                 Connection conn = transactionConfig.getTargetDataSource().getConnection().getConnection(data.getDataSource());
                 PreparedStatement pstmt = conn.prepareStatement(data.getSql())) {

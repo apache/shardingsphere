@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.bed;
+package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,10 +24,10 @@ import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;

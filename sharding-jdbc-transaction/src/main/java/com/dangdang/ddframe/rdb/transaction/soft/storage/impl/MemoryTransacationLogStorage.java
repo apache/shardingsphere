@@ -15,14 +15,16 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,48 +46,19 @@ public final class MemoryTransacationLogStorage implements TransacationLogStorag
     }
     
     @Override
-    public TransactionLog load(final String id) {
-        return DATA.get(id);
-    }
-    
-    @Override
-    public List<TransactionLog> loadBatch(final String transactionId) {
-        List<TransactionLog> result = new ArrayList<>(DATA.size());
-        for (Entry<String, TransactionLog> entry : DATA.entrySet()) {
-            if (transactionId.equals(entry.getValue().getTransactionId())) {
-                result.add(entry.getValue());
-            }
-        }
-        return result;
-    }
-   
-    @Override
     public void remove(final String id) {
         DATA.remove(id);
     }
     
     @Override
-    public void removeBatch(final String transactionId) {
-        List<String> toBeRemoved = new ArrayList<>(DATA.size());
-        for (Entry<String, TransactionLog> entry : DATA.entrySet()) {
-            if (transactionId.equals(entry.getValue().getTransactionId())) {
-                toBeRemoved.add(entry.getKey());
-            }
-        }
-        for (String each : toBeRemoved) {
-            DATA.remove(each);
-        }
-    }
-    
-    @Override
-    public List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(final int size) {
+    public List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(final int size, final SoftTransactionType type) {
         List<TransactionLog> result = new ArrayList<TransactionLog>();
         int count = 0;
         for (TransactionLog each : DATA.values()) {
             if (count >= size) {
                 break;
             }
-            if (each.getAsyncDeliveryTryTimes() < transactionConfig.getAsyncMaxDeliveryTryTimes()) {
+            if (each.getAsyncDeliveryTryTimes() < transactionConfig.getAsyncMaxDeliveryTryTimes() && type == each.getTransactionType()) {
                 result.add(each);
             }
             count++;

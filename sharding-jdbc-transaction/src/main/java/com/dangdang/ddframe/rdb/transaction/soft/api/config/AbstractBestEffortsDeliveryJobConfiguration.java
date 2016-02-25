@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.api;
+package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 
 import lombok.Getter;
 import lombok.Setter;

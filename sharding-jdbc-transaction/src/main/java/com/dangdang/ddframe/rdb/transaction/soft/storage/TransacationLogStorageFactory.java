@@ -17,7 +17,9 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.DatabaseTransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.MemoryTransacationLogStorage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

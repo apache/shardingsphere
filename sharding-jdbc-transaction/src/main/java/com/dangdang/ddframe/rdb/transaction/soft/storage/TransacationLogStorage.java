@@ -19,6 +19,8 @@ package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+
 /**
  * 事务日志存储器接口.
  * 
@@ -34,20 +36,6 @@ public interface TransacationLogStorage {
     void add(TransactionLog transactionLog);
     
     /**
-     * 根据主键读取事务日志.
-     * 
-     * @param id 事务日志主键
-     */
-    TransactionLog load(String id);
-    
-    /**
-     * 根据事务主键批量读取事务日志.
-     * 
-     * @param transactionId 事务主键
-     */
-    List<TransactionLog> loadBatch(String transactionId);
-    
-    /**
      *  根据主键删除事务日志.
      * 
      * @param id 事务日志主键
@@ -55,18 +43,12 @@ public interface TransacationLogStorage {
     void remove(String id);
     
     /**
-     * 根据事务主键批量删除事务日志.
-     * 
-     * @param transactionId 事务主键
-     */
-    void removeBatch(String transactionId);
-    
-    /**
      * 读取异步处理次数小于最大处理次数的事务日志.
      * 
      * @param size 获取日志的数量
+     * @param type 柔性事务类型
      */
-    List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(int size);
+    List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(int size, SoftTransactionType type);
     
     /**
      * 增加事务日志异步重试次数.

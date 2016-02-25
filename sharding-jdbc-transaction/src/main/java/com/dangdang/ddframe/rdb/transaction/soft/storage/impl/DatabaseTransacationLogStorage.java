@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.storage;
+package com.dangdang.ddframe.rdb.transaction.soft.storage.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,8 +24,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -63,33 +65,6 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
     }
     
     @Override
-    public TransactionLog load(final String id) {
-        String sql = "SELECT `id`, `transaction_type`, `data_source`, `sql`, `parameters`, `async_delivery_try_times` FROM `transaction_log` WHERE `id`=?;";
-        try (
-                Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, id);
-            try (ResultSet rs = psmt.executeQuery()) {
-                if (rs.next()) {
-                    Gson gson = new Gson();
-                    List<Object> parameters = gson.fromJson(rs.getString(5), new TypeToken<List<Object>>() { }.getType());
-                    TransactionLog result = new TransactionLog(
-                            rs.getString(1), "", SoftTransactionType.valueOf(rs.getString(2)), rs.getString(3), rs.getString(4), parameters, rs.getInt(6));
-                    return result;
-                }
-            }
-        } catch (final SQLException ex) {
-            log.error("Query transaction log error:", ex);
-        }
-        throw new IllegalArgumentException(String.format("Cannot found transaction log for id: %s", id));
-    }
-    
-    @Override
-    public List<TransactionLog> loadBatch(final String transactionId) {
-        throw new UnsupportedOperationException();
-    }
-   
-    @Override
     public void remove(final String id) {
         String sql = "DELETE FROM `transaction_log` WHERE `id`=?;";
         try (
@@ -103,19 +78,16 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
     }
     
     @Override
-    public void removeBatch(final String transactionId) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(final int size) {
+    public List<TransactionLog> findAllForLessThanMaxAsyncProcessTimes(final int size, final SoftTransactionType type) {
         List<TransactionLog> result = new ArrayList<>(size);
-        String sql = "SELECT `id`, `transaction_type`, `data_source`, `sql`, `parameters`, `async_delivery_try_times` FROM `transaction_log` WHERE `async_delivery_try_times`<? LIMIT ?;";
+        String sql = "SELECT `id`, `transaction_type`, `data_source`, `sql`, `parameters`, `async_delivery_try_times` "
+                + "FROM `transaction_log` WHERE `async_delivery_try_times`<? AND `transaction_type`=? LIMIT ?;";
         try (
                 Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
                 PreparedStatement psmt = conn.prepareStatement(sql)) {
             psmt.setInt(1, transactionConfig.getAsyncMaxDeliveryTryTimes());
-            psmt.setInt(2, size);
+            psmt.setString(2, type.toString());
+            psmt.setInt(3, size);
             try (ResultSet rs = psmt.executeQuery()) {
                 while (rs.next()) {
                     Gson gson = new Gson();

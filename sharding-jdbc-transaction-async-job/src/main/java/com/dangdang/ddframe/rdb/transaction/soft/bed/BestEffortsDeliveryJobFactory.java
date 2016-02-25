@@ -17,7 +17,8 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.bed;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.bed.async.AbstractBestEffortsDeliveryJobFactory;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 
 /**

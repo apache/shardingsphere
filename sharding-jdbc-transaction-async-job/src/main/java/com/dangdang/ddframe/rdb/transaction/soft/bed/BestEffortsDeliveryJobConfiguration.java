@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.bed;
 
-import com.dangdang.ddframe.rdb.transaction.soft.api.AbstractBestEffortsDeliveryJobConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.AbstractBestEffortsDeliveryJobConfiguration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

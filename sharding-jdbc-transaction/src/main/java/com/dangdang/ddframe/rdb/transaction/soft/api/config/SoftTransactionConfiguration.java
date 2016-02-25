@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.api;
+package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 
 import javax.sql.DataSource;
 
@@ -49,7 +49,6 @@ public final class SoftTransactionConfiguration {
     /**
      * 异步的事务送达的最大尝试次数.
      */
-    // TODO 使用elastic-job做异步重试
     private int asyncMaxDeliveryTryTimes = 3;
     
     /**

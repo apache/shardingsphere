@@ -15,12 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.transaction.soft.bed;
+package com.dangdang.ddframe.rdb.transaction.soft.bed.async;
 
 import com.dangdang.ddframe.job.api.JobConfiguration;
 import com.dangdang.ddframe.job.api.JobScheduler;
-import com.dangdang.ddframe.rdb.transaction.soft.api.AbstractBestEffortsDeliveryJobConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.AbstractBestEffortsDeliveryJobConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
 import com.dangdang.ddframe.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter;
@@ -40,21 +41,22 @@ public abstract class AbstractBestEffortsDeliveryJobFactory<T extends AbstractBe
     /**
      * 初始化作业.
      */
-    public void init() {
+    public final void init() {
         @SuppressWarnings("unchecked")
-        T config = (T) transactionConfig.getBestEffortsDeliveryJobConfiguration();
-        CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(createZookeeperConfiguration(config));
+        T bedJobConfig = (T) transactionConfig.getBestEffortsDeliveryJobConfiguration();
+        CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(createZookeeperConfiguration(bedJobConfig));
         regCenter.init();
-        JobScheduler jobScheduler = new JobScheduler(regCenter, createJobConfiguration(config));
+        JobScheduler jobScheduler = new JobScheduler(regCenter, createBedJobConfiguration(bedJobConfig));
         jobScheduler.setField("transactionConfig", transactionConfig);
+        jobScheduler.setField("transacationLogStorage", TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig));
         jobScheduler.init();
     }
     
     protected abstract ZookeeperConfiguration createZookeeperConfiguration(final T config);
     
-    private JobConfiguration createJobConfiguration(final T config) {
-        JobConfiguration result = new JobConfiguration(config.getJobName(), BestEffortsDeliveryJob.class, 1, config.getCron());
-        result.setFetchDataCount(config.getTransactionLogFetchDataCount());
+    private JobConfiguration createBedJobConfiguration(final T bedJobConfig) {
+        JobConfiguration result = new JobConfiguration(bedJobConfig.getJobName(), BestEffortsDeliveryJob.class, 1, bedJobConfig.getCron());
+        result.setFetchDataCount(bedJobConfig.getTransactionLogFetchDataCount());
         return result;
     }
 }
