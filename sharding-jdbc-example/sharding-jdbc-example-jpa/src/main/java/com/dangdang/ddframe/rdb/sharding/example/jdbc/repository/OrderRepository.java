@@ -27,6 +27,8 @@ public interface OrderRepository {
     
     List<Order> selectAll();
     
+    List<Order> selectOrderBy();
+    
     void create(Order order);
     
     void update(Order order);

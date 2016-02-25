@@ -8,14 +8,13 @@
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 <!-- Custom Theme JavaScript -->
-<script src="js/prism.js"></script>
+<script src="{{ .Site.BaseURL }}js/prism.js"></script>
 
 {{ if isset .Params "chart" }}
 <script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
 <script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
-<script src="data/chart.js"></script>
+<script src="{{ .Site.BaseURL }}data/chart.js"></script>
 <script>
-
     $("canvas").each(function(){
         var data =  chartData[$(this).attr("id")];
         $(data.datasets).each(function(index, obj){
@@ -27,6 +26,5 @@
         });
     })
 </script>
-
 
 {{ end }}

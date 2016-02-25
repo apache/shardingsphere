@@ -17,36 +17,32 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
+import com.dangdang.ddframe.rdb.sharding.example.jdbc.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
-
-public final class Main {
-    
-    private static ApplicationContext applicationContext;
-    
+// CHECKSTYLE:OFF
+@Service
+@Transactional
+public class Main {
     public static void main(final String[] args) {
-        startContainer();
-        select();
-        System.out.println("--------------");
-        selectAll();
-    }
+        // CHECKSTYLE:ON
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisContext.xml");
+        OrderService orderService = applicationContext.getBean(OrderService.class);
+        orderService.clear();
+        orderService.fooService();
+        orderService.select();
     
-    private static void startContainer() {
-        applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisContext.xml");
-    }
-    
-    private static void select() {
-        Order criteria = new Order();
-        criteria.setUserId(10);
-        criteria.setOrderId(1000);
-        Order model = applicationContext.getBean(OrderRepository.class).selectById(criteria);
-        System.out.println(model);
-    }
-    
-    private static void selectAll() {
-        System.out.println(applicationContext.getBean(OrderRepository.class).selectAll());
+        //[order_id: 1, user_id: 10, status: UPDATED, order_id: 1, user_id: 11, status: UPDATED]
+        orderService.clear();
+        try {
+            orderService.fooServiceWithFailure();
+        } catch (final IllegalArgumentException e) {
+            System.out.println("roll back");
+        }
+        //[]
+        orderService.select();
     }
 }

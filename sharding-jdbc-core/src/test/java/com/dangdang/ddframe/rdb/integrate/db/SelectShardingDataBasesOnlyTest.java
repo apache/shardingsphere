@@ -66,6 +66,13 @@ public final class SelectShardingDataBasesOnlyTest extends AbstractShardingDataB
     }
     
     @Test
+    public void assertSelectOrderByWithAlias() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT order_id as `order_id_alias`,user_id,status FROM `t_order` WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
+        assertDataset("integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1001, 1200);
+        assertDataset("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
+    }
+    
+    @Test
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
         String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
                 + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?";

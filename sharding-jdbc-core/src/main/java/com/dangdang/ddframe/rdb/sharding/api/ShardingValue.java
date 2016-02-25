@@ -32,7 +32,7 @@ import com.google.common.collect.Range;
  * 
  * <p>
  * 目前支持{@code =, IN, BETWEEN};
- * 不支持{@code , >, <-, >=, LIKE, NOT, NOT IN}.
+ * 不支持{@code , >, <=, >=, LIKE, NOT, NOT IN}.
  * </p>
  * 
  * @author zhangliang

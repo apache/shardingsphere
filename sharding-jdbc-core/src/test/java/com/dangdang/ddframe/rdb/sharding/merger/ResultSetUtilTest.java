@@ -77,6 +77,18 @@ public final class ResultSetUtilTest {
         verify(resultSet).getObject("name");
     }
     
+    @Test
+    public void assertGetValueFromGroupByColumnForAlias() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("Alias")).thenReturn(null);
+        when(resultSet.getObject("ALIAS")).thenReturn(null);
+        when(resultSet.getObject("alias")).thenReturn("fromAlias");
+        assertThat(ResultSetUtil.getValue(new OrderByColumn("Name", "Alias", OrderByType.ASC), resultSet), is((Object) "fromAlias"));
+        verify(resultSet).getObject("Alias");
+        verify(resultSet).getObject("ALIAS");
+        verify(resultSet).getObject("alias");
+    }
+    
     @Test(expected = NullPointerException.class)
     public void assertCannotGetValueFromGroupByColumnForIndex() throws SQLException {
         ResultSetUtil.getValue(new OrderByColumn(1, OrderByType.ASC), mock(ResultSet.class));
@@ -85,6 +97,11 @@ public final class ResultSetUtilTest {
     @Test(expected = NullPointerException.class)
     public void assertCannotGetValueFromGroupByColumnForName() throws SQLException {
         ResultSetUtil.getValue(new OrderByColumn("none", OrderByType.ASC), mock(ResultSet.class));
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void assertCannotGetValueFromGroupByColumnForAlias() throws SQLException {
+        ResultSetUtil.getValue(new OrderByColumn("none", "none", OrderByType.ASC), mock(ResultSet.class));
     }
     
     @Test

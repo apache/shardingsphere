@@ -39,7 +39,7 @@ public final class SQLParsedResultTest {
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
                 + "operator=IN, values=[1, 2, 3])})], "
                 + "mergeContext=MergeContext("
-                + "orderByColumns=[OrderByColumn(name=Optional.of(id), index=Optional.absent(), orderByType=DESC)], "
+                + "orderByColumns=[OrderByColumn(name=Optional.of(id), index=Optional.absent(), alias=Optional.of(a), orderByType=DESC)], "
                 + "groupByColumns=[GroupByColumn(name=id, alias=d, orderByType=ASC)], "
                 + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], index=-1)], "
                 + "limit=Limit(offset=0, rowCount=10)))"));
@@ -68,7 +68,7 @@ public final class SQLParsedResultTest {
     
     private void generateMergeContext(final MergeContext mergeContext) {
         mergeContext.getAggregationColumns().add(new AggregationColumn("COUNT(id)", AggregationType.COUNT, Optional.of("c"), Optional.<String>absent()));
-        mergeContext.getOrderByColumns().add(new OrderByColumn("id", OrderByType.DESC));
+        mergeContext.getOrderByColumns().add(new OrderByColumn("id", "a", OrderByType.DESC));
         mergeContext.getGroupByColumns().add(new GroupByColumn("id", "d", OrderByType.ASC));
         mergeContext.setLimit(new Limit(0, 10));
     }

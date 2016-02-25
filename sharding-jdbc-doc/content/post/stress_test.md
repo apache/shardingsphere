@@ -25,7 +25,7 @@ chart = true
 | 数据表行数   | 1000万                   | 1000万                   |
 ## 网络拓扑
 
-![网络拓扑图](img/stress_test_arch.png)
+![网络拓扑图](../../img/stress_test_arch.png)
 ## 单库情况下Sharding-JDBC与JDBC性能对比
 测试结论：
 

@@ -1,11 +1,19 @@
+##Sharding-JDBC - A JDBC driver for shard databases and tables
+
 `Sharding-JDBC`是当当应用框架`ddframe`中，关系型数据库模块`dd-rdb`中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。
 
 `Sharding-JDBC`继`dubbox`和`elastic-job`之后，是`ddframe`系列开源的第三个产品。
 
-**License:** [![Hex.pm](http://dangdangdotcom.github.io/elastic-job/images/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)<br/>
-**Continuous Integration:** [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc) <br/>
-**Coverage Status:** [![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)<br/>
-**Maven Central:** [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core)<br/>
+# Release Notes
+* sharding-jdbc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
+* sharding-jdbc-core&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core)
+
+# License
+[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+# Build Status
+[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
+[![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
 
 # 主要贡献者
 
@@ -14,7 +22,7 @@
 * 曹昊 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) caohao@dangdang.com
 * 岳令 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) yueling@dangdang.com
 
-**讨论QQ群：**532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）
+**讨论QQ群：**532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。）
 
 # 简介
 
@@ -53,23 +61,33 @@
 
 # 相关文档
 
+[Release Notes](http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/)
+
 [使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
-[阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/sourceCodeGuide.html)
+[目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
 
-[使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/restriction/)
+[阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/post/source_code_guide)
+
+[使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/)
 
 [压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
 
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
 
+[事务支持说明](http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/)
+
+[InfoQ新闻](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
+
+[CSDN文章](http://geek.csdn.net/news/detail/55513)
+
 # Quick Start
 
-## 引入maven依赖(暂时还未放入中央仓库，等稳定后再部署)
+## 引入maven依赖
 
 ```xml
 <!-- 引入sharding-jdbc核心模块 -->

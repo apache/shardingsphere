@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import java.util.List;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
+import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
@@ -38,8 +39,10 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 /**
  * MySQL的SELECT语句访问器.
@@ -78,6 +81,18 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     // TODO SELECT * 导致index不准，不支持SELECT *，且生产环境不建议使用SELECT *
     public boolean visit(final SQLSelectItem x) {
         itemIndex++;
+        if (Strings.isNullOrEmpty(x.getAlias())) {
+            SQLExpr expr = x.getExpr();
+            if (expr instanceof SQLIdentifierExpr) {
+                getParseContext().registerSelectItem(((SQLIdentifierExpr) expr).getName());
+            } else if (expr instanceof SQLPropertyExpr) {
+                getParseContext().registerSelectItem(((SQLPropertyExpr) expr).getName());
+            } else if (expr instanceof SQLAllColumnExpr) {
+                getParseContext().registerSelectItem("*");
+            }
+        } else {
+            getParseContext().registerSelectItem(x.getAlias());
+        }
         return super.visit(x);
     }
     
@@ -137,8 +152,6 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         } else if (x.getExpr() instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
             getParseContext().addGroupByColumns(expr.getName(), alias, orderByType);
-        } else {
-            return super.visit(x);
         }
         return super.visit(x);
     }
@@ -186,6 +199,11 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         }
         for (GroupByColumn each : getParseContext().getParsedResult().getMergeContext().getGroupByColumns()) {
             derivedSelectItems.append(", ").append(each.getName()).append(" AS ").append(each.getAlias());
+        }
+        for (OrderByColumn each : getParseContext().getParsedResult().getMergeContext().getOrderByColumns()) {
+            if (each.getAlias().isPresent()) {
+                derivedSelectItems.append(", ").append(each.getName().get()).append(" AS ").append(each.getAlias().get());
+            }
         }
         if (0 != derivedSelectItems.length()) {
             getSQLBuilder().buildSQL(AUTO_GEN_TOKE_KEY, derivedSelectItems.toString());

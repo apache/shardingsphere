@@ -25,13 +25,9 @@ public interface OrderRepository {
     
     void insert(Order model);
     
-    int update(Order orderId);
-    
-    int delete(Order orderId);
+    int update(List<Integer> userIds);
     
     int deleteAll();
-    
-    Order selectById(Order orderId);
     
     List<Order> selectAll();
 }
