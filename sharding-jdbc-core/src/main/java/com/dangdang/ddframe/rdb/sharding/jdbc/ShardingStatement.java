@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -190,5 +191,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Override
     public Collection<? extends Statement> getRoutedStatements() throws SQLException {
         return cachedRoutedStatements.values();
+    }
+    
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        if (getRoutedStatements().size() > 0) {
+            return getRoutedStatements().iterator().next().getGeneratedKeys();
+        }
+        else {
+            throw new SQLFeatureNotSupportedException("getGeneratedKeys: not found statement");
+        }
     }
 }
