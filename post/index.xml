@@ -719,7 +719,7 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;h2 id=&#34;网络拓扑:da68abc810593941936aaba3d62b3b96&#34;&gt;网络拓扑&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;img/stress_test_arch.png&#34; alt=&#34;网络拓扑图&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../img/stress_test_arch.png&#34; alt=&#34;网络拓扑图&#34; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;单库情况下sharding-jdbc与jdbc性能对比:da68abc810593941936aaba3d62b3b96&#34;&gt;单库情况下Sharding-JDBC与JDBC性能对比&lt;/h2&gt;
 
