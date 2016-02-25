@@ -72,11 +72,6 @@ public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapt
     }
     
     @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getGeneratedKeys");
-    }
-    
-    @Override
     public final void addBatch(final String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException("addBatch sql");
     }
