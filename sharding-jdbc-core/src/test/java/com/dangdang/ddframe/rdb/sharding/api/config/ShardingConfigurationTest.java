@@ -21,14 +21,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Properties;
+import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 
 public final class ShardingConfigurationTest {
     
-    private final Properties prop = new Properties();
+    private final Map<String,Object> prop = Maps.newHashMap();
     
     private final ShardingConfiguration shardingConfiguration = new ShardingConfiguration(prop);
     
@@ -41,11 +42,11 @@ public final class ShardingConfigurationTest {
     
     @Test
     public void assertGetConfigWithDefaultValue() {
-        assertThat(new ShardingConfiguration(new Properties()).getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD),
+        assertThat(new ShardingConfiguration().getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD),
                 is(ShardingConfigurationConstant.METRICS_SECOND_PERIOD.getDefaultValue()));
-        assertThat(new ShardingConfiguration(new Properties()).getConfig(ShardingConfigurationConstant.METRICS_ENABLE),
+        assertThat(new ShardingConfiguration().getConfig(ShardingConfigurationConstant.METRICS_ENABLE),
                 is(ShardingConfigurationConstant.METRICS_ENABLE.getDefaultValue()));
-        assertThat(new ShardingConfiguration(new Properties()).getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME),
+        assertThat(new ShardingConfiguration().getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME),
                 is(ShardingConfigurationConstant.METRICS_PACKAGE_NAME.getDefaultValue()));
     }
     
