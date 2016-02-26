@@ -52,6 +52,8 @@ public final class AggregationInvokeHandler extends AbstractMergerInvokeHandler<
                 return Optional.of(each);
             } else if (each.getAlias().isPresent() && each.getAlias().get().equals(resultSetQueryIndex.getQueryName())) {
                 return Optional.of(each);
+            } else if (each.getExpression().equalsIgnoreCase(resultSetQueryIndex.getQueryName())) {
+                return Optional.of(each);
             }
         }
         return Optional.absent();
