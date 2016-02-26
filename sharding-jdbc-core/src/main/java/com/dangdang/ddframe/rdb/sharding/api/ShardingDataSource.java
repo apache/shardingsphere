@@ -18,19 +18,20 @@
 package com.dangdang.ddframe.rdb.sharding.api;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfiguration;
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationConstant;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
+import com.dangdang.ddframe.rdb.sharding.threadlocal.ThreadLocalObjectRepository;
 import com.google.common.base.Preconditions;
 
 /**
@@ -40,51 +41,40 @@ import com.google.common.base.Preconditions;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ShardingRule shardingRule;
+    private final ThreadLocalObjectRepository threadLocalObjectRepository = new ThreadLocalObjectRepository();
     
-    private final DatabaseMetaData databaseMetaData;
-    
-    private final ShardingConfiguration configuration;
-    
-    private final MetricsContext metricsContext;
+    private final ShardingContext context;
     
     public ShardingDataSource(final ShardingRule shardingRule) {
         this(shardingRule, new Properties());
     }
     
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
-        this.shardingRule = shardingRule;
-        databaseMetaData = getDatabaseMetaData();
-        configuration = new ShardingConfiguration(props);
-        metricsContext = new MetricsContext(configuration.getConfig(ShardingConfigurationConstant.METRICS_ENABLE, boolean.class), 
-                configuration.getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD, long.class), 
-                configuration.getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME, String.class));
+        Preconditions.checkNotNull(shardingRule);
+        Preconditions.checkNotNull(props);
+        ShardingConfiguration configuration = new ShardingConfiguration(props);
+        initThreadLocalObjectRepository(configuration);
+        DatabaseType type;
+        try {
+            type = DatabaseType.valueFrom(ShardingConnection.getDatabaseMetaDataFromDataSource(shardingRule.getDataSourceRule().getDataSources()).getDatabaseProductName());
+        } catch (final SQLException e) {
+            throw new ShardingJdbcException("Can not get database product name", e);
+        }
+        context = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(configuration));
     }
     
-    private DatabaseMetaData getDatabaseMetaData() {
-        String databaseProductName = null;
-        DatabaseMetaData result = null;
-        for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
-            String databaseProductNameInEach;
-            DatabaseMetaData metaDataInEach;
-            try {
-                metaDataInEach = each.getConnection().getMetaData();
-                databaseProductNameInEach = metaDataInEach.getDatabaseProductName();
-            } catch (final SQLException ex) {
-                throw new ShardingJdbcException("Can not get data source DatabaseProductName", ex);
-            }
-            Preconditions.checkState(null == databaseProductName || databaseProductName.equals(databaseProductNameInEach), 
-                    String.format("Database type inconsistent with '%s' and '%s'", databaseProductName, databaseProductNameInEach));
-            databaseProductName = databaseProductNameInEach;
-            result = metaDataInEach;
+    private void initThreadLocalObjectRepository(final ShardingConfiguration configuration) {
+        boolean enableMetrics = configuration.getConfig(ShardingConfigurationConstant.METRICS_ENABLE, boolean.class);
+        if (enableMetrics) {
+            threadLocalObjectRepository.addItem(new MetricsContext(configuration.getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD, long.class),
+                    configuration.getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME, String.class)));
         }
-        return result;
     }
     
     @Override
     public ShardingConnection getConnection() throws SQLException {
-        metricsContext.register();
-        return new ShardingConnection(shardingRule, databaseMetaData);
+        threadLocalObjectRepository.open();
+        return new ShardingConnection(context);
     }
     
     @Override

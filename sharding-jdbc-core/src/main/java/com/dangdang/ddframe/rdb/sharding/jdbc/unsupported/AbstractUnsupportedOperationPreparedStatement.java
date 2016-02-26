@@ -29,7 +29,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingStatement;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 
 /**
  * 声明不支持操作的预编译语句对象.
@@ -38,9 +37,9 @@ import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
  */
 public abstract class AbstractUnsupportedOperationPreparedStatement extends ShardingStatement implements PreparedStatement {
     
-    public AbstractUnsupportedOperationPreparedStatement(final SQLRouteEngine sqlRouteEngine, final ShardingConnection shardingConnection, 
+    public AbstractUnsupportedOperationPreparedStatement(final ShardingConnection shardingConnection, 
             final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        super(sqlRouteEngine, shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
+        super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override

@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,26 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.exception;
+package com.dangdang.ddframe.rdb.sharding.jdbc;
+
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
+import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * JDBC分片抛出的异常基类.
+ * ShardingDataSource运行期上下文.
  * 
- * @author zhangliang
+ * @author gaohongtao
  */
-public class ShardingJdbcException extends RuntimeException {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingContext {
     
-    private static final long serialVersionUID = -1343739516839252250L;
+    private final ShardingRule shardingRule;
     
-    public ShardingJdbcException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
-
-    public ShardingJdbcException(final String message, final Exception cause) {
-        super(message, cause);
-    }
+    private final SQLRouteEngine sqlRouteEngine;
     
-    public ShardingJdbcException(final Exception cause) {
-        super(cause);
-    }
+    private final ExecutorEngine executorEngine;
 }

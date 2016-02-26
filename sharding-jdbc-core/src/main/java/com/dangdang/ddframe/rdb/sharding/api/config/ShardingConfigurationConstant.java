@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.config;
 
+import java.util.concurrent.TimeUnit;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -45,9 +47,33 @@ public enum ShardingConfigurationConstant {
     /**
      * 度量输出在日志中的标识名称.
      */
-    METRICS_PACKAGE_NAME("metrics.package.name", "com.dangdang.ddframe.rdb.sharding.metrics");
+    METRICS_PACKAGE_NAME("metrics.package.name", "com.dangdang.ddframe.rdb.sharding.metrics"),
+    
+    /**
+     * 最小空闲工作现成数量.
+     */
+    PARALLEL_EXECUTOR_WORKER_MIN_IDLE_SIZE("parallelExecutor.worker.minIdleSize", "0"),
+    
+    /**
+     * 最大工作现成数量.
+     */
+    PARALLEL_EXECUTOR_WORKER_MAX_SIZE("parallelExecutor.worker.maxSize", defaultMaxThread()),
+    
+    /**
+     * 工作线程空闲时超时时间.
+     */
+    PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT("parallelExecutor.worker.maxIdleTimeout", "60"),
+    
+    /**
+     * 工作线程空闲时超时时间单位.
+     */
+    PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT_TIME_UNIT("parallelExecutor.worker.maxIdleTimeout.timeUnit", TimeUnit.SECONDS.toString());
     
     private final String key;
     
     private final String defaultValue;
+    
+    private static String defaultMaxThread() {
+        return String.valueOf(Runtime.getRuntime().availableProcessors() * 2);
+    }
 }

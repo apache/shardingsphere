@@ -35,8 +35,6 @@ import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
-
 import lombok.Getter;
 
 /**
@@ -53,9 +51,9 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Getter
     private final List<Object> parameters = new ArrayList<>();
     
-    public AbstractPreparedStatementAdapter(final SQLRouteEngine sqlRouteEngine, final ShardingConnection shardingConnection, 
+    public AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, 
             final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        super(sqlRouteEngine, shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
+        super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     
     @Override

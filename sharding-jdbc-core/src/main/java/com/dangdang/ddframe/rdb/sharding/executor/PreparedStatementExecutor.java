@@ -26,7 +26,6 @@ import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -36,6 +35,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
+    
+    private final ExecutorEngine executorEngine;
     
     private final Collection<PreparedStatement> preparedStatements;
     
@@ -53,7 +54,7 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, ResultSet>() {
+        result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, ResultSet>() {
             
             @Override
             public ResultSet execute(final PreparedStatement input) throws Exception {
@@ -78,7 +79,7 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Integer>() {
+        result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Integer>() {
             
             @Override
             public Integer execute(final PreparedStatement input) throws Exception {
@@ -112,7 +113,7 @@ public final class PreparedStatementExecutor {
             MetricsContext.stop(context);
             return result;
         }
-        List<Boolean> result = ExecutorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Boolean>() {
+        List<Boolean> result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Boolean>() {
             
             @Override
             public Boolean execute(final PreparedStatement input) throws Exception {
