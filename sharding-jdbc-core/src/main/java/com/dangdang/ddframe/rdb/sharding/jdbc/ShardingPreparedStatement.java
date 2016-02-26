@@ -124,7 +124,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         int[] result = new int[batchParameters.size()];
         int i = 0;
         for (List<Object> each : batchParameters) {
-            result[i++] = new PreparedStatementExecutor(getShardingConnection().getContext().getExecutorEngine(), routeSQL(each)).executeUpdate();
+            List<PreparedStatement> routePreparedStatements = routeSQL(each);
+            cachedRoutedPreparedStatements.addAll(routePreparedStatements);
+            result[i++] = new PreparedStatementExecutor(getShardingConnection().getContext().getExecutorEngine(), routePreparedStatements).executeUpdate();
         }
         return result;
     }

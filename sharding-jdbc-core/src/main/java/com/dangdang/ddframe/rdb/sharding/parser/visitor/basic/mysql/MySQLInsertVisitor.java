@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.google.common.base.Optional;
 
@@ -33,6 +34,15 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
         getParseContext().setCurrentTable(x.getTableName().toString(), Optional.fromNullable(x.getAlias()));
         for (int i = 0; i < x.getColumns().size(); i++) {
             getParseContext().addCondition(x.getColumns().get(i).toString(), x.getTableName().toString(), BinaryOperator.EQUAL, x.getValues().getValues().get(i), getDatabaseType(), getParameters());
+        }
+        if (getParseContext().getCurrentConditionContext().isEmpty()) {
+            String errMsg;
+            if (x.getColumns().size() < 1) {
+                errMsg = "Insert statement DOES NOT contains column name.The syntax is : INSERT INTO tbl_name (col_name,...) VALUES (expr,...)";
+            } else {
+                errMsg = "Sharding columns DO NOT exist in insert column names";
+            }
+            throw new SQLParserException(errMsg);
         }
         return super.visit(x);
     }

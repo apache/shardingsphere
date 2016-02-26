@@ -17,14 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
+import java.util.Arrays;
 import java.util.Collections;
-
-import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.google.common.collect.Lists;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public final class UnsupportedParseTest {
+    
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
     
     @Test(expected = SQLParserException.class)
     public void assertCreate() throws SQLParserException {
@@ -44,5 +50,19 @@ public final class UnsupportedParseTest {
     @Test(expected = SQLParserException.class)
     public void assertAlter() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", Collections.emptyList(), Collections.<String>emptyList());
+    }
+    
+    @Test
+    public void testWithoutColumnNames() {
+        expectedException.expect(SQLParserException.class);
+        expectedException.expectMessage("Insert statement DOES NOT contains column name.The syntax is : INSERT INTO tbl_name (col_name,...) VALUES (expr,...)");
+        SQLParserFactory.create(DatabaseType.MySQL, "insert into `t_order` values(1,2,'INSERT')", Lists.newArrayList(), Arrays.asList("order_id", "user_id")).parse();
+    }
+    
+    @Test
+    public void testWithoutMissShardingKey() {
+        expectedException.expect(SQLParserException.class);
+        expectedException.expectMessage("Sharding columns DO NOT exist in insert column names");
+        SQLParserFactory.create(DatabaseType.MySQL, "insert into `t_order`(ORDER_ID, USER_ID) values(1,2,'INSERT')", Lists.newArrayList(), Arrays.asList("order_id", "user_id")).parse();
     }
 }
