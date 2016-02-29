@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,27 +19,24 @@ package com.dangdang.ddframe.rdb.sharding.metrics;
 
 import org.junit.Test;
 
-import com.codahale.metrics.Timer.Context;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
-public final class MetricsContextTest {
+public final class ThreadLocalObjectContainerTest {
     
+    private final ThreadLocalObjectContainer threadLocalObjectContainer = new ThreadLocalObjectContainer();
+
     @Test
-    public void assertMetricsContextEnable() {
-        run(true);
+    public void assertGetItemWithoutBuild() {
+        threadLocalObjectContainer.initItem("init");
+        assertNull(ThreadLocalObjectContainer.getItem(String.class));
     }
-    
+
     @Test
-    public void assertMetricsContextDisable() {
-        run(false);
-    }
-    
-    private void run(final boolean enable) {
-        if(enable){
-            ThreadLocalObjectContainer container = new ThreadLocalObjectContainer();
-            container.initItem(new MetricsContext(1000000L, "example"));
-            container.build();
-        }
-        Context context = MetricsContext.start("example");
-        MetricsContext.stop(context);
+    public void assertGetItemWithBuild() {
+        threadLocalObjectContainer.initItem("init");
+        threadLocalObjectContainer.build();
+        assertThat(ThreadLocalObjectContainer.getItem(String.class), is("init"));
     }
 }

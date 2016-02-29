@@ -23,7 +23,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Slf4jReporter.LoggingLevel;
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.threadlocal.ThreadLocalObjectRepository;
 import com.google.common.base.Joiner;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,7 @@ public final class MetricsContext {
      * @return 计时上下文
      */
     public static Context start(final String... name) {
-        MetricsContext context = ThreadLocalObjectRepository.getItem(MetricsContext.class);
+        MetricsContext context = ThreadLocalObjectContainer.getItem(MetricsContext.class);
         return null == context ? null : context.metricRegistry.timer(MetricRegistry.name(Joiner.on("-").join(name))).time();
     }
     

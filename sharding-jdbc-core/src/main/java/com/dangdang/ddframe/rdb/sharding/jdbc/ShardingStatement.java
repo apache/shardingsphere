@@ -78,8 +78,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         this(shardingConnection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection shardingConnection,
-                             final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         super(Statement.class);
         this.shardingConnection = shardingConnection;
         this.resultSetType = resultSetType;
@@ -142,10 +141,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
-        StatementExecutor result = new StatementExecutor(shardingConnection.getContext().getExecutorEngine());
-        SQLRouteResult sqlRouteResult = shardingConnection.getContext().getSqlRouteEngine().route(sql, Collections.emptyList());
+        StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
+        SQLRouteResult sqlRouteResult = shardingConnection.getShardingContext().getSqlRouteEngine().route(sql, Collections.emptyList());
         mergeContext = sqlRouteResult.getMergeContext();
-        mergeContext.setExecutorEngine(shardingConnection.getContext().getExecutorEngine());
+        mergeContext.setExecutorEngine(shardingConnection.getShardingContext().getExecutorEngine());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             result.addStatement(each.getSql(), generateStatement(each.getSql(), each.getDataSource()));
         }

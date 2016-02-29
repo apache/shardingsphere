@@ -57,7 +57,7 @@ public enum ShardingConfigurationConstant {
     /**
      * 最大工作现成数量.
      */
-    PARALLEL_EXECUTOR_WORKER_MAX_SIZE("parallelExecutor.worker.maxSize", defaultMaxThread()),
+    PARALLEL_EXECUTOR_WORKER_MAX_SIZE("parallelExecutor.worker.maxSize", defaultMaxThreads()),
     
     /**
      * 工作线程空闲时超时时间.
@@ -73,7 +73,7 @@ public enum ShardingConfigurationConstant {
     
     private final String defaultValue;
     
-    private static String defaultMaxThread() {
+    private static String defaultMaxThreads() {
         return String.valueOf(Runtime.getRuntime().availableProcessors() * 2);
     }
 }

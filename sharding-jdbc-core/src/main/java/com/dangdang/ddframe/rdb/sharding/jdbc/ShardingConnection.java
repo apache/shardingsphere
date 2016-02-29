@@ -41,13 +41,14 @@ import lombok.RequiredArgsConstructor;
 /**
  * 支持分片的数据库连接.
  * 
- * @author zhangliang,gaohongtao
+ * @author zhangliang
+ * @author gaohongtao
  */
 @RequiredArgsConstructor
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter(AccessLevel.PACKAGE)
-    private final ShardingContext context;
+    private final ShardingContext shardingContext;
     
     private Map<String, Connection> connectionMap = new HashMap<>();
     
@@ -61,9 +62,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (connectionMap.containsKey(dataSourceName)) {
             return connectionMap.get(dataSourceName);
         }
-        Context context = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
-        Connection connection = this.context.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
-        MetricsContext.stop(context);
+        Context metricsContext = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
+        Connection connection = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
+        MetricsContext.stop(metricsContext);
         replayMethodsInvovation(connection);
         connectionMap.put(dataSourceName, connection);
         return connection;
@@ -72,31 +73,29 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         if (connectionMap.isEmpty()) {
-            return getDatabaseMetaDataFromDataSource(context.getShardingRule().getDataSourceRule().getDataSources());
-        } else {
-            return getDatabaseMetaDataFromConnection(connectionMap.values());
+            return getDatabaseMetaDataFromDataSource(shardingContext.getShardingRule().getDataSourceRule().getDataSources());
         }
+        return getDatabaseMetaDataFromConnection(connectionMap.values());
     }
     
     public static DatabaseMetaData getDatabaseMetaDataFromDataSource(final Collection<DataSource> dataSources) {
-        Collection<Connection> connectionCollection = null;
-        
+        Collection<Connection> connections = null;
         try {
-            connectionCollection = Collections2.transform(dataSources, new Function<DataSource, Connection>() {
+            connections = Collections2.transform(dataSources, new Function<DataSource, Connection>() {
                 
                 @Override
                 public Connection apply(final DataSource input) {
                     try {
                         return input.getConnection();
-                    } catch (final SQLException e) {
-                        throw new ShardingJdbcException(e);
+                    } catch (final SQLException ex) {
+                        throw new ShardingJdbcException(ex);
                     }
                 }
             });
-            return getDatabaseMetaDataFromConnection(connectionCollection);
+            return getDatabaseMetaDataFromConnection(connections);
         } finally {
-            if (null != connectionCollection) {
-                for (Connection each : connectionCollection) {
+            if (null != connections) {
+                for (Connection each : connections) {
                     try {
                         each.close();
                     } catch (final SQLException ignored) {
