@@ -1,7 +1,7 @@
 +++
 date = "2016-02-05T17:03:18+08:00"
 title = "Release Notes"
-weight = 9
+weight = 1
 +++
 
 # Release Notes
