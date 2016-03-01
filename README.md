@@ -59,6 +59,8 @@
 
 ![整体架构图](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
 
+![柔性事务-最大努力送达型](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture-soft-transaction-bed.png)
+
 # 相关文档
 
 [Release Notes](http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/)
@@ -68,6 +70,8 @@
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
+
+[柔性事务(未合并至主干,目前在sharding-jdbc-transaction分支)](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
 
 [目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
 
