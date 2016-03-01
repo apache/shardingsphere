@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>柔性事务</title>
+    
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
+    
+    
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    
+    <style>
+    .navbar {
+    border-color: #e7e7e7;
+}
+
+.content-section-a,
+footer,
+.navbar {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: rgb(51, 51, 51);
+}
+
+.content-section-b {
+    background-color: white;
+    color: #333;
+}
+
+body {
+    color: rgb(51, 51, 51);
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+    color: rgb(51, 51, 51);
+}
+
+  </style>
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/prism.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
+</head>
+<body>
+
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+    
+</nav>
+
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 
+
+<h1 id="最大努力送达型:dd5cc724d0260c85f8f2c3800b365c2d">最大努力送达型</h1>
+
+<h2 id="概念:dd5cc724d0260c85f8f2c3800b365c2d">概念</h2>
+
+<p>在分布式数据库的场景下，相信对于该数据库的操作最终一定可以成功，所以通过最大努力反复尝试送达操作。</p>
+
+<h2 id="架构图:dd5cc724d0260c85f8f2c3800b365c2d">架构图</h2>
+
+<p><img src="../../img/architecture-soft-transaction-bed.png" alt="最大努力送达型事务" /></p>
+
+<h2 id="使用场景:dd5cc724d0260c85f8f2c3800b365c2d">使用场景</h2>
+
+<ul>
+<li>根据主键删除数据。</li>
+<li>更新记录永久状态，如更新通知送达状态。</li>
+</ul>
+
+<h2 id="使用限制:dd5cc724d0260c85f8f2c3800b365c2d">使用限制</h2>
+
+<p>使用最大努力送达型柔性事务的<code>SQL</code>需要满足幂等性。</p>
+
+<ul>
+<li>INSERT语句要求必须包含主键，且不能是自增主键。</li>
+<li>UPDATE语句要求幂等，不能是<code>UPDATE xxx SET x=x+1</code></li>
+<li>DELETE语句无要求。</li>
+</ul>
+
+<h2 id="开发指南:dd5cc724d0260c85f8f2c3800b365c2d">开发指南</h2>
+
+<ul>
+<li><code>Sharding-JDBC-trnasaction</code>完全基于<code>java</code>开发，直接提供<code>jar</code>包，可直接使用maven导入坐标即可使用。</li>
+<li>由于柔性事务采用异步尝试，需要部署独立的作业和<code>Zookeeper</code>。<code>Sharding-JDBC-trnasaction</code>采用<code>elastic-job</code>实现的<code>Sharding-JDBC-trnasaction-async-job</code>，通过简单配置即可启动高可用作业异步送达柔性事务。作业可自行打包，并通过<code>main</code>方法启动。(目前独立作业的配置部分还在开发中)</li>
+<li>为了便于开发，<code>Sharding-JDBC-trnasaction</code>提供了内嵌异步作业，配置方法可参见事务管理器工厂配置项。</li>
+<li>为了保证事务不丢失，<code>Sharding-JDBC-trnasaction</code>需要提供数据库存储事务日志，配置方法可参见事务管理器工厂配置项。</li>
+<li>为了便于开发，<code>Sharding-JDBC-trnasaction</code>提供了基于内存的事务日志存储器，配置方法可参见事务管理器工厂配置项。</li>
+</ul>
+
+<h2 id="开发步骤:dd5cc724d0260c85f8f2c3800b365c2d">开发步骤</h2>
+
+<ol>
+<li>配置<code>SoftTransactionConfiguration</code>
+<code>java
+SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+transactionConfig.setXXX();
+</code></li>
+
+<li><p>初始化<code>SoftTransactionManagerFactory</code></p>
+
+<pre><code class="language-java">SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+transactionManagerFactory.init();
+</code></pre></li>
+
+<li><p>获取<code>BEDSoftTransactionManager</code></p>
+
+<pre><code class="language-java">BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+</code></pre></li>
+
+<li><p>开启事务</p>
+
+<pre><code class="language-java">transactionManager.begin(connection);
+</code></pre></li>
+
+<li><p>执行<code>JDBC</code></p></li>
+
+<li><p>关闭事务</p>
+
+<pre><code class="language-java">transactionManager.end();
+</code></pre></li>
+</ol>
+
+<h2 id="部署指南:dd5cc724d0260c85f8f2c3800b365c2d">部署指南</h2>
+
+<ul>
+<li>部署用于存储事务日志的数据库。</li>
+<li>部署用于异步作业使用的<code>Zookeeper</code>。</li>
+<li>按照正常<code>java</code>项目发布引用<code>Sharding-JDBC</code>的<code>jar</code>。</li>
+<li>打包并通过<code>main</code>方法启动<code>Sharding-JDBC-trnasaction-async-job</code>。</li>
+</ul>
+
+<h2 id="事务管理器工厂配置项:dd5cc724d0260c85f8f2c3800b365c2d">事务管理器工厂配置项</h2>
+
+<h3 id="softtransactionconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>SoftTransactionConfiguration</code>配置</h3>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th align="center">类型</th>
+<th align="right">默认值</th>
+<th align="right">功能</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>syncMaxDeliveryTryTimes</td>
+<td align="center">int</td>
+<td align="right">3</td>
+<td align="right">同步的事务送达的最大尝试次数</td>
+</tr>
+
+<tr>
+<td>asyncMaxDeliveryTryTimes</td>
+<td align="center">int</td>
+<td align="right">3</td>
+<td align="right">异步的事务送达的最大尝试次数</td>
+</tr>
+
+<tr>
+<td>stroageType</td>
+<td align="center">enum</td>
+<td align="right">DATABASE</td>
+<td align="right">事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表</td>
+</tr>
+
+<tr>
+<td>transactionLogDataSource</td>
+<td align="center">DataSource</td>
+<td align="right">null</td>
+<td align="right">存储事务日志的数据源</td>
+</tr>
+
+<tr>
+<td>nestedJob</td>
+<td align="center">boolean</td>
+<td align="right">false</td>
+<td align="right">是否使用内嵌的作业处理异步事务送达</td>
+</tr>
+
+<tr>
+<td>bestEffortsDeliveryJobConfiguration</td>
+<td align="center">AbstractBestEffortsDeliveryJobConfiguration</td>
+<td align="right">null</td>
+<td align="right">最大努力送达型异步作业配置对象</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="besteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>BestEffortsDeliveryJobConfiguration</code>配置</h3>
+
+<p>用于配置异步送达作业。使用<code>elastic-job</code>实现的高可用弹性作业，可直接用于生产环境。如果<code>SoftTransactionConfiguration</code>的<code>nestedJob</code>为<code>false</code>，请使用此对象配置异步作业。</p>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th align="center">类型</th>
+<th align="right">默认值</th>
+<th align="right">功能</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>zookeeperConnectionString</td>
+<td align="center">String</td>
+<td align="right">null</td>
+<td align="right">注册中心的连接地址</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="nestedbesteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>NestedBestEffortsDeliveryJobConfiguration</code>配置</h3>
+
+<p>用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。如果<code>SoftTransactionConfiguration</code>的<code>nestedJob</code>为<code>true</code>，请使用此对象配置异步作业。</p>
+
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th align="center">类型</th>
+<th align="right">默认值</th>
+<th align="right">功能</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>zookeeperPort</td>
+<td align="center">int</td>
+<td align="right">4181</td>
+<td align="right">内嵌的注册中心端口号</td>
+</tr>
+
+<tr>
+<td>zookeeperDataDir</td>
+<td align="center">String</td>
+<td align="right">target/test_zk_data/nano/</td>
+<td align="right">异步的事务送达的最大尝试次数</td>
+</tr>
+</tbody>
+</table>
+
+<h1 id="tcc型:dd5cc724d0260c85f8f2c3800b365c2d">TCC型</h1>
+
+<p>开发中&hellip;</p>
+
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 <nav id="TableOfContents">
+<ul>
+<li><a href="#最大努力送达型:dd5cc724d0260c85f8f2c3800b365c2d">最大努力送达型</a>
+<ul>
+<li><a href="#概念:dd5cc724d0260c85f8f2c3800b365c2d">概念</a></li>
+<li><a href="#架构图:dd5cc724d0260c85f8f2c3800b365c2d">架构图</a></li>
+<li><a href="#使用场景:dd5cc724d0260c85f8f2c3800b365c2d">使用场景</a></li>
+<li><a href="#使用限制:dd5cc724d0260c85f8f2c3800b365c2d">使用限制</a></li>
+<li><a href="#开发指南:dd5cc724d0260c85f8f2c3800b365c2d">开发指南</a></li>
+<li><a href="#开发步骤:dd5cc724d0260c85f8f2c3800b365c2d">开发步骤</a></li>
+<li><a href="#部署指南:dd5cc724d0260c85f8f2c3800b365c2d">部署指南</a></li>
+<li><a href="#事务管理器工厂配置项:dd5cc724d0260c85f8f2c3800b365c2d">事务管理器工厂配置项</a>
+<ul>
+<li><a href="#softtransactionconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>SoftTransactionConfiguration</code>配置</a></li>
+<li><a href="#besteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>BestEffortsDeliveryJobConfiguration</code>配置</a></li>
+<li><a href="#nestedbesteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d"><code>NestedBestEffortsDeliveryJobConfiguration</code>配置</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#tcc型:dd5cc724d0260c85f8f2c3800b365c2d">TCC型</a></li>
+</ul>
+</nav>
+	</div>
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="copyright text-muted small">Copyright &copy; 柔性事务 All Rights Reserved</p>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+<script src="http://dangdangdotcom.github.io/sharding-jdbc/js/prism.js"></script>
+
+
+
+</body>
+</html>
+
