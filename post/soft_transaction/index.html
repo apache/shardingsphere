@@ -195,60 +195,60 @@ transactionManagerFactory.init();
 <thead>
 <tr>
 <th>名称</th>
-<th align="center">类型</th>
-<th align="right">默认值</th>
-<th align="right">功能</th>
+<th>类型</th>
+<th>默认值</th>
+<th>功能</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
 <td>syncMaxDeliveryTryTimes</td>
-<td align="center">int</td>
-<td align="right">3</td>
-<td align="right">同步的事务送达的最大尝试次数</td>
+<td>int</td>
+<td>3</td>
+<td>同步的事务送达的最大尝试次数</td>
 </tr>
 
 <tr>
 <td>asyncMaxDeliveryTryTimes</td>
-<td align="center">int</td>
-<td align="right">3</td>
-<td align="right">异步的事务送达的最大尝试次数</td>
+<td>int</td>
+<td>3</td>
+<td>异步的事务送达的最大尝试次数</td>
 </tr>
 
 <tr>
 <td>asyncMaxDeliveryTryDelayMillis</td>
-<td align="center">long</td>
-<td align="right">60000</td>
-<td align="right">执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行</td>
+<td>long</td>
+<td>60000</td>
+<td>执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行</td>
 </tr>
 
 <tr>
 <td>stroageType</td>
-<td align="center">enum</td>
-<td align="right">DATABASE</td>
-<td align="right">事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表</td>
+<td>enum</td>
+<td>DATABASE</td>
+<td>事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表</td>
 </tr>
 
 <tr>
 <td>transactionLogDataSource</td>
-<td align="center">DataSource</td>
-<td align="right">null</td>
-<td align="right">存储事务日志的数据源</td>
+<td>DataSource</td>
+<td>null</td>
+<td>存储事务日志的数据源</td>
 </tr>
 
 <tr>
 <td>nestedJob</td>
-<td align="center">boolean</td>
-<td align="right">false</td>
-<td align="right">是否使用内嵌的作业处理异步事务送达</td>
+<td>boolean</td>
+<td>false</td>
+<td>是否使用内嵌的作业处理异步事务送达</td>
 </tr>
 
 <tr>
 <td>bestEffortsDeliveryJobConfiguration</td>
-<td align="center">AbstractBestEffortsDeliveryJobConfiguration</td>
-<td align="right">null</td>
-<td align="right">最大努力送达型异步作业配置对象</td>
+<td>AbstractBestEffortsDeliveryJobConfiguration</td>
+<td>null</td>
+<td>最大努力送达型异步作业配置对象</td>
 </tr>
 </tbody>
 </table>
@@ -261,18 +261,18 @@ transactionManagerFactory.init();
 <thead>
 <tr>
 <th>名称</th>
-<th align="center">类型</th>
-<th align="right">默认值</th>
-<th align="right">功能</th>
+<th>类型</th>
+<th>默认值</th>
+<th>功能</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
 <td>zookeeperConnectionString</td>
-<td align="center">String</td>
-<td align="right">null</td>
-<td align="right">注册中心的连接地址</td>
+<td>String</td>
+<td>null</td>
+<td>注册中心的连接地址</td>
 </tr>
 </tbody>
 </table>
@@ -285,25 +285,25 @@ transactionManagerFactory.init();
 <thead>
 <tr>
 <th>名称</th>
-<th align="center">类型</th>
-<th align="right">默认值</th>
-<th align="right">功能</th>
+<th>类型</th>
+<th>默认值</th>
+<th>功能</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
 <td>zookeeperPort</td>
-<td align="center">int</td>
-<td align="right">4181</td>
-<td align="right">内嵌的注册中心端口号</td>
+<td>int</td>
+<td>4181</td>
+<td>内嵌的注册中心端口号</td>
 </tr>
 
 <tr>
 <td>zookeeperDataDir</td>
-<td align="center">String</td>
-<td align="right">target/test_zk_data/nano/</td>
-<td align="right">异步的事务送达的最大尝试次数</td>
+<td>String</td>
+<td>target/test_zk_data/nano/</td>
+<td>异步的事务送达的最大尝试次数</td>
 </tr>
 </tbody>
 </table>
