@@ -22,11 +22,11 @@ import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingResult;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +45,8 @@ public class MixedTablesRouter {
     
     private final ConditionContext conditionContext;
     
+    private final SQLStatementType sqlStatementType;
+    
     /**
      * 路由.
      * 
@@ -56,11 +58,11 @@ public class MixedTablesRouter {
         Collection<String> remainingTables = new ArrayList<>(logicTables);
         Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
         if (1 < bindingTables.size()) {
-            result.add(new BindingTablesRouter(shardingRule, bindingTables, conditionContext).route());
+            result.add(new BindingTablesRouter(shardingRule, bindingTables, conditionContext, sqlStatementType).route());
             remainingTables.removeAll(bindingTables);
         }
         for (String each : remainingTables) {
-            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, each, conditionContext).route();
+            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, each, conditionContext, sqlStatementType).route();
             if (null != routingResult) {
                 result.add(routingResult);
             }

@@ -31,6 +31,8 @@ import com.dangdang.ddframe.rdb.integrate.dbtbl.SelectShardingBothDataBasesAndTa
 import com.dangdang.ddframe.rdb.integrate.dbtbl.StatementDMLShardingBothDataBasesAndTablesTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.StatementSelectAggregateShardingBothDataBasesAndTablesTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.StatementSelectShardingBothDataBasesAndTablesTest;
+import com.dangdang.ddframe.rdb.integrate.hint.DMLShardingDataBasesOnlyHintTest;
+import com.dangdang.ddframe.rdb.integrate.hint.SelectShardingDataBasesOnlyHintTest;
 import com.dangdang.ddframe.rdb.integrate.tbl.DMLShardingTablesOnlyTest;
 import com.dangdang.ddframe.rdb.integrate.tbl.SelectAggregateShardingTablesOnlyTest;
 import com.dangdang.ddframe.rdb.integrate.tbl.SelectGroupByShardingTablesOnlyTest;
@@ -64,7 +66,9 @@ import org.junit.runners.Suite.SuiteClasses;
         DMLShardingTablesOnlyTest.class,
         StatementSelectShardingTablesOnlyTest.class,
         StatementSelectAggregateShardingTablesOnlyTest.class,
-        StatementDMLShardingTablesOnlyTest.class    
+        StatementDMLShardingTablesOnlyTest.class,
+        DMLShardingDataBasesOnlyHintTest.class,
+        SelectShardingDataBasesOnlyHintTest.class,
     })
 public class AllIntegrateTests {
 }

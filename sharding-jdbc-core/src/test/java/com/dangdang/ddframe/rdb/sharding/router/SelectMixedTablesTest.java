@@ -19,23 +19,27 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.google.common.collect.Lists;
+import org.junit.Test;
 
-public final class SelectMixedTablesTest extends AbstractBaseRouteSqlTest {
+public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertBindingTableWithUnBoundTable() throws SQLParserException {
-        assertSingleTarget("select * from order o join order_item i join order_attr a using(order_id) where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o join order_item i join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id) WHERE o.order_id = 1");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_item i join order_attr a using(order_id)", "ds_1",
+                "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id)");
     }
     
     @Test
     public void assertConditionFromRelationship() throws SQLParserException {
-        assertSingleTarget("select * from order o join order_attr a using(order_id) where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_attr_b a USING (order_id) WHERE o.order_id = 1");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_attr a using(order_id)", "ds_1",
+                "SELECT * FROM order_1 o JOIN order_attr_b a USING (order_id)");
     }
     
     @Test
@@ -47,8 +51,10 @@ public final class SelectMixedTablesTest extends AbstractBaseRouteSqlTest {
     
     @Test
     public void assertSelectWithoutTableRule() throws SQLParserException {
-        assertSingleTarget("select * from order o join product p using(prod_id) where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o join product p using(prod_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN product p USING (prod_id) WHERE o.order_id = 1");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join product p using(prod_id)", "ds_1",
+                "SELECT * FROM order_1 o JOIN product p USING (prod_id)");
     }
     
     @Test(expected = ShardingJdbcException.class)
