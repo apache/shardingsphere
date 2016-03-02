@@ -668,6 +668,13 @@ transactionManagerFactory.init();
 &lt;/tr&gt;
 
 &lt;tr&gt;
+&lt;td&gt;asyncMaxDeliveryTryDelayMillis&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;long&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
 &lt;td&gt;stroageType&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;enum&lt;/td&gt;
 &lt;td align=&#34;right&#34;&gt;DATABASE&lt;/td&gt;

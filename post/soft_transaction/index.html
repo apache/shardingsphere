@@ -217,6 +217,13 @@ transactionManagerFactory.init();
 </tr>
 
 <tr>
+<td>asyncMaxDeliveryTryDelayMillis</td>
+<td align="center">long</td>
+<td align="right">60000</td>
+<td align="right">执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行</td>
+</tr>
+
+<tr>
 <td>stroageType</td>
 <td align="center">enum</td>
 <td align="right">DATABASE</td>
