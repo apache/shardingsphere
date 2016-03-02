@@ -30,13 +30,13 @@ import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -79,21 +79,21 @@ public final class SQLRouteEngine {
                 public String apply(final Table input) {
                     return input.getName();
                 }
-            }), parsedResult.getRouteContext().getSqlBuilder()));
+            }), parsedResult.getRouteContext().getSqlBuilder(), parsedResult.getRouteContext().getSqlStatementType()));
         }
         MetricsContext.stop(context);
         return result;
     }
     
-    private Collection<SQLExecutionUnit> routeSQL(final ConditionContext conditionContext, final Collection<String> logicTables, final SQLBuilder sqlBuilder) {
+    private Collection<SQLExecutionUnit> routeSQL(final ConditionContext conditionContext, final Collection<String> logicTables, final SQLBuilder sqlBuilder, final SQLStatementType type) {
         RoutingResult result;
         if (1 == logicTables.size()) {
-            result = new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext).route();
+            result = new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, type).route();
         } else if (shardingRule.isAllBindingTable(logicTables)) {
-            result = new BindingTablesRouter(shardingRule, logicTables, conditionContext).route();
+            result = new BindingTablesRouter(shardingRule, logicTables, conditionContext, type).route();
         } else {
             // TODO 可配置是否执行笛卡尔积
-            result = new MixedTablesRouter(shardingRule, logicTables, conditionContext).route();
+            result = new MixedTablesRouter(shardingRule, logicTables, conditionContext, type).route();
         }
         if (null == result) {
             throw new ShardingJdbcException("Sharding-JDBC: cannot route any result, please check your sharding rule.");

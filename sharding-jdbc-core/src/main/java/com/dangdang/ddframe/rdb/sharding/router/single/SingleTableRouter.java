@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -30,11 +31,9 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -53,10 +52,13 @@ public final class SingleTableRouter {
     
     private final Optional<TableRule> tableRule;
     
-    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext) {
+    private final SQLStatementType sqlStatementType;
+    
+    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLStatementType sqlStatementType) {
         this.shardingRule = shardingRule;
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;
+        this.sqlStatementType = sqlStatementType;
         tableRule = shardingRule.findTableRule(logicTable);
     }
     
@@ -77,9 +79,15 @@ public final class SingleTableRouter {
     
     private Collection<String> routeDataSources() {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule.get());
-        List<ShardingValue<?>> databaseShardingValues = getShardingValues(strategy.getShardingColumns());
+        Optional<List<ShardingValue<?>>> hintDatabaseShardingValues = HintShardingValueManager.getShardingValueOfDatabase(logicTable);
+        List<ShardingValue<?>> databaseShardingValues;
+        if (hintDatabaseShardingValues.isPresent()) {
+            databaseShardingValues = hintDatabaseShardingValues.get();
+        } else {
+            databaseShardingValues = getShardingValues(strategy.getShardingColumns());
+        }
         logBeforeRoute("database", logicTable, shardingRule.getDataSourceRule().getDataSourceNames(), strategy.getShardingColumns(), databaseShardingValues);
-        Collection<String> result = new HashSet<>(strategy.doSharding(shardingRule.getDataSourceRule().getDataSourceNames(), databaseShardingValues));
+        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, shardingRule.getDataSourceRule().getDataSourceNames(), databaseShardingValues));
         logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
@@ -87,9 +95,15 @@ public final class SingleTableRouter {
     
     private Collection<String> routeTables(final Collection<String> routedDataSources) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule.get());
-        List<ShardingValue<?>> tableShardingValues = getShardingValues(strategy.getShardingColumns());
+        Optional<List<ShardingValue<?>>> hintTableShardingValues = HintShardingValueManager.getShardingValueOfTable(logicTable);
+        List<ShardingValue<?>> tableShardingValues;
+        if (hintTableShardingValues.isPresent()) {
+            tableShardingValues = hintTableShardingValues.get();
+        } else {
+            tableShardingValues = getShardingValues(strategy.getShardingColumns());
+        }
         logBeforeRoute("table", logicTable, tableRule.get().getActualTables(), strategy.getShardingColumns(), tableShardingValues);
-        Collection<String> result = new HashSet<>(strategy.doSharding(tableRule.get().getActualTableNames(routedDataSources), tableShardingValues));
+        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, tableRule.get().getActualTableNames(routedDataSources), tableShardingValues));
         logAfterRoute("table", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;
@@ -100,26 +114,10 @@ public final class SingleTableRouter {
         for (String each : shardingColumns) {
             Optional<Condition> condition = conditionContext.find(logicTable, each);
             if (condition.isPresent()) {
-                result.add(getShardingValue(condition.get()));
+                result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get()));
             }
         }
         return result;
-    }
-    
-    private ShardingValue<?> getShardingValue(final Condition condition) {
-        List<Comparable<?>> conditionValues = condition.getValues();
-        switch (condition.getOperator()) {
-            case EQUAL:
-            case IN:
-                if (1 == conditionValues.size()) {
-                    return new ShardingValue<Comparable<?>>(condition.getColumn().getColumnName(), conditionValues.get(0));
-                }
-                return new ShardingValue<>(condition.getColumn().getColumnName(), conditionValues);
-            case BETWEEN:
-                return new ShardingValue<>(condition.getColumn().getColumnName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
-            default:
-                throw new UnsupportedOperationException(condition.getOperator().getExpression());
-        }
     }
     
     private void logBeforeRoute(final String type, final String logicTable, final Collection<?> targets, final Collection<String> shardingColumns, final List<ShardingValue<?>> shardingValues) {

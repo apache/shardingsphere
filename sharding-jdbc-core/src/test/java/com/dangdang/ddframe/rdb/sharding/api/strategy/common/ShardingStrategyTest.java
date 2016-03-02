@@ -17,20 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.collect.Range;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class ShardingStrategyTest {
     
@@ -39,31 +39,31 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Arrays.asList("column"), null);
-        assertThat(strategy.doSharding(targets, Collections.<ShardingValue<?>>emptyList()), is(targets));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, Collections.<ShardingValue<?>>emptyList()), is(targets));
     }
     
     @Test
     public void assertDoShardingForEqualSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1")));
     }
     
     @Test
     public void assertDoShardingForInSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(targets, createShardingValues(new ShardingValue<String>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(targets, createShardingValues(new ShardingValue<String>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     @Test
     public void assertDoShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doSharding(targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     private Collection<ShardingValue<?>> createShardingValues(final ShardingValue<String> shardingValue) {
