@@ -530,6 +530,50 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     </item>
     
     <item>
+      <title>核心概念</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/</link>
+      <pubDate>Thu, 03 Mar 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/</guid>
+      <description>
+
+&lt;p&gt;本文介绍&lt;code&gt;Sharding-JDBC&lt;/code&gt;包含的一些核心概念。&lt;/p&gt;
+
+&lt;h2 id=&#34;logictable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;LogicTable&lt;/h2&gt;
+
+&lt;p&gt;数据分片的逻辑表，对于水平拆分的数据库(表)，同一类表的总称。例：订单数据根据主键尾数拆分为&lt;code&gt;10&lt;/code&gt;张表,分别是&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;，他们的逻辑表名为&lt;code&gt;t_order&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;actualtable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ActualTable&lt;/h2&gt;
+
+&lt;p&gt;在分片的数据库中真实存在的物理表。即上个示例中的&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;datanode:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;DataNode&lt;/h2&gt;
+
+&lt;p&gt;数据分片的最小单元。由数据源名称和数据表组成，例：&lt;code&gt;ds_1.t_order_0&lt;/code&gt;。配置时默认各个分片数据库的表结构均相同，直接配置逻辑表和真实表对应关系即可。如果各数据库的表结果不同，可使用&lt;code&gt;ds.actual_table&lt;/code&gt;配置。&lt;/p&gt;
+
+&lt;h2 id=&#34;dynamictable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;DynamicTable&lt;/h2&gt;
+
+&lt;p&gt;逻辑表和真实表不一定需要在配置规则中静态配置。比如按照日期分片的场景，真实表的名称随着时间的推移会产生变化。此类需求&lt;code&gt;Sharding-JDBC&lt;/code&gt;是支持的，不过目前配置并不友好，会在新版本中提升。&lt;/p&gt;
+
+&lt;h2 id=&#34;bindingtable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;BindingTable&lt;/h2&gt;
+
+&lt;p&gt;指在任何场景下分片规则均一致的主表和子表。例：订单表和订单项表，均按照订单ID分片，则此两张表互为&lt;code&gt;BindingTable&lt;/code&gt;关系。&lt;code&gt;BindingTable&lt;/code&gt;关系的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。&lt;/p&gt;
+
+&lt;h2 id=&#34;shardingcolumn:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ShardingColumn&lt;/h2&gt;
+
+&lt;p&gt;分片字段。用于将数据库(表)水平拆分的关键字段。例：订单表订单ID分片尾数取模分片，则订单ID为分片字段。&lt;code&gt;SQL&lt;/code&gt;中如果无分片字段，将执行全路由，性能较差。&lt;code&gt;Sharding-JDBC&lt;/code&gt;支持多分片字段。&lt;/p&gt;
+
+&lt;h2 id=&#34;shardingalgorithm:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ShardingAlgorithm&lt;/h2&gt;
+
+&lt;p&gt;分片算法。&lt;code&gt;Sharding-JDBC&lt;/code&gt;通过分片算法将数据分片，支持通过等号、&lt;code&gt;BETWEEN&lt;/code&gt;和&lt;code&gt;IN&lt;/code&gt;分片。分片算法目前需要业务方开发者自行实现，可实现的灵活度非常高。未来&lt;code&gt;Sharding-JDBC&lt;/code&gt;也将会实现常用分片算法，如&lt;code&gt;range&lt;/code&gt;，&lt;code&gt;hash&lt;/code&gt;和&lt;code&gt;tag&lt;/code&gt;等。&lt;/p&gt;
+
+&lt;h2 id=&#34;sql-hint:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;SQL Hint&lt;/h2&gt;
+
+&lt;p&gt;对于分片字段非&lt;code&gt;SQL&lt;/code&gt;决定，而由其他外置条件决定的场景，可使用&lt;code&gt;SQL Hint&lt;/code&gt;灵活的注入分片字段。例：内部系统，按照员工登录ID分库，而数据库中并无此字段。&lt;code&gt;SQL Hint&lt;/code&gt;支持通过&lt;code&gt;ThreadLocal&lt;/code&gt;和&lt;code&gt;SQL&lt;/code&gt;注释(待实现)两种方式使用。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>架构图</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
