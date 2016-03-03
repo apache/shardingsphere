@@ -22,10 +22,10 @@ import java.util.Collection;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -44,10 +44,13 @@ public class BindingTablesRouter {
     
     private final BindingTableRule bindingTableRule;
     
-    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext) {
+    private final SQLStatementType sqlStatementType;
+    
+    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext, final SQLStatementType sqlStatementType) {
         this.shardingRule = shardingRule;
         this.logicTables = logicTables;
         this.conditionContext = conditionContext;
+        this.sqlStatementType = sqlStatementType;
         Optional<BindingTableRule> optionalBindingTableRule = shardingRule.getBindingTableRule(logicTables.iterator().next());
         Preconditions.checkState(optionalBindingTableRule.isPresent());
         bindingTableRule = optionalBindingTableRule.get();
@@ -62,7 +65,7 @@ public class BindingTablesRouter {
         BindingRoutingResult result = null;
         for (final String each : logicTables) {
             if (null == result) {
-                result = new BindingRoutingResult(new SingleTableRouter(shardingRule, each, conditionContext).route());
+                result = new BindingRoutingResult(new SingleTableRouter(shardingRule, each, conditionContext, sqlStatementType).route());
             } else {
                 result.bind(bindingTableRule, each);
             }

@@ -20,10 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 
 /**
  * 分片策略.
@@ -44,15 +45,22 @@ public class ShardingStrategy {
     
     /**
      * 根据分片值计算数据源名称集合.
-     * 
+     *
+     *
+     * @param sqlStatementType
      * @param availableTargetNames 所有的可用数据源名称集合
      * @param shardingValues 分库片值集合
      * @return 分库后指向的数据源名称集合
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<? extends Comparable<?>>> shardingValues) {
+    public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, 
+                                         final Collection<ShardingValue<? extends Comparable<?>>> shardingValues) {
         if (shardingValues.isEmpty()) {
-            return availableTargetNames;
+            if (SQLStatementType.INSERT.equals(sqlStatementType)) {
+                throw new ShardingJdbcException("INSERT statement must contains sharding value");
+            } else {
+                return availableTargetNames;
+            }
         }
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;

@@ -28,12 +28,14 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,9 +75,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         if (connectionMap.isEmpty()) {
-            return getDatabaseMetaDataFromDataSource(shardingContext.getShardingRule().getDataSourceRule().getDataSources());
+            DataSourceRule dataSourceRule = shardingContext.getShardingRule().getDataSourceRule();
+            String dsName = dataSourceRule.getDataSourceNames().iterator().next();
+            connectionMap.put(dsName, dataSourceRule.getDataSource(dsName).getConnection());
         }
-        return getDatabaseMetaDataFromConnection(connectionMap.values());
+        return getDatabaseMetaDataFromConnection(connectionMap.values().iterator().next());
     }
     
     public static DatabaseMetaData getDatabaseMetaDataFromDataSource(final Collection<DataSource> dataSources) {
@@ -103,6 +107,10 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
                 }
             }
         }
+    }
+    
+    private static DatabaseMetaData getDatabaseMetaDataFromConnection(final Connection connection) {
+        return getDatabaseMetaDataFromConnection(Lists.newArrayList(connection));
     }
     
     private static DatabaseMetaData getDatabaseMetaDataFromConnection(final Collection<Connection> connections) {

@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRuleTest;
@@ -30,6 +27,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -44,8 +43,9 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
     ShardingStrategyTest.class, 
     DatabaseShardingStrategyTest.class, 
     NoneDatabaseShardingAlgorithmTest.class, 
-    TableShardingStrategyTest.class, 
-    NoneTableShardingAlgorithmTest.class
+    TableShardingStrategyTest.class,
+        NoneTableShardingAlgorithmTest.class,
+        HintShardingValueManagerTest.class,
     })
 public class AllApiTest {
 }

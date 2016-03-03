@@ -1,12 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import java.io.IOException;
 import java.util.Arrays;
-
-import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
@@ -23,6 +18,10 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.google.common.base.Optional;
+import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public final class SQLParsedResultTest {
     
@@ -35,6 +34,7 @@ public final class SQLParsedResultTest {
         assertThat(actual.toString(), is("SQLParsedResult("
                 + "routeContext=RouteContext("
                 + "tables=[Table(name=order, alias=Optional.of(o)), Table(name=order_item, alias=Optional.absent())], "
+                + "sqlStatementType=null, "
                 + "sqlBuilder=SELECT * FROM [Token(order)]), "
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
                 + "operator=IN, values=[1, 2, 3])})], "

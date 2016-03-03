@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingRoutingResultTest;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.CartesianResultTest;
+import com.dangdang.ddframe.rdb.sharding.router.single.SingleRouterUtilTest;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingResultTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -31,8 +31,9 @@ import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingResultTest;
         SelectMixedTablesTest.class, 
         DMLTest.class, 
         SingleRoutingResultTest.class, 
-        BindingRoutingResultTest.class, 
-        CartesianResultTest.class
+        BindingRoutingResultTest.class,
+        CartesianResultTest.class,
+        SingleRouterUtilTest.class,
     })
 public class AllRouterTest {
 }

@@ -21,12 +21,17 @@ import java.util.Collection;
 import java.util.List;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.or.OrParser;
 import com.google.common.base.Preconditions;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,6 +73,23 @@ public final class SQLParseEngine {
         log.debug("Parsed SQL result: {}", result);
         log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());
         result.getRouteContext().setSqlBuilder(sqlVisitor.getSQLBuilder());
+        result.getRouteContext().setSqlStatementType(getType());
         return result;
+    }
+    
+    private SQLStatementType getType() {
+        if (sqlStatement instanceof SQLSelectStatement) {
+            return SQLStatementType.SELECT;
+        }
+        if (sqlStatement instanceof SQLInsertStatement) {
+            return SQLStatementType.INSERT;
+        }
+        if (sqlStatement instanceof SQLUpdateStatement) {
+            return SQLStatementType.UPDATE;
+        }
+        if (sqlStatement instanceof SQLDeleteStatement) {
+            return SQLStatementType.DELETE;
+        }
+        throw new SQLParserException("Unsupported SQL statement: [%s]", sqlStatement);
     }
 }

@@ -19,24 +19,36 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Arrays;
 
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-
-public final class SelectBindingTableTest extends AbstractBaseRouteSqlTest {
+public final class SelectBindingTableTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertSelectWithBindingJoin() throws SQLParserException {
-        assertSingleTarget("select * from order o inner join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o inner join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o INNER JOIN order_item_1 i ON o.order_id = i.order_id WHERE o.order_id = 1");
-        assertSingleTarget("select * from order o join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i ON o.order_id = i.order_id WHERE o.order_id = 1");
-        assertSingleTarget("select * from order o join order_item i using (order_id) where o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o join order_item i using (order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i USING (order_id) WHERE o.order_id = 1");
-        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = 1", "ds_1", 
+        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o, order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = 1");
-        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = ?", Arrays.<Object>asList(1), "ds_1", 
+        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = ?", Arrays.<Object>asList(1), "ds_1",
                 "SELECT * FROM order_1 o, order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = ?");
+    }
+    
+    @Test
+    public void assertSelectWithBindingJoinDynamic() throws SQLParserException {
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o inner join order_item i on o.order_id = i.order_id", "ds_1",
+                "SELECT * FROM order_1 o INNER JOIN order_item_1 i ON o.order_id = i.order_id");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_item i on o.order_id = i.order_id", "ds_1",
+                "SELECT * FROM order_1 o JOIN order_item_1 i ON o.order_id = i.order_id");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_item i using (order_id)", "ds_1",
+                "SELECT * FROM order_1 o JOIN order_item_1 i USING (order_id)");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o, order_item i WHERE o.order_id = i.order_id", "ds_1",
+                "SELECT * FROM order_1 o, order_item_1 i WHERE o.order_id = i.order_id");
     }
     
     @Test
