@@ -43,9 +43,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOp
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
-import com.google.common.base.CharMatcher;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -84,7 +83,7 @@ public final class ParseContext {
      * @param currentAlias 表别名
      */
     public void setCurrentTable(final String currentTableName, final Optional<String> currentAlias) {
-        Table table = new Table(getExactlyValue(currentTableName), currentAlias.isPresent() ? Optional.of(getExactlyValue(currentAlias.get())) : currentAlias);
+        Table table = new Table(SQLUtil.getExactlyValue(currentTableName), currentAlias.isPresent() ? Optional.of(SQLUtil.getExactlyValue(currentAlias.get())) : currentAlias);
         parsedResult.getRouteContext().getTables().add(table);
         currentTable = table;
     }
@@ -95,7 +94,7 @@ public final class ParseContext {
      * @param x 表名表达式, 来源于FROM, INSERT ,UPDATE, DELETE等语句
      */
     public Table addTable(final SQLExprTableSource x) {
-        Table result = new Table(getExactlyValue(x.getExpr().toString()), getExactlyValue(x.getAlias()));
+        Table result = new Table(SQLUtil.getExactlyValue(x.getExpr().toString()), SQLUtil.getExactlyValue(x.getAlias()));
         parsedResult.getRouteContext().getTables().add(result);
         return result;
     }
@@ -196,7 +195,7 @@ public final class ParseContext {
     }
     
     private Column createColumn(final String columName, final String tableName) {
-        return new Column(getExactlyValue(columName), getExactlyValue(tableName));
+        return new Column(SQLUtil.getExactlyValue(columName), SQLUtil.getExactlyValue(tableName));
     }
     
     private Optional<Table> findTable(final String tableNameOrAlias) {
@@ -212,12 +211,12 @@ public final class ParseContext {
      * @return 是否为二元操作且带有别名
      */
     public boolean isBinaryOperateWithAlias(final SQLPropertyExpr x, final String tableOrAliasName) {
-        return x.getParent() instanceof SQLBinaryOpExpr && findTableFromAlias(getExactlyValue(tableOrAliasName)).isPresent();
+        return x.getParent() instanceof SQLBinaryOpExpr && findTableFromAlias(SQLUtil.getExactlyValue(tableOrAliasName)).isPresent();
     }
     
     private Optional<Table> findTableFromName(final String name) {
         for (Table each : parsedResult.getRouteContext().getTables()) {
-            if (each.getName().equalsIgnoreCase(getExactlyValue(name))) {
+            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
                 return Optional.of(each);
             }
         }
@@ -226,7 +225,7 @@ public final class ParseContext {
     
     private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : parsedResult.getRouteContext().getTables()) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(getExactlyValue(alias))) {
+            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
                 return Optional.of(each);
             }
         }
@@ -278,7 +277,7 @@ public final class ParseContext {
      * @param orderByType 排序类型
      */
     public void addOrderByColumn(final String name, final OrderByType orderByType) {
-        String rawName = getExactlyValue(name);
+        String rawName = SQLUtil.getExactlyValue(name);
         String alias = null;
         if (!containsSelectItem(rawName)) {
             alias = generateDerivedColumnAlias();
@@ -298,7 +297,7 @@ public final class ParseContext {
      * @param orderByType 排序类型
      */
     public void addGroupByColumns(final String name, final String alias, final OrderByType orderByType) {
-        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(getExactlyValue(name), alias, orderByType));
+        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(SQLUtil.getExactlyValue(name), alias, orderByType));
     }
     
     /**
@@ -323,7 +322,7 @@ public final class ParseContext {
      * @param selectItem SELECT语句中声明的列名称或别名
      */
     public void registerSelectItem(final String selectItem) {
-        String rawItemExpr = getExactlyValue(selectItem);
+        String rawItemExpr = SQLUtil.getExactlyValue(selectItem);
         if ("*".equals(rawItemExpr)) {
             hasAllColumn = true;
             return;
@@ -331,13 +330,4 @@ public final class ParseContext {
         selectItems.add(rawItemExpr);
     }
     
-    /**
-     * 去掉SQL表达式的特殊字符.
-     * 
-     * @param value SQL表达式
-     * @return 去掉SQL特殊字符的表达式
-     */
-    public String getExactlyValue(final String value) {
-        return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
-    }
 }

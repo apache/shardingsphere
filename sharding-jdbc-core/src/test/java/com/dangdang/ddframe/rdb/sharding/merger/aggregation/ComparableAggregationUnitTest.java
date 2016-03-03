@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
 
 public final class ComparableAggregationUnitTest {
     
     @Test
     public void assertComparableAggregationForAsc() {
-        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true);
+        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true, int.class);
         comparableAggregation.doMerge(1);
         comparableAggregation.doMerge(10);
         comparableAggregation.doMerge(5);
@@ -35,7 +35,7 @@ public final class ComparableAggregationUnitTest {
     
     @Test
     public void assertComparableAggregationForDesc() {
-        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false);
+        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false, int.class);
         comparableAggregation.doMerge(1);
         comparableAggregation.doMerge(10);
         comparableAggregation.doMerge(5);

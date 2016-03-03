@@ -74,6 +74,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
+        validateColumn(columnLabel);
         return (Integer) currentValue.get(columnLabel);
     }
     
@@ -84,6 +85,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
+        validateColumn(columnLabel);
         return (String) currentValue.get(columnLabel);
     }
     
@@ -94,12 +96,19 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
+        validateColumn(columnLabel);
         return currentValue.get(columnLabel);
     }
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         return columnNamesMetaData.indexOf(columnLabel) + 1;
+    }
+    
+    private void validateColumn(final String columnLabel) throws SQLException {
+        if (!columnNamesMetaData.contains(columnLabel)) {
+            throw new SQLException(String.format("can not contains column %s, column is %s", columnLabel, columnNamesMetaData));
+        }
     }
     
     private T find(final int columnIndex) {

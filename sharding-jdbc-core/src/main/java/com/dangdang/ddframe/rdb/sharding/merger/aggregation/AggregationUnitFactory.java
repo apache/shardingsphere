@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -34,9 +32,9 @@ public final class AggregationUnitFactory {
     public static AggregationUnit create(final AggregationType type, final Class<?> returnType) {
         switch (type) {
             case MAX:
-                return new ComparableAggregationUnit(false);
+                return new ComparableAggregationUnit(false, returnType);
             case MIN:
-                return new ComparableAggregationUnit(true);
+                return new ComparableAggregationUnit(true, returnType);
             case SUM:
             case COUNT:
                 return new AccumulationAggregationUnit(returnType);

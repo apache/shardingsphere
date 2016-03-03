@@ -93,7 +93,9 @@ public final class ResultSetUtil {
      * @return 特定类型的返回结果
      */
     public static Object convertValue(final Object value, final Class<?> convertType) {
-        if (value instanceof Number) {
+        if (null == value) {
+            return convertNullValue(convertType);
+        } else if (value instanceof Number) {
             return convertNumberValue(value, convertType);
         } else {
             if (String.class.equals(convertType)) {
@@ -107,6 +109,8 @@ public final class ResultSetUtil {
     private static Object convertNumberValue(final Object value, final Class<?> convertType) {
         Number number = (Number) value;
         switch (convertType.getName()) {
+            case "short":
+                return number.shortValue();
             case "int":
                 return number.intValue();
             case "long":
@@ -123,6 +127,29 @@ public final class ResultSetUtil {
                 }
             case "java.lang.Object":
                 return value;
+            case "java.lang.String":
+                return value.toString();
+            default:
+                throw new ShardingJdbcException("Unsupported data type:%s", convertType);
+        }
+    }
+    
+    private static Object convertNullValue(final Class<?> convertType) {
+        switch (convertType.getName()) {
+            case "short":
+                return (short) 0;
+            case "int":
+                return 0;
+            case "long":
+                return 0L;
+            case "double":
+                return 0D;
+            case "float":
+                return 0F;
+            case "java.math.BigDecimal":
+            case "java.lang.Object":
+            case "java.lang.String":
+                return null;
             default:
                 throw new ShardingJdbcException("Unsupported data type:%s", convertType);
         }

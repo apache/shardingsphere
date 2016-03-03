@@ -30,11 +30,12 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
 /**
  * MySQL解析基础访问器.
@@ -67,7 +68,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public final void printToken(final String token) {
-        getSQLBuilder().appendToken(parseContext.getExactlyValue(token));
+        getSQLBuilder().appendToken(SQLUtil.getExactlyValue(token));
     }
     
     /**

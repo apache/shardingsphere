@@ -17,18 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AccumulationAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AvgAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.ComparableAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.aggregation.NullableAggregationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.ResultSetAggregationValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -42,7 +42,8 @@ import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
     AccumulationAggregationUnitTest.class, 
     ComparableAggregationUnitTest.class, 
     AvgAggregationUnitTest.class, 
-    GroupByValueTest.class
+    GroupByValueTest.class, 
+    NullableAggregationResultSetTest.class,
     })
 public class AllMergerTest {
 }

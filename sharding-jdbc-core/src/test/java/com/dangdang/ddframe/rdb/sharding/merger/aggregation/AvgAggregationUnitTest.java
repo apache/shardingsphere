@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class AvgAggregationUnitTest {
     
@@ -33,5 +33,14 @@ public final class AvgAggregationUnitTest {
         avgAggregationUnit.doMerge(10, 20);
         avgAggregationUnit.doMerge(5, 40);
         assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal("4.4000")));
+    }
+    
+    @Test
+    public void assertDivideZero() {
+        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit(BigDecimal.class);
+        avgAggregationUnit.doMerge(0, 50);
+        avgAggregationUnit.doMerge(0, 20);
+        avgAggregationUnit.doMerge(0, 40);
+        assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal(0)));
     }
 }

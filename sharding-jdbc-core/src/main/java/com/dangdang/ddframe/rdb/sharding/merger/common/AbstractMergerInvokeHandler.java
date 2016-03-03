@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.AbstractShardingResultSet;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

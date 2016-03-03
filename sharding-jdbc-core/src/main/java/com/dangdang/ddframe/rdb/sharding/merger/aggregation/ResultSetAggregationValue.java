@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetQueryIndex;
-
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -32,6 +32,14 @@ public final class ResultSetAggregationValue implements AggregationValue {
     @Override
     public Comparable<?> getValue(final ResultSetQueryIndex resultSetQueryIndex) throws SQLException {
         return resultSetQueryIndex.isQueryBySequence()
-                ? (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryIndex()) : (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryName());
+                ? (Comparable<?>) resultSet.getObject(resultSetQueryIndex.getQueryIndex()) : getQueryNameValue(resultSetQueryIndex.getQueryName());
+    }
+    
+    private Comparable<?> getQueryNameValue(final String queryName) throws SQLException {
+        try {
+            return (Comparable<?>) resultSet.getObject(queryName);
+        } catch (final SQLException ex) {
+            return (Comparable<?>) resultSet.getObject(SQLUtil.getExactlyValue(queryName));
+        }
     }
 }

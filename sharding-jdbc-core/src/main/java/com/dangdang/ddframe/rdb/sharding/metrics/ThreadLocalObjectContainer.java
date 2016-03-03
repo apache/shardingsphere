@@ -55,6 +55,14 @@ public final class ThreadLocalObjectContainer {
     }
     
     /**
+     * 清理线程中的数据.
+     * 
+     */
+    public static void clear() {
+        THREAD_LOCAL_CONTAINER.remove();
+    }
+    
+    /**
      * 获取线程中对象.
      * 
      * @param clazz 对象类型

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.db;
+package com.dangdang.ddframe.rdb.integrate.nullable;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -25,14 +25,15 @@ import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
-import org.hamcrest.core.Is;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SelectAggregateShardingDataBasesOnlyTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class SelectAggregateShardingNullableTest extends AbstractShardingNullableDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     
@@ -43,105 +44,77 @@ public final class SelectAggregateShardingDataBasesOnlyTest extends AbstractShar
     
     @Test
     public void assertSelectCount() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order`";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", sql);
-    }
-    
-    @Test
-    public void assertSelectCountByName() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM `t_order`";
+        String sql = "SELECT COUNT(`user_id`) FROM `t_order`";
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
-            assertThat(rs.getInt("COUNT(*)"), is(40));
-            assertThat(rs.getInt(1), is(40));
+            assertThat(rs.getInt("COUNT(`user_id`)"), is(0));
+            assertThat(rs.getInt(1), is(0));
+            assertThat(rs.getObject("COUNT(`user_id`)"), CoreMatchers.<Object>is(new BigDecimal("0")));
+            assertThat(rs.getObject(1), CoreMatchers.<Object>is(new BigDecimal("0")));
             assertThat(rs.next(), is(false));
         }
     }
     
     @Test
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT SUM(`user_id`) AS `user_id_sum` FROM `t_order`";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
-    }
-    
-    @Test
-    public void assertSelectSumByName() throws SQLException {
         String sql = "SELECT SUM(`user_id`) FROM `t_order`";
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
-            assertThat(rs.getLong("SUM(`user_id`)"), is(780L));
-            assertThat(rs.getLong(1), is(780L));
+            assertThat(rs.getInt("SUM(`user_id`)"), is(0));
+            assertThat(rs.getInt(1), is(0));
+            assertThat(rs.getObject("SUM(`user_id`)"), nullValue());
+            assertThat(rs.getObject(1), nullValue());
             assertThat(rs.next(), is(false));
         }
     }
     
     @Test
     public void assertSelectMax() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT MAX(`user_id`) AS `max_user_id` FROM `t_order`";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", sql);
-    }
-    
-    @Test
-    public void assertSelectMaxByName() throws SQLException {
         String sql = "SELECT MAX(`user_id`) FROM `t_order`";
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
-            assertThat(rs.getDouble("MAX(`user_id`)"), is(29D));
-            assertThat(rs.getDouble(1), is(29D));
+            assertThat(rs.getInt("MAX(`user_id`)"), is(0));
+            assertThat(rs.getInt(1), is(0));
+            assertThat(rs.getObject("MAX(`user_id`)"), nullValue());
+            assertThat(rs.getObject(1), nullValue());
             assertThat(rs.next(), is(false));
         }
     }
     
     @Test
     public void assertSelectMin() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT MIN(`user_id`) AS `min_user_id` FROM `t_order`";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", sql);
-    }
-    
-    @Test
-    public void assertSelectMinByName() throws SQLException {
         String sql = "SELECT MIN(`user_id`) FROM `t_order`";
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
-            assertThat(rs.getFloat("MIN(`user_id`)"), is(10F));
-            assertThat(rs.getFloat(1), is(10F));
+            assertThat(rs.getInt("MIN(`user_id`)"), is(0));
+            assertThat(rs.getInt(1), is(0));
+            assertThat(rs.getObject("MIN(`user_id`)"), nullValue());
+            assertThat(rs.getObject(1), nullValue());
             assertThat(rs.next(), is(false));
         }
     }
     
     @Test
-    // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
     public void assertSelectAvg() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT AVG(`user_id`) AS `user_id_avg` FROM `t_order`";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", sql);
-    }
-    
-    @Test
-    public void assertSelectAvgByName() throws SQLException {
         String sql = "SELECT AVG(`user_id`) FROM `t_order`";
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
-            assertThat(rs.getObject("AVG(`user_id`)"), Is.<Object>is(new BigDecimal("19.5000")));
-            assertThat(rs.getBigDecimal(1), Is.<Object>is(new BigDecimal("19.5000")));
+            assertThat(rs.getInt("AVG(`user_id`)"), is(0));
+            assertThat(rs.getInt(1), is(0));
+            assertThat(rs.getObject("AVG(`user_id`)"), nullValue());
+            assertThat(rs.getObject(1), nullValue());
             assertThat(rs.next(), is(false));
         }
     }
     
-    @Test
-    public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ?";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
-    }
 }

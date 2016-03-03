@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
+import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -38,5 +39,10 @@ public final class ThreadLocalObjectContainerTest {
         threadLocalObjectContainer.initItem("init");
         threadLocalObjectContainer.build();
         assertThat(ThreadLocalObjectContainer.getItem(String.class), is("init"));
+    }
+    
+    @After
+    public void clear(){
+        ThreadLocalObjectContainer.clear();
     }
 }

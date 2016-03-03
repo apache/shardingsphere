@@ -21,13 +21,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.google.common.base.Optional;
@@ -61,7 +59,7 @@ public final class AggregationResultSetTest {
     
     private final Number result;
     
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{index}: testTarget:{0}, aggregation type:{1}, columns:{2}, r1:{3}, r2:{4}, rsName:{5}, rsClass:{6}, result:{7}")
     public static Collection init() {
         
         return Arrays.asList(new Object[][]{
@@ -69,10 +67,10 @@ public final class AggregationResultSetTest {
                 {TestTarget.COLUMN_NAME, AggregationType.SUM, Arrays.asList("SUM(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("SUM(0)"), Integer.class, 8},
                 {TestTarget.ALIAS, AggregationType.SUM, Arrays.asList("SUM_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("SUM_RESULT"), Integer.class, 8},
                 {TestTarget.INDEX, AggregationType.COUNT, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 8},
-                {TestTarget.COLUMN_NAME, AggregationType.COUNT, Arrays.asList("COUNT(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("COUNT(0)"), Integer.class, 8},
+                {TestTarget.COLUMN_NAME, AggregationType.COUNT, Arrays.asList("COUNT(`id`)"), Arrays.asList(6), Arrays.asList(2), Optional.of("COUNT(`id`)"), Integer.class, 8},
                 {TestTarget.ALIAS, AggregationType.COUNT, Arrays.asList("COUNT_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("COUNT_RESULT"), Integer.class, 8},
                 {TestTarget.INDEX, AggregationType.MAX, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 6},
-                {TestTarget.COLUMN_NAME, AggregationType.MAX, Arrays.asList("MAX(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("MAX(0)"), Integer.class, 6},
+                {TestTarget.COLUMN_NAME, AggregationType.MAX, Arrays.asList("MAX(id)"), Arrays.asList(6), Arrays.asList(2), Optional.of("MAX(`id`)"), Integer.class, 6},
                 {TestTarget.ALIAS, AggregationType.MAX, Arrays.asList("MAX_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("MAX_RESULT"), Integer.class, 6},
                 {TestTarget.INDEX, AggregationType.MIN, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 2},
                 {TestTarget.COLUMN_NAME, AggregationType.MIN, Arrays.asList("MIN(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("MIN(0)"), Integer.class, 2},
@@ -89,20 +87,20 @@ public final class AggregationResultSetTest {
         MergeContext mergeContext;
         switch (type) {
             case INDEX:
-                mergeContext = createMergeContext(1, "column", null, aggregationType);
+                mergeContext = MergerTestUtil.createMergeContext(1, "column", null, aggregationType);
                 break;
             case COLUMN_NAME:
-                mergeContext = createMergeContext(1, nameOfGetResult.get(), null, aggregationType);
+                mergeContext = MergerTestUtil.createMergeContext(1, nameOfGetResult.get(), null, aggregationType);
                 break;
             case ALIAS:
-                mergeContext = createMergeContext(1, "column", nameOfGetResult.get(), aggregationType);
+                mergeContext = MergerTestUtil.createMergeContext(1, "column", nameOfGetResult.get(), aggregationType);
                 break;
             default:
                 throw new RuntimeException();
         }
         
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                createMock(columns, resultSet1), createMock(columns, resultSet2), new MockResultSet<Integer>()),
+                MergerTestUtil.createMock(columns, resultSet1), MergerTestUtil.createMock(columns, resultSet2), new MockResultSet<Integer>()),
                 mergeContext);
         assertTrue(resultSet.next());
     
@@ -129,25 +127,6 @@ public final class AggregationResultSetTest {
         }
         assertThat(actual, is(result));
         assertFalse(resultSet.next());
-    }
-    
-    private MockResultSet<Integer> createMock(List<String> columns, List<Integer> values) {
-        Map<String, Integer> result = new HashMap<>();
-        for (int i = 0; i < columns.size(); i++) {
-            result.put(columns.get(i), values.get(i));            
-        }
-        return new MockResultSet<>(Arrays.asList(result));
-    }
-    
-    private MergeContext createMergeContext(final int index, final String name, final String alias, final AggregationType aggregationType) {
-        AggregationColumn column = new AggregationColumn(name, aggregationType, Optional.fromNullable(alias), Optional.<String>absent(), index);
-        if (AggregationType.AVG.equals(aggregationType)) {
-            column.getDerivedColumns().add(new AggregationColumn("column", AggregationType.COUNT, Optional.of("sharding_gen_1"), Optional.<String>absent()));
-            column.getDerivedColumns().add(new AggregationColumn("column", AggregationType.COUNT, Optional.of("sharding_gen_2"), Optional.<String>absent()));
-        }
-        MergeContext result = new MergeContext();
-        result.getAggregationColumns().add(column);
-        return result;
     }
     
     private enum TestTarget {

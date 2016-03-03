@@ -17,10 +17,6 @@
 
 package com.dangdang.ddframe.rdb;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
 import com.dangdang.ddframe.rdb.sharding.api.AllApiTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTest;
@@ -28,6 +24,10 @@ import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTest;
 import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTest;
 import com.dangdang.ddframe.rdb.sharding.parser.AllParserTest;
 import com.dangdang.ddframe.rdb.sharding.router.AllRouterTest;
+import com.dangdang.ddframe.rdb.sharding.util.AllUtilTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -37,7 +37,8 @@ import com.dangdang.ddframe.rdb.sharding.router.AllRouterTest;
     AllMergerTest.class, 
     AllJDBCTest.class, 
     AllMetricsTest.class, 
-    AllIntegrateTests.class
+    AllIntegrateTests.class,
+    AllUtilTest.class,
     })
 public class AllTests {
 }

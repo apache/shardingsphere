@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
@@ -106,19 +105,25 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertValueSuccess() {
         assertThat((String) ResultSetUtil.convertValue("1", String.class), is("1"));
+        assertThat((short) ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
         assertThat((int) ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));
         assertThat((long) ResultSetUtil.convertValue(new BigDecimal("1"), long.class), is(1L));
         assertThat((double) ResultSetUtil.convertValue(new BigDecimal("1"), double.class), is(1d));
         assertThat((float) ResultSetUtil.convertValue(new BigDecimal("1"), float.class), is(1f));
         assertThat((BigDecimal) ResultSetUtil.convertValue(new BigDecimal("1"), BigDecimal.class), is(new BigDecimal("1")));
         assertThat((BigDecimal) ResultSetUtil.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
+    
         assertThat((Date) ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
         assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is((Object)Short.valueOf("1")));
-    }
-    
-    @Test(expected = ShardingJdbcException.class)
-    public void assertConvertValueFailure() {
-        ResultSetUtil.convertValue((short) 1, short.class);
+        assertThat(ResultSetUtil.convertValue((short) 1, String.class), is((Object) "1"));
+        assertThat(ResultSetUtil.convertValue(null, short.class), is((Object) (short) 0));
+        assertThat(ResultSetUtil.convertValue(null, int.class), is((Object) 0));
+        assertThat(ResultSetUtil.convertValue(null, long.class), is((Object) 0L));
+        assertThat(ResultSetUtil.convertValue(null, double.class), is((Object) 0D));
+        assertThat(ResultSetUtil.convertValue(null, float.class), is((Object) 0F));
+        assertThat(ResultSetUtil.convertValue(null, String.class), is((Object) null));
+        assertThat(ResultSetUtil.convertValue(null, Object.class), is((Object) null));
+        assertThat(ResultSetUtil.convertValue(null, BigDecimal.class), is((Object) null));
     }
     
     @Test
