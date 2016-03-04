@@ -1,10 +1,10 @@
 +++
 date = "2016-02-05T17:03:18+08:00"
-title = "基于暗示的分片键值注册方法"
+title = "基于暗示(Hint)的分片键值注册方法"
 weight = 12
 +++
 
-# 基于暗示的分片键值注册方法
+# 基于暗示(Hint)的分片键值注册方法
 
 > 提示:阅读本文前请详细预读 [使用指南](../user_guide)
 
@@ -26,7 +26,7 @@ __现有一个假设，如果`WHERE`中没有`user_id`和`order_id`的条件，�
 
 答案是肯定的。下面就介绍一下`Sharding-JDBC`对这个问题的解决方法。
 
-## 基于暗示的分片键值管理器
+## 基于暗示(Hint)的分片键值管理器
 要解决上面的问题，我们使用`com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager`。
 该管理器是使用`ThreadLocal`技术管理分片键值的。
 使用例子：

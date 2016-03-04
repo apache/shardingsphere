@@ -67,6 +67,8 @@
 
 [使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
+[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
+
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
 [核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/)

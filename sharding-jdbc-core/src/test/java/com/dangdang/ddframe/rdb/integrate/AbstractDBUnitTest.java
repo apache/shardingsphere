@@ -46,7 +46,7 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    public static final DatabaseType CURRENT_DB_TYPE = DatabaseType.MySQL;
+    public static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
     
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
