@@ -1110,11 +1110,11 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;INSERT INTO tbl_name SET col1 = val1&lt;/td&gt;
+&lt;td&gt;INSERT INTO tbl_name &lt;code&gt;SET col1 = val1&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;SELECT &lt;code&gt;DISTINCT&lt;/code&gt; * FROM table_name WHERE column1 = value1&lt;/td&gt;
+&lt;td&gt;SELECT &lt;code&gt;DISTINCT&lt;/code&gt; * FROM tbl_name WHERE column1 = value1&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
@@ -1311,22 +1311,93 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;h1 id=&#34;未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;未来线路规划&lt;/h1&gt;
 
+&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
+
+&lt;h3 id=&#34;config:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;config&lt;/h3&gt;
+
 &lt;ol&gt;
-&lt;li&gt;更加灵活和多维度的配置。包括spring支持，分片算法inline支持，读写分离配置，水平垂直分片配置，动态表配置等。&lt;/li&gt;
-&lt;li&gt;更多的SQL支持。包括distinct结果归并， group by和count之后进行haviing的支持，计算表达式支持，如sum(pv) / count(uv)等。&lt;/li&gt;
-&lt;li&gt;柔性分布式事务。&lt;/li&gt;
-&lt;li&gt;读写分离。读写一致性处理。&lt;/li&gt;
-&lt;li&gt;分布式主键生成器。&lt;/li&gt;
-&lt;li&gt;SQL重写优化，进一步提升性能。&lt;/li&gt;
-&lt;li&gt;SQL Hint，可指定某SQL在某具体库表执行，基于业务规则而非SQL解析路由。&lt;/li&gt;
-&lt;li&gt;小表广播。&lt;/li&gt;
-&lt;li&gt;HA相关。&lt;/li&gt;
-&lt;li&gt;流量控制。&lt;/li&gt;
-&lt;li&gt;数据库建表工具。&lt;/li&gt;
-&lt;li&gt;数据迁移。&lt;/li&gt;
-&lt;li&gt;复杂SQL解析支持，如子查询，存储过程等。&lt;/li&gt;
-&lt;li&gt;Oracle， SQLServer，DB2支持。&lt;/li&gt;
-&lt;li&gt;配置中心。&lt;/li&gt;
+&lt;li&gt;Spring命名空间&lt;/li&gt;
+&lt;li&gt;yaml配置&lt;/li&gt;
+&lt;li&gt;动态配置逻辑表，例：logic&lt;em&gt;tables=&amp;ldquo;order&lt;/em&gt;${0..64}&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;分片算法inline支持，例：sharding_express=&amp;ldquo;user_id % 8&amp;rdquo;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;transaction:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;sharding-jdbc-core发送SQL执行事件&lt;/li&gt;
+&lt;li&gt;bed类型事务日志存储设计&lt;/li&gt;
+&lt;li&gt;bed类型事务同步尝试&lt;/li&gt;
+&lt;li&gt;基于elastic-job的bed类型事务异步尝试&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
+
+&lt;h3 id=&#34;config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;config 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;动态表配置&lt;/li&gt;
+&lt;li&gt;只分库不需要逻辑表和真实表对应配置&lt;/li&gt;
+&lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
+&lt;li&gt;简化只分表配置，可指定默认数据源,简化单库TableRule配置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;基于tcc的柔性事务&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;distribution-id:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;distribution id&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;JDBC接口改写&lt;/li&gt;
+&lt;li&gt;分布式主键策略接口制定&lt;/li&gt;
+&lt;li&gt;基于snowflake的分布式主键算法实现&lt;/li&gt;
+&lt;li&gt;基于groupsequence的分布式主键算法实现&lt;/li&gt;
+&lt;li&gt;基于数据库的分布式主键算法实现&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;parser-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;parser 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;判断不支持SQL并直接报错&lt;/li&gt;
+&lt;li&gt;支持DISTINCT&lt;/li&gt;
+&lt;li&gt;支持GROUP BY聚合之后进行HAVING&lt;/li&gt;
+&lt;li&gt;支持计算表达式，如：SUM(pv) / COUNT(uv)&lt;/li&gt;
+&lt;li&gt;支持通过SQL注释指定SQL Hint&lt;/li&gt;
+&lt;li&gt;SQL重写优化，进一步提升性能&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;merger 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;管道化结果归并&lt;/li&gt;
+&lt;li&gt;支持OR语句根据row的唯一标识去重&lt;/li&gt;
+&lt;li&gt;支持DISTINCT&lt;/li&gt;
+&lt;li&gt;支持GROUP BY聚合之后进行HAVING&lt;/li&gt;
+&lt;li&gt;支持计算表达式，如：SUM(pv) / COUNT(uv)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;router-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;router 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;支持通过SQL注释指定SQL Hint&lt;/li&gt;
+&lt;li&gt;ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定&lt;/li&gt;
+&lt;li&gt;释放资源时，自动清理ThreadLocal Hints&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;待定:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;待定&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;读写分离&lt;/li&gt;
+&lt;li&gt;字典表复制广播&lt;/li&gt;
+&lt;li&gt;HA相关&lt;/li&gt;
+&lt;li&gt;流量控制&lt;/li&gt;
+&lt;li&gt;建表工具&lt;/li&gt;
+&lt;li&gt;动态扩容&lt;/li&gt;
+&lt;li&gt;配置中心&lt;/li&gt;
+&lt;li&gt;其他数据库支持&lt;/li&gt;
 &lt;/ol&gt;
 </description>
     </item>

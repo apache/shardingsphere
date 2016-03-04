@@ -110,29 +110,117 @@ body {
 
 <h1 id="未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03">未来线路规划</h1>
 
+<h2 id="进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</h2>
+
+<h3 id="config:cd4a1b36ed2b93cfc52abf77a7d25d03">config</h3>
+
 <ol>
-<li>更加灵活和多维度的配置。包括spring支持，分片算法inline支持，读写分离配置，水平垂直分片配置，动态表配置等。</li>
-<li>更多的SQL支持。包括distinct结果归并， group by和count之后进行haviing的支持，计算表达式支持，如sum(pv) / count(uv)等。</li>
-<li>柔性分布式事务。</li>
-<li>读写分离。读写一致性处理。</li>
-<li>分布式主键生成器。</li>
-<li>SQL重写优化，进一步提升性能。</li>
-<li>SQL Hint，可指定某SQL在某具体库表执行，基于业务规则而非SQL解析路由。</li>
-<li>小表广播。</li>
-<li>HA相关。</li>
-<li>流量控制。</li>
-<li>数据库建表工具。</li>
-<li>数据迁移。</li>
-<li>复杂SQL解析支持，如子查询，存储过程等。</li>
-<li>Oracle， SQLServer，DB2支持。</li>
-<li>配置中心。</li>
+<li>Spring命名空间</li>
+<li>yaml配置</li>
+<li>动态配置逻辑表，例：logic<em>tables=&ldquo;order</em>${0..64}&rdquo;</li>
+<li>分片算法inline支持，例：sharding_express=&ldquo;user_id % 8&rdquo;</li>
+</ol>
+
+<h3 id="transaction:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction</h3>
+
+<ol>
+<li>sharding-jdbc-core发送SQL执行事件</li>
+<li>bed类型事务日志存储设计</li>
+<li>bed类型事务同步尝试</li>
+<li>基于elastic-job的bed类型事务异步尝试</li>
+</ol>
+
+<h2 id="计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</h2>
+
+<h3 id="config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</h3>
+
+<ol>
+<li>动态表配置</li>
+<li>只分库不需要逻辑表和真实表对应配置</li>
+<li>简化只分库配置，无需配置逻辑表和真实表对应关系</li>
+<li>简化只分表配置，可指定默认数据源,简化单库TableRule配置</li>
+</ol>
+
+<h3 id="transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction 2.0</h3>
+
+<ol>
+<li>基于tcc的柔性事务</li>
+</ol>
+
+<h3 id="distribution-id:cd4a1b36ed2b93cfc52abf77a7d25d03">distribution id</h3>
+
+<ol>
+<li>JDBC接口改写</li>
+<li>分布式主键策略接口制定</li>
+<li>基于snowflake的分布式主键算法实现</li>
+<li>基于groupsequence的分布式主键算法实现</li>
+<li>基于数据库的分布式主键算法实现</li>
+</ol>
+
+<h3 id="parser-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">parser 2.0</h3>
+
+<ol>
+<li>判断不支持SQL并直接报错</li>
+<li>支持DISTINCT</li>
+<li>支持GROUP BY聚合之后进行HAVING</li>
+<li>支持计算表达式，如：SUM(pv) / COUNT(uv)</li>
+<li>支持通过SQL注释指定SQL Hint</li>
+<li>SQL重写优化，进一步提升性能</li>
+</ol>
+
+<h3 id="merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">merger 2.0</h3>
+
+<ol>
+<li>管道化结果归并</li>
+<li>支持OR语句根据row的唯一标识去重</li>
+<li>支持DISTINCT</li>
+<li>支持GROUP BY聚合之后进行HAVING</li>
+<li>支持计算表达式，如：SUM(pv) / COUNT(uv)</li>
+</ol>
+
+<h3 id="router-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">router 2.0</h3>
+
+<ol>
+<li>支持通过SQL注释指定SQL Hint</li>
+<li>ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定</li>
+<li>释放资源时，自动清理ThreadLocal Hints</li>
+</ol>
+
+<h2 id="待定:cd4a1b36ed2b93cfc52abf77a7d25d03">待定</h2>
+
+<ol>
+<li>读写分离</li>
+<li>字典表复制广播</li>
+<li>HA相关</li>
+<li>流量控制</li>
+<li>建表工具</li>
+<li>动态扩容</li>
+<li>配置中心</li>
+<li>其他数据库支持</li>
 </ol>
 
 	</div>
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
 		 <nav id="TableOfContents">
 <ul>
-<li><a href="#未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03">未来线路规划</a></li>
+<li><a href="#未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03">未来线路规划</a>
+<ul>
+<li><a href="#进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</a>
+<ul>
+<li><a href="#config:cd4a1b36ed2b93cfc52abf77a7d25d03">config</a></li>
+<li><a href="#transaction:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction</a></li>
+</ul></li>
+<li><a href="#计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</a>
+<ul>
+<li><a href="#config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</a></li>
+<li><a href="#transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction 2.0</a></li>
+<li><a href="#distribution-id:cd4a1b36ed2b93cfc52abf77a7d25d03">distribution id</a></li>
+<li><a href="#parser-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">parser 2.0</a></li>
+<li><a href="#merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">merger 2.0</a></li>
+<li><a href="#router-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">router 2.0</a></li>
+</ul></li>
+<li><a href="#待定:cd4a1b36ed2b93cfc52abf77a7d25d03">待定</a></li>
+</ul></li>
 </ul>
 </nav>
 	</div>
