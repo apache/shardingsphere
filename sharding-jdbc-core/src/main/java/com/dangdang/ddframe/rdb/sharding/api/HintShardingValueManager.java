@@ -47,7 +47,7 @@ public final class HintShardingValueManager {
      */
     public static void init() {
         if (null != SHARING_VALUE_CONTAINER.get()) {
-            throw new ShardingJdbcException("CAN NOT register sharding value repeatedly");
+            throw new ShardingJdbcException("CAN NOT init repeatedly");
         }
         SHARING_VALUE_CONTAINER.set(new ShardingValueContainer());
     }

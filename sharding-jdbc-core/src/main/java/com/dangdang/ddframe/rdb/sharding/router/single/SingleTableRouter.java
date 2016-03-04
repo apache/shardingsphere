@@ -82,7 +82,7 @@ public final class SingleTableRouter {
         Optional<List<ShardingValue<?>>> hintDatabaseShardingValues = HintShardingValueManager.getShardingValueOfDatabase(logicTable);
         List<ShardingValue<?>> databaseShardingValues;
         if (hintDatabaseShardingValues.isPresent()) {
-            databaseShardingValues = hintDatabaseShardingValues.get();
+            databaseShardingValues = filterShardingValue(strategy.getShardingColumns(), hintDatabaseShardingValues.get());
         } else {
             databaseShardingValues = getShardingValues(strategy.getShardingColumns());
         }
@@ -98,7 +98,7 @@ public final class SingleTableRouter {
         Optional<List<ShardingValue<?>>> hintTableShardingValues = HintShardingValueManager.getShardingValueOfTable(logicTable);
         List<ShardingValue<?>> tableShardingValues;
         if (hintTableShardingValues.isPresent()) {
-            tableShardingValues = hintTableShardingValues.get();
+            tableShardingValues = filterShardingValue(strategy.getShardingColumns(), hintTableShardingValues.get());
         } else {
             tableShardingValues = getShardingValues(strategy.getShardingColumns());
         }
@@ -115,6 +115,16 @@ public final class SingleTableRouter {
             Optional<Condition> condition = conditionContext.find(logicTable, each);
             if (condition.isPresent()) {
                 result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get()));
+            }
+        }
+        return result;
+    }
+    
+    private List<ShardingValue<?>> filterShardingValue(final Collection<String> shardingColumns, final List<ShardingValue<?>> shardingValues) {
+        List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
+        for (ShardingValue<?> each : shardingValues) {
+            if (shardingColumns.contains(each.getColumnName())) {
+                result.add(each);
             }
         }
         return result;

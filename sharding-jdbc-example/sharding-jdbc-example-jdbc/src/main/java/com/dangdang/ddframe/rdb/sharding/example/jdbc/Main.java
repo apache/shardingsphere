@@ -24,11 +24,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
-
+import com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -38,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
+import org.apache.commons.dbcp.BasicDataSource;
 // CHECKSTYLE:OFF
 public final class Main {
     
@@ -47,6 +46,8 @@ public final class Main {
         printSimpleSelect(dataSource);
         System.out.println("--------------");
         printGroupBy(dataSource);
+        System.out.println("--------------");
+        printHintSimpleSelect(dataSource);
     }
     
     private static void printSimpleSelect(final DataSource dataSource) throws SQLException {
@@ -76,6 +77,27 @@ public final class Main {
             while (rs.next()) {
                 System.out.println("user_id: " + rs.getInt(1) + ", count: " + rs.getInt(2));
             }
+        }
+    }
+    
+    private static void printHintSimpleSelect(final DataSource dataSource) throws SQLException {
+        String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id";
+        
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            HintShardingValueManager.init();
+            HintShardingValueManager.registerShardingValueOfDatabase("t_order", "user_id", 10);
+            HintShardingValueManager.registerShardingValueOfTable("t_order", "order_id", 1001);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println(rs.getInt(1));
+                    System.out.println(rs.getInt(2));
+                    System.out.println(rs.getInt(3));
+                }
+            }
+        } finally {
+            HintShardingValueManager.clear();
         }
     }
     

@@ -7,7 +7,11 @@ weight = 1
 # Release Notes
 
 ## 1.0.1-snapshot
-1.增加使用ThreadLocal方式动态生成分区键值的方式进行SQL路由的功能
+功能提升:
+
+1. 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能
+
+bug修改:
 
 1. 修正JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。
 1. 修正[issue #11](https://github.com/dangdangdotcom/sharding-jdbc/issues/11) count函数在某些情况下返回不正确

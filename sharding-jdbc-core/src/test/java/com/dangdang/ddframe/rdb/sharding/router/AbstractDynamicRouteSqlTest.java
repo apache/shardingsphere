@@ -45,8 +45,8 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
                                          final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         HintShardingValueManager.init();
         for (ShardingValuePair each : shardingValuePairs) {
-            HintShardingValueManager.registerShardingValueOfDatabase(each.logicTable, "dynamic_virtual_order_id", each.binaryOperator, each.shardingValue);
-            HintShardingValueManager.registerShardingValueOfTable(each.logicTable, "dynamic_virtual_order_id", each.binaryOperator, each.shardingValue);
+            HintShardingValueManager.registerShardingValueOfDatabase(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
+            HintShardingValueManager.registerShardingValueOfTable(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
         }
         
         assertMultipleTargets(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
