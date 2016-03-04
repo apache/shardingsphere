@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
@@ -60,9 +60,10 @@
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -230,7 +231,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+    
     <build>
         <pluginManagement>
             <plugins>
@@ -412,9 +413,25 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
             </plugin>
+            <!-- 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+             -->
         </plugins>
     </build>
-
+    
     <reporting>
         <plugins>
             <plugin>
@@ -486,7 +503,7 @@
             </plugin>
         </plugins>
     </reporting>
-
+    
     <repositories>
         <repository>
             <id>henryyan-mavenrepo</id>
@@ -513,7 +530,7 @@
             </releases>
         </repository>
     </repositories>
-
+    
     <url>http://www.dangdang.com</url>
     <description>RDB Sharding</description>
     <licenses>
@@ -523,20 +540,20 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
+    
     <scm>
         <connection>scm:https://github.com/dangdangdotcom/sharding-jdbc</connection>
         <developerConnection>scm:https://github.com/dangdangdotcom/sharding-jdbc</developerConnection>
         <url>https://github.com/dangdangdotcom/sharding-jdbc</url>
     </scm>
-
+    
     <mailingLists>
         <mailingList>
             <name>Zhangliang</name>
             <post>zhangliang@dangdang.com</post>
         </mailingList>
     </mailingLists>
-
+    
     <developers>
         <developer>
             <id>zhangliang</id>
@@ -545,7 +562,7 @@
             <timezone>8</timezone>
         </developer>
     </developers>
-
+    
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
