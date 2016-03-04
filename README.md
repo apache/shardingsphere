@@ -83,6 +83,8 @@
 
 [使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/)
 
+[SQL支持详细列表](http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/)
+
 [压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
 
 [未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
