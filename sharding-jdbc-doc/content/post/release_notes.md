@@ -6,7 +6,7 @@ weight = 1
 
 # Release Notes
 
-## 1.0.1-snapshot
+## 1.0.1
 功能提升:
 
 1. 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能

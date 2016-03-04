@@ -67,13 +67,13 @@
 
 [使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
-[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
-
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
 [核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/)
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
+
+[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
 
 [柔性事务(未合并至主干,目前在sharding-jdbc-transaction分支)](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
 
