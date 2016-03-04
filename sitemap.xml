@@ -51,6 +51,11 @@
   </url>
   
   <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
   </url>
@@ -58,6 +63,11 @@
   <url>
     <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</loc>
+    <lastmod>2016-02-05T17:03:18+08:00</lastmod>
   </url>
   
   <url>

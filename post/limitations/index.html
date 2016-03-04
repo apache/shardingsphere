@@ -169,21 +169,6 @@ body {
 
 <h3 id="不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234">不支持<code>DISTINCT</code>聚合</h3>
 
-<h3 id="对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234">对于<code>*</code>谨慎使用</h3>
-
-<p>一般情况下<code>SELECT</code>语句中是可以使用<code>*</code>的，如下的<code>SQL</code>可以正常在<code>Sharding-JDBC</code>中使用。</p>
-
-<pre><code class="language-sql">select * from order;
-</code></pre>
-
-<p>但以下几种SQL不允许使用<code>*</code></p>
-
-<ul>
-<li>语句中存在聚合函数<code>AVG</code></li>
-<li><code>GROUP BY</code>语句</li>
-<li><code>ORDER BY</code>语句</li>
-</ul>
-
 	</div>
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
 		 <nav id="TableOfContents">
@@ -205,7 +190,6 @@ body {
 <li><a href="#不支持-union-和-union-all:187f2cad6c4cc3b3972d4d058186f234">不支持<code>UNION</code> 和 <code>UNION ALL</code></a></li>
 <li><a href="#不支持特殊-insert:187f2cad6c4cc3b3972d4d058186f234">不支持特殊<code>INSERT</code></a></li>
 <li><a href="#不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234">不支持<code>DISTINCT</code>聚合</a></li>
-<li><a href="#对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234">对于<code>*</code>谨慎使用</a></li>
 </ul></li>
 </ul></li>
 </ul>

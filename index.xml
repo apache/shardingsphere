@@ -191,14 +191,23 @@ try (
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
-&lt;h2 id=&#34;1-0-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1-snapshot&lt;/h2&gt;
+&lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
+
+&lt;p&gt;功能提升:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;bug修改:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;修正JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;issue #11&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/13&#34;&gt;issue #13&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/16&#34;&gt;issue #16&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/18&#34;&gt;issue #18&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;issue #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
+&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/13&#34;&gt;issue #13&lt;/a&gt; Insert 语句 没有写列名 进行了全路由&lt;/li&gt;
+&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/16&#34;&gt;issue #16&lt;/a&gt; 改造多线程执行模型&lt;/li&gt;
+&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/18&#34;&gt;issue #18&lt;/a&gt; 查询Count时，使用getObject()取数会报异常&lt;/li&gt;
+&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/19&#34;&gt;issue #19&lt;/a&gt; sum和avg函数，不加别名不执行merger，加了空指针异常&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.0&lt;/h2&gt;
@@ -637,6 +646,10 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;该数据源与普通数据源完全相同，你可以通过上例的API形式来使用，也可以将其配置在Spring，Hibernate等框架中使用。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;如果希望不依赖于表中的列传入分片键值，参考：&lt;a href=&#34;../hint_shardingvalue&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
     </item>
     
@@ -1081,21 +1094,202 @@ transactionManagerFactory.init();
 &lt;p&gt;每条&lt;code&gt;INSERT&lt;/code&gt;语句只能插入一条数据，不支持&lt;code&gt;VALUES&lt;/code&gt;后有多行数据的语句&lt;/p&gt;
 
 &lt;h3 id=&#34;不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;DISTINCT&lt;/code&gt;聚合&lt;/h3&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>SQL支持详细列表</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</guid>
+      <description>
 
-&lt;h3 id=&#34;对于-谨慎使用:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;对于&lt;code&gt;*&lt;/code&gt;谨慎使用&lt;/h3&gt;
+&lt;h1 id=&#34;sql支持详细列表:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;SQL支持详细列表&lt;/h1&gt;
 
-&lt;p&gt;一般情况下&lt;code&gt;SELECT&lt;/code&gt;语句中是可以使用&lt;code&gt;*&lt;/code&gt;的，如下的&lt;code&gt;SQL&lt;/code&gt;可以正常在&lt;code&gt;Sharding-JDBC&lt;/code&gt;中使用。&lt;/p&gt;
+&lt;p&gt;由于&lt;code&gt;SQL&lt;/code&gt;语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的&lt;code&gt;SQL&lt;/code&gt;出现。
+本文详细罗列出已明确可支持的&lt;code&gt;SQL&lt;/code&gt;种类以及已明确不支持的&lt;code&gt;SQL&lt;/code&gt;种类，尽量让使用者避免踩坑。
+其中必然有未涉及到的&lt;code&gt;SQL&lt;/code&gt;欢迎补充，未支持的&lt;code&gt;SQL&lt;/code&gt;也尽量会在未来的版本中支持。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from order;
+&lt;h2 id=&#34;全局不支持项:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;全局不支持项&lt;/h2&gt;
+
+&lt;h3 id=&#34;动态表:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;动态表&lt;/h3&gt;
+
+&lt;p&gt;未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在&lt;code&gt;SQL&lt;/code&gt;或&lt;code&gt;Hint&lt;/code&gt;中包含分片键的&lt;code&gt;SQL&lt;/code&gt;均不支持。
+原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。&lt;/p&gt;
+
+&lt;h3 id=&#34;除-dql-和-dml-以外的语句:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;除&lt;code&gt;DQL&lt;/code&gt;和&lt;code&gt;DML&lt;/code&gt;以外的语句&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;定位于&lt;code&gt;CRUD&lt;/code&gt;操作，目前仅针对&lt;code&gt;DQL&lt;/code&gt;和&lt;code&gt;DML&lt;/code&gt;语句进行支持。&lt;/p&gt;
+
+&lt;h3 id=&#34;子查询未详细测试:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;子查询未详细测试&lt;/h3&gt;
+
+&lt;h2 id=&#34;支持的sql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;支持的SQL&lt;/h2&gt;
+
+&lt;h3 id=&#34;dql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DQL&lt;/h3&gt;
+
+&lt;h4 id=&#34;select主语句:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;SELECT主语句&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
+[WHERE where_condition] 
+[GROUP BY {col_name | position} [ASC | DESC]] 
+[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[LIMIT {[offset,] row_count | row_count OFFSET offset}]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;但以下几种SQL不允许使用&lt;code&gt;*&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;select-expr:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;select_expr&lt;/h4&gt;
 
-&lt;ul&gt;
-&lt;li&gt;语句中存在聚合函数&lt;code&gt;AVG&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;GROUP BY&lt;/code&gt;语句&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ORDER BY&lt;/code&gt;语句&lt;/li&gt;
-&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;* | 
+COLUMN_NAME [AS] [alias] | 
+(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
+COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;table-reference:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;table_reference&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;tbl_name [AS] alias] [index_hint_list] | 
+table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;示例:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;示例&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;dml:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DML&lt;/h3&gt;
+
+&lt;h4 id=&#34;insert:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;INSERT&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;否&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;插入列需要包含分片键&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name VALUES (val1, val2,&amp;hellip;.)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;否&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;通过&lt;code&gt;Hint&lt;/code&gt;注入分片键&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;update:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;UPDATE&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;UPDATE tbl_name SET col1 = val1 WHERE col2 = val2&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;delete:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DELETE&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;DELETE FROM tbl_name WHERE col1 = val1&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;不支持的sql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;不支持的SQL&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2, &amp;hellip;) VALUES &lt;code&gt;(val1, val2,....), (val3, val4,....)&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2, &amp;hellip;) &lt;code&gt;SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name SET col1 = val1&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT &lt;code&gt;DISTINCT&lt;/code&gt; * FROM table_name WHERE column1 = value1&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 &lt;code&gt;HAVING count_alias &amp;gt; val1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name1 &lt;code&gt;UNION&lt;/code&gt; SELECT * FROM tbl_name2&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name1 &lt;code&gt;UNION ALL&lt;/code&gt; SELECT * FROM tbl_name2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 </description>
     </item>
     
@@ -1294,6 +1488,88 @@ transactionManagerFactory.init();
 &lt;li&gt;Oracle， SQLServer，DB2支持。&lt;/li&gt;
 &lt;li&gt;配置中心。&lt;/li&gt;
 &lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>基于暗示(Hint)的分片键值注册方法</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</link>
+      <pubDate>Fri, 05 Feb 2016 17:03:18 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</guid>
+      <description>
+
+&lt;h1 id=&#34;基于暗示-hint-的分片键值注册方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/h1&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;提示:阅读本文前请详细预读 &lt;a href=&#34;../user_guide&#34;&gt;使用指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;背景:c5f80a6139537602865bbe0a8146efe1&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;对&lt;code&gt;Shanrding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
+例如逻辑表&lt;code&gt;t_order&lt;/code&gt;如果其数据源分片键为&lt;code&gt;user_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;db1&lt;/code&gt;偶数值路由到&lt;code&gt;db2&lt;/code&gt;；表分片键为&lt;code&gt;order_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;t_order_1&lt;/code&gt;偶数值路由到&lt;code&gt;t_order_2&lt;/code&gt;，如果执行如下sql语句：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from t_order where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么在数据源分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;1&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;db1&lt;/code&gt;;
+表分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;2&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;t_order_2&lt;/code&gt;。最终SQL为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from db1.t_order_2 where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;现有一个假设，如果&lt;code&gt;WHERE&lt;/code&gt;中没有&lt;code&gt;user_id&lt;/code&gt;和&lt;code&gt;order_id&lt;/code&gt;的条件，那么是否可以进行分片计算呢？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;答案是肯定的。下面就介绍一下&lt;code&gt;Sharding-JDBC&lt;/code&gt;对这个问题的解决方法。&lt;/p&gt;
+
+&lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
+
+&lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager&lt;/code&gt;。
+该管理器是使用&lt;code&gt;ThreadLocal&lt;/code&gt;技术管理分片键值的。
+使用例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String sql = &amp;quot;SELECT * FROM t_order&amp;quot;;
+        
+try (
+        Connection conn = dataSource.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    HintShardingValueManager.init();
+    HintShardingValueManager.registerShardingValueOfDatabase(&amp;quot;t_order&amp;quot;, &amp;quot;user_id&amp;quot;, 1);
+    HintShardingValueManager.registerShardingValueOfTable(&amp;quot;t_order&amp;quot;, &amp;quot;order_id&amp;quot;, 2);
+    try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            ...
+        }
+    }
+} finally {
+    HintShardingValueManager.clear();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;初始化方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;初始化方法&lt;/h3&gt;
+
+&lt;p&gt;使用&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;表示开始执行操作，此时会初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
+
+&lt;p&gt;注意：&lt;strong&gt;在一个线程中只能初始化一次&lt;/strong&gt;。否则会抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;的异常。&lt;/p&gt;
+
+&lt;h3 id=&#34;注册分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;注册分片键值&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfDatabase&lt;/code&gt;来注册数据源分片键值&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfTable&lt;/code&gt;来注册表分片键值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。&lt;/p&gt;
+
+&lt;h3 id=&#34;清除注册的分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;清除注册的分片键值&lt;/h3&gt;
+
+&lt;p&gt;由于分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束的使用调用&lt;code&gt;HintShardingValueManager.clear()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。
+如果你没有调用该方法，那么在该线程被复用时（线程池场景），&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;被调用将抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;异常。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;建议使用&lt;code&gt;try-finally&lt;/code&gt;或者&lt;code&gt;AOP&lt;/code&gt;编程的方式来调用清除方法&lt;/strong&gt;&lt;/p&gt;
 </description>
     </item>
     

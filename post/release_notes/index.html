@@ -110,14 +110,23 @@ body {
 
 <h1 id="release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</h1>
 
-<h2 id="1-0-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1-snapshot</h2>
+<h2 id="1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</h2>
+
+<p>功能提升:</p>
+
+<ol>
+<li>增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能</li>
+</ol>
+
+<p>bug修改:</p>
 
 <ol>
 <li>修正JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。</li>
-<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/11">issue #11</a></li>
-<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/13">issue #13</a></li>
-<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/16">issue #16</a></li>
-<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/18">issue #18</a></li>
+<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/11">issue #11</a> count函数在某些情况下返回不正确</li>
+<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/13">issue #13</a> Insert 语句 没有写列名 进行了全路由</li>
+<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/16">issue #16</a> 改造多线程执行模型</li>
+<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/18">issue #18</a> 查询Count时，使用getObject()取数会报异常</li>
+<li>修正<a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/19">issue #19</a> sum和avg函数，不加别名不执行merger，加了空指针异常</li>
 </ol>
 
 <h2 id="1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</h2>
@@ -132,7 +141,7 @@ body {
 <ul>
 <li><a href="#release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</a>
 <ul>
-<li><a href="#1-0-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1-snapshot</a></li>
+<li><a href="#1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</a></li>
 <li><a href="#1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</a></li>
 </ul></li>
 </ul>
