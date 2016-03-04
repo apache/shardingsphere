@@ -4,19 +4,68 @@ title = "未来线路规划"
 weight = 11
 +++
 # 未来线路规划
-1. 更加灵活和多维度的配置。包括spring支持，分片算法inline支持，读写分离配置，水平垂直分片配置，动态表配置等。
-1. 更多的SQL支持。包括distinct结果归并， group by和count之后进行haviing的支持，计算表达式支持，如sum(pv) / count(uv)等。
-1. 柔性分布式事务。
-1. 读写分离。读写一致性处理。
-1. 分布式主键生成器。
-1. SQL重写优化，进一步提升性能。
-1. SQL Hint，可指定某SQL在某具体库表执行，基于业务规则而非SQL解析路由。
-1. 小表广播。
-1. HA相关。
-1. 流量控制。
-1. 数据库建表工具。
-1. 数据迁移。
-1. 复杂SQL解析支持，如子查询，存储过程等。
-1. Oracle， SQLServer，DB2支持。
-1. 配置中心。
+
+## 进行中
+
+### config
+1. Spring命名空间
+1. yaml配置
+1. 动态配置逻辑表，例：logic_tables="order_${0..64}"
+1. 分片算法inline支持，例：sharding_express="user_id % 8"
+
+### transaction
+1. sharding-jdbc-core发送SQL执行事件
+1. bed类型事务日志存储设计
+1. bed类型事务同步尝试
+1. 基于elastic-job的bed类型事务异步尝试
+
+## 计划中
+
+### config 2.0
+1. 动态表配置
+1. 只分库不需要逻辑表和真实表对应配置
+1. 简化只分库配置，无需配置逻辑表和真实表对应关系
+1. 简化只分表配置，可指定默认数据源,简化单库TableRule配置
+
+### transaction 2.0
+1. 基于tcc的柔性事务
+
+### distribution id
+1. JDBC接口改写
+1. 分布式主键策略接口制定
+1. 基于snowflake的分布式主键算法实现
+1. 基于groupsequence的分布式主键算法实现
+1. 基于数据库的分布式主键算法实现
+
+### parser 2.0
+1. 判断不支持SQL并直接报错
+1. 支持DISTINCT
+1. 支持GROUP BY聚合之后进行HAVING
+1. 支持计算表达式，如：SUM(pv) / COUNT(uv)
+1. 支持通过SQL注释指定SQL Hint
+1. SQL重写优化，进一步提升性能
+
+### merger 2.0
+1. 管道化结果归并
+1. 支持OR语句根据row的唯一标识去重
+1. 支持DISTINCT
+1. 支持GROUP BY聚合之后进行HAVING
+1. 支持计算表达式，如：SUM(pv) / COUNT(uv)
+
+### router 2.0
+1. 支持通过SQL注释指定SQL Hint
+1. ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定
+1. 释放资源时，自动清理ThreadLocal Hints
+
+## 待定
+
+1. 读写分离
+1. 字典表复制广播
+1. HA相关
+1. 流量控制
+1. 建表工具
+1. 动态扩容
+1. 配置中心
+1. 其他数据库支持
+
 

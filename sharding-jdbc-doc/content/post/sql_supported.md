@@ -86,8 +86,8 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 | ----------------------------------------------------------------------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES `(val1, val2,....), (val3, val4,....)`            |
 | INSERT INTO tbl_name (col1, col2, ...) `SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3` |
-| INSERT INTO tbl_name SET col1 = val1                                                            |
-| SELECT `DISTINCT` * FROM table_name WHERE column1 = value1                                      |
+| INSERT INTO tbl_name `SET col1 = val1`                                                          |
+| SELECT `DISTINCT` * FROM tbl_name WHERE column1 = value1                                        |
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 `HAVING count_alias > val1`       |
 | SELECT * FROM tbl_name1 `UNION` SELECT * FROM tbl_name2                                         |
 | SELECT * FROM tbl_name1 `UNION ALL` SELECT * FROM tbl_name2                                     |
