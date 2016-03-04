@@ -160,28 +160,40 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 <thead>
 <tr>
 <th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
 <td>SELECT * FROM tbl_name</td>
+<td>是</td>
+<td></td>
 </tr>
 
 <tr>
 <td>SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit</td>
+<td>是</td>
+<td></td>
 </tr>
 
 <tr>
 <td>SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1</td>
+<td>是</td>
+<td></td>
 </tr>
 
 <tr>
 <td>SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit</td>
+<td>是</td>
+<td></td>
 </tr>
 
 <tr>
 <td>SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2</td>
+<td>是</td>
+<td></td>
 </tr>
 </tbody>
 </table>
