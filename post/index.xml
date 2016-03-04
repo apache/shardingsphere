@@ -1425,5 +1425,87 @@ try (
 </description>
     </item>
     
+    <item>
+      <title>基于暗示(Hint)的分片键值注册方法</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</link>
+      <pubDate>Fri, 05 Feb 2016 17:03:18 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</guid>
+      <description>
+
+&lt;h1 id=&#34;基于暗示-hint-的分片键值注册方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/h1&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;提示:阅读本文前请详细预读 &lt;a href=&#34;../user_guide&#34;&gt;使用指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;背景:c5f80a6139537602865bbe0a8146efe1&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;对&lt;code&gt;Shanrding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
+例如逻辑表&lt;code&gt;t_order&lt;/code&gt;如果其数据源分片键为&lt;code&gt;user_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;db1&lt;/code&gt;偶数值路由到&lt;code&gt;db2&lt;/code&gt;；表分片键为&lt;code&gt;order_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;t_order_1&lt;/code&gt;偶数值路由到&lt;code&gt;t_order_2&lt;/code&gt;，如果执行如下sql语句：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from t_order where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么在数据源分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;1&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;db1&lt;/code&gt;;
+表分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;2&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;t_order_2&lt;/code&gt;。最终SQL为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from db1.t_order_2 where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;现有一个假设，如果&lt;code&gt;WHERE&lt;/code&gt;中没有&lt;code&gt;user_id&lt;/code&gt;和&lt;code&gt;order_id&lt;/code&gt;的条件，那么是否可以进行分片计算呢？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;答案是肯定的。下面就介绍一下&lt;code&gt;Sharding-JDBC&lt;/code&gt;对这个问题的解决方法。&lt;/p&gt;
+
+&lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
+
+&lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager&lt;/code&gt;。
+该管理器是使用&lt;code&gt;ThreadLocal&lt;/code&gt;技术管理分片键值的。
+使用例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String sql = &amp;quot;SELECT * FROM t_order&amp;quot;;
+        
+try (
+        Connection conn = dataSource.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    HintShardingValueManager.init();
+    HintShardingValueManager.registerShardingValueOfDatabase(&amp;quot;t_order&amp;quot;, &amp;quot;user_id&amp;quot;, 1);
+    HintShardingValueManager.registerShardingValueOfTable(&amp;quot;t_order&amp;quot;, &amp;quot;order_id&amp;quot;, 2);
+    try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            ...
+        }
+    }
+} finally {
+    HintShardingValueManager.clear();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;初始化方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;初始化方法&lt;/h3&gt;
+
+&lt;p&gt;使用&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;表示开始执行操作，此时会初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
+
+&lt;p&gt;注意：&lt;strong&gt;在一个线程中只能初始化一次&lt;/strong&gt;。否则会抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;的异常。&lt;/p&gt;
+
+&lt;h3 id=&#34;注册分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;注册分片键值&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfDatabase&lt;/code&gt;来注册数据源分片键值&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfTable&lt;/code&gt;来注册表分片键值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。&lt;/p&gt;
+
+&lt;h3 id=&#34;清除注册的分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;清除注册的分片键值&lt;/h3&gt;
+
+&lt;p&gt;由于分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束的使用调用&lt;code&gt;HintShardingValueManager.clear()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。
+如果你没有调用该方法，那么在该线程被复用时（线程池场景），&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;被调用将抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;异常。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;建议使用&lt;code&gt;try-finally&lt;/code&gt;或者&lt;code&gt;AOP&lt;/code&gt;编程的方式来调用清除方法&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>
