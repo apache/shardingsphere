@@ -102,7 +102,7 @@
 <dependency>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
-    <version>1.0.0</version>
+    <version>${lasted.release.version}</version>
 </dependency>
 ```
 
