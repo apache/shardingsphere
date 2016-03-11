@@ -2,12 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
     <modules>
         <module>sharding-jdbc-core</module>
+        <module>sharding-jdbc-config-parent</module>
     </modules>
 
     <properties>
@@ -35,12 +36,15 @@
         <slf4j.version>1.7.7</slf4j.version>
         <metrics.version>3.1.0</metrics.version>
         <groovy.version>2.4.5</groovy.version>
+        <snakeyaml.version>1.16</snakeyaml.version>
+        <springframework.version>4.1.1.RELEASE</springframework.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <h2.version>1.4.184</h2.version>
         <junit.version>4.12</junit.version>
         <dbunit.version>2.5.0</dbunit.version>
         <unitils.core.version>3.4.2</unitils.core.version>
         <mockito.version>1.10.19</mockito.version>
+        <hamcrest.version>1.3</hamcrest.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -179,14 +183,22 @@
                 <version>${groovy.version}</version>
                 <classifier>indy</classifier>
             </dependency>
-
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
                 <scope>runtime</scope>
             </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -227,6 +239,18 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-library</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${springframework.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

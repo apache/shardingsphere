@@ -1,0 +1,29 @@
+tables:
+  config:
+    actualTables: t_config
+    
+  t_order: 
+    actualTables: t_order_${0..1}
+    databaseStrategy: &db001
+      shardingColumns: order_id
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    tableStrategy: &table001
+      shardingColumns: id
+      algorithmExpression: t_order_${id.longValue() % 1}
+        
+  t_order_item:
+    actualTables: t_order_item_${0..1}
+    #绑定表中其余的表的策略与第一张表的策略相同
+    databaseStrategy: *db001
+    tableStrategy: *table001
+    
+
+bindingTables:
+  - tableNames: t_order,t_order_item
+#默认数据库分片策略
+defaultDatabaseStrategy:
+  shardingColumns: order_id, user_id
+  algorithmExpression: table_test
+defaultTableStrategy:
+  shardingColumns: id, order_id
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
