@@ -38,6 +38,7 @@ import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SQL路由引擎.
@@ -45,6 +46,7 @@ import lombok.RequiredArgsConstructor;
  * @author gaohongtao, zhangiang
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class SQLRouteEngine {
     
     private final ShardingRule shardingRule;
@@ -82,6 +84,8 @@ public final class SQLRouteEngine {
             }), parsedResult.getRouteContext().getSqlBuilder(), parsedResult.getRouteContext().getSqlStatementType()));
         }
         MetricsContext.stop(context);
+        log.debug("final route result:{}", result.getExecutionUnits());
+        log.debug("merge context:{}", result.getMergeContext());
         return result;
     }
     

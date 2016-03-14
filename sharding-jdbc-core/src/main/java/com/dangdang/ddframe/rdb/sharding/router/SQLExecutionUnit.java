@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @ToString
+@EqualsAndHashCode
 public class SQLExecutionUnit {
     
     private final String dataSource;
@@ -38,6 +40,6 @@ public class SQLExecutionUnit {
     public SQLExecutionUnit(final String dataSource, final String sql) {
         this.dataSource = dataSource;
         this.sql = sql;
-        log.debug("route sql to db: [{}] sql: [{}]", dataSource, sql);
+        log.trace("route sql to db: [{}] sql: [{}]", dataSource, sql);
     }
 }

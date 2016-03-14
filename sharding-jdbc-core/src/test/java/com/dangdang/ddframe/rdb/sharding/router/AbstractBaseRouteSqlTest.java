@@ -17,10 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,10 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.sql.DataSource;
-
-import org.junit.Before;
 
 import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -45,10 +38,15 @@ import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderAttrShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderShardingAlgorithm;
 import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.junit.Before;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public abstract class AbstractBaseRouteSqlTest {
     
@@ -87,7 +85,7 @@ public abstract class AbstractBaseRouteSqlTest {
             final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         SQLRouteResult actual = new SQLRouteEngine(getShardingRule(), DatabaseType.MySQL).route(originSql, parameters);
         assertThat(actual.getExecutionUnits().size(), is(expectedSize));
-        Set<String> actualDdataSources = new HashSet<String>(Lists.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Set<String> actualDdataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
@@ -95,7 +93,7 @@ public abstract class AbstractBaseRouteSqlTest {
             }
         }));
         assertThat(actualDdataSources, hasItems(targetDataSources.toArray(new String[0])));
-        List<String> actualSQLs = Lists.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
             @Override
             public String apply(final SQLExecutionUnit input) {

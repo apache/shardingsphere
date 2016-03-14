@@ -58,10 +58,22 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
+    public void assertSelectWithInAndIntersection() throws SQLParserException {
+        assertMultipleTargets("select * from order where order_id in (?,?) or order_id in (?,?)", Arrays.<Object>asList(1, 2, 100, 2), 4,
+                Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)", "SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)"));
+    }
+    
+    @Test
     public void assertSelectWithBetween() throws SQLParserException {
         assertMultipleTargets("select * from order where order_id between ? and ?", Arrays.<Object>asList(1, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_0 WHERE order_id BETWEEN ? AND ?", "SELECT * FROM order_1 WHERE order_id BETWEEN ? AND ?"));
         assertMultipleTargets(Lists.newArrayList(new ShardingValuePair("order", Condition.BinaryOperator.BETWEEN, 1, 100)), "select * from order", 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_0", "SELECT * FROM order_1"));
+    }
+    
+    @Test
+    public void assertSelectWithBetweenAndIntersection() throws SQLParserException {
+        assertMultipleTargets("select * from order where order_id between ? and ? or order_id between ? and ? ", Arrays.<Object>asList(1, 50, 29, 100), 4,
+                Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_0 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?", "SELECT * FROM order_1 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?"));
     }
 }

@@ -17,11 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,5 +35,5 @@ public final class SQLRouteResult {
     
     private final MergeContext mergeContext;
     
-    private final List<SQLExecutionUnit> executionUnits = new ArrayList<>();
+    private final Set<SQLExecutionUnit> executionUnits = new HashSet<>();
 }

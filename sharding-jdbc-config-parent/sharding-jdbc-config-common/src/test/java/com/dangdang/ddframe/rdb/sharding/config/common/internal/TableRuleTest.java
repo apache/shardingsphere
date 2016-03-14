@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
 import com.google.common.collect.Lists;
@@ -61,17 +62,17 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order1 where order_id = 1", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = 1"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = 1"));
         result = engine.route("select * from order1 where order_id = ?", Lists.newArrayList((Object) 1));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
         
         result = engine.route("select * from order1 where order_id = '1'", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = '1'"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = '1'"));
         result = engine.route("select * from order1 where order_id = ?", Lists.newArrayList((Object) "1"));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
         
         result = engine.route("select * from order1 where order_id = ?", Lists.newArrayList((Object) new java.sql.Date(12000111L)));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
     }
     
     @Test
@@ -79,17 +80,17 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order2 where order_id = 1.11", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = 1.11"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = 1.11"));
         result = engine.route("select * from order2 where order_id = ?", Lists.newArrayList((Object) 1.11));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
         
         result = engine.route("select * from order2 where order_id = '1.11'", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = '1.11'"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = '1.11'"));
         result = engine.route("select * from order2 where order_id = ?", Lists.newArrayList((Object) "1.11"));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id = ?"));
         
         result = engine.route("select * from order2 where order_id = ?", Lists.newArrayList((Object) new java.sql.Date(12000111L)));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE order_id = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE order_id = ?"));
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -103,13 +104,13 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order3 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015")));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
         
         result = engine.route("select * from order3 where date = ?", Lists.newArrayList((Object) "20151115"));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE date = ?"));
         
         result = engine.route("select * from order3 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015").getTime()));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
         
     }
     
@@ -118,13 +119,13 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order4 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015")));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_201510 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_201510 WHERE date = ?"));
         
         result = engine.route("select * from order4 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015").getTime()));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_201510 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_201510 WHERE date = ?"));
         
         result = engine.route("select * from order4 where date = ?", Lists.newArrayList((Object) "201511"));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_201511 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_201511 WHERE date = ?"));
     }
     
     @Test
@@ -132,10 +133,10 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order5 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015")));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
         
         result = engine.route("select * from order5 where date = ?", Lists.newArrayList((Object) new SimpleDateFormat("yyyyMMdd").parse("20151015").getTime()));
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE date = ?"));
         
     }
     
@@ -144,7 +145,7 @@ public class TableRuleTest extends AbstractConfigTest {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         
         SQLRouteResult result = engine.route("select * from order1 where order_id in (1,3)", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 WHERE order_id IN (1, 3)"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 WHERE order_id IN (1, 3)"));
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -169,29 +170,28 @@ public class TableRuleTest extends AbstractConfigTest {
     public void testNullRouteResult() throws FileNotFoundException, SQLParserException, ParseException {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         SQLRouteResult result = engine.route("select * from order6 where order_id = 1", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE order_id = 1"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE order_id = 1"));
     }
     
     @Test
     public void testDefaultStrategy() throws SQLParserException, FileNotFoundException {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("defaultStrategy").build(), DatabaseType.MySQL);
         SQLRouteResult result = engine.route("select * from order1 where order_id = 1", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 WHERE order_id = 1"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_0 WHERE order_id = 1"));
     }
     
     @Test
     public void testBindingTable() {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("binding_table").build(), DatabaseType.MySQL);
         SQLRouteResult result = engine.route("select * from t_order o ,t_order_item i where o.order_id = i.order_id and o.order_id = 11", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_1 o, t_order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = 11"));
+        assertThat(result.getExecutionUnits().iterator().next().getSql(), is("SELECT * FROM t_order_1 o, t_order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = 11"));
     }
     
     @Test
     public void testReturnMultiResult() {
         SQLRouteEngine engine = new SQLRouteEngine(getShardingRuleBuilder("algorithm").build(), DatabaseType.MySQL);
         SQLRouteResult result = engine.route("select * from order7 o where o.order_id = 1", null);
-        assertThat(result.getExecutionUnits().get(0).getSql(), is("SELECT * FROM t_order_0 o WHERE o.order_id = 1"));
-        assertThat(result.getExecutionUnits().get(1).getSql(), is("SELECT * FROM t_order_1 o WHERE o.order_id = 1"));
+        assertThat(result.getExecutionUnits(), hasItems(new SQLExecutionUnit("db0", "SELECT * FROM t_order_0 o WHERE o.order_id = 1"), new SQLExecutionUnit("db0", "SELECT * FROM t_order_1 o WHERE o.order_id = 1")));
     }
     
     @Override
