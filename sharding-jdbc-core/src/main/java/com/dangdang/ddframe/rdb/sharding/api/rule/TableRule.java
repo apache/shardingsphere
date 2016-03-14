@@ -22,14 +22,13 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.google.common.base.Splitter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.google.common.base.Splitter;
 
 /**
  * 表规则配置对象.
@@ -94,6 +93,19 @@ public final class TableRule {
             if (targetDataSources.contains(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
                 result.add(each);
             }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取真实数据源.
+     *
+     * @return 真实表名称
+     */
+    public Collection<String> getActualDatasourceNames() {
+        Collection<String> result = new LinkedHashSet<>(actualTables.size());
+        for (DataNode each : actualTables) {
+            result.add(each.getDataSourceName());
         }
         return result;
     }

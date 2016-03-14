@@ -47,7 +47,7 @@ public class ShardingStrategy {
      * 根据分片值计算数据源名称集合.
      *
      *
-     * @param sqlStatementType
+     * @param sqlStatementType SQL语句的类型
      * @param availableTargetNames 所有的可用数据源名称集合
      * @param shardingValues 分库片值集合
      * @return 分库后指向的数据源名称集合
@@ -56,7 +56,7 @@ public class ShardingStrategy {
     public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, 
                                          final Collection<ShardingValue<? extends Comparable<?>>> shardingValues) {
         if (shardingValues.isEmpty()) {
-            if (SQLStatementType.INSERT.equals(sqlStatementType)) {
+            if (SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1) {
                 throw new ShardingJdbcException("INSERT statement must contains sharding value");
             } else {
                 return availableTargetNames;

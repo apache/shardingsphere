@@ -86,8 +86,8 @@ public final class SingleTableRouter {
         } else {
             databaseShardingValues = getShardingValues(strategy.getShardingColumns());
         }
-        logBeforeRoute("database", logicTable, shardingRule.getDataSourceRule().getDataSourceNames(), strategy.getShardingColumns(), databaseShardingValues);
-        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, shardingRule.getDataSourceRule().getDataSourceNames(), databaseShardingValues));
+        logBeforeRoute("database", logicTable, tableRule.get().getActualDatasourceNames(), strategy.getShardingColumns(), databaseShardingValues);
+        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, tableRule.get().getActualDatasourceNames(), databaseShardingValues));
         logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
