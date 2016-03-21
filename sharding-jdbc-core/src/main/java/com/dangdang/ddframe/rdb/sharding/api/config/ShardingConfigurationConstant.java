@@ -36,7 +36,7 @@ public enum ShardingConfigurationConstant {
      * 单位为秒
      * 默认值:30秒
      */
-    METRICS_SECOND_PERIOD("metrics.second.period", "1"), 
+    METRICS_SECOND_PERIOD("metrics.second.period", "30"), 
     
     /**
      * 是否开启度量采集.
@@ -50,12 +50,12 @@ public enum ShardingConfigurationConstant {
     METRICS_PACKAGE_NAME("metrics.package.name", "com.dangdang.ddframe.rdb.sharding.metrics"),
     
     /**
-     * 最小空闲工作现成数量.
+     * 最小空闲工作线程数量.
      */
     PARALLEL_EXECUTOR_WORKER_MIN_IDLE_SIZE("parallelExecutor.worker.minIdleSize", "0"),
     
     /**
-     * 最大工作现成数量.
+     * 最大工作线程数量.
      */
     PARALLEL_EXECUTOR_WORKER_MAX_SIZE("parallelExecutor.worker.maxSize", defaultMaxThreads()),
     
