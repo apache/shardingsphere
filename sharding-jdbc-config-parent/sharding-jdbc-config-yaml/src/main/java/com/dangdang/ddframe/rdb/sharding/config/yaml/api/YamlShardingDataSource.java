@@ -41,7 +41,7 @@ public class YamlShardingDataSource extends ShardingDataSource {
     }
     
     public YamlShardingDataSource(final Map<String, DataSource> dataSource, final File yamlFile) throws FileNotFoundException {
-        super(new ShardingRuleBuilder().setDataSourceMap(dataSource).parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
+        super(new ShardingRuleBuilder().setExternalDataSourceMap(dataSource).parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
     }
     
     private static YamlConfig parse(final File yamlFile) throws FileNotFoundException {

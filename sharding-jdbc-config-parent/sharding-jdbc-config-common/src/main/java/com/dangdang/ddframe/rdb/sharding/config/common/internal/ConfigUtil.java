@@ -19,12 +19,15 @@ package com.dangdang.ddframe.rdb.sharding.config.common.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import groovy.lang.GString;
+import groovy.lang.GroovyShell;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +39,81 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigUtil {
     
-    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    public static List<String> transformCommaStringToList(final String strWithComma) {
+        final GroovyShell shell = new GroovyShell();
+        return flattenList(Lists.transform(splitComma(strWithComma), new Function<String, Object>() {
+            @Override
+            public Object apply(final String input) {
+                String compactInput = input.trim();
+                StringBuilder expression = new StringBuilder(compactInput);
+                if (!compactInput.startsWith("\"")) {
+                    expression.insert(0, "\"");
+                }
+                if (!compactInput.endsWith("\"")) {
+                    expression.append("\"");
+                }
+                return shell.evaluate(expression.toString());
+            }
+        }));
+    }
     
-    public static List<String> generateString(final GString gString) {
+    private static List<String> flattenList(final List list) {
+        List<String> result = new ArrayList<>();
+        for (Object each : list) {
+            if (each instanceof GString) {
+                result.addAll(transformGStringToList((GString) each));
+            } else {
+                result.add(each.toString());
+            }
+        }
+        return result;
+    }
+    
+    private static List<String> splitComma(final String strWithComma) {
+        List<String> result = new ArrayList<>();
+        int offset = -1;
+        StringBuilder token = new StringBuilder();
+        int closureDepth = 0;
+        boolean isStartMatch = false;
+        while (++offset < strWithComma.length()) {
+            char c = strWithComma.charAt(offset);
+            switch (c) {
+                case ',':
+                    if (closureDepth > 0) {
+                        token.append(c);
+                    } else {
+                        result.add(token.toString());
+                        token.setLength(0);
+                    }
+                    break;
+                case '$':
+                    isStartMatch = true;
+                    token.append(c);
+                    break;
+                case '{':
+                    closureDepth = isStartMatch ? closureDepth + 1 : closureDepth;
+                    isStartMatch = false;
+                    token.append(c);
+                    break;
+                case '}':
+                    closureDepth--;
+                    isStartMatch = false;
+                    token.append(c);
+                    break;
+                default:
+                    token.append(c);
+                    break;
+            }
+        }
+        if (token.length() > 0) {
+            result.add(token.toString());
+        }
+        return result;
+    }
+    
+    private static List<String> transformGStringToList(final GString gString) {
         String[] strings = gString.getStrings();
-        List<List<String>> valueScenario = getValueScenario(gString);
+        Set<List<String>> valueScenario = getValueScenario(gString);
         List<String> result = new ArrayList<>(valueScenario.size());
         for (List<String> each : valueScenario) {
             StringBuilder stringItemBuilder = new StringBuilder();
@@ -53,74 +126,27 @@ public final class ConfigUtil {
             }
             result.add(stringItemBuilder.toString());
         }
-        
         return result;
     }
     
-    public static List<String> generateList(final List list) {
-        List<String> result = new ArrayList<>();
-        for (Object each : list) {
-            if (each instanceof GString) {
-                result.addAll(generateString((GString) each));
-            } else {
-                result.add(each.toString());
-            }
-        }
-        return result;
-    }
-    
-    public static List<List<String>> getValueScenario(final GString gString) {
-        List<List<String>> dimValue = new ArrayList<>(gString.getValues().length);
+    @SuppressWarnings(value = "unchecked")
+    private static Set<List<String>> getValueScenario(final GString gString) {
+        List<Set<String>> dimValue = new ArrayList<>(gString.getValues().length);
         for (Object each : gString.getValues()) {
             if (null == each) {
                 continue;
             }
             if (each instanceof Collection) {
-                dimValue.add(Lists.transform(Lists.newArrayList((Collection<?>) each), new Function<Object, String>() {
+                dimValue.add(Sets.newHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
                     @Override
                     public String apply(final Object input) {
                         return input.toString();
                     }
-                }));
+                })));
             } else {
-                dimValue.add(Lists.newArrayList(each.toString()));
+                dimValue.add(Sets.newHashSet(each.toString()));
             }
         }
-        
-        return descartes(dimValue);
-    }
-    
-    public static <T> List<List<T>> descartes(final List<List<T>> dimvalue) {
-        List<List<T>> result = new ArrayList<>();
-        descartes(dimvalue, result, 0, new LinkedList<T>());
-        return result;
-    }
-    
-    private static <T> void descartes(final List<List<T>> dimvalue, final List<List<T>> result, final int layer, final LinkedList<T> current) {
-        if (layer < dimvalue.size() - 1) {
-            //大于一个集合时，第一个集合为空
-            if (dimvalue.get(layer).size() == 0) {
-                descartes(dimvalue, result, layer + 1, current);
-            } else {
-                for (int i = 0; i < dimvalue.get(layer).size(); i++) {
-                    current.offerLast(dimvalue.get(layer).get(i));
-                    descartes(dimvalue, result, layer + 1, current);
-                    current.removeLast();
-                }
-            }
-        } else if (layer == dimvalue.size() - 1) {
-            //只有一个集合，且集合中没有元素
-            if (dimvalue.get(layer).size() == 0) {
-                List<T> resultItem = new ArrayList<>(current);
-                result.add(resultItem);
-            } else {
-                //只有一个集合，且集合中有元素时：其笛卡尔积就是这个集合元素本身
-                for (int i = 0; i < dimvalue.get(layer).size(); i++) {
-                    List<T> resultItem = new ArrayList<>(current);
-                    resultItem.add(dimvalue.get(layer).get(i));
-                    result.add(resultItem);
-                }
-            }
-        }
+        return Sets.cartesianProduct(dimValue);
     }
 }

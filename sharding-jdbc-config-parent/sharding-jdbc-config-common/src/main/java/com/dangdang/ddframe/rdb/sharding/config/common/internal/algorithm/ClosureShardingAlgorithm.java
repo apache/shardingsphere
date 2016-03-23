@@ -25,13 +25,14 @@ import java.util.Set;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.config.common.internal.ConfigUtil;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import groovy.lang.Binding;
 import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
 import groovy.util.Expando;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -39,23 +40,31 @@ import org.slf4j.LoggerFactory;
  * 
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
     
     private final Closure<String> closure;
     
+    @SuppressWarnings(value = "unchecked")
+    public ClosureShardingAlgorithm(final String scriptText, final String logRoot) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(scriptText));
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(logRoot));
+        Binding binding = new Binding();
+        binding.setVariable("log", LoggerFactory.getLogger(Joiner.on(".").join("com.dangdang.ddframe.rdb.sharding.configFile", logRoot.trim())));
+        closure = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", scriptText.trim(), "\"}"));
+    }
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
-        List<List<Comparable>> parametersDim = new ArrayList<>();
+        List<Set<Comparable>> parametersDim = new ArrayList<>();
         List<String> columnNameList = new ArrayList<>(shardingValues.size());
         for (ShardingValue<?> each : shardingValues) {
             columnNameList.add(each.getColumnName());
             switch (each.getType()) {
                 case SINGLE:
-                    parametersDim.add(Lists.newArrayList((Comparable) each.getValue()));
+                    parametersDim.add(Sets.newHashSet((Comparable) each.getValue()));
                     break;
                 case LIST:
-                    parametersDim.add(new ArrayList<Comparable>(each.getValues()));
+                    parametersDim.add(Sets.<Comparable>newHashSet(each.getValues()));
                     break;
                 case RANGE:
                     throw new UnsupportedOperationException("Config file does not support BETWEEN, please use Java API Config");
@@ -63,42 +72,19 @@ public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
                     throw new UnsupportedOperationException();
             }
         }
-        
-        List<List<Comparable>> paramScenario = ConfigUtil.descartes(parametersDim);
-        
         List<String> result = new ArrayList<>();
         Set<String> availableTargetNameSet = new HashSet<>(availableTargetNames);
-        for (List<Comparable> each : paramScenario) {
-            Closure newClosure = closure.rehydrate(new Expando(), null, null);
+        for (List<Comparable> each : Sets.cartesianProduct(parametersDim)) {
+            Closure<String> newClosure = closure.rehydrate(new Expando(), null, null);
             newClosure.setResolveStrategy(Closure.DELEGATE_ONLY);
-            newClosure.setProperty("log", LoggerFactory.getLogger(Joiner.on(".").join("com.dangdang.ddframe.rdb.sharding.configFile", each)));
+            newClosure.setProperty("log", closure.getProperty("log"));
             for (int i = 0; i < each.size(); i++) {
                 newClosure.setProperty(columnNameList.get(i), new ShardingValueWrapper(each.get(i)));
             }
-            //jvm动态调用指令将会忽略Closure返回值的泛型,故此处采用两行代码进行数据转换.
             Object algorithmResult = newClosure.call();
-            if (null == algorithmResult) {
-                throw new SQLParserException("No table route");
-            }
-            
-            if (algorithmResult instanceof ArrayList) {
-                for (Object innerResult : (ArrayList) algorithmResult) {
-                    result.add(filterResult(innerResult, availableTargetNameSet));
-                }
-            } else {
-                result.add(filterResult(algorithmResult, availableTargetNameSet));
-            }
-    
+            Preconditions.checkState(availableTargetNameSet.contains(algorithmResult.toString()));
+            result.add(algorithmResult.toString());
         }
         return result;
     }
-    
-    private String filterResult(final Object algorithmResult, final Set<String> availableTargetNameSet) {
-        String stringAlgorithmResult = algorithmResult.toString();
-        if (!availableTargetNameSet.contains(stringAlgorithmResult)) {
-            throw new SQLParserException("Routing target %s does not contain in availableTargetNames %s", stringAlgorithmResult, availableTargetNameSet);
-        }
-        return stringAlgorithmResult;
-    }
-    
 }

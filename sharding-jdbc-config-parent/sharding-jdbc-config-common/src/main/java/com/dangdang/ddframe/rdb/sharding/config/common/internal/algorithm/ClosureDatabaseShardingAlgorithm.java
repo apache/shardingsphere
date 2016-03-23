@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
-import groovy.lang.Closure;
 
 /**
  * 分库闭包算法.
@@ -27,7 +26,7 @@ import groovy.lang.Closure;
  */
 public class ClosureDatabaseShardingAlgorithm extends ClosureShardingAlgorithm implements MultipleKeysDatabaseShardingAlgorithm {
     
-    public ClosureDatabaseShardingAlgorithm(final Closure<String> closure) {
-        super(closure);
+    public ClosureDatabaseShardingAlgorithm(final String scriptText, final String logRoot) {
+        super(scriptText, logRoot);
     }
 }

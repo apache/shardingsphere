@@ -1,3 +1,0 @@
-package error
-
-table "order"
