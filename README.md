@@ -78,6 +78,8 @@
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
+[Yaml文件和Spring命名空间配置](http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/)
+
 [基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
 
 [柔性事务(未合并至主干,目前在sharding-jdbc-transaction分支)](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
@@ -126,7 +128,7 @@
 
 >详细的规则配置请参考[用户指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
-## 使用基于ShardingDataSource的JDBC接口
+## 使用原生JDBC接口
 通过规则配置对象获取`ShardingDataSource`，`ShardingDataSource`实现自`JDBC`的标准接口`DataSource`。然后可通过`DataSource`选择使用原生`JDBC`开发，或者使用`JPA`, `MyBatis`等`ORM`工具。
 以`JDBC`原生实现为例：
 ```java
@@ -147,7 +149,7 @@ try (
 }
 ```
 
-## 配置示例
+## 使用Spring命名空间配置
 ```xml
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -170,7 +172,6 @@ try (
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
     <bean id="dbtbl_1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/dbtbl_1"/>
@@ -180,7 +181,6 @@ try (
 
     <rdb:strategy id="orderTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_${order_id % 4}"/>
     <rdb:strategy id="orderItemTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_item_${order_id % 4}"/>
-
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
             <rdb:table-rules>
