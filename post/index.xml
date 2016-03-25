@@ -19,23 +19,37 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
+&lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
+
+&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能:&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;增加Spring命名空间和YAML文件配置功能&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
 
-&lt;p&gt;功能提升:&lt;/p&gt;
+&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升:&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;bug修改:&lt;/p&gt;
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;修正JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;issue #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/13&#34;&gt;issue #13&lt;/a&gt; Insert 语句 没有写列名 进行了全路由&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/16&#34;&gt;issue #16&lt;/a&gt; 改造多线程执行模型&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/18&#34;&gt;issue #18&lt;/a&gt; 查询Count时，使用getObject()取数会报异常&lt;/li&gt;
-&lt;li&gt;修正&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/19&#34;&gt;issue #19&lt;/a&gt; sum和avg函数，不加别名不执行merger，加了空指针异常&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/13&#34;&gt;ISSUE #13&lt;/a&gt; Insert 语句 没有写列名 进行了全路由&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/16&#34;&gt;ISSUE #16&lt;/a&gt; 改造多线程执行模型&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/18&#34;&gt;ISSUE #18&lt;/a&gt; 查询Count时，使用getObject()取数会报异常&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/19&#34;&gt;ISSUE #19&lt;/a&gt; sum和avg函数，不加别名不执行merger，加了空指针异常&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/38&#34;&gt;ISSUE #38&lt;/a&gt; JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.0&lt;/h2&gt;
@@ -43,6 +57,630 @@
 &lt;ol&gt;
 &lt;li&gt;初始版本。&lt;/li&gt;
 &lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Spring命名空间和Yaml配置</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/</link>
+      <pubDate>Fri, 25 Mar 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/</guid>
+      <description>
+
+&lt;h1 id=&#34;yaml配置:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Yaml配置&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖:a66b35d20295cb764719ac8bd35837ec&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-yaml&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;java示例:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Java示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    DataSource dataSource = new YamlShardingDataSource(yamlFile);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置示例:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;dataSource:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dbtbl_0
+    username: root
+    password: 
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dbtbl_1
+    username: root
+    password: 
+    
+tables:
+  config:
+    actualTables: t_config
+    
+  t_order: 
+    actualTables: t_order_${0..7}
+    databaseStrategy: &amp;amp;db001
+      shardingColumns: order_id
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    tableStrategy: &amp;amp;table001
+      shardingColumns: id
+      algorithmExpression: t_order_${id.longValue() % 2}
+  
+  #绑定表中其余的表的策略与t_order的策略相同
+  t_order_item:
+    actualTables: t_order_item_${0..7}
+    databaseStrategy: *db001
+    tableStrategy: *table001
+
+bindingTables:
+  - tableNames: t_order,t_order_item
+  - tableNames: ...
+
+defaultDatabaseStrategy:
+  shardingColumns: order_id, user_id
+  algorithmExpression: t_order_${id.longValue() % 2}
+
+defaultTableStrategy:
+  shardingColumns: id, order_id
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+
+props:
+  metrics.enable: false
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置项说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置项说明&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;dataSource: 数据源配置
+  &amp;lt;data_source_name&amp;gt; 可配置多个: !!数据库连接池实现类
+    driverClassName: 数据库驱动类名
+    url: 数据库url连接
+    username: 数据库用户名
+    password: 数据库密码
+    ... 数据库连接池的其它属性
+  
+  tables: 分库分表配置，可配置多个logic_table_name
+    &amp;lt;logic_table_name&amp;gt;: 逻辑表名
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
+        databaseStrategy: 分库策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+        tableStrategy: 分表策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  bindingTables: 绑定表列表
+  - tableNames: 逻辑表名列表，多个&amp;lt;logic_table_name&amp;gt;以逗号分隔
+  
+defaultDatabaseStrategy: 默认数据库分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+  algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  
+defaultTableStrategy: 默认数据表分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分表算法全类名，与algorithmExpression出现一个即可
+  algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
+
+props: 属性配置(可选)
+    metrics.enable: 是否开启度量采集，默认值为false不开启
+    metrics.second.period: 度量输出周期，单位为秒，默认为1秒
+    metrics.package.name: 度量输出在日志中的标识名称，默认为com.dangdang.ddframe.rdb.sharding.metrics
+    parallelExecutor.worker.minIdleSize: 最小空闲工作线程数量，默认为0
+    parallelExecutor.worker.maxSize: 最大工作线程数量，默认为CPU核数乘2
+    parallelExecutor.worker.maxIdleTimeout: 工作线程空闲时超时时间，单位为秒，默认为60秒
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Yaml格式特别说明&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;!!&lt;/code&gt; 表示实现类&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;&amp;amp;&lt;/code&gt; 表示变量定义&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;\*&lt;/code&gt; 表示变量引用&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;\-&lt;/code&gt; 表示多个&lt;/p&gt;
+
+&lt;h1 id=&#34;spring命名空间配置:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Spring命名空间配置&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖-1:a66b35d20295cb764719ac8bd35837ec&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-spring&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置示例-1:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+    xmlns:rdb=&amp;quot;http://www.dangdang.com/schema/ddframe/rdb&amp;quot; 
+    xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &amp;quot;&amp;gt;
+    &amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;bean id=&amp;quot;dbtbl_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;rdb:strategy id=&amp;quot;databaseStrategy&amp;quot; sharding-columns=&amp;quot;user_id&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloDatabaseShardingAlgorithm&amp;quot;/&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;tableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&amp;quot;/&amp;gt;
+
+    &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0,dbtbl_1&amp;quot;&amp;gt;
+            &amp;lt;rdb:table-rules&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:table-rules&amp;gt;
+        &amp;lt;/rdb:sharding-rule&amp;gt;
+        &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${id % 2 + 1}&amp;quot;/&amp;gt;
+        &amp;lt;rdb:props&amp;gt;
+            &amp;lt;prop key=&amp;quot;metrics.enable&amp;quot;&amp;gt;${metrics.enable}&amp;lt;/prop&amp;gt;
+        &amp;lt;/rdb:props&amp;gt;
+    &amp;lt;/rdb:data-source&amp;gt;
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;标签说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;标签说明&lt;/h2&gt;
+
+&lt;h3 id=&#34;rdb-data-source:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:data-source/&amp;gt;&lt;/h3&gt;
+
+&lt;p&gt;定义sharding-jdbc数据源&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;id&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;Spring Bean ID&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;sharding-rule&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-database-strategy&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;默认分库策略&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-table-strategy&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;默认分表策略&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;props&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;相关属性配置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-sharding-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:sharding-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;data-sources&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;数据源Bean列表，多个Bean以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;table-rules&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-table-rules:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:table-rules/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;table-rule&lt;code&gt;+&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-table-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:table-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;logic-table&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;逻辑表名&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;database-strategy&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分库策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分库策略id&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;table-strategy&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分表策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分表策略id&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-default-database-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:default-database-strategy/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分库算法全类名，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分库算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-default-table-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:default-table-strategy/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分表算法全类名，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分表算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:strategy/&amp;gt;&lt;code&gt;*&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;定义数据分库或分表策略&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;id&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;Spring Bean ID&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库或分表算法全类名，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库或分表算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-props:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:props/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;metrics.enable&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;是否开启度量采集，默认为false不开启&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;metrics.second.period&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;度量输出周期，单位为秒&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;metrics.package.name&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;度量输出在日志中的标识名称&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;parallelExecutor.worker.minIdleSize&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;最小空闲工作线程数量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;parallelExecutor.worker.maxSize&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;最大工作线程数量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;parallelExecutor.worker.maxIdleTimeout&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;工作线程空闲时超时时间，默认以秒为单位&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;spring格式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Spring格式特别说明&lt;/h3&gt;
+
+&lt;p&gt;如需使用inline表达式，需配置&lt;code&gt;ignore-unresolvable&lt;/code&gt;为&lt;code&gt;true&lt;/code&gt;，否则placeholder会把inline表达式当成属性key值导致出错.&lt;/p&gt;
+
+&lt;h1 id=&#34;分片算法表达式语法说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;分片算法表达式语法说明&lt;/h1&gt;
+
+&lt;h2 id=&#34;inline表达式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;inline表达式特别说明&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;${begin..end}&lt;/code&gt; 表示范围区间&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;${[unit1, unit2, unitX]}&lt;/code&gt; 表示枚举值&lt;/p&gt;
+
+&lt;h2 id=&#34;字符串内嵌groovy代码:a66b35d20295cb764719ac8bd35837ec&#34;&gt;字符串内嵌groovy代码&lt;/h2&gt;
+
+&lt;p&gt;表达式本质上是一段字符串，字符串中使用&lt;code&gt;${}&lt;/code&gt;来嵌入&lt;code&gt;groovy&lt;/code&gt;代码。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-groovy&#34;&gt;data_source_${id.longValue() % 2 + 1}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面的表达式中&lt;code&gt;data_source_&lt;/code&gt;是字符串前缀，&lt;code&gt;id.longValue() % 2 + 1&lt;/code&gt;是&lt;code&gt;groovy&lt;/code&gt;代码。&lt;/p&gt;
+
+&lt;h2 id=&#34;分区键值获取:a66b35d20295cb764719ac8bd35837ec&#34;&gt;分区键值获取&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;groovy&lt;/code&gt;代码中可以使用分区键的名字直接获取表达式的值对象。&lt;/p&gt;
+
+&lt;p&gt;该对象是&lt;code&gt;com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapper&lt;/code&gt;类型的对象。&lt;/p&gt;
+
+&lt;p&gt;该类中提供了一些方法，方便数据类型的转换。包装的原始类型一般为&lt;code&gt;Number&lt;/code&gt;，&lt;code&gt;java.util.Date&lt;/code&gt;，&lt;code&gt;String&lt;/code&gt; 三种类型。使用类中的方法可以将这三种类型转换为需要的其他类型。&lt;/p&gt;
+
+&lt;p&gt;方法列表如下：&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;方法名&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;入参&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;返回类型&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;longValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;doubleValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;double&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;dateValue(String format)&lt;/td&gt;
+&lt;td&gt;时间格式化表达式&lt;/td&gt;
+&lt;td&gt;java.util.Date&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;dateValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;java.util.Date&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;toString(String format)&lt;/td&gt;
+&lt;td&gt;时间格式化表达式&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;toString()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;STring&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 </description>
     </item>
     
@@ -656,35 +1294,43 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
-&lt;code&gt;java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+    transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;开启事务&lt;/li&gt;
+&lt;/ol&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 
