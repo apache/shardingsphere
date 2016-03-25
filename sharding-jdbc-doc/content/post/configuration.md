@@ -177,6 +177,9 @@ props: 属性配置(可选)
                 <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
             </rdb:table-rules>
         </rdb:sharding-rule>
+        <rdb:binding-table-rules>
+            <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
+        </rdb:binding-table-rules>
         <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id % 2 + 1}"/>
         <rdb:props>
             <prop key="metrics.enable">${metrics.enable}</prop>
@@ -194,6 +197,7 @@ props: 属性配置(可选)
 | --------------------          | --------     |  --------- | ------| -----   |
 | id                            | 属性         |  String     |   是  | Spring Bean ID |
 | sharding-rule                 | 标签         |   -         |   是  | 分片规则 |
+| binding-table-rules`?`        | 标签         |   -         |   是  | 绑定表规则 |  
 | default-database-strategy`?`  | 标签         |   -         |   是  | 默认分库策略 |  
 | default-table-strategy`?`     | 标签         |   -         |   是  | 默认分表策略 |
 | props`?`                      | 标签         |   -         |   是  | 相关属性配置 |
@@ -219,6 +223,18 @@ props: 属性配置(可选)
 | sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
 | database-strategy             | 属性         |  String     |   是  | 分库策略，对应`<rdb:strategy>`中分库策略id |
 | table-strategy                | 属性         |  String     |   是  | 分表策略，对应`<rdb:strategy>`中分表策略id |
+
+### \<rdb:binding-table-rules/>
+
+| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
+| --------------------          | --------     |  --------- | ------| -----   |
+| binding-table-rule           | 标签         |   -         |   是  | 绑定规则 |
+
+### \<rdb:binding-table-rule/>
+
+| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
+| --------------------          | --------     |  --------- | ------| -----   |
+| logic-tables                  | 属性         |  String     |   是  | 逻辑表名，多个表名以逗号分隔 |
 
 ### \<rdb:default-database-strategy/>
 
