@@ -237,6 +237,9 @@ props: 属性配置(可选)
                 &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
             &amp;lt;/rdb:table-rules&amp;gt;
         &amp;lt;/rdb:sharding-rule&amp;gt;
+        &amp;lt;rdb:binding-table-rules&amp;gt;
+            &amp;lt;rdb:binding-table-rule logic-tables=&amp;quot;t_order, t_order_item&amp;quot;/&amp;gt;
+        &amp;lt;/rdb:binding-table-rules&amp;gt;
         &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${id % 2 + 1}&amp;quot;/&amp;gt;
         &amp;lt;rdb:props&amp;gt;
             &amp;lt;prop key=&amp;quot;metrics.enable&amp;quot;&amp;gt;${metrics.enable}&amp;lt;/prop&amp;gt;
@@ -277,6 +280,14 @@ props: 属性配置(可选)
 &lt;td&gt;-&lt;/td&gt;
 &lt;td&gt;是&lt;/td&gt;
 &lt;td&gt;分片规则&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;binding-table-rules&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;绑定表规则&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
@@ -405,6 +416,54 @@ props: 属性配置(可选)
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;是&lt;/td&gt;
 &lt;td&gt;分表策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分表策略id&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:binding-table-rules/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;binding-table-rule&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;绑定规则&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:binding-table-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;logic-tables&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;逻辑表名，多个表名以逗号分隔&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;

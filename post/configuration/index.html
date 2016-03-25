@@ -277,6 +277,9 @@ props: 属性配置(可选)
                 &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
             &lt;/rdb:table-rules&gt;
         &lt;/rdb:sharding-rule&gt;
+        &lt;rdb:binding-table-rules&gt;
+            &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
+        &lt;/rdb:binding-table-rules&gt;
         &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id % 2 + 1}&quot;/&gt;
         &lt;rdb:props&gt;
             &lt;prop key=&quot;metrics.enable&quot;&gt;${metrics.enable}&lt;/prop&gt;
@@ -317,6 +320,14 @@ props: 属性配置(可选)
 <td>-</td>
 <td>是</td>
 <td>分片规则</td>
+</tr>
+
+<tr>
+<td>binding-table-rules<code>?</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>绑定表规则</td>
 </tr>
 
 <tr>
@@ -445,6 +456,54 @@ props: 属性配置(可选)
 <td>String</td>
 <td>是</td>
 <td>分表策略，对应<code>&lt;rdb:strategy&gt;</code>中分表策略id</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rules/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th>类型</th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>binding-table-rule</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>绑定规则</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rule/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th>类型</th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-tables</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>逻辑表名，多个表名以逗号分隔</td>
 </tr>
 </tbody>
 </table>
@@ -746,6 +805,8 @@ props: 属性配置(可选)
 <li><a href="#rdb-sharding-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:sharding-rule/&gt;</a></li>
 <li><a href="#rdb-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rules/&gt;</a></li>
 <li><a href="#rdb-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rule/&gt;</a></li>
+<li><a href="#rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rules/&gt;</a></li>
+<li><a href="#rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rule/&gt;</a></li>
 <li><a href="#rdb-default-database-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-database-strategy/&gt;</a></li>
 <li><a href="#rdb-default-table-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-table-strategy/&gt;</a></li>
 <li><a href="#rdb-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:strategy/&gt;<code>*</code></a></li>
