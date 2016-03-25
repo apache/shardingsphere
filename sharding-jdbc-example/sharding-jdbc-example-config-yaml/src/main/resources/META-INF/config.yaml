@@ -14,7 +14,11 @@ tables:
 
 bindingTables:
   - tableNames: t_order,t_order_item
+  
 #默认数据库分片策略
 defaultDatabaseStrategy:
   shardingColumns: user_id
   algorithmExpression: ds_${user_id.longValue() % 2}
+
+props:
+  metrics.enable: false
