@@ -7,12 +7,6 @@ weight = 11
 
 ## 进行中
 
-### config
-1. Spring命名空间
-1. yaml配置
-1. 动态配置逻辑表，例：logic_tables="order_${0..64}"
-1. 分片算法inline支持，例：sharding_express="user_id % 8"
-
 ### transaction
 1. sharding-jdbc-core发送SQL执行事件
 1. bed类型事务日志存储设计
@@ -67,5 +61,3 @@ weight = 11
 1. 动态扩容
 1. 配置中心
 1. 其他数据库支持
-
-
