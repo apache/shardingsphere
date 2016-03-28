@@ -79,9 +79,9 @@ public final class ResultSetUtil {
         if (null == result) {
             result = resultSet.getObject(columnName.toUpperCase());
         }
-        if (null == result) {
-            result = resultSet.getObject(columnName.toLowerCase());
-        }
+       // if (null == result) {
+           // result = resultSet.getObject(columnName.toLowerCase());
+       // }
         return result;
     }
     
