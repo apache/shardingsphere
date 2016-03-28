@@ -1353,43 +1353,35 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
+&lt;code&gt;java
+SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+transactionConfig.setXXX();
+&lt;/code&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-    transactionConfig.setXXX();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-    transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;开启事务&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 
@@ -2017,15 +2009,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;h1 id=&#34;未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;未来线路规划&lt;/h1&gt;
 
 &lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
-
-&lt;h3 id=&#34;config:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;config&lt;/h3&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Spring命名空间&lt;/li&gt;
-&lt;li&gt;yaml配置&lt;/li&gt;
-&lt;li&gt;动态配置逻辑表，例：logic&lt;em&gt;tables=&amp;ldquo;order&lt;/em&gt;${0..64}&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;分片算法inline支持，例：sharding_express=&amp;ldquo;user_id % 8&amp;rdquo;&lt;/li&gt;
-&lt;/ol&gt;
 
 &lt;h3 id=&#34;transaction:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction&lt;/h3&gt;
 
