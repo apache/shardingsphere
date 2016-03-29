@@ -19,15 +19,25 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
+&lt;h2 id=&#34;1-1-0-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0-SNAPSHOT&lt;/h2&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
 
 &lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能:&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;增加Spring命名空间和YAML文件配置功能&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/40&#34;&gt;ISSUE #40&lt;/a&gt; 支持YAML文件配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/41&#34;&gt;ISSUE #41&lt;/a&gt; 支持Spring命名空间配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/42&#34;&gt;ISSUE #42&lt;/a&gt; 支持inline表达式配置&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
@@ -38,10 +48,10 @@
 &lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升:&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
