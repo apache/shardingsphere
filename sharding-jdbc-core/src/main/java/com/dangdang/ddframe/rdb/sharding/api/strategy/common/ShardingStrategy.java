@@ -54,7 +54,7 @@ public class ShardingStrategy {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, 
-                                         final Collection<ShardingValue<? extends Comparable<?>>> shardingValues) {
+                                         final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
             if (SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1) {
                 throw new ShardingJdbcException("INSERT statement must contains sharding value");

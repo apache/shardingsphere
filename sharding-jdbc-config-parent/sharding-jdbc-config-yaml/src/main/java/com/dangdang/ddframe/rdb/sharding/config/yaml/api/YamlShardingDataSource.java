@@ -17,17 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.api;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.YamlConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * 基于配置文件的分片规则.
@@ -36,15 +37,15 @@ import org.yaml.snakeyaml.constructor.Constructor;
  */
 public class YamlShardingDataSource extends ShardingDataSource {
     
-    public YamlShardingDataSource(final File yamlFile) throws FileNotFoundException {
+    public YamlShardingDataSource(final File yamlFile) throws IOException {
         super(new ShardingRuleBuilder().parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
     }
     
-    public YamlShardingDataSource(final Map<String, DataSource> dataSource, final File yamlFile) throws FileNotFoundException {
+    public YamlShardingDataSource(final Map<String, DataSource> dataSource, final File yamlFile) throws IOException {
         super(new ShardingRuleBuilder().setExternalDataSourceMap(dataSource).parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
     }
     
-    private static YamlConfig parse(final File yamlFile) throws FileNotFoundException {
-        return (YamlConfig) new Yaml(new Constructor(YamlConfig.class)).load(new FileReader(yamlFile));
+    private static YamlConfig parse(final File yamlFile) throws IOException {
+        return new Yaml(new Constructor(YamlConfig.class)).loadAs(new InputStreamReader(new FileInputStream(yamlFile), "UTF-8"), YamlConfig.class);
     }
 }

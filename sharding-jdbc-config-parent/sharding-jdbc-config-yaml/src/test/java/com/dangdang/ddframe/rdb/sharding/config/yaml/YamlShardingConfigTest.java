@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -55,7 +55,7 @@ public class YamlShardingConfigTest extends AbstractYamlShardingDataSourceTest {
     }
     
     @Test
-    public void testWithDataSource() throws SQLException, URISyntaxException, FileNotFoundException {
+    public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
         File yamlFile = new File(YamlShardingConfigTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
