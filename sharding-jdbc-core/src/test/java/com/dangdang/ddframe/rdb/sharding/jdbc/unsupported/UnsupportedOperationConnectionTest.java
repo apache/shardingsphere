@@ -91,17 +91,7 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingDa
     public void assertAbort() throws SQLException {
         actual.abort(null);
     }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCatalog() throws SQLException {
-        actual.getCatalog();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetCatalog() throws SQLException {
-        actual.setCatalog("");
-    }
-    
+
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetSchema() throws SQLException {
         actual.getSchema();

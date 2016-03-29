@@ -88,16 +88,6 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     }
     
     @Override
-    public final String getCatalog() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getCatalog");
-    }
-    
-    @Override
-    public final void setCatalog(final String catalog) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setCatalog");
-    }
-    
-    @Override
     public final String getSchema() throws SQLException {
         throw new SQLFeatureNotSupportedException("getSchema");
     }

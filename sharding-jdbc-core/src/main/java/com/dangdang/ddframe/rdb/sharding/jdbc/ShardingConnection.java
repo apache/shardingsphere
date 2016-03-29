@@ -51,16 +51,24 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Getter(AccessLevel.PACKAGE)
     private final ShardingContext shardingContext;
-    
+
     private Map<String, Connection> connectionMap = new HashMap<>();
-    
+
+    private String catalog = "";
+
     /**
-     * 根据数据源名称获取相应的数据库连接.
+     * 根据数据源名称获取相应的数据库连接,并设置 Catalog 为 dataSourceName
      * 
      * @param dataSourceName 数据源名称
      * @return 数据库连接
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
+        Connection connection = getRawConnection(dataSourceName);
+        connection.setCatalog(dataSourceName);
+        return connection;
+    }
+
+    private Connection getRawConnection(final String dataSourceName) throws SQLException {
         if (connectionMap.containsKey(dataSourceName)) {
             return connectionMap.get(dataSourceName);
         }
@@ -71,7 +79,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         connectionMap.put(dataSourceName, connection);
         return connection;
     }
-    
+
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         if (connectionMap.isEmpty()) {
@@ -132,7 +140,24 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         }
         return result;
     }
-    
+
+    @Override
+    public void setCatalog(String catalog) throws SQLException {
+        if (this.catalog.equals(catalog)) {
+            return;
+        }
+        Connection conn = getRawConnection(catalog);
+        Context metricsContext = MetricsContext.start("ShardingConnection-setCatalog", catalog);
+        conn.setCatalog(catalog);
+        MetricsContext.stop(metricsContext);
+        this.catalog = catalog;
+    }
+
+    @Override
+    public String getCatalog() throws SQLException {
+        return catalog;
+    }
+
     @Override
     public PreparedStatement prepareStatement(final String sql) throws SQLException {
         return new ShardingPreparedStatement(this, sql);
