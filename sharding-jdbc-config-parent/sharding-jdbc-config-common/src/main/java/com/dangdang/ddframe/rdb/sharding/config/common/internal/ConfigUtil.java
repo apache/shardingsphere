@@ -42,6 +42,7 @@ public final class ConfigUtil {
     public static List<String> transformCommaStringToList(final String strWithComma) {
         final GroovyShell shell = new GroovyShell();
         return flattenList(Lists.transform(splitComma(strWithComma), new Function<String, Object>() {
+            
             @Override
             public Object apply(final String input) {
                 String compactInput = input.trim();
@@ -57,7 +58,7 @@ public final class ConfigUtil {
         }));
     }
     
-    private static List<String> flattenList(final List list) {
+    private static List<String> flattenList(final List<?> list) {
         List<String> result = new ArrayList<>();
         for (Object each : list) {
             if (each instanceof GString) {
@@ -71,21 +72,12 @@ public final class ConfigUtil {
     
     private static List<String> splitComma(final String strWithComma) {
         List<String> result = new ArrayList<>();
-        int offset = -1;
         StringBuilder token = new StringBuilder();
         int closureDepth = 0;
         boolean isStartMatch = false;
-        while (++offset < strWithComma.length()) {
-            char c = strWithComma.charAt(offset);
+        for (int i = 0; i < strWithComma.length(); i++) {
+            char c = strWithComma.charAt(i);
             switch (c) {
-                case ',':
-                    if (closureDepth > 0) {
-                        token.append(c);
-                    } else {
-                        result.add(token.toString());
-                        token.setLength(0);
-                    }
-                    break;
                 case '$':
                     isStartMatch = true;
                     token.append(c);
@@ -99,6 +91,14 @@ public final class ConfigUtil {
                     closureDepth--;
                     isStartMatch = false;
                     token.append(c);
+                    break;
+                case ',':
+                    if (closureDepth > 0) {
+                        token.append(c);
+                    } else {
+                        result.add(token.toString());
+                        token.setLength(0);
+                    }
                     break;
                 default:
                     token.append(c);

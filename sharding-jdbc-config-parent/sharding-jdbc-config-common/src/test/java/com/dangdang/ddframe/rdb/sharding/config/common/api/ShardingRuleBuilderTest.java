@@ -42,7 +42,7 @@ public class ShardingRuleBuilderTest {
     public void testAll() {
         Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-all.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder().parse(config).build();
+        ShardingRule shardingRule = new ShardingRuleBuilder("config-all.yaml", config).build();
         assertThat(shardingRule.getTableRules().size(), is(3));
         assertThat(shardingRule.getBindingTableRules().size(), is(1));
         assertThat(Arrays.asList(shardingRule.getTableRules().toArray()), hasItems(shardingRule.getBindingTableRules().iterator().next().getTableRules().toArray()));
@@ -54,7 +54,7 @@ public class ShardingRuleBuilderTest {
         Map<String, DataSource> dsMap = new HashMap<>();
         dsMap.put("ds", new BasicDataSource());
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-min.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder().setExternalDataSourceMap(dsMap).parse(config).build();
+        ShardingRule shardingRule = new ShardingRuleBuilder("config-min.yaml", dsMap, config).build();
         assertThat(shardingRule.getTableRules().size(), is(1));
     }
     
@@ -64,7 +64,7 @@ public class ShardingRuleBuilderTest {
         Map<String, DataSource> dsMap = new HashMap<>();
         dsMap.put("ds", new BasicDataSource());
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-classNotFound.yaml"));
-        new ShardingRuleBuilder().setExternalDataSourceMap(dsMap).parse(config).build();
+        new ShardingRuleBuilder("config-classNotFound.yaml", dsMap, config).build();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -73,7 +73,7 @@ public class ShardingRuleBuilderTest {
         Map<String, DataSource> dsMap = new HashMap<>();
         dsMap.put("ds", new BasicDataSource());
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-bindingError.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder().setExternalDataSourceMap(dsMap).parse(config).build();
+        ShardingRule shardingRule = new ShardingRuleBuilder("config-bindingError.yaml", dsMap, config).build();
         for (TableRule tableRule : shardingRule.getBindingTableRules().iterator().next().getTableRules()) {
             log.info(tableRule.toString());
         }

@@ -17,13 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.api;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -49,6 +42,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.MapUtils;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 分片规则构建器.
@@ -57,44 +58,28 @@ import com.google.common.collect.Lists;
  */
 public class ShardingRuleBuilder {
     
-    private Map<String, DataSource> externalDataSourceMap = new HashMap<>();
+    private final String logRoot;
     
-    private ShardingRuleConfig config;
+    private final Map<String, DataSource> externalDataSourceMap;
     
-    private String logRoot;
+    private final ShardingRuleConfig shardingRuleConfig;
     
-    /**
-     * 设置数据源映射.
-     *
-     * @param externalDataSourceMap 数据源映射
-     * @return 构建器对象
-     */
-    public ShardingRuleBuilder setExternalDataSourceMap(final Map<String, DataSource> externalDataSourceMap) {
-        this.externalDataSourceMap.putAll(externalDataSourceMap);
-        return this;
+    public ShardingRuleBuilder(final ShardingRuleConfig shardingRuleConfig) {
+        logRoot = "default";
+        externalDataSourceMap = new HashMap<>();
+        this.shardingRuleConfig = shardingRuleConfig;
     }
     
-    /**
-     * 解析规则配置对象中的规则配置.
-     * 
-     * @param config 规则配置对象
-     * @return 构建器对象
-     */
-    public ShardingRuleBuilder parse(final ShardingRuleConfig config) {
-        return parse("default", config);
-    }
-    
-    /**
-     * 解析规则配置对象中的规则配置.
-     * 
-     * @param logRoot 规则名称
-     * @param config 规则配置对象
-     * @return 构建器对象
-     */
-    public ShardingRuleBuilder parse(final String logRoot, final ShardingRuleConfig config) {
-        this.config = config;
+    public ShardingRuleBuilder(final String logRoot, final ShardingRuleConfig shardingRuleConfig) {
         this.logRoot = logRoot;
-        return this;
+        externalDataSourceMap = new HashMap<>();
+        this.shardingRuleConfig = shardingRuleConfig;
+    }
+    
+    public ShardingRuleBuilder(final String logRoot, final Map<String, DataSource> externalDataSourceMap, final ShardingRuleConfig shardingRuleConfig) {
+        this.logRoot = logRoot;
+        this.externalDataSourceMap = externalDataSourceMap;
+        this.shardingRuleConfig = shardingRuleConfig;
     }
     
     /**
@@ -106,18 +91,18 @@ public class ShardingRuleBuilder {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRule(dataSourceRule);
         return new ShardingRule(dataSourceRule, tableRules, buildBindingTableRule(tableRules),
-                buildShardingStrategy(config.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class),
-                buildShardingStrategy(config.getDefaultTableStrategy(), TableShardingStrategy.class));
+                buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class),
+                buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class));
     }
     
     private DataSourceRule buildDataSourceRule() {
-        Preconditions.checkArgument(config.getDataSource().size() > 0 || null != externalDataSourceMap && externalDataSourceMap.size() > 0, "Sharding JDBC: No data source config");
-        return config.getDataSource().size() > 0 ? new DataSourceRule(config.getDataSource()) : new DataSourceRule(externalDataSourceMap);
+        Preconditions.checkArgument(!shardingRuleConfig.getDataSource().isEmpty() || MapUtils.isNotEmpty(externalDataSourceMap), "Sharding JDBC: No data source config");
+        return !shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(shardingRuleConfig.getDataSource()) : new DataSourceRule(externalDataSourceMap);
     }
     
     private Collection<TableRule> buildTableRule(final DataSourceRule dataSourceRule) {
-        Collection<TableRule> result = new ArrayList<>(config.getTables().size());
-        for (Map.Entry<String, TableRuleConfig> each : config.getTables().entrySet()) {
+        Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
+        for (Map.Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
             result.add(new TableRule(each.getKey(), ConfigUtil.transformCommaStringToList(each.getValue().getActualTables()), dataSourceRule,
                     buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
                     buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class)));
@@ -126,8 +111,8 @@ public class ShardingRuleBuilder {
     }
     
     private Collection<BindingTableRule> buildBindingTableRule(final Collection<TableRule> tableRules) {
-        Collection<BindingTableRule> result = new ArrayList<>(config.getBindingTables().size());
-        for (BindingTableRuleConfig each : config.getBindingTables()) {
+        Collection<BindingTableRule> result = new ArrayList<>(shardingRuleConfig.getBindingTables().size());
+        for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
             result.add(new BindingTableRule(Lists.transform(ConfigUtil.transformCommaStringToList(each.getTableNames()), new Function<String, TableRule>() {
                 @Override
                 public TableRule apply(final String input) {
