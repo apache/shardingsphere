@@ -7,6 +7,8 @@
 # Release Notes
 * sharding-jdbc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
 * sharding-jdbc-core&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core)
+* sharding-jdbc-config-yaml&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-yaml/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-yaml)
+* sharding-jdbc-config-spring&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-spring/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-spring)
 
 # License
 [![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
