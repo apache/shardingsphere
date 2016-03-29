@@ -10,7 +10,9 @@ weight = 1
 
 ### 新功能:
 
-1. 增加Spring命名空间和YAML文件配置功能
+1. [ISSUE #40](https://github.com/dangdangdotcom/sharding-jdbc/issues/40) 支持YAML文件配置
+1. [ISSUE #41](https://github.com/dangdangdotcom/sharding-jdbc/issues/41) 支持Spring命名空间配置
+1. [ISSUE #42](https://github.com/dangdangdotcom/sharding-jdbc/issues/42) 支持inline表达式配置
 
 ### 缺陷修正:
 
@@ -20,7 +22,7 @@ weight = 1
 
 ### 功能提升:
 
-1. 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能
+1. [ISSUE #39](https://github.com/dangdangdotcom/sharding-jdbc/issues/39) 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能
 
 ### 缺陷修正:
 
