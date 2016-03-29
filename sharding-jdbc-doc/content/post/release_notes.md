@@ -6,6 +6,12 @@ weight = 1
 
 # Release Notes
 
+## 1.1.0-SNAPSHOT
+
+### 缺陷修正:
+
+1. [ISSUE #43](https://github.com/dangdangdotcom/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
+
 ## 1.1.0
 
 ### 新功能:
