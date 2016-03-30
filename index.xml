@@ -269,14 +269,14 @@ try (
 &lt;h2 id=&#34;配置示例:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置示例&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;dataSource:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dbtbl_0
+    url: jdbc:mysql://localhost:3306/ds_0
     username: root
     password: 
-  db1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dbtbl_1
+    url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password: 
     
@@ -285,18 +285,14 @@ tables:
     actualTables: t_config
     
   t_order: 
-    actualTables: t_order_${0..7}
-    databaseStrategy: &amp;amp;db001
-      shardingColumns: order_id
-      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    actualTables: t_order_${0..1}
     tableStrategy: &amp;amp;table001
-      shardingColumns: id
-      algorithmExpression: t_order_${id.longValue() % 2}
+      shardingColumns: order_id
+      algorithmExpression: t_order_${order_id.longValue() % 2}
   
   #绑定表中其余的表的策略与t_order的策略相同
   t_order_item:
-    actualTables: t_order_item_${0..7}
-    databaseStrategy: *db001
+    actualTables: t_order_item_${0..1}
     tableStrategy: *table001
 
 bindingTables:
@@ -304,8 +300,8 @@ bindingTables:
   - tableNames: ...
 
 defaultDatabaseStrategy:
-  shardingColumns: order_id, user_id
-  algorithmExpression: t_order_${id.longValue() % 2}
+  shardingColumns: user_id
+  algorithmExpression: ds_${user_id.longValue() % 2}
 
 defaultTableStrategy:
   shardingColumns: id, order_id
@@ -1535,35 +1531,43 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
-&lt;code&gt;java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+    transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;开启事务&lt;/li&gt;
+&lt;/ol&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 
