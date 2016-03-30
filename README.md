@@ -84,7 +84,7 @@
 
 [基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
 
-[柔性事务(未合并至主干,目前在sharding-jdbc-transaction分支)](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
+[柔性事务](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
 
 [目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
 
