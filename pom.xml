@@ -9,6 +9,8 @@
     <modules>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-config-parent</module>
+        <module>sharding-jdbc-transaction</module>
+        <module>sharding-jdbc-transaction-async-job</module>
     </modules>
 
     <properties>

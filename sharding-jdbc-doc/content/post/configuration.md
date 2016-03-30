@@ -26,14 +26,14 @@ weight = 2
 
 ```yaml
 dataSource:
-  db0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dbtbl_0
+    url: jdbc:mysql://localhost:3306/ds_0
     username: root
     password: 
-  db1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dbtbl_1
+    url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password: 
     
@@ -42,18 +42,14 @@ tables:
     actualTables: t_config
     
   t_order: 
-    actualTables: t_order_${0..7}
-    databaseStrategy: &db001
-      shardingColumns: order_id
-      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
+    actualTables: t_order_${0..1}
     tableStrategy: &table001
-      shardingColumns: id
-      algorithmExpression: t_order_${id.longValue() % 2}
+      shardingColumns: order_id
+      algorithmExpression: t_order_${order_id.longValue() % 2}
   
   #绑定表中其余的表的策略与t_order的策略相同
   t_order_item:
-    actualTables: t_order_item_${0..7}
-    databaseStrategy: *db001
+    actualTables: t_order_item_${0..1}
     tableStrategy: *table001
 
 bindingTables:
@@ -61,8 +57,8 @@ bindingTables:
   - tableNames: ...
 
 defaultDatabaseStrategy:
-  shardingColumns: order_id, user_id
-  algorithmExpression: t_order_${id.longValue() % 2}
+  shardingColumns: user_id
+  algorithmExpression: ds_${user_id.longValue() % 2}
 
 defaultTableStrategy:
   shardingColumns: id, order_id

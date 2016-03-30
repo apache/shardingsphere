@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,20 +24,24 @@ import java.util.Collection;
 import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
 
 /**
  * 多线程执行预编译语句对象请求的执行器.
  * 
- * @author zhangliang
+ * @author zhangliang, caohao
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutor {
     
     private final ExecutorEngine executorEngine;
     
-    private final Collection<PreparedStatement> preparedStatements;
+    private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
     
     /**
      * 执行SQL查询.
@@ -49,16 +52,16 @@ public final class PreparedStatementExecutor {
     public List<ResultSet> executeQuery() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
         List<ResultSet> result;
-        if (1 == preparedStatements.size()) {
-            result =  Arrays.asList(preparedStatements.iterator().next().executeQuery());
+        if (1 == preparedStatementExecutorWrappers.size()) {
+            result =  Arrays.asList(preparedStatementExecutorWrappers.iterator().next().getPreparedStatement().executeQuery());
             MetricsContext.stop(context);
             return result;
         }
-        result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, ResultSet>() {
-            
+        result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, ResultSet>() {
+    
             @Override
-            public ResultSet execute(final PreparedStatement input) throws Exception {
-                return input.executeQuery();
+            public ResultSet execute(final PreparedStatementExecutorWrapper input) throws Exception {
+                return input.getPreparedStatement().executeQuery();
             }
         });
         MetricsContext.stop(context);
@@ -73,17 +76,35 @@ public final class PreparedStatementExecutor {
      */
     public int executeUpdate() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        int result;
-        if (1 == preparedStatements.size()) {
-            result =  preparedStatements.iterator().next().executeUpdate();
-            MetricsContext.stop(context);
+        int result = 0;
+        if (1 == preparedStatementExecutorWrappers.size()) {
+            PreparedStatementExecutorWrapper preparedStatementExecutorWrapper = preparedStatementExecutorWrappers.iterator().next();
+            try {
+                result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
+            } catch (final SQLException ex) {
+                postDMLExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+                ExecutorExceptionHandler.handleException(ex);
+                return result;
+            } finally {
+                MetricsContext.stop(context);
+            }
+            postDMLExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
-        result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Integer>() {
+        result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Integer>() {
             
             @Override
-            public Integer execute(final PreparedStatement input) throws Exception {
-                return input.executeUpdate();
+            public Integer execute(final PreparedStatementExecutorWrapper input) throws Exception {
+                int result = 0;
+                try {
+                    result = input.getPreparedStatement().executeUpdate();
+                } catch (final SQLException ex) {
+                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
+                    ExecutorExceptionHandler.handleException(ex);
+                    return result;
+                }
+                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
+                return result;
             }
         }, new MergeUnit<Integer, Integer>() {
             
@@ -108,19 +129,55 @@ public final class PreparedStatementExecutor {
      */
     public boolean execute() throws SQLException {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
-        if (1 == preparedStatements.size()) {
-            boolean result = preparedStatements.iterator().next().execute();
-            MetricsContext.stop(context);
+        postDMLExecutionEvents();
+        if (1 == preparedStatementExecutorWrappers.size()) {
+            boolean result = false;
+            PreparedStatementExecutorWrapper preparedStatementExecutorWrapper = preparedStatementExecutorWrappers.iterator().next();
+            try {
+                result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
+            } catch (final SQLException ex) {
+                postDMLExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+                ExecutorExceptionHandler.handleException(ex);
+                return result;
+            } finally {
+                MetricsContext.stop(context);
+            }
+            postDMLExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
-        List<Boolean> result = executorEngine.execute(preparedStatements, new ExecuteUnit<PreparedStatement, Boolean>() {
-            
+        List<Boolean> result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
+        
             @Override
-            public Boolean execute(final PreparedStatement input) throws Exception {
-                return input.execute();
+            public Boolean execute(final PreparedStatementExecutorWrapper input) throws Exception {
+                boolean result = false;
+                try {
+                    result = input.getPreparedStatement().execute();
+                } catch (final SQLException ex) {
+                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
+                    ExecutorExceptionHandler.handleException(ex);
+                    return result;
+                }
+                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
+                return result;
             }
         });
         MetricsContext.stop(context);
         return result.get(0);
+    }
+    
+    private void postDMLExecutionEvents() {
+        for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
+            if (each.getDMLExecutionEvent().isPresent()) {
+                DMLExecutionEventBus.post(each.getDMLExecutionEvent().get());
+            }
+        }
+    }
+    
+    private void postDMLExecutionEventsAfterExecution(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final EventExecutionType eventExecutionType) {
+        if (preparedStatementExecutorWrapper.getDMLExecutionEvent().isPresent()) {
+            DMLExecutionEvent event = preparedStatementExecutorWrapper.getDMLExecutionEvent().get();
+            event.setEventExecutionType(eventExecutionType);
+            DMLExecutionEventBus.post(event);
+        }
     }
 }

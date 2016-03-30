@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,22 +25,14 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public final class YamlConfigMain {
     
-    private static ApplicationContext applicationContext;
-    
-    public static void main(final String[] args) throws SQLException {
-        startContainer();
-        YamlShardingDataSource dataSource =  applicationContext.getBean(YamlShardingDataSource.class);
+    public static void main(final String[] args) throws Exception {
+        YamlShardingDataSource dataSource =  new YamlShardingDataSource(
+            new File(YamlConfigMain.class.getResource("/META-INF/config.yaml").getFile()));
         printSimpleSelect(dataSource);
         printGroupBy(dataSource);
-    }
-    
-    private static void startContainer() {
-        applicationContext = new ClassPathXmlApplicationContext("META-INF/configContext.xml");
     }
     
     private static void printSimpleSelect(DataSource dataSource) throws SQLException {
