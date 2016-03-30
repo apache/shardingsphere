@@ -38,14 +38,14 @@ import java.util.Map;
 public class YamlShardingDataSource extends ShardingDataSource {
     
     public YamlShardingDataSource(final File yamlFile) throws IOException {
-        super(new ShardingRuleBuilder().parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
+        super(new ShardingRuleBuilder(yamlFile.getName(), unmarshal(yamlFile)).build(), unmarshal(yamlFile).getProps());
     }
     
     public YamlShardingDataSource(final Map<String, DataSource> dataSource, final File yamlFile) throws IOException {
-        super(new ShardingRuleBuilder().setExternalDataSourceMap(dataSource).parse(yamlFile.getName(), parse(yamlFile)).build(), parse(yamlFile).getProps());
+        super(new ShardingRuleBuilder(yamlFile.getName(), dataSource, unmarshal(yamlFile)).build(), unmarshal(yamlFile).getProps());
     }
     
-    private static YamlConfig parse(final File yamlFile) throws IOException {
+    private static YamlConfig unmarshal(final File yamlFile) throws IOException {
         return new Yaml(new Constructor(YamlConfig.class)).loadAs(new InputStreamReader(new FileInputStream(yamlFile), "UTF-8"), YamlConfig.class);
     }
 }
