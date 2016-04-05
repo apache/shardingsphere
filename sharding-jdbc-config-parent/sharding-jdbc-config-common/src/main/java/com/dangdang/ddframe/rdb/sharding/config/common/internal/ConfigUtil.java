@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -31,6 +26,11 @@ import groovy.lang.GroovyShell;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * 配置文件工具类.
  * 
@@ -39,18 +39,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigUtil {
     
-    public static List<String> transformCommaStringToList(final String strWithComma) {
+    public static List<String> transformCommaStringToList(final String target) {
         final GroovyShell shell = new GroovyShell();
-        return flattenList(Lists.transform(splitComma(strWithComma), new Function<String, Object>() {
+        return flattenSegments(Lists.transform(splitWithComma(target), new Function<String, Object>() {
             
             @Override
             public Object apply(final String input) {
-                String compactInput = input.trim();
-                StringBuilder expression = new StringBuilder(compactInput);
-                if (!compactInput.startsWith("\"")) {
+                StringBuilder expression = new StringBuilder(input);
+                if (!input.startsWith("\"")) {
                     expression.insert(0, "\"");
                 }
-                if (!compactInput.endsWith("\"")) {
+                if (!input.endsWith("\"")) {
                     expression.append("\"");
                 }
                 return shell.evaluate(expression.toString());
@@ -58,11 +57,49 @@ public final class ConfigUtil {
         }));
     }
     
-    private static List<String> flattenList(final List<?> list) {
+    static List<String> splitWithComma(final String target) {
         List<String> result = new ArrayList<>();
-        for (Object each : list) {
+        StringBuilder segment = new StringBuilder();
+        int bracketsDepth = 0;
+        for (int i = 0; i < target.length(); i++) {
+            char each = target.charAt(i);
+            switch (each) {
+                case ',':
+                    if (bracketsDepth > 0) {
+                        segment.append(each);
+                    } else {
+                        result.add(segment.toString().trim());
+                        segment.setLength(0);
+                    }
+                    break;
+                case '$':
+                    if ('{' == target.charAt(i + 1)) {
+                        bracketsDepth++;
+                    }
+                    segment.append(each);
+                    break;
+                case '}':
+                    if (bracketsDepth > 0) {
+                        bracketsDepth--;
+                    }
+                    segment.append(each);
+                    break;
+                default:
+                    segment.append(each);
+                    break;
+            }
+        }
+        if (segment.length() > 0) {
+            result.add(segment.toString().trim());
+        }
+        return result;
+    }
+    
+    private static List<String> flattenSegments(final List<Object> segments) {
+        List<String> result = new ArrayList<>();
+        for (Object each : segments) {
             if (each instanceof GString) {
-                result.addAll(transformGStringToList((GString) each));
+                result.addAll(assemblyCartesianSegments((GString) each));
             } else {
                 result.add(each.toString());
             }
@@ -70,83 +107,45 @@ public final class ConfigUtil {
         return result;
     }
     
-    private static List<String> splitComma(final String strWithComma) {
-        List<String> result = new ArrayList<>();
-        StringBuilder token = new StringBuilder();
-        int closureDepth = 0;
-        boolean isStartMatch = false;
-        for (int i = 0; i < strWithComma.length(); i++) {
-            char c = strWithComma.charAt(i);
-            switch (c) {
-                case '$':
-                    isStartMatch = true;
-                    token.append(c);
-                    break;
-                case '{':
-                    closureDepth = isStartMatch ? closureDepth + 1 : closureDepth;
-                    isStartMatch = false;
-                    token.append(c);
-                    break;
-                case '}':
-                    closureDepth--;
-                    isStartMatch = false;
-                    token.append(c);
-                    break;
-                case ',':
-                    if (closureDepth > 0) {
-                        token.append(c);
-                    } else {
-                        result.add(token.toString());
-                        token.setLength(0);
-                    }
-                    break;
-                default:
-                    token.append(c);
-                    break;
-            }
-        }
-        if (token.length() > 0) {
-            result.add(token.toString());
+    private static List<String> assemblyCartesianSegments(final GString segment) {
+        Set<List<String>> cartesianValues = getCartesianValues(segment);
+        List<String> result = new ArrayList<>(cartesianValues.size());
+        for (List<String> each : cartesianValues) {
+            result.add(assemblySegment(each, segment));
         }
         return result;
     }
     
-    private static List<String> transformGStringToList(final GString gString) {
-        String[] strings = gString.getStrings();
-        Set<List<String>> valueScenario = getValueScenario(gString);
-        List<String> result = new ArrayList<>(valueScenario.size());
-        for (List<String> each : valueScenario) {
-            StringBuilder stringItemBuilder = new StringBuilder();
-            int numberOfValues = each.size();
-            for (int i = 0, size = strings.length; i < size; i++) {
-                stringItemBuilder.append(strings[i]);
-                if (i < numberOfValues) {
-                    stringItemBuilder.append(each.get(i));
-                }
+    private static String assemblySegment(final List<String> cartesianValue, final GString segment) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < segment.getStrings().length; i++) {
+            result.append(segment.getStrings()[i]);
+            if (i < cartesianValue.size()) {
+                result.append(cartesianValue.get(i));
             }
-            result.add(stringItemBuilder.toString());
         }
-        return result;
+        return result.toString();
     }
     
-    @SuppressWarnings(value = "unchecked")
-    private static Set<List<String>> getValueScenario(final GString gString) {
-        List<Set<String>> dimValue = new ArrayList<>(gString.getValues().length);
-        for (Object each : gString.getValues()) {
+    @SuppressWarnings("unchecked")
+    private static Set<List<String>> getCartesianValues(final GString segment) {
+        List<Set<String>> result = new ArrayList<>(segment.getValues().length);
+        for (Object each : segment.getValues()) {
             if (null == each) {
                 continue;
             }
             if (each instanceof Collection) {
-                dimValue.add(Sets.newHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
+                result.add(Sets.newHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
+                    
                     @Override
                     public String apply(final Object input) {
                         return input.toString();
                     }
                 })));
             } else {
-                dimValue.add(Sets.newHashSet(each.toString()));
+                result.add(Sets.newHashSet(each.toString()));
             }
         }
-        return Sets.cartesianProduct(dimValue);
+        return Sets.cartesianProduct(result);
     }
 }

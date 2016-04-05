@@ -68,7 +68,7 @@ public class ShardingValueWrapper {
     }
     
     /**
-     * 讲字符串转换为时间.
+     * 将字符串转换为时间.
      * 
      * @param format 时间格式化格式
      * @return 时间类型的值
