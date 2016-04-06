@@ -1360,35 +1360,43 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
-&lt;code&gt;java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+    transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;开启事务&lt;/li&gt;
+&lt;/ol&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 
