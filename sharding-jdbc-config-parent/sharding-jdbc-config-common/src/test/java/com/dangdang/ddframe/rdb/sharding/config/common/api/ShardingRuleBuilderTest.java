@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,10 +61,8 @@ public class ShardingRuleBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testClassNotFound() {
         Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        Map<String, DataSource> dsMap = new HashMap<>();
-        dsMap.put("ds", new BasicDataSource());
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-classNotFound.yaml"));
-        new ShardingRuleBuilder("config-classNotFound.yaml", dsMap, config).build();
+        new ShardingRuleBuilder(config).build();
     }
     
     @Test(expected = IllegalArgumentException.class)
