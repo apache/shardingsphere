@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
@@ -40,7 +41,7 @@ public class ShardingStrategy {
     private final ShardingAlgorithm shardingAlgorithm;
     
     public ShardingStrategy(final String shardingColumn, final ShardingAlgorithm shardingAlgorithm) {
-        this(Arrays.asList(shardingColumn), shardingAlgorithm);
+        this(Collections.singletonList(shardingColumn), shardingAlgorithm);
     }
     
     /**
@@ -67,7 +68,7 @@ public class ShardingStrategy {
             ShardingValue shardingValue = shardingValues.iterator().next();
             switch (shardingValue.getType()) {
                 case SINGLE: 
-                    return Arrays.asList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
+                    return Collections.singletonList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
                 case LIST: 
                     return singleKeyShardingAlgorithm.doInSharding(availableTargetNames, shardingValue);
                 case RANGE: 

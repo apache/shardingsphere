@@ -34,7 +34,7 @@ public abstract class AbstractAggregationUnit implements AggregationUnit {
     @Override
     public final void merge(final AggregationColumn aggregationColumn, final AggregationValue aggregationValue, final ResultSetQueryIndex resultSetQueryIndex) throws SQLException {
         if (!aggregationColumn.getDerivedColumns().isEmpty()) {
-            Collection<Comparable<?>> paramList = new ArrayList<Comparable<?>>(aggregationColumn.getDerivedColumns().size());
+            Collection<Comparable<?>> paramList = new ArrayList<>(aggregationColumn.getDerivedColumns().size());
             for (AggregationColumn each : aggregationColumn.getDerivedColumns()) {
                 paramList.add(aggregationValue.getValue(new ResultSetQueryIndex(each.getAlias().get())));
             }

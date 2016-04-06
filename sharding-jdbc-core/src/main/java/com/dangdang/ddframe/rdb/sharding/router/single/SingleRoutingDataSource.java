@@ -64,7 +64,7 @@ public class SingleRoutingDataSource {
     }
     
     Set<String> getLogicTables() {
-        Set<String> result = new HashSet<String>(routingTableFactors.size());
+        Set<String> result = new HashSet<>(routingTableFactors.size());
         result.addAll(Lists.transform(routingTableFactors, new Function<SingleRoutingTableFactor, String>() {
             
             @Override
@@ -87,7 +87,7 @@ public class SingleRoutingDataSource {
     }
     
     private Set<String> getActualTables(final String logicTable) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (SingleRoutingTableFactor each : routingTableFactors) {
             if (each.getLogicTable().equals(logicTable)) {
                 result.add(each.getActualTable());

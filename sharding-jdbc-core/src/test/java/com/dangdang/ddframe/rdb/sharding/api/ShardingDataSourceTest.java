@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -65,6 +66,6 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        return new ShardingDataSource(new ShardingRule(dataSourceRule, Arrays.asList(new TableRule("logicTable", Arrays.asList("table_0", "table_1", "table_2"), dataSourceRule))));
+        return new ShardingDataSource(new ShardingRule(dataSourceRule, Collections.singletonList(new TableRule("logicTable", Arrays.asList("table_0", "table_1", "table_2"), dataSourceRule))));
     }
 }

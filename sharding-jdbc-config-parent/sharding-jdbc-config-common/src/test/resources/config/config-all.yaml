@@ -20,7 +20,7 @@ tables:
     actualTables: t_order_${0..1}
     databaseStrategy: &db001
       shardingColumns: order_id
-      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.common.internal.SingleAlgorithm
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm
     tableStrategy: &table001
       shardingColumns: id
       algorithmExpression: t_order_${id.longValue() % 2}
@@ -39,4 +39,4 @@ defaultDatabaseStrategy:
   algorithmExpression: t_order_${id.longValue() % 2}
 defaultTableStrategy:
   shardingColumns: id, order_id
-  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.common.internal.MultiAlgorithm
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.MultiAlgorithm

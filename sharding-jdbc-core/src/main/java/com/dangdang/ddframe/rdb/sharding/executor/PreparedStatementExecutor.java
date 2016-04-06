@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
@@ -53,7 +54,7 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
         List<ResultSet> result;
         if (1 == preparedStatementExecutorWrappers.size()) {
-            result =  Arrays.asList(preparedStatementExecutorWrappers.iterator().next().getPreparedStatement().executeQuery());
+            result = Collections.singletonList(preparedStatementExecutorWrappers.iterator().next().getPreparedStatement().executeQuery());
             MetricsContext.stop(context);
             return result;
         }

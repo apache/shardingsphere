@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.MultipleKeysShardingAlgorithm;
 import com.google.common.base.Joiner;
@@ -35,6 +29,11 @@ import groovy.lang.GroovyShell;
 import groovy.util.Expando;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /**
  * 基于闭包的数据源划分算法.
  * 
@@ -42,48 +41,49 @@ import org.slf4j.LoggerFactory;
  */
 public class ClosureShardingAlgorithm implements MultipleKeysShardingAlgorithm {
     
-    private final Closure<String> closure;
+    private final Closure<?> closureTemplate;
     
-    @SuppressWarnings(value = "unchecked")
-    public ClosureShardingAlgorithm(final String scriptText, final String logRoot) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(scriptText));
+    public ClosureShardingAlgorithm(final String expression, final String logRoot) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(expression));
         Preconditions.checkArgument(!Strings.isNullOrEmpty(logRoot));
         Binding binding = new Binding();
         binding.setVariable("log", LoggerFactory.getLogger(Joiner.on(".").join("com.dangdang.ddframe.rdb.sharding.configFile", logRoot.trim())));
-        closure = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", scriptText.trim(), "\"}"));
+        closureTemplate = (Closure) new GroovyShell(binding).evaluate(Joiner.on("").join("{it -> \"", expression.trim(), "\"}"));
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
-        List<Set<Comparable>> parametersDim = new ArrayList<>();
-        List<String> columnNameList = new ArrayList<>(shardingValues.size());
+        List<Set<Comparable>> valuesDim = new ArrayList<>();
+        List<String> columnNames = new ArrayList<>(shardingValues.size());
         for (ShardingValue<?> each : shardingValues) {
-            columnNameList.add(each.getColumnName());
+            columnNames.add(each.getColumnName());
             switch (each.getType()) {
                 case SINGLE:
-                    parametersDim.add(Sets.newHashSet((Comparable) each.getValue()));
+                    valuesDim.add(Sets.newHashSet((Comparable) each.getValue()));
                     break;
                 case LIST:
-                    parametersDim.add(Sets.<Comparable>newHashSet(each.getValues()));
+                    valuesDim.add(Sets.<Comparable>newHashSet(each.getValues()));
                     break;
                 case RANGE:
-                    throw new UnsupportedOperationException("Config file does not support BETWEEN, please use Java API Config");
+                    throw new UnsupportedOperationException("Inline expression does not support BETWEEN, please use Java API Config");
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException(each.getType().name());
             }
         }
-        List<String> result = new ArrayList<>();
-        Set<String> availableTargetNameSet = new HashSet<>(availableTargetNames);
-        for (List<Comparable> each : Sets.cartesianProduct(parametersDim)) {
-            Closure<String> newClosure = closure.rehydrate(new Expando(), null, null);
-            newClosure.setResolveStrategy(Closure.DELEGATE_ONLY);
-            newClosure.setProperty("log", closure.getProperty("log"));
-            for (int i = 0; i < each.size(); i++) {
-                newClosure.setProperty(columnNameList.get(i), new ShardingValueWrapper(each.get(i)));
-            }
-            Object algorithmResult = newClosure.call();
-            Preconditions.checkState(availableTargetNameSet.contains(algorithmResult.toString()));
-            result.add(algorithmResult.toString());
+        Set<List<Comparable>> cartesianValues = Sets.cartesianProduct(valuesDim);
+        List<String> result = new ArrayList<>(cartesianValues.size());
+        for (List<Comparable> each : cartesianValues) {
+            result.add(cloneClosure(columnNames, each).call().toString());
+        }
+        return result;
+    }
+    
+    private Closure<?> cloneClosure(final List<String> columnNames, final List<Comparable> values) {
+        Closure<?> result = closureTemplate.rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        result.setProperty("log", closureTemplate.getProperty("log"));
+        for (int i = 0; i < values.size(); i++) {
+            result.setProperty(columnNames.get(i), new ShardingValueWrapper(values.get(i)));
         }
         return result;
     }

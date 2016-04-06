@@ -188,7 +188,7 @@ public final class DMLShardingTablesOnlyTest extends AbstractShardingTablesOnlyD
     
     private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
-            assertDataset(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern), 
+            assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern), 
                     shardingDataSource.getConnection().getConnection("dataSource_db_single"), 
                     String.format("t_order_%s", i), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", i), status);
         }

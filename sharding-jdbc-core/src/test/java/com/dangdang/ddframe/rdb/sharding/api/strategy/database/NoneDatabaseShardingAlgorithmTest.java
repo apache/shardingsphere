@@ -31,7 +31,7 @@ public final class NoneDatabaseShardingAlgorithmTest {
     
     private final NoneDatabaseShardingAlgorithm noneDatabaseShardingAlgorithm = new NoneDatabaseShardingAlgorithm();
     
-    private final Collection<String> targets = Arrays.asList("ds");
+    private final Collection<String> targets = Collections.singletonList("ds");
     
     @Test
     public void assertDoSharding() {

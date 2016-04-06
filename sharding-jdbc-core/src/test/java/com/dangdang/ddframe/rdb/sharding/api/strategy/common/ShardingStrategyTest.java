@@ -38,32 +38,32 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoShardingWithoutShardingColumns() {
-        ShardingStrategy strategy = new ShardingStrategy(Arrays.asList("column"), null);
+        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), null);
         assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, Collections.<ShardingValue<?>>emptyList()), is(targets));
     }
     
     @Test
     public void assertDoShardingForEqualSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Collections.singletonList("1")));
     }
     
     @Test
     public void assertDoShardingForInSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     @Test
     public void assertDoShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<String>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     private Collection<ShardingValue<?>> createShardingValues(final ShardingValue<String> shardingValue) {

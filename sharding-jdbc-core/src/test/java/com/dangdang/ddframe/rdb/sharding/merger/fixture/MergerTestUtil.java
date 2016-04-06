@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MergerTestUtil {
         for (int i = 0; i < columns.size(); i++) {
             result.put(columns.get(i), values.get(i));
         }
-        return new MockResultSet<>(Arrays.asList(result));
+        return new MockResultSet<>(Collections.singletonList(result));
     }
     
     public static MergeContext createMergeContext(final int index, final String name, final String alias, final AggregationColumn.AggregationType aggregationType) {

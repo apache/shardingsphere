@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.google.common.collect.Lists;
@@ -35,7 +36,7 @@ public final class SelectBindingTableTest extends AbstractDynamicRouteSqlTest {
                 "SELECT * FROM order_1 o JOIN order_item_1 i USING (order_id) WHERE o.order_id = 1");
         assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o, order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = 1");
-        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = ?", Arrays.<Object>asList(1), "ds_1",
+        assertSingleTarget("select * from order o, order_item i WHERE o.order_id = i.order_id and o.order_id = ?", Collections.<Object>singletonList(1), "ds_1",
                 "SELECT * FROM order_1 o, order_item_1 i WHERE o.order_id = i.order_id AND o.order_id = ?");
     }
     

@@ -37,7 +37,7 @@ public final class StatementSelectAggregateShardingDataBasesOnlyTest extends Abs
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
                 + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s";
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
-        assertDataset("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
     }
 }

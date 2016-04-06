@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
@@ -29,7 +30,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     public void assertSingleSelect() throws SQLParserException {
         assertSingleTarget("select * from order where order_id = 1", "ds_1", "SELECT * FROM order_1 WHERE order_id = 1");
-        assertSingleTarget("select * from order where order_id = ?", Arrays.<Object>asList(2), "ds_0", "SELECT * FROM order_0 WHERE order_id = ?");
+        assertSingleTarget("select * from order where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "SELECT * FROM order_0 WHERE order_id = ?");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order", "ds_1", "SELECT * FROM order_1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "select * from order", "ds_0", "SELECT * FROM order_0");
     }

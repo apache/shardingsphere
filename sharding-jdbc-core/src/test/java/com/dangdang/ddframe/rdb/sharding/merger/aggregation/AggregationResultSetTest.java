@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
@@ -63,18 +64,18 @@ public final class AggregationResultSetTest {
     public static Collection init() {
         
         return Arrays.asList(new Object[][]{
-                {TestTarget.INDEX, AggregationType.SUM, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 8},
-                {TestTarget.COLUMN_NAME, AggregationType.SUM, Arrays.asList("SUM(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("SUM(0)"), Integer.class, 8},
-                {TestTarget.ALIAS, AggregationType.SUM, Arrays.asList("SUM_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("SUM_RESULT"), Integer.class, 8},
-                {TestTarget.INDEX, AggregationType.COUNT, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 8},
-                {TestTarget.COLUMN_NAME, AggregationType.COUNT, Arrays.asList("COUNT(`id`)"), Arrays.asList(6), Arrays.asList(2), Optional.of("COUNT(`id`)"), Integer.class, 8},
-                {TestTarget.ALIAS, AggregationType.COUNT, Arrays.asList("COUNT_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("COUNT_RESULT"), Integer.class, 8},
-                {TestTarget.INDEX, AggregationType.MAX, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 6},
-                {TestTarget.COLUMN_NAME, AggregationType.MAX, Arrays.asList("MAX(id)"), Arrays.asList(6), Arrays.asList(2), Optional.of("MAX(`id`)"), Integer.class, 6},
-                {TestTarget.ALIAS, AggregationType.MAX, Arrays.asList("MAX_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("MAX_RESULT"), Integer.class, 6},
-                {TestTarget.INDEX, AggregationType.MIN, Arrays.asList(""), Arrays.asList(6), Arrays.asList(2), Optional.absent(), Integer.class, 2},
-                {TestTarget.COLUMN_NAME, AggregationType.MIN, Arrays.asList("MIN(0)"), Arrays.asList(6), Arrays.asList(2), Optional.of("MIN(0)"), Integer.class, 2},
-                {TestTarget.ALIAS, AggregationType.MIN, Arrays.asList("MIN_RESULT"), Arrays.asList(6), Arrays.asList(2), Optional.of("MIN_RESULT"), Integer.class, 2},
+                {TestTarget.INDEX, AggregationType.SUM, Collections.singletonList(""), Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 8},
+                {TestTarget.COLUMN_NAME, AggregationType.SUM, Collections.singletonList("SUM(0)"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("SUM(0)"), Integer.class, 8},
+                {TestTarget.ALIAS, AggregationType.SUM, Collections.singletonList("SUM_RESULT"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("SUM_RESULT"), Integer.class, 8},
+                {TestTarget.INDEX, AggregationType.COUNT, Collections.singletonList(""), Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 8},
+                {TestTarget.COLUMN_NAME, AggregationType.COUNT, Collections.singletonList("COUNT(`id`)"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("COUNT(`id`)"), Integer.class, 8},
+                {TestTarget.ALIAS, AggregationType.COUNT, Collections.singletonList("COUNT_RESULT"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("COUNT_RESULT"), Integer.class, 8},
+                {TestTarget.INDEX, AggregationType.MAX, Collections.singletonList(""), Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 6},
+                {TestTarget.COLUMN_NAME, AggregationType.MAX, Collections.singletonList("MAX(id)"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("MAX(`id`)"), Integer.class, 6},
+                {TestTarget.ALIAS, AggregationType.MAX, Collections.singletonList("MAX_RESULT"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("MAX_RESULT"), Integer.class, 6},
+                {TestTarget.INDEX, AggregationType.MIN, Collections.singletonList(""), Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 2},
+                {TestTarget.COLUMN_NAME, AggregationType.MIN, Collections.singletonList("MIN(0)"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("MIN(0)"), Integer.class, 2},
+                {TestTarget.ALIAS, AggregationType.MIN, Collections.singletonList("MIN_RESULT"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("MIN_RESULT"), Integer.class, 2},
                 {TestTarget.INDEX, AggregationType.AVG, Arrays.asList("sharding_gen_1", "sharding_gen_2"), Arrays.asList(5, 10), Arrays.asList(10, 100), Optional.absent(), Double.class, 7.3333D},
                 {TestTarget.COLUMN_NAME, AggregationType.AVG, Arrays.asList("sharding_gen_1", "sharding_gen_2"), Arrays.asList(5, 10), Arrays.asList(10, 100), Optional.of("AVG(*)"), Double.class, 7.3333D},
                 {TestTarget.ALIAS, AggregationType.AVG, Arrays.asList("sharding_gen_1", "sharding_gen_2"), Arrays.asList(5, 10), Arrays.asList(10, 100), Optional.of("AVG_RESULT"), Double.class, 7.3333D},

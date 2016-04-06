@@ -37,39 +37,39 @@ public final class SelectAggregateShardingBothDataBasesAndTablesTest extends Abs
     @Test
     public void assertSelectCount() throws SQLException, DatabaseUnitException {
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order`";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
         String sql = "SELECT SUM(`user_id`) AS `user_id_sum` FROM `t_order`";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test
     public void assertSelectMax() throws SQLException, DatabaseUnitException {
         String sql = "SELECT MAX(`user_id`) AS `max_user_id` FROM `t_order`";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test
     public void assertSelectMin() throws SQLException, DatabaseUnitException {
         String sql = "SELECT MIN(`user_id`) AS `min_user_id` FROM `t_order`";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test
     // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
     public void assertSelectAvg() throws SQLException, DatabaseUnitException {
         String sql = "SELECT AVG(`user_id`) AS `user_id_avg` FROM `t_order`";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
                 + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ?";
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
-        assertDataset("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
     }
 }

@@ -19,7 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.mysql;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -47,6 +49,6 @@ public final class MySQLPreparedStatementForOneParameterTest extends AbstractBas
     
     @Test
     public void assertParse() {
-        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Arrays.<Object>asList(1), Arrays.asList("user_id", "order_id", "state")).parse());
+        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Lists.<Object>newArrayList(1), Arrays.asList("user_id", "order_id", "state")).parse());
     }
 }

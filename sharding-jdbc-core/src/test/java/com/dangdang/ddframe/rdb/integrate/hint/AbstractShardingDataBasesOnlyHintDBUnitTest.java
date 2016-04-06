@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.integrate.hint;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
@@ -72,26 +73,25 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
     
     protected final ShardingDataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
-        TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order"), dataSourceRule);
-        TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(Arrays.asList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(Arrays.asList("order_id"), new NoneTableShardingAlgorithm()));
+        TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
+        TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+                new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
+                new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);
     }
     
     protected void assertDataset(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql, final Object... params)
             throws SQLException, DatabaseUnitException {
         try (DynamicShardingValueHelper annotherHelper = helper) {
-            assertDataset(expectedDataSetFile, connection, actualTableName, sql, params);
+            assertDataSet(expectedDataSetFile, connection, actualTableName, sql, params);
         }
     }
     
     protected void assertDataset(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
         try (DynamicShardingValueHelper annotherHelper = helper) {
-            assertDataset(expectedDataSetFile, connection, actualTableName, sql);
+            assertDataSet(expectedDataSetFile, connection, actualTableName, sql);
         }
     }
     

@@ -63,8 +63,7 @@ public abstract class AbstractBaseRouteSqlTest {
         TableRule orderItemTableRule = new TableRule("order_item", Lists.newArrayList("order_item_0", "order_item_1"), dataSourceRule);
         TableRule orderAttrTableRule = new TableRule("order_attr", Lists.newArrayList("ds_0.order_attr_a", "ds_1.order_attr_b"), dataSourceRule, 
                 new TableShardingStrategy("order_id", new OrderAttrShardingAlgorithm()));
-        shardingRule = new ShardingRule(dataSourceRule, Lists.newArrayList(orderTableRule, orderItemTableRule, orderAttrTableRule), 
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))), 
+        shardingRule = new ShardingRule(dataSourceRule, Lists.newArrayList(orderTableRule, orderItemTableRule, orderAttrTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))), 
                 new DatabaseShardingStrategy("order_id", new OrderShardingAlgorithm()), new TableShardingStrategy("order_id", new OrderShardingAlgorithm()));
     }
     
@@ -73,7 +72,7 @@ public abstract class AbstractBaseRouteSqlTest {
     }
     
     protected void assertSingleTarget(final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) throws SQLParserException {
-        assertMultipleTargets(originSql, parameters, 1, Arrays.asList(targetDataSource), Arrays.asList(targetSQL));
+        assertMultipleTargets(originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
     protected void assertMultipleTargets(final String originSql, final int expectedSize, 
@@ -85,14 +84,14 @@ public abstract class AbstractBaseRouteSqlTest {
             final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         SQLRouteResult actual = new SQLRouteEngine(getShardingRule(), DatabaseType.MySQL).route(originSql, parameters);
         assertThat(actual.getExecutionUnits().size(), is(expectedSize));
-        Set<String> actualDdataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
+        Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
                 return input.getDataSource();
             }
         }));
-        assertThat(actualDdataSources, hasItems(targetDataSources.toArray(new String[0])));
+        assertThat(actualDataSources, hasItems(targetDataSources.toArray(new String[targetDataSources.size()])));
         Collection<String> actualSQLs = Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
             @Override
@@ -100,6 +99,6 @@ public abstract class AbstractBaseRouteSqlTest {
                 return input.getSql();
             }
         });
-        assertThat(actualSQLs, hasItems(targetSQLs.toArray(new String[0])));
+        assertThat(actualSQLs, hasItems(targetSQLs.toArray(new String[targetSQLs.size()])));
     }
 }

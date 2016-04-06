@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractShardingBothDataBasesAndTablesDBUnitTest extends AbstractDBUnitTest {
@@ -89,8 +90,7 @@ public abstract class AbstractShardingBothDataBasesAndTablesDBUnitTest extends A
                 "t_order_item_7", 
                 "t_order_item_8", 
                 "t_order_item_9"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

@@ -38,7 +38,7 @@ public final class OrderAttrShardingAlgorithm implements SingleKeyTableShardingA
     
     @Override
     public Collection<String> doInSharding(final Collection<String> tables, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<String>(tables.size());
+        Collection<String> result = new HashSet<>(tables.size());
         for (int value : shardingValue.getValues()) {
             String suffix = value % 2 == 0 ? "_a" : "_b";
             for (String table : tables) {

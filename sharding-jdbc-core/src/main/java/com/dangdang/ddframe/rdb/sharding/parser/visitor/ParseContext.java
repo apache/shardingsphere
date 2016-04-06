@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -139,7 +140,7 @@ public final class ParseContext {
     public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> paramters) {
         Comparable<?> value = evalExpression(databaseType, valueExpr, paramters);
         if (null != value) {
-            addCondition(createColumn(columnName, tableName), operator, Arrays.<Comparable<?>>asList(value));
+            addCondition(createColumn(columnName, tableName), operator, Collections.<Comparable<?>>singletonList(value));
         }
     }
     

@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
@@ -46,7 +47,7 @@ public final class MultipleKeysModuloTableShardingAlgorithm implements MultipleK
     private Collection<String> doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(shardingValue.getValue() % 10 + "")) {
-                return Arrays.asList(each);
+                return Collections.singletonList(each);
             }
         }
         throw new UnsupportedOperationException();

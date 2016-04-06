@@ -15,27 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture;
 
 import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 
-public class SingleAlgorithm implements SingleKeyDatabaseShardingAlgorithm{
+public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
     
     @Override
-    public String doEqualSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
-        return null;
-    }
-    
-    @Override
-    public Collection<String> doInSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
-        return null;
-    }
-    
-    @Override
-    public Collection<String> doBetweenSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         return null;
     }
 }

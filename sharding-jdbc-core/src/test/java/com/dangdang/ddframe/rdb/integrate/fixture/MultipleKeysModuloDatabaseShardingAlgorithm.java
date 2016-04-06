@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
@@ -47,7 +48,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
         Integer modulo = Integer.parseInt(shardingValue.getValue().toString()) % 10;
         for (String each : availableTargetNames) {
             if (each.endsWith(modulo.toString())) {
-                return Arrays.asList(each);
+                return Collections.singletonList(each);
             }
         }
         throw new UnsupportedOperationException();

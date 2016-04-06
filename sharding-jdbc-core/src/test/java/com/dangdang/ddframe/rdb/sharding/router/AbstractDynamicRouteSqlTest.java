@@ -33,7 +33,7 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     }
     
     protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) throws SQLParserException {
-        assertMultipleTargets(shardingValuePairs, originSql, parameters, 1, Arrays.asList(targetDataSource), Arrays.asList(targetSQL));
+        assertMultipleTargets(shardingValuePairs, originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
     protected void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final int expectedSize,

@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatab
  */
 public class ClosureDatabaseShardingAlgorithm extends ClosureShardingAlgorithm implements MultipleKeysDatabaseShardingAlgorithm {
     
-    public ClosureDatabaseShardingAlgorithm(final String scriptText, final String logRoot) {
-        super(scriptText, logRoot);
+    public ClosureDatabaseShardingAlgorithm(final String expression, final String logRoot) {
+        super(expression, logRoot);
     }
 }

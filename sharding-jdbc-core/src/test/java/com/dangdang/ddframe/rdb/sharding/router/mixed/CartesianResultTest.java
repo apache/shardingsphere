@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public final class CartesianResultTest {
     @Test
     public void assertToString() {
         CartesianResult actual = new CartesianResult();
-        CartesianTableReference tableReference = new CartesianTableReference(Arrays.asList(new SingleRoutingTableFactor("logic", "actual")));
+        CartesianTableReference tableReference = new CartesianTableReference(Collections.singletonList(new SingleRoutingTableFactor("logic", "actual")));
         CartesianDataSource dataSource = new CartesianDataSource("ds", tableReference);
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("CartesianResult(routingDataSources=[CartesianDataSource(dataSource=ds, "

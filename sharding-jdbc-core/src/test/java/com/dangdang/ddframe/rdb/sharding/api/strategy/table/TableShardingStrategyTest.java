@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -29,6 +30,6 @@ public final class TableShardingStrategyTest {
     
     @Test
     public void assertTableShardingStrategyWithSingleShardingColumn() {
-        assertThat(new TableShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Arrays.asList("shardingColumn")));
+        assertThat(new TableShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Collections.singletonList("shardingColumn")));
     }
 }

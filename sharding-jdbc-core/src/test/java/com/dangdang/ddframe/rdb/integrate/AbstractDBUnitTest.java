@@ -107,7 +107,7 @@ public abstract class AbstractDBUnitTest {
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql, final Object... params) 
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql, final Object... params) 
             throws SQLException, DatabaseUnitException {
         try (
                 Connection conn = connection;
@@ -122,7 +122,7 @@ public abstract class AbstractDBUnitTest {
         }
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
             ITable actualTable = getConnection(connection).createQueryTable(actualTableName, sql);

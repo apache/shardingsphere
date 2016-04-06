@@ -23,6 +23,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.codahale.metrics.Timer.Context;
@@ -65,7 +66,7 @@ public final class StatementExecutor {
         List<ResultSet> result;
         if (1 == statementExecutorWrappers.size()) {
             StatementExecutorWrapper StatementExecutorWrapper = statementExecutorWrappers.iterator().next();
-            result = Arrays.asList(StatementExecutorWrapper.getStatement().executeQuery(StatementExecutorWrapper.getSqlExecutionUnit().getSql()));
+            result = Collections.singletonList(StatementExecutorWrapper.getStatement().executeQuery(StatementExecutorWrapper.getSqlExecutionUnit().getSql()));
             MetricsContext.stop(context);
             return result;
         }

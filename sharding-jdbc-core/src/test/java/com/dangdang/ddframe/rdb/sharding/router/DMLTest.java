@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
@@ -51,14 +52,14 @@ public final class DMLTest extends AbstractDynamicRouteSqlTest {
         assertSingleTarget("update `order` set name = 'test' where order_id = 1", "ds_1", "UPDATE order_1 SET name = 'test' WHERE order_id = 1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "update `order` set name = 'test'", "ds_1", "UPDATE order_1 SET name = 'test'");
         assertSingleTarget("update `order` set name = ? where order_id = ?", Arrays.<Object>asList("test", 2), "ds_0", "UPDATE order_0 SET name = ? WHERE order_id = ?");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "update `order` set name = ?", Arrays.<Object>asList("test"), "ds_0", "UPDATE order_0 SET name = ?");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "update `order` set name = ?", Collections.<Object>singletonList("test"), "ds_0", "UPDATE order_0 SET name = ?");
     }
     
     @Test
     public void assertDelete() throws SQLParserException {
         assertSingleTarget("delete from `order` where order_id = 1", "ds_1", "DELETE FROM order_1 WHERE order_id = 1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "delete from `order`", "ds_1", "DELETE FROM order_1");
-        assertSingleTarget("delete from `order` where order_id = ?", Arrays.<Object>asList(2), "ds_0", "DELETE FROM order_0 WHERE order_id = ?");
+        assertSingleTarget("delete from `order` where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "DELETE FROM order_0 WHERE order_id = ?");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "delete from `order`", "ds_0", "DELETE FROM order_0");
     }
 }

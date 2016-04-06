@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingValueWrapperTest {
+public final class ShardingValueWrapperTest {
     
     private static final String formatText = "yyyy-MM-dd";
     
@@ -90,13 +90,8 @@ public class ShardingValueWrapperTest {
         assertThat(new ShardingValueWrapper(dateText).toString(formatText), is(dateText));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
-    public void testUnsupportedNumber() throws Exception {
-        new ShardingValueWrapper(true).longValue();
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void testUnsupportedDate() throws Exception {
-        new ShardingValueWrapper(true).dateValue();
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnsupportedType() throws Exception {
+        new ShardingValueWrapper(true);
     }
 }

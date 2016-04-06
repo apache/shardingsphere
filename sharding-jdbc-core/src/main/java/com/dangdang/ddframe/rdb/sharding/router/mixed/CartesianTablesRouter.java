@@ -95,8 +95,8 @@ final class CartesianTablesRouter {
     private List<Set<SingleRoutingTableFactor>> toRoutingTableFactorGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
         List<Set<SingleRoutingTableFactor>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
-            result.add(new HashSet<SingleRoutingTableFactor>(Lists.transform(new ArrayList<String>(each), new Function<String, SingleRoutingTableFactor>() {
-                
+            result.add(new HashSet<>(Lists.transform(new ArrayList<>(each), new Function<String, SingleRoutingTableFactor>() {
+    
                 @Override
                 public SingleRoutingTableFactor apply(final String input) {
                     return findRoutingTableFactor(dataSource, input);

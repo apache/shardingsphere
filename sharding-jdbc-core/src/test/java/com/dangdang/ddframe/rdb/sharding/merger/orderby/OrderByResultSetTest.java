@@ -38,8 +38,7 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForAsc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<Integer>(1, 4), new MockResultSet<Integer>(2, 4), new MockResultSet<Integer>()), createMergeContext(OrderByType.ASC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createMergeContext(OrderByType.ASC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
         assertTrue(resultSet.next());
@@ -53,8 +52,7 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForDesc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<Integer>(4, 1), new MockResultSet<Integer>(4, 2), new MockResultSet<Integer>()), createMergeContext(OrderByType.DESC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), new MockResultSet<Integer>()), createMergeContext(OrderByType.DESC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(4));
         assertTrue(resultSet.next());

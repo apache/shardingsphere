@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDBUnitTest {
@@ -67,12 +68,11 @@ public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDB
     
     protected final ShardingDataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
-        TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order"), dataSourceRule);
-        TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(Arrays.asList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(Arrays.asList("order_id"), new NoneTableShardingAlgorithm()));
+        TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
+        TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+                new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
+                new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);
     }
 }

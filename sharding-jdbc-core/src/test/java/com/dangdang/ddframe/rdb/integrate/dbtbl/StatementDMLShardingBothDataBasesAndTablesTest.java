@@ -105,7 +105,7 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
     private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                assertDataset(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i), 
+                assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i), 
                         shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i)), 
                         String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
             }

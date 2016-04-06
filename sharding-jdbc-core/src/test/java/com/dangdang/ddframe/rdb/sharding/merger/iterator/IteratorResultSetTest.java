@@ -35,8 +35,7 @@ public final class IteratorResultSetTest {
     
     @Test
     public void assertNext() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<Integer>(1), new MockResultSet<Integer>(2, 4), new MockResultSet<Integer>()), new MergeContext());
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new MergeContext());
         int count = 0;
         while (resultSet.next()) {
             count++;
@@ -48,8 +47,7 @@ public final class IteratorResultSetTest {
     public void assertNextWithLimitForAllData() throws SQLException {
         MergeContext mergeContext = new MergeContext();
         mergeContext.setLimit(new Limit(1, 10));
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<Integer>(1), new MockResultSet<Integer>(2, 4), new MockResultSet<Integer>()), mergeContext);
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), mergeContext);
         int count = 0;
         while (resultSet.next()) {
             count++;
@@ -61,8 +59,7 @@ public final class IteratorResultSetTest {
     public void assertNextWithLimitForPartData() throws SQLException {
         MergeContext mergeContext = new MergeContext();
         mergeContext.setLimit(new Limit(1, 1));
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<Integer>(1), new MockResultSet<Integer>(2, 4), new MockResultSet<Integer>()), mergeContext);
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), mergeContext);
         int count = 0;
         while (resultSet.next()) {
             count++;

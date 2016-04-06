@@ -17,25 +17,28 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
-
 /**
- * 进入闭包的值进行包装,提供类型转换方法.
+ * 将进入闭包的值提供类型转换方法.
  * 
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 public class ShardingValueWrapper {
     
-    //value 可能的取值类型有 Number, java.sql.Date, String
-    private final Comparable value;
+    private final Comparable<?> value;
+    
+    public ShardingValueWrapper(final Comparable<?> value) {
+        Preconditions.checkArgument(value instanceof Number || value instanceof Date || value instanceof String, 
+                String.format("Value must be type of Number, Data or String, your value type is '%s'", value.getClass().getName()));
+        this.value = value;
+    }
     
     /**
      * 获取long值.
@@ -58,13 +61,11 @@ public class ShardingValueWrapper {
     private Number numberValue() {
         if (value instanceof Number) {
             return (Number) value;
-        } else if (value instanceof Date) {
-            return ((Date) value).getTime();
-        } else if (value instanceof String) {
-            return new BigDecimal((String) value);
-        } else {
-            throw new UnsupportedOperationException();
         }
+        if (value instanceof Date) {
+            return ((Date) value).getTime();
+        }
+        return new BigDecimal(value.toString());
     }
     
     /**
@@ -77,16 +78,20 @@ public class ShardingValueWrapper {
     public Date dateValue(final String format) throws ParseException {
         if (value instanceof Number) {
             return new Date(((Number) value).longValue());
-        } else if (value instanceof Date) {
-            return (Date) value;
-        } else if (value instanceof String) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(format));
-            return new SimpleDateFormat(format).parse((String) value);
-        } else {
-            throw new UnsupportedOperationException();
         }
+        if (value instanceof Date) {
+            return (Date) value;
+        }
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(format));
+        return new SimpleDateFormat(format).parse(value.toString());
     }
     
+    /**
+     * 将字符串转换为时间.
+     * 
+     * @return 时间类型的值
+     * @throws ParseException
+     */
     public Date dateValue() throws ParseException {
         return dateValue(null);
     }
@@ -100,15 +105,15 @@ public class ShardingValueWrapper {
     public String toString(final String format) {
         if (value instanceof Date) {
             return new SimpleDateFormat(format).format(((Date) value).getTime());
-        } else if (value instanceof Number) {
-            return new SimpleDateFormat(format).format(((Number) value).longValue());
-        } else {
-            return toString();
         }
+        if (value instanceof Number) {
+            return new SimpleDateFormat(format).format(((Number) value).longValue());
+        }
+        return toString();
     }
     
+    @Override
     public String toString() {
         return value.toString();
     }
-    
 }

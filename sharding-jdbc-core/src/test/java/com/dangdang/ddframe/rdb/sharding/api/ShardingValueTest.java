@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -31,31 +32,31 @@ public final class ShardingValueTest {
     
     @Test
     public void assertGetTypeWithSingleValue() {
-        assertThat(new ShardingValue<String>("columnName", "value").getType(), is(ShardingValueType.SINGLE));
+        assertThat(new ShardingValue<>("columnName", "value").getType(), is(ShardingValueType.SINGLE));
     }
     
     @Test
     public void assertGetTypeWithMultipleValue() {
-        assertThat(new ShardingValue<String>("columnName", Arrays.asList("value")).getType(), is(ShardingValueType.LIST));
+        assertThat(new ShardingValue<>("columnName", Collections.singletonList("value")).getType(), is(ShardingValueType.LIST));
     }
     
     @Test
     public void assertGetTypeWithRangeValue() {
-        assertThat(new ShardingValue<Integer>("columnName", Range.closed(10, 20)).getType(), is(ShardingValueType.RANGE));
+        assertThat(new ShardingValue<>("columnName", Range.closed(10, 20)).getType(), is(ShardingValueType.RANGE));
     }
     
     @Test
     public void assertToStringWithSingleValue() {
-        assertThat(new ShardingValue<String>("columnName", "value").toString(), is("ShardingValue(columnName=columnName, value=value, values=[], valueRange=null)"));
+        assertThat(new ShardingValue<>("columnName", "value").toString(), is("ShardingValue(columnName=columnName, value=value, values=[], valueRange=null)"));
     }
     
     @Test
     public void assertToStringWithMultipleValue() {
-        assertThat(new ShardingValue<String>("columnName", Arrays.asList("value")).toString(), is("ShardingValue(columnName=columnName, value=null, values=[value], valueRange=null)"));
+        assertThat(new ShardingValue<>("columnName", Collections.singletonList("value")).toString(), is("ShardingValue(columnName=columnName, value=null, values=[value], valueRange=null)"));
     }
     
     @Test
     public void assertToStringWithRangeValue() {
-        assertThat(new ShardingValue<Integer>("columnName", Range.closed(10, 20)).toString(), is("ShardingValue(columnName=columnName, value=null, values=[], valueRange=[10‥20])"));
+        assertThat(new ShardingValue<>("columnName", Range.closed(10, 20)).toString(), is("ShardingValue(columnName=columnName, value=null, values=[], valueRange=[10‥20])"));
     }
 }

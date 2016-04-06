@@ -15,16 +15,16 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.internal;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal.parser;
 
 import com.google.common.base.Function;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,16 +32,35 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 配置文件工具类.
+ * 行内配置解析器.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfigUtil {
+@RequiredArgsConstructor
+public final class InlineParser {
     
-    public static List<String> transformCommaStringToList(final String target) {
+    private final static char SPLITTER = ',';
+    
+    private final String inlineExpression;
+    
+    /**
+     * 分隔行内配置.
+     * 
+     * @return 分隔后的配置集合
+     */
+    public List<String> split() {
+        return Splitter.on(SPLITTER).trimResults().splitToList(inlineExpression);
+    }
+    
+    /**
+     * 分隔并求inline表达式值.
+     *
+     * @return 求值后的配置集合
+     */
+    public List<String> evaluate() {
         final GroovyShell shell = new GroovyShell();
-        return flattenSegments(Lists.transform(splitWithComma(target), new Function<String, Object>() {
+        return flattenSegments(Lists.transform(splitWithInlineExpression(), new Function<String, Object>() {
             
             @Override
             public Object apply(final String input) {
@@ -57,14 +76,14 @@ public final class ConfigUtil {
         }));
     }
     
-    static List<String> splitWithComma(final String target) {
+    List<String> splitWithInlineExpression() {
         List<String> result = new ArrayList<>();
         StringBuilder segment = new StringBuilder();
         int bracketsDepth = 0;
-        for (int i = 0; i < target.length(); i++) {
-            char each = target.charAt(i);
+        for (int i = 0; i < inlineExpression.length(); i++) {
+            char each = inlineExpression.charAt(i);
             switch (each) {
-                case ',':
+                case SPLITTER:
                     if (bracketsDepth > 0) {
                         segment.append(each);
                     } else {
@@ -73,7 +92,7 @@ public final class ConfigUtil {
                     }
                     break;
                 case '$':
-                    if ('{' == target.charAt(i + 1)) {
+                    if ('{' == inlineExpression.charAt(i + 1)) {
                         bracketsDepth++;
                     }
                     segment.append(each);
@@ -95,7 +114,7 @@ public final class ConfigUtil {
         return result;
     }
     
-    private static List<String> flattenSegments(final List<Object> segments) {
+    private List<String> flattenSegments(final List<Object> segments) {
         List<String> result = new ArrayList<>();
         for (Object each : segments) {
             if (each instanceof GString) {
@@ -107,7 +126,7 @@ public final class ConfigUtil {
         return result;
     }
     
-    private static List<String> assemblyCartesianSegments(final GString segment) {
+    private List<String> assemblyCartesianSegments(final GString segment) {
         Set<List<String>> cartesianValues = getCartesianValues(segment);
         List<String> result = new ArrayList<>(cartesianValues.size());
         for (List<String> each : cartesianValues) {
@@ -116,7 +135,7 @@ public final class ConfigUtil {
         return result;
     }
     
-    private static String assemblySegment(final List<String> cartesianValue, final GString segment) {
+    private String assemblySegment(final List<String> cartesianValue, final GString segment) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < segment.getStrings().length; i++) {
             result.append(segment.getStrings()[i]);
@@ -128,7 +147,7 @@ public final class ConfigUtil {
     }
     
     @SuppressWarnings("unchecked")
-    private static Set<List<String>> getCartesianValues(final GString segment) {
+    private Set<List<String>> getCartesianValues(final GString segment) {
         List<Set<String>> result = new ArrayList<>(segment.getValues().length);
         for (Object each : segment.getValues()) {
             if (null == each) {

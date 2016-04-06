@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.nullable;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
@@ -68,11 +69,10 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
     
     protected final ShardingDataSource getShardingDataSource() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
-        TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule))),
-                new DatabaseShardingStrategy(Arrays.asList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(Arrays.asList("order_id"), new NoneTableShardingAlgorithm()));
+        TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Collections.singletonList(orderTableRule), Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))),
+                new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
+                new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);
     }
 }

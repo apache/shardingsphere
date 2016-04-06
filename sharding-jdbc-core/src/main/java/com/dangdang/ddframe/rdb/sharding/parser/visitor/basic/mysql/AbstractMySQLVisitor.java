@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
@@ -143,8 +144,8 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
                 parseContext.setHasOrCondition(true);
                 break;
             case Equality: 
-                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Arrays.asList(x.getRight()), getDatabaseType(), getParameters());
-                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Arrays.asList(x.getLeft()), getDatabaseType(), getParameters());
+                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Collections.singletonList(x.getRight()), getDatabaseType(), getParameters());
+                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Collections.singletonList(x.getLeft()), getDatabaseType(), getParameters());
                 break;
             default:
                 break;
