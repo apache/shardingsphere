@@ -85,7 +85,9 @@ public final class MergeContext {
         return Lists.transform(groupByColumns, new Function<GroupByColumn, OrderByColumn>() {
             @Override
             public OrderByColumn apply(final GroupByColumn input) {
-                return new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
+                OrderByColumn orderByColumn = new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
+                orderByColumn.setColumnIndex(input.getColumnIndex());
+                return orderByColumn;
             }
         });
     }

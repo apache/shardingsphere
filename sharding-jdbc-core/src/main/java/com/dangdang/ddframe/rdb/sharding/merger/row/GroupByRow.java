@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.row;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,11 @@ public class GroupByRow extends Row {
     }
     
     private List<Object> getGroupByKey(final List<GroupByColumn> groupByColumns) {
-        return Lists.transform(groupByColumns, getValueByColumnIndexFunction);
+        List<Object> result = new ArrayList<>(groupByColumns.size());
+        for (GroupByColumn each : groupByColumns) {
+            result.add(getValueSafely(each.getColumnIndex()));
+        }
+        return result;
     }
         
     @SuppressWarnings("SuspiciousToArrayCall")

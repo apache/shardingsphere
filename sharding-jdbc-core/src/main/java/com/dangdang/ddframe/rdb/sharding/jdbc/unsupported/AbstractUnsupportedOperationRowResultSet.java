@@ -24,7 +24,6 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.util.Map;
 
 /**
@@ -84,10 +83,7 @@ public abstract class AbstractUnsupportedOperationRowResultSet extends AbstractU
         throw new SQLFeatureNotSupportedException("getCharacterStream");
     }
     
-    @Override
-    public Statement getStatement() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getStatement");
-    }
+    
     
     @Override
     public Blob getBlob(final int columnIndex) throws SQLException {

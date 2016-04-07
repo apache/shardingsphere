@@ -19,19 +19,23 @@ package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 流式排序.
  *
  * @author gaohongtao
  */
+@Slf4j
 public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter implements ReducerResultSet {
     
     private final List<OrderByColumn> orderByColumns;
@@ -39,6 +43,8 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
     private List<ResultSet> effectiveResultSets;
     
     private boolean initial;
+    
+    private Map<ResultSet, Integer> innerStateMap = new HashMap<>();
     
     public StreamingOrderByReducerResultSet(final List<OrderByColumn> orderByColumns) {
         this.orderByColumns = orderByColumns;
@@ -49,6 +55,9 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
         setResultSets(preResultSet);
         setCurrentResultSet(preResultSet.get(0));
         effectiveResultSets = Lists.newArrayList(preResultSet);
+        if (log.isDebugEnabled()) {
+        
+        }
     }
     
     @Override

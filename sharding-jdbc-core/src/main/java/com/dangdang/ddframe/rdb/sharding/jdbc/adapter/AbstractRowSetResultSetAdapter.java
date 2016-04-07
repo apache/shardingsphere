@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -121,6 +122,11 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
             this.wasNullFlag = true;
         }
         return cell;
+    }
+    
+    @Override
+    public Statement getStatement() throws SQLException {
+        return resultSets.get(0).getStatement();
     }
     
     @Override
