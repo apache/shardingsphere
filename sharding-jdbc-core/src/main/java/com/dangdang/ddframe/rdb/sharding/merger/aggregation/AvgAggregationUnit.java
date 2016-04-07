@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,16 +29,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class AvgAggregationUnit extends AbstractAggregationUnit {
-    
-    private final Class<?> returnType;
+public class AvgAggregationUnit implements AggregationUnit {
     
     private BigDecimal count;
     
     private BigDecimal sum;
     
     @Override
-    public void doMerge(final Comparable<?>... values) {
+    public void merge(final Comparable<?>... values) {
         if (null == values || null == values[0] || null == values[1]) {
             return;
         }
@@ -57,9 +54,9 @@ public class AvgAggregationUnit extends AbstractAggregationUnit {
     @Override
     public Comparable<?> getResult() {
         if (null == count || BigDecimal.ZERO.equals(count)) {
-            return (Comparable<?>) ResultSetUtil.convertValue(count, returnType);
+            return count;
         }
         // TODO 通过metadata获取数据库的浮点数精度值
-        return (Comparable<?>) ResultSetUtil.convertValue(sum.divide(count, 4, BigDecimal.ROUND_HALF_UP), returnType);
+        return sum.divide(count, 4, BigDecimal.ROUND_HALF_UP);
     }
 }

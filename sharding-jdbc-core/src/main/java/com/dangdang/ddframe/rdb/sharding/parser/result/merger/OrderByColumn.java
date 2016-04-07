@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.google.common.base.Optional;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ import lombok.ToString;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
-public final class OrderByColumn {
+public final class OrderByColumn implements IndexColumn {
     
     private final Optional<String> name;
     
@@ -42,6 +41,8 @@ public final class OrderByColumn {
     private final Optional<String> alias;
     
     private final OrderByType orderByType;
+    
+    private int columnIndex;
     
     public OrderByColumn(final String name, final String alias, final OrderByType orderByType) {
         this(Optional.of(name), Optional.<Integer>absent(), Optional.fromNullable(alias), orderByType);
@@ -53,6 +54,25 @@ public final class OrderByColumn {
     
     public OrderByColumn(final int index, final OrderByType orderByType) {
         this(Optional.<String>absent(), Optional.of(index), Optional.<String>absent(), orderByType);
+        columnIndex = index;
+    }
+    
+    @Override
+    public void setColumnIndex(final int index) {
+        if (this.index.isPresent()) {
+            return;
+        }
+        columnIndex = index;
+    }
+        
+    @Override
+    public Optional<String> getColumnLabel() {
+        return alias;
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return name;
     }
     
     /**

@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,7 +40,7 @@ public abstract class AbstractShardingResultSet extends AbstractResultSetAdapter
     private int readCount;
     
     protected AbstractShardingResultSet(final List<ResultSet> resultSets, final Limit limit) {
-        super(resultSets);
+//        super(resultSets);
         this.limit = limit;
         setCurrentResultSet(resultSets.get(0));
     }

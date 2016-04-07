@@ -16,7 +16,7 @@
  */
     
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
-    
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -24,7 +24,6 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -40,17 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOpe
 public abstract class AbstractUnsupportedOperationMockResultSet extends AbstractUnsupportedOperationResultSet {
     
     @Override
-    public final void close() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
     public final boolean wasNull() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final ResultSetMetaData getMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
@@ -269,10 +258,7 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
         throw new SQLFeatureNotSupportedException();
     }
     
-    @Override
-    public final int getFetchSize() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
+
     
     @Override
     public final int getType() throws SQLException {
@@ -326,11 +312,6 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
     
     @Override
     public final URL getURL(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final boolean isClosed() throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     

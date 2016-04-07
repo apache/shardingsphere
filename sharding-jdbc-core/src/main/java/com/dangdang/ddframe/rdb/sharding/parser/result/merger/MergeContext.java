@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -45,6 +47,48 @@ public final class MergeContext {
     
     @Setter
     private ExecutorEngine executorEngine;
+    
+    /**
+     * 判断是否为分组或者聚合计算.
+     * 此处将聚合计算想象成为特殊的分组计算,统一进行处理.
+     *
+     * @return true:是分组或者聚合计算 false:不是分组且不是聚合计算
+     */
+    public boolean hasGroupByOrAggregation() {
+        return !groupByColumns.isEmpty() || !aggregationColumns.isEmpty();
+    }
+    
+    /**
+     * 判断是否为排序计算.
+     *
+     * @return true:是排序计算 false:不是排序计算
+     */
+    public boolean hasOrderBy() {
+        return !orderByColumns.isEmpty();
+    }
+    
+    /**
+     * 判断是否有限定结果集计算.
+     * 
+     * @return true:是限定结果集计算 false:不是限定结果集计算
+     */
+    public boolean hasLimit() {
+        return limit != null;
+    }
+    
+    /**
+     * 将分组列转换为排序列的形式.
+     * 
+     * @return 排序列
+     */
+    public List<OrderByColumn> transformGroupByColumnToOrderByColumn() {
+        return Lists.transform(groupByColumns, new Function<GroupByColumn, OrderByColumn>() {
+            @Override
+            public OrderByColumn apply(final GroupByColumn input) {
+                return new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
+            }
+        });
+    }
     
     /**
      * 获取结果集类型.

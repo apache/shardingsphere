@@ -181,7 +181,7 @@ public abstract class AbstractBaseParseTest {
                             AggregationColumn result = new AggregationColumn(input.getExpression(), 
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()), Optional.fromNullable(input.getOption()));
                             if (null != input.getIndex()) {
-                                result.setIndex(input.getIndex());
+                                result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn each : input.getDerivedColumns()) {
                                 result.getDerivedColumns().add(new AggregationColumn(each.getExpression(), 

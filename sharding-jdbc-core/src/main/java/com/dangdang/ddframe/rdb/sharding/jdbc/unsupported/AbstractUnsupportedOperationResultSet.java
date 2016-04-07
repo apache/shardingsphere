@@ -37,8 +37,9 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractResu
         throw new SQLFeatureNotSupportedException("previous");
     }
     
+    //TODO:MERGE改造，改造后子类需要实现光标判断的四个方法
     @Override
-    public final boolean isBeforeFirst() throws SQLException {
+    public boolean isBeforeFirst() throws SQLException {
         throw new SQLFeatureNotSupportedException("isBeforeFirst");
     }
     

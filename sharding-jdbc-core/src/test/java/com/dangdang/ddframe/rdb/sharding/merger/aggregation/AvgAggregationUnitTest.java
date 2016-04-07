@@ -28,19 +28,19 @@ public final class AvgAggregationUnitTest {
     
     @Test
     public void assertAvgAggregation() {
-        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit(BigDecimal.class);
-        avgAggregationUnit.doMerge(10, 50);
-        avgAggregationUnit.doMerge(10, 20);
-        avgAggregationUnit.doMerge(5, 40);
+        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit();
+        avgAggregationUnit.merge(10, 50);
+        avgAggregationUnit.merge(10, 20);
+        avgAggregationUnit.merge(5, 40);
         assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal("4.4000")));
     }
     
     @Test
     public void assertDivideZero() {
-        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit(BigDecimal.class);
-        avgAggregationUnit.doMerge(0, 50);
-        avgAggregationUnit.doMerge(0, 20);
-        avgAggregationUnit.doMerge(0, 40);
+        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit();
+        avgAggregationUnit.merge(0, 50);
+        avgAggregationUnit.merge(0, 20);
+        avgAggregationUnit.merge(0, 40);
         assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal(0)));
     }
 }

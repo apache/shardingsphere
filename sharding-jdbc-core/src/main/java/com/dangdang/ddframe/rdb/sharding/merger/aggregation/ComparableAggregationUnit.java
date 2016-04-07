@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,17 +27,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComparableAggregationUnit extends AbstractAggregationUnit {
+public final class ComparableAggregationUnit implements AggregationUnit {
     
     private final boolean asc;
-    
-    private final Class<?> returnType;
     
     private Comparable<?> result;
     
     @SuppressWarnings("unchecked")
     @Override
-    protected void doMerge(@SuppressWarnings("rawtypes") final Comparable... values) {
+    public void merge(@SuppressWarnings("rawtypes") final Comparable... values) {
         if (null == values || null == values[0]) {
             return;
         }
@@ -56,6 +53,6 @@ public final class ComparableAggregationUnit extends AbstractAggregationUnit {
     
     @Override
     public Comparable<?> getResult() {
-        return (Comparable<?>) ResultSetUtil.convertValue(result, returnType);
+        return result;
     }
 }

@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.component;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * 归并计算单元接口.
+ * 组件接口.
  * 
  * @author gaohongtao
  */
-public interface AggregationUnit {
+public interface ComponentResultSet<T> extends ResultSet {
     
-    /**
-     * 归并聚合值.
-     * 
-     * @param values 聚合数值
-     */
-    void merge(Comparable<?>... values);
-    
-    /**
-     * 获取计算结果.
-     * 
-     * @return 计算结果
-     */
-    Comparable<?> getResult();
+    void inject(final T preResultSet) throws SQLException;
 }

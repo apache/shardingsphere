@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,35 +22,38 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * 处理多结果集的适配器.
- * 
- * @author zhangliang
+ * 代理结果集.
+ *
+ * @author gaohongtao
  */
-public abstract class AbstractResultSetAdapter extends AbstractResultSetGetterAdapter {
+@Slf4j
+public abstract class AbstractDelegateResultSetAdapter extends AbstractResultSetGetterAdapter {
     
-    @Getter
-    @Setter
-    private List<ResultSet> resultSets;
+    private int offset;
     
-    private boolean closed;
+    public void setDelegatedResultSet(final ResultSet resultSet) {
+        setCurrentResultSet(resultSet);
+    }
+    
+    @Override
+    public boolean next() throws SQLException {
+        offset++;
+        log.trace(toString());
+        return getCurrentResultSet().next();
+    }
     
     @Override
     public final void close() throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.close();
-        }
-        closed = true;
+        getCurrentResultSet().close();
     }
     
     @Override
     public final boolean isClosed() throws SQLException {
-        return closed;
+        return getCurrentResultSet().isClosed();
     }
     
     @Override
@@ -65,9 +68,7 @@ public abstract class AbstractResultSetAdapter extends AbstractResultSetGetterAd
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.setFetchDirection(direction);
-        }
+        getCurrentResultSet().setFetchDirection(direction);
     }
     
     @Override
@@ -77,9 +78,7 @@ public abstract class AbstractResultSetAdapter extends AbstractResultSetGetterAd
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.setFetchSize(rows);
-        }
+        getCurrentResultSet().setFetchSize(rows);
     }
     
     @Override
@@ -115,5 +114,10 @@ public abstract class AbstractResultSetAdapter extends AbstractResultSetGetterAd
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
         return getCurrentResultSet().findColumn(columnLabel);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Delegate result set's offset is %d", offset);
     }
 }

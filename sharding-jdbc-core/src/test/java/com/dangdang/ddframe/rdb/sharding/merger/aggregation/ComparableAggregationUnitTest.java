@@ -26,19 +26,19 @@ public final class ComparableAggregationUnitTest {
     
     @Test
     public void assertComparableAggregationForAsc() {
-        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true, int.class);
-        comparableAggregation.doMerge(1);
-        comparableAggregation.doMerge(10);
-        comparableAggregation.doMerge(5);
+        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true);
+        comparableAggregation.merge(1);
+        comparableAggregation.merge(10);
+        comparableAggregation.merge(5);
         assertThat((Integer) comparableAggregation.getResult(), is(1));
     }
     
     @Test
     public void assertComparableAggregationForDesc() {
-        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false, int.class);
-        comparableAggregation.doMerge(1);
-        comparableAggregation.doMerge(10);
-        comparableAggregation.doMerge(5);
+        ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false);
+        comparableAggregation.merge(1);
+        comparableAggregation.merge(10);
+        comparableAggregation.merge(5);
         assertThat((Integer) comparableAggregation.getResult(), is(10));
     }
 }

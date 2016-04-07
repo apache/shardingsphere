@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,14 +29,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class AccumulationAggregationUnit extends AbstractAggregationUnit {
-    
-    private final Class<?> returnType;
+public final class AccumulationAggregationUnit implements AggregationUnit {
     
     private BigDecimal result;
     
     @Override
-    public void doMerge(final Comparable<?>... values) {
+    public void merge(final Comparable<?>... values) {
         if (null == values || null == values[0]) {
             return;
         }
@@ -50,6 +47,6 @@ public final class AccumulationAggregationUnit extends AbstractAggregationUnit {
     
     @Override
     public Comparable<?>  getResult() {
-        return (Comparable<?>) ResultSetUtil.convertValue(result, returnType);
+        return result;
     }
 }

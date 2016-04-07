@@ -22,28 +22,27 @@ import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationResultSet
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AvgAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.ComparableAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.NullableAggregationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.aggregation.ResultSetAggregationValueTest;
-import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.rs.MemoryOrderByResultSetGetTest;
+import com.dangdang.ddframe.rdb.sharding.merger.rs.MemoryOrderByResultSetTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     ResultSetUtilTest.class, 
-    ResultSetQueryIndexTest.class, 
     IteratorResultSetTest.class, 
     OrderByResultSetTest.class, 
-    OrderByValueTest.class, 
     AggregationResultSetTest.class, 
-    ResultSetAggregationValueTest.class, 
     AccumulationAggregationUnitTest.class, 
     ComparableAggregationUnitTest.class, 
     AvgAggregationUnitTest.class, 
-    GroupByValueTest.class, 
     NullableAggregationResultSetTest.class,
+    OrderByRowTest.class,
+    MemoryOrderByResultSetTest.class,
+    MemoryOrderByResultSetGetTest.class
     })
 public class AllMergerTest {
 }

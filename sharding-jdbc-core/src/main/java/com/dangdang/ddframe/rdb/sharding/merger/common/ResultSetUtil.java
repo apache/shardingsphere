@@ -20,14 +20,15 @@ package com.dangdang.ddframe.rdb.sharding.merger.common;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import com.google.common.base.Preconditions;
+import com.google.common.base.Function;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -38,53 +39,6 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtil {
-    
-    /**
-     * 从结果集中提取结果值.
-     * 
-     * @param groupByColumn 分组列对象
-     * @param resultSet 目标结果集
-     * @return 结果对象
-     * @throws SQLException
-     */
-    public static Object getValue(final GroupByColumn groupByColumn, final ResultSet resultSet) throws SQLException {
-        Object result = getValue(groupByColumn.getAlias(), resultSet);
-        Preconditions.checkNotNull(result);
-        return result;
-    }
-    
-    /**
-     * 从结果集中提取结果值.
-     * 
-     * @param orderByColumn 排序列对象
-     * @param resultSet 目标结果集
-     * @return 结果对象
-     * @throws SQLException
-     */
-    public static Object getValue(final OrderByColumn orderByColumn, final ResultSet resultSet) throws SQLException {
-        Object result = null;
-        if (orderByColumn.getIndex().isPresent()) {
-            result = resultSet.getObject(orderByColumn.getIndex().get());
-        } else if (orderByColumn.getAlias().isPresent()) {
-            result = getValue(orderByColumn.getAlias().get(), resultSet);
-        } else if (orderByColumn.getName().isPresent()) {
-            result = getValue(orderByColumn.getName().get(), resultSet);
-        }
-        Preconditions.checkNotNull(result);
-        return result;
-    }
-    
-    private static Object getValue(final String columnName, final ResultSet resultSet) throws SQLException {
-        Object result = resultSet.getObject(columnName);
-        if (null == result) {
-            result = resultSet.getObject(columnName.toUpperCase());
-        }
-        if (null == result) {
-            result = resultSet.getObject(columnName.toLowerCase());
-        }
-        return result;
-    }
-    
     /**
      * 根据返回值类型返回特定类型的结果.
      * 
@@ -95,8 +49,12 @@ public final class ResultSetUtil {
     public static Object convertValue(final Object value, final Class<?> convertType) {
         if (null == value) {
             return convertNullValue(convertType);
+        } else if (value.getClass().equals(convertType)) {
+            return value;
         } else if (value instanceof Number) {
             return convertNumberValue(value, convertType);
+        } else if (value instanceof Date) {
+            return convertDateValue(value, convertType);
         } else {
             if (String.class.equals(convertType)) {
                 return value.toString();
@@ -106,9 +64,25 @@ public final class ResultSetUtil {
         }
     }
     
+    private static Object convertDateValue(final Object value, final Class<?> convertType) {
+        Date date = (Date) value;
+        switch (convertType.getName()) {
+            case "java.sql.Date":
+                return new java.sql.Date(date.getTime());
+            case "java.sql.Time":
+                return new Time(date.getTime());
+            case "java.sql.Timestamp":
+                return new Timestamp(date.getTime());
+            default:
+                throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
+        }
+    }
+    
     private static Object convertNumberValue(final Object value, final Class<?> convertType) {
         Number number = (Number) value;
         switch (convertType.getName()) {
+            case "byte":
+                return number.byteValue();
             case "short":
                 return number.shortValue();
             case "int":
@@ -120,11 +94,7 @@ public final class ResultSetUtil {
             case "float":
                 return number.floatValue();
             case "java.math.BigDecimal":
-                if (number instanceof BigDecimal) {
-                    return number;
-                } else {
-                    return new BigDecimal(number.toString());
-                }
+                return new BigDecimal(number.toString());
             case "java.lang.Object":
                 return value;
             case "java.lang.String":
@@ -136,6 +106,8 @@ public final class ResultSetUtil {
     
     private static Object convertNullValue(final Class<?> convertType) {
         switch (convertType.getName()) {
+            case "byte":
+                return (byte) 0;
             case "short":
                 return (short) 0;
             case "int":
@@ -146,12 +118,8 @@ public final class ResultSetUtil {
                 return 0D;
             case "float":
                 return 0F;
-            case "java.math.BigDecimal":
-            case "java.lang.Object":
-            case "java.lang.String":
-                return null;
             default:
-                throw new ShardingJdbcException("Unsupported data type:%s", convertType);
+                return null;
         }
     }
     
@@ -168,18 +136,14 @@ public final class ResultSetUtil {
         return OrderByType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
     
-    /**
-     * 向聚合列的补列填充索引值.
-     * 
-     * @param resultSet 结果集对象
-     * @param aggregationColumns 聚合列集合
-     * @throws SQLException SQL异常
-     */
-    public static void fillIndexesForDerivedAggregationColumns(final ResultSet resultSet, final Collection<AggregationColumn> aggregationColumns) throws SQLException {
-        for (AggregationColumn aggregationColumn : aggregationColumns) {
-            for (AggregationColumn derivedColumn : aggregationColumn.getDerivedColumns()) {
-                derivedColumn.setIndex(resultSet.findColumn(derivedColumn.getAlias().get()));
-            }
+    public static <V> List<V> iterateResultSet(final ResultSet rs, final Function<ResultSet, V> function) throws SQLException {
+        if (rs.isBeforeFirst()) {
+            rs.next();
         }
+        List<V> result = new ArrayList<>();
+        do {
+            result.add(function.apply(rs));
+        } while (rs.next());
+        return result;
     }
 }
