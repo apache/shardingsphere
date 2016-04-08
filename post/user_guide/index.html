@@ -14,7 +14,7 @@
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
     
     
-    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href='http://fonts.useso.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
     
     <style>
     .navbar {
@@ -55,7 +55,7 @@ body {
 }
 
   </style>
-    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/prism.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
 </head>
 <body>
@@ -287,7 +287,7 @@ Sharding-JDBC认为对于分片策略存有两种维度
 <li>多分片策略</li>
 </ul>
 
-<pre><code class="language-java">new TableShardingStrategy(Arrays.asList(&quot;order_id&quot;，&quot;order_type&quot;, &quot;order_date&quot;), new MultiKeyShardingAlgorithm()))
+<pre><code class="language-java">new TableShardingStrategy(Arrays.asList(&quot;order_id&quot;, &quot;order_type&quot;, &quot;order_date&quot;), new MultiKeyShardingAlgorithm()))
 </code></pre>
 
 <h3 id="分片算法:74c632aa9613b8dd6b95bfab1ba313e2">分片算法</h3>
@@ -513,11 +513,11 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 <pre><code class="language-java">String sql = &quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&quot;;
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 ) {
-            pstmt.setInt(1, 10);
-            pstmt.setInt(2, 1001);
-            ResultSet rs = pstmt.executeQuery();
+            preparedStatement.setInt(1, 10);
+            preparedStatement.setInt(2, 1001);
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
                 System.out.println(rs.getInt(2));
@@ -597,9 +597,13 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-<script src="http://dangdangdotcom.github.io/sharding-jdbc/js/prism.js"></script>
-
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
 
 
 </body>

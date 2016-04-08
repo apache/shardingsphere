@@ -14,7 +14,7 @@
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
     
     
-    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href='http://fonts.useso.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
     
     <style>
     .navbar {
@@ -55,7 +55,7 @@ body {
 }
 
   </style>
-    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/prism.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
 </head>
 <body>
@@ -263,7 +263,7 @@ body {
 
 <h2 id="sharding-jdbc疲劳测试:da68abc810593941936aaba3d62b3b96">Sharding-JDBC疲劳测试</h2>
 
-<p>经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生fullgc。
+<p>经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生Full GC。
 <canvas id="fatigueTest" width="400" height="150"></canvas></p>
 
 	</div>
@@ -319,9 +319,13 @@ body {
 
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-<script src="http://dangdangdotcom.github.io/sharding-jdbc/js/prism.js"></script>
-
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
 
 <script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
 <script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
@@ -331,7 +335,7 @@ body {
         var data =  chartData[$(this).attr("id")];
         $(data.datasets).each(function(index, obj){
             $.extend(obj, charStyle[index])
-        })
+        });
         new Chart(this.getContext("2d"),{
             type: 'line',
             data: data

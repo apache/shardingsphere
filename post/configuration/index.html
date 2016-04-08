@@ -14,7 +14,7 @@
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
     
     
-    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href='http://fonts.useso.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
     
     <style>
     .navbar {
@@ -55,7 +55,7 @@ body {
 }
 
   </style>
-    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/prism.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
     <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
 </head>
 <body>
@@ -184,23 +184,23 @@ props:
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
         tableStrategy: 分表策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   bindingTables: 绑定表列表
   - tableNames: 逻辑表名列表，多个&lt;logic_table_name&gt;以逗号分隔
   
 defaultDatabaseStrategy: 默认数据库分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   
 defaultTableStrategy: 默认数据表分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分表算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
@@ -531,7 +531,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>Class</td>
 <td>否</td>
-<td>默认分库算法全类名，与<code>algorithm-expression</code>有且仅有一个出现</td>
+<td>默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
 </tr>
 
 <tr>
@@ -571,7 +571,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>Class</td>
 <td>否</td>
-<td>默认分表算法全类名，与<code>algorithm-expression</code>有且仅有一个出现</td>
+<td>默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
 </tr>
 
 <tr>
@@ -621,7 +621,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>Class</td>
 <td>否</td>
-<td>分库或分表算法全类名，与<code>algorithm-expression</code>有且仅有一个出现</td>
+<td>分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
 </tr>
 
 <tr>
@@ -710,6 +710,13 @@ props: 属性配置(可选)
 
 <p><code>${[unit1, unit2, unitX]}</code> 表示枚举值</p>
 
+<p>inline表达式中连续多个<code>${...}</code>表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：</p>
+
+<pre><code class="language-groovy">dbtbl_${[online, offline]}_${1..3}
+</code></pre>
+
+<p>最终会解析为<code>dbtbl_online_1</code>，<code>dbtbl_online_2</code>，<code>dbtbl_online_3</code>，<code>dbtbl_offline_1</code>，<code>dbtbl_offline_2</code>和<code>dbtbl_ offline_3</code>这6张表。</p>
+
 <h2 id="字符串内嵌groovy代码:a66b35d20295cb764719ac8bd35837ec">字符串内嵌groovy代码</h2>
 
 <p>表达式本质上是一段字符串，字符串中使用<code>${}</code>来嵌入<code>groovy</code>代码。</p>
@@ -772,7 +779,7 @@ props: 属性配置(可选)
 <tr>
 <td>toString()</td>
 <td></td>
-<td>STring</td>
+<td>String</td>
 </tr>
 </tbody>
 </table>
@@ -846,9 +853,13 @@ props: 属性配置(可选)
 
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-<script src="http://dangdangdotcom.github.io/sharding-jdbc/js/prism.js"></script>
-
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
 
 
 </body>

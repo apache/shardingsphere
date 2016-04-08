@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Indices on Sharding-JDBC</title>
+    <title>Indexes on Sharding-JDBC</title>
     <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
-    <description>Recent content in Indices on Sharding-JDBC</description>
+    <description>Recent content in Indexes on Sharding-JDBC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
@@ -166,10 +166,10 @@
 String sql = &amp;quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&amp;quot;;
 try (
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
-    pstmt.setInt(1, 10);
-    pstmt.setInt(2, 1001);
-    try (ResultSet rs = pstmt.executeQuery()) {
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    preparedStatement.setInt(1, 10);
+    preparedStatement.setInt(2, 1001);
+    try (ResultSet rs = preparedStatement.executeQuery()) {
         while(rs.next()) {
             System.out.println(rs.getInt(1));
             System.out.println(rs.getInt(2));
