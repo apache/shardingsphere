@@ -84,23 +84,23 @@ dataSource: 数据源配置
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
         tableStrategy: 分表策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   bindingTables: 绑定表列表
   - tableNames: 逻辑表名列表，多个<logic_table_name>以逗号分隔
   
 defaultDatabaseStrategy: 默认数据库分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   
 defaultTableStrategy: 默认数据表分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分表算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
@@ -237,7 +237,7 @@ props: 属性配置(可选)
 | *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
 | --------------------          | --------     |  --------- | ------| -----   |
 | sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否  | 默认分库算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:default-table-strategy/\>
@@ -245,7 +245,7 @@ props: 属性配置(可选)
 | *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
 | --------------------          | --------     |  --------- | ------| -----   |
 | sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 默认分表算法全类名，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-class               | 属性         |  Class      |   否  | 默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否  | 默认分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:strategy/\>`*`
@@ -256,7 +256,7 @@ props: 属性配置(可选)
 | --------------------          | --------     |  --------- | ------| -----   |
 | id                            | 属性         |  String     |   是  | Spring Bean ID |
 | sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 分库或分表算法全类名，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-class               | 属性         |  Class      |   否  | 分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否  | 分库或分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:props/\>
@@ -280,6 +280,12 @@ props: 属性配置(可选)
 `${begin..end}` 表示范围区间
 
 `${[unit1, unit2, unitX]}` 表示枚举值
+
+inline表达式中连续多个`${...}`表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：
+```groovy
+dbtbl_${[online, offline]}_${1..3}
+```
+最终会解析为`dbtbl_online_1`，`dbtbl_online_2`，`dbtbl_online_3`，`dbtbl_offline_1`，`dbtbl_offline_2`和`dbtbl_ offline_3`这6张表。
 
 ## 字符串内嵌groovy代码
 表达式本质上是一段字符串，字符串中使用`${}`来嵌入`groovy`代码。

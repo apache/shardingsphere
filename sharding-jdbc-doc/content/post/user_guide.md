@@ -160,7 +160,7 @@ new TableShardingStrategy("order_id", new SingleKeyShardingAlgorithm()))
 - 多分片策略
 
 ```java
-new TableShardingStrategy(Arrays.asList("order_id"，"order_type", "order_date"), new MultiKeyShardingAlgorithm()))
+new TableShardingStrategy(Arrays.asList("order_id", "order_type", "order_date"), new MultiKeyShardingAlgorithm()))
 ```
 
 ### 分片算法
