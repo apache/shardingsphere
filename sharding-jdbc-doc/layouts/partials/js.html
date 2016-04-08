@@ -19,7 +19,7 @@
         var data =  chartData[$(this).attr("id")];
         $(data.datasets).each(function(index, obj){
             $.extend(obj, charStyle[index])
-        })
+        });
         new Chart(this.getContext("2d"),{
             type: 'line',
             data: data

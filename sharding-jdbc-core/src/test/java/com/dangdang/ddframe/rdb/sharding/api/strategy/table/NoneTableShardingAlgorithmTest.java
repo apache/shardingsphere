@@ -34,7 +34,7 @@ public final class NoneTableShardingAlgorithmTest {
     private final Collection<String> targets = Collections.singletonList("tbl");
     
     @Test
-    public void assertDoEqualShardingForTargetsEmtpy() {
+    public void assertDoEqualShardingForTargetsEmpty() {
         assertNull(noneTableShardingAlgorithm.doEqualSharding(Collections.<String>emptyList(), null));
     }
     

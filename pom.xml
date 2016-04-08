@@ -480,6 +480,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
@@ -546,7 +547,7 @@
     
     <repositories>
         <repository>
-            <id>henryyan-mavenrepo</id>
+            <id>alfresco-maven-repo</id>
             <url>https://maven.alfresco.com/nexus/content/groups/public/</url>
         </repository>
         <repository>
@@ -575,7 +576,7 @@
     <description>RDB Sharding</description>
     <licenses>
         <license>
-            <name>Apache Licene 2.0</name>
+            <name>Apache License 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>

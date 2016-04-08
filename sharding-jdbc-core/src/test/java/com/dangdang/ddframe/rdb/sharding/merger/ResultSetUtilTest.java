@@ -127,12 +127,12 @@ public final class ResultSetUtilTest {
     }
     
     @Test
-    public void assertcompareToForAsc() {
+    public void assertCompareToForAsc() {
         assertTrue(ResultSetUtil.compareTo(1, 2, OrderByType.ASC) < 0);
     }
     
     @Test
-    public void assertcompareToForDesc() {
+    public void assertCompareToForDesc() {
         assertFalse(ResultSetUtil.compareTo(1, 2, OrderByType.DESC) < 0);
     }
 }

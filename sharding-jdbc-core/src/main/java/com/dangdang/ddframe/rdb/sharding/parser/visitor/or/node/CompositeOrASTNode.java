@@ -33,7 +33,7 @@ import lombok.Getter;
 @Getter
 public class CompositeOrASTNode extends AbstractOrASTNode {
     
-    private List<Condition> outConditions = new ArrayList<>();
+    private final List<Condition> outConditions = new ArrayList<>();
     
     public void addOutConditions(final ConditionContext outConditions) {
         this.outConditions.addAll(outConditions.getAllConditions());

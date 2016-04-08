@@ -76,10 +76,10 @@ DataSource dataSource = new ShardingDataSource(shardingRule);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
-    pstmt.setInt(1, 10);
-    pstmt.setInt(2, 1001);
-    try (ResultSet rs = pstmt.executeQuery()) {
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    preparedStatement.setInt(1, 10);
+    preparedStatement.setInt(2, 1001);
+    try (ResultSet rs = preparedStatement.executeQuery()) {
         while(rs.next()) {
             System.out.println(rs.getInt(1));
             System.out.println(rs.getInt(2));

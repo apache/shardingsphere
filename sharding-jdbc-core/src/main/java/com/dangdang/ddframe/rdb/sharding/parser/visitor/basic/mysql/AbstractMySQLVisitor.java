@@ -47,7 +47,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     private final ParseContext parseContext = new ParseContext();
     
-    public AbstractMySQLVisitor() {
+    protected AbstractMySQLVisitor() {
         super(new SQLBuilder());
         setPrettyFormat(false);
     }

@@ -34,7 +34,7 @@ import java.util.List;
 
 public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -66,7 +66,7 @@ public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDB
                 "integrate/dataset/db/init/db_9.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);

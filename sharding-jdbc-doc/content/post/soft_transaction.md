@@ -73,7 +73,7 @@ weight = 6
 | syncMaxDeliveryTryTimes            | int                                        | 3         | 同步的事务送达的最大尝试次数                                         |
 | asyncMaxDeliveryTryTimes           | int                                        | 3         | 异步的事务送达的最大尝试次数                                         |
 | asyncMaxDeliveryTryDelayMillis     | long                                       | 60000     | 执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行   |
-| stroageType                        | enum                                       | DATABASE  | 事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表 |
+| storageType                        | enum                                       | DATABASE  | 事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表 |
 | transactionLogDataSource           | DataSource                                 | null      | 存储事务日志的数据源                                                |
 | nestedJob                          | boolean                                    | false     | 是否使用内嵌的作业处理异步事务送达                                    |
 | bestEffortsDeliveryJobConfiguration| AbstractBestEffortsDeliveryJobConfiguration| null      | 最大努力送达型异步作业配置对象                                       |

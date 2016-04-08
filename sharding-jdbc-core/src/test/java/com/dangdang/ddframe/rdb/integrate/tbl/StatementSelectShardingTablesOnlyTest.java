@@ -82,10 +82,10 @@ public final class StatementSelectShardingTablesOnlyTest extends AbstractShardin
     }
     
     @Test
-    public void assertSelectWithBingdingTableAndConfigTable() throws SQLException, DatabaseUnitException {
+    public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN `t_config` c ON o.status = c.status"
                 + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s AND c.status = '%s' ORDER BY i.item_id";
-        assertDataSet("integrate/dataset/tbl/expect/select/SelectWithBingdingTableAndConfigTable.xml", 
+        assertDataSet("integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml", 
                 shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "init"));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "none"));
     }

@@ -26,7 +26,7 @@ import com.dangdang.ddframe.job.api.JobExecutionMultipleShardingContext;
 import com.dangdang.ddframe.job.plugin.job.type.dataflow.AbstractIndividualThroughputDataFlowElasticJob;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 
 import lombok.Setter;
@@ -44,28 +44,28 @@ public class BestEffortsDeliveryJob extends AbstractIndividualThroughputDataFlow
     private SoftTransactionConfiguration transactionConfig;
     
     @Setter
-    private TransacationLogStorage transacationLogStorage;
+    private TransactionLogStorage transactionLogStorage;
     
     @Override
     public List<TransactionLog> fetchData(final JobExecutionMultipleShardingContext context) {
-        return transacationLogStorage.findEligibledTransactionLogs(context.getFetchDataCount(), SoftTransactionType.BestEffortsDelivery);
+        return transactionLogStorage.findEligibleTransactionLogs(context.getFetchDataCount(), SoftTransactionType.BestEffortsDelivery);
     }
     
     @Override
     public boolean processData(final JobExecutionMultipleShardingContext context, final TransactionLog data) {
         try (
                 Connection conn = transactionConfig.getTargetDataSource().getConnection().getConnection(data.getDataSource());
-                PreparedStatement pstmt = conn.prepareStatement(data.getSql())) {
+                PreparedStatement preparedStatement = conn.prepareStatement(data.getSql())) {
             for (int parameterIndex = 0; parameterIndex < data.getParameters().size(); parameterIndex++) {
-                pstmt.setObject(parameterIndex + 1, data.getParameters().get(parameterIndex));
+                preparedStatement.setObject(parameterIndex + 1, data.getParameters().get(parameterIndex));
             }
-            pstmt.executeUpdate();
+            preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
-            transacationLogStorage.increaseAsyncDeliveryTryTimes(data.getId());
+            transactionLogStorage.increaseAsyncDeliveryTryTimes(data.getId());
             log.error(String.format("Async delivery times %s error, max try times is %s", data.getAsyncDeliveryTryTimes() + 1, transactionConfig.getAsyncMaxDeliveryTryTimes()), ex);
             return false;
         }
-        transacationLogStorage.remove(data.getId());
+        transactionLogStorage.remove(data.getId());
         return true;
     }
     

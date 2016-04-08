@@ -39,10 +39,10 @@ public final class YamlConfigMain {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
             Connection conn = dataSource.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, 10);
-            pstmt.setInt(2, 1001);
-            try (ResultSet rs = pstmt.executeQuery()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 10);
+            preparedStatement.setInt(2, 1001);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 while(rs.next()) {
                     System.out.println(rs.getInt(1));
                     System.out.println(rs.getInt(2));
@@ -56,8 +56,8 @@ public final class YamlConfigMain {
         String sql = "SELECT o.user_id, COUNT(*) FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id GROUP BY o.user_id";
         try (
             Connection conn = dataSource.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 System.out.println("user_id: " + rs.getInt(1)+ ", count: " + rs.getInt(2));
             }

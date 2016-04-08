@@ -35,11 +35,11 @@ String sql = "SELECT * FROM t_order";
         
 try (
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
     HintShardingValueManager.init();
     HintShardingValueManager.registerShardingValueOfDatabase("t_order", "user_id", 1);
     HintShardingValueManager.registerShardingValueOfTable("t_order", "order_id", 2);
-    try (ResultSet rs = pstmt.executeQuery()) {
+    try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             ...
         }

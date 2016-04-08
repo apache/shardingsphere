@@ -369,7 +369,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     }
     
     @Test
-    public void assertGetSQLxmlForColumnIndex() throws SQLException {
+    public void assertGetSQLXMLForColumnIndex() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
                 actual.getSQLXML(1);
@@ -381,7 +381,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     }
     
     @Test
-    public void assertGetSQLxmlForColumnLabel() throws SQLException {
+    public void assertGetSQLXMLForColumnLabel() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
                 actual.getSQLXML("uid");

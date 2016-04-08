@@ -64,7 +64,7 @@ public final class AggregationInvokeHandler extends AbstractMergerInvokeHandler<
             final ResultSetQueryIndex resultSetQueryIndex, final AggregationColumn aggregationColumn) 
             throws SQLException {
         AggregationUnit unit = AggregationUnitFactory.create(aggregationColumn.getAggregationType(), returnType);
-        for (ResultSet each : aggregationResultSet.getEffectivedResultSets()) {
+        for (ResultSet each : aggregationResultSet.getEffectiveResultSets()) {
             unit.merge(aggregationColumn, new ResultSetAggregationValue(each), resultSetQueryIndex);
         }
         return unit.getResult();

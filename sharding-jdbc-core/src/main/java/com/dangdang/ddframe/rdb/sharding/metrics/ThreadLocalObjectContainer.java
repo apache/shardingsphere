@@ -33,7 +33,7 @@ public final class ThreadLocalObjectContainer {
     
     private static final ThreadLocal<Map<String, Object>> THREAD_LOCAL_CONTAINER = new ThreadLocal<>();
     
-    private Map<String, Object> data = new HashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
     
     /**
      * 向容器内添加初始对象.

@@ -78,9 +78,9 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     
     private Map<String, BeanDefinition> parseTableRulesConfig(final Element element) {
         Element tableRulesElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_RULES_TAG);
-        List<Element> tableRulelements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(tableRulelements.size());
-        for (Element each : tableRulelements) {
+        List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
+        Map<String, BeanDefinition> result = new ManagedMap<>(tableRuleElements.size());
+        for (Element each : tableRuleElements) {
             result.put(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTR), parseTableRuleConfig(each));
         }
         return result;

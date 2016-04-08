@@ -32,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
  */
 public class WrapperAdapter implements Wrapper {
     
-    private Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
+    private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
     
     @SuppressWarnings("unchecked")
     @Override
@@ -69,7 +69,7 @@ public class WrapperAdapter implements Wrapper {
      * 
      * @param target 目标对象
      */
-    protected final void replayMethodsInvovation(final Object target) {
+    protected final void replayMethodsInvocation(final Object target) {
         for (JdbcMethodInvocation each : jdbcMethodInvocations) {
             each.invoke(target);
         }

@@ -148,7 +148,7 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingDa
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateSQLxml() throws SQLException {
+    public void assertCreateSQLXML() throws SQLException {
         actual.createSQLXML();
     }
     

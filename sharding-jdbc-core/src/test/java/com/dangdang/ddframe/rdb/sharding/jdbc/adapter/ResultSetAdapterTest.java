@@ -65,7 +65,7 @@ public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBU
     }
     
     @Test
-    public void assertColse() throws SQLException {
+    public void assertClose() throws SQLException {
         actual.close();
         assertClose((AbstractShardingResultSet) actual);
     }

@@ -41,9 +41,9 @@ public class SingleRouterUtilTest {
         condition.getValues().add(2);
         shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition);
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.LIST));
-        Iterator<?> iter = shardingValue.getValues().iterator();
-        assertThat((Integer) iter.next(), is(1));
-        assertThat((Integer) iter.next(), is(2));
+        Iterator<?> iterator = shardingValue.getValues().iterator();
+        assertThat((Integer) iterator.next(), is(1));
+        assertThat((Integer) iterator.next(), is(2));
         
         condition = new Condition(new Condition.Column("test", "test"), Condition.BinaryOperator.BETWEEN);
         condition.getValues().add(1);

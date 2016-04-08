@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -54,10 +55,10 @@ public final class Main {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, 10);
-            pstmt.setInt(2, 1001);
-            try (ResultSet rs = pstmt.executeQuery()) {
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 10);
+            preparedStatement.setInt(2, 1001);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     System.out.println(rs.getInt(1));
                     System.out.println(rs.getInt(2));
@@ -71,9 +72,9 @@ public final class Main {
         String sql = "SELECT o.user_id, COUNT(*) FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id GROUP BY o.user_id";
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)
                 ) {
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 System.out.println("user_id: " + rs.getInt(1) + ", count: " + rs.getInt(2));
             }
@@ -85,11 +86,11 @@ public final class Main {
         
         try (
                 Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             HintShardingValueManager.init();
             HintShardingValueManager.registerShardingValueOfDatabase("t_order", "user_id", 10);
             HintShardingValueManager.registerShardingValueOfTable("t_order", "order_id", 1001);
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     System.out.println(rs.getInt(1));
                     System.out.println(rs.getInt(2));
@@ -101,12 +102,11 @@ public final class Main {
         }
     }
     
-    private static ShardingDataSource getShardingDataSource() throws SQLException {
+    private static ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item_0", "t_order_item_1"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

@@ -22,7 +22,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.storage;
  * 
  * @author zhangliang
  */
-public enum TransactionLogStroageType {
+public enum TransactionLogStorageType {
     
     /**
      *  内存存储.

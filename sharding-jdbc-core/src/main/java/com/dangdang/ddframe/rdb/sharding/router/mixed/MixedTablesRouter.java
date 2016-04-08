@@ -52,7 +52,7 @@ public class MixedTablesRouter {
      * 
      * @return 路由结果
      */
-    // TODO 支持多bindtable rule
+    // TODO 支持多bindingTable rule
     public RoutingResult route() {
         Collection<String> bindingTables = shardingRule.filterAllBindingTables(logicTables);
         Collection<String> remainingTables = new ArrayList<>(logicTables);

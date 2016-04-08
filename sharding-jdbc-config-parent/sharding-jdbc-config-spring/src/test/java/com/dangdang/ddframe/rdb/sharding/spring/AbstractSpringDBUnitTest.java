@@ -45,7 +45,7 @@ public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringConte
     @Getter
     private ShardingDataSource shardingDataSource;
     
-    private ClassLoader classLoader = AbstractSpringDBUnitTest.class.getClassLoader();
+    private final ClassLoader classLoader = AbstractSpringDBUnitTest.class.getClassLoader();
     
     @Before
     public void createSchema() throws SQLException {

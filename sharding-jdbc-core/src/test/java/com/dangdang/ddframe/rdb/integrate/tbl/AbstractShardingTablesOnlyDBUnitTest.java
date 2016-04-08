@@ -35,7 +35,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 
 public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -47,7 +47,7 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
         return Collections.singletonList("integrate/dataset/tbl/init/db_single.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList(
                 "t_order_0", 

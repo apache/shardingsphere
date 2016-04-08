@@ -27,7 +27,7 @@ import java.sql.SQLException;
 public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test
-    public void testWithAllPlacehloders() throws SQLException {
+    public void testWithAllPlaceholders() throws SQLException {
         insertData();
         selectData();
     }
@@ -38,28 +38,28 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
         for (int orderId = 1; orderId <= 4; orderId++) {
             for (int userId = 1; userId <= 2; userId++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
-                    PreparedStatement pstmt = connection.prepareStatement(orderSql);
-                    pstmt.setInt(1, orderId);
-                    pstmt.setInt(2, userId);
-                    pstmt.setString(3, "insert");
-                    pstmt.execute();
-                    pstmt.close();
+                    PreparedStatement preparedStatement = connection.prepareStatement(orderSql);
+                    preparedStatement.setInt(1, orderId);
+                    preparedStatement.setInt(2, userId);
+                    preparedStatement.setString(3, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
                     
-                    pstmt = connection.prepareStatement(orderItemSql);
-                    pstmt.setInt(1, orderId);
-                    pstmt.setInt(2, orderId);
-                    pstmt.setInt(3, userId);
-                    pstmt.setString(4, "insert");
-                    pstmt.execute();
-                    pstmt.close();
+                    preparedStatement = connection.prepareStatement(orderItemSql);
+                    preparedStatement.setInt(1, orderId);
+                    preparedStatement.setInt(2, orderId);
+                    preparedStatement.setInt(3, userId);
+                    preparedStatement.setString(4, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
                     
-                    pstmt = connection.prepareStatement(orderItemSql);
-                    pstmt.setInt(1, orderId + 4);
-                    pstmt.setInt(2, orderId);
-                    pstmt.setInt(3, userId);
-                    pstmt.setString(4, "insert");
-                    pstmt.execute();
-                    pstmt.close();
+                    preparedStatement = connection.prepareStatement(orderItemSql);
+                    preparedStatement.setInt(1, orderId + 4);
+                    preparedStatement.setInt(2, orderId);
+                    preparedStatement.setInt(3, userId);
+                    preparedStatement.setString(4, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
                 }
             }
         }
@@ -69,14 +69,14 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
         String sql = "SELECT i.order_id, i.order_item_id  FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.`user_id` = %s AND o.`order_id` = %s ORDER BY i.order_item_id DESC";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement(String.format(sql, 10, 1000));
-            ResultSet resultSet = pstmt.executeQuery();
+            PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, 10, 1000));
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 int order_id = resultSet.getInt(1);
                 int order_item_id = resultSet.getInt(2);
                 System.out.println(order_id+","+order_item_id);
             }
-            pstmt.close();
+            preparedStatement.close();
         }
     }
 }

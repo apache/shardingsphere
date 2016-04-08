@@ -33,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.Orde
 public final class OrderByValueTest {
     
     @Test
-    public void assertcompareToWithSame() {
+    public void assertCompareToWithSame() {
         List<OrderByColumn> columns = Arrays.asList(new OrderByColumn("col1", OrderByType.ASC), new OrderByColumn("col2", OrderByType.DESC));
         List<Comparable<?>> values = createValues(1, 2);
         OrderByValue.Value orderByValue1 = new OrderByValue.Value(columns, values);
@@ -42,7 +42,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertcompareToWithAscForFirstValue() {
+    public void assertCompareToWithAscForFirstValue() {
         List<OrderByColumn> columns = Arrays.asList(new OrderByColumn("col1", OrderByType.ASC), new OrderByColumn("col2", OrderByType.DESC));
         OrderByValue.Value orderByValue1 = new OrderByValue.Value(columns, createValues(1, 2));
         OrderByValue.Value orderByValue2 = new OrderByValue.Value(columns, createValues(2, 2));
@@ -50,7 +50,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertcompareToWithDescForFirstValue() {
+    public void assertCompareToWithDescForFirstValue() {
         List<OrderByColumn> columns = Arrays.asList(new OrderByColumn("col1", OrderByType.ASC), new OrderByColumn("col2", OrderByType.DESC));
         OrderByValue.Value orderByValue1 = new OrderByValue.Value(columns, createValues(1, 2));
         OrderByValue.Value orderByValue2 = new OrderByValue.Value(columns, createValues(2, 2));
@@ -58,7 +58,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertcompareToWithAscForSecondValue() {
+    public void assertCompareToWithAscForSecondValue() {
         List<OrderByColumn> columns = Arrays.asList(new OrderByColumn("col1", OrderByType.ASC), new OrderByColumn("col2", OrderByType.DESC));
         OrderByValue.Value orderByValue1 = new OrderByValue.Value(columns, createValues(2, 1));
         OrderByValue.Value orderByValue2 = new OrderByValue.Value(columns, createValues(2, 2));
@@ -66,7 +66,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertcompareToWithDescForSecondValue() {
+    public void assertCompareToWithDescForSecondValue() {
         List<OrderByColumn> columns = Arrays.asList(new OrderByColumn("col1", OrderByType.ASC), new OrderByColumn("col2", OrderByType.DESC));
         OrderByValue.Value orderByValue1 = new OrderByValue.Value(columns, createValues(2, 1));
         OrderByValue.Value orderByValue2 = new OrderByValue.Value(columns, createValues(2, 2));

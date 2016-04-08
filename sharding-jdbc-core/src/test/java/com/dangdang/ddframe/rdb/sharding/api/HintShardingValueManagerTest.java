@@ -88,11 +88,11 @@ public class HintShardingValueManagerTest {
     public void testMultiValues() {
         HintShardingValueManager.registerShardingValueOfTable("test", "test1", 1);
         HintShardingValueManager.registerShardingValueOfTable("test", "test2", 2);
-        Iterator<ShardingValue<?>> iter = HintShardingValueManager.getShardingValueOfTable("test").get().iterator();
-        ShardingValue<?> shardingValue = iter.next();
+        Iterator<ShardingValue<?>> iterator = HintShardingValueManager.getShardingValueOfTable("test").get().iterator();
+        ShardingValue<?> shardingValue = iterator.next();
         assertThat(shardingValue.getColumnName(), is("test1"));
         assertThat((Integer) shardingValue.getValue(), is(1));
-        shardingValue = iter.next();
+        shardingValue = iterator.next();
         assertThat(shardingValue.getColumnName(), is("test2"));
         assertThat((Integer) shardingValue.getValue(), is(2));
     }

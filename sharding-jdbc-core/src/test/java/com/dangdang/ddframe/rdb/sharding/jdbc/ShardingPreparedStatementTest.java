@@ -48,9 +48,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, "init");
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "init");
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -61,8 +61,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = 'init'";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -73,9 +73,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "DELETE FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, "init");
-            assertThat(pstmt.executeUpdate(), is(40));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "init");
+            assertThat(preparedStatement.executeUpdate(), is(40));
         }
     }
     
@@ -84,8 +84,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "DELETE FROM `t_order` WHERE `status` = 'init'";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            assertThat(pstmt.executeUpdate(), is(40));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            assertThat(preparedStatement.executeUpdate(), is(40));
         }
     }
     
@@ -94,11 +94,11 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, "init");
-            assertTrue(pstmt.execute());
-            assertTrue(pstmt.getResultSet().next());
-            assertThat(pstmt.getResultSet().getLong(1), is(40L));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "init");
+            assertTrue(preparedStatement.execute());
+            assertTrue(preparedStatement.getResultSet().next());
+            assertThat(preparedStatement.getResultSet().getLong(1), is(40L));
         }
     }
     
@@ -107,32 +107,32 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "DELETE FROM `t_order` WHERE `status` = 'init'";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            assertFalse(pstmt.execute());
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            assertFalse(preparedStatement.execute());
         }
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndRsultSetConcurrency() throws SQLException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException {
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            pstmt.setString(1, "init");
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            preparedStatement.setString(1, "init");
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndRsultSetConcurrencyAndResultSetHoldability() throws SQLException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException {
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
-            pstmt.setString(1, "init");
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            preparedStatement.setString(1, "init");
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -143,9 +143,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, 0)) {
-            pstmt.setString(1, "init");
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, 0)) {
+            preparedStatement.setString(1, "init");
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -156,9 +156,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS)) {
-            pstmt.setString(1, "init");
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS)) {
+            preparedStatement.setString(1, "init");
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -169,9 +169,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, new int[] {1})) {
-            pstmt.setNull(1, java.sql.Types.VARCHAR);
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, new int[] {1})) {
+            preparedStatement.setNull(1, java.sql.Types.VARCHAR);
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(0L));
         }
@@ -182,9 +182,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql, new String[] {"orders_count"})) {
-            pstmt.setNull(1, java.sql.Types.VARCHAR);
-            ResultSet resultSet = pstmt.executeQuery();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[] {"orders_count"})) {
+            preparedStatement.setNull(1, java.sql.Types.VARCHAR);
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(0L));
         }
@@ -195,16 +195,16 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, 3101);
-            pstmt.setInt(2, 11);
-            pstmt.setString(3, "BATCH");
-            pstmt.addBatch();
-            pstmt.setInt(1, 3102);
-            pstmt.setInt(2, 12);
-            pstmt.setString(3, "BATCH");
-            pstmt.addBatch();
-            int[] result = pstmt.executeBatch();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3102);
+            preparedStatement.setInt(2, 12);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            int[] result = preparedStatement.executeBatch();
             for (int each : result) {
                 assertThat(each, is(1));
             }

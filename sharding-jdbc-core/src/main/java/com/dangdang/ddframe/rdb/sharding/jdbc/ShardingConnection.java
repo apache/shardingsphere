@@ -52,7 +52,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Getter(AccessLevel.PACKAGE)
     private final ShardingContext shardingContext;
     
-    private Map<String, Connection> connectionMap = new HashMap<>();
+    private final Map<String, Connection> connectionMap = new HashMap<>();
     
     /**
      * 根据数据源名称获取相应的数据库连接.
@@ -67,7 +67,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         Context metricsContext = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
         Connection connection = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
         MetricsContext.stop(metricsContext);
-        replayMethodsInvovation(connection);
+        replayMethodsInvocation(connection);
         connectionMap.put(dataSourceName, connection);
         return connection;
     }

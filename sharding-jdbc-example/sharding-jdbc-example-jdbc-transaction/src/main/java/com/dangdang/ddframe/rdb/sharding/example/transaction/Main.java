@@ -17,17 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.transaction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -37,11 +26,21 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.transaction.algorithm.ModuloTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.NestedBestEffortsDeliveryJobConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
+import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransactionManager;
+import org.apache.commons.dbcp.BasicDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 // CHECKSTYLE:OFF
 public final class Main {
@@ -65,13 +64,13 @@ public final class Main {
         try {
             conn = dataSource.getConnection();
             transactionManager.begin(conn);
-            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
-            pstmt2.setObject(1, 1000);
-            PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-            pstmt1.executeUpdate();
-            pstmt2.executeUpdate();
-            pstmt3.executeUpdate();
+            PreparedStatement preparedStatement1 = conn.prepareStatement(sql1);
+            PreparedStatement preparedStatement2 = conn.prepareStatement(sql2);
+            preparedStatement2.setObject(1, 1000);
+            PreparedStatement preparedStatement3 = conn.prepareStatement(sql3);
+            preparedStatement1.executeUpdate();
+            preparedStatement2.executeUpdate();
+            preparedStatement3.executeUpdate();
         } finally {
             transactionManager.end();
             if (conn != null) {
@@ -80,12 +79,11 @@ public final class Main {
         }
     }
     
-    private static ShardingDataSource getShardingDataSource() throws SQLException {
+    private static ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item_0", "t_order_item_1"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

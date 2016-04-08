@@ -76,11 +76,11 @@ public class NullableAggregationResultSetTest {
         List<ResultSet> resultSetList = new ArrayList<>();
         if (aggregationType.equals(AggregationColumn.AggregationType.AVG)) {
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, null, null})));
-            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, 1, 1})));
+            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(null, 1, 1)));
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, null, null})));
         } else {
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{null})));
-            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{1})));
+            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(1)));
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{null})));
         }
         ResultSet resultSet = ResultSetFactory.getResultSet(resultSetList, result);

@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class MemoryTransacationLogStorage implements TransacationLogStorage {
+public final class MemoryTransactionLogStorage implements TransactionLogStorage {
     
     private static final ConcurrentHashMap<String, TransactionLog> DATA = new ConcurrentHashMap<>();
     
@@ -51,7 +51,7 @@ public final class MemoryTransacationLogStorage implements TransacationLogStorag
     }
     
     @Override
-    public List<TransactionLog> findEligibledTransactionLogs(final int size, final SoftTransactionType type) {
+    public List<TransactionLog> findEligibleTransactionLogs(final int size, final SoftTransactionType type) {
         List<TransactionLog> result = new ArrayList<>();
         int count = 0;
         for (TransactionLog each : DATA.values()) {

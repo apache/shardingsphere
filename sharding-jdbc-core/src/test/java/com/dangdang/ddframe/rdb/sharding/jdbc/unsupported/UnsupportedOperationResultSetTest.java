@@ -71,7 +71,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertisFirst() throws SQLException {
+    public void assertIsFirst() throws SQLException {
         actual.isFirst();
     }
     
@@ -156,7 +156,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertrowUpdateed() throws SQLException {
+    public void assertRowUpdated() throws SQLException {
         actual.rowUpdated();
     }
     

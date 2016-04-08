@@ -59,7 +59,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     }
     
     @Test
-    public void assertColse() throws SQLException {
+    public void assertClose() throws SQLException {
         actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
         actual.close();
         assertTrue(actual.isClosed());

@@ -64,7 +64,7 @@ public final class VisitorLogProxy {
     
     private static class VisitorHandler implements MethodInterceptor {
         
-        private StringBuilder hierarchyIndex = new StringBuilder();
+        private final StringBuilder hierarchyIndex = new StringBuilder();
         
         private Integer depth = 0;
         

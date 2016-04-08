@@ -51,8 +51,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Getter
     private final List<Object> parameters = new ArrayList<>();
     
-    public AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, 
-            final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
+    protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
     

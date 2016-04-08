@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfi
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.async.NestedBestEffortsDeliveryJobFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.sync.BestEffortsDeliveryListener;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorageType;
 import com.dangdang.ddframe.rdb.transaction.soft.tcc.TCCSoftTransactionManager;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -53,7 +53,7 @@ public final class SoftTransactionManagerFactory {
      */
     public void init() throws SQLException {
         DMLExecutionEventBus.register(new BestEffortsDeliveryListener());
-        if (TransactionLogStroageType.DATABASE == transactionConfig.getStroageType()) {
+        if (TransactionLogStorageType.DATABASE == transactionConfig.getStorageType()) {
             Preconditions.checkNotNull(transactionConfig.getTransactionLogDataSource());
             createTable();
         }
@@ -74,8 +74,8 @@ public final class SoftTransactionManagerFactory {
                 + "PRIMARY KEY (`id`));";
         try (
                 Connection conn = transactionConfig.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(dbSchema)) {
-            psmt.executeUpdate();
+                PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
+            preparedStatement.executeUpdate();
         }
     }
     

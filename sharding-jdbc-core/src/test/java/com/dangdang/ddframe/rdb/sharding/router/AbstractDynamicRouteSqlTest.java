@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     
@@ -41,8 +40,7 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
         assertMultipleTargets(shardingValuePairs, originSql, Collections.emptyList(), expectedSize, targetDataSources, targetSQLs);
     }
     
-    protected void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize,
-                                         final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+    private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         HintShardingValueManager.init();
         for (ShardingValuePair each : shardingValuePairs) {
             HintShardingValueManager.registerShardingValueOfDatabase(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);

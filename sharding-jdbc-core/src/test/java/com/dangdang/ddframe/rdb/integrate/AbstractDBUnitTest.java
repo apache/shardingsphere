@@ -46,7 +46,7 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    public static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
+    protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
     
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
@@ -131,7 +131,7 @@ public abstract class AbstractDBUnitTest {
         }
     }
     
-    private IDatabaseConnection getConnection(final Connection connection) throws SQLException, DatabaseUnitException {
+    private IDatabaseConnection getConnection(final Connection connection) throws DatabaseUnitException {
         switch (dbEnv.getDatabaseType()) {
             case H2: 
                 return new H2Connection(connection, "PUBLIC");

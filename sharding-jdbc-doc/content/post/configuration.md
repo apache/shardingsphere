@@ -299,11 +299,11 @@ data_source_${id.longValue() % 2 + 1}
 
 方法列表如下：
 
-| *方法名*                  | *入参*         | *返回类型* |
-| ------------------------ | -------------- | --------- |
-| longValue()              |                | long      |
-| doubleValue()            |                | double    |
+| *方法名*                  | *入参*         | *返回类型*      |
+| ------------------------ | -------------- | ---------------|
+| longValue()              |                | long           |
+| doubleValue()            |                | double         |
 | dateValue(String format) | 时间格式化表达式 | java.util.Date |
 | dateValue()              |                | java.util.Date |
-| toString(String format)  | 时间格式化表达式 | String |
-| toString()               |                | STring |
+| toString(String format)  | 时间格式化表达式 | String         |
+| toString()               |                | String         |

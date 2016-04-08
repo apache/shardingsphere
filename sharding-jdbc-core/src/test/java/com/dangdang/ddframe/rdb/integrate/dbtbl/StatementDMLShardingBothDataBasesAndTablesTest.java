@@ -50,7 +50,7 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
                 }
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
@@ -64,7 +64,7 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
                 }
             }
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -74,7 +74,7 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
             Statement stmt = connection.prepareStatement(sql);
             assertThat(stmt.executeUpdate(String.format(sql, "updated", "init")), is(100));
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     
@@ -89,7 +89,7 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
                 }
             }
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
     @Test
@@ -99,10 +99,10 @@ public final class StatementDMLShardingBothDataBasesAndTablesTest extends Abstra
             Statement stmt = connection.prepareStatement(sql);
             assertThat(stmt.executeUpdate(String.format(sql, "init")), is(100));
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
-    private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
+    private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i), 

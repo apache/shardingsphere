@@ -18,7 +18,7 @@ import com.google.common.collect.Sets;
 
 public final class DataSourceRuleTest {
     
-    private Map<String, DataSource> dataSourceMap = new HashMap<>(3);
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>(3);
     
     private DataSourceRule dataSourceRule;
     
@@ -58,6 +58,6 @@ public final class DataSourceRuleTest {
     
     @Test
     public void assertGetDataSources() {
-        assertThat(dataSourceRule.getDataSources(), is((Collection<DataSource>) dataSourceMap.values()));
+        assertThat(dataSourceRule.getDataSources(), is(dataSourceMap.values()));
     }
 }

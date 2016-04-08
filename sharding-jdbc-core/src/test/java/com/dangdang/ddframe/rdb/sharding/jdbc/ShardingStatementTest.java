@@ -76,7 +76,7 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndRsultSetConcurrency() throws SQLException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException {
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = 'init'";
         try (
                 Connection connection = shardingDataSource.getConnection();
@@ -88,7 +88,7 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndRsultSetConcurrencyAndResultSetHoldability() throws SQLException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException {
         String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = 'init'";
         try (
                 Connection connection = shardingDataSource.getConnection();

@@ -35,47 +35,47 @@ public final class OrderByResultSet extends AbstractShardingResultSet {
     
     private final List<OrderByColumn> orderByColumns;
     
-    private final List<ResultSet> effectivedResultSets;
+    private final List<ResultSet> effectiveResultSets;
     
     private boolean initial;
     
     public OrderByResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) {
         super(resultSets, mergeContext.getLimit());
         orderByColumns = mergeContext.getOrderByColumns();
-        effectivedResultSets = new ArrayList<>(resultSets.size());
+        effectiveResultSets = new ArrayList<>(resultSets.size());
     }
     
     @Override
     public boolean nextForSharding() throws SQLException {
         if (!initial) {
-            initialEffectivedResultSets();
+            initialEffectiveResultSets();
         } else {
-            nextEffectivedResultSets();
+            nextEffectiveResultSets();
         }
-        OrderByValue choosenOrderByValue = null;
-        for (ResultSet each : effectivedResultSets) {
+        OrderByValue chosenOrderByValue = null;
+        for (ResultSet each : effectiveResultSets) {
             OrderByValue eachOrderByValue = new OrderByValue(orderByColumns, each);
-            if (null == choosenOrderByValue || choosenOrderByValue.compareTo(eachOrderByValue) > 0) {
-                choosenOrderByValue = eachOrderByValue;
+            if (null == chosenOrderByValue || chosenOrderByValue.compareTo(eachOrderByValue) > 0) {
+                chosenOrderByValue = eachOrderByValue;
                 setCurrentResultSet(each);
             }
         }
-        return !effectivedResultSets.isEmpty();
+        return !effectiveResultSets.isEmpty();
     }
     
-    private void initialEffectivedResultSets() throws SQLException {
+    private void initialEffectiveResultSets() throws SQLException {
         for (ResultSet each : getResultSets()) {
             if (each.next()) {
-                effectivedResultSets.add(each);
+                effectiveResultSets.add(each);
             }
         }
         initial = true;
     }
     
-    private void nextEffectivedResultSets() throws SQLException {
+    private void nextEffectiveResultSets() throws SQLException {
         boolean next = getCurrentResultSet().next();
         if (!next) {
-            effectivedResultSets.remove(getCurrentResultSet());
+            effectiveResultSets.remove(getCurrentResultSet());
         }
     }
 }

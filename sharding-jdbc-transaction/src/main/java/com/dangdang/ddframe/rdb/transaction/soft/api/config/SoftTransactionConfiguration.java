@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 import javax.sql.DataSource;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStroageType;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorageType;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public final class SoftTransactionConfiguration {
     /**
      * 事务日志存储类型.
      */
-    private TransactionLogStroageType stroageType = TransactionLogStroageType.DATABASE;
+    private TransactionLogStorageType storageType = TransactionLogStorageType.DATABASE;
     
     /**
      * 存储事务日志的数据源.

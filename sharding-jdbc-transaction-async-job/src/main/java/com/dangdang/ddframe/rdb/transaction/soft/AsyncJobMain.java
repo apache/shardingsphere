@@ -58,7 +58,7 @@ public final class AsyncJobMain {
         new BestEffortsDeliveryJobFactory(transactionConfig).init();
     }
     
-    private static ShardingDataSource getShardingDataSource() throws SQLException {
+    private static ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item_0", "t_order_item_1"), dataSourceRule);

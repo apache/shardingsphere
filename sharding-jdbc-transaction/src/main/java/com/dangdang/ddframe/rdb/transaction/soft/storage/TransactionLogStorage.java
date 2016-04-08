@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
  * 
  * @author zhangliang
  */
-public interface TransacationLogStorage {
+public interface TransactionLogStorage {
     
     /**
      * 存储事务日志.
@@ -52,7 +52,7 @@ public interface TransacationLogStorage {
      * @param size 获取日志的数量
      * @param type 柔性事务类型
      */
-    List<TransactionLog> findEligibledTransactionLogs(int size, SoftTransactionType type);
+    List<TransactionLog> findEligibleTransactionLogs(int size, SoftTransactionType type);
     
     /**
      * 增加事务日志异步重试次数.

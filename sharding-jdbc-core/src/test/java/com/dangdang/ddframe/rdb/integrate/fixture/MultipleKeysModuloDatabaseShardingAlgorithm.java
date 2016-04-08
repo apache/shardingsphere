@@ -56,7 +56,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     
     private Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Collection<Integer> values = (Collection<Integer>) shardingValue.getValues();
+        Collection<Integer> values = shardingValue.getValues();
         for (Integer value : values) {
             for (String dataSourceName : availableTargetNames) {
                 if (dataSourceName.endsWith(value % 10 + "")) {
@@ -69,7 +69,7 @@ public final class MultipleKeysModuloDatabaseShardingAlgorithm implements Multip
     
     private Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Range<Integer> range = (Range<Integer>) shardingValue.getValueRange();
+        Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(i % 10 + "")) {

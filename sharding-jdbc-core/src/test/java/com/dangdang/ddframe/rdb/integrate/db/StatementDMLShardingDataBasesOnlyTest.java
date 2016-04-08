@@ -49,7 +49,7 @@ public class StatementDMLShardingDataBasesOnlyTest extends AbstractShardingDataB
                 connection.close();
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
@@ -62,7 +62,7 @@ public class StatementDMLShardingDataBasesOnlyTest extends AbstractShardingDataB
                 }
             }
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -71,7 +71,7 @@ public class StatementDMLShardingDataBasesOnlyTest extends AbstractShardingDataB
             Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format("UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'", "updated", "init")), is(40));
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -84,7 +84,7 @@ public class StatementDMLShardingDataBasesOnlyTest extends AbstractShardingDataB
                 }
             }
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
     @Test
@@ -93,10 +93,10 @@ public class StatementDMLShardingDataBasesOnlyTest extends AbstractShardingDataB
             Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format("DELETE `t_order` WHERE `status` = '%s'", "init")), is(40));
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
-    private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
+    private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
                     shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i)), "t_order", "SELECT * FROM `t_order` WHERE `status`=?", status);

@@ -36,9 +36,9 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractOrASTNode {
     
-    private List<AbstractOrASTNode> subNodes = new ArrayList<>();
+    private final List<AbstractOrASTNode> subNodes = new ArrayList<>();
     
-    private List<List<Condition>> nestedConditions = new ArrayList<>();
+    private final List<List<Condition>> nestedConditions = new ArrayList<>();
     
     public final void addSubNode(final AbstractOrASTNode node) {
         subNodes.add(node);

@@ -38,7 +38,7 @@ import lombok.Getter;
 @Getter
 public final class AggregationResultSet extends AbstractShardingResultSet {
     
-    private final Collection<ResultSet> effectivedResultSets;
+    private final Collection<ResultSet> effectiveResultSets;
     
     private final List<AggregationColumn> aggregationColumns;
     
@@ -47,7 +47,7 @@ public final class AggregationResultSet extends AbstractShardingResultSet {
     public AggregationResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) {
         super(resultSets, mergeContext.getLimit());
         aggregationColumns = mergeContext.getAggregationColumns();
-        effectivedResultSets = new LinkedHashSet<>(resultSets.size());
+        effectiveResultSets = new LinkedHashSet<>(resultSets.size());
     }
     
     @Override
@@ -58,11 +58,11 @@ public final class AggregationResultSet extends AbstractShardingResultSet {
         }
         for (ResultSet each : getResultSets()) {
             if (!each.next()) {
-                effectivedResultSets.remove(each);
+                effectiveResultSets.remove(each);
                 continue;
             }
-            effectivedResultSets.add(each);
+            effectiveResultSets.add(each);
         }
-        return !effectivedResultSets.isEmpty();
+        return !effectiveResultSets.isEmpty();
     }
 }

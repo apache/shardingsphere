@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.transaction.soft.storage;
 
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.DatabaseTransacationLogStorage;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.MemoryTransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.DatabaseTransactionLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.impl.MemoryTransactionLogStorage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransacationLogStorageFactory {
+public final class TransactionLogStorageFactory {
     
     /**
      * 创建事务日志存储器.
@@ -38,14 +38,14 @@ public final class TransacationLogStorageFactory {
      * @param transactionConfiguration 柔性事务配置对象
      * @return 事务日志存储器
      */
-    public static TransacationLogStorage createTransacationLogStorageFactory(final SoftTransactionConfiguration transactionConfiguration) {
-        switch (transactionConfiguration.getStroageType()) {
+    public static TransactionLogStorage createTransactionLogStorageFactory(final SoftTransactionConfiguration transactionConfiguration) {
+        switch (transactionConfiguration.getStorageType()) {
             case MEMORY: 
-                return new MemoryTransacationLogStorage(transactionConfiguration);
+                return new MemoryTransactionLogStorage(transactionConfiguration);
             case DATABASE: 
-                return new DatabaseTransacationLogStorage(transactionConfiguration, transactionConfiguration);
+                return new DatabaseTransactionLogStorage(transactionConfiguration, transactionConfiguration);
             default: 
-                throw new UnsupportedOperationException(transactionConfiguration.getStroageType().toString());
+                throw new UnsupportedOperationException(transactionConfiguration.getStorageType().toString());
         }
     }
 }

@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -105,18 +104,18 @@ public final class ParseContext {
      * 
      * @param expr SQL表达式
      * @param operator 操作符
-     * @param valueExprs 值对象表达式集合
+     * @param valueExprList 值对象表达式集合
      * @param databaseType 数据库类型
-     * @param paramters 通过占位符传进来的参数
+     * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprs, final DatabaseType databaseType, final List<Object> paramters) {
+    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final DatabaseType databaseType, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
         if (!column.isPresent()) {
             return;
         }
-        List<Comparable<?>> values = new ArrayList<>(valueExprs.size());
-        for (SQLExpr each : valueExprs) {
-            Comparable<?> evalValue = evalExpression(databaseType, each, paramters);
+        List<Comparable<?>> values = new ArrayList<>(valueExprList.size());
+        for (SQLExpr each : valueExprList) {
+            Comparable<?> evalValue = evalExpression(databaseType, each, parameters);
             if (null != evalValue) {
                 values.add(evalValue);
             }
@@ -135,10 +134,10 @@ public final class ParseContext {
      * @param operator 操作符
      * @param valueExpr 值对象表达式
      * @param databaseType 数据库类型
-     * @param paramters 通过占位符传进来的参数
+     * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> paramters) {
-        Comparable<?> value = evalExpression(databaseType, valueExpr, paramters);
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> parameters) {
+        Comparable<?> value = evalExpression(databaseType, valueExpr, parameters);
         if (null != value) {
             addCondition(createColumn(columnName, tableName), operator, Collections.<Comparable<?>>singletonList(value));
         }
@@ -195,8 +194,8 @@ public final class ParseContext {
         return null != currentTable ? createColumn(expr.getName(), currentTable.getName()) : null;
     }
     
-    private Column createColumn(final String columName, final String tableName) {
-        return new Column(SQLUtil.getExactlyValue(columName), SQLUtil.getExactlyValue(tableName));
+    private Column createColumn(final String columnName, final String tableName) {
+        return new Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
     private Optional<Table> findTable(final String tableNameOrAlias) {

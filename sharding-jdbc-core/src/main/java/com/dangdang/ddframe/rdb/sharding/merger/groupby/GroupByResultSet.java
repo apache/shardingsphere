@@ -111,7 +111,7 @@ public final class GroupByResultSet extends AbstractShardingResultSet {
         }
     }
     
-    private Multimap<GroupByKey, GroupByValue> map() throws SQLException {
+    private Multimap<GroupByKey, GroupByValue> map() {
         ExecuteUnit<ResultSet, Map<GroupByKey, GroupByValue>> executeUnit = new ExecuteUnit<ResultSet, Map<GroupByKey, GroupByValue>>() {
             
             @Override

@@ -47,7 +47,7 @@ public final class StatementDMLShardingTablesOnlyTest extends AbstractShardingTa
                 stmt.executeUpdate(String.format(sql, i, i, "insert"));
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
@@ -62,7 +62,7 @@ public final class StatementDMLShardingTablesOnlyTest extends AbstractShardingTa
                 }
             }
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -73,7 +73,7 @@ public final class StatementDMLShardingTablesOnlyTest extends AbstractShardingTa
             Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format(sql, "updated", "init")), is(20));
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     
@@ -89,7 +89,7 @@ public final class StatementDMLShardingTablesOnlyTest extends AbstractShardingTa
                 }
             }   
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
     @Test
@@ -100,10 +100,10 @@ public final class StatementDMLShardingTablesOnlyTest extends AbstractShardingTa
             Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format(sql, "init")), is(20));
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
-    private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
+    private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern),
                     shardingDataSource.getConnection().getConnection("dataSource_db_single"), 

@@ -237,7 +237,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
     }
     
     @Test
-    public void assertSetSQLxml() throws SQLException {
+    public void assertSetSQLXML() throws SQLException {
         actual.setSQLXML(1, null);
         assertParameter(actual, 1, null);
     }

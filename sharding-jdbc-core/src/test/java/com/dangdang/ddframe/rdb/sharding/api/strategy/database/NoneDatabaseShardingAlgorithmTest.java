@@ -39,7 +39,7 @@ public final class NoneDatabaseShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoEqualShardingForTargetsEmtpy() {
+    public void assertDoEqualShardingForTargetsEmpty() {
         assertNull(noneDatabaseShardingAlgorithm.doEqualSharding(Collections.<String>emptyList(), null));
     }
     

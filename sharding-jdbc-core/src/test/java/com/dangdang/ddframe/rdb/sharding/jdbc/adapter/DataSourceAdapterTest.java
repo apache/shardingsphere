@@ -54,7 +54,7 @@ public final class DataSourceAdapterTest extends AbstractShardingDataBasesOnlyDB
     }
     
     @Test(expected = SQLException.class)
-    public void assertUnwrapFaliure() throws SQLException {
+    public void assertUnwrapFailure() throws SQLException {
         shardingDataSource.unwrap(String.class);
     }
     
@@ -73,12 +73,12 @@ public final class DataSourceAdapterTest extends AbstractShardingDataBasesOnlyDB
         List<?> list = mock(List.class);
         when(list.isEmpty()).thenReturn(true);
         shardingDataSource.recordMethodInvocation(List.class, "isEmpty", new Class[] {}, new Object[] {});
-        shardingDataSource.replayMethodsInvovation(list);
+        shardingDataSource.replayMethodsInvocation(list);
         verify(list).isEmpty();
     }
     
     @Test(expected = ShardingJdbcException.class)
-    public void assertRecordMethodInvocationFaliure() throws SQLException {
+    public void assertRecordMethodInvocationFailure() throws SQLException {
         shardingDataSource.recordMethodInvocation(String.class, "none", new Class[] {}, new Object[] {});
     }
     

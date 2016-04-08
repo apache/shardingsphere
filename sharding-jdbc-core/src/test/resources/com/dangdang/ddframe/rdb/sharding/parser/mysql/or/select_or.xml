@@ -53,7 +53,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertSelectWithCompictedOrExpression" sql="select id from travelrecord where id = 1 and ( fee=3 or days=5 or (traveldate = '2015-05-04 00:00:07.375' and (user_id=2 or days=2 or fee = 0))) and id=2" expected-sql="SELECT id FROM [Token(travelrecord)] WHERE id = 1 AND (fee = 3 OR days = 5 OR traveldate = '2015-05-04 00:00:07.375' AND (user_id = 2 OR days = 2 OR fee = 0)) AND id = 2">
+    <assert id="assertSelectWithComplicatedOrExpression" sql="select id from travelrecord where id = 1 and ( fee=3 or days=5 or (traveldate = '2015-05-04 00:00:07.375' and (user_id=2 or days=2 or fee = 0))) and id=2" expected-sql="SELECT id FROM [Token(travelrecord)] WHERE id = 1 AND (fee = 3 OR days = 5 OR traveldate = '2015-05-04 00:00:07.375' AND (user_id = 2 OR days = 2 OR fee = 0)) AND id = 2">
         <tables>
             <table name="travelrecord" />
         </tables>
@@ -115,7 +115,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertNullCondtions" sql="select id from travelrecord where 1=1 or id = 1"  expected-sql="SELECT id FROM [Token(travelrecord)] WHERE 1 = 1 OR id = 1">
+    <assert id="assertNullConditions" sql="select id from travelrecord where 1=1 or id = 1"  expected-sql="SELECT id FROM [Token(travelrecord)] WHERE 1 = 1 OR id = 1">
         <tables>
             <table name="travelrecord" />
         </tables>

@@ -35,7 +35,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 
 public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -67,7 +67,7 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
                 "integrate/dataset/nullable/init/nullable_9.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
         ShardingRule shardingRule = new ShardingRule(dataSourceRule, Collections.singletonList(orderTableRule), Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))),

@@ -79,7 +79,7 @@ var chartData = {
             }
         ]
     }
-}
+};
 
 var charStyle = [
     
@@ -105,4 +105,4 @@ var charStyle = [
         pointHoverBorderColor: "rgba(61,134,198,1)",
         pointHoverBorderWidth: 2,
     }
-]
+];

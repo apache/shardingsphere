@@ -37,21 +37,21 @@ public class FooRepositoryImpl implements FooRepository {
         for (int orderId = 1; orderId <= 4; orderId++) {
             for (int userId = 1; userId <= 2; userId++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement pstmt = connection.prepareStatement(orderSql);
-                    pstmt.setInt(1, orderId);
-                    pstmt.setInt(2, userId);
-                    pstmt.setString(3, "insert");
-                    pstmt.execute();
-                    pstmt.close();
+                    PreparedStatement preparedStatement = connection.prepareStatement(orderSql);
+                    preparedStatement.setInt(1, orderId);
+                    preparedStatement.setInt(2, userId);
+                    preparedStatement.setString(3, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
                 
-                    pstmt = connection.prepareStatement(orderItemSql);
+                    preparedStatement = connection.prepareStatement(orderItemSql);
                     int orderItemId = orderId + 4;
-                    pstmt.setInt(1, orderItemId);
-                    pstmt.setInt(2, orderId);
-                    pstmt.setInt(3, userId);
-                    pstmt.setString(4, "insert");
-                    pstmt.execute();
-                    pstmt.close();
+                    preparedStatement.setInt(1, orderItemId);
+                    preparedStatement.setInt(2, orderId);
+                    preparedStatement.setInt(3, userId);
+                    preparedStatement.setString(4, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
                 }  catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -64,12 +64,12 @@ public class FooRepositoryImpl implements FooRepository {
         String orderSql = "DELETE FROM `t_order`";
         String orderItemSql = "DELETE FROM `t_order_item`";
         try (Connection connection = shardingDataSource.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement(orderSql);
-            pstmt.execute();
-            pstmt.close();
-            pstmt = connection.prepareStatement(orderItemSql);
-            pstmt.execute();
-            pstmt.close();
+            PreparedStatement preparedStatement = connection.prepareStatement(orderSql);
+            preparedStatement.execute();
+            preparedStatement.close();
+            preparedStatement = connection.prepareStatement(orderItemSql);
+            preparedStatement.execute();
+            preparedStatement.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -80,10 +80,10 @@ public class FooRepositoryImpl implements FooRepository {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
             Connection conn = shardingDataSource.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, 1);
-            pstmt.setInt(2, 2);
-            try (ResultSet rs = pstmt.executeQuery()) {
+            PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 1);
+            preparedStatement.setInt(2, 2);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 while(rs.next()) {
                     System.out.println("orderItemId:" + rs.getInt(1) + ",orderId:" + rs.getInt(2) + 
                         ",userId:" + rs.getInt(3) + ",status:" + rs.getString(4));

@@ -39,56 +39,56 @@ public final class DMLShardingDataBasesOnlyTest extends AbstractShardingDataBase
     }
     
     @Test
-    public void assertInsertWithAllPlacehloders() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithAllPlaceholders() throws SQLException, DatabaseUnitException {
         String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
-                PreparedStatement pstmt = connection.prepareStatement(sql);
-                pstmt.setInt(1, i);
-                pstmt.setInt(2, i);
-                pstmt.setString(3, "insert");
-                pstmt.executeUpdate();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                preparedStatement.setInt(1, i);
+                preparedStatement.setInt(2, i);
+                preparedStatement.setString(3, "insert");
+                preparedStatement.executeUpdate();
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
-    public void assertInsertWithoutPlacehloder() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
         String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, 'insert')";
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
-                PreparedStatement pstmt = connection.prepareStatement(String.format(sql, i, i));
-                pstmt.executeUpdate();
+                PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, i));
+                preparedStatement.executeUpdate();
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
-    public void assertInsertWithPlacehlodersForShardingKeys() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithPlaceholdersForShardingKeys() throws SQLException, DatabaseUnitException {
         String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
-                PreparedStatement pstmt = connection.prepareStatement(String.format(sql, i, i));
-                pstmt.setString(1, "insert");
-                pstmt.executeUpdate();
+                PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, i));
+                preparedStatement.setString(1, "insert");
+                preparedStatement.executeUpdate();
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
-    public void assertInsertWithPlacehlodersForNotShardingKeys() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithPlaceholdersForNotShardingKeys() throws SQLException, DatabaseUnitException {
         String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
-                PreparedStatement pstmt = connection.prepareStatement(String.format(sql, i, i));
-                pstmt.setString(1, "insert");
-                pstmt.executeUpdate();
+                PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, i));
+                preparedStatement.setString(1, "insert");
+                preparedStatement.executeUpdate();
             }
         }
-        assertDataset("insert", "insert");
+        assertDataSet("insert", "insert");
     }
     
     @Test
@@ -97,15 +97,15 @@ public final class DMLShardingDataBasesOnlyTest extends AbstractShardingDataBase
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement pstmt = connection.prepareStatement(sql);
-                    pstmt.setString(1, "updated");
-                    pstmt.setInt(2, i * 100 + j);
-                    pstmt.setInt(3, i);
-                    assertThat(pstmt.executeUpdate(), is(1));
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setString(1, "updated");
+                    preparedStatement.setInt(2, i * 100 + j);
+                    preparedStatement.setInt(3, i);
+                    assertThat(preparedStatement.executeUpdate(), is(1));
                 }
             }
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -114,27 +114,27 @@ public final class DMLShardingDataBasesOnlyTest extends AbstractShardingDataBase
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement pstmt = connection.prepareStatement(sql);
-                    pstmt.setString(1, "updated");
-                    pstmt.setInt(2, i * 100 + j);
-                    pstmt.setInt(3, i);
-                    assertThat(pstmt.executeUpdate(), is(1));
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setString(1, "updated");
+                    preparedStatement.setInt(2, i * 100 + j);
+                    preparedStatement.setInt(3, i);
+                    assertThat(preparedStatement.executeUpdate(), is(1));
                 }
             }
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         String sql = "UPDATE `t_order` SET `status` = ? WHERE `status` = ?";
         try (Connection connection = shardingDataSource.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, "updated");
-            pstmt.setString(2, "init");
-            assertThat(pstmt.executeUpdate(), is(40));
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, "updated");
+            preparedStatement.setString(2, "init");
+            assertThat(preparedStatement.executeUpdate(), is(40));
         }
-        assertDataset("update", "updated");
+        assertDataSet("update", "updated");
     }
     
     @Test
@@ -143,29 +143,29 @@ public final class DMLShardingDataBasesOnlyTest extends AbstractShardingDataBase
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement pstmt = connection.prepareStatement(sql);
-                    pstmt.setInt(1, i * 100 + j);
-                    pstmt.setInt(2, i);
-                    pstmt.setString(3, "init");
-                    assertThat(pstmt.executeUpdate(), is(1));
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1, i * 100 + j);
+                    preparedStatement.setInt(2, i);
+                    preparedStatement.setString(3, "init");
+                    assertThat(preparedStatement.executeUpdate(), is(1));
                 }
             }
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         String sql = "DELETE `t_order` WHERE `status` = ?";
         try (Connection connection = shardingDataSource.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, "init");
-            assertThat(pstmt.executeUpdate(), is(40));
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, "init");
+            assertThat(preparedStatement.executeUpdate(), is(40));
         }
-        assertDataset("delete", "init");
+        assertDataSet("delete", "init");
     }
     
-    private void assertDataset(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
+    private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i), 
                     shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i)), "t_order", "SELECT * FROM `t_order` WHERE `status`=?", status);

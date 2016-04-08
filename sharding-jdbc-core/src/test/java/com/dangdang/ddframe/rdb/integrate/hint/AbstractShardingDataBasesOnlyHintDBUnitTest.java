@@ -39,7 +39,7 @@ import org.dbunit.DatabaseUnitException;
 
 public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends AbstractDBUnitTest {
     
-    private String dataSourceName = "dataSource_%s";
+    private final String dataSourceName = "dataSource_%s";
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -71,7 +71,7 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
                 "integrate/dataset/db/init/db_9.xml");
     }
     
-    protected final ShardingDataSource getShardingDataSource() throws SQLException {
+    protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);
@@ -81,16 +81,16 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
         return new ShardingDataSource(shardingRule);
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql, final Object... params)
+    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql, final Object... params)
             throws SQLException, DatabaseUnitException {
-        try (DynamicShardingValueHelper annotherHelper = helper) {
+        try (DynamicShardingValueHelper anotherHelper = helper) {
             assertDataSet(expectedDataSetFile, connection, actualTableName, sql, params);
         }
     }
     
-    protected void assertDataset(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql)
+    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
-        try (DynamicShardingValueHelper annotherHelper = helper) {
+        try (DynamicShardingValueHelper anotherHelper = helper) {
             assertDataSet(expectedDataSetFile, connection, actualTableName, sql);
         }
     }

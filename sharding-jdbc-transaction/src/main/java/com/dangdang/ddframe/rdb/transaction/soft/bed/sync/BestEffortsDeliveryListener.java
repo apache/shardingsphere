@@ -28,8 +28,8 @@ import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorageFactory;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorageFactory;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -51,15 +51,15 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
             return;
         }
         SoftTransactionConfiguration transactionConfig = SoftTransactionManagerFactory.getCurrentTransactionConfiguration().get();
-        TransacationLogStorage transacationLogStorage = TransacationLogStorageFactory.createTransacationLogStorageFactory(transactionConfig);
+        TransactionLogStorage transactionLogStorage = TransactionLogStorageFactory.createTransactionLogStorageFactory(transactionConfig);
         BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) SoftTransactionManagerFactory.getCurrentTransactionManager().get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE: 
-                transacationLogStorage.add(new TransactionLog(
+                transactionLogStorage.add(new TransactionLog(
                         event.getId(), transactionManager.getTransactionId(), transactionManager.getTransactionType(), event.getDataSource(), event.getSql(), event.getParameters(), System.currentTimeMillis(), 0));
                 return;
             case EXECUTE_SUCCESS: 
-                transacationLogStorage.remove(event.getId());
+                transactionLogStorage.remove(event.getId());
                 return;
             case EXECUTE_FAILURE: 
                 boolean deliverySuccess = false;
@@ -69,24 +69,24 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                     }
                     boolean isNewConnection = false;
                     Connection conn = null;
-                    PreparedStatement pstmt = null;
+                    PreparedStatement preparedStatement = null;
                     try {
                         conn = transactionManager.getConnection().getConnection(event.getDataSource());
                         if (!isValidConnection(conn)) {
                             conn = transactionManager.getConnection();
                             isNewConnection = true;
                         }
-                        pstmt = conn.prepareStatement(event.getSql());
+                        preparedStatement = conn.prepareStatement(event.getSql());
                         for (int parameterIndex = 0; parameterIndex < event.getParameters().size(); parameterIndex++) {
-                            pstmt.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));
+                            preparedStatement.setObject(parameterIndex + 1, event.getParameters().get(parameterIndex));
                         }
-                        pstmt.executeUpdate();
+                        preparedStatement.executeUpdate();
                         deliverySuccess = true;
-                        transacationLogStorage.remove(event.getId());
+                        transactionLogStorage.remove(event.getId());
                     } catch (final SQLException ex) {
                         log.error(String.format("Delivery times %s error, max try times is %s", i + 1, transactionConfig.getSyncMaxDeliveryTryTimes()), ex);
                     } finally {
-                        close(isNewConnection, conn, pstmt);
+                        close(isNewConnection, conn, preparedStatement);
                     }
                 }
                 return;
@@ -101,8 +101,8 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
     }
     
     private boolean isValidConnection(final Connection conn) {
-        try (PreparedStatement pstmt = conn.prepareStatement("SELECT 1")) {
-            try (ResultSet rs = pstmt.executeQuery()) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT 1")) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 return rs.next() && 1 == rs.getInt("1");
             }
         } catch (final SQLException ex) {
@@ -110,19 +110,19 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
         }
     }
     
-    private void close(final boolean isNewConnection, final Connection conn, final PreparedStatement pstmt) {
-        if (null != pstmt) {
+    private void close(final boolean isNewConnection, final Connection conn, final PreparedStatement preparedStatement) {
+        if (null != preparedStatement) {
             try {
-                pstmt.close();
+                preparedStatement.close();
             } catch (final SQLException ex) {
-                log.error("PreparedStatement colsed error:", ex);
+                log.error("PreparedStatement closed error:", ex);
             }
         }
         if (isNewConnection && null != conn) {
             try {
                 conn.close();
             } catch (final SQLException ex) {
-                log.error("Connection colsed error:", ex);
+                log.error("Connection closed error:", ex);
             }
         }
     }

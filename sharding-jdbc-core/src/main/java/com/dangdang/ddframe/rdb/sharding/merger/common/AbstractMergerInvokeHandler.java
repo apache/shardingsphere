@@ -52,6 +52,6 @@ public abstract class AbstractMergerInvokeHandler<T extends AbstractShardingResu
     protected abstract Object doMerge(T resultSet, Method method, ResultSetQueryIndex resultSetQueryIndex) throws ReflectiveOperationException, SQLException;
     
     protected Object invokeOriginal(final Method method, final ResultSetQueryIndex resultSetQueryIndex) throws ReflectiveOperationException {
-        return method.invoke(resultSet, new Object[] {resultSetQueryIndex.getRawQueryIndex()});
+        return method.invoke(resultSet, resultSetQueryIndex.getRawQueryIndex());
     }
 }

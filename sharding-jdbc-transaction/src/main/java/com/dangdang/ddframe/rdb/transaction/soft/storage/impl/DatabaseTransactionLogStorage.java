@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.storage.impl;
 
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.storage.TransacationLogStorage;
+import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,7 +40,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DatabaseTransacationLogStorage implements TransacationLogStorage {
+public final class DatabaseTransactionLogStorage implements TransactionLogStorage {
     
     private final SoftTransactionConfiguration transactionConfiguration;
     
@@ -51,14 +51,14 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
         String sql = "INSERT INTO `transaction_log` (`id`, `transaction_type`, `data_source`, `sql`, `parameters`, `creation_time`) VALUES (?, ?, ?, ?, ?, ?);";
         try (
                 Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, transactionLog.getId());
-            psmt.setString(2, transactionLog.getTransactionType().toString());
-            psmt.setString(3, transactionLog.getDataSource());
-            psmt.setString(4, transactionLog.getSql());
-            psmt.setString(5, new Gson().toJson(transactionLog.getParameters()));
-            psmt.setLong(6, transactionLog.getCreationTime());
-            psmt.executeUpdate();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, transactionLog.getId());
+            preparedStatement.setString(2, transactionLog.getTransactionType().toString());
+            preparedStatement.setString(3, transactionLog.getDataSource());
+            preparedStatement.setString(4, transactionLog.getSql());
+            preparedStatement.setString(5, new Gson().toJson(transactionLog.getParameters()));
+            preparedStatement.setLong(6, transactionLog.getCreationTime());
+            preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
             log.error("Save transaction log error:", ex);
         }
@@ -69,26 +69,26 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
         String sql = "DELETE FROM `transaction_log` WHERE `id`=?;";
         try (
                 Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, id);
-            psmt.executeUpdate();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
             log.error("Delete transaction log error:", ex);
         }
     }
     
     @Override
-    public List<TransactionLog> findEligibledTransactionLogs(final int size, final SoftTransactionType type) {
+    public List<TransactionLog> findEligibleTransactionLogs(final int size, final SoftTransactionType type) {
         List<TransactionLog> result = new ArrayList<>(size);
         String sql = "SELECT `id`, `transaction_type`, `data_source`, `sql`, `parameters`, `creation_time`, `async_delivery_try_times` "
                 + "FROM `transaction_log` WHERE `async_delivery_try_times`<? AND `transaction_type`=? AND `creation_time`<? LIMIT ?;";
         try (
                 Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setInt(1, transactionConfig.getAsyncMaxDeliveryTryTimes());
-            psmt.setString(2, type.toString());
-            psmt.setLong(3, System.currentTimeMillis() - transactionConfiguration.getAsyncMaxDeliveryTryDelayMillis());
-            try (ResultSet rs = psmt.executeQuery()) {
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, transactionConfig.getAsyncMaxDeliveryTryTimes());
+            preparedStatement.setString(2, type.toString());
+            preparedStatement.setLong(3, System.currentTimeMillis() - transactionConfiguration.getAsyncMaxDeliveryTryDelayMillis());
+            try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     Gson gson = new Gson();
                     List<Object> parameters = gson.fromJson(rs.getString(5), new TypeToken<List<Object>>() { }.getType());
@@ -106,9 +106,9 @@ public final class DatabaseTransacationLogStorage implements TransacationLogStor
         String sql = "UPDATE `transaction_log` SET `async_delivery_try_times`=`async_delivery_try_times`+1 WHERE `id`=?;";
         try (
                 Connection conn = transactionConfiguration.getTransactionLogDataSource().getConnection();
-                PreparedStatement psmt = conn.prepareStatement(sql)) {
-            psmt.setString(1, id);
-            psmt.executeUpdate();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
             log.error("Update transaction log error:", ex);
         }
