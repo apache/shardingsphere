@@ -226,13 +226,13 @@ public final class StatementExecutor {
         postDMLExecutionEvents();
         if (1 == statementExecutorWrappers.size()) {
             StatementExecutorWrapper StatementExecutorWrapper = statementExecutorWrappers.iterator().next();
-            boolean result = false;
+            boolean result;
             try {
                 result = executor.execute(StatementExecutorWrapper.getStatement(), StatementExecutorWrapper.getSqlExecutionUnit().getSql());
             } catch (final SQLException ex) {
                 postDMLExecutionEventsAfterExecution(StatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
-                return result;
+                return false;
             } finally {
                 MetricsContext.stop(context);
             }
@@ -243,13 +243,13 @@ public final class StatementExecutor {
         
             @Override
             public Boolean execute(final StatementExecutorWrapper input) throws Exception {
-                boolean result = false;
+                boolean result;
                 try {
                     result = executor.execute(input.getStatement(), input.getSqlExecutionUnit().getSql());
                 } catch (final SQLException ex) {
                     postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
                     ExecutorExceptionHandler.handleException(ex);
-                    return result;
+                    return false;
                 }
                 postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
                 return result;

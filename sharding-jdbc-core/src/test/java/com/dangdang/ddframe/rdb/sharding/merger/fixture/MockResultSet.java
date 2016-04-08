@@ -34,6 +34,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     private Map<String, T> currentValue;
     
+    @SafeVarargs
     public MockResultSet(@SuppressWarnings("unchecked") final T... data) {
         columnNamesMetaData = new ArrayList<>(1);
         List<Map<String, T>> list = new ArrayList<>(data.length);

@@ -50,6 +50,6 @@ public final class OrParseTest extends AbstractBaseParseTest {
     @Test
     public void assertParse() {
         assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Collections.emptyList(), 
-                Arrays.asList("id", "user_id", "name", "age", "days", "fee", "traveldate", "long")).parse());
+                Arrays.asList("id", "user_id", "name", "age", "days", "fee", "travel_date", "long")).parse());
     }
 }

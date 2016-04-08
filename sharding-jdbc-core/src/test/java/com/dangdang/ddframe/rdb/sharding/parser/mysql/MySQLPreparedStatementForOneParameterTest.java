@@ -44,7 +44,7 @@ public final class MySQLPreparedStatementForOneParameterTest extends AbstractBas
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/preparedstatement/one_param/");
+        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/prepared_statement/one_param/");
     }
     
     @Test

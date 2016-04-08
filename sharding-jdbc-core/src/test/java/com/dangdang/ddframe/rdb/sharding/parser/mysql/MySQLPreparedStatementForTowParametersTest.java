@@ -42,7 +42,7 @@ public final class MySQLPreparedStatementForTowParametersTest extends AbstractBa
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/preparedstatement/two_params/");
+        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parser/mysql/prepared_statement/two_params/");
     }
     
     @Test
