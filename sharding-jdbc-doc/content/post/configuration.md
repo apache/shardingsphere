@@ -176,7 +176,7 @@ props: 属性配置(可选)
         <rdb:binding-table-rules>
             <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
         </rdb:binding-table-rules>
-        <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id % 2 + 1}"/>
+        <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id.longValue() % 2 + 1}"/>
         <rdb:props>
             <prop key="metrics.enable">${metrics.enable}</prop>
         </rdb:props>
