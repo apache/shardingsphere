@@ -92,7 +92,7 @@ var charStyle = [
         pointHoverRadius: 5,
         pointHoverBackgroundColor: "rgba(246,179,107,1)",
         pointHoverBorderColor: "rgba(246,179,107,1)",
-        pointHoverBorderWidth: 2,
+        pointHoverBorderWidth: 2
     },
     {
         backgroundColor: "rgba(61,134,198,0.2)",
@@ -103,6 +103,6 @@ var charStyle = [
         pointHoverRadius: 5,
         pointHoverBackgroundColor: "rgba(61,134,198,1)",
         pointHoverBorderColor: "rgba(61,134,198,1)",
-        pointHoverBorderWidth: 2,
+        pointHoverBorderWidth: 2
     }
 ];
