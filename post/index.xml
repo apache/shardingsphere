@@ -21,7 +21,13 @@
 
 &lt;h2 id=&#34;1-1-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.1-SNAPSHOT&lt;/h2&gt;
 
-&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+&lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/49&#34;&gt;ISSUE #49&lt;/a&gt; 调整属性配置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
@@ -30,7 +36,7 @@
 
 &lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
 
-&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能:&lt;/h3&gt;
+&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/40&#34;&gt;ISSUE #40&lt;/a&gt; 支持YAML文件配置&lt;/li&gt;
@@ -38,7 +44,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/42&#34;&gt;ISSUE #42&lt;/a&gt; 支持inline表达式配置&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
@@ -46,13 +52,13 @@
 
 &lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
 
-&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升:&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正:&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
@@ -175,12 +181,12 @@ defaultTableStrategy: 默认数据表分片策略
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
-    metrics.enable: 是否开启度量采集，默认值为false不开启
-    metrics.second.period: 度量输出周期，单位为秒，默认为1秒
-    metrics.package.name: 度量输出在日志中的标识名称，默认为com.dangdang.ddframe.rdb.sharding.metrics
-    parallelExecutor.worker.minIdleSize: 最小空闲工作线程数量，默认为0
-    parallelExecutor.worker.maxSize: 最大工作线程数量，默认为CPU核数乘2
-    parallelExecutor.worker.maxIdleTimeout: 工作线程空闲时超时时间，单位为秒，默认为60秒
+    metrics.enable: 是否开启度量采集，默认值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
+    metrics.package.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
+    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Yaml格式特别说明&lt;/h3&gt;
@@ -628,7 +634,7 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;metrics.second.period&lt;/td&gt;
+&lt;td&gt;metrics.millisecond.period&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
@@ -644,7 +650,7 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;parallelExecutor.worker.minIdleSize&lt;/td&gt;
+&lt;td&gt;executor.min.idle.size&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
@@ -652,7 +658,7 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;parallelExecutor.worker.maxSize&lt;/td&gt;
+&lt;td&gt;executor.max.size&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
@@ -660,7 +666,7 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;parallelExecutor.worker.maxIdleTimeout&lt;/td&gt;
+&lt;td&gt;executor.max.idle.timeout.millisecond&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
@@ -1367,43 +1373,35 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
+&lt;code&gt;java
+SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+transactionConfig.setXXX();
+&lt;/code&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-    transactionConfig.setXXX();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-    transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;开启事务&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 
