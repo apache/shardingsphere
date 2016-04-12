@@ -17,6 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
@@ -27,13 +34,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -63,7 +63,7 @@ public final class AggregationResultSetTest {
     @Parameterized.Parameters(name = "{index}: testTarget:{0}, aggregation type:{1}, columns:{2}, r1:{3}, r2:{4}, rsName:{5}, rsClass:{6}, result:{7}")
     public static Collection init() {
         
-        return Collections.singletonList(new Object[][]{
+        return Arrays.asList(new Object[][]{
                 {TestTarget.INDEX, AggregationType.SUM, Collections.singletonList("column"), Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 8},
                 {TestTarget.COLUMN_NAME, AggregationType.SUM, Collections.singletonList("SUM(0)"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("SUM(0)"), Integer.class, 8},
                 {TestTarget.ALIAS, AggregationType.SUM, Collections.singletonList("SUM_RESULT"), Collections.singletonList(6), Collections.singletonList(2), Optional.of("SUM_RESULT"), Integer.class, 8},
