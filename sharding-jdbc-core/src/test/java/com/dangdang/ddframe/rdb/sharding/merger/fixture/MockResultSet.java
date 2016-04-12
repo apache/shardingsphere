@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -141,13 +142,13 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     }
     
     @Override
-    public boolean isBeforeFirst() throws SQLException {
-        return null == currentValue;
+    public final int getFetchSize() throws SQLException {
+        return size;
     }
     
     @Override
-    public final int getFetchSize() throws SQLException {
-        return size;
+    public final Statement getStatement() throws SQLException {
+        return null;
     }
     
     @Override

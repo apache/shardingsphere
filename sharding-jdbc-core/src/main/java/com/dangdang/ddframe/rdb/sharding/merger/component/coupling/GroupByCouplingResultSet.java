@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByRow;
@@ -30,9 +25,14 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 分组节点结果集.
- *
+ * 
  * @author gaohongtao
  */
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class GroupByCouplingResultSet extends AbstractRowSetResultSetAdapter imp
     private boolean hasNext;
     
     @Override
-    public void inject(final ResultSet preResultSet) {
+    public void init(final ResultSet preResultSet) {
         setResultSets(Collections.singletonList(preResultSet));
     }
     
@@ -62,8 +62,8 @@ public class GroupByCouplingResultSet extends AbstractRowSetResultSetAdapter imp
         if (!hasNext) {
             return null;
         }
-        GroupByRow row = new GroupByRow(resultSet);
-        hasNext = row.aggregate(groupByColumns, aggregationColumns);
+        GroupByRow row = new GroupByRow(resultSet, groupByColumns, aggregationColumns);
+        hasNext = row.aggregate();
         return row;
     }
 }

@@ -17,6 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.rs;
 
+import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import org.junit.Test;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,11 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryOrderByResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;

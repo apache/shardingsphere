@@ -17,21 +17,25 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
+import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
+ * 限制结果集.
+ * 
  * @author gaohongtao
  */
+@Slf4j
 public class LimitCouplingResultSet extends AbstractDelegateResultSetAdapter implements CouplingResultSet {
     
     private final Limit limit;
     
-    private int rowCount;
+    private int rowNumber;
     
     private ResultSet preResultSet;
     
@@ -42,24 +46,41 @@ public class LimitCouplingResultSet extends AbstractDelegateResultSetAdapter imp
     }
     
     @Override
-    public void inject(final ResultSet preResultSet) {
+    public void init(final ResultSet preResultSet) {
         setDelegatedResultSet(preResultSet);
         this.preResultSet = preResultSet;
     }
     
     @Override
     public boolean next() throws SQLException {
-        init();
-        return ++rowCount <= limit.getRowCount() && preResultSet.next();
+        boolean result = true;
+        if (!initial) {
+            result = skipOffset();
+        }
+        if (!result) {
+            return false;
+        }
+        result = ++rowNumber <= limit.getRowCount() && preResultSet.next();
+        if (result) {
+            increaseStat();
+        }
+        return result;
     }
     
-    private void init() throws SQLException {
-        if (initial) {
-            return;
-        }
+    private boolean skipOffset() throws SQLException {
+        boolean result = true;
         for (int i = 0; i < limit.getOffset(); i++) {
-            preResultSet.next();
+            result = preResultSet.next();
+            if (!result) {
+                break;
+            }
         }
         initial = true;
+        return result;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Limit row number:%d limit size:%d result set stat:%s", rowNumber, limit.getRowCount(), super.toString());
     }
 }

@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +48,7 @@ public class OrderByRowTest {
         assertThat((int) row.getCell(1), is(1));
     }
     
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testGetCellError() throws Exception {
         assertThat((int) row.getCell(2), is(1));
     }

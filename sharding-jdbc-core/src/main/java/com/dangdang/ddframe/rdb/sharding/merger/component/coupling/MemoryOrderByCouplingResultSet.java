@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+
 import java.sql.ResultSet;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryOrderByResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 
 /**
  * 基于内存的全排序.
@@ -39,7 +39,7 @@ public class MemoryOrderByCouplingResultSet extends AbstractDelegateResultSetAda
     }
     
     @Override
-    public void inject(final ResultSet preResultSet) {
+    public void init(final ResultSet preResultSet) {
         setDelegatedResultSet(new MemoryOrderByResultSet(preResultSet, expectOrderList));
     }
 }

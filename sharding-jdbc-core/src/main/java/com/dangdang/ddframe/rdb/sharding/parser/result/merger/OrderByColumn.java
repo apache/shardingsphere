@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -93,5 +94,25 @@ public final class OrderByColumn implements IndexColumn {
         public static OrderByType valueOf(final SQLOrderingSpecification sqlOrderingSpecification) {
             return OrderByType.valueOf(sqlOrderingSpecification.name());
         }
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OrderByColumn)) {
+            return false;
+        }
+        OrderByColumn that = (OrderByColumn) o;
+        return orderByType == that.orderByType && (columnIndex == that.columnIndex 
+                || index.isPresent() && that.index.isPresent() && index.get().equals(that.index.get())
+                || name.isPresent() && that.name.isPresent() && name.get().equals(that.name.get())
+                || alias.isPresent() && that.alias.isPresent() && alias.get().equals(that.alias.get()));
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(orderByType, columnIndex);
     }
 }

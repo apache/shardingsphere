@@ -17,6 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationRowResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,17 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationRowResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
-import com.google.common.base.Preconditions;
-import lombok.Setter;
-
 /**
  * 使用行数据集实现的结果集.
  *
  * @author gaohongtao
  */
+@Slf4j
 public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupportedOperationRowResultSet {
     
     @Setter
@@ -55,6 +60,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     
     private final Map<String, Integer> columnLabelToIndexMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
+    @Getter(AccessLevel.PROTECTED)
     private Row currentRow;
     
     private boolean wasNullFlag;
@@ -62,7 +68,9 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     @Override
     public boolean next() throws SQLException {
         init();
-        return (currentRow = nextRow()) != null;
+        boolean result = (currentRow = nextRow()) != null;
+        log.trace(toString());
+        return result;
     }
     
     private void init() throws SQLException {
@@ -106,8 +114,19 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         initColumnIndexMap();
-        Preconditions.checkArgument(columnLabelToIndexMap.containsKey(columnLabel), String.format("Column label %s does not exist", columnLabel));
-        return columnLabelToIndexMap.get(columnLabel);
+        String formattedColumnLabel;
+        if (columnLabelToIndexMap.containsKey(columnLabel)) {
+            formattedColumnLabel = columnLabel;
+        } else {
+            formattedColumnLabel = SQLUtil.getExactlyValue(columnLabel);
+        }
+        Preconditions.checkArgument(columnLabelToIndexMap.containsKey(formattedColumnLabel), String.format("Column label %s does not exist", formattedColumnLabel));
+        return columnLabelToIndexMap.get(formattedColumnLabel);
+    }
+
+    @Override
+    public Statement getStatement() throws SQLException {
+        return resultSets.get(0).getStatement();
     }
     
     @Override
@@ -118,15 +137,8 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         Preconditions.checkArgument(currentRow.containsCell(columnIndex), String.format("Column Index %d out of range", columnIndex));
         
         Object cell = currentRow.getCell(columnIndex);
-        if (null == cell) {
-            this.wasNullFlag = true;
-        }
+        this.wasNullFlag = null == cell;
         return cell;
-    }
-    
-    @Override
-    public Statement getStatement() throws SQLException {
-        return resultSets.get(0).getStatement();
     }
     
     @Override
@@ -153,6 +165,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     public boolean getBoolean(final int columnIndex) throws SQLException {
         Object cell = getObject(columnIndex);
         if (null == cell) {
+            wasNullFlag = false;
             return false;
         }
         return (cell instanceof Boolean) ? (Boolean) cell : Boolean.valueOf(cell.toString());
@@ -374,5 +387,10 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     @Override
     public int getConcurrency() throws SQLException {
         return ResultSet.CONCUR_READ_ONLY;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Current row is %s", currentRow);
     }
 }

@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
@@ -31,8 +25,13 @@ import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.MemoryOrderByR
 import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.StreamingOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 结果集管道构建器.
@@ -42,14 +41,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResultSetPipelineBuilder {
     
-    @Getter
     private final List<ResultSet> inputResultSets;
     
-    private AbstractList<OrderByColumn> orderByColumns = new ArrayList<>();
+    private final AbstractList<OrderByColumn> orderByColumns = new ArrayList<>();
     
     private ComponentResultSet tailResultSet;
     
-    public ResultSetPipelineBuilder(final List<ResultSet> resultSets, final List<OrderByColumn> orderByColumns) throws SQLException {
+    public ResultSetPipelineBuilder(final List<ResultSet> resultSets, final List<OrderByColumn> orderByColumns) {
         inputResultSets = resultSets;
         this.orderByColumns.addAll(orderByColumns);
     }
@@ -63,11 +61,12 @@ public class ResultSetPipelineBuilder {
     public <T> ResultSetPipelineBuilder join(final ComponentResultSet<T> componentResultSet) throws SQLException {
         Preconditions.checkArgument(componentResultSet instanceof ReducerResultSet || componentResultSet instanceof CouplingResultSet);
         if (componentResultSet instanceof ReducerResultSet) {
-            ((ReducerResultSet) componentResultSet).inject(inputResultSets);
+            ((ReducerResultSet) componentResultSet).init(inputResultSets);
         } else {
-            ((CouplingResultSet) componentResultSet).inject(tailResultSet);
+            ((CouplingResultSet) componentResultSet).init(tailResultSet);
         }
         tailResultSet = componentResultSet;
+        log.trace("join component {}", tailResultSet.getClass().getSimpleName());
         return this;
     }
     
@@ -81,6 +80,7 @@ public class ResultSetPipelineBuilder {
         if (orderEqual(expectOrderList)) {
             join(new StreamingOrderByReducerResultSet(expectOrderList));
         } else {
+            setNewOrder(expectOrderList);
             join(new MemoryOrderByReducerResultSet(expectOrderList));
         }
         return this;
@@ -97,6 +97,7 @@ public class ResultSetPipelineBuilder {
         if (orderEqual(expectOrderList)) {
             return this;
         }
+        setNewOrder(expectOrderList);
         join(new MemoryOrderByCouplingResultSet(expectOrderList));
         return this;
     }
@@ -107,12 +108,16 @@ public class ResultSetPipelineBuilder {
      * @return 结果集
      */
     public ResultSet build() {
-        log.trace("The pipeline of result set handling is : {}", tailResultSet);
         return tailResultSet;
     }
     
     private boolean orderEqual(final List<OrderByColumn> expectOrderList) {
         return orderByColumns.equals(expectOrderList);
+    }
+    
+    private void setNewOrder(final List<OrderByColumn> orderList) {
+        orderByColumns.clear();
+        orderByColumns.addAll(orderList);
     }
     
 }

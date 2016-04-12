@@ -68,6 +68,7 @@ public final class ThreadLocalObjectContainer {
      * @param clazz 对象类型
      * @return 对象
      */
+    @SuppressWarnings("unchecked")
     public static <T> T getItem(final Class<T> clazz) {
         return (T) (null == THREAD_LOCAL_CONTAINER.get() ? null : THREAD_LOCAL_CONTAINER.get().get(clazz.getName()));
     }

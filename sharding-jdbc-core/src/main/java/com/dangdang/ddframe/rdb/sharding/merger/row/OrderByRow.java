@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
+import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.google.common.base.Preconditions;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.base.Preconditions;
 
 /**
  * 具有排序功能的行对象.
@@ -43,7 +43,7 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
         this.values = getValues();
     }
     
-    private List<Comparable<?>> getValues() throws SQLException {
+    private List<Comparable<?>> getValues() {
         List<Comparable<?>> result = new ArrayList<>(orderByColumns.size());
         for (OrderByColumn each : orderByColumns) {
             Object value = getCell(each.getColumnIndex());
@@ -63,5 +63,10 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
             }
         }
         return 0;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Order by columns value is %s", values);
     }
 }

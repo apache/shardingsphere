@@ -17,14 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnitFactory;
@@ -33,41 +25,50 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaohongtao
  */
+@Slf4j
 public class GroupByRow extends Row {
     
     private final ResultSet resultSet;
     
-    private final Function<IndexColumn, Object> getValueByColumnIndexFunction = new Function<IndexColumn, Object>() {
-        @Override
-        public Object apply(final IndexColumn input) {
-            return getValueSafely(input.getColumnIndex());
-        }
-    };
+    private final List<GroupByColumn> groupByColumns;
     
-    public GroupByRow(final ResultSet resultSet) throws SQLException {
+    private final List<AggregationColumn> aggregationColumns;
+    
+    public GroupByRow(final ResultSet resultSet, final List<GroupByColumn> groupByColumns, final List<AggregationColumn> aggregationColumns) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
+        this.groupByColumns = groupByColumns;
+        this.aggregationColumns = aggregationColumns;
     }
     
-    public boolean aggregate(final List<GroupByColumn> groupByColumns, final List<AggregationColumn> aggregationColumns) throws SQLException {
+    public boolean aggregate() throws SQLException {
         Map<AggregationColumn, AggregationUnit> aggregationUnitMap = null;
         if (!aggregationColumns.isEmpty()) {
             aggregationUnitMap = new HashMap<>(aggregationColumns.size());
         }
         List<Object> groupByKey = getGroupByKey(groupByColumns);
-        boolean hasNext;
-        while (hasNext = resultSet.next()) {
-            List<Object> nextRowGroupByKey = getGroupByKey(groupByColumns);
-            if (!groupByColumns.isEmpty() && !groupByKey.equals(nextRowGroupByKey)) {
+        log.trace("Group {} start", groupByKey);
+        boolean hasNext = false;
+        do {
+            if (!groupByColumns.isEmpty() && !groupByKey.equals(getGroupByKey(groupByColumns))) {
+                log.trace("Group {} finish", groupByKey);
                 break;
             }
-            mergeAggregationColumn(aggregationColumns, aggregationUnitMap);
-            groupByKey = nextRowGroupByKey;
-        }
+            mergeAggregationColumn(aggregationUnitMap);
+        } while (hasNext = resultSet.next());
         if (null == aggregationUnitMap) {
             return hasNext;
         }
@@ -84,9 +85,8 @@ public class GroupByRow extends Row {
         }
         return result;
     }
-        
-    @SuppressWarnings("SuspiciousToArrayCall")
-    private void mergeAggregationColumn(final List<AggregationColumn> aggregationColumns, final Map<AggregationColumn, AggregationUnit> aggregationUnitMap) {
+    
+    private void mergeAggregationColumn(final Map<AggregationColumn, AggregationUnit> aggregationUnitMap) {
         if (null == aggregationUnitMap) {
             return;
         }
@@ -101,7 +101,14 @@ public class GroupByRow extends Row {
             } else {
                 mergingAggregationColumns = Lists.newArrayList(each.getDerivedColumns());
             }
-            unit.merge(Lists.transform(mergingAggregationColumns, getValueByColumnIndexFunction).toArray(new Comparable[each.getDerivedColumns().size()]));
+            unit.merge(Lists.transform(mergingAggregationColumns, new Function<IndexColumn, Comparable<?>>() {
+                
+                @Override
+                public Comparable<?> apply(final IndexColumn input) {
+                    log.trace("Column Index {} will be merged", input.getColumnIndex());
+                    return (Comparable<?>) getValueSafely(input.getColumnIndex());
+                }
+            }).toArray(new Comparable[mergingAggregationColumns.size()]));
         }
     }
     
@@ -111,5 +118,10 @@ public class GroupByRow extends Row {
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Group by columns is %s, aggregation column is %s, %s", groupByColumns, aggregationColumns, super.toString());
     }
 }

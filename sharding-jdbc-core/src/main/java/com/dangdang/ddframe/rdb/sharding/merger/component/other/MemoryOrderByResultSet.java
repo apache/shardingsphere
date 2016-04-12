@@ -15,7 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.common;
+package com.dangdang.ddframe.rdb.sharding.merger.component.other;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,16 +29,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.base.Function;
-
 /**
  * 内存结果集.
- *
+ * 
  * @author gaohongtao
  */
 public class MemoryOrderByResultSet extends AbstractRowSetResultSetAdapter {
@@ -55,16 +53,9 @@ public class MemoryOrderByResultSet extends AbstractRowSetResultSetAdapter {
     protected void initRows(final List<ResultSet> resultSets) throws SQLException {
         List<OrderByRow> orderByRows = new LinkedList<>();
         for (ResultSet each : resultSets) {
-            orderByRows.addAll(ResultSetUtil.iterateResultSet(each, new Function<ResultSet, OrderByRow>() {
-                @Override
-                public OrderByRow apply(final ResultSet input) {
-                    try {
-                        return new OrderByRow(orderByColumns, input);
-                    } catch (final SQLException ex) {
-                        throw new ShardingJdbcException("Access result set error", ex);
-                    }
-                }
-            }));
+            while (each.next()) {
+                orderByRows.add(new OrderByRow(orderByColumns, each));
+            }
         }
         Collections.sort(orderByRows);
         orderByRowsIterator = orderByRows.iterator();

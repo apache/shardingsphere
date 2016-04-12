@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * 代理结果集.
- *
+ * 
  * @author gaohongtao
  */
 @Slf4j
@@ -35,15 +35,22 @@ public abstract class AbstractDelegateResultSetAdapter extends AbstractResultSet
     
     private int offset;
     
-    public void setDelegatedResultSet(final ResultSet resultSet) {
+    protected void setDelegatedResultSet(final ResultSet resultSet) {
         setCurrentResultSet(resultSet);
+    }
+    
+    protected void increaseStat() {
+        offset++;
+        log.trace(toString());
     }
     
     @Override
     public boolean next() throws SQLException {
-        offset++;
-        log.trace(toString());
-        return getCurrentResultSet().next();
+        boolean result = getCurrentResultSet().next();
+        if (result) {
+            increaseStat();
+        }
+        return result;
     }
     
     @Override
@@ -118,6 +125,6 @@ public abstract class AbstractDelegateResultSetAdapter extends AbstractResultSet
     
     @Override
     public String toString() {
-        return String.format("Delegate result set's offset is %d", offset);
+        return String.format("%s(%d)'s offset is %d", this.getClass().getSimpleName(), hashCode(), offset);
     }
 }

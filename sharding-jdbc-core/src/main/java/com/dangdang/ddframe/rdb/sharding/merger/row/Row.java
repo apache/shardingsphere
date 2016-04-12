@@ -17,11 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-
-import com.google.common.base.Preconditions;
+import java.util.Arrays;
 
 /**
  * 数据行.
@@ -45,7 +48,7 @@ public class Row {
         return result;
     }
     
-    protected void setCell(final int index, final Object value) {
+    void setCell(final int index, final Object value) {
         Preconditions.checkArgument(containsCell(index));
         rowData[index - 1] = value;
     }
@@ -59,4 +62,14 @@ public class Row {
         return index - 1 > -1 && index - 1 < rowData.length;
     }
     
+    @Override
+    public String toString() {
+        return String.format("value is : %s", Lists.transform(Arrays.asList(rowData), new Function<Object, Object>() {
+    
+            @Override
+            public Object apply(final Object input) {
+                return null == input ? "nil" : input;
+            }
+        }));
+    }
 }

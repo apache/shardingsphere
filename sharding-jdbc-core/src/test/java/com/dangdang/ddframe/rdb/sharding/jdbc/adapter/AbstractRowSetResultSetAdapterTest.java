@@ -15,7 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.rs;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.fixture.MockRowSetResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
+import lombok.RequiredArgsConstructor;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -30,20 +37,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryOrderByResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import lombok.RequiredArgsConstructor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class MemoryOrderByResultSetGetTest {
+public class AbstractRowSetResultSetAdapterTest {
     
     private final Object input;
     
@@ -87,8 +87,19 @@ public class MemoryOrderByResultSetGetTest {
     
     @Test
     public void test() throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(input)), Collections.<OrderByColumn>emptyList());
-        rs.next();
+        MockRowSetResultSet rs = new MockRowSetResultSet();
+        MockResultSet mockResultSet = new MockResultSet<>(input);
+        rs.setResultSets(Collections.<ResultSet>singletonList(mockResultSet));
+        assertThat(rs.getStatement(), nullValue());
+        assertThat(rs.getFetchSize() ,is(1));
+        assertThat(rs.getMetaData().getColumnCount(), is(1));
+        assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
+        assertThat(rs.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
+        assertThat(rs.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+        rs.clearWarnings();
+        assertThat(rs.getWarnings(), nullValue());
+        
+        assertThat(rs.next(), is(true));
         if (scale > 0) {
             assertThat(ResultSet.class.getMethod(methodName, int.class, int.class).invoke(rs, 1, scale), is(result));
             assertThat(ResultSet.class.getMethod(methodName, String.class, int.class).invoke(rs, "name", scale), is(result));
@@ -99,5 +110,14 @@ public class MemoryOrderByResultSetGetTest {
             assertThat(ResultSet.class.getMethod(methodName, int.class).invoke(rs, 1), is(result));
             assertThat(ResultSet.class.getMethod(methodName, String.class).invoke(rs, "name"), is(result));
         }
+        if(null == result){
+            assertThat(rs.wasNull(), is(true));
+        } else {
+            assertThat(rs.wasNull(), is(false));
+        }
+        assertThat(rs.next(), is(false));
+        assertThat(rs.isClosed(), is(false));
+        rs.close();
+        assertThat(rs.isClosed(), is(true));
     }
 }

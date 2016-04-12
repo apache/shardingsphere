@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
+
 import java.sql.SQLException;
 import java.sql.Wrapper;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
 
 /**
  * JDBC Wrapper适配类.
@@ -32,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
  */
 public class WrapperAdapter implements Wrapper {
     
-    private Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
+    private final Collection<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
     
     @SuppressWarnings("unchecked")
     @Override

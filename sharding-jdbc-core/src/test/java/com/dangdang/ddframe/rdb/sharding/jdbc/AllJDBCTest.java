@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
@@ -33,6 +31,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationPr
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -50,7 +50,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
     PreparedStatementAdapterTest.class, 
     ResultSetGetterAdapterTest.class, 
     ResultSetAdapterTest.class, 
-    JdbcMethodInvocationTest.class
+    JdbcMethodInvocationTest.class, 
+    AbstractRowSetResultSetAdapterTest.class,
     })
 public class AllJDBCTest {
 }

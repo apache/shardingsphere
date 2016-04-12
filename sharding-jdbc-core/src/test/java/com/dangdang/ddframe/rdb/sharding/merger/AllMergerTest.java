@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.merger.aggregation.NullableAggregationR
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.rs.MemoryOrderByResultSetGetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.rs.MemoryOrderByResultSetTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -42,7 +41,6 @@ import org.junit.runners.Suite;
     NullableAggregationResultSetTest.class,
     OrderByRowTest.class,
     MemoryOrderByResultSetTest.class,
-    MemoryOrderByResultSetGetTest.class
     })
 public class AllMergerTest {
 }

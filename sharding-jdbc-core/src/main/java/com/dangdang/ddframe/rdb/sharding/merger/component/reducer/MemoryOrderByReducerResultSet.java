@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+
 import java.sql.ResultSet;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryOrderByResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 
 /**
  * 根据排序列进行内存中排序.
@@ -39,7 +39,7 @@ public class MemoryOrderByReducerResultSet extends AbstractDelegateResultSetAdap
     }
     
     @Override
-    public void inject(final List<ResultSet> preResultSet) {
+    public void init(final List<ResultSet> preResultSet) {
         setDelegatedResultSet(new MemoryOrderByResultSet(preResultSet, orderByColumns));
     }
     

@@ -15,17 +15,29 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.component;
+package com.dangdang.ddframe.rdb.sharding.jdbc.fixture;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-/**
- * 组件接口.
- * 
- * @author gaohongtao
- */
-public interface ComponentResultSet<T> extends ResultSet {
+public class MockRowSetResultSet extends AbstractRowSetResultSetAdapter {
     
-    void init(final T preResultSet) throws SQLException;
+    private ResultSet resultSet;
+    
+    @Override
+    protected void initRows(final List<ResultSet> resultSets) throws SQLException {
+        this.resultSet = resultSets.get(0);
+    }
+    
+    @Override
+    protected Row nextRow() throws SQLException {
+        if(resultSet.next()){
+            return new Row(resultSet);
+        }
+        return null;
+    }
 }

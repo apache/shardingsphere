@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * 迭代归并结果集.
@@ -38,23 +38,27 @@ public class IteratorReducerResultSet extends AbstractResultSetAdapter implement
     private int currentResultSetOffset;
     
     @Override
-    public void inject(final List<ResultSet> preResultSet) {
+    public void init(final List<ResultSet> preResultSet) {
         setResultSets(preResultSet);
+        resultSetIndex++;
+        setCurrentResultSet(preResultSet.get(0));
     }
     
     @Override
     public boolean next() throws SQLException {
         if (null != getCurrentResultSet() && getCurrentResultSet().next()) {
             currentResultSetOffset++;
+            log.trace(toString());
             return true;
         }
         if (resultSetIndex >= getResultSets().size()) {
             return false;
         }
+        currentResultSetOffset = 1;
         ResultSet rs = getResultSets().get(resultSetIndex++);
         setCurrentResultSet(rs);
         log.trace(toString());
-        return true;
+        return rs.next();
     }
     
     @Override

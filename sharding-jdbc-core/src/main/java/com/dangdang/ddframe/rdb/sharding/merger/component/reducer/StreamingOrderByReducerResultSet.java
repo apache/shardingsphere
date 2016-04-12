@@ -17,18 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * 流式排序.
@@ -40,24 +42,29 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
     
     private final List<OrderByColumn> orderByColumns;
     
-    private List<ResultSet> effectiveResultSets;
-    
     private boolean initial;
     
-    private Map<ResultSet, Integer> innerStateMap = new HashMap<>();
+    private Queue<ResultSet> effectiveResultSetQueue;
     
     public StreamingOrderByReducerResultSet(final List<OrderByColumn> orderByColumns) {
         this.orderByColumns = orderByColumns;
     }
     
     @Override
-    public void inject(final List<ResultSet> preResultSet) throws SQLException {
+    public void init(final List<ResultSet> preResultSet) throws SQLException {
         setResultSets(preResultSet);
         setCurrentResultSet(preResultSet.get(0));
-        effectiveResultSets = Lists.newArrayList(preResultSet);
-        if (log.isDebugEnabled()) {
-        
-        }
+        effectiveResultSetQueue = new LinkedList<>(Collections2.filter(preResultSet, new Predicate<ResultSet>() {
+            @Override
+            public boolean apply(final ResultSet input) {
+                try {
+                    return input.next();
+                } catch (final SQLException ex) {
+                    throw new ShardingJdbcException(ex);
+                }
+            }
+        }));
+        log.trace("Effective result set:{}", effectiveResultSetQueue);
     }
     
     @Override
@@ -68,20 +75,29 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
             initial = true;
         }
         OrderByRow chosenOrderByValue = null;
-        for (ResultSet each : effectiveResultSets) {
+        for (ResultSet each : effectiveResultSetQueue) {
             OrderByRow eachOrderByValue = new OrderByRow(orderByColumns, each);
             if (null == chosenOrderByValue || chosenOrderByValue.compareTo(eachOrderByValue) > 0) {
                 chosenOrderByValue = eachOrderByValue;
                 setCurrentResultSet(each);
             }
         }
-        return !effectiveResultSets.isEmpty();
+        if (!effectiveResultSetQueue.isEmpty()) {
+            log.trace(toString());
+        }
+        return !effectiveResultSetQueue.isEmpty();
     }
     
     private void nextEffectiveResultSets() throws SQLException {
         boolean next = getCurrentResultSet().next();
         if (!next) {
-            effectiveResultSets.remove(getCurrentResultSet());
+            effectiveResultSetQueue.remove(getCurrentResultSet());
+            log.trace("Result set {} finish", getCurrentResultSet());
         }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Current result set:%s", getCurrentResultSet());
     }
 }

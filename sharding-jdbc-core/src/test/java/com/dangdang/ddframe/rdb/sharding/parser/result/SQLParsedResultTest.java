@@ -1,8 +1,5 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
@@ -19,6 +16,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.google.common.base.Optional;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -39,9 +39,9 @@ public final class SQLParsedResultTest {
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
                 + "operator=IN, values=[1, 2, 3])})], "
                 + "mergeContext=MergeContext("
-                + "orderByColumns=[OrderByColumn(name=Optional.of(id), index=Optional.absent(), alias=Optional.of(a), orderByType=DESC)], "
-                + "groupByColumns=[GroupByColumn(name=id, alias=d, orderByType=ASC)], "
-                + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], index=-1)], "
+                + "orderByColumns=[OrderByColumn(name=Optional.of(id), index=Optional.absent(), alias=Optional.of(a), orderByType=DESC, columnIndex=0)], "
+                + "groupByColumns=[GroupByColumn(name=id, alias=d, orderByType=ASC, columnIndex=0)], "
+                + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], columnIndex=-1)], "
                 + "limit=Limit(offset=0, rowCount=10), executorEngine=null))"));
     }
     

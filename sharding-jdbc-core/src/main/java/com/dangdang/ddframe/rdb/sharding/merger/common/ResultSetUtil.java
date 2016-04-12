@@ -17,20 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.common;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import com.google.common.base.Function;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 结果集处理工具类.
@@ -134,16 +129,5 @@ public final class ResultSetUtil {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderByType orderByType) {
         return OrderByType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
-    }
-    
-    public static <V> List<V> iterateResultSet(final ResultSet rs, final Function<ResultSet, V> function) throws SQLException {
-        if (rs.isBeforeFirst()) {
-            rs.next();
-        }
-        List<V> result = new ArrayList<>();
-        do {
-            result.add(function.apply(rs));
-        } while (rs.next());
-        return result;
     }
 }

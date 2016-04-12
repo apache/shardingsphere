@@ -17,6 +17,8 @@
     
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -28,13 +30,10 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
     
 public abstract class AbstractUnsupportedOperationMockResultSet extends AbstractUnsupportedOperationResultSet {
     
@@ -270,10 +269,7 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
         throw new SQLFeatureNotSupportedException();
     }
     
-    @Override
-    public final Statement getStatement() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
+
     
     @Override
     public final Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
