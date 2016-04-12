@@ -17,7 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationTest;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstantTest;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRuleTest;
@@ -33,7 +34,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     DatabaseTypeTest.class, 
-    ShardingConfigurationTest.class, 
+    ShardingPropertiesTest.class,
+    ShardingPropertiesConstantTest.class, 
     ShardingDataSourceTest.class, 
     ShardingValueTest.class,
     DataSourceRuleTest.class, 
@@ -43,9 +45,9 @@ import org.junit.runners.Suite;
     ShardingStrategyTest.class, 
     DatabaseShardingStrategyTest.class, 
     NoneDatabaseShardingAlgorithmTest.class, 
-    TableShardingStrategyTest.class,
-        NoneTableShardingAlgorithmTest.class,
-        HintShardingValueManagerTest.class,
+    TableShardingStrategyTest.class, 
+    NoneTableShardingAlgorithmTest.class,
+    HintShardingValueManagerTest.class,
     })
 public class AllApiTest {
 }

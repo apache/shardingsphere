@@ -17,12 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationConstant;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
@@ -30,9 +26,13 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.dangdang.ddframe.rdb.sharding.metrics.ThreadLocalObjectContainer;
+import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.google.common.base.Preconditions;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * 支持分片的数据源.
@@ -52,21 +52,22 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
         Preconditions.checkNotNull(shardingRule);
         Preconditions.checkNotNull(props);
-        ShardingConfiguration configuration = new ShardingConfiguration(props);
-        initThreadLocalObjectContainer(configuration);
+        ShardingProperties shardingProperties = new ShardingProperties(props);
+        initThreadLocalObjectContainer(shardingProperties);
         DatabaseType type;
         try {
             type = DatabaseType.valueFrom(ShardingConnection.getDatabaseMetaDataFromDataSource(shardingRule.getDataSourceRule().getDataSources()).getDatabaseProductName());
         } catch (final SQLException ex) {
             throw new ShardingJdbcException("Can not get database product name", ex);
         }
-        context = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(configuration));
+        context = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(shardingProperties));
     }
     
-    private void initThreadLocalObjectContainer(final ShardingConfiguration configuration) {
-        if (configuration.getConfig(ShardingConfigurationConstant.METRICS_ENABLE, boolean.class)) {
-            threadLocalObjectContainer.initItem(new MetricsContext(configuration.getConfig(ShardingConfigurationConstant.METRICS_SECOND_PERIOD, long.class),
-                    configuration.getConfig(ShardingConfigurationConstant.METRICS_PACKAGE_NAME, String.class)));
+    private void initThreadLocalObjectContainer(final ShardingProperties shardingProperties) {
+        if (shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE)) {
+            long metricsMillisecondPeriod = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
+            String metricsPackageName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_PACKAGE_NAME);
+            threadLocalObjectContainer.initItem(new MetricsContext(metricsMillisecondPeriod, metricsPackageName));
         }
     }
     

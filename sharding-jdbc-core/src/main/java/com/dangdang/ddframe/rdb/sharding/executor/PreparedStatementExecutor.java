@@ -17,13 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
@@ -31,6 +24,12 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 多线程执行预编译语句对象请求的执行器.

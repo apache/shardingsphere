@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,22 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.util;
+package com.dangdang.ddframe.rdb.sharding.api.props;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        StringUtilTest.class, 
-        SQLUtilTest.class
-})
-public class AllUtilTest {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
+
+public class ShardingPropertiesConstantTest {
     
+    @Test
+    public void testFindByKey() {
+        assertThat(ShardingPropertiesConstant.findByKey("metrics.enable"), is(ShardingPropertiesConstant.METRICS_ENABLE));
+    }
+    
+    @Test
+    public void testFindByKeyWhenNotFound() {
+        assertNull(ShardingPropertiesConstant.findByKey("empty"));
+    }
 }

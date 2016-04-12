@@ -104,12 +104,12 @@ defaultTableStrategy: 默认数据表分片策略
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
-    metrics.enable: 是否开启度量采集，默认值为false不开启
-    metrics.second.period: 度量输出周期，单位为秒，默认为1秒
-    metrics.package.name: 度量输出在日志中的标识名称，默认为com.dangdang.ddframe.rdb.sharding.metrics
-    parallelExecutor.worker.minIdleSize: 最小空闲工作线程数量，默认为0
-    parallelExecutor.worker.maxSize: 最大工作线程数量，默认为CPU核数乘2
-    parallelExecutor.worker.maxIdleTimeout: 工作线程空闲时超时时间，单位为秒，默认为60秒
+    metrics.enable: 是否开启度量采集，默认值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
+    metrics.package.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
+    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
 ```
 
 ### Yaml格式特别说明
@@ -261,14 +261,14 @@ props: 属性配置(可选)
 
 ### \<rdb:props/\>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| metrics.enable                | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启 |
-| metrics.second.period         | 属性         |  String    |   否  | 度量输出周期，单位为秒 |
-| metrics.package.name          | 属性         |  String    |   否  | 度量输出在日志中的标识名称 |
-| parallelExecutor.worker.minIdleSize| 属性         |  int    |   否  | 最小空闲工作线程数量 |
-| parallelExecutor.worker.maxSize| 属性         |  int    |   否  | 最大工作线程数量 |
-| parallelExecutor.worker.maxIdleTimeout| 属性         |  int    |   否  | 工作线程空闲时超时时间，默认以秒为单位 |
+| *名称*                                | 类型         | *数据类型*  | *必填*| *说明*                           |
+| ------------------------------------ | ------------ | ---------- | -----| -------------------------------- |
+| metrics.enable                       | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启   |
+| metrics.millisecond.period           | 属性         |  String    |   否  | 度量输出周期，单位为秒               |
+| metrics.package.name                 | 属性         |  String    |   否  | 度量输出在日志中的标识名称           |
+| executor.min.idle.size               | 属性         |  int       |   否  | 最小空闲工作线程数量                |
+| executor.max.size                    | 属性         |  int       |   否  | 最大工作线程数量                    |
+| executor.max.idle.timeout.millisecond| 属性         |  int       |   否  | 工作线程空闲时超时时间，默认以秒为单位 |
 
 ### Spring格式特别说明
 如需使用inline表达式，需配置`ignore-unresolvable`为`true`，否则placeholder会把inline表达式当成属性key值导致出错. 

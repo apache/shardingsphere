@@ -43,7 +43,7 @@ public final class MetricsContext {
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .withLoggingLevel(LoggingLevel.DEBUG)
                 .build();
-        reporter.start(period, TimeUnit.SECONDS);
+        reporter.start(period, TimeUnit.MILLISECONDS);
         
     }
     

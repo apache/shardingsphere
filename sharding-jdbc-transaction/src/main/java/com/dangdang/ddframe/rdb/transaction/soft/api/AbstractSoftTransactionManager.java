@@ -19,8 +19,6 @@ package com.dangdang.ddframe.rdb.transaction.soft.api;
 
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManagerFactory;
-import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionType;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 

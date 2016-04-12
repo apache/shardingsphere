@@ -27,8 +27,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfiguration;
-import com.dangdang.ddframe.rdb.sharding.api.config.ShardingConfigurationConstant;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -47,13 +47,12 @@ public final class ExecutorEngine {
     
     private final ListeningExecutorService executorService;
     
-    public ExecutorEngine(final ShardingConfiguration configuration) {
+    public ExecutorEngine(final ShardingProperties shardingProperties) {
+        int executorMinIdleSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MIN_IDLE_SIZE);
+        int executorMaxSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_SIZE);
+        long executorMaxIdleTimeoutMilliseconds = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_IDLE_TIMEOUT_MILLISECONDS);
         executorService = MoreExecutors.listeningDecorator(MoreExecutors.getExitingExecutorService(
-                new ThreadPoolExecutor(configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MIN_IDLE_SIZE, int.class),
-                configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_SIZE, int.class),
-                configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT, long.class),
-                TimeUnit.valueOf(configuration.getConfig(ShardingConfigurationConstant.PARALLEL_EXECUTOR_WORKER_MAX_IDLE_TIMEOUT_TIME_UNIT)),
-                new LinkedBlockingQueue<Runnable>())));
+                new ThreadPoolExecutor(executorMinIdleSize, executorMaxSize, executorMaxIdleTimeoutMilliseconds, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>())));
     }
     
     /**

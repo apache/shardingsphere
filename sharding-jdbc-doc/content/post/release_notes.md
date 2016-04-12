@@ -8,30 +8,34 @@ weight = 1
 
 ## 1.1.1-SNAPSHOT
 
-### 缺陷修正:
+### 结构调整
+
+1. [ISSUE #49](https://github.com/dangdangdotcom/sharding-jdbc/issues/49) 调整属性配置
+
+### 缺陷修正
 
 1. [ISSUE #43](https://github.com/dangdangdotcom/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
 1. [ISSUE #48](https://github.com/dangdangdotcom/sharding-jdbc/issues/48) yaml文件读取后未关闭
 
 ## 1.1.0
 
-### 新功能:
+### 新功能
 
 1. [ISSUE #40](https://github.com/dangdangdotcom/sharding-jdbc/issues/40) 支持YAML文件配置
 1. [ISSUE #41](https://github.com/dangdangdotcom/sharding-jdbc/issues/41) 支持Spring命名空间配置
 1. [ISSUE #42](https://github.com/dangdangdotcom/sharding-jdbc/issues/42) 支持inline表达式配置
 
-### 缺陷修正:
+### 缺陷修正
 
 1. [ISSUE #25](https://github.com/dangdangdotcom/sharding-jdbc/issues/25) OR表达式下会出现重复结果问题
 
 ## 1.0.1
 
-### 功能提升:
+### 功能提升
 
 1. [ISSUE #39](https://github.com/dangdangdotcom/sharding-jdbc/issues/39) 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能
 
-### 缺陷修正:
+### 缺陷修正
 
 1. [ISSUE #11](https://github.com/dangdangdotcom/sharding-jdbc/issues/11) count函数在某些情况下返回不正确
 1. [ISSUE #13](https://github.com/dangdangdotcom/sharding-jdbc/issues/13) Insert 语句 没有写列名 进行了全路由
