@@ -15,13 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.repository;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.repository;
 
-public interface FooRepository {
-    
-    void insert();
-    
-    void delete();
+public interface ConfigRepository {
     
     void select();
 }

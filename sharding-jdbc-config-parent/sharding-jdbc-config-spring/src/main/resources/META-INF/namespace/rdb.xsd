@@ -8,21 +8,21 @@
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     <xsd:element name="data-source">
         <xsd:complexType>
-            <xsd:sequence>
+            <xsd:all>
                 <xsd:element ref="sharding-rule" minOccurs="1" maxOccurs="1"/>
                 <xsd:element ref="props" minOccurs="0" maxOccurs="1"/>
-            </xsd:sequence>
+            </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="sharding-rule">
         <xsd:complexType>
-            <xsd:sequence>
+            <xsd:all>
                 <xsd:element ref="table-rules" minOccurs="1" maxOccurs="1"/>
                 <xsd:element ref="binding-table-rules" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-database-strategy" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-table-strategy" minOccurs="0" maxOccurs="1"/>
-            </xsd:sequence>
+            </xsd:all>
             <xsd:attribute name="data-sources" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>

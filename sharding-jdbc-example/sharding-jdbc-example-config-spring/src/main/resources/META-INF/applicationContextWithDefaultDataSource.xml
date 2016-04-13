@@ -10,7 +10,7 @@
                         http://www.dangdang.com/schema/ddframe/rdb 
                         http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
                         ">
-    <context:component-scan base-package="com.dangdang.ddframe.rdb.sharding.example.config"/>
+    <context:component-scan base-package="com.dangdang.ddframe.rdb.sharding.example.config.spring"/>
     
     <bean id="dbtbl_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -30,7 +30,7 @@
 
     <rdb:strategy id="orderTableStrategy" sharding-columns="order_id" algorithm-expression="t_order_${order_id.longValue() % 4}"/>
 
-    <rdb:strategy id="orderItemTableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.config.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="orderItemTableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.config.spring.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">

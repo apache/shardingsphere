@@ -15,21 +15,26 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
-import java.sql.SQLException;
-import com.dangdang.ddframe.rdb.sharding.example.config.service.FooService;
+import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.ConfigService;
+import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public final class SpringNamespaceMain {
+import java.sql.SQLException;
+
+public final class SpringNamespaceWithAssignedDataSourceMain {
     
     public static void main(final String[] args) throws SQLException {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/applicationContext.xml");
-        FooService service =  applicationContext.getBean(FooService.class);
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/applicationContextWithAssignedDataSource.xml");
+        OrderService service =  applicationContext.getBean(OrderService.class);
         service.insert();
         service.select();
         service.delete();
         service.select();
+    
+        ConfigService configService =  applicationContext.getBean(ConfigService.class);
+        configService.select();
     }
 }

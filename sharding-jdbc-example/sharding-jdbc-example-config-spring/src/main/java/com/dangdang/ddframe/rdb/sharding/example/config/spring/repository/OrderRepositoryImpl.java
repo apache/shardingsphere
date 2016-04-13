@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.repository;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.repository;
 
 import com.dangdang.ddframe.rdb.sharding.spring.datasource.SpringShardingDataSource;
 import org.springframework.stereotype.Repository;
@@ -25,7 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 @Repository
-public class FooRepositoryImpl implements FooRepository {
+public class OrderRepositoryImpl implements OrderRepository {
     
     @Resource
     private SpringShardingDataSource shardingDataSource;
@@ -76,7 +76,7 @@ public class FooRepositoryImpl implements FooRepository {
     }
     
     @Override
-    public void select(){
+    public void select() {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
             Connection conn = shardingDataSource.getConnection();

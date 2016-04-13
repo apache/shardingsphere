@@ -81,7 +81,7 @@ dataSource: 数据源配置
   
   tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -216,9 +216,9 @@ props: 属性配置(可选)
 | *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
 | --------------------          | --------     |  --------- | ------| -----   |
 | logic-table                   | 属性         |  String     |   是  | 逻辑表名 |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| database-strategy             | 属性         |  String     |   是  | 分库策略，对应`<rdb:strategy>`中分库策略id |
-| table-strategy                | 属性         |  String     |   是  | 分表策略，对应`<rdb:strategy>`中分表策略id |
+  actual-tables                 | 属性         |  String     |   是  | 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源 |
+| database-strategy             | 属性         |  String     |   否  | 分库策略，对应`<rdb:strategy>`中分库策略id, 如果不填需配置`<rdb:default-database-strategy/>` |
+| table-strategy                | 属性         |  String     |   否  | 分表策略，对应`<rdb:strategy>`中分表策略id, 如果不填需配置`<rdb:default-table-strategy/>` |
 
 ### \<rdb:binding-table-rules/>
 
@@ -261,14 +261,14 @@ props: 属性配置(可选)
 
 ### \<rdb:props/\>
 
-| *名称*                                | 类型         | *数据类型*  | *必填*| *说明*                           |
-| ------------------------------------ | ------------ | ---------- | -----| -------------------------------- |
-| metrics.enable                       | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启   |
-| metrics.millisecond.period           | 属性         |  String    |   否  | 度量输出周期，单位为秒               |
-| metrics.package.name                 | 属性         |  String    |   否  | 度量输出在日志中的标识名称           |
-| executor.min.idle.size               | 属性         |  int       |   否  | 最小空闲工作线程数量                |
-| executor.max.size                    | 属性         |  int       |   否  | 最大工作线程数量                    |
-| executor.max.idle.timeout.millisecond| 属性         |  int       |   否  | 工作线程空闲时超时时间，默认以秒为单位 |
+| *名称*                                | 类型         | *数据类型*  | *必填*| *说明*                              |
+| ------------------------------------ | ------------ | ---------- | -----| ------------------------------------|
+| metrics.enable                       | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启     |
+| metrics.millisecond.period           | 属性         |  String    |   否  | 度量输出周期，单位为毫秒               |
+| metrics.package.name                 | 属性         |  String    |   否  | 度量输出在日志中的标识名称             |
+| executor.min.idle.size               | 属性         |  int       |   否  | 最小空闲工作线程数量                  |
+| executor.max.size                    | 属性         |  int       |   否  | 最大工作线程数量                      |
+| executor.max.idle.timeout.millisecond| 属性         |  int       |   否  | 工作线程空闲时超时时间，默认以毫秒为单位 |
 
 ### Spring格式特别说明
 如需使用inline表达式，需配置`ignore-unresolvable`为`true`，否则placeholder会把inline表达式当成属性key值导致出错. 

@@ -16,7 +16,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.algorithm;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;

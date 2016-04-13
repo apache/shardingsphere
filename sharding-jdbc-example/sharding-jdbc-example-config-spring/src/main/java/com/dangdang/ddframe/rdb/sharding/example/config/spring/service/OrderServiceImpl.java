@@ -15,23 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.service;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.service;
 
-import com.dangdang.ddframe.rdb.sharding.example.config.repository.FooRepository;
+import com.dangdang.ddframe.rdb.sharding.example.config.spring.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 @Service
-public class FooServiceImpl implements FooService {
+public class OrderServiceImpl implements OrderService {
     
     @Resource
-    private FooRepository fooRepository;
+    private OrderRepository orderRepository;
     
     @Override
     public void insert() {
         try {
-            fooRepository.insert();
+            orderRepository.insert();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -39,11 +39,11 @@ public class FooServiceImpl implements FooService {
     
     @Override
     public void delete() {
-        fooRepository.delete();
+        orderRepository.delete();
     }
     
     @Override
     public void select() {
-        fooRepository.select();
+        orderRepository.select();
     }
 }

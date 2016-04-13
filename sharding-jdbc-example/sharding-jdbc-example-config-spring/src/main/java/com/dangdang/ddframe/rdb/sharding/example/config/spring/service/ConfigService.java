@@ -15,13 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.service;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring.service;
 
-public interface FooService {
-    
-    void insert();
-    
-    void delete();
+public interface ConfigService {
     
     void select();
 }

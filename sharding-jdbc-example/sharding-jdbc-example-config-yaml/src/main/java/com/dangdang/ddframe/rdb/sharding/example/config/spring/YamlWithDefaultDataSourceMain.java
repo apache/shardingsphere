@@ -15,27 +15,27 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config;
+package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
+import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
+
+import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
-
-public final class YamlConfigMain {
+public final class YamlWithDefaultDataSourceMain {
     
     public static void main(final String[] args) throws Exception {
         YamlShardingDataSource dataSource =  new YamlShardingDataSource(
-            new File(YamlConfigMain.class.getResource("/META-INF/config.yaml").getFile()));
-        printSimpleSelect(dataSource);
+            new File(YamlWithDefaultDataSourceMain.class.getResource("/META-INF/withDefaultDataSource.yaml").getFile()));
+        printJoinSelect(dataSource);
         printGroupBy(dataSource);
     }
     
-    private static void printSimpleSelect(DataSource dataSource) throws SQLException {
+    private static void printJoinSelect(DataSource dataSource) throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
         try (
             Connection conn = dataSource.getConnection();
