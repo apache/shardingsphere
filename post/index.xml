@@ -158,7 +158,7 @@ props:
   
   tables: 分库分表配置，可配置多个logic_table_name
     &amp;lt;logic_table_name&amp;gt;: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -408,27 +408,27 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;actual-tables&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;是&lt;/td&gt;
-&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
 &lt;td&gt;database-strategy&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
-&lt;td&gt;是&lt;/td&gt;
-&lt;td&gt;分库策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分库策略id&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分库策略id, 如果不填需配置&lt;code&gt;&amp;lt;rdb:default-database-strategy/&amp;gt;&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
 &lt;td&gt;table-strategy&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
-&lt;td&gt;是&lt;/td&gt;
-&lt;td&gt;分表策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分表策略id&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分表策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分表策略id, 如果不填需配置&lt;code&gt;&amp;lt;rdb:default-table-strategy/&amp;gt;&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -638,7 +638,7 @@ props: 属性配置(可选)
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
-&lt;td&gt;度量输出周期，单位为秒&lt;/td&gt;
+&lt;td&gt;度量输出周期，单位为毫秒&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
@@ -670,7 +670,7 @@ props: 属性配置(可选)
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
-&lt;td&gt;工作线程空闲时超时时间，默认以秒为单位&lt;/td&gt;
+&lt;td&gt;工作线程空闲时超时时间，默认以毫秒为单位&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -1373,35 +1373,43 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
-&lt;code&gt;java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+    transactionManagerFactory.init();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;开启事务&lt;/li&gt;
+&lt;/ol&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.begin(connection);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    transactionManager.end();
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
 

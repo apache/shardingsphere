@@ -181,7 +181,7 @@ props:
   
   tables: 分库分表配置，可配置多个logic_table_name
     &lt;logic_table_name&gt;: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -431,27 +431,27 @@ props: 属性配置(可选)
 </tr>
 
 <tr>
-<td>sharding-columns</td>
+<td>actual-tables</td>
 <td>属性</td>
 <td>String</td>
 <td>是</td>
-<td>分片列名，多个列以逗号分隔</td>
+<td>真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源</td>
 </tr>
 
 <tr>
 <td>database-strategy</td>
 <td>属性</td>
 <td>String</td>
-<td>是</td>
-<td>分库策略，对应<code>&lt;rdb:strategy&gt;</code>中分库策略id</td>
+<td>否</td>
+<td>分库策略，对应<code>&lt;rdb:strategy&gt;</code>中分库策略id, 如果不填需配置<code>&lt;rdb:default-database-strategy/&gt;</code></td>
 </tr>
 
 <tr>
 <td>table-strategy</td>
 <td>属性</td>
 <td>String</td>
-<td>是</td>
-<td>分表策略，对应<code>&lt;rdb:strategy&gt;</code>中分表策略id</td>
+<td>否</td>
+<td>分表策略，对应<code>&lt;rdb:strategy&gt;</code>中分表策略id, 如果不填需配置<code>&lt;rdb:default-table-strategy/&gt;</code></td>
 </tr>
 </tbody>
 </table>
@@ -661,7 +661,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>String</td>
 <td>否</td>
-<td>度量输出周期，单位为秒</td>
+<td>度量输出周期，单位为毫秒</td>
 </tr>
 
 <tr>
@@ -693,7 +693,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>int</td>
 <td>否</td>
-<td>工作线程空闲时超时时间，默认以秒为单位</td>
+<td>工作线程空闲时超时时间，默认以毫秒为单位</td>
 </tr>
 </tbody>
 </table>

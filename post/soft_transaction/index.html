@@ -148,35 +148,43 @@ body {
 <h2 id="开发步骤:dd5cc724d0260c85f8f2c3800b365c2d">开发步骤</h2>
 
 <ol>
-<li>配置<code>SoftTransactionConfiguration</code>
-<code>java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-</code></li>
+<li>配置<code>SoftTransactionConfiguration</code></li>
+</ol>
 
-<li><p>初始化<code>SoftTransactionManagerFactory</code></p>
+<pre><code class="language-java">    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+</code></pre>
 
-<pre><code class="language-java">SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-</code></pre></li>
+<ol>
+<li>初始化<code>SoftTransactionManagerFactory</code></li>
+</ol>
 
-<li><p>获取<code>BEDSoftTransactionManager</code></p>
+<pre><code class="language-java">    SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
+    transactionManagerFactory.init();
+</code></pre>
 
-<pre><code class="language-java">BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-</code></pre></li>
+<ol>
+<li>获取<code>BEDSoftTransactionManager</code></li>
+</ol>
 
-<li><p>开启事务</p>
+<pre><code class="language-java">    BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
+</code></pre>
 
-<pre><code class="language-java">transactionManager.begin(connection);
-</code></pre></li>
+<ol>
+<li>开启事务</li>
+</ol>
 
+<pre><code class="language-java">    transactionManager.begin(connection);
+</code></pre>
+
+<ol>
 <li><p>执行<code>JDBC</code></p></li>
 
-<li><p>关闭事务</p>
-
-<pre><code class="language-java">transactionManager.end();
-</code></pre></li>
+<li><p>关闭事务</p></li>
 </ol>
+
+<pre><code class="language-java">    transactionManager.end();
+</code></pre>
 
 <h2 id="部署指南:dd5cc724d0260c85f8f2c3800b365c2d">部署指南</h2>
 
