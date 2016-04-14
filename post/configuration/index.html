@@ -131,23 +131,23 @@ body {
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_0
     username: root
-    password: 
+    password:
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_1
     username: root
-    password: 
-    
+    password:
+
 tables:
   config:
     actualTables: t_config
-    
-  t_order: 
+
+  t_order:
     actualTables: t_order_${0..1}
     tableStrategy: &amp;table001
       shardingColumns: order_id
       algorithmExpression: t_order_${order_id.longValue() % 2}
-  
+
   #绑定表中其余的表的策略与t_order的策略相同
   t_order_item:
     actualTables: t_order_item_${0..1}
@@ -178,7 +178,7 @@ props:
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
-  
+
   tables: 分库分表配置，可配置多个logic_table_name
     &lt;logic_table_name&gt;: 逻辑表名
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源
@@ -192,24 +192,24 @@ props:
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   bindingTables: 绑定表列表
   - tableNames: 逻辑表名列表，多个&lt;logic_table_name&gt;以逗号分隔
-  
+
 defaultDatabaseStrategy: 默认数据库分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
   algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
-  
+
 defaultTableStrategy: 默认数据表分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
   algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
-    metrics.enable: 是否开启度量采集，默认值: false
-    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
-    metrics.package.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
-    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
-    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
-    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
+    metrics.enable: 是否开启度量采集，缺省值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，缺省值: 30000毫秒
+    metrics.package.name: 度量输出在日志中的标识名称，缺省值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，缺省值: 0
+    executor.max.size: 最大工作线程数量，缺省值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，缺省值: 60000毫秒
 </code></pre>
 
 <h3 id="yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec">Yaml格式特别说明</h3>
@@ -235,20 +235,22 @@ props: 属性配置(可选)
 
 <h2 id="配置示例-1:a66b35d20295cb764719ac8bd35837ec">配置示例</h2>
 
+<h3 id="缺省数据源配置示例:a66b35d20295cb764719ac8bd35837ec">缺省数据源配置示例</h3>
+
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
     xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot; 
-    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd 
-                        http://www.dangdang.com/schema/ddframe/rdb 
-                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.dangdang.com/schema/ddframe/rdb
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd
                         &quot;&gt;
     &lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot;/&gt;
-    
+
     &lt;bean id=&quot;dbtbl_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
         &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
         &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0&quot;/&gt;
@@ -269,19 +271,85 @@ props: 属性配置(可选)
     &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
         &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1&quot;&gt;
             &lt;rdb:table-rules&gt;
+                &lt;!-- 指定数据源配置非分库分表规则，使用缺省分库及分表策略 --&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
             &lt;/rdb:table-rules&gt;
+            &lt;rdb:binding-table-rules&gt;
+                &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
+            &lt;/rdb:binding-table-rules&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id.longValue() % 2 + 1}&quot;/&gt;
         &lt;/rdb:sharding-rule&gt;
-        &lt;rdb:binding-table-rules&gt;
-            &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
-        &lt;/rdb:binding-table-rules&gt;
-        &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id.longValue() % 2 + 1}&quot;/&gt;
         &lt;rdb:props&gt;
             &lt;prop key=&quot;metrics.enable&quot;&gt;${metrics.enable}&lt;/prop&gt;
         &lt;/rdb:props&gt;
     &lt;/rdb:data-source&gt;
 &lt;/beans&gt;
+</code></pre>
+
+<h3 id="指定不同数据源配置示例:a66b35d20295cb764719ac8bd35837ec">指定不同数据源配置示例</h3>
+
+<p>例如：如下配置中t_order，t_order_item表需要分库分表，但t_config表不需要。</p>
+
+<pre><code class="language-xml">&lt;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.dangdang.com/schema/ddframe/rdb
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd
+                        &quot;&gt;
+    &lt;context:component-scan base-package=&quot;com.dangdang.ddframe.rdb.sharding.example.config.spring&quot;/&gt;
+
+    &lt;bean id=&quot;dbtbl_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;dbtbl_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;dbtbl_config&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_config&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;rdb:strategy id=&quot;databaseStrategy&quot; sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${user_id.longValue() % 2}&quot;/&gt;
+
+    &lt;rdb:strategy id=&quot;orderTableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-expression=&quot;t_order_${order_id.longValue() % 4}&quot;/&gt;
+
+    &lt;rdb:strategy id=&quot;orderItemTableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.example.config.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&quot;/&gt;
+
+    &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1,dbtbl_config&quot;&gt;
+            &lt;rdb:table-rules&gt;
+                &lt;!-- 指定数据源配置非分库分表规则，使用缺省分库及分表策略 --&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_config&quot; actual-tables=&quot;dbtbl_config.t_config&quot;/&gt;
+                &lt;!-- 指定数据源配置分库分表规则，使用指定分库及分表策略  --&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;dbtbl_${[0,1]}.t_order_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;orderTableStrategy&quot;/&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;dbtbl_${0..1}.t_order_item_0,dbtbl_${0..1}.t_order_item_1,dbtbl_${0..1}.t_order_item_2,dbtbl_${0..1}.t_order_item_3&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;orderItemTableStrategy&quot;/&gt;
+            &lt;/rdb:table-rules&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;none&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm&quot;/&gt;
+            &lt;rdb:default-table-strategy sharding-columns=&quot;none&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm&quot;/&gt;
+        &lt;/rdb:sharding-rule&gt;
+        &lt;rdb:props&gt;
+            &lt;prop key=&quot;metrics.enable&quot;&gt;false&lt;/prop&gt;
+        &lt;/rdb:props&gt;
+    &lt;/rdb:data-source&gt;
+&lt;/beans&gt;
+
 </code></pre>
 
 <h2 id="标签说明:a66b35d20295cb764719ac8bd35837ec">标签说明</h2>
@@ -322,7 +390,7 @@ props: 属性配置(可选)
 <td>binding-table-rules<code>?</code></td>
 <td>标签</td>
 <td>-</td>
-<td>是</td>
+<td>否</td>
 <td>绑定表规则</td>
 </tr>
 
@@ -330,7 +398,7 @@ props: 属性配置(可选)
 <td>default-database-strategy<code>?</code></td>
 <td>标签</td>
 <td>-</td>
-<td>是</td>
+<td>否</td>
 <td>默认分库策略</td>
 </tr>
 
@@ -338,7 +406,7 @@ props: 属性配置(可选)
 <td>default-table-strategy<code>?</code></td>
 <td>标签</td>
 <td>-</td>
-<td>是</td>
+<td>否</td>
 <td>默认分表策略</td>
 </tr>
 
@@ -346,7 +414,7 @@ props: 属性配置(可选)
 <td>props<code>?</code></td>
 <td>标签</td>
 <td>-</td>
-<td>是</td>
+<td>否</td>
 <td>相关属性配置</td>
 </tr>
 </tbody>
@@ -435,7 +503,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>String</td>
 <td>是</td>
-<td>真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源</td>
+<td>真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源</td>
 </tr>
 
 <tr>
@@ -643,6 +711,7 @@ props: 属性配置(可选)
 <th>类型</th>
 <th><em>数据类型</em></th>
 <th><em>必填</em></th>
+<th><em>缺省值</em></th>
 <th><em>说明</em></th>
 </tr>
 </thead>
@@ -653,7 +722,8 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>boolean</td>
 <td>否</td>
-<td>是否开启度量采集，默认为false不开启</td>
+<td>false</td>
+<td>是否开启度量采集</td>
 </tr>
 
 <tr>
@@ -661,7 +731,8 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>String</td>
 <td>否</td>
-<td>度量输出周期，单位为毫秒</td>
+<td>30000</td>
+<td>度量输出周期，单位: 毫秒</td>
 </tr>
 
 <tr>
@@ -669,6 +740,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>String</td>
 <td>否</td>
+<td>com.dangdang.ddframe.rdb.sharding.metrics</td>
 <td>度量输出在日志中的标识名称</td>
 </tr>
 
@@ -677,6 +749,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>int</td>
 <td>否</td>
+<td>0</td>
 <td>最小空闲工作线程数量</td>
 </tr>
 
@@ -685,6 +758,7 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>int</td>
 <td>否</td>
+<td>CPU核数乘2</td>
 <td>最大工作线程数量</td>
 </tr>
 
@@ -693,7 +767,8 @@ props: 属性配置(可选)
 <td>属性</td>
 <td>int</td>
 <td>否</td>
-<td>工作线程空闲时超时时间，默认以毫秒为单位</td>
+<td>60000</td>
+<td>工作线程空闲时超时时间，单位: 毫秒</td>
 </tr>
 </tbody>
 </table>
@@ -801,7 +876,11 @@ props: 属性配置(可选)
 <li><a href="#spring命名空间配置:a66b35d20295cb764719ac8bd35837ec">Spring命名空间配置</a>
 <ul>
 <li><a href="#引入maven依赖-1:a66b35d20295cb764719ac8bd35837ec">引入maven依赖</a></li>
-<li><a href="#配置示例-1:a66b35d20295cb764719ac8bd35837ec">配置示例</a></li>
+<li><a href="#配置示例-1:a66b35d20295cb764719ac8bd35837ec">配置示例</a>
+<ul>
+<li><a href="#缺省数据源配置示例:a66b35d20295cb764719ac8bd35837ec">缺省数据源配置示例</a></li>
+<li><a href="#指定不同数据源配置示例:a66b35d20295cb764719ac8bd35837ec">指定不同数据源配置示例</a></li>
+</ul></li>
 <li><a href="#标签说明:a66b35d20295cb764719ac8bd35837ec">标签说明</a>
 <ul>
 <li><a href="#rdb-data-source:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:data-source/&gt;</a></li>
