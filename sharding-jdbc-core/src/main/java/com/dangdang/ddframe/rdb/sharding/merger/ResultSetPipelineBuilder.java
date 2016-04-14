@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +38,12 @@ import java.util.List;
  * @author gaohongtao
  */
 @Slf4j
+// TODO 最好把mergeContext纳入局部变量, 用于判断是否需要内存还是非内存排序. 通过mergeContext判断, 比零散的通过orderByColumns是否好一些
 public class ResultSetPipelineBuilder {
     
     private final List<ResultSet> inputResultSets;
     
-    private final AbstractList<OrderByColumn> orderByColumns = new ArrayList<>();
+    private final List<OrderByColumn> orderByColumns = new ArrayList<>();
     
     private ComponentResultSet tailResultSet;
     
@@ -58,6 +58,7 @@ public class ResultSetPipelineBuilder {
      * @param componentResultSet 链接目标结果集
      * @return 管道建造者
      */
+    // TODO 虽然考虑使用builder模式, 但实际并未使用, 是否可以把返回值去掉
     public <T> ResultSetPipelineBuilder join(final ComponentResultSet<T> componentResultSet) throws SQLException {
         Preconditions.checkArgument(componentResultSet instanceof ReducerResultSet || componentResultSet instanceof CouplingResultSet);
         if (componentResultSet instanceof ReducerResultSet) {
@@ -76,8 +77,9 @@ public class ResultSetPipelineBuilder {
      * @param expectOrderList 期望的排序顺序
      * @return 管道建造者
      */
+    // TODO 虽然考虑使用builder模式, 但实际并未使用, 是否可以把返回值去掉
     public ResultSetPipelineBuilder joinSortReducer(final List<OrderByColumn> expectOrderList) throws SQLException {
-        if (orderEqual(expectOrderList)) {
+        if (orderByColumns.equals(expectOrderList)) {
             join(new StreamingOrderByReducerResultSet(expectOrderList));
         } else {
             setNewOrder(expectOrderList);
@@ -93,13 +95,20 @@ public class ResultSetPipelineBuilder {
      * @param expectOrderList 期望的排序顺序
      * @return 管道建造者
      */
+    // TODO 是否应该只需要一个join方法, joinSortCoupling => join(new MemoryOrderByCouplingResultSet(expectOrderList))
     public ResultSetPipelineBuilder joinSortCoupling(final List<OrderByColumn> expectOrderList) throws SQLException {
-        if (orderEqual(expectOrderList)) {
+        if (orderByColumns.equals(expectOrderList)) {
             return this;
         }
         setNewOrder(expectOrderList);
         join(new MemoryOrderByCouplingResultSet(expectOrderList));
         return this;
+    }
+    
+    // TODO 是否可以在一开始就初始化完成OrderByColumn, 而不是根据后续判断再改
+    private void setNewOrder(final List<OrderByColumn> orderList) {
+        orderByColumns.clear();
+        orderByColumns.addAll(orderList);
     }
     
     /**
@@ -110,14 +119,4 @@ public class ResultSetPipelineBuilder {
     public ResultSet build() {
         return tailResultSet;
     }
-    
-    private boolean orderEqual(final List<OrderByColumn> expectOrderList) {
-        return orderByColumns.equals(expectOrderList);
-    }
-    
-    private void setNewOrder(final List<OrderByColumn> orderList) {
-        orderByColumns.clear();
-        orderByColumns.addAll(orderList);
-    }
-    
 }

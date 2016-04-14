@@ -30,10 +30,12 @@ import java.util.List;
  *
  * @author gaohongtao
  */
+// TODO 和MemoryOrderByResultSet能否合二为一
 public class MemoryOrderByReducerResultSet extends AbstractDelegateResultSetAdapter implements ReducerResultSet {
     
     private final List<OrderByColumn> orderByColumns;
     
+    // TODO 使用lombok?
     public MemoryOrderByReducerResultSet(final List<OrderByColumn> orderByColumns) {
         this.orderByColumns = orderByColumns;
     }

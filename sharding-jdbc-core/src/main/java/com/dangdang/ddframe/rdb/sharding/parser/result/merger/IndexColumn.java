@@ -26,10 +26,11 @@ import com.google.common.base.Optional;
  */
 public interface IndexColumn {
     
-    void setColumnIndex(final int index);
+    void setColumnIndex(int index);
     
     int getColumnIndex();
     
+    // TODO ColumnLabel和alias的区别?
     Optional<String> getColumnLabel();
     
     Optional<String> getColumnName();

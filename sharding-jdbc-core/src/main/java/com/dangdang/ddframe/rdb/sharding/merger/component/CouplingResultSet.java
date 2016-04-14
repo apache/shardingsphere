@@ -24,6 +24,7 @@ import java.sql.ResultSet;
  *
  * @author gaohongtao
  */
+// TODO 放到coupling包
 public interface CouplingResultSet extends ComponentResultSet<ResultSet> {
     
 }

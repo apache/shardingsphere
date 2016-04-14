@@ -42,29 +42,38 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
     
     private final List<OrderByColumn> orderByColumns;
     
+    // TODO 作用?
     private boolean initial;
     
+    // TODO 为什么用Queue
     private Queue<ResultSet> effectiveResultSetQueue;
     
+    // TODO 使用lombok?
     public StreamingOrderByReducerResultSet(final List<OrderByColumn> orderByColumns) {
         this.orderByColumns = orderByColumns;
     }
     
     @Override
+    // TODO preResultSet什么意思, 如果是复数需要加s
     public void init(final List<ResultSet> preResultSet) throws SQLException {
+        // TODO 以下两步可否通过构造器
         setResultSets(preResultSet);
         setCurrentResultSet(preResultSet.get(0));
         effectiveResultSetQueue = new LinkedList<>(Collections2.filter(preResultSet, new Predicate<ResultSet>() {
+            
             @Override
             public boolean apply(final ResultSet input) {
                 try {
+                    // TODO 之前在WrapperResultSet的构造器里已经next过了, 会否有问题
                     return input.next();
+                    // TODO next问题是否直接抛SQLException, 目前方法签名的SQLException并不需要
                 } catch (final SQLException ex) {
                     throw new ShardingJdbcException(ex);
                 }
             }
         }));
-        log.trace("Effective result set:{}", effectiveResultSetQueue);
+        // TODO log是否有意义,没有覆盖toString能否看清调试信息
+        log.trace("Effective result set: {}", effectiveResultSetQueue);
     }
     
     @Override
@@ -74,21 +83,26 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
         } else {
             initial = true;
         }
+        // TODO 单独提炼一个getComparedResultSet这样的方法是否好一些
         OrderByRow chosenOrderByValue = null;
         for (ResultSet each : effectiveResultSetQueue) {
+            // TODO 变量名字是否应该叫orderByRow
             OrderByRow eachOrderByValue = new OrderByRow(orderByColumns, each);
             if (null == chosenOrderByValue || chosenOrderByValue.compareTo(eachOrderByValue) > 0) {
                 chosenOrderByValue = eachOrderByValue;
+                // TODO 作用?
                 setCurrentResultSet(each);
             }
         }
         if (!effectiveResultSetQueue.isEmpty()) {
+            // TODO toString是否应删除, 将内容直接挪入log
             log.trace(toString());
         }
         return !effectiveResultSetQueue.isEmpty();
     }
     
     private void nextEffectiveResultSets() throws SQLException {
+        // TODO next rename => hasNext
         boolean next = getCurrentResultSet().next();
         if (!next) {
             effectiveResultSetQueue.remove(getCurrentResultSet());
@@ -97,6 +111,7 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
     }
     
     @Override
+    // TODO toString应该展现变量状态, 描述词语Current result set: 是否应去掉, 而且ToString是否不应只展现getCurrentResultSet的状态?
     public String toString() {
         return String.format("Current result set:%s", getCurrentResultSet());
     }

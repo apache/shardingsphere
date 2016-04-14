@@ -25,7 +25,11 @@ import java.sql.SQLException;
  * 
  * @author gaohongtao
  */
+// TODO 泛型的javadoc
+// TODO ComponentResultSet是什么
 public interface ComponentResultSet<T> extends ResultSet {
     
+    // TODO 注释
+    // TODO 接口参数不需要加final
     void init(final T preResultSet) throws SQLException;
 }

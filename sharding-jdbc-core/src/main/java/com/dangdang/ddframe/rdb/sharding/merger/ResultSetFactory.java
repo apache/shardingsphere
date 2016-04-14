@@ -22,25 +22,19 @@ import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.GroupByCoupli
 import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.LimitCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.WrapperResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 创建归并分片结果集的工厂.
@@ -59,21 +53,25 @@ public final class ResultSetFactory {
      * @return 结果集包装
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {
+        // TODO 如果不filter, 直接操纵可能为空的resultSet会有什么结果, 能否统一处理
         List<ResultSet> filteredResultSets = filterResultSets(resultSets);
         if (filteredResultSets.isEmpty()) {
-            log.trace("Sharding-JDBC:No data found in origin result sets");
+            log.trace("Sharding-JDBC: No data found in origin result sets");
             return resultSets.get(0);
-        } else if (filteredResultSets.size() == 1) {
-            log.trace("Sharding-JDBC:Only one result set");
+        }
+        // TODO 只有1个的情况和多个情况有何不同, 需要单独处理么
+        if (1 == filteredResultSets.size()) {
+            log.trace("Sharding-JDBC: Only one result set");
             return filteredResultSets.get(0);
         }
-        setColumnIndex(filteredResultSets.get(0), mergeContext);
+        setColumnIndex((WrapperResultSet) filteredResultSets.get(0), mergeContext);
         ResultSetPipelineBuilder builder = new ResultSetPipelineBuilder(filteredResultSets, mergeContext.getOrderByColumns());
         buildReducer(builder, mergeContext);
         buildCoupling(builder, mergeContext);
         return builder.build();
     }
     
+    // TODO 能否直接使用WrapperResultSet
     private static List<ResultSet> filterResultSets(final List<ResultSet> resultSets) {
         return Lists.newArrayList(Collections2.filter(Lists.transform(resultSets, new Function<ResultSet, ResultSet>() {
             
@@ -86,6 +84,7 @@ public final class ResultSetFactory {
                 }
             }
         }), new Predicate<ResultSet>() {
+            
             @Override
             public boolean apply(final ResultSet input) {
                 return !((WrapperResultSet) input).isEmpty();
@@ -93,44 +92,17 @@ public final class ResultSetFactory {
         }));
     }
     
-    private static void setColumnIndex(final ResultSet resultSet, final MergeContext mergeContext) throws SQLException {
-        ResultSetMetaData md = resultSet.getMetaData();
-        Map<String, Integer> columnLabelIndexMap = new CaseInsensitiveMap<>(md.getColumnCount());
-        for (int i = 1; i <= md.getColumnCount(); i++) {
-            String columnLabel = md.getColumnLabel(i);
-            columnLabelIndexMap.put(columnLabel, i);
-        }
-        for (IndexColumn each : extractIndexColumns(mergeContext)) {
-            if (each.getColumnIndex() > 0) {
-                continue;
-            }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel().orNull()) || columnLabelIndexMap.containsKey(each.getColumnName().orNull()),
-                    String.format("%s has not index", each));
-            if (each.getColumnLabel().isPresent() && columnLabelIndexMap.containsKey(each.getColumnLabel().get())) {
-                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnLabel().get()));
-            } else if (each.getColumnName().isPresent() && columnLabelIndexMap.containsKey(each.getColumnName().get())) {
-                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnName().get()));
+    private static void setColumnIndex(final WrapperResultSet resultSet, final MergeContext mergeContext) {
+        for (IndexColumn each : mergeContext.getMergeFocusedColumns()) {
+            if (0 == each.getColumnIndex()) {
+                each.setColumnIndex(resultSet.getColumnIndex(each));
             }
         }
     }
     
-    private static List<IndexColumn> extractIndexColumns(final MergeContext mergeContext) {
-        List<IndexColumn> result = new LinkedList<>();
-        result.addAll(mergeContext.getGroupByColumns());
-        result.addAll(mergeContext.getOrderByColumns());
-        LinkedList<AggregationColumn> allAggregationColumns = Lists.newLinkedList(mergeContext.getAggregationColumns());
-        while (allAggregationColumns.size() > 0) {
-            AggregationColumn head = allAggregationColumns.poll();
-            result.add(head);
-            if (head.getDerivedColumns().isEmpty()) {
-                continue;
-            }
-            allAggregationColumns.addAll(head.getDerivedColumns());
-        }
-        return result;
-    }
-    
+    // TODO reducer目的是什么, 是为了确定读取resultSet的next走内存还是走streaming吗, 如果是,是否抽象出两个Reducer就够了
     private static void buildReducer(final ResultSetPipelineBuilder builder, final MergeContext mergeContext) throws SQLException {
+        // TODO 判断hasGroupByOrAggregation并获取什么样的OrderByColumns, 能否封装到mergeContext对象里
         if (mergeContext.hasGroupByOrAggregation()) {
             builder.joinSortReducer(mergeContext.transformGroupByColumnToOrderByColumn());
             return;
@@ -142,11 +114,14 @@ public final class ResultSetFactory {
         builder.join(new IteratorReducerResultSet());
     }
     
+    // TODO Reducer和Coupling大致流程一致, 两个有什么区别
     private static void buildCoupling(final ResultSetPipelineBuilder builder, final MergeContext mergeContext) throws SQLException {
         if (mergeContext.hasGroupByOrAggregation()) {
+            // TODO 保持一致, 都new一个CouplingResultSet
             builder.join(new GroupByCouplingResultSet(mergeContext.getGroupByColumns(), mergeContext.getAggregationColumns()));
         }
         if (mergeContext.hasOrderBy()) {
+            // TODO 保持一致, 都new一个CouplingResultSet
             builder.joinSortCoupling(mergeContext.getOrderByColumns());
         }
         if (mergeContext.hasLimit()) {

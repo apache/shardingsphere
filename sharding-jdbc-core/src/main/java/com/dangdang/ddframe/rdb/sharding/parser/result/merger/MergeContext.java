@@ -17,15 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 结果归并上下文.
@@ -83,11 +84,12 @@ public final class MergeContext {
      */
     public List<OrderByColumn> transformGroupByColumnToOrderByColumn() {
         return Lists.transform(groupByColumns, new Function<GroupByColumn, OrderByColumn>() {
+            
             @Override
             public OrderByColumn apply(final GroupByColumn input) {
-                OrderByColumn orderByColumn = new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
-                orderByColumn.setColumnIndex(input.getColumnIndex());
-                return orderByColumn;
+                OrderByColumn result = new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
+                result.setColumnIndex(input.getColumnIndex());
+                return result;
             }
         });
     }
@@ -108,6 +110,31 @@ public final class MergeContext {
             return ResultSetType.OrderBy;
         }
         return ResultSetType.Iterator;
+    }
+    
+    /**
+     * 获取所有结果归并需要关注的列集合.
+     * 
+     * @return 结果归并需要关注的列集合
+     */
+    public List<IndexColumn> getMergeFocusedColumns() {
+        List<IndexColumn> result = new LinkedList<>();
+        result.addAll(groupByColumns);
+        result.addAll(orderByColumns);
+        result.addAll(getAggregationColumnsWithDerivedColumns());
+        return result;
+    }
+    
+    // TODO 派生列是否有递归?
+    private List<AggregationColumn> getAggregationColumnsWithDerivedColumns() {
+        List<AggregationColumn> result = new ArrayList<>();
+        for (AggregationColumn each : aggregationColumns) {
+            result.add(each);
+            if (!each.getDerivedColumns().isEmpty()) {
+                result.addAll(each.getDerivedColumns());
+            }
+        }
+        return result;
     }
     
     /**

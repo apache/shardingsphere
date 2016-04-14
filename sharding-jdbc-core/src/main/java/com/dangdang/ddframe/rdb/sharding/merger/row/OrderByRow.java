@@ -31,18 +31,22 @@ import java.util.List;
  *
  * @author gaohongtao
  */
+// TODO 继承还是复用Row? 好像没有用父类相关的方法
 public class OrderByRow extends Row implements Comparable<OrderByRow> {
     
     private final List<OrderByColumn> orderByColumns;
     
+    // TODO rename => orderByValues
     private final List<Comparable<?>> values;
     
     public OrderByRow(final List<OrderByColumn> orderByColumns, final ResultSet resultSet) throws SQLException {
         super(resultSet);
         this.orderByColumns = orderByColumns;
+        // TODO this不需要
         this.values = getValues();
     }
     
+    // TODO rename => fillOrderByValues
     private List<Comparable<?>> getValues() {
         List<Comparable<?>> result = new ArrayList<>(orderByColumns.size());
         for (OrderByColumn each : orderByColumns) {
@@ -52,7 +56,7 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
         }
         return result;
     }
-        
+    
     @Override
     public int compareTo(final OrderByRow otherOrderByValue) {
         for (int i = 0; i < orderByColumns.size(); i++) {
@@ -66,6 +70,7 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
     }
     
     @Override
+    // TODO toString应该展现变量状态, 描述词语Order by columns value is是否应去掉, 而且ToString是否不应只展现getCurrentResultSet的状态?
     public String toString() {
         return String.format("Order by columns value is %s", values);
     }

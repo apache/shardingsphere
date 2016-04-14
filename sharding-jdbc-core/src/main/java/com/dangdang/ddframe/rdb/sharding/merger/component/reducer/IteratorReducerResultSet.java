@@ -62,6 +62,7 @@ public class IteratorReducerResultSet extends AbstractResultSetAdapter implement
     }
     
     @Override
+    // TODO 同样的toString问题
     public String toString() {
         return String.format("Current access %d of %d result set, offset is %d", resultSetIndex, getResultSets().size(), currentResultSetOffset);
     }

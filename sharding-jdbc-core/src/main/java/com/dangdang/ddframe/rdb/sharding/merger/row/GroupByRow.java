@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO javadoc
 /**
  * @author gaohongtao
  */
@@ -54,6 +55,7 @@ public class GroupByRow extends Row {
         this.aggregationColumns = aggregationColumns;
     }
     
+    // TODO javadoc
     public boolean aggregate() throws SQLException {
         Map<AggregationColumn, AggregationUnit> aggregationUnitMap = null;
         if (!aggregationColumns.isEmpty()) {
@@ -121,6 +123,7 @@ public class GroupByRow extends Row {
     }
     
     @Override
+    // TODO toString问题
     public String toString() {
         return String.format("Group by columns is %s, aggregation column is %s, %s", groupByColumns, aggregationColumns, super.toString());
     }

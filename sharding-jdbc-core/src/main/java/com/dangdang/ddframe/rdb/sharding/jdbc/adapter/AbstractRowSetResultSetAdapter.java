@@ -86,6 +86,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     
     protected abstract Row nextRow() throws SQLException;
     
+    // TODO 能否复用ResultSetFactory里面的
     private void initColumnIndexMap() throws SQLException {
         if (!columnLabelToIndexMap.isEmpty()) {
             return;

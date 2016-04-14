@@ -32,8 +32,10 @@ import java.util.Date;
  * 
  * @author gaohongtao
  */
+// TODO common包改名为util
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtil {
+    
     /**
      * 根据返回值类型返回特定类型的结果.
      * 
@@ -42,8 +44,11 @@ public final class ResultSetUtil {
      * @return 特定类型的返回结果
      */
     public static Object convertValue(final Object value, final Class<?> convertType) {
+        // TODO 使用卫语句处理null和解除嵌套
         if (null == value) {
+            // TODO 调整顺序, 按照调用顺序排列private方法
             return convertNullValue(convertType);
+            // TODO class判断使用==
         } else if (value.getClass().equals(convertType)) {
             return value;
         } else if (value instanceof Number) {
@@ -90,6 +95,7 @@ public final class ResultSetUtil {
                 return number.floatValue();
             case "java.math.BigDecimal":
                 return new BigDecimal(number.toString());
+            // TODO Object和String不是number, 不会进入switch
             case "java.lang.Object":
                 return value;
             case "java.lang.String":

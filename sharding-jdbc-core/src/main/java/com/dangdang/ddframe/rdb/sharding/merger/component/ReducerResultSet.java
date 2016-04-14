@@ -25,6 +25,7 @@ import java.util.List;
  *
  * @author gaohongtao
  */
+// TODO 放到reducer包
 public interface ReducerResultSet extends ComponentResultSet<List<ResultSet>> {
     
 }

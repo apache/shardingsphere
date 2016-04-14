@@ -31,6 +31,7 @@ import java.util.Arrays;
  *
  * @author gaohongtao
  */
+// TODO 名字最好再考虑下, ROW有点大, 而且guava, swing等已经用了
 public class Row {
     
     private final Object[] rowData;
@@ -39,7 +40,9 @@ public class Row {
         rowData = getRowData(resultSet);
     }
     
+    // TODO rename => fillRowData?
     private Object[] getRowData(final ResultSet resultSet) throws SQLException {
+        // TODO 最好不要用md这类缩写
         ResultSetMetaData md = resultSet.getMetaData();
         Object[] result = new Object[md.getColumnCount()];
         for (int i = 0; i < md.getColumnCount(); i++) {
@@ -53,17 +56,21 @@ public class Row {
         rowData[index - 1] = value;
     }
     
+    // TODO javadoc
     public Object getCell(final int index) {
         Preconditions.checkArgument(containsCell(index));
         return rowData[index - 1];
     }
     
+    // TODO javadoc
+    // TODO 改名? 这名字不能望文生义, 比如: isIndexOutOfRange
     public boolean containsCell(final int index) {
         return index - 1 > -1 && index - 1 < rowData.length;
     }
     
     @Override
     public String toString() {
+        // TODO 试试 Arrays.toString(rowData)
         return String.format("value is : %s", Lists.transform(Arrays.asList(rowData), new Function<Object, Object>() {
     
             @Override
