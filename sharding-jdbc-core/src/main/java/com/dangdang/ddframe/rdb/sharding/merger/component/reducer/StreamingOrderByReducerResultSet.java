@@ -17,6 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
@@ -25,12 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.extern.slf4j.Slf4j;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 /**
  * 流式排序.
@@ -55,7 +55,7 @@ public class StreamingOrderByReducerResultSet extends AbstractResultSetAdapter i
     
     @Override
     // TODO preResultSet什么意思, 如果是复数需要加s
-    public void init(final List<ResultSet> preResultSet) throws SQLException {
+    public void init(final List<ResultSet> preResultSet) {
         // TODO 以下两步可否通过构造器
         setResultSets(preResultSet);
         setCurrentResultSet(preResultSet.get(0));

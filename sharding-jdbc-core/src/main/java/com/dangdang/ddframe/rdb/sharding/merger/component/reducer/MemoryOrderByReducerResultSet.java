@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
+import java.sql.ResultSet;
+import java.util.List;
+
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-
-import java.sql.ResultSet;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 根据排序列进行内存中排序.
@@ -31,18 +32,13 @@ import java.util.List;
  * @author gaohongtao
  */
 // TODO 和MemoryOrderByResultSet能否合二为一
+@RequiredArgsConstructor
 public class MemoryOrderByReducerResultSet extends AbstractDelegateResultSetAdapter implements ReducerResultSet {
     
     private final List<OrderByColumn> orderByColumns;
-    
-    // TODO 使用lombok?
-    public MemoryOrderByReducerResultSet(final List<OrderByColumn> orderByColumns) {
-        this.orderByColumns = orderByColumns;
-    }
     
     @Override
     public void init(final List<ResultSet> preResultSet) {
         setDelegatedResultSet(new MemoryOrderByResultSet(preResultSet, orderByColumns));
     }
-    
 }
