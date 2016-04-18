@@ -24,7 +24,7 @@ import java.sql.SQLWarning;
 import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import com.dangdang.ddframe.rdb.sharding.metrics.ThreadLocalObjectContainer;
+import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 
 /**
  * 数据库连接适配类.
@@ -80,7 +80,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             each.close();
         }
         closed = true;
-        ThreadLocalObjectContainer.clear();
+        MetricsContext.clear();
     }
     
     @Override

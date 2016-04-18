@@ -17,29 +17,61 @@
 
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
+import org.junit.After;
 import org.junit.Test;
 
-import com.codahale.metrics.Timer.Context;
+import java.util.Properties;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public final class MetricsContextTest {
     
-    @Test
-    public void assertMetricsContextEnable() {
-        run(true);
+    @After
+    public void tearDown(){
+        MetricsContext.clear();
     }
     
     @Test
-    public void assertMetricsContextDisable() {
-        run(false);
+    public void assertStartWhenMetricsDisable() {
+        initDisabledMetrics();
+        assertNull(MetricsContext.start("name"));
     }
     
-    private void run(final boolean enable) {
-        if(enable){
-            ThreadLocalObjectContainer container = new ThreadLocalObjectContainer();
-            container.initItem(new MetricsContext(1000000L, "example"));
-            container.build();
-        }
-        Context context = MetricsContext.start("example");
-        MetricsContext.stop(context);
+    @Test
+    public void assertStartWhenMetricsEnable() {
+        initEnabledMetrics();
+        assertNotNull(MetricsContext.start("name"));
+    }
+    
+    @Test
+    public void assertStopWhenMetricsDisable() {
+        initDisabledMetrics();
+        MetricsContext.stop(null);
+    }
+    
+    @Test
+    public void assertStopWhenMetricsEnable() {
+        initEnabledMetrics();
+        MetricsContext.stop(MetricsContext.start("name"));
+    }
+    
+    @Test
+    public void assertClear() {
+        initEnabledMetrics();
+        MetricsContext.clear();
+        assertNull(MetricsContext.start("name"));
+    }
+    
+    private void initDisabledMetrics() {
+        MetricsContext.init(new ShardingProperties(new Properties()));
+    }
+    
+    private void initEnabledMetrics() {
+        Properties props = new Properties();
+        props.setProperty(ShardingPropertiesConstant.METRICS_ENABLE.getKey(), Boolean.TRUE.toString());
+        MetricsContext.init(new ShardingProperties(props));
     }
 }

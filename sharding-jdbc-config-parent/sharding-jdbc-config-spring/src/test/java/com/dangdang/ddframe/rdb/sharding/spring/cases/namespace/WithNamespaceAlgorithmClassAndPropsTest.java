@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
 
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.metrics.ThreadLocalObjectContainer;
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -31,11 +31,9 @@ import static org.junit.Assert.assertNotNull;
 public final class WithNamespaceAlgorithmClassAndPropsTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
     
     @Test
-    public void testMetricsContextWhenEnable() throws  NoSuchFieldException {
+    public void testMetricsContextWhenEnable() throws SQLException {
         try (Connection connection = getShardingDataSource().getConnection()) {
-            assertNotNull(ThreadLocalObjectContainer.getItem(MetricsContext.class));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            assertNotNull(MetricsContext.start("name"));
         }
     }
 }

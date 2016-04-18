@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
@@ -26,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.metrics.ThreadLocalObjectContainer;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.google.common.base.Preconditions;
 
@@ -41,9 +39,9 @@ import java.util.Properties;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ThreadLocalObjectContainer threadLocalObjectContainer = new ThreadLocalObjectContainer();
+    private final ShardingContext shardingContext;
     
-    private final ShardingContext context;
+    private final ShardingProperties shardingProperties;
     
     public ShardingDataSource(final ShardingRule shardingRule) {
         this(shardingRule, new Properties());
@@ -52,29 +50,20 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingDataSource(final ShardingRule shardingRule, final Properties props) {
         Preconditions.checkNotNull(shardingRule);
         Preconditions.checkNotNull(props);
-        ShardingProperties shardingProperties = new ShardingProperties(props);
-        initThreadLocalObjectContainer(shardingProperties);
+        shardingProperties = new ShardingProperties(props);
         DatabaseType type;
         try {
             type = DatabaseType.valueFrom(ShardingConnection.getDatabaseMetaDataFromDataSource(shardingRule.getDataSourceRule().getDataSources()).getDatabaseProductName());
         } catch (final SQLException ex) {
             throw new ShardingJdbcException("Can not get database product name", ex);
         }
-        context = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(shardingProperties));
-    }
-    
-    private void initThreadLocalObjectContainer(final ShardingProperties shardingProperties) {
-        if (shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE)) {
-            long period = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-            String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
-            threadLocalObjectContainer.initItem(new MetricsContext(period, loggerName));
-        }
+        shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, type), new ExecutorEngine(shardingProperties));
     }
     
     @Override
     public ShardingConnection getConnection() throws SQLException {
-        threadLocalObjectContainer.build();
-        return new ShardingConnection(context);
+        MetricsContext.init(shardingProperties);
+        return new ShardingConnection(shardingContext);
     }
     
     @Override

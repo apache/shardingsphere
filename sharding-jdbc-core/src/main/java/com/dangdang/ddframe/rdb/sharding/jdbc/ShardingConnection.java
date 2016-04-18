@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (connectionMap.containsKey(dataSourceName)) {
             return connectionMap.get(dataSourceName);
         }
-        Context metricsContext = MetricsContext.start("ShardingConnection-getConnection", dataSourceName);
+        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         Connection connection = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
         MetricsContext.stop(metricsContext);
         replayMethodsInvocation(connection);
