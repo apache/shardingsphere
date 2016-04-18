@@ -55,7 +55,7 @@ public enum ShardingPropertiesConstant {
      * 默认值: com.dangdang.ddframe.rdb.sharding.metrics
      * </p>
      */
-    METRICS_PACKAGE_NAME("metrics.package.name", "com.dangdang.ddframe.rdb.sharding.metrics", String.class),
+    METRICS_LOGGER_NAME("metrics.logger.name", "com.dangdang.ddframe.rdb.sharding.metrics", String.class),
     
     /**
      * 最小空闲工作线程数量.

@@ -65,9 +65,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private void initThreadLocalObjectContainer(final ShardingProperties shardingProperties) {
         if (shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE)) {
-            long metricsMillisecondPeriod = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-            String metricsPackageName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_PACKAGE_NAME);
-            threadLocalObjectContainer.initItem(new MetricsContext(metricsMillisecondPeriod, metricsPackageName));
+            long period = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
+            String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
+            threadLocalObjectContainer.initItem(new MetricsContext(period, loggerName));
         }
     }
     

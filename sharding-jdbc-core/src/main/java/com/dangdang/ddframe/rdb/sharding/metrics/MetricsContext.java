@@ -35,10 +35,10 @@ public final class MetricsContext {
     
     private final MetricRegistry metricRegistry;
     
-    public MetricsContext(final long period, final String packageName) {
+    public MetricsContext(final long period, final String loggerName) {
         metricRegistry = new MetricRegistry();
         Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry)
-                .outputTo(LoggerFactory.getLogger(packageName))
+                .outputTo(LoggerFactory.getLogger(loggerName))
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .withLoggingLevel(LoggingLevel.DEBUG)

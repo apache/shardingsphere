@@ -106,7 +106,7 @@ defaultTableStrategy: 默认数据表分片策略
 props: 属性配置(可选)
     metrics.enable: 是否开启度量采集，默认值: false
     metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
-    metrics.package.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    metrics.logger.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
     executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
     executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
     executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
@@ -265,7 +265,7 @@ props: 属性配置(可选)
 | ------------------------------------ | ------------ | ---------- | -----| ------------------------------------|
 | metrics.enable                       | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启     |
 | metrics.millisecond.period           | 属性         |  String    |   否  | 度量输出周期，单位为毫秒               |
-| metrics.package.name                 | 属性         |  String    |   否  | 度量输出在日志中的标识名称             |
+| metrics.logger.name                  | 属性         |  String    |   否  | 度量输出在日志中的标识名称             |
 | executor.min.idle.size               | 属性         |  int       |   否  | 最小空闲工作线程数量                  |
 | executor.max.size                    | 属性         |  int       |   否  | 最大工作线程数量                      |
 | executor.max.idle.timeout.millisecond| 属性         |  int       |   否  | 工作线程空闲时超时时间，默认以毫秒为单位 |
