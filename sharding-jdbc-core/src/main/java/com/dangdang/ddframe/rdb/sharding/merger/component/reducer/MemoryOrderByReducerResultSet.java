@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 import java.sql.ResultSet;
 import java.util.List;
 
-import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 
@@ -36,7 +36,8 @@ public class MemoryOrderByReducerResultSet extends MemoryOrderByResultSet implem
     }
     
     @Override
-    public void init(final List<ResultSet> preResultSet) {
+    public ComponentResultSet init(final List<ResultSet> preResultSet) {
         setResultSets(preResultSet);
+        return this;
     }
 }

@@ -21,15 +21,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * 组件接口.
+ * 管道化组件接口.
  * 
- * @author gaohongtao
+ * @param <T> 前置组件类型
  */
-// TODO 泛型的javadoc
-// TODO ComponentResultSet是什么
 public interface ComponentResultSet<T> extends ResultSet {
     
-    // TODO 注释
-    // TODO 接口参数不需要加final
-    void init(final T preResultSet) throws SQLException;
+    /**
+     * 初始化管道组件.
+     * 
+     * @param preComponent 前置管道组件
+     * @return 返回初始化完成的管道组件
+     * @throws SQLException 访问组件可能抛出异常
+     */
+    ComponentResultSet init(T preComponent) throws SQLException;
 }

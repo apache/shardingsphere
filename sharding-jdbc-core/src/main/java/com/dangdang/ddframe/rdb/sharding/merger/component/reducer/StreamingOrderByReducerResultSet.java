@@ -25,7 +25,7 @@ import java.util.Queue;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Predicate;
@@ -51,7 +51,7 @@ public class StreamingOrderByReducerResultSet extends AbstractReducerResultSetAd
     }
     
     @Override
-    public void init(final List<ResultSet> preResultSet) throws SQLException {
+    public ComponentResultSet init(final List<ResultSet> preResultSet) throws SQLException {
         input(preResultSet);
         setDelegate(preResultSet.get(0));
         effectiveResultSetQueue = new LinkedList<>(Collections2.filter(preResultSet, new Predicate<ResultSet>() {
@@ -64,7 +64,7 @@ public class StreamingOrderByReducerResultSet extends AbstractReducerResultSetAd
                 }
             }
         }));
-        log.trace("Effective result set:{}", effectiveResultSetQueue);
+        return this;
     }
     
     @Override
@@ -82,9 +82,7 @@ public class StreamingOrderByReducerResultSet extends AbstractReducerResultSetAd
                 setDelegate(each);
             }
         }
-        if (!effectiveResultSetQueue.isEmpty()) {
-            log.trace(toString());
-        }
+        log.trace("Chosen order by value is {}, current result set is {}", chosenOrderByValue, getDelegate().hashCode());
         return !effectiveResultSetQueue.isEmpty();
     }
     
@@ -92,12 +90,7 @@ public class StreamingOrderByReducerResultSet extends AbstractReducerResultSetAd
         boolean next = getDelegate().next();
         if (!next) {
             effectiveResultSetQueue.remove(getDelegate());
-            log.trace("Result set {} finish", getDelegate());
+            log.trace("Result set {} finished", getDelegate().hashCode());
         }
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Current result set:%s", getDelegate());
     }
 }

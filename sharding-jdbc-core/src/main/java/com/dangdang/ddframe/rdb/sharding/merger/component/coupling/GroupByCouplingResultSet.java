@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByRow;
 import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -49,8 +49,9 @@ public class GroupByCouplingResultSet extends AbstractRowSetResultSetAdapter imp
     private boolean hasNext;
     
     @Override
-    public void init(final ResultSet preResultSet) {
+    public ComponentResultSet init(final ResultSet preResultSet) {
         setResultSets(Collections.singletonList(preResultSet));
+        return this;
     }
     
     @Override

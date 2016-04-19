@@ -17,12 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.GroupByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.LimitCouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.MemoryOrderByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.WrapperResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
+import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.MemoryOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.StreamingOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -31,10 +38,6 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * 创建归并分片结果集的工厂.
@@ -53,25 +56,19 @@ public final class ResultSetFactory {
      * @return 结果集包装
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {
-        // TODO 如果不filter, 直接操纵可能为空的resultSet会有什么结果, 能否统一处理
         List<ResultSet> filteredResultSets = filterResultSets(resultSets);
         if (filteredResultSets.isEmpty()) {
             log.trace("Sharding-JDBC: No data found in origin result sets");
             return resultSets.get(0);
         }
-        // TODO 只有1个的情况和多个情况有何不同, 需要单独处理么
         if (1 == filteredResultSets.size()) {
             log.trace("Sharding-JDBC: Only one result set");
             return filteredResultSets.get(0);
         }
-        setColumnIndex((WrapperResultSet) filteredResultSets.get(0), mergeContext);
-        ResultSetPipelineBuilder builder = new ResultSetPipelineBuilder(filteredResultSets, mergeContext.getOrderByColumns());
-        buildReducer(builder, mergeContext);
-        buildCoupling(builder, mergeContext);
-        return builder.build();
+        mergeContext.buildContextWithResultSet((WrapperResultSet) filteredResultSets.get(0));
+        return buildCoupling(buildReducer(filteredResultSets, mergeContext), mergeContext);
     }
     
-    // TODO 能否直接使用WrapperResultSet
     private static List<ResultSet> filterResultSets(final List<ResultSet> resultSets) {
         return Lists.newArrayList(Collections2.filter(Lists.transform(resultSets, new Function<ResultSet, ResultSet>() {
             
@@ -92,40 +89,36 @@ public final class ResultSetFactory {
         }));
     }
     
-    private static void setColumnIndex(final WrapperResultSet resultSet, final MergeContext mergeContext) {
-        for (IndexColumn each : mergeContext.getMergeFocusedColumns()) {
-            if (0 == each.getColumnIndex()) {
-                each.setColumnIndex(resultSet.getColumnIndex(each));
+    private static ResultSet buildReducer(final List<ResultSet> filteredResultSets, final MergeContext mergeContext) throws SQLException {
+        if (mergeContext.hasGroupBy()) {
+            if (mergeContext.groupByKeysEqualsOrderByKeys()) {
+                return join(new StreamingOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
             }
+            return join(new MemoryOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
+        } else if (mergeContext.hasOrderBy()) {
+            return join(new StreamingOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
+        } else {
+            return join(new IteratorReducerResultSet(), filteredResultSets);
         }
     }
     
-    // TODO reducer目的是什么, 是为了确定读取resultSet的next走内存还是走streaming吗, 如果是,是否抽象出两个Reducer就够了
-    private static void buildReducer(final ResultSetPipelineBuilder builder, final MergeContext mergeContext) throws SQLException {
-        // TODO 判断hasGroupByOrAggregation并获取什么样的OrderByColumns, 能否封装到mergeContext对象里
+    private static ResultSet buildCoupling(final ResultSet preResultSet, final MergeContext mergeContext) throws SQLException {
+        ResultSet currentResultSet = preResultSet;
         if (mergeContext.hasGroupByOrAggregation()) {
-            builder.joinSortReducer(mergeContext.transformGroupByColumnToOrderByColumn());
-            return;
+            currentResultSet = join(new GroupByCouplingResultSet(mergeContext.getGroupByColumns(), mergeContext.getAggregationColumns()), currentResultSet);
         }
-        if (mergeContext.hasOrderBy()) {
-            builder.joinSortReducer(mergeContext.getOrderByColumns());
-            return;
-        }
-        builder.join(new IteratorReducerResultSet());
-    }
-    
-    // TODO Reducer和Coupling大致流程一致, 两个有什么区别
-    private static void buildCoupling(final ResultSetPipelineBuilder builder, final MergeContext mergeContext) throws SQLException {
-        if (mergeContext.hasGroupByOrAggregation()) {
-            // TODO 保持一致, 都new一个CouplingResultSet
-            builder.join(new GroupByCouplingResultSet(mergeContext.getGroupByColumns(), mergeContext.getAggregationColumns()));
-        }
-        if (mergeContext.hasOrderBy()) {
-            // TODO 保持一致, 都new一个CouplingResultSet
-            builder.joinSortCoupling(mergeContext.getOrderByColumns());
+        if (mergeContext.needToSort()) {
+            currentResultSet = join(new MemoryOrderByCouplingResultSet(mergeContext.getCurrentOrderByKeys()), currentResultSet);
         }
         if (mergeContext.hasLimit()) {
-            builder.join(new LimitCouplingResultSet(mergeContext.getLimit()));
+            currentResultSet = join(new LimitCouplingResultSet(mergeContext.getLimit()), currentResultSet);
         }
+        return currentResultSet;
+    }
+    
+    private static <T> ComponentResultSet<T> join(final ComponentResultSet<T> resultSet, final T preResultSet) throws SQLException {
+        log.trace("{} joined", resultSet.getClass().getSimpleName());
+        resultSet.init(preResultSet);
+        return resultSet;
     }
 }

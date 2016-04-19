@@ -31,23 +31,19 @@ import com.google.common.base.Preconditions;
  * 
  * @author gaohongtao
  */
-// TODO 继承还是复用Row? 好像没有用父类相关的方法
 public class OrderByRow extends Row implements Comparable<OrderByRow> {
     
     private final List<OrderByColumn> orderByColumns;
     
-    // TODO rename => orderByValues
-    private final List<Comparable<?>> values;
+    private final List<Comparable<?>> orderByValues;
     
     public OrderByRow(final List<OrderByColumn> orderByColumns, final ResultSet resultSet) throws SQLException {
         super(resultSet);
         this.orderByColumns = orderByColumns;
-        // TODO this不需要
-        this.values = getValues();
+        orderByValues = fillOrderByValues();
     }
     
-    // TODO rename => fillOrderByValues
-    private List<Comparable<?>> getValues() {
+    private List<Comparable<?>> fillOrderByValues() {
         List<Comparable<?>> result = new ArrayList<>(orderByColumns.size());
         for (OrderByColumn each : orderByColumns) {
             Object value = getCell(each.getColumnIndex());
@@ -61,7 +57,7 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
     public int compareTo(final OrderByRow otherOrderByValue) {
         for (int i = 0; i < orderByColumns.size(); i++) {
             OrderByColumn thisOrderByColumn = orderByColumns.get(i);
-            int result = ResultSetUtil.compareTo(values.get(i), otherOrderByValue.values.get(i), thisOrderByColumn.getOrderByType());
+            int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderByColumn.getOrderByType());
             if (0 != result) {
                 return result;
             }
@@ -70,8 +66,7 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
     }
     
     @Override
-    // TODO toString应该展现变量状态, 描述词语Order by columns value is是否应去掉, 而且ToString是否不应只展现getCurrentResultSet的状态?
     public String toString() {
-        return String.format("OrderByKey is %s", values);
+        return String.format("Order by columns value is %s", orderByValues);
     }
 }

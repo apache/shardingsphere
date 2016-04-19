@@ -18,10 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.merger.component.other;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Map;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
 import lombok.Getter;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
  * 原始结果集包装类.
@@ -53,5 +56,20 @@ public class WrapperResultSet extends AbstractForwardingResultSetAdapter {
             return isFirstNext = true;
         }
         return super.next();
+    }
+    
+    /**
+     * 获取列标签与列索引之间的映射.
+     * 
+     * @return 映射对象
+     * @throws SQLException 访问元数据可能会抛出异常
+     */
+    public Map<String, Integer> getColumnLabelIndexMap() throws SQLException {
+        ResultSetMetaData resultSetMetaData = getDelegate().getMetaData();
+        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount());
+        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+            result.put(resultSetMetaData.getColumnLabel(i), i);
+        }
+        return result;
     }
 }

@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 
-import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 
@@ -37,7 +37,8 @@ public class MemoryOrderByCouplingResultSet extends MemoryOrderByResultSet imple
     }
     
     @Override
-    public void init(final ResultSet preResultSet) {
+    public ComponentResultSet init(final ResultSet preResultSet) {
         setResultSets(Collections.singletonList(preResultSet));
+        return this;
     }
 }

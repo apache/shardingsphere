@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.common;
 
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 结果集处理工具类.
@@ -95,7 +95,6 @@ public final class ResultSetUtil {
                 return number.floatValue();
             case "java.math.BigDecimal":
                 return new BigDecimal(number.toString());
-            // TODO Object和String不是number, 不会进入switch
             case "java.lang.Object":
                 return value;
             case "java.lang.String":

@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,9 +46,10 @@ public class LimitCouplingResultSet extends AbstractForwardingResultSetAdapter i
     }
     
     @Override
-    public void init(final ResultSet preResultSet) {
+    public ComponentResultSet init(final ResultSet preResultSet) {
         setDelegate(preResultSet);
         this.preResultSet = preResultSet;
+        return this;
     }
     
     @Override
@@ -77,10 +78,5 @@ public class LimitCouplingResultSet extends AbstractForwardingResultSetAdapter i
         }
         initial = true;
         return result;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Limit row number:%d limit size:%d result set stat:%s", rowNumber, limit.getRowCount(), super.toString());
     }
 }

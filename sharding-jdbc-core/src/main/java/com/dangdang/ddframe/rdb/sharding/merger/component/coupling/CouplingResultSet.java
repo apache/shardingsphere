@@ -15,16 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.component;
+package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
 import java.sql.ResultSet;
+
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 
 /**
  * 节点结果集.
  *
  * @author gaohongtao
  */
-// TODO 放到coupling包
 public interface CouplingResultSet extends ComponentResultSet<ResultSet> {
     
 }

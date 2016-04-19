@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,16 +38,17 @@ public class IteratorReducerResultSet extends AbstractReducerResultSetAdapter im
     private int currentResultSetOffset;
     
     @Override
-    public void init(final List<ResultSet> preResultSet) {
+    public ComponentResultSet init(final List<ResultSet> preResultSet) {
         input(preResultSet);
         resultSetIndex++;
+        return this;
     }
     
     @Override
     public boolean next() throws SQLException {
         if (null != getDelegate() && getDelegate().next()) {
             currentResultSetOffset++;
-            log.trace(toString());
+            log.trace("Current access {} of {} result set, offset is {}", resultSetIndex, getInputResultSets().size(), currentResultSetOffset);
             return true;
         }
         if (resultSetIndex >= getInputResultSets().size()) {
@@ -56,13 +57,7 @@ public class IteratorReducerResultSet extends AbstractReducerResultSetAdapter im
         currentResultSetOffset = 1;
         ResultSet rs = getInputResultSets().get(resultSetIndex++);
         setDelegate(rs);
-        log.trace(toString());
+        log.trace("Current access {} of {} result set, offset is {}", resultSetIndex, getInputResultSets().size(), currentResultSetOffset);
         return rs.next();
-    }
-    
-    @Override
-    // TODO 同样的toString问题
-    public String toString() {
-        return String.format("Current access %d of %d result set, offset is %d", resultSetIndex, getInputResultSets().size(), currentResultSetOffset);
     }
 }

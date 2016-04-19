@@ -15,17 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.component;
+package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
 import java.sql.ResultSet;
 import java.util.List;
+
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 
 /**
  * 从真实数据源搜集结果集.
  *
  * @author gaohongtao
  */
-// TODO 放到reducer包
 public interface ReducerResultSet extends ComponentResultSet<List<ResultSet>> {
     
 }
