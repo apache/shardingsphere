@@ -155,7 +155,9 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public boolean visit(final SQLInListExpr x) {
-        parseContext.addCondition(x.getExpr(), x.isNot() ? BinaryOperator.NOT_IN : BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
+        if (!x.isNot()) {
+            parseContext.addCondition(x.getExpr(), BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
+        }
         return super.visit(x);
     }
     

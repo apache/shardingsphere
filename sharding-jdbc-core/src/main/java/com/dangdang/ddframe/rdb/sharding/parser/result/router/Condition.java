@@ -66,7 +66,7 @@ public final class Condition {
     @RequiredArgsConstructor
     public enum BinaryOperator {
         
-        EQUAL("="), BETWEEN("BETWEEN"), IN("IN"), NOT_IN("NOT IN");
+        EQUAL("="), BETWEEN("BETWEEN"), IN("IN");
         
         @Getter
         private final String expression;
