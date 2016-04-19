@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.CouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import lombok.extern.slf4j.Slf4j;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * 限制结果集.
@@ -31,7 +31,7 @@ import java.sql.SQLException;
  * @author gaohongtao
  */
 @Slf4j
-public class LimitCouplingResultSet extends AbstractDelegateResultSetAdapter implements CouplingResultSet {
+public class LimitCouplingResultSet extends AbstractForwardingResultSetAdapter implements CouplingResultSet {
     
     private final Limit limit;
     
@@ -47,7 +47,7 @@ public class LimitCouplingResultSet extends AbstractDelegateResultSetAdapter imp
     
     @Override
     public void init(final ResultSet preResultSet) {
-        setDelegatedResultSet(preResultSet);
+        setDelegate(preResultSet);
         this.preResultSet = preResultSet;
     }
     

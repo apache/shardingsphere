@@ -17,21 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
 
 /**
  * 数据行.
- *
+ * 每个数据行对象代表结果集中的一行数据.
+ * 
  * @author gaohongtao
  */
-// TODO 名字最好再考虑下, ROW有点大, 而且guava, swing等已经用了
 public class Row {
     
     private final Object[] rowData;
@@ -40,9 +37,7 @@ public class Row {
         rowData = getRowData(resultSet);
     }
     
-    // TODO rename => fillRowData?
     private Object[] getRowData(final ResultSet resultSet) throws SQLException {
-        // TODO 最好不要用md这类缩写
         ResultSetMetaData md = resultSet.getMetaData();
         Object[] result = new Object[md.getColumnCount()];
         for (int i = 0; i < md.getColumnCount(); i++) {
@@ -51,32 +46,29 @@ public class Row {
         return result;
     }
     
-    void setCell(final int index, final Object value) {
+    protected void setCell(final int index, final Object value) {
         Preconditions.checkArgument(containsCell(index));
         rowData[index - 1] = value;
     }
     
-    // TODO javadoc
+    /**
+     * 通过索引访问数据行中的单元格.
+     * 
+     * @param index 索引
+     * @return 单元格中的数据
+     */
     public Object getCell(final int index) {
         Preconditions.checkArgument(containsCell(index));
         return rowData[index - 1];
     }
     
-    // TODO javadoc
-    // TODO 改名? 这名字不能望文生义, 比如: isIndexOutOfRange
+    /**
+     * 判断数据行中是否包含该索引.
+     * 
+     * @param index 索引
+     * @return true 包含 false 不包含
+     */
     public boolean containsCell(final int index) {
         return index - 1 > -1 && index - 1 < rowData.length;
-    }
-    
-    @Override
-    public String toString() {
-        // TODO 试试 Arrays.toString(rowData)
-        return String.format("value is : %s", Lists.transform(Arrays.asList(rowData), new Function<Object, Object>() {
-    
-            @Override
-            public Object apply(final Object input) {
-                return null == input ? "nil" : input;
-            }
-        }));
     }
 }

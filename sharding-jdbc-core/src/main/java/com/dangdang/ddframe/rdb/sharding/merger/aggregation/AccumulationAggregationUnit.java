@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +35,14 @@ public final class AccumulationAggregationUnit implements AggregationUnit {
     private BigDecimal result;
     
     @Override
-    public void merge(final Comparable<?>... values) {
-        if (null == values || null == values[0]) {
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0)) {
             return;
         }
         if (null == result) {
             result = new BigDecimal("0");
         }
-        result = result.add(new BigDecimal(values[0].toString()));
+        result = result.add(new BigDecimal(values.get(0).toString()));
         log.trace("Accumulation result: {}", result.toString());
     }
     

@@ -17,18 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.base.Preconditions;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.google.common.base.Preconditions;
+
 /**
  * 具有排序功能的行对象.
- *
+ * 
  * @author gaohongtao
  */
 // TODO 继承还是复用Row? 好像没有用父类相关的方法
@@ -72,6 +72,6 @@ public class OrderByRow extends Row implements Comparable<OrderByRow> {
     @Override
     // TODO toString应该展现变量状态, 描述词语Order by columns value is是否应去掉, 而且ToString是否不应只展现getCurrentResultSet的状态?
     public String toString() {
-        return String.format("Order by columns value is %s", values);
+        return String.format("OrderByKey is %s", values);
     }
 }

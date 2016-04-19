@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
-import lombok.extern.slf4j.Slf4j;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ReducerResultSet;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 迭代归并结果集.
@@ -31,7 +31,7 @@ import java.util.List;
  * @author gaohongtao
  */
 @Slf4j
-public class IteratorReducerResultSet extends AbstractResultSetAdapter implements ReducerResultSet {
+public class IteratorReducerResultSet extends AbstractReducerResultSetAdapter implements ReducerResultSet {
     
     private int resultSetIndex;
     
@@ -39,24 +39,23 @@ public class IteratorReducerResultSet extends AbstractResultSetAdapter implement
     
     @Override
     public void init(final List<ResultSet> preResultSet) {
-        setResultSets(preResultSet);
+        input(preResultSet);
         resultSetIndex++;
-        setCurrentResultSet(preResultSet.get(0));
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (null != getCurrentResultSet() && getCurrentResultSet().next()) {
+        if (null != getDelegate() && getDelegate().next()) {
             currentResultSetOffset++;
             log.trace(toString());
             return true;
         }
-        if (resultSetIndex >= getResultSets().size()) {
+        if (resultSetIndex >= getInputResultSets().size()) {
             return false;
         }
         currentResultSetOffset = 1;
-        ResultSet rs = getResultSets().get(resultSetIndex++);
-        setCurrentResultSet(rs);
+        ResultSet rs = getInputResultSets().get(resultSetIndex++);
+        setDelegate(rs);
         log.trace(toString());
         return rs.next();
     }
@@ -64,6 +63,6 @@ public class IteratorReducerResultSet extends AbstractResultSetAdapter implement
     @Override
     // TODO 同样的toString问题
     public String toString() {
-        return String.format("Current access %d of %d result set, offset is %d", resultSetIndex, getResultSets().size(), currentResultSetOffset);
+        return String.format("Current access %d of %d result set, offset is %d", resultSetIndex, getInputResultSets().size(), currentResultSetOffset);
     }
 }

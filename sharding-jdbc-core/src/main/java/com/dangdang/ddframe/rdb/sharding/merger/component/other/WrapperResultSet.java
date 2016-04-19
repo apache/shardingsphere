@@ -17,49 +17,31 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.other;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDelegateResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
-import lombok.Getter;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
+import lombok.Getter;
 
 /**
  * 原始结果集包装类.
  * 
  * @author gaohongtao
  */
-public class WrapperResultSet extends AbstractDelegateResultSetAdapter {
+public class WrapperResultSet extends AbstractForwardingResultSetAdapter {
     
     @Getter
     private final boolean isEmpty;
-    
-    private final Map<String, Integer> columnLabelIndexMap;
     
     private boolean isFirstNext;
     
     public WrapperResultSet(final ResultSet resultSet) throws SQLException {
         isEmpty = !resultSet.next();
         if (isEmpty) {
-            columnLabelIndexMap = Collections.emptyMap();
             return;
         }
-        setDelegatedResultSet(resultSet);
+        setDelegate(resultSet);
         increaseStat();
-        columnLabelIndexMap = getColumnLabelIndexMap();
-    }
-    
-    private Map<String, Integer> getColumnLabelIndexMap() throws SQLException {
-        ResultSetMetaData resultSetMetaData = getCurrentResultSet().getMetaData();
-        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount());
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(resultSetMetaData.getColumnLabel(i), i);
-        }
-        return result;
     }
     
     @Override
@@ -71,20 +53,5 @@ public class WrapperResultSet extends AbstractDelegateResultSetAdapter {
             return isFirstNext = true;
         }
         return super.next();
-    }
-    
-    /**
-     * 获取列索引.
-     * 
-     * @param indexColumn 基于索引的列
-     * @return 列索引
-     */
-    public int getColumnIndex(final IndexColumn indexColumn) {
-        if (indexColumn.getColumnLabel().isPresent() && columnLabelIndexMap.containsKey(indexColumn.getColumnLabel().get())) {
-            return columnLabelIndexMap.get(indexColumn.getColumnLabel().get());
-        } else if (indexColumn.getColumnName().isPresent() && columnLabelIndexMap.containsKey(indexColumn.getColumnName().get())) {
-            return columnLabelIndexMap.get(indexColumn.getColumnName().get());
-        }
-        throw new IllegalArgumentException(String.format("Cannot find index for column '%s' from ResultSet '%s'", indexColumn, columnLabelIndexMap));
     }
 }

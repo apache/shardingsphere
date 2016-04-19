@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import java.util.List;
+
 /**
  * 归并计算单元接口.
  * 
@@ -29,7 +31,7 @@ public interface AggregationUnit {
      * 
      * @param values 聚合数值
      */
-    void merge(Comparable<?>... values);
+    void merge(List<Comparable<?>> values);
     
     /**
      * 获取计算结果.

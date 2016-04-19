@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,18 +37,18 @@ public final class ComparableAggregationUnit implements AggregationUnit {
     
     @SuppressWarnings("unchecked")
     @Override
-    public void merge(@SuppressWarnings("rawtypes") final Comparable... values) {
-        if (null == values || null == values[0]) {
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0)) {
             return;
         }
         if (null == result) {
-            result = values[0];
+            result = values.get(0);
             log.trace("Comparable result: {}", result);
             return;
         }
-        int comparedValue = values[0].compareTo(result);
+        int comparedValue = ((Comparable) values.get(0)).compareTo(result);
         if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
-            result = values[0];
+            result = values.get(0);
             log.trace("Comparable result: {}", result);
         }
     }

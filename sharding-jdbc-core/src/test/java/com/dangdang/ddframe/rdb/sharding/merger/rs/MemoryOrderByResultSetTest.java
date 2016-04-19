@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.rs;
 
-import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import org.junit.Test;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,6 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import org.junit.Test;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
@@ -41,8 +41,8 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void testSort() throws SQLException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         List<Integer> actualList = new ArrayList<>();
         while (rs.next()) {
             actualList.add(rs.getInt(1));
@@ -51,8 +51,8 @@ public class MemoryOrderByResultSetTest {
         rs.close();
         assertThat(rs.isClosed(), is(true));
         
-        rs = new MemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.DESC)));
+        rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.DESC)));
+        rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         actualList.clear();
         while (rs.next()) {
             actualList.add(rs.getInt("nAmE"));
@@ -85,8 +85,8 @@ public class MemoryOrderByResultSetTest {
         orderByColumn1.setColumnIndex(1);
         OrderByColumn orderByColumn2 = new OrderByColumn("time", OrderByColumn.OrderByType.DESC);
         orderByColumn2.setColumnIndex(2);
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))),
-                Arrays.asList(orderByColumn1, orderByColumn2));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Arrays.asList(orderByColumn1, orderByColumn2));
+        rs.setResultSets(Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))));
         List<Map<String, Object>> actualList = new ArrayList<>();
         while (rs.next()) {
             Map<String, Object> map = new TreeMap<>();
@@ -100,15 +100,15 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void testFindColumnSuccess() throws SQLException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet( Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         assertThat(rs.findColumn("name"), is(1));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void testFindColumnError() throws SQLException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         rs.findColumn("unknown");
     }
     
@@ -117,8 +117,8 @@ public class MemoryOrderByResultSetTest {
         Map<String, Object> rs1 = new TreeMap<>();
         rs1.put("name", "kecf");
         rs1.put("time", null);
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        rs.setResultSets(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))));
         assertThat(rs.next(), is(true));
         assertThat(rs.getObject(2), nullValue());
         assertThat(rs.wasNull(), is(true));
@@ -126,8 +126,8 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void testOthers() throws SQLException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)),
-                Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         assertThat(rs.next(), is(true));
         assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
         assertThat(rs.getFetchSize(), is(9));

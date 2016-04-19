@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,18 +29,18 @@ public final class ComparableAggregationUnitTest {
     @Test
     public void assertComparableAggregationForAsc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true);
-        comparableAggregation.merge(1);
-        comparableAggregation.merge(10);
-        comparableAggregation.merge(5);
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(1));
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(10));
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(5));
         assertThat((Integer) comparableAggregation.getResult(), is(1));
     }
     
     @Test
     public void assertComparableAggregationForDesc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false);
-        comparableAggregation.merge(1);
-        comparableAggregation.merge(10);
-        comparableAggregation.merge(5);
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(1));
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(10));
+        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(5));
         assertThat((Integer) comparableAggregation.getResult(), is(10));
     }
 }

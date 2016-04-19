@@ -17,16 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationRowResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,9 +33,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationRowResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 使用行数据集实现的结果集.
- *
+ * 
  * @author gaohongtao
  */
 @Slf4j
@@ -69,7 +69,9 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     public boolean next() throws SQLException {
         init();
         boolean result = (currentRow = nextRow()) != null;
-        log.trace(toString());
+        if (result) {
+            log.trace("Current row is {}", currentRow);
+        }
         return result;
     }
     
@@ -388,10 +390,5 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     @Override
     public int getConcurrency() throws SQLException {
         return ResultSet.CONCUR_READ_ONLY;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Current row is %s", currentRow);
     }
 }

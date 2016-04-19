@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,8 @@ public class AvgAggregationUnit implements AggregationUnit {
     private BigDecimal sum;
     
     @Override
-    public void merge(final Comparable<?>... values) {
-        if (null == values || null == values[0] || null == values[1]) {
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0) || null == values.get(1)) {
             return;
         }
         if (null == count) {
@@ -46,8 +47,8 @@ public class AvgAggregationUnit implements AggregationUnit {
         if (null == sum) {
             sum = new BigDecimal("0");
         }
-        count = count.add(new BigDecimal(values[0].toString()));
-        sum = sum.add(new BigDecimal(values[1].toString()));
+        count = count.add(new BigDecimal(values.get(0).toString()));
+        sum = sum.add(new BigDecimal(values.get(1).toString()));
         log.trace("AVG result COUNT: {} SUM: {}", count, sum);
     }
     

@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,9 +29,9 @@ public final class AccumulationAggregationUnitTest {
     @Test
     public void assertAccumulationAggregation() {
         AccumulationAggregationUnit accumulationAggregationUnit = new AccumulationAggregationUnit();
-        accumulationAggregationUnit.merge(1);
-        accumulationAggregationUnit.merge(1);
-        accumulationAggregationUnit.merge(10);
+        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(1));
+        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(1));
+        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(10));
         assertThat(((Number) accumulationAggregationUnit.getResult()).intValue(), is(12));
     }
 }

@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.other;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -29,25 +24,23 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import lombok.RequiredArgsConstructor;
+
 /**
  * 内存结果集.
  * 
  * @author gaohongtao
  */
+@RequiredArgsConstructor
 public class MemoryOrderByResultSet extends AbstractRowSetResultSetAdapter {
     
     private final List<OrderByColumn> orderByColumns;
     
     private Iterator<OrderByRow> orderByRowsIterator;
-    
-    public MemoryOrderByResultSet(final ResultSet resultSets, final List<OrderByColumn> orderByColumns) {
-        this(Collections.singletonList(resultSets), orderByColumns);
-    }
-    
-    public MemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderByColumn> orderByColumns) {
-        this.orderByColumns = orderByColumns;
-        setResultSets(resultSets);
-    }
     
     @Override
     protected void initRows(final List<ResultSet> resultSets) throws SQLException {
