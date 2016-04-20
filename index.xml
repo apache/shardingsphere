@@ -197,6 +197,7 @@ try (
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/49&#34;&gt;ISSUE #49&lt;/a&gt; 调整属性配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/51&#34;&gt;ISSUE #51&lt;/a&gt; 重构Hint接口&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
@@ -2318,49 +2319,44 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
 
-&lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager&lt;/code&gt;。
+&lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintManager&lt;/code&gt;。
 该管理器是使用&lt;code&gt;ThreadLocal&lt;/code&gt;技术管理分片键值的。
 使用例子：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String sql = &amp;quot;SELECT * FROM t_order&amp;quot;;
         
 try (
+        HintManager hintManager = new HintManager();
         Connection conn = dataSource.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    HintShardingValueManager.init();
-    HintShardingValueManager.registerShardingValueOfDatabase(&amp;quot;t_order&amp;quot;, &amp;quot;user_id&amp;quot;, 1);
-    HintShardingValueManager.registerShardingValueOfTable(&amp;quot;t_order&amp;quot;, &amp;quot;order_id&amp;quot;, 2);
+    hintManager.addDatabaseShardingValue(&amp;quot;t_order&amp;quot;, &amp;quot;user_id&amp;quot;, 1);
+    hintManager.addTableShardingValue(&amp;quot;t_order&amp;quot;, &amp;quot;order_id&amp;quot;, 2);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             ...
         }
     }
-} finally {
-    HintShardingValueManager.clear();
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;初始化方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;初始化方法&lt;/h3&gt;
+&lt;h3 id=&#34;实例化:c5f80a6139537602865bbe0a8146efe1&#34;&gt;实例化&lt;/h3&gt;
 
-&lt;p&gt;使用&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;表示开始执行操作，此时会初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;HintManager hintManager = new HintManager()&lt;/code&gt;实例化后将初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
 
-&lt;p&gt;注意：&lt;strong&gt;在一个线程中只能初始化一次&lt;/strong&gt;。否则会抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;的异常。&lt;/p&gt;
-
-&lt;h3 id=&#34;注册分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;注册分片键值&lt;/h3&gt;
+&lt;h3 id=&#34;添加分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;添加分片键值&lt;/h3&gt;
 
 &lt;ul&gt;
-&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfDatabase&lt;/code&gt;来注册数据源分片键值&lt;/li&gt;
-&lt;li&gt;使用&lt;code&gt;HintShardingValueManager.registerShardingValueOfTable&lt;/code&gt;来注册表分片键值&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;hintManager.addDatabaseShardingValue&lt;/code&gt;来添加数据源分片键值&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;hintManager.addTableShardingValue&lt;/code&gt;来添加表分片键值&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。&lt;/p&gt;
 
-&lt;h3 id=&#34;清除注册的分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;清除注册的分片键值&lt;/h3&gt;
+&lt;h3 id=&#34;清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;清除添加的分片键值&lt;/h3&gt;
 
-&lt;p&gt;由于分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束的使用调用&lt;code&gt;HintShardingValueManager.clear()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。
-如果你没有调用该方法，那么在该线程被复用时（线程池场景），&lt;code&gt;HintShardingValueManager.init()&lt;/code&gt;被调用将抛出&lt;code&gt;CAN NOT init repeatedly&lt;/code&gt;异常。&lt;/p&gt;
+&lt;p&gt;分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束时调用&lt;code&gt;hintManager.close()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;建议使用&lt;code&gt;try-finally&lt;/code&gt;或者&lt;code&gt;AOP&lt;/code&gt;编程的方式来调用清除方法&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;hintManager&lt;/code&gt;实现了&lt;code&gt;AutoCloseable&lt;/code&gt;接口，可推荐使用&lt;code&gt;try with resource&lt;/code&gt;自动关闭。&lt;/strong&gt;&lt;/p&gt;
 </description>
     </item>
     

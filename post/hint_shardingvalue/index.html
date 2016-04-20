@@ -136,49 +136,44 @@ body {
 
 <h2 id="基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值管理器</h2>
 
-<p>要解决上面的问题，我们使用<code>com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager</code>。
+<p>要解决上面的问题，我们使用<code>com.dangdang.ddframe.rdb.sharding.api.HintManager</code>。
 该管理器是使用<code>ThreadLocal</code>技术管理分片键值的。
 使用例子：</p>
 
 <pre><code class="language-java">String sql = &quot;SELECT * FROM t_order&quot;;
         
 try (
+        HintManager hintManager = new HintManager();
         Connection conn = dataSource.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    HintShardingValueManager.init();
-    HintShardingValueManager.registerShardingValueOfDatabase(&quot;t_order&quot;, &quot;user_id&quot;, 1);
-    HintShardingValueManager.registerShardingValueOfTable(&quot;t_order&quot;, &quot;order_id&quot;, 2);
+    hintManager.addDatabaseShardingValue(&quot;t_order&quot;, &quot;user_id&quot;, 1);
+    hintManager.addTableShardingValue(&quot;t_order&quot;, &quot;order_id&quot;, 2);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             ...
         }
     }
-} finally {
-    HintShardingValueManager.clear();
 }
 </code></pre>
 
-<h3 id="初始化方法:c5f80a6139537602865bbe0a8146efe1">初始化方法</h3>
+<h3 id="实例化:c5f80a6139537602865bbe0a8146efe1">实例化</h3>
 
-<p>使用<code>HintShardingValueManager.init()</code>表示开始执行操作，此时会初始化<code>ThreadLocal</code>中的数据。</p>
+<p>使用<code>HintManager hintManager = new HintManager()</code>实例化后将初始化<code>ThreadLocal</code>中的数据。</p>
 
-<p>注意：<strong>在一个线程中只能初始化一次</strong>。否则会抛出<code>CAN NOT init repeatedly</code>的异常。</p>
-
-<h3 id="注册分片键值:c5f80a6139537602865bbe0a8146efe1">注册分片键值</h3>
+<h3 id="添加分片键值:c5f80a6139537602865bbe0a8146efe1">添加分片键值</h3>
 
 <ul>
-<li>使用<code>HintShardingValueManager.registerShardingValueOfDatabase</code>来注册数据源分片键值</li>
-<li>使用<code>HintShardingValueManager.registerShardingValueOfTable</code>来注册表分片键值</li>
+<li>使用<code>hintManager.addDatabaseShardingValue</code>来添加数据源分片键值</li>
+<li>使用<code>hintManager.addTableShardingValue</code>来添加表分片键值</li>
 </ul>
 
 <p>每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。</p>
 
-<h3 id="清除注册的分片键值:c5f80a6139537602865bbe0a8146efe1">清除注册的分片键值</h3>
+<h3 id="清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1">清除添加的分片键值</h3>
 
-<p>由于分片键值保存在<code>ThreadLocal</code>中，所以需要在操作结束的使用调用<code>HintShardingValueManager.clear()</code>来清除<code>ThreadLocal</code>中的内容。
-如果你没有调用该方法，那么在该线程被复用时（线程池场景），<code>HintShardingValueManager.init()</code>被调用将抛出<code>CAN NOT init repeatedly</code>异常。</p>
+<p>分片键值保存在<code>ThreadLocal</code>中，所以需要在操作结束时调用<code>hintManager.close()</code>来清除<code>ThreadLocal</code>中的内容。</p>
 
-<p><strong>建议使用<code>try-finally</code>或者<code>AOP</code>编程的方式来调用清除方法</strong></p>
+<p><strong><code>hintManager</code>实现了<code>AutoCloseable</code>接口，可推荐使用<code>try with resource</code>自动关闭。</strong></p>
 
 	</div>
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
@@ -189,9 +184,9 @@ try (
 <li><a href="#背景:c5f80a6139537602865bbe0a8146efe1">背景</a></li>
 <li><a href="#基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值管理器</a>
 <ul>
-<li><a href="#初始化方法:c5f80a6139537602865bbe0a8146efe1">初始化方法</a></li>
-<li><a href="#注册分片键值:c5f80a6139537602865bbe0a8146efe1">注册分片键值</a></li>
-<li><a href="#清除注册的分片键值:c5f80a6139537602865bbe0a8146efe1">清除注册的分片键值</a></li>
+<li><a href="#实例化:c5f80a6139537602865bbe0a8146efe1">实例化</a></li>
+<li><a href="#添加分片键值:c5f80a6139537602865bbe0a8146efe1">添加分片键值</a></li>
+<li><a href="#清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1">清除添加的分片键值</a></li>
 </ul></li>
 </ul></li>
 </ul>
