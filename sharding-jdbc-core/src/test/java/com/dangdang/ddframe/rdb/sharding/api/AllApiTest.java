@@ -47,7 +47,7 @@ import org.junit.runners.Suite;
     NoneDatabaseShardingAlgorithmTest.class, 
     TableShardingStrategyTest.class, 
     NoneTableShardingAlgorithmTest.class,
-    HintShardingValueManagerTest.class,
+    HintManagerTest.class,
     })
 public class AllApiTest {
 }

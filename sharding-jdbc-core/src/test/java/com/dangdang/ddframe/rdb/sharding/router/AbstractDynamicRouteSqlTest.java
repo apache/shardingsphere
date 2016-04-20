@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager;
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 
@@ -41,14 +41,13 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     }
     
     private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
-        HintShardingValueManager.init();
-        for (ShardingValuePair each : shardingValuePairs) {
-            HintShardingValueManager.registerShardingValueOfDatabase(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
-            HintShardingValueManager.registerShardingValueOfTable(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
+        try (HintManager hintManager = HintManager.getInstance()) {
+            for (ShardingValuePair each : shardingValuePairs) {
+                hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
+                hintManager.addTableShardingValue(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
+            }
+            assertMultipleTargets(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
         }
-        
-        assertMultipleTargets(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
-        HintShardingValueManager.clear();
     }
     
     protected static class ShardingValuePair {
@@ -69,5 +68,4 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
         
         private final Integer[] shardingValue;
     }
-    
 }

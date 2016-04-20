@@ -11,6 +11,7 @@ weight = 1
 ### 结构调整
 
 1. [ISSUE #49](https://github.com/dangdangdotcom/sharding-jdbc/issues/49) 调整属性配置
+1. [ISSUE #51](https://github.com/dangdangdotcom/sharding-jdbc/issues/51) 重构Hint接口
 
 ### 缺陷修正
 

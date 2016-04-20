@@ -17,17 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
-
-import com.dangdang.ddframe.rdb.sharding.api.HintShardingValueManager;
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -38,6 +28,16 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.ModuloTableShardingAlgorithm;
 import org.apache.commons.dbcp.BasicDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 // CHECKSTYLE:OFF
 public final class Main {
     
@@ -83,13 +83,12 @@ public final class Main {
     
     private static void printHintSimpleSelect(final DataSource dataSource) throws SQLException {
         String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id";
-        
         try (
+                HintManager hintManager = HintManager.getInstance();
                 Connection conn = dataSource.getConnection();
                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            HintShardingValueManager.init();
-            HintShardingValueManager.registerShardingValueOfDatabase("t_order", "user_id", 10);
-            HintShardingValueManager.registerShardingValueOfTable("t_order", "order_id", 1001);
+            hintManager.addDatabaseShardingValue("t_order", "user_id", 10);
+            hintManager.addTableShardingValue("t_order", "order_id", 1001);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     System.out.println(rs.getInt(1));
@@ -97,8 +96,6 @@ public final class Main {
                     System.out.println(rs.getInt(3));
                 }
             }
-        } finally {
-            HintShardingValueManager.clear();
         }
     }
     
