@@ -30,7 +30,8 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     public void assertBindingTableWithUnBoundTable() throws SQLParserException {
         assertSingleTarget("select * from order o join order_item i join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id) WHERE o.order_id = 1");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), "select * from order o join order_item i join order_attr a using(order_id)", "ds_1",
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), 
+                "select * from order o join order_item i join order_attr a using(order_id)", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id)");
     }
     

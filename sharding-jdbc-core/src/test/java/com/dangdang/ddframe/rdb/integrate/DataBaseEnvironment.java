@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.integrate;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
 import lombok.Getter;
 

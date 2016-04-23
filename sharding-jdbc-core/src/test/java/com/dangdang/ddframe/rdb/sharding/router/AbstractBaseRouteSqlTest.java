@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -63,7 +63,8 @@ public abstract class AbstractBaseRouteSqlTest {
         TableRule orderItemTableRule = new TableRule("order_item", Lists.newArrayList("order_item_0", "order_item_1"), dataSourceRule);
         TableRule orderAttrTableRule = new TableRule("order_attr", Lists.newArrayList("ds_0.order_attr_a", "ds_1.order_attr_b"), dataSourceRule, 
                 new TableShardingStrategy("order_id", new OrderAttrShardingAlgorithm()));
-        shardingRule = new ShardingRule(dataSourceRule, Lists.newArrayList(orderTableRule, orderItemTableRule, orderAttrTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))), 
+        shardingRule = new ShardingRule(dataSourceRule, Lists.newArrayList(orderTableRule, orderItemTableRule, orderAttrTableRule), 
+                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))), 
                 new DatabaseShardingStrategy("order_id", new OrderShardingAlgorithm()), new TableShardingStrategy("order_id", new OrderShardingAlgorithm()));
     }
     

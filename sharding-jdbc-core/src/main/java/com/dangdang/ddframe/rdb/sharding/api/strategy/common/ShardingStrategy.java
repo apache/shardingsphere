@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 分片策略.

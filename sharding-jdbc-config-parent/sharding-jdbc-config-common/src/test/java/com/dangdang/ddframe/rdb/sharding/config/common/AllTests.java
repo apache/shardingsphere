@@ -29,8 +29,8 @@ import org.junit.runners.Suite;
         ShardingRuleBuilderTest.class,
         ClosureShardingAlgorithmTest.class,
         ShardingValueWrapperTest.class,
-        InlineParserTest.class,
-})
+        InlineParserTest.class
+    })
 public class AllTests {
     
 }

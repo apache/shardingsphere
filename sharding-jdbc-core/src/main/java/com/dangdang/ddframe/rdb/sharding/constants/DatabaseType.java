@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api;
+package com.dangdang.ddframe.rdb.sharding.constants;
 
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 

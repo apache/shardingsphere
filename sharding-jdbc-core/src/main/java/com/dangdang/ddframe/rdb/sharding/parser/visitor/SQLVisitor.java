@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 
 /**

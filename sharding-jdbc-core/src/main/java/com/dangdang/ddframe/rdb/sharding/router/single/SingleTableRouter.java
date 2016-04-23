@@ -112,7 +112,7 @@ public final class SingleTableRouter {
         List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
             Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(logicTable, each));
-            Preconditions.checkState(shardingValue.isPresent(), String.format("Can not find sharding hint for logic-table '%s' and sharding-column '%s'",logicTable, each));
+            Preconditions.checkState(shardingValue.isPresent(), String.format("Can not find sharding hint for logic-table '%s' and sharding-column '%s'", logicTable, each));
             result.add(shardingValue.get());
         }
         return result;
@@ -122,7 +122,7 @@ public final class SingleTableRouter {
         List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
             Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getTableShardingValue(new ShardingKey(logicTable, each));
-            Preconditions.checkState(shardingValue.isPresent(), String.format("Can not find sharding hint for logic-table '%s' and sharding-column '%s'",logicTable, each));
+            Preconditions.checkState(shardingValue.isPresent(), String.format("Can not find sharding hint for logic-table '%s' and sharding-column '%s'", logicTable, each));
             result.add(shardingValue.get());
         }
         return result;

@@ -75,14 +75,15 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), 
+                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
                 new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);
     }
     
-    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql, final Object... params)
-            throws SQLException, DatabaseUnitException {
+    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, 
+                                 final Connection connection, final String actualTableName, final String sql, final Object... params) throws SQLException, DatabaseUnitException {
         try (DynamicShardingValueHelper anotherHelper = helper) {
             assertDataSet(expectedDataSetFile, connection, actualTableName, sql, params);
         }

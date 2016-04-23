@@ -48,10 +48,10 @@ public final class StatementExecutor {
     /**
      * 添加静态语句对象至执行上下文.
      *
-     * @param StatementExecutorWrapper 静态语句对象的执行上下文
+     * @param statementExecutorWrapper 静态语句对象的执行上下文
      */
-    public void addStatement(final StatementExecutorWrapper StatementExecutorWrapper) {
-        statementExecutorWrappers.add(StatementExecutorWrapper);
+    public void addStatement(final StatementExecutorWrapper statementExecutorWrapper) {
+        statementExecutorWrappers.add(statementExecutorWrapper);
     }
     
     /**
@@ -64,8 +64,8 @@ public final class StatementExecutor {
         Context context = MetricsContext.start("ShardingStatement-executeQuery");
         List<ResultSet> result;
         if (1 == statementExecutorWrappers.size()) {
-            StatementExecutorWrapper StatementExecutorWrapper = statementExecutorWrappers.iterator().next();
-            result = Collections.singletonList(StatementExecutorWrapper.getStatement().executeQuery(StatementExecutorWrapper.getSqlExecutionUnit().getSql()));
+            StatementExecutorWrapper statementExecutorWrapper = statementExecutorWrappers.iterator().next();
+            result = Collections.singletonList(statementExecutorWrapper.getStatement().executeQuery(statementExecutorWrapper.getSqlExecutionUnit().getSql()));
             MetricsContext.stop(context);
             return result;
         }
@@ -131,17 +131,17 @@ public final class StatementExecutor {
         postDMLExecutionEvents();
         int result = 0;
         if (1 == statementExecutorWrappers.size()) {
-            StatementExecutorWrapper StatementExecutorWrapper = statementExecutorWrappers.iterator().next();
+            StatementExecutorWrapper statementExecutorWrapper = statementExecutorWrappers.iterator().next();
             try {
-                result = updater.executeUpdate(StatementExecutorWrapper.getStatement(), StatementExecutorWrapper.getSqlExecutionUnit().getSql());
+                result = updater.executeUpdate(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
             } catch (final SQLException ex) {
-                postDMLExecutionEventsAfterExecution(StatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+                postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
                 return result;
             } finally {
                 MetricsContext.stop(context);
             }
-            postDMLExecutionEventsAfterExecution(StatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
+            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
         result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Integer>() {
@@ -224,18 +224,18 @@ public final class StatementExecutor {
         Context context = MetricsContext.start("ShardingStatement-execute");
         postDMLExecutionEvents();
         if (1 == statementExecutorWrappers.size()) {
-            StatementExecutorWrapper StatementExecutorWrapper = statementExecutorWrappers.iterator().next();
+            StatementExecutorWrapper statementExecutorWrapper = statementExecutorWrappers.iterator().next();
             boolean result;
             try {
-                result = executor.execute(StatementExecutorWrapper.getStatement(), StatementExecutorWrapper.getSqlExecutionUnit().getSql());
+                result = executor.execute(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
             } catch (final SQLException ex) {
-                postDMLExecutionEventsAfterExecution(StatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+                postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
                 ExecutorExceptionHandler.handleException(ex);
                 return false;
             } finally {
                 MetricsContext.stop(context);
             }
-            postDMLExecutionEventsAfterExecution(StatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
+            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
             return result;
         }
         List<Boolean> result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Boolean>() {
@@ -266,9 +266,9 @@ public final class StatementExecutor {
         }
     }
     
-    private void postDMLExecutionEventsAfterExecution(final StatementExecutorWrapper StatementExecutorWrapper, final EventExecutionType eventExecutionType) {
-        if (StatementExecutorWrapper.getDMLExecutionEvent().isPresent()) {
-            DMLExecutionEvent event = StatementExecutorWrapper.getDMLExecutionEvent().get();
+    private void postDMLExecutionEventsAfterExecution(final StatementExecutorWrapper statementExecutorWrapper, final EventExecutionType eventExecutionType) {
+        if (statementExecutorWrapper.getDMLExecutionEvent().isPresent()) {
+            DMLExecutionEvent event = statementExecutorWrapper.getDMLExecutionEvent().get();
             event.setEventExecutionType(eventExecutionType);
             DMLExecutionEventBus.post(event);
         }

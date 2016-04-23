@@ -43,7 +43,7 @@ import org.junit.runners.Suite;
     ComparableAggregationUnitTest.class, 
     AvgAggregationUnitTest.class, 
     GroupByValueTest.class, 
-    NullableAggregationResultSetTest.class,
+    NullableAggregationResultSetTest.class
     })
 public class AllMergerTest {
 }

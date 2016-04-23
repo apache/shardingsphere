@@ -39,7 +39,7 @@ public final class HintManagerHolder {
      *
      * @param hintManager 线索分片管理器
      */
-    public static void setHintManager(HintManager hintManager) {
+    public static void setHintManager(final HintManager hintManager) {
         Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
         HINT_MANAGER_HOLDER.set(hintManager);
     }
@@ -73,7 +73,7 @@ public final class HintManagerHolder {
     }
     
     /**
-     * 清理线索分片管理器的本地线程持有者
+     * 清理线索分片管理器的本地线程持有者.
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();

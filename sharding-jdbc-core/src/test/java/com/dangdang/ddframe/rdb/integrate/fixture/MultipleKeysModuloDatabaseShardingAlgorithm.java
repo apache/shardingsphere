@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.fixture;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.google.common.collect.Range;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 
 public final class MultipleKeysModuloDatabaseShardingAlgorithm implements MultipleKeysDatabaseShardingAlgorithm {
     

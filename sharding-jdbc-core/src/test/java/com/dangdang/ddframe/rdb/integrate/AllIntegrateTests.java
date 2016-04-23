@@ -70,7 +70,7 @@ import org.junit.runners.Suite.SuiteClasses;
         StatementDMLShardingTablesOnlyTest.class,
         DMLShardingDataBasesOnlyHintTest.class,
         SelectShardingDataBasesOnlyHintTest.class,
-        SelectAggregateShardingNullableTest.class,
+        SelectAggregateShardingNullableTest.class
     })
 public class AllIntegrateTests {
 }

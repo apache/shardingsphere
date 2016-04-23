@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        YamlShardingConfigTest.class,
-})
+@Suite.SuiteClasses(
+        YamlShardingConfigTest.class
+    )
 public class AllYamlShardingConfigTest {
 }

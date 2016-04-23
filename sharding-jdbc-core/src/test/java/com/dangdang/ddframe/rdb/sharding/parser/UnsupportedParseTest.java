@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 
 import java.util.Collections;
 
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import org.junit.Test;
 

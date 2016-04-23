@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseTypeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -47,7 +48,7 @@ import org.junit.runners.Suite;
     NoneDatabaseShardingAlgorithmTest.class, 
     TableShardingStrategyTest.class, 
     NoneTableShardingAlgorithmTest.class,
-    HintManagerTest.class,
+    HintManagerTest.class
     })
 public class AllApiTest {
 }

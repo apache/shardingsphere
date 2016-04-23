@@ -32,7 +32,9 @@ public class OrderServiceImpl implements OrderService {
     public void insert() {
         try {
             orderRepository.insert();
-        } catch (Exception ex) {
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:ON
             ex.printStackTrace();
         }
     }

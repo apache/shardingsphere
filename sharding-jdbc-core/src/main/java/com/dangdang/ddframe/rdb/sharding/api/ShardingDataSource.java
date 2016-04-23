@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
@@ -56,7 +57,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         shardingProperties = new ShardingProperties(props);
         try {
             shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), new ExecutorEngine(shardingProperties));
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
     }

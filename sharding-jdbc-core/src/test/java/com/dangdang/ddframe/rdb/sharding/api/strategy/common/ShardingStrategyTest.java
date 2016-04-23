@@ -51,13 +51,15 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingForInSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), 
+                is((Collection<String>) Arrays.asList("1", "3")));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), 
+                is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     @Test

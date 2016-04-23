@@ -15,14 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api;
+package com.dangdang.ddframe.rdb.sharding.constants;
+
+import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 
 public final class DatabaseTypeTest {
     

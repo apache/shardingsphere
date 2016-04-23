@@ -72,7 +72,7 @@ public class ShardingRuleBuilder {
     }
     
     public ShardingRuleBuilder(final String logRoot, final ShardingRuleConfig shardingRuleConfig) {
-        this(logRoot, Collections.<String, DataSource> emptyMap(), shardingRuleConfig);
+        this(logRoot, Collections.<String, DataSource>emptyMap(), shardingRuleConfig);
     }
     
     /**

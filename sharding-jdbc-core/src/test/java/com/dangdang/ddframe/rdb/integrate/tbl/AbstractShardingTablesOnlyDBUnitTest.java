@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
@@ -32,6 +27,10 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUnitTest {
     
@@ -71,7 +70,8 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
                 "t_order_item_7", 
                 "t_order_item_8", 
                 "t_order_item_9"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), 
+                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

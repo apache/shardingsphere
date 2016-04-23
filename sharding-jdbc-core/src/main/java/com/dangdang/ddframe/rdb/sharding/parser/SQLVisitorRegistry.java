@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLDeleteVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;

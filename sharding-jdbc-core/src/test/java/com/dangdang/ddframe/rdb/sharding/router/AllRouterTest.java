@@ -33,7 +33,7 @@ import org.junit.runners.Suite;
         SingleRoutingResultTest.class, 
         BindingRoutingResultTest.class,
         CartesianResultTest.class,
-        SingleRouterUtilTest.class,
+        SingleRouterUtilTest.class
     })
 public class AllRouterTest {
 }

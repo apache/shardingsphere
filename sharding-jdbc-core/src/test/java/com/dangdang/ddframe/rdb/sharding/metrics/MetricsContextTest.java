@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
 public final class MetricsContextTest {
     
     @After
-    public void tearDown(){
+    public void tearDown() {
         MetricsContext.clear();
     }
     

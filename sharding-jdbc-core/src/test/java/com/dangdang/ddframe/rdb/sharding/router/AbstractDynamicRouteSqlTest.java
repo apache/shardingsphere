@@ -25,13 +25,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
+public abstract class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     
     protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final String targetDataSource, final String targetSQL) throws SQLParserException {
         assertSingleTarget(shardingValuePairs, originSql, Collections.emptyList(), targetDataSource, targetSQL);
     }
     
-    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) throws SQLParserException {
+    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) 
+            throws SQLParserException {
         assertMultipleTargets(shardingValuePairs, originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
@@ -40,7 +41,8 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
         assertMultipleTargets(shardingValuePairs, originSql, Collections.emptyList(), expectedSize, targetDataSources, targetSQLs);
     }
     
-    private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+    private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, 
+                                       final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         try (HintManager hintManager = HintManager.getInstance()) {
             for (ShardingValuePair each : shardingValuePairs) {
                 hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
@@ -51,6 +53,12 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     }
     
     protected static class ShardingValuePair {
+    
+        private final String logicTable;
+    
+        private final Condition.BinaryOperator binaryOperator;
+    
+        private final Integer[] shardingValue;
         
         protected ShardingValuePair(final String logicTable, final Integer... shardingValue) {
             this(logicTable, Condition.BinaryOperator.EQUAL, shardingValue);
@@ -61,11 +69,5 @@ public class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
             this.binaryOperator = binaryOperator;
             this.shardingValue = shardingValue;
         }
-        
-        private final String logicTable;
-        
-        private final Condition.BinaryOperator binaryOperator;
-        
-        private final Integer[] shardingValue;
     }
 }

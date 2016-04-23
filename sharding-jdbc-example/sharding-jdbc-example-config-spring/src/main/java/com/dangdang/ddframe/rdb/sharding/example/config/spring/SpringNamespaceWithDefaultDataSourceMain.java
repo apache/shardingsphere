@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
-import java.sql.SQLException;
-
-import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.ConfigService;
 import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.sql.SQLException;
 
 public final class SpringNamespaceWithDefaultDataSourceMain {
     

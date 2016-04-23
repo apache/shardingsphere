@@ -24,6 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test
@@ -67,14 +70,22 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
     
     private void selectData() throws SQLException {
         String sql = "SELECT i.order_id, i.order_item_id  FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` = %s AND o.`order_id` = %s ORDER BY i.order_item_id DESC";
+            + " WHERE o.`user_id` = ? AND o.`order_id` = ? ORDER BY i.order_item_id DESC";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, 10, 1000));
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, 1);
+            preparedStatement.setInt(2, 1);
             ResultSet resultSet = preparedStatement.executeQuery();
+            int count = 0;
             while (resultSet.next()) {
-                int order_id = resultSet.getInt(1);
-                int order_item_id = resultSet.getInt(2);
-                System.out.println(order_id+","+order_item_id);
+                if (0 == count) {
+                    assertThat(resultSet.getInt(1), is(1));
+                    assertThat(resultSet.getInt(2), is(5));
+                } else if (1 == count) {
+                    assertThat(resultSet.getInt(1), is(1));
+                    assertThat(resultSet.getInt(2), is(1));
+                }
+                count++;
             }
             preparedStatement.close();
         }

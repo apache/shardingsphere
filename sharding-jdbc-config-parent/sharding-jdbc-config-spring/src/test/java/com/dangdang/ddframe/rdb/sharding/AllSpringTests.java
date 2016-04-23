@@ -17,13 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.*;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceDefaultStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassAndPropsTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmExpressionTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceBindingTablesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDefaultStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDifferentTablesTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
-import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceDefaultStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({

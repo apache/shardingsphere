@@ -46,16 +46,21 @@ public final class SelectShardingDataBasesOnlyHintTest extends AbstractShardingD
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
-        assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12), Condition.BinaryOperator.BETWEEN, Lists.newArrayList(1001, 1200), Condition.BinaryOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1001, 1200);
-        assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12), Condition.BinaryOperator.BETWEEN, Lists.newArrayList(1309, 1408), Condition.BinaryOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
+        assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12), 
+                Condition.BinaryOperator.BETWEEN, Lists.newArrayList(1001, 1200), Condition.BinaryOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1001, 1200);
+        assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12), 
+                Condition.BinaryOperator.BETWEEN, Lists.newArrayList(1309, 1408), Condition.BinaryOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT * FROM `t_order` WHERE `user_id` IN (?, ?, ?) AND `order_id` IN (?, ?) ORDER BY user_id, order_id";
-        assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), Condition.BinaryOperator.IN, Lists.newArrayList(1000, 1201), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1201);
-        assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), Condition.BinaryOperator.IN, Lists.newArrayList(1000, 1101), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1101);
-        assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), Condition.BinaryOperator.IN, Lists.newArrayList(1309, 1408), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1309, 1408);
+        assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), 
+                Condition.BinaryOperator.IN, Lists.newArrayList(1000, 1201), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1201);
+        assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), 
+                Condition.BinaryOperator.IN, Lists.newArrayList(1000, 1101), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1101);
+        assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15), 
+                Condition.BinaryOperator.IN, Lists.newArrayList(1309, 1408), Condition.BinaryOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1309, 1408);
     }
     
 }
