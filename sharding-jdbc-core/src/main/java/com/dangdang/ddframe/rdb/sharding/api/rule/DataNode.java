@@ -17,10 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.google.common.base.Splitter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * 分库分表数据单元.
@@ -33,7 +36,25 @@ import lombok.ToString;
 @ToString
 public final class DataNode {
     
+    private static final String DELIMITER = ".";
+    
     private final String dataSourceName;
     
     private final String tableName;
+    
+    public DataNode(final String dataNode) {
+        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        dataSourceName = segments.get(0);
+        tableName = segments.get(1);
+    }
+    
+    /**
+     * 判断字符串是否为合法的分库分表数据单元字符串.
+     * 
+     * @param dataNodeStr 待判断的字符串
+     * @return 是否为合法的分库分表数据单元字符串
+     */
+    public static boolean isValidDataNode(final String dataNodeStr) {
+        return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).splitToList(dataNodeStr).size();
+    }
 }

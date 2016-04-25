@@ -115,19 +115,19 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetBindingTableRuleForNotConfig() {
         ShardingRule actual = new ShardingRule(createDataSourceRule(), Collections.singletonList(createTableRule()));
-        assertFalse(actual.getBindingTableRule("logicTable").isPresent());
+        assertFalse(actual.findBindingTableRule("logicTable").isPresent());
     }
     
     @Test
     public void assertGetBindingTableRuleForNotFound() {
-        assertFalse(createShardingRule().getBindingTableRule("newTable").isPresent());
+        assertFalse(createShardingRule().findBindingTableRule("newTable").isPresent());
     }
     
     @Test
     public void assertGetBindingTableRuleForFound() {
         BindingTableRule bindingTableRule = createBindingTableRule();
         ShardingRule actual = new ShardingRule(createDataSourceRule(), Collections.singletonList(createTableRule()), Collections.singletonList(bindingTableRule));
-        assertThat(actual.getBindingTableRule("logicTable").get(), is(bindingTableRule));
+        assertThat(actual.findBindingTableRule("logicTable").get(), is(bindingTableRule));
     }
     
     @Test
@@ -150,20 +150,20 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBindingTableWhenLogicTablesIsEmpty() {
-        assertFalse(createShardingRule().isAllBindingTable(Collections.<String>emptyList()));
+        assertFalse(createShardingRule().isAllBindingTables(Collections.<String>emptyList()));
     }
     
     @Test
     public void assertIsNotAllBindingTable() {
-        assertFalse(createShardingRule().isAllBindingTable(Collections.singletonList("newTable")));
-        assertFalse(createShardingRule().isAllBindingTable(Arrays.asList("logicTable", "newTable")));
+        assertFalse(createShardingRule().isAllBindingTables(Collections.singletonList("newTable")));
+        assertFalse(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "newTable")));
     }
     
     @Test
     public void assertIsAllBindingTable() {
-        assertTrue(createShardingRule().isAllBindingTable(Collections.singletonList("logicTable")));
-        assertTrue(createShardingRule().isAllBindingTable(Collections.singletonList("subLogicTable")));
-        assertTrue(createShardingRule().isAllBindingTable(Arrays.asList("logicTable", "subLogicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("logicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Collections.singletonList("subLogicTable")));
+        assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "subLogicTable")));
     }
     
     private ShardingRule createShardingRule() {

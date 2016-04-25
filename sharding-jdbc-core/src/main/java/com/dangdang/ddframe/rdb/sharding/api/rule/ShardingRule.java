@@ -133,21 +133,14 @@ public final class ShardingRule {
     }
     
     /**
-     * 根据逻辑表名称获取binding表配置的逻辑表名称集合.
-     * 
-     * @param logicTable 逻辑表名称
-     * @return binding表配置的逻辑表名称集合
+     * 判断逻辑表名称集合是否全部属于Binding表.
+     *
+     * @param logicTables 逻辑表名称集合
+     * @return 是否全部属于Binding表
      */
-    public Optional<BindingTableRule> getBindingTableRule(final String logicTable) {
-        if (null == bindingTableRules) {
-            return Optional.absent();
-        }
-        for (BindingTableRule each : bindingTableRules) {
-            if (each.hasLogicTable(logicTable)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
+    public boolean isAllBindingTables(final Collection<String> logicTables) {
+        Collection<String> bindingTables = filterAllBindingTables(logicTables);
+        return !bindingTables.isEmpty() && bindingTables.containsAll(logicTables);
     }
     
     /**
@@ -160,13 +153,7 @@ public final class ShardingRule {
         if (logicTables.isEmpty()) {
             return Collections.emptyList();
         }
-        Optional<BindingTableRule> bindingTableRule = Optional.absent();
-        for (String each : logicTables) {
-            bindingTableRule = getBindingTableRule(each);
-            if (bindingTableRule.isPresent()) {
-                break;
-            }
-        }
+        Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTables);
         if (!bindingTableRule.isPresent()) {
             return Collections.emptyList();
         }
@@ -175,15 +162,32 @@ public final class ShardingRule {
         return result;
     }
     
+    private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTables) {
+        for (String each : logicTables) {
+            Optional<BindingTableRule> result = findBindingTableRule(each);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.absent();
+    }
+    
     /**
-     * 判断逻辑表名称集合是否全部属于Binding表.
-     * 
-     * @param logicTables 逻辑表名称集合
-     * @return 是否全部属于Binding表
+     * 根据逻辑表名称获取binding表配置的逻辑表名称集合.
+     *
+     * @param logicTable 逻辑表名称
+     * @return binding表配置的逻辑表名称集合
      */
-    public boolean isAllBindingTable(final Collection<String> logicTables) {
-        Collection<String> bindingTables = filterAllBindingTables(logicTables);
-        return !bindingTables.isEmpty() && bindingTables.containsAll(logicTables);
+    public Optional<BindingTableRule> findBindingTableRule(final String logicTable) {
+        if (null == bindingTableRules) {
+            return Optional.absent();
+        }
+        for (BindingTableRule each : bindingTableRules) {
+            if (each.hasLogicTable(logicTable)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
     
     /**

@@ -51,7 +51,7 @@ public class BindingTablesRouter {
         this.logicTables = logicTables;
         this.conditionContext = conditionContext;
         this.sqlStatementType = sqlStatementType;
-        Optional<BindingTableRule> optionalBindingTableRule = shardingRule.getBindingTableRule(logicTables.iterator().next());
+        Optional<BindingTableRule> optionalBindingTableRule = shardingRule.findBindingTableRule(logicTables.iterator().next());
         Preconditions.checkState(optionalBindingTableRule.isPresent());
         bindingTableRule = optionalBindingTableRule.get();
     }

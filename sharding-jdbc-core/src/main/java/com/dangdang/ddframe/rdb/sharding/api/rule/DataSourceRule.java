@@ -34,7 +34,6 @@ public final class DataSourceRule {
     private final Map<String, DataSource> dataSourceMap;
     
     public DataSourceRule(final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkNotNull(dataSourceMap, "Must have one data source at least.");
         Preconditions.checkState(!dataSourceMap.isEmpty(), "Must have one data source at least.");
         this.dataSourceMap = dataSourceMap;
     }

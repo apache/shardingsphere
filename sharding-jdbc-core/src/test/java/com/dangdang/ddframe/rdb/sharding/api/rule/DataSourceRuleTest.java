@@ -30,11 +30,6 @@ public final class DataSourceRuleTest {
         dataSourceRule = new DataSourceRule(dataSourceMap);
     }
     
-    @Test(expected = NullPointerException.class)
-    public void assertNewDataSourceFailureWhenDataSourceMapIsNull() {
-        new DataSourceRule(null);
-    }
-    
     @Test(expected = IllegalStateException.class)
     public void assertNewDataSourceFailureWhenDataSourceMapIsEmpty() {
         new DataSourceRule(Collections.<String, DataSource>emptyMap());

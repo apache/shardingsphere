@@ -93,7 +93,7 @@ public final class SQLRouteEngine {
         RoutingResult result;
         if (1 == logicTables.size()) {
             result = new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, type).route();
-        } else if (shardingRule.isAllBindingTable(logicTables)) {
+        } else if (shardingRule.isAllBindingTables(logicTables)) {
             result = new BindingTablesRouter(shardingRule, logicTables, conditionContext, type).route();
         } else {
             // TODO 可配置是否执行笛卡尔积

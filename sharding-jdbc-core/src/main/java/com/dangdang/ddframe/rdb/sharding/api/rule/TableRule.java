@@ -24,7 +24,6 @@ import java.util.List;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.google.common.base.Splitter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -69,9 +68,8 @@ public final class TableRule {
     
     private void generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule) {
         for (String actualTable : actualTables) {
-            if (actualTable.contains(".")) {
-                List<String> actualDatabaseTable = Splitter.on(".").splitToList(actualTable);
-                this.actualTables.add(new DataNode(actualDatabaseTable.get(0), actualDatabaseTable.get(1)));
+            if (DataNode.isValidDataNode(actualTable)) {
+                this.actualTables.add(new DataNode(actualTable));
             } else {
                 for (String dataSourceName : dataSourceRule.getDataSourceNames()) {
                     this.actualTables.add(new DataNode(dataSourceName, actualTable));
@@ -126,14 +124,7 @@ public final class TableRule {
         return result;
     }
     
-    /**
-     * 根据数据源和真实表名称查找真实表顺序.
-     * 
-     * @param dataSourceName 数据源名称
-     * @param actualTableName 真实表名称
-     * @return 真实表顺序
-     */
-    public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
+    int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         int result = 0;
         for (DataNode each : actualTables) {
             if (each.getDataSourceName().equals(dataSourceName) && each.getTableName().equals(actualTableName)) {
