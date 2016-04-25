@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -46,21 +46,16 @@ public class ShardingStrategy {
     /**
      * 根据分片值计算数据源名称集合.
      *
-     *
      * @param sqlStatementType SQL语句的类型
      * @param availableTargetNames 所有的可用数据源名称集合
      * @param shardingValues 分库片值集合
      * @return 分库后指向的数据源名称集合
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, 
-                                         final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
-            if (SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1) {
-                throw new ShardingJdbcException("INSERT statement must contains sharding value");
-            } else {
-                return availableTargetNames;
-            }
+            Preconditions.checkState(!isInsertMultiple(sqlStatementType, availableTargetNames), "INSERT statement should contain sharding value.");
+            return availableTargetNames;
         }
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
@@ -80,5 +75,9 @@ public class ShardingStrategy {
             return ((MultipleKeysShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames, shardingValues);
         }
         throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
+    }
+    
+    private boolean isInsertMultiple(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames) {
+        return SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1;
     }
 }

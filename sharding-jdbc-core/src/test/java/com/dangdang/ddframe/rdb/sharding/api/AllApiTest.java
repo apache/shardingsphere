@@ -29,13 +29,11 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseTypeTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DatabaseTypeTest.class, 
     ShardingPropertiesTest.class,
     ShardingPropertiesConstantTest.class, 
     ShardingDataSourceTest.class, 
