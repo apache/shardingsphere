@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Joiner;
@@ -56,25 +55,25 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @return 数据库连接
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        if (connectionMap.containsKey(dataSourceName)) {
-            return connectionMap.get(dataSourceName);
-        }
-        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
-        Connection connection = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
-        MetricsContext.stop(metricsContext);
-        replayMethodsInvocation(connection);
-        connectionMap.put(dataSourceName, connection);
-        return connection;
+        Connection result = getConnectionInternal(dataSourceName);
+        replayMethodsInvocation(result);
+        return result;
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        if (connectionMap.isEmpty()) {
-            DataSourceRule dataSourceRule = shardingContext.getShardingRule().getDataSourceRule();
-            String dataSourceName = dataSourceRule.getDataSourceNames().iterator().next();
-            connectionMap.put(dataSourceName, dataSourceRule.getDataSource(dataSourceName).getConnection());
+        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next()).getMetaData();
+    }
+    
+    private Connection getConnectionInternal(final String dataSourceName) throws SQLException {
+        if (connectionMap.containsKey(dataSourceName)) {
+            return connectionMap.get(dataSourceName);
         }
-        return connectionMap.values().iterator().next().getMetaData();
+        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
+        Connection result = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
+        MetricsContext.stop(metricsContext);
+        connectionMap.put(dataSourceName, result);
+        return result;
     }
     
     @Override
