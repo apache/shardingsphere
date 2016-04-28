@@ -18,9 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -31,11 +32,24 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class GroupByColumn {
+public final class GroupByColumn implements IndexColumn {
     
     private final String name;
     
     private final String alias;
     
     private final OrderByType orderByType;
+    
+    @Setter
+    private int columnIndex;
+    
+    @Override
+    public Optional<String> getColumnLabel() {
+        return Optional.of(alias);
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return Optional.of(name);
+    }
 }

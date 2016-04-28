@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.groupby;
+package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.google.common.base.Optional;
 
 /**
- * 分组结果集数据存储索引.
- * 
- * @author gaohongtao, zhangliang
+ * 基于索引的列.
+ *
+ * @author gaohongtao
  */
-@EqualsAndHashCode
-@ToString
-public final class GroupByKey {
+public interface IndexColumn {
     
-    private final List<String> unionKey = new ArrayList<>();
+    void setColumnIndex(int index);
     
-    public void append(final String key) {
-        unionKey.add(key);
-    }
+    int getColumnIndex();
+    
+    // TODO ColumnLabel和alias的区别?
+    Optional<String> getColumnLabel();
+    
+    Optional<String> getColumnName();
 }

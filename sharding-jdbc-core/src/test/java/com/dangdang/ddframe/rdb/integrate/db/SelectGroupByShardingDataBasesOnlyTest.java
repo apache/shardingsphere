@@ -17,13 +17,12 @@
 
 package com.dangdang.ddframe.rdb.integrate.db;
 
-import java.sql.SQLException;
-
+import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import java.sql.SQLException;
 
 public final class SelectGroupByShardingDataBasesOnlyTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -38,6 +37,12 @@ public final class SelectGroupByShardingDataBasesOnlyTest extends AbstractShardi
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
         String sql = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id`";
         assertDataSet("integrate/dataset/db/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
+    }
+    
+    @Test
+    public void assertSelectSumOrderBy() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id` ORDER BY `user_id`";
+        assertDataset("integrate/dataset/db/expect/select_groupby/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test

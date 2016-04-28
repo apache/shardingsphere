@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Optional;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public final class AggregationColumn {
+public final class AggregationColumn implements IndexColumn {
     
     private final String expression;
     
@@ -50,7 +49,17 @@ public final class AggregationColumn {
     private final List<AggregationColumn> derivedColumns = new ArrayList<>(2);
     
     @Setter
-    private int index = -1;
+    private int columnIndex = -1;
+    
+    @Override
+    public Optional<String> getColumnLabel() {
+        return alias;
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return Optional.of(expression);
+    }
     
     /**
      * 聚合函数类型.

@@ -17,7 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,34 +29,32 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ComparableAggregationUnit extends AbstractAggregationUnit {
+public final class ComparableAggregationUnit implements AggregationUnit {
     
     private final boolean asc;
-    
-    private final Class<?> returnType;
     
     private Comparable<?> result;
     
     @SuppressWarnings("unchecked")
     @Override
-    protected void doMerge(@SuppressWarnings("rawtypes") final Comparable... values) {
-        if (null == values || null == values[0]) {
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0)) {
             return;
         }
         if (null == result) {
-            result = values[0];
+            result = values.get(0);
             log.trace("Comparable result: {}", result);
             return;
         }
-        int comparedValue = values[0].compareTo(result);
+        int comparedValue = ((Comparable) values.get(0)).compareTo(result);
         if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
-            result = values[0];
+            result = values.get(0);
             log.trace("Comparable result: {}", result);
         }
     }
     
     @Override
     public Comparable<?> getResult() {
-        return (Comparable<?>) ResultSetUtil.convertValue(result, returnType);
+        return result;
     }
 }

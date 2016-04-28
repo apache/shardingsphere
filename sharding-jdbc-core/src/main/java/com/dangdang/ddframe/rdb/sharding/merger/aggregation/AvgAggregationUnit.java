@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,17 +30,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class AvgAggregationUnit extends AbstractAggregationUnit {
-    
-    private final Class<?> returnType;
+public class AvgAggregationUnit implements AggregationUnit {
     
     private BigDecimal count;
     
     private BigDecimal sum;
     
     @Override
-    public void doMerge(final Comparable<?>... values) {
-        if (null == values || null == values[0] || null == values[1]) {
+    public void merge(final List<Comparable<?>> values) {
+        if (null == values || null == values.get(0) || null == values.get(1)) {
             return;
         }
         if (null == count) {
@@ -49,17 +47,17 @@ public class AvgAggregationUnit extends AbstractAggregationUnit {
         if (null == sum) {
             sum = new BigDecimal("0");
         }
-        count = count.add(new BigDecimal(values[0].toString()));
-        sum = sum.add(new BigDecimal(values[1].toString()));
+        count = count.add(new BigDecimal(values.get(0).toString()));
+        sum = sum.add(new BigDecimal(values.get(1).toString()));
         log.trace("AVG result COUNT: {} SUM: {}", count, sum);
     }
     
     @Override
     public Comparable<?> getResult() {
         if (null == count || BigDecimal.ZERO.equals(count)) {
-            return (Comparable<?>) ResultSetUtil.convertValue(count, returnType);
+            return count;
         }
         // TODO 通过metadata获取数据库的浮点数精度值
-        return (Comparable<?>) ResultSetUtil.convertValue(sum.divide(count, 4, BigDecimal.ROUND_HALF_UP), returnType);
+        return sum.divide(count, 4, BigDecimal.ROUND_HALF_UP);
     }
 }

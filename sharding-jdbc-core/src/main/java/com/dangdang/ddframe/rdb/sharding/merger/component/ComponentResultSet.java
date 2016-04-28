@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.component;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetQueryIndex;
-
 /**
- * 聚合值接口.
+ * 管道化组件接口.
  * 
- * @author zhangliang
+ * @param <T> 前置组件类型
  */
-public interface AggregationValue {
+public interface ComponentResultSet<T> extends ResultSet {
     
     /**
-     * 获取聚合值.
+     * 初始化管道组件.
      * 
-     * @param resultSetQueryIndex 结果集查询索引.
-     * @return 聚合值
+     * @param preComponent 前置管道组件
+     * @return 返回初始化完成的管道组件
+     * @throws SQLException 访问组件可能抛出异常
      */
-    Comparable<?> getValue(ResultSetQueryIndex resultSetQueryIndex) throws SQLException;
+    ComponentResultSet init(T preComponent) throws SQLException;
 }

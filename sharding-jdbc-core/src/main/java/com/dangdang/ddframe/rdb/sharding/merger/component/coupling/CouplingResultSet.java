@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,28 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import java.util.List;
+import java.sql.ResultSet;
+
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 
 /**
- * 归并计算单元接口.
- * 
+ * 节点结果集.
+ *
  * @author gaohongtao
  */
-public interface AggregationUnit {
+public interface CouplingResultSet extends ComponentResultSet<ResultSet> {
     
-    /**
-     * 归并聚合值.
-     * 
-     * @param values 聚合数值
-     */
-    void merge(List<Comparable<?>> values);
-    
-    /**
-     * 获取计算结果.
-     * 
-     * @return 计算结果
-     */
-    Comparable<?> getResult();
 }

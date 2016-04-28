@@ -17,20 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForOneParameterTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForTowParametersTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.OrParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResultTest;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContextTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         SQLParsedResultTest.class, 
-        MergeContextTest.class, 
         MySQLStatementTest.class, 
         MySQLPreparedStatementForOneParameterTest.class, 
         MySQLPreparedStatementForTowParametersTest.class, 

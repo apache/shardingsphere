@@ -29,17 +29,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AggregationUnitFactory {
     
-    public static AggregationUnit create(final AggregationType type, final Class<?> returnType) {
+    public static AggregationUnit create(final AggregationType type) {
         switch (type) {
             case MAX:
-                return new ComparableAggregationUnit(false, returnType);
+                return new ComparableAggregationUnit(false);
             case MIN:
-                return new ComparableAggregationUnit(true, returnType);
+                return new ComparableAggregationUnit(true);
             case SUM:
             case COUNT:
-                return new AccumulationAggregationUnit(returnType);
+                return new AccumulationAggregationUnit();
             case AVG:
-                return new AvgAggregationUnit(returnType);
+                return new AvgAggregationUnit();
             default:
                 throw new UnsupportedOperationException(type.name());
         }

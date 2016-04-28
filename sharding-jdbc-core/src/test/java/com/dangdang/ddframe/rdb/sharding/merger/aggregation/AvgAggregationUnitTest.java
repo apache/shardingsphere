@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -28,19 +29,19 @@ public final class AvgAggregationUnitTest {
     
     @Test
     public void assertAvgAggregation() {
-        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit(BigDecimal.class);
-        avgAggregationUnit.doMerge(10, 50);
-        avgAggregationUnit.doMerge(10, 20);
-        avgAggregationUnit.doMerge(5, 40);
+        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit();
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(10, 50));
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(10, 20));
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(5, 40));
         assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal("4.4000")));
     }
     
     @Test
     public void assertDivideZero() {
-        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit(BigDecimal.class);
-        avgAggregationUnit.doMerge(0, 50);
-        avgAggregationUnit.doMerge(0, 20);
-        avgAggregationUnit.doMerge(0, 40);
+        AvgAggregationUnit avgAggregationUnit = new AvgAggregationUnit();
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 50));
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 20));
+        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 40));
         assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal(0)));
     }
 }
