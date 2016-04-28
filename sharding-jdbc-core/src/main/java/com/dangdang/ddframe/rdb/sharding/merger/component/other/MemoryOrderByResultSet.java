@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.other;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
+import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import lombok.RequiredArgsConstructor;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 内存结果集.

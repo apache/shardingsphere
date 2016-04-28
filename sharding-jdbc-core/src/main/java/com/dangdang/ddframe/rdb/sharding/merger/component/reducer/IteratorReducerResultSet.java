@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * 迭代归并结果集.

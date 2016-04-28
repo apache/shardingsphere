@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.aggregation;
 
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
-
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.google.common.base.Optional;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.google.common.base.Optional;
 
 public class MergerTestUtil {
     

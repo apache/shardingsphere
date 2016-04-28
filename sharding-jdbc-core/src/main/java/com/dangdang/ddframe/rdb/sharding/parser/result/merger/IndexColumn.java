@@ -30,7 +30,6 @@ public interface IndexColumn {
     
     int getColumnIndex();
     
-    // TODO ColumnLabel和alias的区别?
     Optional<String> getColumnLabel();
     
     Optional<String> getColumnName();

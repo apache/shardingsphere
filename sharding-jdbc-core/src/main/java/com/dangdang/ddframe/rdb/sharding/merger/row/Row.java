@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
+import com.google.common.base.Preconditions;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-
-import com.google.common.base.Preconditions;
 
 /**
  * 数据行.

@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 聚合列对象.

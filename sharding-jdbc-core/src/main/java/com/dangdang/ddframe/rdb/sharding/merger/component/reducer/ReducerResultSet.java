@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
+
 import java.sql.ResultSet;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 
 /**
  * 从真实数据源搜集结果集.

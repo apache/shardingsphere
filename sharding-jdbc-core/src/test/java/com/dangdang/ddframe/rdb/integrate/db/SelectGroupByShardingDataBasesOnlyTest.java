@@ -42,7 +42,7 @@ public final class SelectGroupByShardingDataBasesOnlyTest extends AbstractShardi
     @Test
     public void assertSelectSumOrderBy() throws SQLException, DatabaseUnitException {
         String sql = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id` ORDER BY `user_id`";
-        assertDataset("integrate/dataset/db/expect/select_groupby/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/db/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
     }
     
     @Test

@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import lombok.Getter;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
-import lombok.Getter;
 
 /**
  * 处理多结果集的适配器.

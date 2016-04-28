@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.WrapperResultSet;
 import com.google.common.base.Function;
@@ -31,6 +25,12 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 结果归并上下文.

@@ -1,8 +1,5 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
@@ -19,6 +16,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.google.common.base.Optional;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

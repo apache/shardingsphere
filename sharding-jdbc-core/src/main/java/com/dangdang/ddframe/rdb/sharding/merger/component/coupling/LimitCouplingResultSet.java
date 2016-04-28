@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * 限制结果集.

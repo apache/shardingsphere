@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
-import java.sql.ResultSet;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.other.MemoryOrderByResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+
+import java.sql.ResultSet;
+import java.util.List;
 
 /**
  * 根据排序列进行内存中排序.
