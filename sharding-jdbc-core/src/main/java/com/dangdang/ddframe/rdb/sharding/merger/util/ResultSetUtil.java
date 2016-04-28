@@ -15,24 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.common;
-
-import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
+package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * 结果集处理工具类.
  * 
  * @author gaohongtao
  */
-// TODO common包改名为util
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtil {
     
@@ -44,37 +43,41 @@ public final class ResultSetUtil {
      * @return 特定类型的返回结果
      */
     public static Object convertValue(final Object value, final Class<?> convertType) {
-        // TODO 使用卫语句处理null和解除嵌套
         if (null == value) {
-            // TODO 调整顺序, 按照调用顺序排列private方法
             return convertNullValue(convertType);
-            // TODO class判断使用==
-        } else if (value.getClass().equals(convertType)) {
+        } 
+        if (value.getClass() == convertType) {
             return value;
-        } else if (value instanceof Number) {
-            return convertNumberValue(value, convertType);
-        } else if (value instanceof Date) {
-            return convertDateValue(value, convertType);
-        } else {
-            if (String.class.equals(convertType)) {
-                return value.toString();
-            } else {
-                return value;
-            }
         }
+        if (value instanceof Number) {
+            return convertNumberValue(value, convertType);
+        }
+        if (value instanceof Date) {
+            return convertDateValue(value, convertType);
+        }
+        if (String.class.equals(convertType)) {
+            return value.toString();
+        } else {
+            return value;
+        }    
     }
     
-    private static Object convertDateValue(final Object value, final Class<?> convertType) {
-        Date date = (Date) value;
+    private static Object convertNullValue(final Class<?> convertType) {
         switch (convertType.getName()) {
-            case "java.sql.Date":
-                return new java.sql.Date(date.getTime());
-            case "java.sql.Time":
-                return new Time(date.getTime());
-            case "java.sql.Timestamp":
-                return new Timestamp(date.getTime());
+            case "byte":
+                return (byte) 0;
+            case "short":
+                return (short) 0;
+            case "int":
+                return 0;
+            case "long":
+                return 0L;
+            case "double":
+                return 0D;
+            case "float":
+                return 0F;
             default:
-                throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
+                return null;
         }
     }
     
@@ -104,22 +107,17 @@ public final class ResultSetUtil {
         }
     }
     
-    private static Object convertNullValue(final Class<?> convertType) {
+    private static Object convertDateValue(final Object value, final Class<?> convertType) {
+        Date date = (Date) value;
         switch (convertType.getName()) {
-            case "byte":
-                return (byte) 0;
-            case "short":
-                return (short) 0;
-            case "int":
-                return 0;
-            case "long":
-                return 0L;
-            case "double":
-                return 0D;
-            case "float":
-                return 0F;
+            case "java.sql.Date":
+                return new java.sql.Date(date.getTime());
+            case "java.sql.Time":
+                return new Time(date.getTime());
+            case "java.sql.Timestamp":
+                return new Timestamp(date.getTime());
             default:
-                return null;
+                throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
         }
     }
     

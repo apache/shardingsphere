@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
+import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.google.common.base.Preconditions;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.base.Preconditions;
 
 /**
  * 具有排序功能的行对象.

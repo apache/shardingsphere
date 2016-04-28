@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.coupling;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByRow;
@@ -30,6 +25,11 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 分组节点结果集.
@@ -66,9 +66,6 @@ public class GroupByCouplingResultSet extends AbstractRowSetResultSetAdapter imp
             return null;
         }
         GroupByRow row = new GroupByRow(resultSet, groupByColumns, aggregationColumns);
-        if (aggregationColumns.isEmpty()) {
-            return row;
-        }
         for (List<Object> groupByKey = row.getGroupByKey(); hasNext && (groupByColumns.isEmpty() || groupByKey.equals(row.getGroupByKey())); hasNext = resultSet.next()) {
             row.aggregate();
         }

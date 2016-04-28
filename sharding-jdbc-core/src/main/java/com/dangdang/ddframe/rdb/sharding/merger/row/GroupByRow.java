@@ -17,6 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.row;
 
+import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnit;
+import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnitFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,16 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnit;
-import com.dangdang.ddframe.rdb.sharding.merger.aggregation.AggregationUnitFactory;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 分组行.
@@ -64,14 +62,13 @@ public class GroupByRow extends Row {
     
     public void aggregate() throws SQLException {
         for (Map.Entry<AggregationColumn, AggregationUnit> each : aggregationUnitMap.entrySet()) {
-            List<AggregationColumn> mergingAggregationColumns = each.getKey().getDerivedColumns().isEmpty() ? Collections.singletonList(each.getKey()) : Lists.newArrayList(each.getKey().getDerivedColumns());
-            each.getValue().merge(Lists.transform(mergingAggregationColumns, new Function<IndexColumn, Comparable<?>>() {
-            
-                @Override
-                public Comparable<?> apply(final IndexColumn input) {
-                    return (Comparable<?>) getValueSilently(input.getColumnIndex());
-                }
-            }));
+            List<AggregationColumn> mergingAggregationColumns = 
+                    each.getKey().getDerivedColumns().isEmpty() ? Collections.singletonList(each.getKey()) : Lists.newArrayList(each.getKey().getDerivedColumns());
+            List<Comparable<?>> comparables = new ArrayList<>(mergingAggregationColumns.size());
+            for (AggregationColumn column : mergingAggregationColumns) {
+                comparables.add((Comparable<?>) resultSet.getObject(column.getColumnIndex()));
+            }
+            each.getValue().merge(comparables);
         }
     }
     
@@ -81,20 +78,12 @@ public class GroupByRow extends Row {
         }
     }
     
-    public List<Object> getGroupByKey() {
+    public List<Object> getGroupByKey() throws SQLException {
         List<Object> result = new ArrayList<>(groupByColumns.size());
         for (GroupByColumn each : groupByColumns) {
-            result.add(getValueSilently(each.getColumnIndex()));
+            result.add(resultSet.getObject(each.getColumnIndex()));
         }
         return result;
-    }
-    
-    private Object getValueSilently(final int index) {
-        try {
-            return resultSet.getObject(index);
-        } catch (final SQLException ex) {
-            throw new ShardingJdbcException(ex);
-        }
     }
     
     @Override

@@ -17,20 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.reducer;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractReducerResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByRow;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 流式排序.
@@ -54,16 +51,12 @@ public class StreamingOrderByReducerResultSet extends AbstractReducerResultSetAd
     public ComponentResultSet init(final List<ResultSet> preResultSet) throws SQLException {
         input(preResultSet);
         setDelegate(preResultSet.get(0));
-        effectiveResultSetQueue = new LinkedList<>(Collections2.filter(preResultSet, new Predicate<ResultSet>() {
-            @Override
-            public boolean apply(final ResultSet input) {
-                try {
-                    return input.next();
-                } catch (final SQLException ex) {
-                    throw new ShardingJdbcException(ex);
-                }
+        effectiveResultSetQueue = new LinkedList<>();
+        for (ResultSet each : preResultSet) {
+            if (each.next()) {
+                effectiveResultSetQueue.add(each);
             }
-        }));
+        }
         return this;
     }
     

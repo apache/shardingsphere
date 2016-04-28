@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.component.other;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
+import lombok.Getter;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractForwardingResultSetAdapter;
-import lombok.Getter;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
  * 原始结果集包装类.
@@ -39,8 +39,7 @@ public class WrapperResultSet extends AbstractForwardingResultSetAdapter {
     private boolean isFirstNext;
     
     public WrapperResultSet(final ResultSet resultSet) throws SQLException {
-        isEmpty = !resultSet.next();
-        if (isEmpty) {
+        if (isEmpty = !resultSet.next()) {
             return;
         }
         setDelegate(resultSet);
@@ -49,9 +48,6 @@ public class WrapperResultSet extends AbstractForwardingResultSetAdapter {
     
     @Override
     public boolean next() throws SQLException {
-        if (isEmpty) {
-            return false;
-        }
         if (!isFirstNext) {
             return isFirstNext = true;
         }

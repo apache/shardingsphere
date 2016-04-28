@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationCo
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationPreparedStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationResultSetTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationRowResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
 import org.junit.runner.RunWith;
@@ -42,7 +43,8 @@ import org.junit.runners.Suite;
     UnsupportedOperationConnectionTest.class, 
     UnsupportedOperationStatementTest.class, 
     UnsupportedOperationPreparedStatementTest.class, 
-    UnsupportedOperationResultSetTest.class, 
+    UnsupportedOperationResultSetTest.class,
+    UnsupportedOperationRowResultSetTest.class,
     ResultSetUpdaterAdapterTest.class, 
     DataSourceAdapterTest.class, 
     ConnectionAdapterTest.class, 

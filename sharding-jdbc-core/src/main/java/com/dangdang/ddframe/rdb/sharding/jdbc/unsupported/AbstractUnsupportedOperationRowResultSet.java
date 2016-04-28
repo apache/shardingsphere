@@ -83,8 +83,6 @@ public abstract class AbstractUnsupportedOperationRowResultSet extends AbstractU
         throw new SQLFeatureNotSupportedException("getCharacterStream");
     }
     
-    
-    
     @Override
     public Blob getBlob(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getBlob");
@@ -117,11 +115,11 @@ public abstract class AbstractUnsupportedOperationRowResultSet extends AbstractU
     
     @Override
     public void setFetchDirection(final int direction) throws SQLException {
-        throw new UnsupportedOperationException("This result set only support ResultSet.FETCH_FORWARD");
+        throw new SQLFeatureNotSupportedException("This result set only support ResultSet.FETCH_FORWARD");
     }
     
     @Override
     public void setFetchSize(final int rows) throws SQLException {
-        throw new UnsupportedOperationException("This result set dose not support set fetch size");
+        throw new SQLFeatureNotSupportedException("This result set dose not support set fetch size");
     }
 }

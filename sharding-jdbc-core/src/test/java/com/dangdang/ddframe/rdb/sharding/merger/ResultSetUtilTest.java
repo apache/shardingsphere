@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
-
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.merger.common.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;

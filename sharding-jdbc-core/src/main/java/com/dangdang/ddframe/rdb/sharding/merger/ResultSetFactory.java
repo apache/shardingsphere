@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.GroupByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.LimitCouplingResultSet;
@@ -31,13 +26,14 @@ import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.IteratorReduce
 import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.MemoryOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.StreamingOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 创建归并分片结果集的工厂.
@@ -69,24 +65,15 @@ public final class ResultSetFactory {
         return buildCoupling(buildReducer(filteredResultSets, mergeContext), mergeContext);
     }
     
-    private static List<ResultSet> filterResultSets(final List<ResultSet> resultSets) {
-        return Lists.newArrayList(Collections2.filter(Lists.transform(resultSets, new Function<ResultSet, ResultSet>() {
-            
-            @Override
-            public ResultSet apply(final ResultSet input) {
-                try {
-                    return new WrapperResultSet(input);
-                } catch (final SQLException ex) {
-                    throw new ShardingJdbcException(ex);
-                }
+    private static List<ResultSet> filterResultSets(final List<ResultSet> resultSets) throws SQLException {
+        List<ResultSet> result = new LinkedList<>();
+        for (ResultSet each : resultSets) {
+            WrapperResultSet wrapperResultSet = new WrapperResultSet(each);
+            if (!wrapperResultSet.isEmpty()) {
+                result.add(wrapperResultSet);
             }
-        }), new Predicate<ResultSet>() {
-            
-            @Override
-            public boolean apply(final ResultSet input) {
-                return !((WrapperResultSet) input).isEmpty();
-            }
-        }));
+        }
+        return result;
     }
     
     private static ResultSet buildReducer(final List<ResultSet> filteredResultSets, final MergeContext mergeContext) throws SQLException {
