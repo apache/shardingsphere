@@ -21,6 +21,12 @@
 
 &lt;h2 id=&#34;1-1-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.1-SNAPSHOT&lt;/h2&gt;
 
+&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/53&#34;&gt;ISSUE #53&lt;/a&gt; 动态表配置&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
 
 &lt;ol&gt;
@@ -37,7 +43,7 @@
 
 &lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
 
-&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+&lt;h3 id=&#34;新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/40&#34;&gt;ISSUE #40&lt;/a&gt; 支持YAML文件配置&lt;/li&gt;
@@ -159,7 +165,7 @@ props:
   
   tables: 分库分表配置，可配置多个logic_table_name
     &amp;lt;logic_table_name&amp;gt;: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示动态表配置。
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -412,8 +418,8 @@ props: 属性配置(可选)
 &lt;td&gt;actual-tables&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
-&lt;td&gt;是&lt;/td&gt;
-&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示使用动态表配置&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
