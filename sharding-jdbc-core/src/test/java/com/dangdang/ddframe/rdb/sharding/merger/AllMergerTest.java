@@ -42,7 +42,7 @@ import org.junit.runners.Suite;
     NullableAggregationResultSetTest.class,
     OrderByRowTest.class,
     MemoryOrderByResultSetTest.class,
-    GroupByRowTest.class,
+    GroupByRowTest.class
     })
 public class AllMergerTest {
 }

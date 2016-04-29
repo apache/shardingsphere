@@ -36,7 +36,7 @@
     <xsd:element name="table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
-            <xsd:attribute name="actual-tables" type="xsd:string" use="required" />
+            <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy" type="xsd:string" use="optional" />
         </xsd:complexType>

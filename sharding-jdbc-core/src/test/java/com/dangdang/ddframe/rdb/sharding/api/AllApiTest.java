@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNodeTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRuleTest;
+import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNodeTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategyTest;
@@ -41,7 +42,8 @@ import org.junit.runners.Suite;
     DataSourceRuleTest.class, 
     ShardingRuleTest.class, 
     TableRuleTest.class,
-    DataNodeTest.class, 
+    DataNodeTest.class,
+    DynamicDataNodeTest.class, 
     BindingTableRuleTest.class, 
     ShardingStrategyTest.class, 
     DatabaseShardingStrategyTest.class, 

@@ -17,30 +17,31 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * 表规则配置对象.
  * 
  * @author zhangliang
  */
-@AllArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public final class TableRule {
     
     private final String logicTable;
+    
+    private final boolean dynamic;
     
     private final List<DataNode> actualTables;
     
@@ -48,9 +49,27 @@ public final class TableRule {
     
     private TableShardingStrategy tableShardingStrategy;
     
+    public TableRule(final String logicTable, final DataSourceRule dataSourceRule,
+                     final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+        this(logicTable, true, new ArrayList<DataNode>(dataSourceRule.getDataSourceNames().size()), databaseShardingStrategy, tableShardingStrategy);
+        generateDataNodes(dataSourceRule);
+    }
+    
+    public TableRule(final String logicTable, final DataSourceRule dataSourceRule) {
+        this(logicTable, dataSourceRule, null, null);
+    }
+    
+    public TableRule(final String logicTable, final DataSourceRule dataSourceRule, final DatabaseShardingStrategy databaseShardingStrategy) {
+        this(logicTable, dataSourceRule, databaseShardingStrategy, null);
+    }
+    
+    public TableRule(final String logicTable, final DataSourceRule dataSourceRule, final TableShardingStrategy tableShardingStrategy) {
+        this(logicTable, dataSourceRule, null, tableShardingStrategy);
+    }
+    
     public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule,
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
-        this(logicTable, new ArrayList<DataNode>(actualTables.size() * dataSourceRule.getDataSourceNames().size()), databaseShardingStrategy, tableShardingStrategy);
+        this(logicTable, false, new ArrayList<DataNode>(actualTables.size() * dataSourceRule.getDataSourceNames().size()), databaseShardingStrategy, tableShardingStrategy);
         generateDataNodes(actualTables, dataSourceRule);
     }
     
@@ -64,6 +83,12 @@ public final class TableRule {
     
     public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule, final TableShardingStrategy tableShardingStrategy) {
         this(logicTable, actualTables, dataSourceRule, null, tableShardingStrategy);
+    }
+    
+    private void generateDataNodes(final DataSourceRule dataSourceRule) {
+        for (String each : dataSourceRule.getDataSourceNames()) {
+            actualTables.add(new DynamicDataNode(each));
+        }
     }
     
     private void generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule) {
@@ -86,6 +111,20 @@ public final class TableRule {
      * @return 真实数据单元
      */
     public Collection<DataNode> getActualDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
+        return dynamic ? getDynamicDataNodes(targetDataSources, targetTables) : getStaticDataNodes(targetDataSources, targetTables);
+    }
+    
+    private Collection<DataNode> getDynamicDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
+        Collection<DataNode> result = new LinkedHashSet<>(targetDataSources.size() * targetTables.size());
+        for (String targetDataSource : targetDataSources) {
+            for (String targetTable : targetTables) {
+                result.add(new DataNode(targetDataSource, targetTable));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> getStaticDataNodes(final Collection<String> targetDataSources, final Collection<String> targetTables) {
         Collection<DataNode> result = new LinkedHashSet<>(actualTables.size());
         for (DataNode each : actualTables) {
             if (targetDataSources.contains(each.getDataSourceName()) && targetTables.contains(each.getTableName())) {
@@ -94,6 +133,7 @@ public final class TableRule {
         }
         return result;
     }
+    
     
     /**
      * 获取真实数据源.

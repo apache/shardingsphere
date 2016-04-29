@@ -44,30 +44,46 @@ public class ShardingStrategy {
     }
     
     /**
-     * 根据分片值计算数据源名称集合.
+     * 计算静态分片.
      *
      * @param sqlStatementType SQL语句的类型
-     * @param availableTargetNames 所有的可用数据源名称集合
-     * @param shardingValues 分库片值集合
+     * @param availableTargetNames 所有的可用分片资源集合
+     * @param shardingValues 分片值集合
      * @return 分库后指向的数据源名称集合
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Collection<String> doSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doStaticSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
             Preconditions.checkState(!isInsertMultiple(sqlStatementType, availableTargetNames), "INSERT statement should contain sharding value.");
             return availableTargetNames;
         }
+        return doSharding(shardingValues, availableTargetNames);
+    }
+    
+    /**
+     * 计算动态分片.
+     *
+     * @param shardingValues 分片值集合
+     * @return 分库后指向的分片资源集合
+     */
+    public Collection<String> doDynamicSharding(final Collection<ShardingValue<?>> shardingValues) {
+        Preconditions.checkState(!shardingValues.isEmpty(), "Dynamic table should contain sharding value.");
+        Collection<String> availableTargetNames = Collections.emptyList();
+        return doSharding(shardingValues, availableTargetNames);
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Collection<String> doSharding(final Collection<ShardingValue<?>> shardingValues, final Collection<String> availableTargetNames) {
         if (shardingAlgorithm instanceof SingleKeyShardingAlgorithm) {
             SingleKeyShardingAlgorithm<?> singleKeyShardingAlgorithm = (SingleKeyShardingAlgorithm<?>) shardingAlgorithm;
             ShardingValue shardingValue = shardingValues.iterator().next();
             switch (shardingValue.getType()) {
-                case SINGLE: 
+                case SINGLE:
                     return Collections.singletonList(singleKeyShardingAlgorithm.doEqualSharding(availableTargetNames, shardingValue));
-                case LIST: 
+                case LIST:
                     return singleKeyShardingAlgorithm.doInSharding(availableTargetNames, shardingValue);
-                case RANGE: 
+                case RANGE:
                     return singleKeyShardingAlgorithm.doBetweenSharding(availableTargetNames, shardingValue);
-                default: 
+                default:
                     throw new UnsupportedOperationException(shardingValue.getType().getClass().getName());
             }
         }

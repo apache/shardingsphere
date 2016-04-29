@@ -91,7 +91,7 @@ public class AbstractRowSetResultSetAdapterTest {
         MockResultSet mockResultSet = new MockResultSet<>(input);
         rs.setResultSets(Collections.<ResultSet>singletonList(mockResultSet));
         assertThat(rs.getStatement(), nullValue());
-        assertThat(rs.getFetchSize() ,is(1));
+        assertThat(rs.getFetchSize(), is(1));
         assertThat(rs.getMetaData().getColumnCount(), is(1));
         assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
         assertThat(rs.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
@@ -110,7 +110,7 @@ public class AbstractRowSetResultSetAdapterTest {
             assertThat(ResultSet.class.getMethod(methodName, int.class).invoke(rs, 1), is(result));
             assertThat(ResultSet.class.getMethod(methodName, String.class).invoke(rs, "name"), is(result));
         }
-        if(null == result){
+        if (null == result) {
             assertThat(rs.wasNull(), is(true));
         } else {
             assertThat(rs.wasNull(), is(false));

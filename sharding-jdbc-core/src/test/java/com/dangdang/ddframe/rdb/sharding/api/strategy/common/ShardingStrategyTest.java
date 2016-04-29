@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.collect.Range;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,35 +37,71 @@ public final class ShardingStrategyTest {
     private final Collection<String> targets = Arrays.asList("1", "2", "3");
     
     @Test
-    public void assertDoShardingWithoutShardingColumns() {
+    public void assertDoStaticShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), null);
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, Collections.<ShardingValue<?>>emptyList()), is(targets));
+        assertThat(strategy.doStaticSharding(SQLStatementType.SELECT, targets, Collections.<ShardingValue<?>>emptyList()), is(targets));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertDoStaticShardingForInsertWithoutShardingColumns() {
+        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), null);
+        strategy.doStaticSharding(SQLStatementType.INSERT, targets, Collections.<ShardingValue<?>>emptyList());
     }
     
     @Test
-    public void assertDoShardingForEqualSingleKey() {
+    public void assertDoStaticShardingForEqualSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Collections.singletonList("1")));
+        assertThat(strategy.doStaticSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Collections.singletonList("1")));
     }
     
     @Test
-    public void assertDoShardingForInSingleKey() {
+    public void assertDoStaticShardingForInSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), 
+        assertThat(strategy.doStaticSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), 
                 is((Collection<String>) Arrays.asList("1", "3")));
     }
     
     @Test
-    public void assertDoShardingForBetweenSingleKey() {
+    public void assertDoStaticShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), 
+        assertThat(strategy.doStaticSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), 
                 is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     @Test
-    public void assertDoShardingForMultipleKeys() {
+    public void assertDoStaticShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doStaticSharding(SQLStatementType.SELECT, targets, createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertDoDynamicShardingWithoutShardingColumns() {
+        ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), null);
+        strategy.doDynamicSharding(Collections.<ShardingValue<?>>emptyList());
+    }
+    
+    @Test
+    public void assertDoDynamicShardingForEqualSingleKey() {
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
+        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Collections.singletonList("1")));
+    }
+    
+    @Test
+    public void assertDoDynamicShardingForInSingleKey() {
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
+        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
+    }
+    
+    @Test
+    public void assertDoDynamicShardingForBetweenSingleKey() {
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
+        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+    }
+    
+    @Test
+    public void assertDoDynamicShardingForMultipleKeys() {
+        ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
+        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("column", "1"))), is((Collection<String>) Collections.<String>emptyList()));
     }
     
     private Collection<ShardingValue<?>> createShardingValues(final ShardingValue<String> shardingValue) {

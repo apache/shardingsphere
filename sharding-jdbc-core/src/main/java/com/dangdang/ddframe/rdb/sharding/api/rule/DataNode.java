@@ -34,7 +34,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class DataNode {
+public class DataNode {
     
     private static final String DELIMITER = ".";
     

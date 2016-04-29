@@ -82,7 +82,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     }
     
     @Override
-    public final boolean isClosed() throws SQLException {
+    public boolean isClosed() throws SQLException {
         return isClosed;
     }
     
@@ -142,17 +142,17 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     }
     
     @Override
-    public final int getFetchSize() throws SQLException {
+    public int getFetchSize() throws SQLException {
         return size;
     }
     
     @Override
-    public final Statement getStatement() throws SQLException {
+    public Statement getStatement() throws SQLException {
         return null;
     }
     
     @Override
-    public final ResultSetMetaData getMetaData() throws SQLException {
+    public ResultSetMetaData getMetaData() throws SQLException {
         return new MockResultSetMetaData();
     }
     

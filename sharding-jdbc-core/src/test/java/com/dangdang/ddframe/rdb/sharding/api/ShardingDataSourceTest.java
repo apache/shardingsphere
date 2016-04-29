@@ -51,7 +51,7 @@ public final class ShardingDataSourceTest {
         Connection connection = mockConnection();
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(connection);
-        assertThat(createShardingDataSource(dataSource).getConnection().getConnection("ds"), is(connection));
+        assertThat(createShardingDataSource(dataSource).getConnection("username", "password").getConnection("ds"), is(connection));
     }
     
     private Connection mockConnection() throws SQLException {

@@ -40,7 +40,8 @@ import java.util.List;
 /**
  * 单逻辑表的库表路由.
  * 
- * @author gaohongtao, zhangliang
+ * @author gaohongtao
+ * @author zhangliang
  */
 @Slf4j
 public final class SingleTableRouter {
@@ -87,7 +88,7 @@ public final class SingleTableRouter {
             shardingValues = getShardingValues(strategy.getShardingColumns());
         }
         logBeforeRoute("database", logicTable, tableRule.get().getActualDatasourceNames(), strategy.getShardingColumns(), shardingValues);
-        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, tableRule.get().getActualDatasourceNames(), shardingValues));
+        Collection<String> result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.get().getActualDatasourceNames(), shardingValues));
         logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
@@ -102,7 +103,12 @@ public final class SingleTableRouter {
             shardingValues = getShardingValues(strategy.getShardingColumns());
         }
         logBeforeRoute("table", logicTable, tableRule.get().getActualTables(), strategy.getShardingColumns(), shardingValues);
-        Collection<String> result = new HashSet<>(strategy.doSharding(sqlStatementType, tableRule.get().getActualTableNames(routedDataSources), shardingValues));
+        Collection<String> result;
+        if (tableRule.get().isDynamic()) {
+            result = new HashSet<>(strategy.doDynamicSharding(shardingValues));
+        } else {
+            result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.get().getActualTableNames(routedDataSources), shardingValues));    
+        }
         logAfterRoute("table", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
         return result;

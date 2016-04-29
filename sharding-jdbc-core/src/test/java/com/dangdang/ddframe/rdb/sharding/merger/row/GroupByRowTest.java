@@ -36,14 +36,14 @@ public class GroupByRowTest {
     
     @Test
     public void testToString() throws Exception {
-        Map<String,Object> rs1 = new LinkedHashMap<>();
+        Map<String, Object> rs1 = new LinkedHashMap<>();
         rs1.put("user_id", 1);
         rs1.put("number", 10);
-        Map<String,Object> rs2 = new LinkedHashMap<>();
+        Map<String, Object> rs2 = new LinkedHashMap<>();
         rs2.put("user_id", 1);
         rs2.put("number", 20);
         MockResultSet rs = new MockResultSet<>(Arrays.asList(rs1, rs2));
-        assertThat(rs.next() ,is(true));
+        assertThat(rs.next(), is(true));
     
         GroupByColumn groupByColumn = new GroupByColumn("user_id", "", OrderByColumn.OrderByType.ASC);
         groupByColumn.setColumnIndex(1);
@@ -53,10 +53,10 @@ public class GroupByRowTest {
         GroupByRow row = new GroupByRow(rs, Collections.singletonList(groupByColumn), Collections.singletonList(aggregationColumn));
         row.aggregate();
         assertThat(row.toString(), is("GroupByKey is: [1]; Aggregation result is: [{index:2, type:SUM, value:10}]"));
-        assertThat(rs.next() ,is(true));
+        assertThat(rs.next(), is(true));
         row.aggregate();
         row.generateResult();
         assertThat(row.toString(), is("GroupByKey is: [1]; Aggregation result is: [{index:2, type:SUM, value:30}]"));
-        assertThat(rs.next() ,is(false));
+        assertThat(rs.next(), is(false));
     }
 }

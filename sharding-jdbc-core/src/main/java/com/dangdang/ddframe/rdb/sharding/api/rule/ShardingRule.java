@@ -17,28 +17,25 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 分库分表规则配置对象.
  * 
  * @author zhangliang
  */
-@AllArgsConstructor
 @Getter
 public final class ShardingRule {
     
@@ -46,11 +43,11 @@ public final class ShardingRule {
     
     private final Collection<TableRule> tableRules;
     
-    private Collection<BindingTableRule> bindingTableRules;
+    private final Collection<BindingTableRule> bindingTableRules;
     
-    private DatabaseShardingStrategy databaseShardingStrategy;
+    private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private TableShardingStrategy tableShardingStrategy;
+    private final TableShardingStrategy tableShardingStrategy;
     
     public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules) {
         this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(),
@@ -77,6 +74,17 @@ public final class ShardingRule {
     public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, 
             final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(), databaseShardingStrategy, tableShardingStrategy);
+    }
+    
+    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
+                        final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+        this.dataSourceRule = dataSourceRule;
+        this.tableRules = tableRules;
+        this.bindingTableRules = bindingTableRules;
+        this.databaseShardingStrategy = null == databaseShardingStrategy ? new DatabaseShardingStrategy(
+                Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
+        this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
+                Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
     }
     
     /**
@@ -179,9 +187,6 @@ public final class ShardingRule {
      * @return binding表配置的逻辑表名称集合
      */
     public Optional<BindingTableRule> findBindingTableRule(final String logicTable) {
-        if (null == bindingTableRules) {
-            return Optional.absent();
-        }
         for (BindingTableRule each : bindingTableRules) {
             if (each.hasLogicTable(logicTable)) {
                 return Optional.of(each);
@@ -198,12 +203,8 @@ public final class ShardingRule {
     // TODO 目前使用分片列名称, 为了进一步提升解析性能，应考虑使用表名 + 列名
     public Collection<String> getAllShardingColumns() {
         Set<String> result = new HashSet<>();
-        if (null != databaseShardingStrategy) {
-            result.addAll(databaseShardingStrategy.getShardingColumns());
-        }
-        if (null != tableShardingStrategy) {
-            result.addAll(tableShardingStrategy.getShardingColumns());
-        }
+        result.addAll(databaseShardingStrategy.getShardingColumns());
+        result.addAll(tableShardingStrategy.getShardingColumns());
         for (TableRule each : tableRules) {
             if (null != each.getDatabaseShardingStrategy()) {
                 result.addAll(each.getDatabaseShardingStrategy().getShardingColumns());

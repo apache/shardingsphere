@@ -100,7 +100,7 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void testFindColumnSuccess() throws SQLException {
-        MemoryOrderByResultSet rs = new MemoryOrderByResultSet( Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
+        MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
         rs.setResultSets(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)));
         assertThat(rs.findColumn("name"), is(1));
     }

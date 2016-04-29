@@ -96,9 +96,17 @@ public class ShardingRuleBuilder {
     private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {
         Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
         for (Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
-            result.add(new TableRule(each.getKey(), new InlineParser(each.getValue().getActualTables()).evaluate(), dataSourceRule,
-                    buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
-                    buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class)));
+            TableRule tableRule;
+            if (null == each.getValue().getActualTables()) {
+                tableRule = new TableRule(each.getKey(), dataSourceRule,
+                        buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
+                        buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
+            } else {
+                tableRule = new TableRule(each.getKey(), new InlineParser(each.getValue().getActualTables()).evaluate(), dataSourceRule,
+                        buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
+                        buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
+            }
+            result.add(tableRule);
         }
         return result;
     }

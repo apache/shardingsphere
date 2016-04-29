@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ResultSetUtilTest {
     @Test
-    public void assertConvertValue(){
+    public void assertConvertValue() {
         Object o = new Object();
         assertThat((String) ResultSetUtil.convertValue(o, String.class), is(o.toString()));
         assertThat((String) ResultSetUtil.convertValue("11", int.class), is("11"));

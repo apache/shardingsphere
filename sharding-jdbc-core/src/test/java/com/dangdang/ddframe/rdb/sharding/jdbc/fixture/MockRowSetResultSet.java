@@ -35,7 +35,7 @@ public class MockRowSetResultSet extends AbstractRowSetResultSetAdapter {
     
     @Override
     protected Row nextRow() throws SQLException {
-        if(resultSet.next()){
+        if (resultSet.next()) {
             return new Row(resultSet);
         }
         return null;

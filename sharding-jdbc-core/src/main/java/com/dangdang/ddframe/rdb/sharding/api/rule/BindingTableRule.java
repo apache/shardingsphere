@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Binding表规则配置对象.
@@ -64,6 +63,9 @@ public final class BindingTableRule {
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherActualTable) {
         int index = -1;
         for (TableRule each : tableRules) {
+            if (each.isDynamic()) {
+                throw new UnsupportedOperationException("Dynamic table cannot support Binding table.");
+            }
             index = each.findActualTableIndex(dataSource, otherActualTable);
             if (-1 != index) {
                 break;

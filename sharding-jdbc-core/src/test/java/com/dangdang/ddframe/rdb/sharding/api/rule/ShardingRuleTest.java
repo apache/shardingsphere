@@ -1,24 +1,24 @@
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.google.common.collect.Sets;
+import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingRuleTest {
     
@@ -80,12 +80,12 @@ public final class ShardingRuleTest {
         assertThat(actual.getDatabaseShardingStrategy(tableRule), is(strategy));
     }
     
-    @Test(expected = NullPointerException.class)
-    public void assertGetDatabaseShardingStrategyFailure() {
+    @Test
+    public void assertGetDatabaseShardingStrategyForNullValue() {
         DatabaseShardingStrategy strategy = null;
         TableRule tableRule = createTableRule();
         ShardingRule actual = new ShardingRule(createDataSourceRule(), Collections.singletonList(tableRule), strategy);
-        assertThat(actual.getDatabaseShardingStrategy(tableRule), is(strategy));
+        assertNotNull(actual.getDatabaseShardingStrategy(tableRule));
     }
     
     @Test
@@ -104,12 +104,12 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableShardingStrategy(tableRule), is(strategy));
     }
     
-    @Test(expected = NullPointerException.class)
-    public void assertGetTableShardingStrategyFailure() {
+    @Test
+    public void assertGetTableShardingStrategyForNullValue() {
         TableShardingStrategy strategy = null;
         TableRule tableRule = createTableRule();
         ShardingRule actual = new ShardingRule(createDataSourceRule(), Collections.singletonList(tableRule), strategy);
-        assertThat(actual.getTableShardingStrategy(tableRule), is(strategy));
+        assertNotNull(actual.getTableShardingStrategy(tableRule));
     }
     
     @Test
@@ -166,6 +166,16 @@ public final class ShardingRuleTest {
         assertTrue(createShardingRule().isAllBindingTables(Arrays.asList("logicTable", "subLogicTable")));
     }
     
+    @Test
+    public void assertGetAllShardingColumnsWithoutStrategy() {
+        assertThat(createShardingRule().getAllShardingColumns(), is((Collection<String>) Collections.<String>emptySet()));
+    }
+    
+    @Test
+    public void assertGetAllShardingColumnsWithStrategy() {
+        assertThat(createShardingRuleWithStrategy().getAllShardingColumns(), is((Collection<String>) Sets.newHashSet("column")));
+    }
+    
     private ShardingRule createShardingRule() {
         return new ShardingRule(createDataSourceRule(), Collections.singletonList(createTableRule()), Collections.singletonList(createBindingTableRule()));
     }
@@ -203,5 +213,13 @@ public final class ShardingRuleTest {
     
     private TableShardingStrategy createTableShardingStrategy() {
         return new TableShardingStrategy(Collections.singletonList("column"), new NoneTableShardingAlgorithm());
+    }
+    
+    private ShardingRule createShardingRuleWithStrategy() {
+        return new ShardingRule(createDataSourceRule(), Collections.singletonList(createTableRuleWithAllStrategies()), Collections.singletonList(createBindingTableRule()));
+    }
+    
+    private TableRule createTableRuleWithAllStrategies() {
+        return new TableRule("logicTable", Arrays.asList("table_0", "table_1", "table_2"), createDataSourceRule(), createDatabaseShardingStrategy(), createTableShardingStrategy());
     }
 }

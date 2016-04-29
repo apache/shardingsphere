@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class MergerTestUtil {
     
-    public static MockResultSet<Integer> createMock(List<String> columns, List<Integer> values) {
+    public static MockResultSet<Integer> createMock(final List<String> columns, final List<Integer> values) {
         Map<String, Integer> result = new LinkedHashMap<>();
         for (int i = 0; i < columns.size(); i++) {
             result.put(columns.get(i), values.get(i));
@@ -39,8 +39,10 @@ public class MergerTestUtil {
     public static MergeContext createMergeContext(final int index, final String name, final String alias, final AggregationColumn.AggregationType aggregationType) {
         AggregationColumn column = new AggregationColumn(name, aggregationType, Optional.fromNullable(alias), Optional.<String>absent(), index);
         if (AggregationColumn.AggregationType.AVG.equals(aggregationType)) {
-            column.getDerivedColumns().add(new AggregationColumn(AggregationColumn.AggregationType.COUNT.name(), AggregationColumn.AggregationType.COUNT, Optional.of("sharding_gen_1"), Optional.<String>absent()));
-            column.getDerivedColumns().add(new AggregationColumn(AggregationColumn.AggregationType.SUM.name(), AggregationColumn.AggregationType.SUM, Optional.of("sharding_gen_2"), Optional.<String>absent()));
+            column.getDerivedColumns().add(
+                    new AggregationColumn(AggregationColumn.AggregationType.COUNT.name(), AggregationColumn.AggregationType.COUNT, Optional.of("sharding_gen_1"), Optional.<String>absent()));
+            column.getDerivedColumns().add(
+                    new AggregationColumn(AggregationColumn.AggregationType.SUM.name(), AggregationColumn.AggregationType.SUM, Optional.of("sharding_gen_2"), Optional.<String>absent()));
         }
         MergeContext result = new MergeContext();
         result.getAggregationColumns().add(column);

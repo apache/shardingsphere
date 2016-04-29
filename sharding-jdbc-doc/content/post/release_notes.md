@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.1.1-SNAPSHOT
 
+### 新功能
+
+1. [ISSUE #53](https://github.com/dangdangdotcom/sharding-jdbc/issues/53) 动态表配置
+
 ### 结构调整
 
 1. [ISSUE #49](https://github.com/dangdangdotcom/sharding-jdbc/issues/49) 调整属性配置
