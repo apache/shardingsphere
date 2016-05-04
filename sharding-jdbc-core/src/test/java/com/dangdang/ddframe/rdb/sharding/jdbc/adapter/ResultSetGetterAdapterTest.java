@@ -406,11 +406,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     public void assertGetObjectForColumnIndexWithMap() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
-                actual.getObject("1", Collections.<String, Class<?>>emptyMap());
+                actual.getObject(1, Collections.<String, Class<?>>emptyMap());
             } catch (final SQLException ignore) {
             }
         } else {
-            assertThat(actual.getObject("uid", Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
+            assertThat(actual.getObject(1, Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
         }
     }
     

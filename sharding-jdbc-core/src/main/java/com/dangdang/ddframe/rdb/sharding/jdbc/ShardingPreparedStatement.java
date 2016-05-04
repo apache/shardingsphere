@@ -40,7 +40,8 @@ import java.util.List;
 /**
  * 支持分片的预编译语句对象.
  * 
- * @author zhangliang, caohao
+ * @author zhangliang
+ * @author caohao
  */
 public final class ShardingPreparedStatement extends AbstractPreparedStatementAdapter {
     
