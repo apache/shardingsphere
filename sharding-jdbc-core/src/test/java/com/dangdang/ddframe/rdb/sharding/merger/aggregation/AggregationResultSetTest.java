@@ -62,7 +62,6 @@ public final class AggregationResultSetTest {
     
     @Parameterized.Parameters(name = "{index}: testTarget:{0}, aggregation type:{1}, columns:{2}, r1:{3}, r2:{4}, rsName:{5}, rsClass:{6}, result:{7}")
     public static Collection init() {
-        
         return Arrays.asList(new Object[][]{
                 {TestTarget.INDEX, AggregationType.SUM, Collections.singletonList("column"), 
                         Collections.singletonList(6), Collections.singletonList(2), Optional.absent(), Integer.class, 8},

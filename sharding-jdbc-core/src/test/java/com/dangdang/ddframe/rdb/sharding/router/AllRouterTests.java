@@ -35,5 +35,5 @@ import org.junit.runners.Suite;
         CartesianResultTest.class,
         SingleRouterUtilTest.class
     })
-public class AllRouterTest {
+public class AllRouterTests {
 }

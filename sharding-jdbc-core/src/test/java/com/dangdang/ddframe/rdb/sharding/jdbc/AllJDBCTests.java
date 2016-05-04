@@ -55,5 +55,5 @@ import org.junit.runners.Suite;
     JdbcMethodInvocationTest.class, 
     AbstractRowSetResultSetAdapterTest.class
     })
-public class AllJDBCTest {
+public class AllJDBCTests {
 }

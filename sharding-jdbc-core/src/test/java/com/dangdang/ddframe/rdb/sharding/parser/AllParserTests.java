@@ -34,5 +34,5 @@ import org.junit.runners.Suite;
         OrParseTest.class, 
         UnsupportedParseTest.class
     })
-public class AllParserTest {
+public class AllParserTests {
 }

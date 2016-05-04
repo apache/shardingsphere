@@ -52,5 +52,5 @@ import org.junit.runners.Suite;
     NoneTableShardingAlgorithmTest.class,
     HintManagerTest.class
     })
-public class AllApiTest {
+public class AllApiTests {
 }

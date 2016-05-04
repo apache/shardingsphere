@@ -44,5 +44,5 @@ import org.junit.runners.Suite;
     MemoryOrderByResultSetTest.class,
     GroupByRowTest.class
     })
-public class AllMergerTest {
+public class AllMergerTests {
 }

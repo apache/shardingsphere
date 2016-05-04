@@ -104,8 +104,15 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetActualDataNodes() {
+    public void assertGetActualDataNodesForStatic() {
         TableRule actual = new TableRule("logicTable", Arrays.asList("ds0.table_0", "ds0.table_1", "ds0.table_2", "ds1.table_0", "ds1.table_1", "ds1.table_2"), createDataSourceRule());
+        assertThat(actual.getActualDataNodes(Collections.singletonList("ds1"), Arrays.asList("table_0", "table_1")), is(
+                (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
+    }
+    
+    @Test
+    public void assertGetActualDataNodesForDynamic() {
+        TableRule actual = new TableRule("logicTable", createDataSourceRule());
         assertThat(actual.getActualDataNodes(Collections.singletonList("ds1"), Arrays.asList("table_0", "table_1")), is(
                 (Collection<DataNode>) Sets.newLinkedHashSet(Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1")))));
     }

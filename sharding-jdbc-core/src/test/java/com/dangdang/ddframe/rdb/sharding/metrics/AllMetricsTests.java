@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
+package com.dangdang.ddframe.rdb.sharding.metrics;
 
-import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpressionForDynamic.xml")
-public final class WithNamespaceAlgorithmExpressionForDynamicTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
+@RunWith(Suite.class)
+@Suite.SuiteClasses(
+        MetricsContextTest.class
+    )
+public class AllMetricsTests {
 }

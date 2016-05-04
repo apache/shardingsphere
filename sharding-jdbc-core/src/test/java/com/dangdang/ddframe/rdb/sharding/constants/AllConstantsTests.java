@@ -15,14 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.hint;
+package com.dangdang.ddframe.rdb.sharding.constants;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(
-    HintManagerHolderTest.class
-)
-public class AllHintTest {
+@Suite.SuiteClasses(DatabaseTypeTest.class)
+public class AllConstantsTests {
 }
