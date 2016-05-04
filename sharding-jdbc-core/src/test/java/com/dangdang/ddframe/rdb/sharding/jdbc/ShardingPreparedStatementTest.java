@@ -191,7 +191,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     }
     
     @Test
-    public void assertBatch() throws SQLException {
+    public void assertAddBatch() throws SQLException {
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
@@ -208,6 +208,21 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             for (int each : result) {
                 assertThat(each, is(1));
             }
+        }
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertClearBatch() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.clearBatch();
+            preparedStatement.executeBatch();
         }
     }
 }

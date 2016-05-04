@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import lombok.RequiredArgsConstructor;
+
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * 静态语句对象适配类.
@@ -157,11 +156,4 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
      * @throws SQLException
      */
     protected abstract Collection<? extends Statement> getRoutedStatements() throws SQLException;
-    
-    /**
-     *  清除路由的静态语句对象集合.
-     *
-     * @throws SQLException
-     */
-    public abstract void clearRoutedStatements() throws SQLException;
 }

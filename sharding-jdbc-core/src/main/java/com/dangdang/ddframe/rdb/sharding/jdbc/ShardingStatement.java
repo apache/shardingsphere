@@ -187,9 +187,4 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public Collection<? extends Statement> getRoutedStatements() throws SQLException {
         return cachedRoutedStatements.values();
     }
-    
-    @Override
-    public void clearRoutedStatements() throws SQLException {
-        cachedRoutedStatements.clear();
-    }
 }

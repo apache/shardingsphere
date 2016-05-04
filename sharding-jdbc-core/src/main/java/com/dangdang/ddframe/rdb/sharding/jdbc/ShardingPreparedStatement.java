@@ -152,11 +152,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         });
     }
     
-    @Override
-    public void clearRoutedStatements() throws SQLException {
-        getRoutedPreparedStatements().clear();
-    }
-    
     private void routeIfNeed() throws SQLException {
         if (!cachedRoutedPreparedStatements.isEmpty()) {
             return;
