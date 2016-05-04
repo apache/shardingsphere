@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -48,6 +42,13 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * 解析过程的上下文对象.
  * 
@@ -56,7 +57,11 @@ import lombok.Setter;
 @Getter
 public final class ParseContext {
     
+    private static final String AUTO_GEN_TOKE_KEY_TEMPLATE = "sharding_auto_gen_%d";
+    
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
+    
+    private final String autoGenTokenKey;
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
@@ -75,6 +80,24 @@ public final class ParseContext {
     private final Collection<String> selectItems = new HashSet<>();
     
     private boolean hasAllColumn;
+    
+    @Setter
+    private ParseContext parentParseContext;
+    
+    private List<ParseContext> subParseContext = new LinkedList<>();
+    
+    private int itemIndex;
+    
+    public ParseContext(final int parseContextIndex) {
+        this.autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
+    }
+    
+    /**
+     * 增加查询投射项数量.
+     */
+    public void increaseItemIndex() {
+        itemIndex++;
+    }
     
     /**
      * 设置当前正在访问的表.
@@ -329,5 +352,4 @@ public final class ParseContext {
         }
         selectItems.add(rawItemExpr);
     }
-    
 }

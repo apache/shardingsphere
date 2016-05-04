@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
@@ -31,7 +29,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
@@ -44,6 +41,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.Orde
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
+import java.util.List;
+
 /**
  * MySQL的SELECT语句访问器.
  * 
@@ -51,20 +50,16 @@ import com.google.common.base.Strings;
  */
 public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     
-    private static final String AUTO_GEN_TOKE_KEY = "sharding_auto_gen";
-    
-    // TODO 封装到方法内部
-    private int itemIndex;
-    
     @Override
     protected void printSelectList(final List<SQLSelectItem> selectList) {
         super.printSelectList(selectList);
         // TODO 提炼成print，或者是否不应该由token的方式替换？
-        getSQLBuilder().appendToken(AUTO_GEN_TOKE_KEY, false);
+        getSQLBuilder().appendToken(getParseContext().getAutoGenTokenKey(), false);
     }
     
     @Override
     public boolean visit(final MySqlSelectQueryBlock x) {
+        stepInQuery();
         if (x.getFrom() instanceof SQLExprTableSource) {
             SQLExprTableSource tableExpr = (SQLExprTableSource) x.getFrom();
             getParseContext().setCurrentTable(tableExpr.getExpr().toString(), Optional.fromNullable(tableExpr.getAlias()));
@@ -80,7 +75,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
      */
     // TODO SELECT * 导致index不准，不支持SELECT *，且生产环境不建议使用SELECT *
     public boolean visit(final SQLSelectItem x) {
-        itemIndex++;
+        getParseContext().increaseItemIndex();
         if (Strings.isNullOrEmpty(x.getAlias())) {
             SQLExpr expr = x.getExpr();
             if (expr instanceof SQLIdentifierExpr) {
@@ -111,7 +106,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         x.accept(new MySqlOutputVisitor(expression));
         // TODO index获取不准，考虑使用别名替换
         AggregationColumn column = new AggregationColumn(expression.toString(), aggregationType, Optional.fromNullable(((SQLSelectItem) x.getParent()).getAlias()), 
-                null == x.getOption() ? Optional.<String>absent() : Optional.of(x.getOption().toString()), itemIndex);
+                null == x.getOption() ? Optional.<String>absent() : Optional.of(x.getOption().toString()), getParseContext().getItemIndex());
         getParseContext().getParsedResult().getMergeContext().getAggregationColumns().add(column);
         if (AggregationType.AVG.equals(aggregationType)) {
             getParseContext().addDerivedColumnsForAvgColumn(column);
@@ -190,7 +185,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     }
     
     @Override
-    public void endVisit(final SQLSelectStatement x) {
+    public void endVisit(final MySqlSelectQueryBlock x) {
         StringBuilder derivedSelectItems = new StringBuilder();
         for (AggregationColumn aggregationColumn : getParseContext().getParsedResult().getMergeContext().getAggregationColumns()) {
             for (AggregationColumn derivedColumn : aggregationColumn.getDerivedColumns()) {
@@ -206,8 +201,9 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             }
         }
         if (0 != derivedSelectItems.length()) {
-            getSQLBuilder().buildSQL(AUTO_GEN_TOKE_KEY, derivedSelectItems.toString());
+            getSQLBuilder().buildSQL(getParseContext().getAutoGenTokenKey(), derivedSelectItems.toString());
         }
         super.endVisit(x);
+        stepOutQuery();
     }
 }
