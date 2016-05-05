@@ -4,32 +4,28 @@ BIN_DIR=`pwd`
 cd ..
 DEPLOY_DIR=`pwd`
 
-SERVER_NAME=dd-frame-container
+SERVER_NAME=sharding-jdbc-transaction-async-job
 
-PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" |awk '{print $2}'`
-if [ -z "$PIDS" ]; then
+PID=`ps -ef | grep java | grep "$DEPLOY_DIR" |awk '{print $2}'`
+if [ -z "$PID" ]; then
     echo "ERROR: The $SERVER_NAME does not started!"
     exit 1
 fi
 
 echo -e "Stopping the $SERVER_NAME ...\c"
-for PID in $PIDS ; do
-    kill $PID > /dev/null 2>&1
-done
+kill $PID > /dev/null 2>&1
 
 COUNT=0
 while [ $COUNT -lt 1 ]; do
     echo -e ".\c"
     sleep 1
     COUNT=1
-    for PID in $PIDS ; do
-        PID_EXIST=`ps -f -p $PID | grep java`
-        if [ -n "$PID_EXIST" ]; then
-            COUNT=0
-            break
-        fi
-    done
+    PID_EXIST=`ps -f -p $PID | grep java`
+    if [ -n "$PID_EXIST" ]; then
+        COUNT=0
+        break
+    fi
 done
 
 echo "OK!"
-echo "PID: $PIDS"
+echo "PID: $PID"
