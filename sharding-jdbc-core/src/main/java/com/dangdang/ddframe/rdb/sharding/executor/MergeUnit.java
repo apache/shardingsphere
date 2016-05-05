@@ -22,6 +22,9 @@ import java.util.List;
 /**
  * 合并执行单元.
  * 
+ * @param <I> 入参类型
+ * @param <O> 出参类型
+ * 
  * @author gaohongtao
  */
 public interface MergeUnit<I, O> {

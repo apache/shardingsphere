@@ -89,7 +89,7 @@ public final class ParseContext {
     private int itemIndex;
     
     public ParseContext(final int parseContextIndex) {
-        this.autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
+        autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
     }
     
     /**

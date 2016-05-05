@@ -20,6 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 /**
  * 执行单元.
  * 
+ * @param <I> 入参类型
+ * @param <O> 出参类型
+ * 
  * @author gaohongtao
  */
 public interface ExecuteUnit<I, O> {
