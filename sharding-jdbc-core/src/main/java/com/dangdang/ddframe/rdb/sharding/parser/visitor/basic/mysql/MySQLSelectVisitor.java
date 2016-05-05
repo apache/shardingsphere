@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,8 @@ import java.util.List;
 /**
  * MySQL的SELECT语句访问器.
  * 
- * @author gaohongtao, zhangliang
+ * @author gaohongtao
+ * @author zhangliang
  */
 public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     
