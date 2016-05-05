@@ -17,12 +17,12 @@
     </xsd:element>
     <xsd:element name="sharding-rule">
         <xsd:complexType>
-            <xsd:all>
+            <xsd:sequence>
                 <xsd:element ref="table-rules" minOccurs="1" maxOccurs="1"/>
                 <xsd:element ref="binding-table-rules" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-database-strategy" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-table-strategy" minOccurs="0" maxOccurs="1"/>
-            </xsd:all>
+            </xsd:sequence>
             <xsd:attribute name="data-sources" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>

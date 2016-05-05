@@ -11,6 +11,7 @@ weight = 1
 ### 新功能
 
 1. [ISSUE #53](https://github.com/dangdangdotcom/sharding-jdbc/issues/53) 动态表配置
+1. [ISSUE #58](https://github.com/dangdangdotcom/sharding-jdbc/issues/58) 柔性事务：最大努力送达型
 
 ### 结构调整
 
