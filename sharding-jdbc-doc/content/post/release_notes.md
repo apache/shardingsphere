@@ -16,12 +16,12 @@ weight = 1
 
 1. [ISSUE #49](https://github.com/dangdangdotcom/sharding-jdbc/issues/49) 调整属性配置
 1. [ISSUE #51](https://github.com/dangdangdotcom/sharding-jdbc/issues/51) 重构Hint接口
-1. [ISSUE #57](https://github.com/dangdangdotcom/sharding-jdbc/issues/57) SQL解析子查询改进
 
 ### 缺陷修正
 
 1. [ISSUE #43](https://github.com/dangdangdotcom/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
 1. [ISSUE #48](https://github.com/dangdangdotcom/sharding-jdbc/issues/48) yaml文件读取后未关闭
+1. [ISSUE #57](https://github.com/dangdangdotcom/sharding-jdbc/issues/57) SQL解析子查询改进
 
 ## 1.1.0
 
