@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 

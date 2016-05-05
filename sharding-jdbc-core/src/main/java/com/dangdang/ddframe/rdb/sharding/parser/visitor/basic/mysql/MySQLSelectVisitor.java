@@ -46,7 +46,8 @@ import java.util.List;
 /**
  * MySQL的SELECT语句访问器.
  * 
- * @author gaohongtao, zhangliang
+ * @author gaohongtao
+ * @author zhangliang
  */
 public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     

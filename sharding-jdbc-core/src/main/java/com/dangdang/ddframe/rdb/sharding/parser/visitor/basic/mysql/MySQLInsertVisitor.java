@@ -24,7 +24,8 @@ import com.google.common.base.Optional;
 /**
  * MySQL的INSERT语句访问器.
  * 
- * @author gaohongtao, zhangliang
+ * @author gaohongtao
+ * @author zhangliang
  */
 public class MySQLInsertVisitor extends AbstractMySQLVisitor {
     

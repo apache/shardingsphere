@@ -38,7 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 不包含OR语句的SQL构建器解析.
  * 
- * @author gaohongtao, zhangliang
+ * @author gaohongtao
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Slf4j
