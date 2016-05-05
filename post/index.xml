@@ -19,13 +19,13 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
-&lt;h2 id=&#34;1-1-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.1-SNAPSHOT&lt;/h2&gt;
+&lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
 
 &lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/53&#34;&gt;ISSUE #53&lt;/a&gt; 动态表配置&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/58&#34;&gt;ISSUE #58&lt;/a&gt; 柔性事务：最大努力送达型&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/58&#34;&gt;ISSUE #58&lt;/a&gt; 柔性事务：最大努力送达型初始版本&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
