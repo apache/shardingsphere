@@ -28,7 +28,9 @@ import java.sql.SQLException;
 
 public final class YamlWithDefaultDataSourceMain {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
+    // CHECKSTYLE:ON
         YamlShardingDataSource dataSource =  new YamlShardingDataSource(
             new File(YamlWithDefaultDataSourceMain.class.getResource("/META-INF/withDefaultDataSource.yaml").getFile()));
         printJoinSelect(dataSource);

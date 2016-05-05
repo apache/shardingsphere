@@ -22,6 +22,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 
@@ -32,12 +34,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSoftTransactionIntegrationTest {
     
-    protected ShardingDataSource shardingDataSource;
+    private ShardingDataSource shardingDataSource;
     
-    protected DataSource transactionDataSource;
+    private DataSource transactionDataSource;
     
     @Before
     public void setup() throws SQLException {

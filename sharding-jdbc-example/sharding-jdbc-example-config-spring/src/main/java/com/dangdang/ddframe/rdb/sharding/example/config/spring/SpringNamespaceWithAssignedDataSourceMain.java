@@ -26,7 +26,9 @@ import java.sql.SQLException;
 
 public final class SpringNamespaceWithAssignedDataSourceMain {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
+    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/applicationContextWithAssignedDataSource.xml");
         OrderService service =  applicationContext.getBean(OrderService.class);
         service.insert();

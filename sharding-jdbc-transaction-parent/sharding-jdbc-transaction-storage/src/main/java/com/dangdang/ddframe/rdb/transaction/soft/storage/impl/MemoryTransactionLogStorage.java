@@ -75,7 +75,7 @@ public final class MemoryTransactionLogStorage implements TransactionLogStorage 
     }
     
     @Override
-    public boolean processData(Connection connection, TransactionLog transactionLog, int maxDeliveryTryTimes) {
+    public boolean processData(final Connection connection, final TransactionLog transactionLog, final int maxDeliveryTryTimes) {
         return false;
     }
 }

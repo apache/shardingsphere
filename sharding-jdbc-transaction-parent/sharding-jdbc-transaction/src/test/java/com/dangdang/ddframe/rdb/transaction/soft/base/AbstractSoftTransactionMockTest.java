@@ -21,6 +21,8 @@ import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.NestedBestEffortsDeliveryJobConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -28,9 +30,10 @@ import javax.sql.DataSource;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSoftTransactionMockTest {
     
-    protected SoftTransactionManager softTransactionManager = null;
+    private SoftTransactionManager softTransactionManager;
     
     @Before
     public void setUp() throws Exception {

@@ -6,12 +6,12 @@ weight = 1
 
 # Release Notes
 
-## 1.1.1-SNAPSHOT
+## 1.2.0
 
 ### 新功能
 
 1. [ISSUE #53](https://github.com/dangdangdotcom/sharding-jdbc/issues/53) 动态表配置
-1. [ISSUE #58](https://github.com/dangdangdotcom/sharding-jdbc/issues/58) 柔性事务：最大努力送达型
+1. [ISSUE #58](https://github.com/dangdangdotcom/sharding-jdbc/issues/58) 柔性事务：最大努力送达型初始版本
 
 ### 结构调整
 

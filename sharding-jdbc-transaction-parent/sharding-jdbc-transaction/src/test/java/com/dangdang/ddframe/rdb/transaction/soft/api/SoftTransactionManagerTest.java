@@ -33,12 +33,12 @@ public final class SoftTransactionManagerTest extends AbstractSoftTransactionMoc
     
     @Test
     public void assertInitTransactionManager() throws SQLException {
-        softTransactionManager.init();
+        getSoftTransactionManager().init();
     }
     
     @Test
     public void assertGetBEDCurrentTransaction() throws SQLException {
-        softTransactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
+        getSoftTransactionManager().getTransaction(SoftTransactionType.BestEffortsDelivery);
         assertNotNull(SoftTransactionManager.getCurrentTransaction().get());
         assertNotNull(SoftTransactionManager.getCurrentTransactionConfiguration().get());
         SoftTransactionManager.closeCurrentTransactionManager();
@@ -46,7 +46,7 @@ public final class SoftTransactionManagerTest extends AbstractSoftTransactionMoc
     
     @Test
     public void assertGetTCCCurrentTransaction() throws SQLException {
-        softTransactionManager.getTransaction(SoftTransactionType.TryConfirmCancel);
+        getSoftTransactionManager().getTransaction(SoftTransactionType.TryConfirmCancel);
         assertNotNull(SoftTransactionManager.getCurrentTransaction().get());
         assertNotNull(SoftTransactionManager.getCurrentTransactionConfiguration().get());
         SoftTransactionManager.closeCurrentTransactionManager();

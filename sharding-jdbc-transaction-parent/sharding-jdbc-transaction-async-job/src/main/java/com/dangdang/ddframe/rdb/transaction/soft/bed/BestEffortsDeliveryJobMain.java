@@ -35,7 +35,9 @@ public final class BestEffortsDeliveryJobMain {
      * 
      * @param args 启动参数
      */
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
+    // CHECKSTYLE:ON
         try (InputStreamReader inputStreamReader = new InputStreamReader(BestEffortsDeliveryJobMain.class.getResourceAsStream("/conf/config.yaml"), "UTF-8")) {
             BestEffortsDeliveryConfiguration config = new Yaml(new Constructor(BestEffortsDeliveryConfiguration.class)).loadAs(inputStreamReader, BestEffortsDeliveryConfiguration.class);
             new BestEffortsDeliveryJobFactory(config).init();

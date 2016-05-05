@@ -24,9 +24,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TransactionLogStorageFactoryTest.class,
-    MemoryTransactionLogStorageTest.class,
-    RdbTransactionLogStorageTest.class,
-})
+    TransactionLogStorageFactoryTest.class, 
+    MemoryTransactionLogStorageTest.class, 
+    RdbTransactionLogStorageTest.class
+    })
 public class AllStorageTest {
 }

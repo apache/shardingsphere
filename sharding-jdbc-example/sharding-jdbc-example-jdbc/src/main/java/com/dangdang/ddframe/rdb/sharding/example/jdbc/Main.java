@@ -38,11 +38,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-// CHECKSTYLE:OFF
+
 public final class Main {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
-        // CHECKSTYLE:ON
+    // CHECKSTYLE:ON
         DataSource dataSource = getShardingDataSource();
         printSimpleSelect(dataSource);
         System.out.println("--------------");
@@ -103,7 +104,8 @@ public final class Main {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
         TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"), dataSourceRule);
         TableRule orderItemTableRule = new TableRule("t_order_item", Arrays.asList("t_order_item_0", "t_order_item_1"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
+        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), 
+                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
                 new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()),
                 new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()));
         return new ShardingDataSource(shardingRule);

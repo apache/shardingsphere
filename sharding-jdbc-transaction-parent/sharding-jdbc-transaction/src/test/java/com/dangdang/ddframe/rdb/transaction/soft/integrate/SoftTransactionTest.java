@@ -37,10 +37,10 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     
     @Test
     public void bedSoftTransactionTest() throws SQLException {
-        SoftTransactionManager transactionManagerFactory = new SoftTransactionManager(getSoftTransactionConfiguration(shardingDataSource));
+        SoftTransactionManager transactionManagerFactory = new SoftTransactionManager(getSoftTransactionConfiguration(getShardingDataSource()));
         transactionManagerFactory.init();
         BEDSoftTransaction transactionManager = (BEDSoftTransaction) transactionManagerFactory.getTransaction(SoftTransactionType.BestEffortsDelivery);
-        transactionManager.begin(shardingDataSource.getConnection());
+        transactionManager.begin(getShardingDataSource().getConnection());
         insert();
         assertThat(select(), is(1));
         transactionManager.end();
@@ -49,7 +49,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     private void insert() throws SQLException {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
-            Connection conn = shardingDataSource.getConnection().getConnection("db_trans");
+            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
             PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
@@ -61,7 +61,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (
-            Connection conn = shardingDataSource.getConnection().getConnection("db_trans");
+            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
             PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -75,7 +75,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     
     private SoftTransactionConfiguration getSoftTransactionConfiguration(final ShardingDataSource dataSource) {
         SoftTransactionConfiguration result = new SoftTransactionConfiguration(dataSource);
-        result.setTransactionLogDataSource(transactionDataSource);
+        result.setTransactionLogDataSource(getTransactionDataSource());
         return result;
     }
 }
