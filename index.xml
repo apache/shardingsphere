@@ -197,6 +197,7 @@ try (
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/53&#34;&gt;ISSUE #53&lt;/a&gt; 动态表配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/58&#34;&gt;ISSUE #58&lt;/a&gt; 柔性事务：最大努力送达型&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
@@ -211,6 +212,7 @@ try (
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/48&#34;&gt;ISSUE #48&lt;/a&gt; yaml文件读取后未关闭&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/57&#34;&gt;ISSUE #57&lt;/a&gt; SQL解析子查询改进&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
@@ -450,7 +452,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -514,7 +516,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -546,7 +548,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -570,7 +572,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -618,7 +620,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -642,7 +644,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -666,7 +668,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -706,7 +708,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -748,7 +750,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -796,7 +798,7 @@ props: 属性配置(可选)
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
 &lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
@@ -1522,7 +1524,7 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;p&gt;&lt;img src=&#34;../../img/architecture-soft-transaction-bed.png&#34; alt=&#34;最大努力送达型事务&#34; /&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;使用场景:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;使用场景&lt;/h2&gt;
+&lt;h2 id=&#34;适用场景:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;适用场景&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;根据主键删除数据。&lt;/li&gt;
@@ -1542,156 +1544,109 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;h2 id=&#34;开发指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发指南&lt;/h2&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Sharding-JDBC-trnasaction&lt;/code&gt;完全基于&lt;code&gt;java&lt;/code&gt;开发，直接提供&lt;code&gt;jar&lt;/code&gt;包，可直接使用maven导入坐标即可使用。&lt;/li&gt;
-&lt;li&gt;由于柔性事务采用异步尝试，需要部署独立的作业和&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;code&gt;Sharding-JDBC-trnasaction&lt;/code&gt;采用&lt;code&gt;elastic-job&lt;/code&gt;实现的&lt;code&gt;Sharding-JDBC-trnasaction-async-job&lt;/code&gt;，通过简单配置即可启动高可用作业异步送达柔性事务。作业可自行打包，并通过&lt;code&gt;main&lt;/code&gt;方法启动。(目前独立作业的配置部分还在开发中)&lt;/li&gt;
-&lt;li&gt;为了便于开发，&lt;code&gt;Sharding-JDBC-trnasaction&lt;/code&gt;提供了内嵌异步作业，配置方法可参见事务管理器工厂配置项。&lt;/li&gt;
-&lt;li&gt;为了保证事务不丢失，&lt;code&gt;Sharding-JDBC-trnasaction&lt;/code&gt;需要提供数据库存储事务日志，配置方法可参见事务管理器工厂配置项。&lt;/li&gt;
-&lt;li&gt;为了便于开发，&lt;code&gt;Sharding-JDBC-trnasaction&lt;/code&gt;提供了基于内存的事务日志存储器，配置方法可参见事务管理器工厂配置项。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;完全基于&lt;code&gt;java&lt;/code&gt;开发，直接提供&lt;code&gt;jar&lt;/code&gt;包，可直接使用maven导入坐标即可使用。&lt;/li&gt;
+&lt;li&gt;为了保证事务不丢失，&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;需要提供数据库存储事务日志，配置方法可参见事务管理器配置项。&lt;/li&gt;
+&lt;li&gt;由于柔性事务采用异步尝试，需要部署独立的作业和&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;采用&lt;code&gt;elastic-job&lt;/code&gt;实现的&lt;code&gt;Sharding-JDBC-transaction-async-job&lt;/code&gt;，通过简单配置即可启动高可用作业异步送达柔性事务，启动脚本为&lt;code&gt;start.sh&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;为了便于开发，&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;提供了基于内存的事务日志存储器和内嵌异步作业。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;开发步骤:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发步骤&lt;/h2&gt;
+&lt;h2 id=&#34;开发示例:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发示例&lt;/h2&gt;
 
-&lt;ol&gt;
-&lt;li&gt;配置&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;
-&lt;code&gt;java
-SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
-transactionConfig.setXXX();
-&lt;/code&gt;&lt;/li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    // 1. 配置SoftTransactionConfiguration
+    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+    
+    // 2. 初始化SoftTransactionManager
+    SoftTransactionManager transactionManager = new SoftTransactionManager(transactionConfig);
+    transactionManager.init();
+    
+    // 3. 获取BEDSoftTransaction
+    BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
+    
+    // 4. 开启事务
+    transaction.begin(connection);
+    
+    // 5. 执行JDBC
+    /* 
+        codes here
+    */
+    * 
+    // 6.关闭事务
+    transaction.end();
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;li&gt;&lt;p&gt;初始化&lt;code&gt;SoftTransactionManagerFactory&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;SoftTransactionManagerFactory transactionManagerFactory = new SoftTransactionManagerFactory(transactionConfig);
-transactionManagerFactory.init();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;获取&lt;code&gt;BEDSoftTransactionManager&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;BEDSoftTransactionManager transactionManager = (BEDSoftTransactionManager) transactionManagerFactory.getTransactionManager(SoftTransactionType.BestEffortsDelivery);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;开启事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.begin(connection);
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;执行&lt;code&gt;JDBC&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;关闭事务&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;transactionManager.end();
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&#34;部署指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;部署指南&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;部署用于存储事务日志的数据库。&lt;/li&gt;
-&lt;li&gt;部署用于异步作业使用的&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;按照正常&lt;code&gt;java&lt;/code&gt;项目发布引用&lt;code&gt;Sharding-JDBC&lt;/code&gt;的&lt;code&gt;jar&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;打包并通过&lt;code&gt;main&lt;/code&gt;方法启动&lt;code&gt;Sharding-JDBC-trnasaction-async-job&lt;/code&gt;。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;事务管理器工厂配置项:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;事务管理器工厂配置项&lt;/h2&gt;
+&lt;h2 id=&#34;事务管理器配置项:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;事务管理器配置项&lt;/h2&gt;
 
 &lt;h3 id=&#34;softtransactionconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;配置&lt;/h3&gt;
+
+&lt;p&gt;用于配置事务管理器。&lt;/p&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th&gt;名称&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
-&lt;th&gt;默认值&lt;/th&gt;
-&lt;th&gt;功能&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;默认值&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 
 &lt;tbody&gt;
 &lt;tr&gt;
+&lt;td&gt;shardingDataSource&lt;/td&gt;
+&lt;td&gt;ShardingDataSource&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;是&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;事务管理器管理的数据源&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
 &lt;td&gt;syncMaxDeliveryTryTimes&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
 &lt;td&gt;3&lt;/td&gt;
 &lt;td&gt;同步的事务送达的最大尝试次数&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td&gt;asyncMaxDeliveryTryTimes&lt;/td&gt;
-&lt;td&gt;int&lt;/td&gt;
-&lt;td&gt;3&lt;/td&gt;
-&lt;td&gt;异步的事务送达的最大尝试次数&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;asyncMaxDeliveryTryDelayMillis&lt;/td&gt;
-&lt;td&gt;long&lt;/td&gt;
-&lt;td&gt;60000&lt;/td&gt;
-&lt;td&gt;执行异步送达事务的延迟毫秒数。早于此间隔时间的入库事务才会被异步作业执行&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
 &lt;td&gt;storageType&lt;/td&gt;
 &lt;td&gt;enum&lt;/td&gt;
-&lt;td&gt;DATABASE&lt;/td&gt;
-&lt;td&gt;事务日志存储类型。可选值: DATABASE, MEMORY。使用DATABASE类型将自动建表&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;RDB&lt;/td&gt;
+&lt;td&gt;事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
 &lt;td&gt;transactionLogDataSource&lt;/td&gt;
 &lt;td&gt;DataSource&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
 &lt;td&gt;null&lt;/td&gt;
-&lt;td&gt;存储事务日志的数据源&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;nestedJob&lt;/td&gt;
-&lt;td&gt;boolean&lt;/td&gt;
-&lt;td&gt;false&lt;/td&gt;
-&lt;td&gt;是否使用内嵌的作业处理异步事务送达&lt;/td&gt;
+&lt;td&gt;存储事务日志的数据源，如果storageType为RDB则必填&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
 &lt;td&gt;bestEffortsDeliveryJobConfiguration&lt;/td&gt;
-&lt;td&gt;AbstractBestEffortsDeliveryJobConfiguration&lt;/td&gt;
+&lt;td&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
 &lt;td&gt;null&lt;/td&gt;
-&lt;td&gt;最大努力送达型异步作业配置对象&lt;/td&gt;
+&lt;td&gt;最大努力送达型内嵌异步作业配置对象。如需使用，请参考&lt;code&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/code&gt;配置&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;h3 id=&#34;besteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;BestEffortsDeliveryJobConfiguration&lt;/code&gt;配置&lt;/h3&gt;
+&lt;h3 id=&#34;nestedbesteffortsdeliveryjobconfiguration-配置-仅开发环境:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/code&gt;配置 (仅开发环境)&lt;/h3&gt;
 
-&lt;p&gt;用于配置异步送达作业。使用&lt;code&gt;elastic-job&lt;/code&gt;实现的高可用弹性作业，可直接用于生产环境。如果&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;的&lt;code&gt;nestedJob&lt;/code&gt;为&lt;code&gt;false&lt;/code&gt;，请使用此对象配置异步作业。&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;名称&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
-&lt;th&gt;默认值&lt;/th&gt;
-&lt;th&gt;功能&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;zookeeperConnectionString&lt;/td&gt;
-&lt;td&gt;String&lt;/td&gt;
-&lt;td&gt;null&lt;/td&gt;
-&lt;td&gt;注册中心的连接地址&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h3 id=&#34;nestedbesteffortsdeliveryjobconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/code&gt;配置&lt;/h3&gt;
-
-&lt;p&gt;用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。如果&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;的&lt;code&gt;nestedJob&lt;/code&gt;为&lt;code&gt;true&lt;/code&gt;，请使用此对象配置异步作业。&lt;/p&gt;
+&lt;p&gt;用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。&lt;/p&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th&gt;名称&lt;/th&gt;
-&lt;th&gt;类型&lt;/th&gt;
-&lt;th&gt;默认值&lt;/th&gt;
-&lt;th&gt;功能&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;默认值&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 
@@ -1699,6 +1654,7 @@ transactionManagerFactory.init();
 &lt;tr&gt;
 &lt;td&gt;zookeeperPort&lt;/td&gt;
 &lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
 &lt;td&gt;4181&lt;/td&gt;
 &lt;td&gt;内嵌的注册中心端口号&lt;/td&gt;
 &lt;/tr&gt;
@@ -1706,11 +1662,95 @@ transactionManagerFactory.init();
 &lt;tr&gt;
 &lt;td&gt;zookeeperDataDir&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
 &lt;td&gt;target/test_zk_data/nano/&lt;/td&gt;
+&lt;td&gt;内嵌的注册中心的数据存放目录&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;asyncMaxDeliveryTryTimes&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
 &lt;td&gt;异步的事务送达的最大尝试次数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;asyncMaxDeliveryTryDelayMillis&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;60000&lt;/td&gt;
+&lt;td&gt;执行异步送达事务的延迟毫秒数，早于此间隔时间的入库事务才会被异步作业执行&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+
+&lt;h2 id=&#34;独立部署作业指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;独立部署作业指南&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;部署用于存储事务日志的数据库。&lt;/li&gt;
+&lt;li&gt;部署用于异步作业使用的&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;yaml&lt;/code&gt;文件,参照示例。&lt;/li&gt;
+&lt;li&gt;下载并解压文件&lt;code&gt;sharding-jdbc-transaction-async-job-$VERSION.tar&lt;/code&gt;，通过&lt;code&gt;start.sh&lt;/code&gt;脚本启动异步作业。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;异步作业yaml文件配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;异步作业yaml文件配置&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;#目标数据库的数据源.
+targetDataSource:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password:
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password:
+
+#事务日志的数据源.
+transactionLogDataSource:
+  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trans_log
+    username: root
+    password:
+
+#注册中心配置
+zkConfig:
+  #注册中心的连接地址
+  connectionString: localhost:2181
+  
+  #作业的命名空间
+  namespace: Best-Efforts-Delivery-Job
+  
+  #注册中心的等待重试的间隔时间的初始值
+  baseSleepTimeMilliseconds: 1000
+  
+  #注册中心的等待重试的间隔时间的最大值
+  maxSleepTimeMilliseconds: 3000
+  
+  #注册中心的最大重试次数
+  maxRetries: 3
+
+#作业配置
+jobConfig:
+  #作业名称
+  name: bestEffortsDeliveryJob
+  
+  #触发作业的cron表达式
+  cron: 0/5 * * * * ?
+  
+  #每次作业获取的事务日志最大数量
+  transactionLogFetchDataCount: 100
+  
+  #事务送达的最大尝试次数.
+  maxDeliveryTryTimes: 3
+  
+  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
+  maxDeliveryTryDelayMillis: 60000
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h1 id=&#34;tcc型:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;TCC型&lt;/h1&gt;
 
