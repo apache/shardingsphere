@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;

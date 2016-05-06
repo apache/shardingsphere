@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import org.junit.After;
 import org.junit.Test;
 

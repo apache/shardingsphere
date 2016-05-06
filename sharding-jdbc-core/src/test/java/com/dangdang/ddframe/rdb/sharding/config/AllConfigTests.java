@@ -15,23 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.props;
+package com.dangdang.ddframe.rdb.sharding.config;
 
-import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-public class ShardingPropertiesConstantTest {
-    
-    @Test
-    public void testFindByKey() {
-        assertThat(ShardingPropertiesConstant.findByKey("metrics.enable"), is(ShardingPropertiesConstant.METRICS_ENABLE));
-    }
-    
-    @Test
-    public void testFindByKeyWhenNotFound() {
-        assertNull(ShardingPropertiesConstant.findByKey("empty"));
-    }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    ShardingPropertiesConstantTest.class, 
+    ShardingPropertiesTest.class
+    })
+public class AllConfigTests {
 }

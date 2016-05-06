@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.dbtbl.common;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 
 import java.util.Arrays;
 import java.util.List;

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.hint;
 
 import java.sql.SQLException;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;

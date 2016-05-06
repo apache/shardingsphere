@@ -37,6 +37,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+    ShardingDataSourceTest.class,
     ShardingStatementTest.class, 
     ShardingPreparedStatementTest.class, 
     UnsupportedOperationDataSourceTest.class, 

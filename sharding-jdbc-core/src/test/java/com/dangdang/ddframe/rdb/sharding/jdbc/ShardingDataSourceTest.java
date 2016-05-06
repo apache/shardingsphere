@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api;
+package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
