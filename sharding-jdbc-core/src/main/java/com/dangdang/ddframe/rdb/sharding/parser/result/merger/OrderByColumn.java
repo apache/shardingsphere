@@ -20,9 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -30,31 +28,27 @@ import lombok.ToString;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
-public final class OrderByColumn implements IndexColumn {
-    
-    private final Optional<String> name;
+@ToString(callSuper = true)
+public final class OrderByColumn extends AbstractSortableColumn implements IndexColumn {
     
     private final Optional<Integer> index;
     
-    private final Optional<String> alias;
-    
-    private final OrderByType orderByType;
-    
     private int columnIndex;
     
-    public OrderByColumn(final String name, final String alias, final OrderByType orderByType) {
-        this(Optional.of(name), Optional.<Integer>absent(), Optional.fromNullable(alias), orderByType);
+    public OrderByColumn(final Optional<String> owner, final String name, final Optional<String> alias, final OrderByType orderByType) {
+        super(owner, Optional.of(name), alias, orderByType);
+        index =  Optional.absent();
     }
     
     public OrderByColumn(final String name, final OrderByType orderByType) {
-        this(Optional.of(name), Optional.<Integer>absent(), Optional.<String>absent(), orderByType);
+        super(Optional.<String>absent(), Optional.of(name), Optional.<String>absent(), orderByType);
+        index =  Optional.absent();
     }
     
     public OrderByColumn(final int index, final OrderByType orderByType) {
-        this(Optional.<String>absent(), Optional.of(index), Optional.<String>absent(), orderByType);
+        super(Optional.<String>absent(), Optional.<String>absent(), Optional.<String>absent(), orderByType);
+        this.index = Optional.of(index);
         columnIndex = index;
     }
     
@@ -68,12 +62,12 @@ public final class OrderByColumn implements IndexColumn {
         
     @Override
     public Optional<String> getColumnLabel() {
-        return alias;
+        return getAlias();
     }
     
     @Override
     public Optional<String> getColumnName() {
-        return name;
+        return getName();
     }
     
     /**
@@ -105,14 +99,14 @@ public final class OrderByColumn implements IndexColumn {
             return false;
         }
         OrderByColumn that = (OrderByColumn) o;
-        return orderByType == that.orderByType && (columnIndex == that.columnIndex 
+        return getOrderByType() == that.getOrderByType() && (columnIndex == that.columnIndex 
                 || index.isPresent() && that.index.isPresent() && index.get().equals(that.index.get())
-                || name.isPresent() && that.name.isPresent() && name.get().equals(that.name.get())
-                || alias.isPresent() && that.alias.isPresent() && alias.get().equals(that.alias.get()));
+                || getName().isPresent() && that.getName().isPresent() && getName().get().equals(that.getName().get())
+                || getAlias().isPresent() && that.getAlias().isPresent() && getAlias().get().equals(that.getAlias().get()));
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(orderByType, columnIndex);
+        return Objects.hashCode(getOrderByType(), columnIndex);
     }
 }
