@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;

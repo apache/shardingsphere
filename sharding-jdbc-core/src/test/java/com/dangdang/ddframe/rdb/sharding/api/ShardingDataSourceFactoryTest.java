@@ -80,6 +80,6 @@ public final class ShardingDataSourceFactoryTest {
         shardingPropertiesField.setAccessible(true);
         Field propsField = shardingPropertiesField.get(dataSource).getClass().getDeclaredField("props");
         propsField.setAccessible(true);
-        return ((Properties) propsField.get(shardingPropertiesField.get(dataSource)));
+        return (Properties) propsField.get(shardingPropertiesField.get(dataSource));
     }
 }

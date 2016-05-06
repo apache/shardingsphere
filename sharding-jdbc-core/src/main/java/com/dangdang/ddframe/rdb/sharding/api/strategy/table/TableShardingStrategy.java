@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
 import java.util.Collection;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
 
 /**
  * 分表策略.

@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
-
-import java.util.Collection;
+package com.dangdang.ddframe.rdb.sharding.router.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+
+import java.util.Collection;
 
 /**
  * 多片键分片法接口.

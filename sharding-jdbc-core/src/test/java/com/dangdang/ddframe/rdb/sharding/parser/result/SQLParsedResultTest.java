@@ -56,7 +56,8 @@ public final class SQLParsedResultTest {
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
                 + "operator=IN, values=[1, 2, 3])})], "
                 + "mergeContext=MergeContext("
-                + "orderByColumns=[OrderByColumn(super=AbstractSortableColumn(owner=Optional.absent(), name=Optional.of(id), alias=Optional.of(a), orderByType=DESC), index=Optional.absent(), columnIndex=0)], "
+                + "orderByColumns=[OrderByColumn(super=AbstractSortableColumn(owner=Optional.absent(), "
+                + "name=Optional.of(id), alias=Optional.of(a), orderByType=DESC), index=Optional.absent(), columnIndex=0)], "
                 + "groupByColumns=[GroupByColumn(super=AbstractSortableColumn(owner=Optional.absent(), name=Optional.of(id), alias=Optional.of(d), orderByType=ASC), columnIndex=0)], "
                 + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], columnIndex=-1)], "
                 + "limit=Limit(offset=0, rowCount=10), executorEngine=null, columnLabelIndexMap=null, currentOrderByKeys=[]))"));

@@ -14,7 +14,7 @@ weight = 1
 
 ### 缺陷修正
 
-1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) order by 与 group by 衍生列bug
+1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) ORDER BY与GROUP BY衍生列未添加表名或表别名
 
 ## 1.2.0
 

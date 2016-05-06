@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
+package com.dangdang.ddframe.rdb.sharding.router.strategy;
 
 /**
  * 分片算法的标识接口.

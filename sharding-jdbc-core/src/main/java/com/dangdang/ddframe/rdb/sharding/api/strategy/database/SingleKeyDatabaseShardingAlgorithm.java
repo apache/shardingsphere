@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
 
 /**
  * 单分片键的分库算法接口.
