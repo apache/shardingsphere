@@ -6,6 +6,16 @@ weight = 1
 
 # Release Notes
 
+## 1.2.1-SNAPSHOT
+
+### 新功能
+
+### 结构调整
+
+### 缺陷修正
+
+1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) order by 与 group by 衍生列bug
+
 ## 1.2.0
 
 ### 新功能
