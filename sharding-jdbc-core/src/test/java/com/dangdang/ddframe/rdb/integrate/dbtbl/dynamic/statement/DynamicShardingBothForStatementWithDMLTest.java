@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.statement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.statement.AbstractShardingBothForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.DynamicShardingBothHelper;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Test;
 

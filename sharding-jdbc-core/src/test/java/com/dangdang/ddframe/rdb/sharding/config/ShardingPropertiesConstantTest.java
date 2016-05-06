@@ -15,13 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.config.spring.repository;
+package com.dangdang.ddframe.rdb.sharding.config;
 
-public interface OrderRepository {
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
+import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
+public class ShardingPropertiesConstantTest {
     
-    void insert();
+    @Test
+    public void testFindByKey() {
+        assertThat(ShardingPropertiesConstant.findByKey("metrics.enable"), is(ShardingPropertiesConstant.METRICS_ENABLE));
+    }
     
-    void delete();
-    
-    void select();
+    @Test
+    public void testFindByKeyWhenNotFound() {
+        assertNull(ShardingPropertiesConstant.findByKey("empty"));
+    }
 }

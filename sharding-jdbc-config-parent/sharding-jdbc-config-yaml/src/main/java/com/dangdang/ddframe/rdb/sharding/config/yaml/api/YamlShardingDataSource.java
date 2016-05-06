@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.YamlConfig;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 

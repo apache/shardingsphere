@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.integrate;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.base.AbstractSoftTransactionIntegrationTest;

@@ -8,9 +8,9 @@ weight = 1
 
 ## 1.2.1-SNAPSHOT
 
-### 新功能
-
 ### 结构调整
+
+1. [ISSUE #60](https://github.com/dangdangdotcom/sharding-jdbc/issues/60) API调整，抽离ShardingDataSource，使用工厂代替
 
 ### 缺陷修正
 

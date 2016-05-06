@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.integrate.tbl.statement;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;

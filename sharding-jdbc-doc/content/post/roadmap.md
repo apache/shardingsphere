@@ -8,18 +8,18 @@ weight = 11
 ## 进行中
 
 ### transaction
-1. sharding-jdbc-core发送SQL执行事件
-1. bed类型事务日志存储设计
-1. bed类型事务同步尝试
-1. 基于elastic-job的bed类型事务异步尝试
-
-## 计划中
+1. sharding-jdbc-core发送SQL执行事件 `(完成)`
+1. bed类型事务日志存储设计 `(完成)`
+1. bed类型事务同步尝试 `(完成)`
+1. 基于elastic-job的bed类型事务异步尝试 `(完成)`
 
 ### config 2.0
-1. 动态表配置
+1. 动态表配置 `(完成)`
 1. 只分库不需要逻辑表和真实表对应配置
 1. 简化只分库配置，无需配置逻辑表和真实表对应关系
 1. 简化只分表配置，可指定默认数据源,简化单库TableRule配置
+
+## 计划中
 
 ### transaction 2.0
 1. 基于tcc的柔性事务
@@ -40,7 +40,7 @@ weight = 11
 1. SQL重写优化，进一步提升性能
 
 ### merger 2.0
-1. 管道化结果归并
+1. 管道化结果归并 `(完成)`
 1. 支持OR语句根据row的唯一标识去重
 1. 支持DISTINCT
 1. 支持GROUP BY聚合之后进行HAVING
@@ -48,8 +48,8 @@ weight = 11
 
 ### router 2.0
 1. 支持通过SQL注释指定SQL Hint
-1. ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定
-1. 释放资源时，自动清理ThreadLocal Hints
+1. ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定 `(完成)`
+1. 释放资源时，自动清理ThreadLocal Hints `(完成)`
 
 ## 待定
 

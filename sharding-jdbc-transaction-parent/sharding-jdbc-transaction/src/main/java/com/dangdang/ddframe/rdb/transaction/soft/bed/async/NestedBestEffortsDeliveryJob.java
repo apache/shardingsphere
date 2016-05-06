@@ -54,10 +54,10 @@ public class NestedBestEffortsDeliveryJob extends AbstractIndividualThroughputDa
     @Override
     public boolean processData(final JobExecutionMultipleShardingContext context, final TransactionLog data) {
         try {
-            return transactionLogStorage.processData(transactionConfig.getTargetDataSource().getConnection().getConnection(data.getDataSource()), 
-                data, transactionConfig.getBestEffortsDeliveryJobConfiguration().get().getAsyncMaxDeliveryTryTimes());
-        } catch (final SQLException e) {
-            throw new ShardingJdbcException(e);
+            return transactionLogStorage.processData(
+                    transactionConfig.getTargetConnection(data.getDataSource()), data, transactionConfig.getBestEffortsDeliveryJobConfiguration().get().getAsyncMaxDeliveryTryTimes());
+        } catch (final SQLException ex) {
+            throw new ShardingJdbcException(ex);
         }
     }
     

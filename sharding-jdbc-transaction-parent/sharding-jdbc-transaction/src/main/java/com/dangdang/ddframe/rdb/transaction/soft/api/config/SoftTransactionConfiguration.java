@@ -17,14 +17,17 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSourceType;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * 柔性事务配置对象.
@@ -39,7 +42,8 @@ public class SoftTransactionConfiguration {
     /**
      * 事务管理器管理的数据源.
      */
-    private final ShardingDataSource targetDataSource;
+    @Getter(AccessLevel.NONE)
+    private final DataSource targetDataSource;
     
     /**
      * 同步的事务送达的最大尝试次数.
@@ -60,4 +64,17 @@ public class SoftTransactionConfiguration {
      * 内嵌的最大努力送达型异步作业配置对象.
      */
     private Optional<NestedBestEffortsDeliveryJobConfiguration> bestEffortsDeliveryJobConfiguration = Optional.absent();
+    
+    /**
+     * 获取事务管理器管理的数据库连接.
+     * 
+     * @param dataSourceName 数据源名称
+     * @return 事务管理器管理的数据库连接
+     */
+    public Connection getTargetConnection(final String dataSourceName) throws SQLException {
+        if (!(targetDataSource instanceof ShardingDataSource)) {
+            return targetDataSource.getConnection();
+        }
+        return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName);
+    }
 }

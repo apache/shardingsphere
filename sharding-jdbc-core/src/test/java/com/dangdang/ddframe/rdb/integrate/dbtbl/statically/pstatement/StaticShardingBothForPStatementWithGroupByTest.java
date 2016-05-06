@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.statically.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement.AbstractShardingBothForPStatementWithGroupByTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.StaticShardingBothHelper;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 
 public final class StaticShardingBothForPStatementWithGroupByTest extends AbstractShardingBothForPStatementWithGroupByTest {
     

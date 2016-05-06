@@ -15,8 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.props;
+package com.dangdang.ddframe.rdb.sharding.config;
 
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import org.junit.Before;
 import org.junit.Test;
 

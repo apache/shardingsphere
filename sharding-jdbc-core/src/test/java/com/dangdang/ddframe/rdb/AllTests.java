@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb;
 
 import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
 import com.dangdang.ddframe.rdb.sharding.api.AllApiTests;
+import com.dangdang.ddframe.rdb.sharding.config.AllConfigTests;
 import com.dangdang.ddframe.rdb.sharding.constants.AllConstantsTests;
 import com.dangdang.ddframe.rdb.sharding.executor.AllExecutorTests;
 import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
@@ -35,7 +36,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
     AllConstantsTests.class, 
-    AllApiTests.class, 
+    AllApiTests.class,
+    AllConfigTests.class, 
     AllParserTests.class, 
     AllRouterTests.class, 
     AllMergerTests.class,

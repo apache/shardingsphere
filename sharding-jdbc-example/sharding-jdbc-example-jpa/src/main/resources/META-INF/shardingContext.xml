@@ -62,7 +62,7 @@
         <constructor-arg index="3" ref="tableShardingStrategy"/>
     </bean>
     
-    <bean id="shardingDataSource" class="com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource">
+    <bean id="shardingDataSource" class="com.dangdang.ddframe.rdb.sharding.api.ShardingDataSourceFactory" factory-method="createDataSource">
         <constructor-arg ref="shardingRule"/>
     </bean>
 </beans>

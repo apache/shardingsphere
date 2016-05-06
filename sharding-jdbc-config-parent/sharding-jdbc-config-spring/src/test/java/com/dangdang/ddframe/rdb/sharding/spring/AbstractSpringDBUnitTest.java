@@ -26,6 +26,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -33,7 +34,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 
 import lombok.Getter;
 

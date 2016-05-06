@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.mysql.jdbc.Statement;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
