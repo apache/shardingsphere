@@ -17,17 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.jaxb;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class GroupByColumn {
+    
+    @XmlAttribute
+    private String owner;
     
     @XmlAttribute
     private String name;

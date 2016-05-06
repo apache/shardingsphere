@@ -105,7 +105,7 @@ public final class MergeContext {
             
             @Override
             public OrderByColumn apply(final GroupByColumn input) {
-                OrderByColumn result = new OrderByColumn(input.getName(), input.getAlias(), input.getOrderByType());
+                OrderByColumn result = new OrderByColumn(input.getOwner(), input.getName().get(), input.getAlias(), input.getOrderByType());
                 result.setColumnIndex(input.getColumnIndex());
                 return result;
             }

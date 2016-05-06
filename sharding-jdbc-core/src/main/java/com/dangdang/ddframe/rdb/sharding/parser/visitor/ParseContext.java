@@ -275,6 +275,10 @@ public final class ParseContext {
         return new AggregationColumn(expression, AggregationType.COUNT, Optional.of(generateDerivedColumnAlias()), avgColumn.getOption());
     }
     
+    private String generateDerivedColumnAlias() {
+        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
+    }
+    
     private AggregationColumn getDerivedSumColumn(final AggregationColumn avgColumn) {
         String expression = avgColumn.getExpression().replaceFirst(AggregationType.AVG.toString(), AggregationType.SUM.toString());
         if (avgColumn.getOption().isPresent()) {
@@ -296,16 +300,20 @@ public final class ParseContext {
     /**
      * 将排序列加入解析上下文.
      * 
+     * @param owner 列拥有者
      * @param name 列名称
      * @param orderByType 排序类型
      */
-    public void addOrderByColumn(final String name, final OrderByType orderByType) {
+    public void addOrderByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
         String rawName = SQLUtil.getExactlyValue(name);
-        String alias = null;
-        if (!containsSelectItem(rawName)) {
-            alias = generateDerivedColumnAlias();
+        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(owner, rawName, getAlias(rawName), orderByType));
+    }
+    
+    private Optional<String> getAlias(final String name) {
+        if (containsSelectItem(name)) {
+            return Optional.absent();
         }
-        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(rawName, alias, orderByType));
+        return Optional.of(generateDerivedColumnAlias());
     }
     
     private boolean containsSelectItem(final String selectItem) {
@@ -315,28 +323,42 @@ public final class ParseContext {
     /**
      * 将分组列加入解析上下文.
      * 
+     * @param owner 列拥有者
      * @param name 列名称
-     * @param alias 列别名
      * @param orderByType 排序类型
      */
-    public void addGroupByColumns(final String name, final String alias, final OrderByType orderByType) {
-        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(SQLUtil.getExactlyValue(name), alias, orderByType));
+    public void addGroupByColumns(final Optional<String> owner, final String name, final OrderByType orderByType) {
+        String rawName = SQLUtil.getExactlyValue(name);
+        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(owner, rawName, getAlias(rawName), orderByType));
     }
     
-    /**
-     * 生成补列别名.
-     * 
-     * @return 补列的别名
-     */
-    public String generateDerivedColumnAlias() {
-        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
-    }
     
     /**
      * 将当前解析的条件对象归并入解析结果.
      */
     public void mergeCurrentConditionContext() {
-        parsedResult.getConditionContexts().add(currentConditionContext);
+        if (!parsedResult.getRouteContext().getTables().isEmpty()) {
+            parsedResult.getConditionContexts().add(currentConditionContext);
+            return;
+        }
+        Optional<SQLParsedResult> target = findValidParseResult();
+        if (!target.isPresent()) {
+            parsedResult.getConditionContexts().add(currentConditionContext);
+            return;
+        }
+        parsedResult.getRouteContext().getTables().addAll(target.get().getRouteContext().getTables());
+        parsedResult.getConditionContexts().addAll(target.get().getConditionContexts());
+    }
+    
+    private Optional<SQLParsedResult> findValidParseResult() {
+        for (ParseContext each : subParseContext) {
+            each.mergeCurrentConditionContext();
+            if (each.getParsedResult().getRouteContext().getTables().isEmpty()) {
+                continue;
+            }
+            return Optional.of(each.getParsedResult()); 
+        }
+        return Optional.absent();
     }
     
     /**

@@ -32,11 +32,10 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AbstractSortableColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -123,9 +122,11 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             if (expr instanceof SQLIntegerExpr) {
                 getParseContext().addOrderByColumn(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
             } else if (expr instanceof SQLIdentifierExpr) {
-                getParseContext().addOrderByColumn(((SQLIdentifierExpr) expr).getName(), orderByType);
+                getParseContext().addOrderByColumn(Optional.<String>absent(), ((SQLIdentifierExpr) expr).getName(), orderByType);
             } else if (expr instanceof SQLPropertyExpr) {
-                getParseContext().addOrderByColumn(((SQLPropertyExpr) expr).getName(), orderByType);
+                SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
+                getParseContext().addOrderByColumn(Optional.of(sqlPropertyExpr.getOwner().toString()), sqlPropertyExpr.getName(), orderByType);
+                
             }
         }
         return super.visit(x);
@@ -140,14 +141,13 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
      */
     @Override
     public boolean visit(final MySqlSelectGroupByExpr x) {
-        String alias = getParseContext().generateDerivedColumnAlias();
         OrderByType orderByType = null == x.getType() ? OrderByType.ASC : OrderByType.valueOf(x.getType());
         if (x.getExpr() instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) x.getExpr();
-            getParseContext().addGroupByColumns(expr.toString(), alias, orderByType);
+            getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getName(), orderByType);
         } else if (x.getExpr() instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
-            getParseContext().addGroupByColumns(expr.getName(), alias, orderByType);
+            getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getName(), orderByType);
         }
         return super.visit(x);
     }
@@ -193,18 +193,25 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
                 derivedSelectItems.append(", ").append(derivedColumn.getExpression()).append(" AS ").append(derivedColumn.getAlias().get());
             }
         }
-        for (GroupByColumn each : getParseContext().getParsedResult().getMergeContext().getGroupByColumns()) {
-            derivedSelectItems.append(", ").append(each.getName()).append(" AS ").append(each.getAlias());
-        }
-        for (OrderByColumn each : getParseContext().getParsedResult().getMergeContext().getOrderByColumns()) {
-            if (each.getAlias().isPresent()) {
-                derivedSelectItems.append(", ").append(each.getName().get()).append(" AS ").append(each.getAlias().get());
-            }
-        }
+        appendSortableColumn(derivedSelectItems, getParseContext().getParsedResult().getMergeContext().getGroupByColumns());
+        appendSortableColumn(derivedSelectItems, getParseContext().getParsedResult().getMergeContext().getOrderByColumns());
         if (0 != derivedSelectItems.length()) {
             getSQLBuilder().buildSQL(getParseContext().getAutoGenTokenKey(), derivedSelectItems.toString());
         }
         super.endVisit(x);
         stepOutQuery();
+    }
+    
+    private void appendSortableColumn(final StringBuilder derivedSelectItems, final List<? extends AbstractSortableColumn> sortableColumns) {
+        for (AbstractSortableColumn each : sortableColumns) {
+            if (!each.getAlias().isPresent()) {
+                continue;
+            }
+            derivedSelectItems.append(", ");
+            if (each.getOwner().isPresent()) {
+                derivedSelectItems.append(each.getOwner().get()).append(".");
+            }
+            derivedSelectItems.append(each.getName().get()).append(" AS ").append(each.getAlias().get());
+        }
     }
 }

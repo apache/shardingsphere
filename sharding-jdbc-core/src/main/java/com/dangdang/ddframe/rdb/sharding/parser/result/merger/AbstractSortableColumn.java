@@ -17,35 +17,26 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 分组列对象.
+ * 可排序列.
  * 
- * @author zhangliang
+ * @author gaohongtao.
  */
+@ToString
 @Getter
-@ToString(callSuper = true)
-public final class GroupByColumn extends AbstractSortableColumn implements IndexColumn {
+@RequiredArgsConstructor
+public abstract class AbstractSortableColumn {
     
-    @Setter
-    private int columnIndex;
+    private final Optional<String> owner;
     
-    public GroupByColumn(final Optional<String> owner, final String name, final Optional<String> alias, final OrderByType orderByType) {
-        super(owner, Optional.of(name), alias, orderByType);
-    }
+    private final Optional<String> name;
     
-    @Override
-    public Optional<String> getColumnLabel() {
-        return getAlias();
-    }
+    private final Optional<String> alias;
     
-    @Override
-    public Optional<String> getColumnName() {
-        return getName();
-    }
+    private final OrderByColumn.OrderByType orderByType;
 }
