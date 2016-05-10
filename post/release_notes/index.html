@@ -110,6 +110,26 @@ body {
 
 <h1 id="release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</h1>
 
+<h2 id="1-2-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1-SNAPSHOT</h2>
+
+<h3 id="结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/60">ISSUE #60</a> API调整，抽离ShardingDataSource，使用工厂代替</li>
+</ol>
+
+<h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/66">ISSUE #66</a> 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持</li>
+</ol>
+
+<h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/63">ISSUE #63</a> ORDER BY与GROUP BY衍生列未添加表名或表别名</li>
+</ol>
+
 <h2 id="1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</h2>
 
 <h3 id="新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</h3>
@@ -119,14 +139,14 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/58">ISSUE #58</a> 柔性事务：最大努力送达型初始版本</li>
 </ol>
 
-<h3 id="结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</h3>
+<h3 id="结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/49">ISSUE #49</a> 调整属性配置</li>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/51">ISSUE #51</a> 重构Hint接口</li>
 </ol>
 
-<h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/43">ISSUE #43</a> yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析</li>
@@ -144,7 +164,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/42">ISSUE #42</a> 支持inline表达式配置</li>
 </ol>
 
-<h3 id="缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/25">ISSUE #25</a> OR表达式下会出现重复结果问题</li>
@@ -152,13 +172,13 @@ body {
 
 <h2 id="1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</h2>
 
-<h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+<h3 id="功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/39">ISSUE #39</a> 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能</li>
 </ol>
 
-<h3 id="缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/11">ISSUE #11</a> count函数在某些情况下返回不正确</li>
@@ -181,21 +201,27 @@ body {
 <ul>
 <li><a href="#release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</a>
 <ul>
+<li><a href="#1-2-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1-SNAPSHOT</a>
+<ul>
+<li><a href="#结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
+<li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
 <li><a href="#1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</a>
 <ul>
 <li><a href="#新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
-<li><a href="#结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
-<li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
+<li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.1.0</a>
 <ul>
 <li><a href="#新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
-<li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</a>
 <ul>
-<li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</a></li>
 </ul></li>

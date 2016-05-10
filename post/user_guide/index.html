@@ -501,9 +501,9 @@ public Collection&lt;String&gt; doSharding(final Collection&lt;String&gt; availa
 
 <h2 id="构造shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2">构造ShardingDataSource</h2>
 
-<p>完成规则配置后，我们就可以得到<code>ShardingDataSource</code></p>
+<p>完成规则配置后，我们可以通过<code>ShardingDataSourceFactory</code>工厂得到<code>ShardingDataSource</code></p>
 
-<pre><code class="language-java">new ShardingDataSource(shardingRule);
+<pre><code class="language-java">DataSource dataSource = new ShardingDataSourceFactory.createDataSource(shardingRule);
 </code></pre>
 
 <h2 id="使用shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2">使用ShardingDataSource</h2>

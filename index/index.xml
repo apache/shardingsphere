@@ -159,10 +159,10 @@
 
 &lt;h2 id=&#34;使用基于shardingdatasource的jdbc接口:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;使用基于ShardingDataSource的JDBC接口&lt;/h2&gt;
 
-&lt;p&gt;通过规则配置对象获取&lt;code&gt;ShardingDataSource&lt;/code&gt;，&lt;code&gt;ShardingDataSource&lt;/code&gt;实现自&lt;code&gt;JDBC&lt;/code&gt;的标准接口&lt;code&gt;DataSource&lt;/code&gt;。然后可通过&lt;code&gt;DataSource&lt;/code&gt;选择使用原生&lt;code&gt;JDBC&lt;/code&gt;开发，或者使用&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;MyBatis&lt;/code&gt;等&lt;code&gt;ORM&lt;/code&gt;工具。
+&lt;p&gt;通过&lt;code&gt;ShardingDataSourceFactory&lt;/code&gt;工厂和规则配置对象获取&lt;code&gt;ShardingDataSource&lt;/code&gt;，&lt;code&gt;ShardingDataSource&lt;/code&gt;实现自&lt;code&gt;JDBC&lt;/code&gt;的标准接口&lt;code&gt;DataSource&lt;/code&gt;。然后可通过&lt;code&gt;DataSource&lt;/code&gt;选择使用原生&lt;code&gt;JDBC&lt;/code&gt;开发，或者使用&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;MyBatis&lt;/code&gt;等&lt;code&gt;ORM&lt;/code&gt;工具。
 以&lt;code&gt;JDBC&lt;/code&gt;原生实现为例：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = new ShardingDataSource(shardingRule);
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 String sql = &amp;quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&amp;quot;;
 try (
         Connection conn = dataSource.getConnection();

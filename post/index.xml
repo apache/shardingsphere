@@ -19,6 +19,26 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
+&lt;h2 id=&#34;1-2-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.1-SNAPSHOT&lt;/h2&gt;
+
+&lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/60&#34;&gt;ISSUE #60&lt;/a&gt; API调整，抽离ShardingDataSource，使用工厂代替&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/66&#34;&gt;ISSUE #66&lt;/a&gt; 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/63&#34;&gt;ISSUE #63&lt;/a&gt; ORDER BY与GROUP BY衍生列未添加表名或表别名&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
 
 &lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
@@ -28,14 +48,14 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/58&#34;&gt;ISSUE #58&lt;/a&gt; 柔性事务：最大努力送达型初始版本&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
+&lt;h3 id=&#34;结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/49&#34;&gt;ISSUE #49&lt;/a&gt; 调整属性配置&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/51&#34;&gt;ISSUE #51&lt;/a&gt; 重构Hint接口&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
@@ -53,7 +73,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/42&#34;&gt;ISSUE #42&lt;/a&gt; 支持inline表达式配置&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
@@ -61,13 +81,13 @@
 
 &lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
 
-&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
@@ -1173,9 +1193,9 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;h2 id=&#34;构造shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;构造ShardingDataSource&lt;/h2&gt;
 
-&lt;p&gt;完成规则配置后，我们就可以得到&lt;code&gt;ShardingDataSource&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;完成规则配置后，我们可以通过&lt;code&gt;ShardingDataSourceFactory&lt;/code&gt;工厂得到&lt;code&gt;ShardingDataSource&lt;/code&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;new ShardingDataSource(shardingRule);
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = new ShardingDataSourceFactory.createDataSource(shardingRule);
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;使用shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;使用ShardingDataSource&lt;/h2&gt;
@@ -1230,10 +1250,17 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;li&gt;支持多表结果归并&lt;/li&gt;
 &lt;li&gt;支持聚合查询结果归并&lt;/li&gt;
 &lt;li&gt;支持&lt;code&gt;AVG&lt;/code&gt;函数改写为&lt;code&gt;SUM/COUNT&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;支持&lt;code&gt;Order By&lt;/code&gt;结果归并&lt;/li&gt;
-&lt;li&gt;支持&lt;code&gt;Group By&lt;/code&gt;结果归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;ORDER BY&lt;/code&gt;结果归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;GROUP BY&lt;/code&gt;结果归并&lt;/li&gt;
 &lt;li&gt;支持&lt;code&gt;LIMIT&lt;/code&gt;分页查询以及多库表结果改写及归并&lt;/li&gt;
 &lt;li&gt;支持&lt;code&gt;OR&lt;/code&gt;查询&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;柔性事务:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;柔性事务&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;最大努力送达型&lt;/li&gt;
+&lt;li&gt;TCC型(待开源)&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;易用性:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;易用性&lt;/h2&gt;
@@ -1247,9 +1274,13 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 
 &lt;p&gt;1.3. 多数据库支持(目前仅&lt;code&gt;MySQL&lt;/code&gt;，未来计划支持&lt;code&gt;Oracle&lt;/code&gt;，&lt;code&gt;SQLServer&lt;/code&gt;和&lt;code&gt;DB2&lt;/code&gt;)&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;&lt;code&gt;Spring&lt;/code&gt;命名空间支持（待开源）&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;配置简化&lt;/p&gt;
 
-&lt;li&gt;&lt;p&gt;基于动态语言的分片策略配置（待开源）&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;2.1. &lt;code&gt;Spring&lt;/code&gt;命名空间支持&lt;/p&gt;
+
+&lt;p&gt;2.2. &lt;code&gt;Yaml&lt;/code&gt;命名空间支持&lt;/p&gt;
+
+&lt;p&gt;2.3. 基于动态语言的分片策略配置&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;&lt;code&gt;Metrics&lt;/code&gt;统计监控&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -1259,12 +1290,12 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;ol&gt;
 &lt;li&gt;基于&lt;code&gt;Druid&lt;/code&gt;的高性能&lt;code&gt;SQL&lt;/code&gt;解析&lt;/li&gt;
 &lt;li&gt;多线程处理结果归并&lt;/li&gt;
-&lt;li&gt;性能损失率不足&lt;code&gt;10%&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;性能损失率约&lt;code&gt;0.02%&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;稳定性:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;稳定性&lt;/h2&gt;
 
-&lt;p&gt;完善的疲劳测试，普通查询无&lt;code&gt;Full GC&lt;/code&gt;（&lt;code&gt;Group By&lt;/code&gt;除外）&lt;/p&gt;
+&lt;p&gt;完善的疲劳测试，普通查询无&lt;code&gt;Full GC&lt;/code&gt;（&lt;code&gt;GROUP BY&lt;/code&gt;除外）&lt;/p&gt;
 </description>
     </item>
     
@@ -1596,25 +1627,25 @@ jobConfig:
 
 &lt;h1 id=&#34;目录结构说明:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;目录结构说明&lt;/h1&gt;
 
-&lt;h2 id=&#34;sharding-jdbc-core:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-core&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;分库分表核心模块。&lt;/p&gt;
-
-&lt;h2 id=&#34;sharding-jdbc-spring-待开源:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-spring（待开源）&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;对&lt;code&gt;spring&lt;/code&gt;支持的模块，包括命名空间等。&lt;/p&gt;
-
-&lt;h2 id=&#34;sharding-jdbc-config-待开源:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-config（待开源）&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;sharding-jdbc&lt;/code&gt;动态分片规则配置模块。&lt;/p&gt;
-
-&lt;h2 id=&#34;sharding-jdbc-example:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-example&lt;/h2&gt;
-
-&lt;p&gt;使用示例。有&lt;code&gt;sharding-jdbc-example-jdbc&lt;/code&gt;,&lt;code&gt;sharding-jdbc-example-jpa&lt;/code&gt;和&lt;code&gt;sharding-jdbc-example-mybatis&lt;/code&gt;3个子项目。&lt;/p&gt;
-
-&lt;h2 id=&#34;sharding-jdbc-doc:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;sharding-jdbc-doc&lt;/h2&gt;
-
-&lt;p&gt;使用&lt;code&gt;markdown&lt;/code&gt;生成文档的项目，使用方无需关注。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sharding-jdbc
+    ├──sharding-jdbc-core                               分库分表核心模块，可直接使用
+    ├──sharding-jdbc-config-parent                      配置父模块，不应直接使用
+    ├      ├──sharding-jdbc-config-common               配置公共模块，不应直接使用
+    ├      ├──sharding-jdbc-config-spring               Spring命名空间支持模块，可直接使用
+    ├      ├──sharding-jdbc-config-yaml                 Yaml配置，可直接使用
+    ├──sharding-jdbc-transaction-parent                 柔性事务父模块，不应直接使用
+    ├      ├──sharding-jdbc-transaction                 柔性事务核心模块，可直接使用
+    ├      ├──sharding-jdbc-transaction-storage         柔性事务存储模块，不应直接使用
+    ├      ├──sharding-jdbc-transaction-async-job       柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可
+    ├──sharding-jdbc-example                            使用示例
+    ├      ├──sharding-jdbc-example-jdbc                基于JDBC的使用示例
+    ├      ├──sharding-jdbc-example-jpa                 基于JPA的使用示例
+    ├      ├──sharding-jdbc-example-mybatis             基于MyBatis的使用示例
+    ├      ├──sharding-jdbc-example-config-spring       基于Spring命名空间配置的使用示例
+    ├      ├──sharding-jdbc-example-config-yaml         基于Yaml配置的使用示例
+    ├      ├──sharding-jdbc-example-jdbc-transaction    柔性事务的使用示例
+    ├──sharding-jdbc-doc                                markdown生成文档的项目，使用方无需关注
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
@@ -2080,22 +2111,22 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;h3 id=&#34;transaction:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;sharding-jdbc-core发送SQL执行事件&lt;/li&gt;
-&lt;li&gt;bed类型事务日志存储设计&lt;/li&gt;
-&lt;li&gt;bed类型事务同步尝试&lt;/li&gt;
-&lt;li&gt;基于elastic-job的bed类型事务异步尝试&lt;/li&gt;
+&lt;li&gt;sharding-jdbc-core发送SQL执行事件 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;bed类型事务日志存储设计 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;bed类型事务同步尝试 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;基于elastic-job的bed类型事务异步尝试 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
-&lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
 
 &lt;h3 id=&#34;config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;config 2.0&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;动态表配置&lt;/li&gt;
+&lt;li&gt;动态表配置 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;只分库不需要逻辑表和真实表对应配置&lt;/li&gt;
 &lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
 &lt;li&gt;简化只分表配置，可指定默认数据源,简化单库TableRule配置&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
 
 &lt;h3 id=&#34;transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction 2.0&lt;/h3&gt;
 
@@ -2127,7 +2158,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;h3 id=&#34;merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;merger 2.0&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;管道化结果归并&lt;/li&gt;
+&lt;li&gt;管道化结果归并 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;支持OR语句根据row的唯一标识去重&lt;/li&gt;
 &lt;li&gt;支持DISTINCT&lt;/li&gt;
 &lt;li&gt;支持GROUP BY聚合之后进行HAVING&lt;/li&gt;
@@ -2138,8 +2169,8 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;ol&gt;
 &lt;li&gt;支持通过SQL注释指定SQL Hint&lt;/li&gt;
-&lt;li&gt;ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定&lt;/li&gt;
-&lt;li&gt;释放资源时，自动清理ThreadLocal Hints&lt;/li&gt;
+&lt;li&gt;ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;释放资源时，自动清理ThreadLocal Hints &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;待定:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;待定&lt;/h2&gt;
@@ -2244,9 +2275,11 @@ try (
 
 &lt;h1 id=&#34;事务支持说明:2e47673b0e2fecf4f97d6b00d496cdc9&#34;&gt;事务支持说明&lt;/h1&gt;
 
-&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;目前不支持分布式事务。我们已明确规划roadmap，在未来的一两个版本中会支持最终一致性的柔性事务。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;由于性能方面的考量，决定不支持&lt;code&gt;强一致性&lt;/code&gt;分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。&lt;/p&gt;
 
-&lt;p&gt;基于目前状况的事务，有以下几点说明：&lt;/p&gt;
+&lt;p&gt;目前&lt;code&gt;最大努力送达型&lt;/code&gt;柔性事务已开发完成。&lt;/p&gt;
+
+&lt;p&gt;如果不使用柔性事务，也会自动包含&lt;code&gt;弱XA&lt;/code&gt;事务支持，有以下几点说明：&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。&lt;/p&gt;&lt;/li&gt;

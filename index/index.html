@@ -251,10 +251,10 @@ body {
 
 <h2 id="使用基于shardingdatasource的jdbc接口:d680e8a854a7cbad6d490c445cba2eba">使用基于ShardingDataSource的JDBC接口</h2>
 
-<p>通过规则配置对象获取<code>ShardingDataSource</code>，<code>ShardingDataSource</code>实现自<code>JDBC</code>的标准接口<code>DataSource</code>。然后可通过<code>DataSource</code>选择使用原生<code>JDBC</code>开发，或者使用<code>JPA</code>, <code>MyBatis</code>等<code>ORM</code>工具。
+<p>通过<code>ShardingDataSourceFactory</code>工厂和规则配置对象获取<code>ShardingDataSource</code>，<code>ShardingDataSource</code>实现自<code>JDBC</code>的标准接口<code>DataSource</code>。然后可通过<code>DataSource</code>选择使用原生<code>JDBC</code>开发，或者使用<code>JPA</code>, <code>MyBatis</code>等<code>ORM</code>工具。
 以<code>JDBC</code>原生实现为例：</p>
 
-<pre><code class="language-java">DataSource dataSource = new ShardingDataSource(shardingRule);
+<pre><code class="language-java">DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 String sql = &quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&quot;;
 try (
         Connection conn = dataSource.getConnection();

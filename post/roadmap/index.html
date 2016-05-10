@@ -115,22 +115,22 @@ body {
 <h3 id="transaction:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction</h3>
 
 <ol>
-<li>sharding-jdbc-core发送SQL执行事件</li>
-<li>bed类型事务日志存储设计</li>
-<li>bed类型事务同步尝试</li>
-<li>基于elastic-job的bed类型事务异步尝试</li>
+<li>sharding-jdbc-core发送SQL执行事件 <code>(完成)</code></li>
+<li>bed类型事务日志存储设计 <code>(完成)</code></li>
+<li>bed类型事务同步尝试 <code>(完成)</code></li>
+<li>基于elastic-job的bed类型事务异步尝试 <code>(完成)</code></li>
 </ol>
-
-<h2 id="计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</h2>
 
 <h3 id="config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</h3>
 
 <ol>
-<li>动态表配置</li>
+<li>动态表配置 <code>(完成)</code></li>
 <li>只分库不需要逻辑表和真实表对应配置</li>
 <li>简化只分库配置，无需配置逻辑表和真实表对应关系</li>
 <li>简化只分表配置，可指定默认数据源,简化单库TableRule配置</li>
 </ol>
+
+<h2 id="计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</h2>
 
 <h3 id="transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction 2.0</h3>
 
@@ -162,7 +162,7 @@ body {
 <h3 id="merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">merger 2.0</h3>
 
 <ol>
-<li>管道化结果归并</li>
+<li>管道化结果归并 <code>(完成)</code></li>
 <li>支持OR语句根据row的唯一标识去重</li>
 <li>支持DISTINCT</li>
 <li>支持GROUP BY聚合之后进行HAVING</li>
@@ -173,8 +173,8 @@ body {
 
 <ol>
 <li>支持通过SQL注释指定SQL Hint</li>
-<li>ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定</li>
-<li>释放资源时，自动清理ThreadLocal Hints</li>
+<li>ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定 <code>(完成)</code></li>
+<li>释放资源时，自动清理ThreadLocal Hints <code>(完成)</code></li>
 </ol>
 
 <h2 id="待定:cd4a1b36ed2b93cfc52abf77a7d25d03">待定</h2>
@@ -199,10 +199,10 @@ body {
 <li><a href="#进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</a>
 <ul>
 <li><a href="#transaction:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction</a></li>
+<li><a href="#config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</a></li>
 </ul></li>
 <li><a href="#计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</a>
 <ul>
-<li><a href="#config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</a></li>
 <li><a href="#transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction 2.0</a></li>
 <li><a href="#distribution-id:cd4a1b36ed2b93cfc52abf77a7d25d03">distribution id</a></li>
 <li><a href="#parser-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">parser 2.0</a></li>
