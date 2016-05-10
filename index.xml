@@ -209,6 +209,7 @@ try (
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/63&#34;&gt;ISSUE #63&lt;/a&gt; ORDER BY与GROUP BY衍生列未添加表名或表别名&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/65&#34;&gt;ISSUE #65&lt;/a&gt; 解析条件上下文性能提升&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
