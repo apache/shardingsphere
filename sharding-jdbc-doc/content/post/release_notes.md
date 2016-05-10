@@ -12,6 +12,10 @@ weight = 1
 
 1. [ISSUE #60](https://github.com/dangdangdotcom/sharding-jdbc/issues/60) API调整，抽离ShardingDataSource，使用工厂代替
 
+### 功能提升
+
+1. [ISSUE #66](https://github.com/dangdangdotcom/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
+
 ### 缺陷修正
 
 1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) ORDER BY与GROUP BY衍生列未添加表名或表别名

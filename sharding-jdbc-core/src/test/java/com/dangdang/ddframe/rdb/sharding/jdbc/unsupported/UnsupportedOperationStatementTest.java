@@ -17,17 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
-
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 
 public final class UnsupportedOperationStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -48,36 +47,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingDat
     public void close() throws SQLException {
         actual.close();
         shardingConnection.close();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetMaxFieldSize() throws SQLException {
-        actual.getMaxFieldSize();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetMaxFieldSize() throws SQLException {
-        actual.setMaxFieldSize(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetMaxRows() throws SQLException {
-        actual.getMaxRows();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetMaxRows() throws SQLException {
-        actual.setMaxRows(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetQueryTimeout() throws SQLException {
-        actual.getQueryTimeout();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetQueryTimeout() throws SQLException {
-        actual.setQueryTimeout(0);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

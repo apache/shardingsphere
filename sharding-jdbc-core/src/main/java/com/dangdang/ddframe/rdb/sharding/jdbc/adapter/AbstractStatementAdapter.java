@@ -149,6 +149,55 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         return false;
     }
     
+    @Override
+    public final int getMaxFieldSize() throws SQLException {
+        return getRoutedStatements().isEmpty() ? 0 : getRoutedStatements().iterator().next().getMaxFieldSize();
+    }
+    
+    @Override
+    public final void setMaxFieldSize(final int max) throws SQLException {
+        if (getRoutedStatements().isEmpty()) {
+            recordMethodInvocation(recordTargetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
+            return;
+        }
+        for (Statement each : getRoutedStatements()) {
+            each.setMaxFieldSize(max);
+        }
+    }
+    
+    // TODO 未来需要确认MaxRows是否在多数据库情况下需要特殊处理,以满足校验需要. 如: 10个statement可能需要将MaxRows / 10
+    @Override
+    public final int getMaxRows() throws SQLException {
+        return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
+    }
+    
+    @Override
+    public final void setMaxRows(final int max) throws SQLException {
+        if (getRoutedStatements().isEmpty()) {
+            recordMethodInvocation(recordTargetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
+            return;
+        }
+        for (Statement each : getRoutedStatements()) {
+            each.setMaxRows(max);
+        }
+    }
+    
+    @Override
+    public final int getQueryTimeout() throws SQLException {
+        return getRoutedStatements().isEmpty() ? 0 : getRoutedStatements().iterator().next().getQueryTimeout();
+    }
+    
+    @Override
+    public final void setQueryTimeout(final int seconds) throws SQLException {
+        if (getRoutedStatements().isEmpty()) {
+            recordMethodInvocation(recordTargetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
+            return;
+        }
+        for (Statement each : getRoutedStatements()) {
+            each.setQueryTimeout(seconds);
+        }
+    }
+    
     /**
      * 获取路由的静态语句对象集合.
      * 

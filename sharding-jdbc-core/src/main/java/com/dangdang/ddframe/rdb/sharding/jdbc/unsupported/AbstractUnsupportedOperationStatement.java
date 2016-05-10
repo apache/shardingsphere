@@ -32,36 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
     
     @Override
-    public final int getMaxFieldSize() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getMaxFieldSize");
-    }
-    
-    @Override
-    public final void setMaxFieldSize(final int max) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setMaxFieldSize");
-    }
-    
-    @Override
-    public final int getMaxRows() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getMaxRows");
-    }
-    
-    @Override
-    public final void setMaxRows(final int max) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setMaxRows");
-    }
-    
-    @Override
-    public final int getQueryTimeout() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getQueryTimeout");
-    }
-    
-    @Override
-    public final void setQueryTimeout(final int seconds) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setQueryTimeout");
-    }
-    
-    @Override
     public final int getFetchDirection() throws SQLException {
         throw new SQLFeatureNotSupportedException("getFetchDirection");
     }

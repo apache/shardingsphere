@@ -17,6 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
+import lombok.Getter;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -32,10 +36,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import lombok.Getter;
 
 /**
  * 预编译语句对象的适配类.
