@@ -48,6 +48,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
         shardingConnection = shardingDataSource.getConnection();
+        shardingConnection.setReadOnly(false);
         actual = shardingConnection.createStatement();
     }
     

@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class AbstractRowSetResultSetAdapterTest {
+public final class RowSetResultSetAdapterTest {
     
     private final Object input;
     

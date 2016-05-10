@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapterTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.RowSetResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
@@ -54,7 +54,7 @@ import org.junit.runners.Suite;
     ResultSetGetterAdapterTest.class, 
     ResultSetAdapterTest.class, 
     JdbcMethodInvocationTest.class, 
-    AbstractRowSetResultSetAdapterTest.class
+    RowSetResultSetAdapterTest.class
     })
 public class AllJDBCTests {
 }
