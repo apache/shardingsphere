@@ -133,7 +133,7 @@ public final class ParseContext {
      */
     public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final DatabaseType databaseType, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
-        if (!column.isPresent()) {
+        if (!column.isPresent() || !shardingColumns.contains(column.get().getColumnName())) {
             return;
         }
         List<Comparable<?>> values = new ArrayList<>(valueExprList.size());
@@ -160,16 +160,17 @@ public final class ParseContext {
      * @param parameters 通过占位符传进来的参数
      */
     public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> parameters) {
+        Column column = createColumn(columnName, tableName);
+        if (!shardingColumns.contains(column.getColumnName())) {
+            return;
+        }
         Comparable<?> value = evalExpression(databaseType, valueExpr, parameters);
         if (null != value) {
-            addCondition(createColumn(columnName, tableName), operator, Collections.<Comparable<?>>singletonList(value));
+            addCondition(column, operator, Collections.<Comparable<?>>singletonList(value));
         }
     }
     
     private void addCondition(final Column column, final BinaryOperator operator, final List<Comparable<?>> values) {
-        if (!shardingColumns.contains(column.getColumnName())) {
-            return;
-        }
         Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
