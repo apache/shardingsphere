@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.api;
 
+import com.dangdang.ddframe.rdb.sharding.executor.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -42,11 +43,11 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public final class SoftTransactionManager {
-    
-    private static ThreadLocal<AbstractSoftTransaction> currentTransaction = new ThreadLocal<>();
-    
-    private static ThreadLocal<SoftTransactionConfiguration> currentTransactionConfig = new ThreadLocal<>();
-    
+
+    private static final String TRANSACTION = "transaction";
+
+    private static final String TRANSACTION_CONFIG = "transactionConfig";
+
     @Getter
     private final SoftTransactionConfiguration transactionConfig;
     
@@ -103,8 +104,8 @@ public final class SoftTransactionManager {
         if (getCurrentTransaction().isPresent()) {
             throw new UnsupportedOperationException("Cannot support nested transaction.");
         }
-        currentTransaction.set(result);
-        currentTransactionConfig.set(transactionConfig);
+        ExecutorDataMap.getDataMap().put(TRANSACTION, result);
+        ExecutorDataMap.getDataMap().put(TRANSACTION_CONFIG, transactionConfig);
         return result;
     }
     
@@ -114,7 +115,10 @@ public final class SoftTransactionManager {
      * @return 当前线程的柔性事务配置
      */
     public static Optional<SoftTransactionConfiguration> getCurrentTransactionConfiguration() {
-        return Optional.fromNullable(currentTransactionConfig.get());
+        Object transactionConfig = ExecutorDataMap.getDataMap().get(TRANSACTION_CONFIG);
+        return (transactionConfig == null)
+                ? Optional.<SoftTransactionConfiguration>absent()
+                : Optional.of((SoftTransactionConfiguration) transactionConfig);
     }
     
     /**
@@ -123,14 +127,17 @@ public final class SoftTransactionManager {
      * @return 当前的柔性事务
      */
     public static Optional<AbstractSoftTransaction> getCurrentTransaction() {
-        return Optional.fromNullable(currentTransaction.get());
+        Object transaction = ExecutorDataMap.getDataMap().get(TRANSACTION);
+        return (transaction == null)
+                ? Optional.<AbstractSoftTransaction>absent()
+                : Optional.of((AbstractSoftTransaction) transaction);
     }
     
     /**
      * 关闭当前的柔性事务管理器.
      */
-    public static void closeCurrentTransactionManager() {
-        currentTransaction.remove();
-        currentTransactionConfig.remove();
+    static void closeCurrentTransactionManager() {
+        ExecutorDataMap.getDataMap().put(TRANSACTION, null);
+        ExecutorDataMap.getDataMap().put(TRANSACTION_CONFIG, null);
     }
 }

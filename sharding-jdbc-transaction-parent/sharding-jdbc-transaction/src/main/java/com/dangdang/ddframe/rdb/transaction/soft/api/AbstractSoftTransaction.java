@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * 柔性事务管理器抽象类.
+ * 柔性事务抽象类.
  * 
  * @author zhangliang 
  */

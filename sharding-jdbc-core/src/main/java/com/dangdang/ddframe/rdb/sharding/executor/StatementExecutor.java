@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 多线程执行静态语句对象请求的执行器.
@@ -132,15 +133,16 @@ public final class StatementExecutor {
         Context context = MetricsContext.start("ShardingStatement-executeUpdate");
         postDMLExecutionEvents();
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         int result;
         if (1 == statementExecutorWrappers.size()) {
-            return executeUpdateInternal(updater, statementExecutorWrappers.iterator().next(), isExceptionThrown, Optional.fromNullable(context));
+            return executeUpdateInternal(updater, statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Integer>() {
         
             @Override
             public Integer execute(final StatementExecutorWrapper input) throws Exception {
-                return executeUpdateInternal(updater, input, isExceptionThrown, Optional.<Context>absent());
+                return executeUpdateInternal(updater, input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         }, new MergeUnit<Integer, Integer>() {
         
@@ -160,9 +162,11 @@ public final class StatementExecutor {
         return result;
     }
     
-    private int executeUpdateInternal(final Updater updater, final StatementExecutorWrapper statementExecutorWrapper, final boolean isExceptionThrown, final Optional<Context> context) {
+    private int executeUpdateInternal(final Updater updater, final StatementExecutorWrapper statementExecutorWrapper,
+                                      final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
         try {
             result = updater.executeUpdate(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
         } catch (final SQLException ex) {
@@ -228,23 +232,26 @@ public final class StatementExecutor {
         Context context = MetricsContext.start("ShardingStatement-execute");
         postDMLExecutionEvents();
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         if (1 == statementExecutorWrappers.size()) {
-            return executeInternal(executor, statementExecutorWrappers.iterator().next(), isExceptionThrown, Optional.fromNullable(context));
+            return executeInternal(executor, statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         List<Boolean> result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Boolean>() {
         
             @Override
             public Boolean execute(final StatementExecutorWrapper input) throws Exception {
-                return executeInternal(executor, input, isExceptionThrown, Optional.<Context>absent());
+                return executeInternal(executor, input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         });
         MetricsContext.stop(context);
         return null == result ? false : result.get(0);
     }
     
-    private boolean executeInternal(final Executor executor, final StatementExecutorWrapper statementExecutorWrapper, final boolean isExceptionThrown, final Optional<Context> context) {
+    private boolean executeInternal(final Executor executor, final StatementExecutorWrapper statementExecutorWrapper,
+                                    final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
         try {
             result = executor.execute(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
         } catch (final SQLException ex) {

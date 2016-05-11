@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 多线程执行预编译语句对象请求的执行器.
@@ -80,14 +81,15 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         postDMLExecutionEvents();
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         if (1 == preparedStatementExecutorWrappers.size()) {
-            return executeUpdateInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, Optional.fromNullable(context));
+            return executeUpdateInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         int result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Integer>() {
             
             @Override
             public Integer execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                return executeUpdateInternal(input, isExceptionThrown, Optional.<Context>absent());
+                return executeUpdateInternal(input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         }, new MergeUnit<Integer, Integer>() {
             
@@ -107,9 +109,11 @@ public final class PreparedStatementExecutor {
         return result;
     }
     
-    private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Optional<Context> context) throws SQLException {
+    private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
+                                      final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) throws SQLException {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
         try {
             result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
         } catch (final SQLException ex) {
@@ -135,24 +139,27 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
         postDMLExecutionEvents();
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         if (1 == preparedStatementExecutorWrappers.size()) {
             PreparedStatementExecutorWrapper preparedStatementExecutorWrapper = preparedStatementExecutorWrappers.iterator().next();
-            return executeInternal(preparedStatementExecutorWrapper, isExceptionThrown, Optional.fromNullable(context));
+            return executeInternal(preparedStatementExecutorWrapper, isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         List<Boolean> result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
             
             @Override
             public Boolean execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                return executeInternal(input, isExceptionThrown, Optional.<Context>absent());
+                return executeInternal(input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         });
         MetricsContext.stop(context);
         return result.get(0);
     }
     
-    private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Optional<Context> context) throws SQLException {
+    private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
+                                    final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) throws SQLException {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
         } catch (final SQLException ex) {
