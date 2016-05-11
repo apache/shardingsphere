@@ -50,7 +50,7 @@ public final class StatementExecutorTest {
 
     private static final String SELECT_FROM_DUAL = "SELECT * FROM dual";
     
-    private  static final String DELETE_FROM_DUAL = "DELETE FROM dual";
+    private static final String DELETE_FROM_DUAL = "DELETE FROM dual";
 
     private ExecutorEngine executorEngine;
     

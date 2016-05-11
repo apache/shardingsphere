@@ -19,6 +19,9 @@ package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSourceType;
+import com.dangdang.ddframe.rdb.transaction.soft.datasource.TransactionLogDataSource;
+import com.dangdang.ddframe.rdb.transaction.soft.datasource.impl.MemoryTransactionLogDataSource;
+import com.dangdang.ddframe.rdb.transaction.soft.datasource.impl.RdbTransactionLogDataSource;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +31,8 @@ import lombok.Setter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSourceType.RDB;
 
 /**
  * 柔性事务配置对象.
@@ -53,7 +58,7 @@ public class SoftTransactionConfiguration {
     /**
      * 事务日志存储类型.
      */
-    private TransactionLogDataSourceType storageType = TransactionLogDataSourceType.RDB;
+    private TransactionLogDataSourceType storageType = RDB;
     
     /**
      * 存储事务日志的数据源.
@@ -76,5 +81,25 @@ public class SoftTransactionConfiguration {
             return targetDataSource.getConnection();
         }
         return ((ShardingDataSource) targetDataSource).getConnection().getConnection(dataSourceName);
+    }
+
+    /**
+     * 构建事务日志事务源.
+     *
+     * @return 存储事务日志的数据源
+     */
+    public TransactionLogDataSource buildTransactionLogDataSource() {
+        TransactionLogDataSource result;
+        switch (storageType) {
+            case MEMORY:
+                result = new MemoryTransactionLogDataSource();
+                break;
+            case RDB:
+                result = new RdbTransactionLogDataSource(transactionLogDataSource);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return result;
     }
 }
