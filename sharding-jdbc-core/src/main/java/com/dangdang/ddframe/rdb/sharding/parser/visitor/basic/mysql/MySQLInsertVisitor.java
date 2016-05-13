@@ -32,6 +32,9 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
     @Override
     public boolean visit(final MySqlInsertStatement x) {
         getParseContext().setCurrentTable(x.getTableName().toString(), Optional.fromNullable(x.getAlias()));
+        if (null == x.getValues()) {
+            return super.visit(x);
+        }
         for (int i = 0; i < x.getColumns().size(); i++) {
             getParseContext().addCondition(x.getColumns().get(i).toString(), x.getTableName().toString(), BinaryOperator.EQUAL, x.getValues().getValues().get(i), getDatabaseType(), getParameters());
         }
