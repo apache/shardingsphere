@@ -21,6 +21,7 @@ weight = 1
 1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) ORDER BY与GROUP BY衍生列未添加表名或表别名
 1. [ISSUE #65](https://github.com/dangdangdotcom/sharding-jdbc/issues/65) 解析条件上下文性能提升
 1. [ISSUE #67](https://github.com/dangdangdotcom/sharding-jdbc/issues/67) 分片路由到多表时柔性事务日志无法删除
+1. [ISSUE #71](https://github.com/dangdangdotcom/sharding-jdbc/issues/71) 路由单分片LIMIT的OFFSET计算错误
 
 ## 1.2.0
 
