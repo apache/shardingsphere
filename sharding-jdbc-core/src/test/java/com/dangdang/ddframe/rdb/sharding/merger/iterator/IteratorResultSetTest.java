@@ -17,19 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.iterator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-
-import org.junit.Test;
-
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import org.junit.Test;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class IteratorResultSetTest {
     
@@ -65,5 +65,31 @@ public final class IteratorResultSetTest {
             count++;
         }
         assertThat(count, is(1));
+    }
+    
+    @Test
+    public void assertNextWithLimitForSingleResultSet() throws SQLException {
+        MergeContext mergeContext = new MergeContext();
+        mergeContext.setLimit(new Limit(2, 3));
+        ResultSet resultSet = ResultSetFactory.getResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(1, 2, 3, 4, 5, 6)), mergeContext);
+        int count = 0;
+        while (resultSet.next()) {
+            System.out.println(resultSet.getInt(1));
+            count++;
+        }
+        assertThat(count, is(3));
+    }
+    
+    @Test
+    public void assertNextWithLimitForSingleResultSetNotFull() throws SQLException {
+        MergeContext mergeContext = new MergeContext();
+        mergeContext.setLimit(new Limit(2, 10));
+        ResultSet resultSet = ResultSetFactory.getResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(1, 2, 3, 4, 5, 6)), mergeContext);
+        int count = 0;
+        while (resultSet.next()) {
+            count++;
+            System.out.println(resultSet.getInt(1));
+        }
+        assertThat(count, is(4));
     }
 }
