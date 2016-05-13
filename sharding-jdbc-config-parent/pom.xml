@@ -60,7 +60,7 @@
             <dependency>
                 <groupId>com.dangdang</groupId>
                 <artifactId>sharding-jdbc</artifactId>
-                <version>${project.version}</version>
+                <version>${project.parent.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
