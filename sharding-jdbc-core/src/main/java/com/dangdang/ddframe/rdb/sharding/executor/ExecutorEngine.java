@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -26,16 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 多线程执行框架.
@@ -117,7 +116,8 @@ public final class ExecutorEngine {
         try {
             return futures.get();
         } catch (final InterruptedException | ExecutionException ex) {
-            throw new ShardingJdbcException(ex);
+            ExecutorExceptionHandler.handleException(ex);
+            return null;
         }
     }
 }

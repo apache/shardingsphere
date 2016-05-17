@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,10 @@
  */
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
+
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
+import lombok.Getter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -32,10 +36,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import lombok.Getter;
 
 /**
  * 预编译语句对象的适配类.

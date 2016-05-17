@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +45,7 @@ public class GroupByRowTest {
         MockResultSet rs = new MockResultSet<>(Arrays.asList(rs1, rs2));
         assertThat(rs.next(), is(true));
     
-        GroupByColumn groupByColumn = new GroupByColumn("user_id", "", OrderByColumn.OrderByType.ASC);
+        GroupByColumn groupByColumn = new GroupByColumn(Optional.<String>absent(), "user_id", Optional.<String>absent(), OrderByColumn.OrderByType.ASC);
         groupByColumn.setColumnIndex(1);
         AggregationColumn aggregationColumn = new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent(), Optional.<String>absent());
         aggregationColumn.setColumnIndex(2);

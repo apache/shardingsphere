@@ -293,3 +293,46 @@ CREATE TABLE IF NOT EXISTS `db_single`.`t_order_item_7` (`item_id` INT NOT NULL,
 CREATE TABLE IF NOT EXISTS `db_single`.`t_order_item_8` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`item_id`));
 CREATE TABLE IF NOT EXISTS `db_single`.`t_order_item_9` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`item_id`));
 CREATE TABLE IF NOT EXISTS `db_single`.`t_config` (`id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`id`));
+
+/**
+ * nullable测试.
+ */
+CREATE SCHEMA IF NOT EXISTS `nullable_0`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_1`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_2`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_3`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_4`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_5`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_6`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_7`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_8`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));
+
+CREATE SCHEMA IF NOT EXISTS `nullable_9`;
+
+CREATE TABLE IF NOT EXISTS `t_order` (`order_id` INT NOT NULL, `user_id` INT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`order_id`));

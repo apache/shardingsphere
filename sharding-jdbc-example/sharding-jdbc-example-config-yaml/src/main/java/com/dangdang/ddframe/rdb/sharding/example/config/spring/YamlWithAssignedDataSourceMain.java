@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,9 @@ import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
 
 public final class YamlWithAssignedDataSourceMain {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws Exception {
+    // CHECKSTYLE:ON
         YamlShardingDataSource dataSource =  new YamlShardingDataSource(
             new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withAssignedDataSource.yaml").getFile()));
         printSimpleSelect(dataSource);

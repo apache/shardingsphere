@@ -20,8 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
 import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
 import org.springframework.test.context.ContextConfiguration;
 
-// TODO 解析可能有问题, 不能解析出关联表, 所以导致动态表时查找关联表分片value失败, 测试用例先用非Dynamic的, 防止install失败
-//@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpressionForDynamic.xml")
-@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpression.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAlgorithmExpressionForDynamic.xml")
 public final class WithNamespaceAlgorithmExpressionForDynamicTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
 }

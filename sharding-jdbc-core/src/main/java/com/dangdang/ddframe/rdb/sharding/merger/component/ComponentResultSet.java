@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ import java.sql.SQLException;
  * 管道化组件接口.
  * 
  * @param <T> 前置组件类型
+ * 
+ * @author gaohongtao
  */
 public interface ComponentResultSet<T> extends ResultSet {
     

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,6 @@
  */
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
@@ -38,6 +35,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  * MySQL解析基础访问器.
  * 
@@ -45,11 +45,14 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
  */
 public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements SQLVisitor {
     
-    private final ParseContext parseContext = new ParseContext();
+    private ParseContext parseContext;
+    
+    private int parseContextIndex;
     
     protected AbstractMySQLVisitor() {
         super(new SQLBuilder());
         setPrettyFormat(false);
+        parseContext = new ParseContext(parseContextIndex);
     }
     
     @Override
@@ -60,6 +63,25 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     @Override
     public final ParseContext getParseContext() {
         return parseContext;
+    }
+    
+    protected final void stepInQuery() {
+        if (0 == parseContextIndex) {
+            parseContextIndex++;
+            return;
+        }
+        ParseContext parseContext = new ParseContext(parseContextIndex++);
+        parseContext.setShardingColumns(this.parseContext.getShardingColumns());
+        parseContext.setParentParseContext(this.parseContext);
+        this.parseContext.getSubParseContext().add(parseContext);
+        this.parseContext = parseContext;
+    }
+    
+    protected final void stepOutQuery() {
+        if (null == parseContext.getParentParseContext()) {
+            return;
+        }
+        parseContext = parseContext.getParentParseContext();
     }
     
     @Override
@@ -86,7 +108,10 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public final boolean visit(final SQLExprTableSource x) {
-        return visit(x, parseContext.addTable(x));
+        if ("dual".equalsIgnoreCase(SQLUtil.getExactlyValue(x.getExpr().toString()))) {
+            return super.visit(x);
+        }
+        return visit(x, getParseContext().addTable(x));
     }
     
     private boolean visit(final SQLExprTableSource x, final Table table) {
@@ -128,7 +153,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
             return super.visit(x);
         }
         String tableOrAliasName = ((SQLIdentifierExpr) x.getOwner()).getLowerName();
-        if (parseContext.isBinaryOperateWithAlias(x, tableOrAliasName)) {
+        if (getParseContext().isBinaryOperateWithAlias(x, tableOrAliasName)) {
             return super.visit(x);
         }
         printToken(tableOrAliasName);

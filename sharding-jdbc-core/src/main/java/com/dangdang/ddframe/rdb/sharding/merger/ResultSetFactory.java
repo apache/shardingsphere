@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ public final class ResultSetFactory {
         }
         if (1 == filteredResultSets.size()) {
             log.trace("Sharding-JDBC: Only one result set");
-            return filteredResultSets.get(0);
+            return joinLimit(filteredResultSets.get(0), mergeContext);
         }
         mergeContext.buildContextWithResultSet((WrapperResultSet) filteredResultSets.get(0));
         return buildCoupling(buildReducer(filteredResultSets, mergeContext), mergeContext);
@@ -97,9 +97,7 @@ public final class ResultSetFactory {
         if (mergeContext.needToSort()) {
             currentResultSet = join(new MemoryOrderByCouplingResultSet(mergeContext.getCurrentOrderByKeys()), currentResultSet);
         }
-        if (mergeContext.hasLimit()) {
-            currentResultSet = join(new LimitCouplingResultSet(mergeContext.getLimit()), currentResultSet);
-        }
+        currentResultSet = joinLimit(currentResultSet, mergeContext);
         return currentResultSet;
     }
     
@@ -107,5 +105,13 @@ public final class ResultSetFactory {
         log.trace("{} joined", resultSet.getClass().getSimpleName());
         resultSet.init(preResultSet);
         return resultSet;
+    }
+    
+    private static ResultSet joinLimit(final ResultSet preResultSet, final MergeContext mergeContext) throws SQLException {
+        if (mergeContext.hasLimit()) {
+            return join(new LimitCouplingResultSet(mergeContext.getLimit()), preResultSet);
+        } else {
+            return preResultSet;
+        }
     }
 }

@@ -1,21 +1,20 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+
+    <property name="log.context.name" value="sharding-jdbc-example-jpa" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+
+    <contextName>${log.context.name}</contextName>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
         </encoder>
     </appender>
-    <logger name="com.dangdang" level="error" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
-    <logger name="com.dangdang.ddframe.rdb.sharding.metrics" level="info" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
-    <logger name="org.dbunit" level="info" additivity="false">
-        <appender-ref ref="console"/>
-    </logger>
+
     <root>
-        <level value="error" />
-        <appender-ref ref="console" />
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
     </root>
-</configuration> 
+</configuration>

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -32,11 +33,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 多线程执行静态语句对象请求的执行器.
  * 
- * @author gaohongtao, caohao
+ * @author gaohongtao
+ * @author caohao
  */
 @RequiredArgsConstructor
 public final class StatementExecutor {
@@ -129,40 +132,25 @@ public final class StatementExecutor {
     private int executeUpdate(final Updater updater) throws SQLException {
         Context context = MetricsContext.start("ShardingStatement-executeUpdate");
         postDMLExecutionEvents();
-        int result = 0;
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+        int result;
         if (1 == statementExecutorWrappers.size()) {
-            StatementExecutorWrapper statementExecutorWrapper = statementExecutorWrappers.iterator().next();
-            try {
-                result = updater.executeUpdate(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
-            } catch (final SQLException ex) {
-                postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
-                ExecutorExceptionHandler.handleException(ex);
-                return result;
-            } finally {
-                MetricsContext.stop(context);
-            }
-            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
-            return result;
+            return executeUpdateInternal(updater, statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Integer>() {
         
             @Override
             public Integer execute(final StatementExecutorWrapper input) throws Exception {
-                int result = 0;
-                try {
-                    result = updater.executeUpdate(input.getStatement(), input.getSqlExecutionUnit().getSql());
-                } catch (final SQLException ex) {
-                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    ExecutorExceptionHandler.handleException(ex);
-                    return result;
-                }
-                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
-                return result;
+                return executeUpdateInternal(updater, input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         }, new MergeUnit<Integer, Integer>() {
         
             @Override
             public Integer merge(final List<Integer> results) {
+                if (null == results) {
+                    return 0;
+                }
                 int result = 0;
                 for (int each : results) {
                     result += each;
@@ -171,6 +159,26 @@ public final class StatementExecutor {
             }
         });
         MetricsContext.stop(context);
+        return result;
+    }
+    
+    private int executeUpdateInternal(final Updater updater, final StatementExecutorWrapper statementExecutorWrapper,
+                                      final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) {
+        int result;
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
+        try {
+            result = updater.executeUpdate(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
+        } catch (final SQLException ex) {
+            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+            ExecutorExceptionHandler.handleException(ex);
+            return 0;
+        } finally {
+            if (context.isPresent()) {
+                MetricsContext.stop(context.get());
+            }
+        }
+        postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
         return result;
     }
     
@@ -223,39 +231,40 @@ public final class StatementExecutor {
     private boolean execute(final Executor executor) throws SQLException {
         Context context = MetricsContext.start("ShardingStatement-execute");
         postDMLExecutionEvents();
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         if (1 == statementExecutorWrappers.size()) {
-            StatementExecutorWrapper statementExecutorWrapper = statementExecutorWrappers.iterator().next();
-            boolean result;
-            try {
-                result = executor.execute(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
-            } catch (final SQLException ex) {
-                postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
-                ExecutorExceptionHandler.handleException(ex);
-                return false;
-            } finally {
-                MetricsContext.stop(context);
-            }
-            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
-            return result;
+            return executeInternal(executor, statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap, Optional.fromNullable(context));
         }
         List<Boolean> result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Boolean>() {
         
             @Override
             public Boolean execute(final StatementExecutorWrapper input) throws Exception {
-                boolean result;
-                try {
-                    result = executor.execute(input.getStatement(), input.getSqlExecutionUnit().getSql());
-                } catch (final SQLException ex) {
-                    postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_FAILURE);
-                    ExecutorExceptionHandler.handleException(ex);
-                    return false;
-                }
-                postDMLExecutionEventsAfterExecution(input, EventExecutionType.EXECUTE_SUCCESS);
-                return result;
+                return executeInternal(executor, input, isExceptionThrown, dataMap, Optional.<Context>absent());
             }
         });
         MetricsContext.stop(context);
-        return result.get(0);
+        return null == result ? false : result.get(0);
+    }
+    
+    private boolean executeInternal(final Executor executor, final StatementExecutorWrapper statementExecutorWrapper,
+                                    final boolean isExceptionThrown, final Map<String, Object> dataMap, final Optional<Context> context) {
+        boolean result;
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
+        try {
+            result = executor.execute(statementExecutorWrapper.getStatement(), statementExecutorWrapper.getSqlExecutionUnit().getSql());
+        } catch (final SQLException ex) {
+            postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE);
+            ExecutorExceptionHandler.handleException(ex);
+            return false;
+        } finally {
+            if (context.isPresent()) {
+                MetricsContext.stop(context.get());
+            }
+        }
+        postDMLExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS);
+        return result;
     }
     
     private void postDMLExecutionEvents() {
@@ -282,13 +291,5 @@ public final class StatementExecutor {
     private interface Executor {
         
         boolean execute(Statement statement, String sql) throws SQLException;
-    }
-    
-    @RequiredArgsConstructor
-    private class StatementEntity {
-        
-        private final String sql;
-        
-        private final Statement statement;
     }
 }

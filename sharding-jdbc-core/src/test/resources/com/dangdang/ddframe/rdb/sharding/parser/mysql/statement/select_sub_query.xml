@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithOrderByForAliasAndSubQuery" sql="SELECT price FROM (SELECT o.user_id,o.price FROM order o WHERE o.order_id = 1 ORDER BY o.order_id) order by user_id" expected-sql="SELECT price[Token(, user_id AS sharding_gen_1)] FROM (SELECT [Token(o)].user_id, [Token(o)].price[Token(, o.order_id AS sharding_gen_1)] FROM [Token(order)] o WHERE o.order_id = 1 ORDER BY o.order_id ) ORDER BY user_id">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+        <order-by-columns>
+            <order-by-column name="user_id" alias="sharding_gen_1" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+    <assert id="assertSelectWithGroupByAndSubQuery" sql="SELECT AVG(i.SUM_PRICE) avg FROM (SELECT o.order_id,SUM(o.price) AS SUM_PRICE FROM order o WHERE o.order_id = 1 GROUP BY o.order_id) i" expected-sql="SELECT AVG(i.SUM_PRICE) AS avg[Token(, COUNT(i.SUM_PRICE) AS sharding_gen_1, SUM(i.SUM_PRICE) AS sharding_gen_2)] FROM (SELECT [Token(o)].order_id, SUM(o.price) AS SUM_PRICE FROM [Token(order)] o WHERE o.order_id = 1 GROUP BY o.order_id ) i">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+        <aggregation-columns>
+            <aggregation-column expression="AVG(i.SUM_PRICE)" aggregation-type="AVG" alias="avg" index="1">
+                <derived-column expression="COUNT(i.SUM_PRICE)" aggregation-type="COUNT" alias="sharding_gen_1"/>
+                <derived-column expression="SUM(i.SUM_PRICE)" aggregation-type="SUM" alias="sharding_gen_2" />
+            </aggregation-column>
+            <aggregation-column expression="COUNT(i.SUM_PRICE)" aggregation-type="COUNT" alias="sharding_gen_1" />
+            <aggregation-column expression="SUM(i.SUM_PRICE)" aggregation-type="SUM" alias="sharding_gen_2" />
+        </aggregation-columns>
+    </assert>
+    <assert id="assertSelectWithWhereSubQuery" sql="SELECT * FROM order o WHERE o.order_id = 2 and exists (select 1 from t_user u where u.user_id = o.user_id and u.user_id = 1)" expected-sql="SELECT * FROM [Token(order)] o WHERE o.order_id = 2 AND EXISTS (SELECT 1 FROM [Token(t_user)] u WHERE u.user_id = [Token(o)].user_id AND u.user_id = 1)">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+</asserts>

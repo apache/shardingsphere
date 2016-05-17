@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,7 @@ public class MemoryOrderByResultSetTest {
         Calendar cal = Calendar.getInstance();
         cal.set(2016, Calendar.JANUARY, 11);
         
-        rs1.put("name", "kecf");
+        rs1.put("name", "name");
         rs1.put("time", cal.getTime());
         rs1.put("id", 11);
         
@@ -115,7 +115,7 @@ public class MemoryOrderByResultSetTest {
     @Test
     public void testNullValue() throws SQLException {
         Map<String, Object> rs1 = new TreeMap<>();
-        rs1.put("name", "kecf");
+        rs1.put("name", "name");
         rs1.put("time", null);
         MemoryOrderByResultSet rs = new MemoryOrderByResultSet(Collections.singletonList(new OrderByColumn(1, OrderByColumn.OrderByType.ASC)));
         rs.setResultSets(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))));

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.mysql.jdbc.Statement;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
@@ -191,7 +190,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     }
     
     @Test
-    public void assertBatch() throws SQLException {
+    public void assertAddBatch() throws SQLException {
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
@@ -208,6 +207,21 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             for (int each : result) {
                 assertThat(each, is(1));
             }
+        }
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertClearBatch() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.clearBatch();
+            preparedStatement.executeBatch();
         }
     }
 }

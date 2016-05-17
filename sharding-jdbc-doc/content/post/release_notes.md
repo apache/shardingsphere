@@ -6,11 +6,30 @@ weight = 1
 
 # Release Notes
 
-## 1.1.1-SNAPSHOT
+## 1.2.1-SNAPSHOT
+
+### 结构调整
+
+1. [ISSUE #60](https://github.com/dangdangdotcom/sharding-jdbc/issues/60) API调整，抽离ShardingDataSource，使用工厂代替
+
+### 功能提升
+
+1. [ISSUE #66](https://github.com/dangdangdotcom/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
+1. [ISSUE #72](https://github.com/dangdangdotcom/sharding-jdbc/issues/72) 对于select union all形式的批量插入支持
+
+### 缺陷修正
+
+1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/63) ORDER BY与GROUP BY衍生列未添加表名或表别名
+1. [ISSUE #65](https://github.com/dangdangdotcom/sharding-jdbc/issues/65) 解析条件上下文性能提升
+1. [ISSUE #67](https://github.com/dangdangdotcom/sharding-jdbc/issues/67) 分片路由到多表时柔性事务日志无法删除
+1. [ISSUE #71](https://github.com/dangdangdotcom/sharding-jdbc/issues/71) 路由单分片LIMIT的OFFSET计算错误
+
+## 1.2.0
 
 ### 新功能
 
 1. [ISSUE #53](https://github.com/dangdangdotcom/sharding-jdbc/issues/53) 动态表配置
+1. [ISSUE #58](https://github.com/dangdangdotcom/sharding-jdbc/issues/58) 柔性事务：最大努力送达型初始版本
 
 ### 结构调整
 
@@ -21,6 +40,7 @@ weight = 1
 
 1. [ISSUE #43](https://github.com/dangdangdotcom/sharding-jdbc/issues/43) yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析
 1. [ISSUE #48](https://github.com/dangdangdotcom/sharding-jdbc/issues/48) yaml文件读取后未关闭
+1. [ISSUE #57](https://github.com/dangdangdotcom/sharding-jdbc/issues/57) SQL解析子查询改进
 
 ## 1.1.0
 

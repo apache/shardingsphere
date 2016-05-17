@@ -47,4 +47,13 @@
             </condition-context>
         </condition-contexts>
     </assert>
+
+    <assert id="assertInsertBatch1" sql="INSERT INTO `order` o ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] o ('order_id', 'state') SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+           <condition-context/>
+        </condition-contexts>
+    </assert>
 </asserts>
