@@ -108,6 +108,9 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public final boolean visit(final SQLExprTableSource x) {
+        if ("dual".equalsIgnoreCase(SQLUtil.getExactlyValue(x.getExpr().toString()))) {
+            return super.visit(x);
+        }
         return visit(x, getParseContext().addTable(x));
     }
     

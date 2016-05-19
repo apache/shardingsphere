@@ -21,12 +21,10 @@ import com.dangdang.ddframe.job.api.JobConfiguration;
 import com.dangdang.ddframe.job.api.JobScheduler;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.AbstractBestEffortsDeliveryJobConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
-import com.dangdang.ddframe.rdb.transaction.soft.datasource.impl.RdbTransactionLogDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorageFactory;
 import com.dangdang.ddframe.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -49,7 +47,7 @@ public abstract class AbstractBestEffortsDeliveryJobFactory<T extends AbstractBe
         regCenter.init();
         JobScheduler jobScheduler = new JobScheduler(regCenter, createBedJobConfiguration(bedJobConfig));
         jobScheduler.setField("transactionConfig", transactionConfig);
-        jobScheduler.setField("transactionLogStorage", TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(transactionConfig.getTransactionLogDataSource())));
+        jobScheduler.setField("transactionLogStorage", TransactionLogStorageFactory.createTransactionLogStorage(transactionConfig.buildTransactionLogDataSource()));
         jobScheduler.init();
     }
     

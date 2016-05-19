@@ -116,7 +116,7 @@ public final class SoftTransactionManager {
      */
     public static Optional<SoftTransactionConfiguration> getCurrentTransactionConfiguration() {
         Object transactionConfig = ExecutorDataMap.getDataMap().get(TRANSACTION_CONFIG);
-        return (transactionConfig == null)
+        return (null == transactionConfig)
                 ? Optional.<SoftTransactionConfiguration>absent()
                 : Optional.of((SoftTransactionConfiguration) transactionConfig);
     }
@@ -128,7 +128,7 @@ public final class SoftTransactionManager {
      */
     public static Optional<AbstractSoftTransaction> getCurrentTransaction() {
         Object transaction = ExecutorDataMap.getDataMap().get(TRANSACTION);
-        return (transaction == null)
+        return (null == transaction)
                 ? Optional.<AbstractSoftTransaction>absent()
                 : Optional.of((AbstractSoftTransaction) transaction);
     }

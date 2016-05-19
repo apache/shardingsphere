@@ -22,8 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListene
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
-import com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType;
-import com.dangdang.ddframe.rdb.transaction.soft.datasource.impl.RdbTransactionLogDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorageFactory;
@@ -35,6 +33,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.BEFORE_EXECUTE;
+import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.EXECUTE_FAILURE;
+import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.EXECUTE_SUCCESS;
+import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType.BestEffortsDelivery;
 
 /**
  * 最大努力送达型事务监听器.
@@ -51,7 +54,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
             return;
         }
         SoftTransactionConfiguration transactionConfig = SoftTransactionManager.getCurrentTransactionConfiguration().get();
-        TransactionLogStorage transactionLogStorage = TransactionLogStorageFactory.createTransactionLogStorage(new RdbTransactionLogDataSource(transactionConfig.getTransactionLogDataSource()));
+        TransactionLogStorage transactionLogStorage = TransactionLogStorageFactory.createTransactionLogStorage(transactionConfig.buildTransactionLogDataSource());
         BEDSoftTransaction bedSoftTransaction = (BEDSoftTransaction) SoftTransactionManager.getCurrentTransaction().get();
         switch (event.getEventExecutionType()) {
             case BEFORE_EXECUTE:
@@ -97,7 +100,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
     
     private boolean isProcessContinuously() {
         return SoftTransactionManager.getCurrentTransaction().isPresent()
-                && SoftTransactionType.BestEffortsDelivery == SoftTransactionManager.getCurrentTransaction().get().getTransactionType();
+                && BestEffortsDelivery == SoftTransactionManager.getCurrentTransaction().get().getTransactionType();
     }
     
     private boolean isValidConnection(final Connection conn) {
