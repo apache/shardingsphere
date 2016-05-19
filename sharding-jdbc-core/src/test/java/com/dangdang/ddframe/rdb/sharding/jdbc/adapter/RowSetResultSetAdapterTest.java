@@ -110,7 +110,7 @@ public final class RowSetResultSetAdapterTest {
             assertThat(ResultSet.class.getMethod(methodName, int.class).invoke(rs, 1), is(result));
             assertThat(ResultSet.class.getMethod(methodName, String.class).invoke(rs, "name"), is(result));
         }
-        if (null == result) {
+        if (null == result || null == input) {
             assertThat(rs.wasNull(), is(true));
         } else {
             assertThat(rs.wasNull(), is(false));
