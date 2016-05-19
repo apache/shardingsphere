@@ -168,7 +168,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     public boolean getBoolean(final int columnIndex) throws SQLException {
         Object cell = getObject(columnIndex);
         if (null == cell) {
-            wasNullFlag = false;
+            wasNullFlag = true;
             return false;
         }
         return (cell instanceof Boolean) ? (Boolean) cell : Boolean.valueOf(cell.toString());
