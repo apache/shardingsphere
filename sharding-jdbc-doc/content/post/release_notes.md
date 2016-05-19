@@ -14,6 +14,7 @@ weight = 1
 
 ### 功能提升
 
+1. [ISSUE #61](https://github.com/dangdangdotcom/sharding-jdbc/issues/61) 在ShardingValue类中加入逻辑表名
 1. [ISSUE #66](https://github.com/dangdangdotcom/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
 
 ### 缺陷修正

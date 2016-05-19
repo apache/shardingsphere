@@ -42,14 +42,15 @@ public class ClosureShardingAlgorithmTest {
     
     @Test
     public void testEqual() {
-        Collection<String> result = algorithm.doSharding(Collections.singletonList("t_order_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("id", 1L)));
+        Collection<String> result = algorithm.doSharding(Collections.singletonList("t_order_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("t_order", "id", 1L)));
         assertThat(result.size(), is(1));
         assertThat(result, hasItem("t_order_1"));
     }
     
     @Test
     public void testIn() {
-        Collection<String> result = algorithm.doSharding(Arrays.asList("t_order_0", "t_order_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("id", Arrays.asList(1, 2))));
+        Collection<String> result = algorithm.doSharding(Arrays.asList("t_order_0", "t_order_1"), 
+                Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("t_order", "id", Arrays.asList(1, 2))));
         assertThat(result.size(), is(2));
         assertThat(result, hasItem("t_order_0"));
         assertThat(result, hasItem("t_order_1"));
@@ -57,7 +58,8 @@ public class ClosureShardingAlgorithmTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void testBetween() {
-        algorithm.doSharding(Arrays.asList("t_order_0", "t_order_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("id", Range.range(1, BoundType.CLOSED, 2, BoundType.OPEN))));
+        algorithm.doSharding(Arrays.asList("t_order_0", "t_order_1"), 
+                Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("t_order", "id", Range.range(1, BoundType.CLOSED, 2, BoundType.OPEN))));
     }
     
     @Test(expected = NullPointerException.class)

@@ -42,6 +42,8 @@ import com.google.common.collect.Range;
 @ToString
 public final class ShardingValue<T extends Comparable<?>> {
     
+    private final String logicTableName;
+    
     private final String columnName;
     
     private final T value;
@@ -50,16 +52,16 @@ public final class ShardingValue<T extends Comparable<?>> {
     
     private final Range<T> valueRange;
     
-    public ShardingValue(final String columnName, final T value) {
-        this(columnName, value, Collections.<T>emptyList(), null);
+    public ShardingValue(final String logicTableName, final String columnName, final T value) {
+        this(logicTableName, columnName, value, Collections.<T>emptyList(), null);
     }
     
-    public ShardingValue(final String columnName, final Collection<T> values) {
-        this(columnName, null, values, null);
+    public ShardingValue(final String logicTableName, final String columnName, final Collection<T> values) {
+        this(logicTableName, columnName, null, values, null);
     }
     
-    public ShardingValue(final String columnName, final Range<T> valueRange) {
-        this(columnName, null, Collections.<T>emptyList(), valueRange);
+    public ShardingValue(final String logicTableName, final String columnName, final Range<T> valueRange) {
+        this(logicTableName, columnName, null, Collections.<T>emptyList(), valueRange);
     }
     
     /**

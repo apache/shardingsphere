@@ -45,7 +45,8 @@ public final class Condition {
     /**
      * 列对象.
      * 
-     * @author gaohongtao, zhangliang
+     * @author gaohongtao
+     * @author zhangliang
      */
     @RequiredArgsConstructor
     @Getter
@@ -61,7 +62,8 @@ public final class Condition {
     /**
      * 操作符枚举.
      * 
-     * @author gaohongtao, zhangliang
+     * @author gaohongtao
+     * @author zhangliang
      */
     @RequiredArgsConstructor
     public enum BinaryOperator {
