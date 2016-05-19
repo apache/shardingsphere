@@ -74,7 +74,6 @@ public final class IteratorResultSetTest {
         ResultSet resultSet = ResultSetFactory.getResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(1, 2, 3, 4, 5, 6)), mergeContext);
         int count = 0;
         while (resultSet.next()) {
-            System.out.println(resultSet.getInt(1));
             count++;
         }
         assertThat(count, is(3));
@@ -88,7 +87,6 @@ public final class IteratorResultSetTest {
         int count = 0;
         while (resultSet.next()) {
             count++;
-            System.out.println(resultSet.getInt(1));
         }
         assertThat(count, is(4));
     }
