@@ -17,15 +17,16 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.storage.impl;
 
+import com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLog;
 import com.dangdang.ddframe.rdb.transaction.soft.storage.TransactionLogStorage;
-import com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 基于内存的事务日志存储器接口.
@@ -69,7 +70,7 @@ public final class MemoryTransactionLogStorage implements TransactionLogStorage 
     public void increaseAsyncDeliveryTryTimes(final String id) {
         if (DATA.containsKey(id)) {
             TransactionLog transactionLog = DATA.get(id);
-            transactionLog.setAsyncDeliveryTryTimes(transactionLog.getAsyncDeliveryTryTimes() + 1);
+            transactionLog.setAsyncDeliveryTryTimes(new AtomicInteger(transactionLog.getAsyncDeliveryTryTimes()).incrementAndGet());
             DATA.put(id, transactionLog);
         }
     }

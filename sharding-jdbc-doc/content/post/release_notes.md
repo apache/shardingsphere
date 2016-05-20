@@ -27,6 +27,7 @@ weight = 1
 1. [ISSUE #65](https://github.com/dangdangdotcom/sharding-jdbc/issues/65) 解析条件上下文性能提升
 1. [ISSUE #67](https://github.com/dangdangdotcom/sharding-jdbc/issues/67) 分片路由到多表时柔性事务日志无法删除
 1. [ISSUE #71](https://github.com/dangdangdotcom/sharding-jdbc/issues/71) 路由单分片LIMIT的OFFSET计算错误
+1. [ISSUE #75](https://github.com/dangdangdotcom/sharding-jdbc/issues/75) MemoryTransactionLogStorage重试次数更新并发问题
 
 ## 1.2.0
 
