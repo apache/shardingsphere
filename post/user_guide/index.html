@@ -198,10 +198,12 @@ db1
 
 <p>以上分库分表的形式<code>Sharding-JDBC</code>是通过规则配置来进行的描述的，下面讲通过几个小节来描述规则的详细配置：</p>
 
-<pre><code class="language-java"> ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()));
+<pre><code class="language-java"> ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+        .build();
 </code></pre>
 
 <h2 id="数据源配置:74c632aa9613b8dd6b95bfab1ba313e2">数据源配置</h2>
@@ -244,32 +246,50 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 <p>策略是作用在特定的表规则上的，数据源策略与表策略与特定表相关</p>
 
-<pre><code class="language-java">TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;),
-                  new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-                  new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()),
-                  dataSourceRule);
+<pre><code class="language-java"> TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;)
+         .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)
+         .dataSourceRule(dataSourceRule)
+         .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
+         .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+         .build();
 </code></pre>
 
-<p>如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。一下两种配置是等价的</p>
+<p>如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。以下两种配置是等价的:</p>
 
 <pre><code class="language-java">  //使用了默认策略配置
-  TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;), dataSourceRule);
-  TableRule orderItemTableRule = new TableRule(&quot;t_order_item&quot;, Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;), dataSourceRule);
-  ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()));
+  TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;)
+          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&quot;t_order_item&quot;)
+            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;)
+            .dataSourceRule(dataSourceRule)
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .build();
 </code></pre>
 
 <pre><code class="language-java">  //未使用默认策略配置
-  TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;), dataSourceRule,
-          new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-          new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()));
-  TableRule orderItemTableRule = new TableRule(&quot;t_order_item&quot;, Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;), dataSourceRule,
-          new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()),
-          new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm()));
-  ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-          Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))));
+  TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;)
+          .actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&quot;t_order_item&quot;)
+            .actualTables(Arrays.asList(&quot;t_order_item_0&quot;, &quot;t_order_item_1&quot;)
+            .dataSourceRule(dataSourceRule)
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;user_id&quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&quot;order_id&quot;, new ModuloTableShardingAlgorithm())))
+            .build();
 </code></pre>
 
 <h3 id="分片键:74c632aa9613b8dd6b95bfab1ba313e2">分片键</h3>

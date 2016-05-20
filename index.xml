@@ -197,12 +197,17 @@ try (
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/60&#34;&gt;ISSUE #60&lt;/a&gt; API调整，抽离ShardingDataSource，使用工厂代替&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/76&#34;&gt;ISSUE #76&lt;/a&gt; ShardingRule和TableRule调整为Builder模式&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/77&#34;&gt;ISSUE #77&lt;/a&gt; ShardingRule和TableRule调整为Builder模式&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/61&#34;&gt;ISSUE #61&lt;/a&gt; 在ShardingValue类中加入逻辑表名&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/66&#34;&gt;ISSUE #66&lt;/a&gt; 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/72&#34;&gt;ISSUE #72&lt;/a&gt; 对于select union all形式的批量插入支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/78&#34;&gt;ISSUE #78&lt;/a&gt; 简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
@@ -210,6 +215,9 @@ try (
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/63&#34;&gt;ISSUE #63&lt;/a&gt; ORDER BY与GROUP BY衍生列未添加表名或表别名&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/65&#34;&gt;ISSUE #65&lt;/a&gt; 解析条件上下文性能提升&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/67&#34;&gt;ISSUE #67&lt;/a&gt; 分片路由到多表时柔性事务日志无法删除&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/71&#34;&gt;ISSUE #71&lt;/a&gt; 路由单分片LIMIT的OFFSET计算错误&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/75&#34;&gt;ISSUE #75&lt;/a&gt; MemoryTransactionLogStorage重试次数更新并发问题&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
@@ -360,7 +368,8 @@ props:
   
   tables: 分库分表配置，可配置多个logic_table_name
     &amp;lt;logic_table_name&amp;gt;: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示动态表配置。
+        dynamic: 是否为动态表
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -610,11 +619,19 @@ props: 属性配置(可选)
 &lt;/tr&gt;
 
 &lt;tr&gt;
+&lt;td&gt;dynamic&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;是否动态表&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
 &lt;td&gt;actual-tables&lt;/td&gt;
 &lt;td&gt;属性&lt;/td&gt;
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;否&lt;/td&gt;
-&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示使用动态表配置&lt;/td&gt;
+&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
@@ -1063,10 +1080,12 @@ db1
 
 &lt;p&gt;以上分库分表的形式&lt;code&gt;Sharding-JDBC&lt;/code&gt;是通过规则配置来进行的描述的，下面讲通过几个小节来描述规则的详细配置：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()));
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+        .build();
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;数据源配置:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据源配置&lt;/h2&gt;
@@ -1109,32 +1128,50 @@ Sharding-JDBC认为对于分片策略存有两种维度
 
 &lt;p&gt;策略是作用在特定的表规则上的，数据源策略与表策略与特定表相关&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;TableRule orderTableRule = new TableRule(&amp;quot;t_order&amp;quot;, Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;),
-                  new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-                  new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()),
-                  dataSourceRule);
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+         .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+         .dataSourceRule(dataSourceRule)
+         .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+         .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+         .build();
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。一下两种配置是等价的&lt;/p&gt;
+&lt;p&gt;如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。以下两种配置是等价的:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;  //使用了默认策略配置
-  TableRule orderTableRule = new TableRule(&amp;quot;t_order&amp;quot;, Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;), dataSourceRule);
-  TableRule orderItemTableRule = new TableRule(&amp;quot;t_order_item&amp;quot;, Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;), dataSourceRule);
-  ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-                Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()));
+  TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+          .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&amp;quot;t_order_item&amp;quot;)
+            .actualTables(Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;)
+            .dataSourceRule(dataSourceRule)
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;  //未使用默认策略配置
-  TableRule orderTableRule = new TableRule(&amp;quot;t_order&amp;quot;, Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;), dataSourceRule,
-          new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-          new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()));
-  TableRule orderItemTableRule = new TableRule(&amp;quot;t_order_item&amp;quot;, Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;), dataSourceRule,
-          new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()),
-          new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()));
-  ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule),
-          Arrays.asList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))));
+  TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+          .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&amp;quot;t_order_item&amp;quot;)
+            .actualTables(Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;)
+            .dataSourceRule(dataSourceRule)
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;分片键:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片键&lt;/h3&gt;
@@ -2294,8 +2331,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;ol&gt;
 &lt;li&gt;动态表配置 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;只分库不需要逻辑表和真实表对应配置&lt;/li&gt;
-&lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
+&lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;简化只分表配置，可指定默认数据源,简化单库TableRule配置&lt;/li&gt;
 &lt;/ol&gt;
 
