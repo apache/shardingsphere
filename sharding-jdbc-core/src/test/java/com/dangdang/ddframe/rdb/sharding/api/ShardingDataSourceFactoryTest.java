@@ -66,7 +66,8 @@ public final class ShardingDataSourceFactoryTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        return new ShardingRule(dataSourceRule, Collections.singletonList(new TableRule("logicTable", Arrays.asList("table_0", "table_1", "table_2"), dataSourceRule)));
+        TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
+        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
     }
 
     private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {

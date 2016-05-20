@@ -76,11 +76,12 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return new TableRule("logicTable", Arrays.asList("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1"), createDataSourceRule());
+        return TableRule.builder("logicTable").actualTables(Arrays.asList("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1")).dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createSubTableRule() {
-        return new TableRule("subLogicTable", Arrays.asList("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1"), createDataSourceRule());
+        return TableRule.builder("subLogicTable").actualTables(Arrays.asList("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1"))
+                .dataSourceRule(createDataSourceRule()).build();
     }
     
     private DataSourceRule createDataSourceRule() {
@@ -95,10 +96,10 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createDynamicTableRule() {
-        return new TableRule("logicTable", createDataSourceRule());
+        return TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createDynamicSubTableRule() {
-        return new TableRule("subLogicTable", createDataSourceRule());
+        return TableRule.builder("subLogicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
     }
 }

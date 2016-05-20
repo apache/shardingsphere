@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.integrate.hint;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -28,7 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;
 
 import java.sql.Connection;
@@ -73,12 +74,12 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
     
     protected final ShardingDataSource getShardingDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
-        TableRule orderTableRule = new TableRule("t_order", Collections.singletonList("t_order"), dataSourceRule);
-        TableRule orderItemTableRule = new TableRule("t_order_item", Collections.singletonList("t_order_item"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Arrays.asList(orderTableRule, orderItemTableRule), 
-                Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))),
-                new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()),
-                new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm()));
+        TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
+        TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
+        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Lists.newArrayList(orderTableRule, orderItemTableRule))
+                .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+                .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
+                .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);
     }
     

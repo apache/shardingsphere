@@ -32,5 +32,4 @@ import org.junit.runners.Suite;
         InlineParserTest.class
     })
 public class AllTests {
-    
 }

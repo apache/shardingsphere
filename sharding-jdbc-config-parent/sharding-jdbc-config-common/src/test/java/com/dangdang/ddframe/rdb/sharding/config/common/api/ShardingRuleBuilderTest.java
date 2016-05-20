@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
@@ -33,7 +34,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @Slf4j
 public class ShardingRuleBuilderTest {
@@ -56,6 +59,35 @@ public class ShardingRuleBuilderTest {
         ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-min.yaml"));
         ShardingRule shardingRule = new ShardingRuleBuilder("config-min.yaml", dsMap, config).build();
         assertThat(shardingRule.getTableRules().size(), is(1));
+    }
+    
+    @Test
+    public void testDynamic() {
+        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
+        Map<String, DataSource> dsMap = new HashMap<>();
+        dsMap.put("ds", new BasicDataSource());
+        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(ShardingRuleBuilderTest.class.getResourceAsStream("/config/config-dynamic.yaml"));
+        ShardingRule shardingRule = new ShardingRuleBuilder("config-dynamic.yaml", dsMap, config).build();
+        int i = 0;
+        for (TableRule each : shardingRule.getTableRules()) {
+            i++;
+            assertThat(each.getActualTables().size(), is(2));
+            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db0")));
+            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db1")));
+            switch (i) {
+                case 1:
+                    assertThat(each.getLogicTable(), is("config"));
+                    break;
+                case 2:
+                    assertThat(each.getLogicTable(), is("t_order"));
+                    break;
+                case 3:
+                    assertThat(each.getLogicTable(), is("t_order_item"));
+                    break;
+                default:
+                    fail();
+            }
+        }
     }
     
     @Test(expected = IllegalArgumentException.class)

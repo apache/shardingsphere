@@ -158,8 +158,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public OrderByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) : 
-                            new OrderByColumn(Optional.fromNullable(input.getOwner()), input.getName(), 
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderByColumn(Optional.fromNullable(input.getOwner()), input.getName(), 
                                     Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
@@ -169,7 +169,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public GroupByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
-                    return new GroupByColumn(Optional.fromNullable(input.getOwner()), input.getName(), Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                    return new GroupByColumn(
+                            Optional.fromNullable(input.getOwner()), input.getName(), Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }

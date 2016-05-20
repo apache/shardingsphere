@@ -18,7 +18,8 @@
     
     <bean id="orderTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
         <constructor-arg value="t_order" index="0"/>
-        <constructor-arg index="1">
+        <constructor-arg value="false" index="1"/>
+        <constructor-arg index="2">
             <list>
                 <value>t_order_0</value>
                 <value>t_order_1</value>
@@ -26,14 +27,15 @@
                 <value>t_order_3</value>
             </list>
         </constructor-arg>
-        <constructor-arg index="2" ref="dataSourceRule"/>
-        <constructor-arg index="3" ref="databaseShardingStrategy"/>
-        <constructor-arg index="4" ref="tableShardingStrategy"/>
+        <constructor-arg index="3" ref="dataSourceRule"/>
+        <constructor-arg index="4" ref="databaseShardingStrategy"/>
+        <constructor-arg index="5" ref="tableShardingStrategy"/>
     </bean>
     
     <bean id="orderItemTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
         <constructor-arg value="t_order_item" index="0"/>
-        <constructor-arg index="1">
+        <constructor-arg value="false" index="1"/>
+        <constructor-arg index="2">
             <list>
                 <value>t_order_item_0</value>
                 <value>t_order_item_1</value>
@@ -41,9 +43,9 @@
                 <value>t_order_item_3</value>
             </list>
         </constructor-arg>
-        <constructor-arg index="2" ref="dataSourceRule"/>
-        <constructor-arg index="3" ref="databaseShardingStrategy"/>
-        <constructor-arg index="4" ref="tableShardingStrategy"/>
+        <constructor-arg index="3" ref="dataSourceRule"/>
+        <constructor-arg index="4" ref="databaseShardingStrategy"/>
+        <constructor-arg index="5" ref="tableShardingStrategy"/>
     </bean>
     
     <bean id="databaseShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy">
@@ -67,6 +69,15 @@
                 <ref bean="orderTableRule"/>
                 <ref bean="orderItemTableRule"/>
             </list>
+        </constructor-arg>
+        <constructor-arg index="2">
+            <null />
+        </constructor-arg>
+        <constructor-arg index="3">
+            <null />
+        </constructor-arg>
+        <constructor-arg index="4">
+            <null />
         </constructor-arg>
     </bean>
     

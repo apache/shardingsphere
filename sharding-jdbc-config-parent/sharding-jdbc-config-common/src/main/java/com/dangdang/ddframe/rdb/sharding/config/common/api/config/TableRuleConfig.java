@@ -29,6 +29,8 @@ import lombok.Setter;
 @Setter
 public class TableRuleConfig {
     
+    private boolean dynamic;
+    
     private String actualTables;
     
     private StrategyConfig databaseStrategy;

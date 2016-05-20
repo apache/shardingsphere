@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
+@Builder
 public final class ShardingRule {
     
     private final DataSourceRule dataSourceRule;
@@ -45,42 +47,28 @@ public final class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules;
     
-    private final DatabaseShardingStrategy databaseShardingStrategy;
+    private DatabaseShardingStrategy databaseShardingStrategy;
     
-    private final TableShardingStrategy tableShardingStrategy;
+    private TableShardingStrategy tableShardingStrategy;
     
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules) {
-        this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(),
-                new DatabaseShardingStrategy(Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()), 
-                new TableShardingStrategy(Collections.<String>emptyList(), new NoneTableShardingAlgorithm()));
-    }
-    
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules) {
-        this(dataSourceRule, tableRules, bindingTableRules, 
-                new DatabaseShardingStrategy(Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()), 
-                new TableShardingStrategy(Collections.<String>emptyList(), new NoneTableShardingAlgorithm()));
-    }
-    
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final DatabaseShardingStrategy databaseShardingStrategy) {
-        this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(), 
-                databaseShardingStrategy, new TableShardingStrategy(Collections.<String>emptyList(), new NoneTableShardingAlgorithm()));
-    }
-    
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final TableShardingStrategy tableShardingStrategy) {
-        this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(), 
-                new DatabaseShardingStrategy(Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()), tableShardingStrategy);
-    }
-    
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, 
+    /**
+     * 全属性构造器.
+     * 
+     * <p>用于Spring非命名空间的配置.</p>
+     * 
+     * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
+     * 
+     * @deprecated
+     */
+    @Deprecated
+    public ShardingRule(
+            final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
             final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
-        this(dataSourceRule, tableRules, Collections.<BindingTableRule>emptyList(), databaseShardingStrategy, tableShardingStrategy);
-    }
-    
-    public ShardingRule(final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-                        final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+        Preconditions.checkNotNull(dataSourceRule);
+        Preconditions.checkNotNull(tableRules);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = tableRules;
-        this.bindingTableRules = bindingTableRules;
+        this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
         this.databaseShardingStrategy = null == databaseShardingStrategy ? new DatabaseShardingStrategy(
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(

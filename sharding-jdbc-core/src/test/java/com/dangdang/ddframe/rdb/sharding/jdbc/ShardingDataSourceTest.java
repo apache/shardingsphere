@@ -66,6 +66,8 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put("ds", dataSource);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        return new ShardingDataSource(new ShardingRule(dataSourceRule, Collections.singletonList(new TableRule("logicTable", Arrays.asList("table_0", "table_1", "table_2"), dataSourceRule))));
+        TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
+        return new ShardingDataSource(ShardingRule.builder()
+                .dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build());
     }
 }

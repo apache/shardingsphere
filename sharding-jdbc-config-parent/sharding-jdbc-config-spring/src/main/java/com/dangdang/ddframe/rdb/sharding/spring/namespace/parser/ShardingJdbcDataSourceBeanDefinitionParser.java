@@ -88,6 +88,10 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     
     private BeanDefinition parseTableRuleConfig(final Element tableElement) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfig.class);
+        String dynamic = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DYNAMIC_TABLE_ATTR);
+        if (!Strings.isNullOrEmpty(dynamic)) {
+            factory.addPropertyValue("dynamic", dynamic);
+        }
         String actualTables = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_TABLES_ATTR);
         if (!Strings.isNullOrEmpty(actualTables)) {
             factory.addPropertyValue("actualTables", actualTables);

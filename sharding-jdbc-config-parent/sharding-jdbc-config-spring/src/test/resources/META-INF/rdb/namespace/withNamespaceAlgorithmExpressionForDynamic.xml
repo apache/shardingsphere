@@ -18,8 +18,8 @@
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
             <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
-                <rdb:table-rule logic-table="t_order_item" database-strategy="databaseStrategy"  table-strategy="orderItemTableStrategy"/>
+                <rdb:table-rule logic-table="t_order" dynamic="true" database-strategy="databaseStrategy" table-strategy="orderTableStrategy"/>
+                <rdb:table-rule logic-table="t_order_item" dynamic="true" database-strategy="databaseStrategy"  table-strategy="orderItemTableStrategy"/>
             </rdb:table-rules>
         </rdb:sharding-rule>
     </rdb:data-source>

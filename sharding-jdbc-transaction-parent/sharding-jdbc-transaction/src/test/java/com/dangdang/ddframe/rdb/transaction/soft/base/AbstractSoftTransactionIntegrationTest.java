@@ -48,8 +48,8 @@ public abstract class AbstractSoftTransactionIntegrationTest {
     
     private void prepareEnv() throws SQLException {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap());
-        TableRule tableRule = new TableRule("transaction_test", Lists.newArrayList("transaction_test"), dataSourceRule);
-        ShardingRule shardingRule = new ShardingRule(dataSourceRule, Lists.newArrayList(tableRule));
+        TableRule tableRule = TableRule.builder("transaction_test").dataSourceRule(dataSourceRule).build();
+        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Lists.newArrayList(tableRule)).build();
         shardingDataSource = new ShardingDataSource(shardingRule);
         createTable(shardingDataSource);
         transactionDataSource = createTransactionLogDataSource();

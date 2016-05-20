@@ -19,13 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -34,7 +35,6 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public final class TableRule {
@@ -45,62 +45,70 @@ public final class TableRule {
     
     private final List<DataNode> actualTables;
     
-    private DatabaseShardingStrategy databaseShardingStrategy;
+    private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private TableShardingStrategy tableShardingStrategy;
+    private final TableShardingStrategy tableShardingStrategy;
     
-    public TableRule(final String logicTable, final DataSourceRule dataSourceRule,
+    /**
+     * 全属性构造器.
+     *
+     * <p>用于Spring非命名空间的配置.</p>
+     *
+     * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
+     *
+     * @deprecated
+     */
+    @Deprecated
+    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, 
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
-        this(logicTable, true, new ArrayList<DataNode>(dataSourceRule.getDataSourceNames().size()), databaseShardingStrategy, tableShardingStrategy);
-        generateDataNodes(dataSourceRule);
-    }
-    
-    public TableRule(final String logicTable, final DataSourceRule dataSourceRule) {
-        this(logicTable, dataSourceRule, null, null);
-    }
-    
-    public TableRule(final String logicTable, final DataSourceRule dataSourceRule, final DatabaseShardingStrategy databaseShardingStrategy) {
-        this(logicTable, dataSourceRule, databaseShardingStrategy, null);
-    }
-    
-    public TableRule(final String logicTable, final DataSourceRule dataSourceRule, final TableShardingStrategy tableShardingStrategy) {
-        this(logicTable, dataSourceRule, null, tableShardingStrategy);
-    }
-    
-    public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule,
-                     final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
-        this(logicTable, false, new ArrayList<DataNode>(actualTables.size() * dataSourceRule.getDataSourceNames().size()), databaseShardingStrategy, tableShardingStrategy);
-        generateDataNodes(actualTables, dataSourceRule);
-    }
-    
-    public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule) {
-        this(logicTable, actualTables, dataSourceRule, null, null);
-    }
-    
-    public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule, final DatabaseShardingStrategy databaseShardingStrategy) {
-        this(logicTable, actualTables, dataSourceRule, databaseShardingStrategy, null);
-    }
-    
-    public TableRule(final String logicTable, final List<String> actualTables, final DataSourceRule dataSourceRule, final TableShardingStrategy tableShardingStrategy) {
-        this(logicTable, actualTables, dataSourceRule, null, tableShardingStrategy);
-    }
-    
-    private void generateDataNodes(final DataSourceRule dataSourceRule) {
-        for (String each : dataSourceRule.getDataSourceNames()) {
-            actualTables.add(new DynamicDataNode(each));
+        Preconditions.checkNotNull(logicTable);
+        this.logicTable = logicTable;
+        this.dynamic = dynamic;
+        this.databaseShardingStrategy = databaseShardingStrategy;
+        this.tableShardingStrategy = tableShardingStrategy;
+        if (dynamic) {
+            Preconditions.checkNotNull(dataSourceRule);
+            this.actualTables = generateDataNodes(dataSourceRule);
+        } else if (null == actualTables || actualTables.isEmpty()) {
+            Preconditions.checkNotNull(dataSourceRule);
+            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), dataSourceRule);
+        } else {
+            this.actualTables = generateDataNodes(actualTables, dataSourceRule);
         }
     }
     
-    private void generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule) {
+    /**
+     * 获取表规则配置对象构建器.
+     * 
+     * @param logicTable 逻辑表名称 
+     * @return 表规则配置对象构建器
+     */
+    public static TableRuleBuilder builder(final String logicTable) {
+        return new TableRuleBuilder(logicTable);
+    }
+    
+    private List<DataNode> generateDataNodes(final DataSourceRule dataSourceRule) {
+        Collection<String> dataSourceNames = dataSourceRule.getDataSourceNames();
+        List<DataNode> result = new ArrayList<>(dataSourceNames.size());
+        for (String each : dataSourceNames) {
+            result.add(new DynamicDataNode(each));
+        }
+        return result;
+    }
+    
+    private List<DataNode> generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule) {
+        Collection<String> dataSourceNames = null == dataSourceRule ? Collections.<String>emptyList() : dataSourceRule.getDataSourceNames();
+        List<DataNode> result = new ArrayList<>(actualTables.size() * (dataSourceNames.isEmpty() ? 1 : dataSourceNames.size()));
         for (String actualTable : actualTables) {
             if (DataNode.isValidDataNode(actualTable)) {
-                this.actualTables.add(new DataNode(actualTable));
+                result.add(new DataNode(actualTable));
             } else {
-                for (String dataSourceName : dataSourceRule.getDataSourceNames()) {
-                    this.actualTables.add(new DataNode(dataSourceName, actualTable));
+                for (String dataSourceName : dataSourceNames) {
+                    result.add(new DataNode(dataSourceName, actualTable));
                 }
             }
         }
+        return result;
     }
     
     /**
@@ -173,5 +181,88 @@ public final class TableRule {
             result++;
         }
         return -1;
+    }
+    
+    /**
+     * 表规则配置对象构建器.
+     */
+    @RequiredArgsConstructor
+    public static class TableRuleBuilder {
+        
+        private final String logicTable;
+        
+        private boolean dynamic;
+        
+        private List<String> actualTables;
+        
+        private DataSourceRule dataSourceRule;
+        
+        private DatabaseShardingStrategy databaseShardingStrategy;
+        
+        private TableShardingStrategy tableShardingStrategy;
+        
+        /**
+         * 构建是否为动态表.
+         * 
+         * @param dynamic 是否为动态表
+         * @return 真实表集合
+         */
+        public TableRuleBuilder dynamic(final boolean dynamic) {
+            this.dynamic = dynamic;
+            return this;
+        }
+        
+        /**
+         * 构建真实表集合.
+         * 
+         * @param actualTables 真实表集合
+         * @return 真实表集合
+         */
+        public TableRuleBuilder actualTables(final List<String> actualTables) {
+            this.actualTables = actualTables;
+            return this;
+        }
+        
+        /**
+         * 构建数据源分片规则.
+         * 
+         * @param dataSourceRule 数据源分片规则
+         * @return 规则配置对象构建器
+         */
+        public TableRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
+            this.dataSourceRule = dataSourceRule;
+            return this;
+        }
+        
+        /**
+         * 构建数据库分片策略.
+         * 
+         * @param databaseShardingStrategy 数据库分片策略
+         * @return 规则配置对象构建器
+         */
+        public TableRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
+            this.databaseShardingStrategy = databaseShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建表分片策略.
+         * 
+         * @param tableShardingStrategy 表分片策略
+         * @return 规则配置对象构建器
+         */
+        public TableRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
+            this.tableShardingStrategy = tableShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建表规则配置对象.
+         * 
+         * @return 表规则配置对象
+         */
+        public TableRule build() {
+            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, databaseShardingStrategy, tableShardingStrategy);
+        }
     }
 }

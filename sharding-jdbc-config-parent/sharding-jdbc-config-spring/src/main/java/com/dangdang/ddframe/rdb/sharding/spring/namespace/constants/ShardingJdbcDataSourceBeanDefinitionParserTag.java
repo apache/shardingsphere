@@ -46,6 +46,8 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String LOGIC_TABLES_ATTR = "logic-tables";
     
+    public static final String DYNAMIC_TABLE_ATTR = "dynamic";
+    
     public static final String ACTUAL_TABLES_ATTR = "actual-tables";
     
     public static final String DATABASE_STRATEGY_ATTR = "database-strategy";

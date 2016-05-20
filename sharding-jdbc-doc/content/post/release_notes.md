@@ -11,12 +11,15 @@ weight = 1
 ### 结构调整
 
 1. [ISSUE #60](https://github.com/dangdangdotcom/sharding-jdbc/issues/60) API调整，抽离ShardingDataSource，使用工厂代替
+1. [ISSUE #76](https://github.com/dangdangdotcom/sharding-jdbc/issues/76) ShardingRule和TableRule调整为Builder模式
+1. [ISSUE #77](https://github.com/dangdangdotcom/sharding-jdbc/issues/77) ShardingRule和TableRule调整为Builder模式
 
 ### 功能提升
 
 1. [ISSUE #61](https://github.com/dangdangdotcom/sharding-jdbc/issues/61) 在ShardingValue类中加入逻辑表名
 1. [ISSUE #66](https://github.com/dangdangdotcom/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
 1. [ISSUE #72](https://github.com/dangdangdotcom/sharding-jdbc/issues/72) 对于select union all形式的批量插入支持
+1. [ISSUE #78](https://github.com/dangdangdotcom/sharding-jdbc/issues/78) 简化只分库配置，无需配置逻辑表和真实表对应关系
 
 ### 缺陷修正
 

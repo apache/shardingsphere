@@ -122,11 +122,12 @@
 ## 规则配置
 `Sharding-JDBC`的分库分表通过规则配置描述，请简单浏览配置全貌：
 ```java
- ShardingRule shardingRule = new ShardingRule(
-                dataSourceRule, 
-                Arrays.asList(tableRule), 
-                new DatabaseShardingStrategy("sharding_column_1", new XXXShardingAlgorithm()),
-                new TableShardingStrategy("sharding_column_2", new XXXShardingAlgorithm()));
+ ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(tableRules)
+        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column_1", new XXXShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy("sharding_column_2", new XXXShardingAlgorithm())))
+        .build();
 ```
 规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和`tableRule`绑定等。
 

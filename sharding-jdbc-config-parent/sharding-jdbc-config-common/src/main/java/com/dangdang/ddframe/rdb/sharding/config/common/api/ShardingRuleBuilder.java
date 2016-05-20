@@ -21,10 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
@@ -38,6 +34,10 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfi
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -83,9 +83,9 @@ public class ShardingRuleBuilder {
     public ShardingRule build() {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
-        return new ShardingRule(dataSourceRule, tableRules, buildBindingTableRules(tableRules),
-                buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class),
-                buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class));
+        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
+                .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class))
+                .tableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class)).build();
     }
     
     private DataSourceRule buildDataSourceRule() {
@@ -96,17 +96,13 @@ public class ShardingRuleBuilder {
     private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {
         Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
         for (Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
-            TableRule tableRule;
-            if (null == each.getValue().getActualTables()) {
-                tableRule = new TableRule(each.getKey(), dataSourceRule,
-                        buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
-                        buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
-            } else {
-                tableRule = new TableRule(each.getKey(), new InlineParser(each.getValue().getActualTables()).evaluate(), dataSourceRule,
-                        buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
-                        buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
+            TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(each.getKey()).dataSourceRule(dataSourceRule).dynamic(each.getValue().isDynamic())
+                    .databaseShardingStrategy(buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class))
+                    .tableShardingStrategy(buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
+            if (null != each.getValue().getActualTables()) {
+                tableRuleBuilder.actualTables(new InlineParser(each.getValue().getActualTables()).evaluate());
             }
-            result.add(tableRule);
+            result.add(tableRuleBuilder.build());
         }
         return result;
     }
