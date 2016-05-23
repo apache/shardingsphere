@@ -90,7 +90,8 @@ public class ShardingRuleBuilder {
     
     private DataSourceRule buildDataSourceRule() {
         Preconditions.checkArgument(!shardingRuleConfig.getDataSource().isEmpty() || MapUtils.isNotEmpty(externalDataSourceMap), "Sharding JDBC: No data source config");
-        return !shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(shardingRuleConfig.getDataSource()) : new DataSourceRule(externalDataSourceMap);
+        return shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(externalDataSourceMap, shardingRuleConfig.getDefaultDataSourceName())
+                : new DataSourceRule(shardingRuleConfig.getDataSource(), shardingRuleConfig.getDefaultDataSourceName());
     }
     
     private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {

@@ -28,7 +28,7 @@ import java.util.Properties;
  * 已废弃, 请使用ShardingDataSourceFactory创建数据源. 未来版本中将删除此类.
  * </p>
  * 
- * @deprecated 
+ * @deprecated 已废弃, 请使用ShardingDataSourceFactory创建数据源. 未来版本中将删除此类.
  * @author zhangliang
  */
 @Deprecated

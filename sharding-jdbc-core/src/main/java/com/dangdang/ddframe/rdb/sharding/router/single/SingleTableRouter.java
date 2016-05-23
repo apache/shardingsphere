@@ -19,9 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.router.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
+import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
@@ -32,10 +35,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 单逻辑表的库表路由.
@@ -52,7 +58,7 @@ public final class SingleTableRouter {
     
     private final ConditionContext conditionContext;
     
-    private final Optional<TableRule> tableRule;
+    private final TableRule tableRule;
     
     private final SQLStatementType sqlStatementType;
     
@@ -61,7 +67,23 @@ public final class SingleTableRouter {
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;
         this.sqlStatementType = sqlStatementType;
-        tableRule = shardingRule.findTableRule(logicTable);
+        Optional<TableRule> tableRuleOptional = shardingRule.findTableRule(logicTable);
+        if (tableRuleOptional.isPresent()) {
+            tableRule = tableRuleOptional.get();
+        } else if (shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {
+            tableRule = createTableRuleWithDefaultDataSource(logicTable, shardingRule.getDataSourceRule());
+        } else {
+            throw new IllegalArgumentException(String.format("Cannot find table rule and default data source with logic table: '%s'", logicTable));
+        }
+    }
+    
+    private TableRule createTableRuleWithDefaultDataSource(final String logicTable, final DataSourceRule defaultDataSourceRule) {
+        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
+        defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
+        return TableRule.builder(logicTable)
+                .dataSourceRule(new DataSourceRule(defaultDataSourceMap))
+                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm()))
+                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
     }
     
     /**
@@ -70,44 +92,40 @@ public final class SingleTableRouter {
      * @return 路由结果
      */
     public SingleRoutingResult route() {
-        if (!tableRule.isPresent()) {
-            log.trace("Can not find table rule of [{}]", logicTable);
-            return null;
-        }
         Collection<String> routedDataSources = routeDataSources();
         Collection<String> routedTables = routeTables(routedDataSources);
         return generateRoutingResult(routedDataSources, routedTables);
     }
     
     private Collection<String> routeDataSources() {
-        DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule.get());
+        DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
         if (HintManagerHolder.isUseHint()) {
             shardingValues = getDatabaseShardingValuesFromHint(strategy.getShardingColumns());
         } else {
             shardingValues = getShardingValues(strategy.getShardingColumns());
         }
-        logBeforeRoute("database", logicTable, tableRule.get().getActualDatasourceNames(), strategy.getShardingColumns(), shardingValues);
-        Collection<String> result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.get().getActualDatasourceNames(), shardingValues));
+        logBeforeRoute("database", logicTable, tableRule.getActualDatasourceNames(), strategy.getShardingColumns(), shardingValues);
+        Collection<String> result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.getActualDatasourceNames(), shardingValues));
         logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
     }
     
     private Collection<String> routeTables(final Collection<String> routedDataSources) {
-        TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule.get());
+        TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
         if (HintManagerHolder.isUseHint()) {
             shardingValues = getTableShardingValuesFromHint(strategy.getShardingColumns());
         } else {
             shardingValues = getShardingValues(strategy.getShardingColumns());
         }
-        logBeforeRoute("table", logicTable, tableRule.get().getActualTables(), strategy.getShardingColumns(), shardingValues);
+        logBeforeRoute("table", logicTable, tableRule.getActualTables(), strategy.getShardingColumns(), shardingValues);
         Collection<String> result;
-        if (tableRule.get().isDynamic()) {
+        if (tableRule.isDynamic()) {
             result = new HashSet<>(strategy.doDynamicSharding(shardingValues));
         } else {
-            result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.get().getActualTableNames(routedDataSources), shardingValues));    
+            result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.getActualTableNames(routedDataSources), shardingValues));    
         }
         logAfterRoute("table", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no table route info");
@@ -157,7 +175,7 @@ public final class SingleTableRouter {
     
     private SingleRoutingResult generateRoutingResult(final Collection<String> routedDataSources, final Collection<String> routedTables) {
         SingleRoutingResult result = new SingleRoutingResult();
-        for (DataNode each : tableRule.get().getActualDataNodes(routedDataSources, routedTables)) {
+        for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
             result.put(each.getDataSourceName(), new SingleRoutingTableFactor(logicTable, each.getTableName()));
         }
         return result;

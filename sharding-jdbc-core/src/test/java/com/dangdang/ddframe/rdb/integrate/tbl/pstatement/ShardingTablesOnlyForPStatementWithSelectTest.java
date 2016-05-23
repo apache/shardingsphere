@@ -17,15 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl.pstatement;
 
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import java.sql.SQLException;
 
 public final class ShardingTablesOnlyForPStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
@@ -103,11 +101,5 @@ public final class ShardingTablesOnlyForPStatementWithSelectTest extends Abstrac
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN `t_config` c ON o.status = c.status ORDER BY i.item_id";
         assertDataSet("integrate/dataset/tbl/expect/select/SelectNoShardingTable.xml", shardingDataSource.getConnection(), "t_order_item", sql);
-    }
-    
-    @Test(expected = ShardingJdbcException.class)
-    public void assertSelectConfigTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_config` c";
-        assertDataSet(null, shardingDataSource.getConnection(), "t_config", sql);
     }
 }

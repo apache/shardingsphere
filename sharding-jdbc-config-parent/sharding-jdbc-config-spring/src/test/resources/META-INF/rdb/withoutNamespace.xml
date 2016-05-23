@@ -8,12 +8,13 @@
     <import resource="datasource/dataSource.xml" />
 
     <bean id="dataSourceRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule">
-        <constructor-arg>
+        <constructor-arg index="0">
             <map>
                 <entry key="dbtbl_0" value-ref="dbtbl_0"/>
                 <entry key="dbtbl_1" value-ref="dbtbl_1"/>
             </map>
         </constructor-arg>
+        <constructor-arg index="1" value="dbtbl_0" />
     </bean>
     
     <bean id="orderTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">

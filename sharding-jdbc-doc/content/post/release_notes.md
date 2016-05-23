@@ -20,6 +20,7 @@ weight = 1
 1. [ISSUE #66](https://github.com/dangdangdotcom/sharding-jdbc/issues/66) 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持
 1. [ISSUE #72](https://github.com/dangdangdotcom/sharding-jdbc/issues/72) 对于select union all形式的批量插入支持
 1. [ISSUE #78](https://github.com/dangdangdotcom/sharding-jdbc/issues/78) 简化只分库配置，无需配置逻辑表和真实表对应关系
+1. [ISSUE #80](https://github.com/dangdangdotcom/sharding-jdbc/issues/80) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule
 
 ### 缺陷修正
 

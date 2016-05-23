@@ -24,6 +24,7 @@
                 <xsd:element ref="default-table-strategy" minOccurs="0" maxOccurs="1"/>
             </xsd:sequence>
             <xsd:attribute name="data-sources" type="xsd:string" use="required" />
+            <xsd:attribute name="default-data-source" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="table-rules">

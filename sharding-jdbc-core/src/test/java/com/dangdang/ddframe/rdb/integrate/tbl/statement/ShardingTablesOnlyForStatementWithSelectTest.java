@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl.statement;
 
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 public final class ShardingTablesOnlyForStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
@@ -89,11 +88,5 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
         assertDataSet("integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml", 
                 shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "init"));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "none"));
-    }
-    
-    @Test(expected = ShardingJdbcException.class)
-    public void assertSelectConfigTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_config` c";
-        assertDataSet(null, shardingDataSource.getConnection(), "t_config", sql);
     }
 }

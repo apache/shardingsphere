@@ -12,6 +12,8 @@ dataSource:
     password: 
     maxActive: 100
     
+defaultDataSourceName: db0
+    
 tables:
   config:
     actualTables: config_${0..1}

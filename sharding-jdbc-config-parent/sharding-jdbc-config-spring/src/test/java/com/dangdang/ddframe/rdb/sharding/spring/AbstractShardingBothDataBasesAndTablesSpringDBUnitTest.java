@@ -38,6 +38,7 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
     private void insertData() throws SQLException {
         String orderSql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
         String orderItemSql = "INSERT INTO `t_order_item` (`order_item_id`, `order_id`, `user_id`, `status`) VALUES (?, ?, ?, ?)";
+        String configSql = "INSERT INTO `t_config` (`id`, `status`) VALUES (?, ?)";
         for (int orderId = 1; orderId <= 4; orderId++) {
             for (int userId = 1; userId <= 2; userId++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
@@ -61,6 +62,13 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
                     preparedStatement.setInt(2, orderId);
                     preparedStatement.setInt(3, userId);
                     preparedStatement.setString(4, "insert");
+                    preparedStatement.execute();
+                    preparedStatement.close();
+    
+    
+                    preparedStatement = connection.prepareStatement(configSql);
+                    preparedStatement.setInt(1,  new Long(System.nanoTime()).intValue());
+                    preparedStatement.setString(2, "insert");
                     preparedStatement.execute();
                     preparedStatement.close();
                 }
@@ -91,4 +99,27 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
             preparedStatement.close();
         }
     }
+    
+//    private void selectDefaultData() throws SQLException {
+//        String sql = "SELECT * FROM `t_config`";
+//        try (Connection connection = getShardingDataSource().getConnection()) {
+//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//            preparedStatement.setInt(1, 1);
+//            preparedStatement.setInt(2, 1);
+//            preparedStatement.setInt(3, 1);
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            int count = 0;
+//            while (resultSet.next()) {
+//                if (0 == count) {
+//                    assertThat(resultSet.getInt(1), is(1));
+//                    assertThat(resultSet.getInt(2), is(5));
+//                } else if (1 == count) {
+//                    assertThat(resultSet.getInt(1), is(1));
+//                    assertThat(resultSet.getInt(2), is(1));
+//                }
+//                count++;
+//            }
+//            preparedStatement.close();
+//        }
+//    }
 }

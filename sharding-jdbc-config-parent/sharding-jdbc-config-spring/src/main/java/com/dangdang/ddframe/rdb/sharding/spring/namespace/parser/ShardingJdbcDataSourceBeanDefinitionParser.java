@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
@@ -38,6 +33,11 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * 基于Spring命名空间的数据源解析器.
@@ -60,6 +60,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfig.class);
         factory.addPropertyValue("dataSource", parseDataSources(shardingRuleElement, parserContext));
+        parseDefaultDataSource(factory, shardingRuleElement);
         factory.addPropertyValue("tables", parseTableRulesConfig(shardingRuleElement));
         factory.addPropertyValue("bindingTables", parseBindingTablesConfig(shardingRuleElement));
         factory.addPropertyValue("defaultDatabaseStrategy", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
@@ -74,6 +75,13 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
             result.put(each, parserContext.getRegistry().getBeanDefinition(each));
         }
         return result;
+    }
+    
+    private void parseDefaultDataSource(final BeanDefinitionBuilder factory, final Element element) {
+        String defaultDataSource = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATA_SOURCE_TAG);
+        if (!Strings.isNullOrEmpty(defaultDataSource)) {
+            factory.addPropertyValue("defaultDataSourceName", defaultDataSource);
+        }
     }
     
     private Map<String, BeanDefinition> parseTableRulesConfig(final Element element) {

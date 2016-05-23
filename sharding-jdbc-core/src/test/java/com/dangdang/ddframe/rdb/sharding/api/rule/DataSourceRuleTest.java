@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import com.dangdang.ddframe.rdb.sharding.api.rule.fixture.TestDataSource;
+import com.google.common.collect.Sets;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.sharding.api.rule.fixture.TestDataSource;
-import com.google.common.collect.Sets;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 public final class DataSourceRuleTest {
     
@@ -61,6 +60,25 @@ public final class DataSourceRuleTest {
     
     private void assertDataSource(final String dataSourceName) {
         assertThat(dataSourceRule.getDataSource(dataSourceName), is((DataSource) new TestDataSource(dataSourceName)));
+    }
+    
+    @Test
+    public void assertGetDefaultDataSourceWhenNotSet() {
+        assertFalse(dataSourceRule.getDefaultDataSource().isPresent());
+    }
+    
+    @Test
+    public void assertGetDefaultDataSourceWithSingleDataSource() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1);
+        dataSourceMap.put("ds0", new TestDataSource("ds0"));
+        dataSourceRule = new DataSourceRule(dataSourceMap);
+        assertThat(dataSourceRule.getDefaultDataSource().get(), is(dataSourceRule.getDataSource("ds0")));
+    }
+    
+    @Test
+    public void assertGetDefaultDataSource() {
+        dataSourceRule = new DataSourceRule(dataSourceMap, "ds0");
+        assertThat(dataSourceRule.getDefaultDataSource().get(), is(dataSourceRule.getDataSource("ds0")));
     }
     
     @Test

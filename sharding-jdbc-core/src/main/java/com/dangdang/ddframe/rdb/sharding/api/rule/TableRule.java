@@ -56,7 +56,7 @@ public final class TableRule {
      *
      * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
      *
-     * @deprecated
+     * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
      */
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, 

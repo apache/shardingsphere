@@ -38,7 +38,7 @@ import java.util.Map;
 public final class StaticShardingBothHelper {
     
     public static ShardingDataSource getShardingDataSource(final Map<String, DataSource> dataSourceMap) {
-        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
+        DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap, "dataSource_dbtbl_0");
         TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
                 "t_order_0",
                 "t_order_1",
@@ -61,7 +61,8 @@ public final class StaticShardingBothHelper {
                 "t_order_item_7",
                 "t_order_item_8",
                 "t_order_item_9")).dataSourceRule(dataSourceRule).build();
-        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
+        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();

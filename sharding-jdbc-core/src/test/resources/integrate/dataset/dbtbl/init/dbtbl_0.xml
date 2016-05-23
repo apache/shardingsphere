@@ -32,4 +32,6 @@
     <t_order_item_9 item_id="100901" order_id="1009" user_id="10" status="init" />
     
     <t_config id="1" status="init" />
+    
+    <t_global id="1" status="global" />
 </dataset>

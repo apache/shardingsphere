@@ -58,7 +58,7 @@ public final class ShardingRule {
      * 
      * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
      * 
-     * @deprecated
+     * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
      */
     @Deprecated
     public ShardingRule(

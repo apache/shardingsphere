@@ -37,6 +37,8 @@ dataSource:
     username: root
     password: 
     
+defaultDataSourceName: ds_0
+
 tables:
   config:
     actualTables: t_config
@@ -78,8 +80,10 @@ dataSource: 数据源配置
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
   
-  tables: 分库分表配置，可配置多个logic_table_name
+tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
         dynamic: 是否为动态表
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
@@ -168,7 +172,7 @@ props: 属性配置(可选)
     <rdb:strategy id="tableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
+        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
             <rdb:table-rules>
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="tableStrategy"/>
                 <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
@@ -201,10 +205,11 @@ props: 属性配置(可选)
 
 ### \<rdb:sharding-rule/>
 
-| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                          |
-| ----------------------------- | ------------ | ---------- | ------ | ------------------------------ |
-| data-sources                  | 属性         | String      |   是   | 数据源Bean列表，多个Bean以逗号分隔 |
-| table-rules                   | 标签         |   -         |   是   | 分片规则列表                     |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                    |
+| ----------------------------- | ------------ | ---------- | ------ | -------------------------------------------------------- |
+| data-sources                  | 属性         | String      |   是   | 数据源Bean列表，多个Bean以逗号分隔                           |
+| default-data-source           | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位           |
+| table-rules                   | 标签         |   -         |   是   | 分片规则列表                                               |
 
 ### \<rdb:table-rules/>
 

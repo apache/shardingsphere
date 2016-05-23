@@ -64,4 +64,10 @@ public final class StaticShardingBothForStatementWithSelectTest extends Abstract
                 getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "init"));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 11, 1009, 1108, "none"));
     }
+    
+    @Test
+    public void assertSelectGlobalTableOnly() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT * FROM t_global";
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGlobalTableOnly.xml", getShardingDataSource().getConnection(), "t_global", sql);
+    }
 }

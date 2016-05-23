@@ -34,6 +34,8 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String DATA_SOURCES_TAG = "data-sources";
     
+    public static final String DEFAULT_DATA_SOURCE_TAG = "default-data-source";
+    
     public static final String TABLE_RULES_TAG = "table-rules";
     
     public static final String TABLE_RULE_TAG = "table-rule";
