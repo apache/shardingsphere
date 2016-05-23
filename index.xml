@@ -208,6 +208,7 @@ try (
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/66&#34;&gt;ISSUE #66&lt;/a&gt; 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/72&#34;&gt;ISSUE #72&lt;/a&gt; 对于select union all形式的批量插入支持&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/78&#34;&gt;ISSUE #78&lt;/a&gt; 简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/80&#34;&gt;ISSUE #80&lt;/a&gt; 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
@@ -325,6 +326,8 @@ try (
     username: root
     password: 
     
+defaultDataSourceName: ds_0
+
 tables:
   config:
     actualTables: t_config
@@ -365,8 +368,10 @@ props:
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
   
-  tables: 分库分表配置，可配置多个logic_table_name
+tables: 分库分表配置，可配置多个logic_table_name
     &amp;lt;logic_table_name&amp;gt;: 逻辑表名
         dynamic: 是否为动态表
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
@@ -455,7 +460,7 @@ props: 属性配置(可选)
     &amp;lt;rdb:strategy id=&amp;quot;tableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&amp;quot;/&amp;gt;
 
     &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
-        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0,dbtbl_1&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0,dbtbl_1&amp;quot; default-data-source=&amp;quot;dbtbl_0&amp;quot;&amp;gt;
             &amp;lt;rdb:table-rules&amp;gt;
                 &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
                 &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
@@ -560,6 +565,14 @@ props: 属性配置(可选)
 &lt;td&gt;String&lt;/td&gt;
 &lt;td&gt;是&lt;/td&gt;
 &lt;td&gt;数据源Bean列表，多个Bean以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-data-source&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认数据源名称，未配置分片规则的表将通过默认数据源定位&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
@@ -2332,7 +2345,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;ol&gt;
 &lt;li&gt;动态表配置 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;简化只分表配置，可指定默认数据源,简化单库TableRule配置&lt;/li&gt;
+&lt;li&gt;简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;

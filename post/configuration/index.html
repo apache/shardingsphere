@@ -138,6 +138,8 @@ body {
     username: root
     password: 
     
+defaultDataSourceName: ds_0
+
 tables:
   config:
     actualTables: t_config
@@ -178,8 +180,10 @@ props:
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
   
-  tables: 分库分表配置，可配置多个logic_table_name
+tables: 分库分表配置，可配置多个logic_table_name
     &lt;logic_table_name&gt;: 逻辑表名
         dynamic: 是否为动态表
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
@@ -268,7 +272,7 @@ props: 属性配置(可选)
     &lt;rdb:strategy id=&quot;tableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&quot;/&gt;
 
     &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
-        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1&quot;&gt;
+        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1&quot; default-data-source=&quot;dbtbl_0&quot;&gt;
             &lt;rdb:table-rules&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
@@ -373,6 +377,14 @@ props: 属性配置(可选)
 <td>String</td>
 <td>是</td>
 <td>数据源Bean列表，多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>default-data-source</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认数据源名称，未配置分片规则的表将通过默认数据源定位</td>
 </tr>
 
 <tr>
