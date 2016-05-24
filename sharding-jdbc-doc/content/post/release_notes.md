@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.2.2-SNAPSHOT
 
+### 缺陷修正
+
+1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/81) 关联表查询使用or查询条件解析结果异常
+
 ## 1.2.1
 
 ### 结构调整

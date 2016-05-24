@@ -41,8 +41,10 @@ public class OrVisitor extends AbstractMySQLVisitor {
     public OrVisitor(final SQLASTOutputVisitor dependencyVisitor) {
         setParameters(dependencyVisitor.getParameters());
         SQLVisitor visitor = (SQLVisitor) dependencyVisitor;
-        String currentTableName = null == visitor.getParseContext().getCurrentTable() ? "" : visitor.getParseContext().getCurrentTable().getName();
-        getParseContext().setCurrentTable(currentTableName, Optional.<String>absent());
+        if (null != visitor.getParseContext().getCurrentTable()) {
+            getParseContext().setCurrentTable(visitor.getParseContext().getCurrentTable().getName(), Optional.<String>absent());
+        }
+        getParseContext().getParsedResult().getRouteContext().getTables().addAll(visitor.getParseContext().getParsedResult().getRouteContext().getTables());
         getParseContext().setShardingColumns(visitor.getParseContext().getShardingColumns());
     }
     
