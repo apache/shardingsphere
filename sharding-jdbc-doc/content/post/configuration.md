@@ -87,6 +87,7 @@ tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
         dynamic: 是否为动态表
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -224,8 +225,9 @@ props: 属性配置(可选)
 | logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
 | dynamic                       | 属性         |  boolean    |   否   | 是否动态表 |
 | actual-tables                 | 属性         |  String     |   否   | 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true) |
+| data-source-names             | 属性         |  String     |   否   | 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源                |
 | database-strategy             | 属性         |  String     |   否   | 分库策略，对应`<rdb:strategy>`中分库策略id, 如果不填需配置`<rdb:default-database-strategy/>` |
-| table-strategy                | 属性         |  String     |   否   | 分表策略，对应`<rdb:strategy>`中分表策略id, 如果不填需配置`<rdb:default-table-strategy/>` |
+| table-strategy                | 属性         |  String     |   否   | 分表策略，对应`<rdb:strategy>`中分表策略id, 如果不填需配置`<rdb:default-table-strategy/>`    |
 
 ### \<rdb:binding-table-rules/>
 

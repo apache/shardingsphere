@@ -15,27 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
+package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
-
-/**
- * 表规则配置.
- * 
- * @author gaohongtao
- */
-@Getter
-@Setter
-public class TableRuleConfig {
+public final class ClosureTableShardingAlgorithmTest extends AbstractClosureShardingAlgorithmTest {
     
-    private boolean dynamic;
+    @Override
+    protected ClosureShardingAlgorithm createClosureShardingAlgorithm() {
+        return new ClosureTableShardingAlgorithm(EXPRESSION, LOG_ROOT);
+    }
     
-    private String actualTables;
-    
-    private String dataSourceNames;
-    
-    private StrategyConfig databaseStrategy;
-    
-    private StrategyConfig tableStrategy;
+    @Override
+    protected ClosureShardingAlgorithm createErrorClosureShardingAlgorithm() {
+        return new ClosureTableShardingAlgorithm(WRONG_EXPRESSION, LOG_ROOT);
+    }
 }

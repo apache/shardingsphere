@@ -116,6 +116,15 @@ public final class TableRuleTest {
         assertNull(actual.getTableShardingStrategy());
     }
     
+    @Test
+    public void assertTableRuleWithDataSourceNames() {
+        TableRule actual = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2"))
+                .dataSourceRule(createDataSourceRule()).dataSourceNames(Arrays.asList("ds0", "ds1")).build();
+        assertActualTable(actual);
+        assertNull(actual.getDatabaseShardingStrategy());
+        assertNull(actual.getTableShardingStrategy());
+    }
+    
     private void assertActualTable(final TableRule actual) {
         assertThat(actual.getActualTables().size(), is(6));
         assertTrue(actual.getActualTables().contains(new DataNode("ds0", "table_0")));
@@ -124,6 +133,11 @@ public final class TableRuleTest {
         assertTrue(actual.getActualTables().contains(new DataNode("ds1", "table_0")));
         assertTrue(actual.getActualTables().contains(new DataNode("ds1", "table_1")));
         assertTrue(actual.getActualTables().contains(new DataNode("ds1", "table_2")));
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void assertTableRuleWithoutActualTablesAndDataSourceRule() {
+        TableRule.builder("logicTable").build();
     }
     
     @Test

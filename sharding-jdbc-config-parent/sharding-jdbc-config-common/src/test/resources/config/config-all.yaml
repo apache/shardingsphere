@@ -17,6 +17,7 @@ defaultDataSourceName: db0
 tables:
   config:
     actualTables: config_${0..1}
+    dataSourceNames: config
     
   t_order: 
     actualTables: t_order_${0..1}

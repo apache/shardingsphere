@@ -15,27 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
+package com.dangdang.ddframe.rdb.sharding.spring.cases.namespace;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.dangdang.ddframe.rdb.sharding.spring.AbstractShardingBothDataBasesAndTablesSpringDBUnitTest;
+import org.springframework.test.context.ContextConfiguration;
 
-/**
- * 表规则配置.
- * 
- * @author gaohongtao
- */
-@Getter
-@Setter
-public class TableRuleConfig {
-    
-    private boolean dynamic;
-    
-    private String actualTables;
-    
-    private String dataSourceNames;
-    
-    private StrategyConfig databaseStrategy;
-    
-    private StrategyConfig tableStrategy;
+@ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceForIndicatedDataSourceNames.xml")
+public final class WithNamespaceForIndicatedDataSourceNamesTest extends AbstractShardingBothDataBasesAndTablesSpringDBUnitTest {
 }
