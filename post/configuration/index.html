@@ -187,6 +187,7 @@ tables: 分库分表配置，可配置多个logic_table_name
     &lt;logic_table_name&gt;: 逻辑表名
         dynamic: 是否为动态表
         actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
             algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
@@ -277,13 +278,13 @@ props: 属性配置(可选)
                 &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
             &lt;/rdb:table-rules&gt;
+            &lt;rdb:binding-table-rules&gt;
+                &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
+            &lt;/rdb:binding-table-rules&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id.longValue() % 2 + 1}&quot;/&gt;
         &lt;/rdb:sharding-rule&gt;
-        &lt;rdb:binding-table-rules&gt;
-            &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
-        &lt;/rdb:binding-table-rules&gt;
-        &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id.longValue() % 2 + 1}&quot;/&gt;
         &lt;rdb:props&gt;
-            &lt;prop key=&quot;metrics.enable&quot;&gt;${metrics.enable}&lt;/prop&gt;
+            &lt;prop key=&quot;metrics.enable&quot;&gt;true&lt;/prop&gt;
         &lt;/rdb:props&gt;
     &lt;/rdb:data-source&gt;
 &lt;/beans&gt;
@@ -457,6 +458,14 @@ props: 属性配置(可选)
 <td>String</td>
 <td>否</td>
 <td>真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)</td>
+</tr>
+
+<tr>
+<td>data-source-names</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源</td>
 </tr>
 
 <tr>
