@@ -118,7 +118,17 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
         validateColumn(columnLabel);
         return currentValue.get(columnLabel);
     }
-    
+
+    @Override
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return (T) currentValue.get(columnIndex);
+    }
+
+    @Override
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return (T) currentValue.get(columnLabel);
+    }
+
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         return columnNamesMetaData.indexOf(columnLabel) + 1;

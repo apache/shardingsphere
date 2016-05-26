@@ -30,14 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -45,26 +38,26 @@ import java.util.TreeMap;
 
 /**
  * 使用行数据集实现的结果集.
- * 
+ *
  * @author gaohongtao
  */
 @Slf4j
 public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupportedOperationRowResultSet {
-    
+
     @Setter
     private List<ResultSet> resultSets;
-    
+
     private boolean isClosed;
-    
+
     private boolean initial;
-    
+
     private final Map<String, Integer> columnLabelToIndexMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    
+
     @Getter(AccessLevel.PROTECTED)
     private Row currentRow;
-    
+
     private boolean wasNullFlag;
-    
+
     @Override
     public boolean next() throws SQLException {
         init();
@@ -74,7 +67,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         }
         return result;
     }
-    
+
     private void init() throws SQLException {
         if (initial) {
             return;
@@ -83,11 +76,11 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         initRows(resultSets);
         initial = true;
     }
-    
+
     protected abstract void initRows(final List<ResultSet> resultSets) throws SQLException;
-    
+
     protected abstract Row nextRow() throws SQLException;
-    
+
     // TODO 能否复用ResultSetFactory里面的
     private void initColumnIndexMap() throws SQLException {
         if (!columnLabelToIndexMap.isEmpty()) {
@@ -100,7 +93,7 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
             columnLabelToIndexMap.put(md.getColumnLabel(index), index);
         }
     }
-    
+
     @Override
     public void close() throws SQLException {
         isClosed = true;
@@ -108,12 +101,12 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
             each.close();
         }
     }
-    
+
     @Override
     public boolean isClosed() throws SQLException {
         return isClosed;
     }
-    
+
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         initColumnIndexMap();
@@ -131,39 +124,104 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
     public Statement getStatement() throws SQLException {
         return resultSets.get(0).getStatement();
     }
-    
+
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
         Preconditions.checkState(!isClosed(), "Result set is closed");
         Preconditions.checkState(initial, "Before start of result set");
         Preconditions.checkState(null != currentRow, "After end of result set");
         Preconditions.checkArgument(currentRow.containsCell(columnIndex), String.format("Column Index %d out of range", columnIndex));
-        
+
         Object cell = currentRow.getCell(columnIndex);
         this.wasNullFlag = null == cell;
         return cell;
     }
-    
+
+    @Override
+    public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException {
+        return getObject(columnIndex);
+    }
+
+    @Override
+    public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException {
+        return getObject(findColumn(columnLabel), map);
+    }
+
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
         return getObject(findColumn(columnLabel));
     }
-    
+
+    @Override
+    public <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
+        if (type == null) {
+            throw new SQLException("Type parameter can not be null");
+        }
+
+        if (type.equals(String.class)) {
+            return (T) getString(columnIndex);
+        } else if (type.equals(BigDecimal.class)) {
+            return (T) getBigDecimal(columnIndex);
+        } else if (type.equals(Boolean.class) || type.equals(Boolean.TYPE)) {
+            return (T) Boolean.valueOf(getBoolean(columnIndex));
+        } else if (type.equals(Integer.class) || type.equals(Integer.TYPE)) {
+            return (T) Integer.valueOf(getInt(columnIndex));
+        } else if (type.equals(Long.class) || type.equals(Long.TYPE)) {
+            return (T) Long.valueOf(getLong(columnIndex));
+        } else if (type.equals(Float.class) || type.equals(Float.TYPE)) {
+            return (T) Float.valueOf(getFloat(columnIndex));
+        } else if (type.equals(Double.class) || type.equals(Double.TYPE)) {
+            return (T) Double.valueOf(getDouble(columnIndex));
+        } else if (type.equals(byte[].class)) {
+            return (T) getBytes(columnIndex);
+        } else if (type.equals(java.sql.Date.class)) {
+            return (T) getDate(columnIndex);
+        } else if (type.equals(Time.class)) {
+            return (T) getTime(columnIndex);
+        } else if (type.equals(Timestamp.class)) {
+            return (T) getTimestamp(columnIndex);
+        } else if (type.equals(Clob.class)) {
+            return (T) getClob(columnIndex);
+        } else if (type.equals(Blob.class)) {
+            return (T) getBlob(columnIndex);
+        } else if (type.equals(Array.class)) {
+            return (T) getArray(columnIndex);
+        } else if (type.equals(Ref.class)) {
+            return (T) getRef(columnIndex);
+        } else if (type.equals(URL.class)) {
+            return (T) getURL(columnIndex);
+        } else {
+            try {
+                return (T) getObject(columnIndex);
+            } catch (ClassCastException cce) {
+                SQLException sqlEx = new SQLException("Conversion not supported for type " + type.getName());
+                sqlEx.initCause(cce);
+                throw sqlEx;
+            }
+        }
+
+    }
+
+    @Override
+    public <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
+        return getObject(findColumn(columnLabel), type);
+    }
+
     @Override
     public boolean wasNull() throws SQLException {
         return wasNullFlag;
     }
-    
+
     @Override
     public String getString(final int columnIndex) throws SQLException {
         return (String) ResultSetUtil.convertValue(getObject(columnIndex), String.class);
     }
-    
+
     @Override
     public String getString(final String columnLabel) throws SQLException {
         return getString(findColumn(columnLabel));
     }
-    
+
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
         Object cell = getObject(columnIndex);
@@ -173,93 +231,93 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         }
         return (cell instanceof Boolean) ? (Boolean) cell : Boolean.valueOf(cell.toString());
     }
-    
+
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
         return getBoolean(findColumn(columnLabel));
     }
-    
+
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
         return (byte) ResultSetUtil.convertValue(getObject(columnIndex), byte.class);
     }
-    
+
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
         return getByte(findColumn(columnLabel));
     }
-    
+
     @Override
     public short getShort(final int columnIndex) throws SQLException {
         return (short) ResultSetUtil.convertValue(getObject(columnIndex), short.class);
     }
-    
+
     @Override
     public short getShort(final String columnLabel) throws SQLException {
         return getShort(findColumn(columnLabel));
     }
-    
+
     @Override
     public int getInt(final int columnIndex) throws SQLException {
         return (int) ResultSetUtil.convertValue(getObject(columnIndex), int.class);
     }
-    
+
     @Override
     public int getInt(final String columnLabel) throws SQLException {
         return getInt(findColumn(columnLabel));
     }
-    
+
     @Override
     public long getLong(final int columnIndex) throws SQLException {
         return (long) ResultSetUtil.convertValue(getObject(columnIndex), long.class);
     }
-    
+
     @Override
     public long getLong(final String columnLabel) throws SQLException {
         return getLong(findColumn(columnLabel));
     }
-    
+
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
         return (float) ResultSetUtil.convertValue(getObject(columnIndex), float.class);
     }
-    
+
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
         return getFloat(findColumn(columnLabel));
     }
-    
+
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
         return (double) ResultSetUtil.convertValue(getObject(columnIndex), double.class);
     }
-    
+
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
         return getDouble(findColumn(columnLabel));
     }
-    
+
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         BigDecimal result = (BigDecimal) ResultSetUtil.convertValue(getObject(columnIndex), BigDecimal.class);
         return result.setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
-    
+
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         return getBigDecimal(findColumn(columnLabel), scale);
     }
-    
+
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(getObject(columnIndex), BigDecimal.class);
     }
-    
+
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
         return getBigDecimal(findColumn(columnLabel));
     }
-    
+
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
         String value = getString(columnIndex);
@@ -268,88 +326,88 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         }
         return value.getBytes();
     }
-    
+
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
         return getBytes(findColumn(columnLabel));
     }
-    
+
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
         return getDate(columnIndex, null);
     }
-    
+
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
         return getDate(findColumn(columnLabel));
     }
-    
+
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
         //TODO 时间相关取值未实现calendar模式
         return (Date) ResultSetUtil.convertValue(getObject(columnIndex), Date.class);
     }
-    
+
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
         return getDate(findColumn(columnLabel), cal);
     }
-    
+
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
         return getTime(columnIndex, null);
     }
-    
+
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
         return getTime(findColumn(columnLabel));
     }
-    
+
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
         return (Time) ResultSetUtil.convertValue(getObject(columnIndex), Time.class);
     }
-    
+
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
         return getTime(findColumn(columnLabel), cal);
     }
-    
+
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
         return getTimestamp(columnIndex, null);
     }
-    
+
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
         return getTimestamp(findColumn(columnLabel));
     }
-    
+
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
         return (Timestamp) ResultSetUtil.convertValue(getObject(columnIndex), Timestamp.class);
     }
-    
+
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
         return getTimestamp(findColumn(columnLabel), cal);
     }
-    
+
     @Override
     public SQLWarning getWarnings() throws SQLException {
         return null;
     }
-    
+
     @Override
     public void clearWarnings() throws SQLException {
-        
+
     }
-    
+
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         return resultSets.get(0).getMetaData();
     }
-    
+
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
         String value = getString(columnIndex);
@@ -362,17 +420,17 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
             throw new SQLException("URL Malformed URL exception");
         }
     }
-    
+
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
         return getURL(findColumn(columnLabel));
     }
-    
+
     @Override
     public int getFetchDirection() throws SQLException {
         return ResultSet.FETCH_FORWARD;
     }
-    
+
     @Override
     public int getFetchSize() throws SQLException {
         int fetchSize = 0;
@@ -381,12 +439,12 @@ public abstract class AbstractRowSetResultSetAdapter extends AbstractUnsupported
         }
         return fetchSize;
     }
-    
+
     @Override
     public int getType() throws SQLException {
         return ResultSet.TYPE_FORWARD_ONLY;
     }
-    
+
     @Override
     public int getConcurrency() throws SQLException {
         return ResultSet.CONCUR_READ_ONLY;

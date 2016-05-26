@@ -32,17 +32,7 @@ import java.util.Map;
  * @author gaohongtao
  */
 public abstract class AbstractUnsupportedOperationRowResultSet extends AbstractUnsupportedOperationResultSet {
-    
-    @Override
-    public Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject");
-    }
-    
-    @Override
-    public Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject");
-    }
-    
+
     @Override
     public InputStream getAsciiStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getAsciiStream");

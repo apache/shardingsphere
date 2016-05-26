@@ -234,15 +234,4 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     public void assertGetRowIdForColumnLabel() throws SQLException {
         actual.getRowId("label");
     }
-    
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnIndexWithType() throws SQLException {
-        actual.getObject(1, String.class);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertObjectForColumnLabelWithType() throws SQLException {
-        actual.getObject("label", String.class);
-    }
 }

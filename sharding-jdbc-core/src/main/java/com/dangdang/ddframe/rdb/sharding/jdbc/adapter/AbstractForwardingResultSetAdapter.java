@@ -335,17 +335,27 @@ public abstract class AbstractForwardingResultSetAdapter extends AbstractUnsuppo
     public final Object getObject(final String columnLabel) throws SQLException {
         return delegate.getObject(columnLabel);
     }
-    
+
     @Override
     public final Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
         return delegate.getObject(columnIndex, map);
     }
-    
+
     @Override
     public final Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
         return delegate.getObject(columnLabel, map);
     }
-    
+
+    @Override
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return delegate.getObject(columnIndex, type);
+    }
+
+    @Override
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return delegate.getObject(columnLabel, type);
+    }
+
     @Override
     public void close() throws SQLException {
         delegate.close();
