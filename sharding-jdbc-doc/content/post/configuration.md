@@ -178,13 +178,13 @@ props: 属性配置(可选)
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="tableStrategy"/>
                 <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
             </rdb:table-rules>
+            <rdb:binding-table-rules>
+                <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
+            </rdb:binding-table-rules>
+            <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id.longValue() % 2 + 1}"/>
         </rdb:sharding-rule>
-        <rdb:binding-table-rules>
-            <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
-        </rdb:binding-table-rules>
-        <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id.longValue() % 2 + 1}"/>
         <rdb:props>
-            <prop key="metrics.enable">${metrics.enable}</prop>
+            <prop key="metrics.enable">true</prop>
         </rdb:props>
     </rdb:data-source>
 </beans>
