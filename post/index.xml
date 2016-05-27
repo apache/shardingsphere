@@ -21,6 +21,12 @@
 
 &lt;h2 id=&#34;1-2-2-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.2-SNAPSHOT&lt;/h2&gt;
 
+&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/85&#34;&gt;ISSUE #85&lt;/a&gt; 读写分离&lt;/li&gt;
+&lt;/ol&gt;
+
 &lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
@@ -65,7 +71,7 @@
 
 &lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
 
-&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+&lt;h3 id=&#34;新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/53&#34;&gt;ISSUE #53&lt;/a&gt; 动态表配置&lt;/li&gt;
@@ -89,7 +95,7 @@
 
 &lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
 
-&lt;h3 id=&#34;新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+&lt;h3 id=&#34;新功能-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/40&#34;&gt;ISSUE #40&lt;/a&gt; 支持YAML文件配置&lt;/li&gt;
@@ -1692,6 +1698,62 @@ jobConfig:
     </item>
     
     <item>
+      <title>读写分离</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave/</guid>
+      <description>
+
+&lt;h1 id=&#34;读写分离:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;读写分离&lt;/h1&gt;
+
+&lt;h2 id=&#34;概念:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;概念&lt;/h2&gt;
+
+&lt;p&gt;为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。&lt;/p&gt;
+
+&lt;h2 id=&#34;支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;支持项&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;提供了一主多从的读写分离配置，可配合分库分表使用。&lt;/li&gt;
+&lt;li&gt;同一线程如果有写入操作，以后的读操作均从主库读取，用于保证同一线程中的数据一致性。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;待支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;待支持项&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Spring命名空间&lt;/li&gt;
+&lt;li&gt;基于Hint的强制主库读取配置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;不支持范围:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;不支持范围&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;主库和从库的数据同步。&lt;/li&gt;
+&lt;li&gt;主库和从库的数据同步延迟导致的数据不一致。&lt;/li&gt;
+&lt;li&gt;主库双写或多写。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;开发示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; // 构建读写分离规则
+ Collection&amp;lt;MasterSlaveRule&amp;gt; masterSlaveRules = new ArrayList&amp;lt;&amp;gt;(2);
+ // ds_0, ds_1是读写分离逻辑数据源, ds_0_master, ds_0_slave_1等数据源是真实数据源
+ masterSlaveRules.add(new MasterSlaveRule(&amp;quot;ds_0&amp;quot;, &amp;quot;ds_0_master&amp;quot;, Arrays.asList(&amp;quot;ds_0_slave_1&amp;quot;, &amp;quot;ds_0_slave_2&amp;quot;));
+ masterSlaveRules.add(new MasterSlaveRule(&amp;quot;ds_1&amp;quot;, &amp;quot;ds_1_master&amp;quot;, Arrays.asList(&amp;quot;ds_1_slave_1&amp;quot;, &amp;quot;ds_1_slave_2&amp;quot;));
+ 
+ ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        // 请注意, TableRule也需要通过builder传入Collection&amp;lt;MasterSlaveRule&amp;gt;
+        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()))
+        .masterSlaveRules(masterSlaveRules)
+        .build();
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>目录结构说明</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</link>
       <pubDate>Thu, 28 Jan 2016 16:14:21 +0800</pubDate>
@@ -2180,7 +2242,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;h1 id=&#34;未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;未来线路规划&lt;/h1&gt;
 
-&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
+&lt;h2 id=&#34;已完成:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;已完成&lt;/h2&gt;
 
 &lt;h3 id=&#34;transaction:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction&lt;/h3&gt;
 
@@ -2198,6 +2260,10 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
+
+&lt;h3 id=&#34;读写分离:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;读写分离&lt;/h3&gt;
 
 &lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
 
@@ -2249,7 +2315,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;h2 id=&#34;待定:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;待定&lt;/h2&gt;
 
 &lt;ol&gt;
-&lt;li&gt;读写分离&lt;/li&gt;
 &lt;li&gt;字典表复制广播&lt;/li&gt;
 &lt;li&gt;HA相关&lt;/li&gt;
 &lt;li&gt;流量控制&lt;/li&gt;
