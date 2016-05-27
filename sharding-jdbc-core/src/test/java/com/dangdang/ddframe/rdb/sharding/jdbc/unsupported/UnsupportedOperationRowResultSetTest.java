@@ -52,17 +52,7 @@ public class UnsupportedOperationRowResultSetTest extends AbstractShardingDataBa
     public void close() throws SQLException {
         actual.close();
     }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void testGetObject() throws Exception {
-        actual.getObject(1, new HashMap<String, Class<?>>());
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void testGetObject1() throws Exception {
-        actual.getObject("no", new HashMap<String, Class<?>>());
-    }
-    
+
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void testGetAsciiStream() throws Exception {
         actual.getAsciiStream(1);

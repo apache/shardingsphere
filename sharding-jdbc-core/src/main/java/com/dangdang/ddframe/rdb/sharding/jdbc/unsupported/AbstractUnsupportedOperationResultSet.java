@@ -211,14 +211,4 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractResu
     public final RowId getRowId(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getRowId");
     }
-    
-    @Override
-    public final <T> T getObject(final int columnIndex, final Class<T> type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject with type");
-    }
-    
-    @Override
-    public final <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getObject with type");
-    }
 }
