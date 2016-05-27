@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -34,9 +35,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.BEFORE_EXECUTE;
-import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.EXECUTE_FAILURE;
-import static com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType.EXECUTE_SUCCESS;
 import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactionType.BestEffortsDelivery;
 
 /**
@@ -74,7 +72,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource());
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLStatementType.SELECT);
                         if (!isValidConnection(conn)) {
                             conn = bedSoftTransaction.getConnection();
                             isNewConnection = true;

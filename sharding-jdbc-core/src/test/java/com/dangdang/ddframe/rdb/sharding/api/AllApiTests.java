@@ -17,19 +17,21 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstantTest;
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNodeTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNodeTest;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRuleTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithmTest;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithmTest;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategyTest;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstantTest;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -50,7 +52,9 @@ import org.junit.runners.Suite;
     NoneDatabaseShardingAlgorithmTest.class, 
     TableShardingStrategyTest.class, 
     NoneTableShardingAlgorithmTest.class, 
-    HintManagerTest.class
+    HintManagerTest.class, 
+    MasterSlaveRuleTest.class, 
+    RoundRobinSlaveLoadBalanceStrategyTest.class
     })
 public class AllApiTests {
 }

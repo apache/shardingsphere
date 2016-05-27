@@ -19,7 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -59,8 +61,8 @@ public final class TableRule {
      * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
      */
     @Deprecated
-    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames, 
-                     final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final Collection<MasterSlaveRule> masterSlaveRules, final DataSourceRule dataSourceRule, 
+                     final Collection<String> dataSourceNames, final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
         this.dynamic = dynamic;
@@ -68,27 +70,27 @@ public final class TableRule {
         this.tableShardingStrategy = tableShardingStrategy;
         if (dynamic) {
             Preconditions.checkNotNull(dataSourceRule);
-            this.actualTables = generateDataNodes(dataSourceRule);
+            this.actualTables = generateDataNodes(masterSlaveRules, dataSourceRule);
         } else if (null == actualTables || actualTables.isEmpty()) {
             Preconditions.checkNotNull(dataSourceRule);
-            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), dataSourceRule, dataSourceNames);
+            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), masterSlaveRules, dataSourceRule, dataSourceNames);
         } else {
-            this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
+            this.actualTables = generateDataNodes(actualTables, masterSlaveRules, dataSourceRule, dataSourceNames);
         }
     }
     
     /**
      * 获取表规则配置对象构建器.
      * 
-     * @param logicTable 逻辑表名称 
+     * @param logicTable 逻辑表名称
      * @return 表规则配置对象构建器
      */
     public static TableRuleBuilder builder(final String logicTable) {
         return new TableRuleBuilder(logicTable);
     }
     
-    private List<DataNode> generateDataNodes(final DataSourceRule dataSourceRule) {
-        Collection<String> dataSourceNames = dataSourceRule.getDataSourceNames();
+    private List<DataNode> generateDataNodes(final Collection<MasterSlaveRule> masterSlaveRules, final DataSourceRule dataSourceRule) {
+        Collection<String> dataSourceNames = getLogicDataSourceNames(masterSlaveRules, dataSourceRule.getDataSourceNames());
         List<DataNode> result = new ArrayList<>(dataSourceNames.size());
         for (String each : dataSourceNames) {
             result.add(new DynamicDataNode(each));
@@ -96,8 +98,9 @@ public final class TableRule {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
-        Collection<String> dataSourceNames = getDataSourceNames(dataSourceRule, actualDataSourceNames);
+    private List<DataNode> generateDataNodes(final List<String> actualTables, final Collection<MasterSlaveRule> masterSlaveRules, 
+                                             final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
+        Collection<String> dataSourceNames = getLogicDataSourceNames(masterSlaveRules, getDataSourceNames(masterSlaveRules, dataSourceRule, actualDataSourceNames));
         List<DataNode> result = new ArrayList<>(actualTables.size() * (dataSourceNames.isEmpty() ? 1 : dataSourceNames.size()));
         for (String actualTable : actualTables) {
             if (DataNode.isValidDataNode(actualTable)) {
@@ -111,14 +114,36 @@ public final class TableRule {
         return result;
     }
     
-    private Collection<String> getDataSourceNames(final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
+    private Collection<String> getDataSourceNames(final Collection<MasterSlaveRule> masterSlaveRules, final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
         if (null == dataSourceRule) {
             return Collections.emptyList();
         }
         if (null == actualDataSourceNames || actualDataSourceNames.isEmpty()) {
             return dataSourceRule.getDataSourceNames();
         }
-        return actualDataSourceNames;
+        return getLogicDataSourceNames(masterSlaveRules, actualDataSourceNames);
+    }
+    
+    private Collection<String> getLogicDataSourceNames(final Collection<MasterSlaveRule> masterSlaveRules, final Collection<String> dataSourceNames) {
+        if (null == masterSlaveRules) {
+            return dataSourceNames;
+        }
+        return Collections2.transform(dataSourceNames, new Function<String, String>() {
+            
+            @Override
+            public String apply(final String input) {
+                return getLogicDataSourceName(masterSlaveRules, input);
+            }
+        });
+    }
+    
+    private String getLogicDataSourceName(final Collection<MasterSlaveRule> masterSlaveRules, final String dataSourceName) {
+        for (MasterSlaveRule each : masterSlaveRules) {
+            if (each.within(dataSourceName)) {
+                return each.getLogicDataSource();
+            }
+        }
+        return dataSourceName;
     }
     
     /**
@@ -205,6 +230,8 @@ public final class TableRule {
         
         private List<String> actualTables;
     
+        private Collection<MasterSlaveRule> masterSlaveRules;
+    
         private DataSourceRule dataSourceRule;
     
         private Collection<String> dataSourceNames;
@@ -217,7 +244,7 @@ public final class TableRule {
          * 构建是否为动态表.
          * 
          * @param dynamic 是否为动态表
-         * @return 真实表集合
+         * @return 规则配置对象构建器
          */
         public TableRuleBuilder dynamic(final boolean dynamic) {
             this.dynamic = dynamic;
@@ -228,10 +255,21 @@ public final class TableRule {
          * 构建真实表集合.
          * 
          * @param actualTables 真实表集合
-         * @return 真实表集合
+         * @return 规则配置对象构建器
          */
         public TableRuleBuilder actualTables(final List<String> actualTables) {
             this.actualTables = actualTables;
+            return this;
+        }
+    
+        /**
+         * 构建读写分离规则.
+         *
+         * @param masterSlaveRules 读写分离规则
+         * @return 规则配置对象构建器
+         */
+        public TableRuleBuilder masterSlaveRules(final Collection<MasterSlaveRule> masterSlaveRules) {
+            this.masterSlaveRules = masterSlaveRules;
             return this;
         }
         
@@ -285,7 +323,7 @@ public final class TableRule {
          * @return 表规则配置对象
          */
         public TableRule build() {
-            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy);
+            return new TableRule(logicTable, dynamic, actualTables, masterSlaveRules, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy);
         }
     }
 }

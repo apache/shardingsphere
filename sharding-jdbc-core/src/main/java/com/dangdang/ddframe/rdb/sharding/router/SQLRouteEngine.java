@@ -17,13 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
@@ -41,6 +37,10 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * SQL路由引擎.
@@ -76,7 +76,7 @@ public final class SQLRouteEngine {
     
     private SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
         Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(parsedResult.getMergeContext());
+        SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
             result.getExecutionUnits().addAll(routeSQL(each, Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<Table, String>() {
                 

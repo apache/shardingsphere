@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -43,7 +44,7 @@ public final class ShardingDataSourceTest {
         Connection connection = mockConnection();
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(connection);
-        assertThat(createShardingDataSource(dataSource).getConnection().getConnection("ds"), is(connection));
+        assertThat(createShardingDataSource(dataSource).getConnection().getConnection("ds", SQLStatementType.SELECT), is(connection));
     }
     
     @Test
@@ -51,7 +52,7 @@ public final class ShardingDataSourceTest {
         Connection connection = mockConnection();
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(connection);
-        assertThat(createShardingDataSource(dataSource).getConnection("username", "password").getConnection("ds"), is(connection));
+        assertThat(createShardingDataSource(dataSource).getConnection("username", "password").getConnection("ds", SQLStatementType.SELECT), is(connection));
     }
     
     private Connection mockConnection() throws SQLException {

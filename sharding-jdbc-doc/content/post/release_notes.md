@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.2.2-SNAPSHOT
 
+### 新功能
+
+1. [ISSUE #85](https://github.com/dangdangdotcom/sharding-jdbc/issues/85) 读写分离
+
 ### 功能提升
 
 1. [ISSUE #82](https://github.com/dangdangdotcom/sharding-jdbc/issues/82) TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源

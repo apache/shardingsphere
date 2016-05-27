@@ -21,15 +21,19 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Builder;
+import com.google.common.collect.Maps;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,7 +42,6 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-@Builder
 public final class ShardingRule {
     
     private final DataSourceRule dataSourceRule;
@@ -47,9 +50,12 @@ public final class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules;
     
-    private DatabaseShardingStrategy databaseShardingStrategy;
+    private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private TableShardingStrategy tableShardingStrategy;
+    private final TableShardingStrategy tableShardingStrategy;
+    
+    @Getter(AccessLevel.NONE)
+    private final Map<String, MasterSlaveRule> masterSlaveRuleMap;
     
     /**
      * 全属性构造器.
@@ -63,7 +69,7 @@ public final class ShardingRule {
     @Deprecated
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final Collection<MasterSlaveRule> masterSlaveRules) {
         Preconditions.checkNotNull(dataSourceRule);
         Preconditions.checkNotNull(tableRules);
         this.dataSourceRule = dataSourceRule;
@@ -73,6 +79,22 @@ public final class ShardingRule {
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
+        masterSlaveRuleMap = Maps.uniqueIndex(null == masterSlaveRules ? Collections.<MasterSlaveRule>emptyList() : masterSlaveRules, new Function<MasterSlaveRule, String>() {
+            
+            @Override
+            public String apply(final MasterSlaveRule input) {
+                return input.getLogicDataSource();
+            }
+        });
+    }
+    
+    /**
+     * 获取表规则配置对象构建器.
+     *
+     * @return 分片规则配置对象构建器
+     */
+    public static ShardingRuleBuilder builder() {
+        return new ShardingRuleBuilder();
     }
     
     /**
@@ -202,5 +224,109 @@ public final class ShardingRule {
             }
         }
         return result;
+    }
+    
+    /**
+     * 根据逻辑数据源名称获取读写分离配置.
+     * 
+     * @param logicDataSource 逻辑数据源名称
+     * @return 读写分离配置
+     */
+    public Optional<MasterSlaveRule> findMasterSlaveRule(final String logicDataSource) {
+        return Optional.fromNullable(masterSlaveRuleMap.get(logicDataSource));
+    }
+    
+    /**
+     * 分片规则配置对象构建器.
+     */
+    @RequiredArgsConstructor
+    public static class ShardingRuleBuilder {
+        
+        private DataSourceRule dataSourceRule;
+    
+        private Collection<TableRule> tableRules;
+    
+        private Collection<BindingTableRule> bindingTableRules;
+    
+        private DatabaseShardingStrategy databaseShardingStrategy;
+    
+        private TableShardingStrategy tableShardingStrategy;
+    
+        private Collection<MasterSlaveRule> masterSlaveRules;
+        
+        /**
+         * 构建数据源配置规则.
+         *
+         * @param dataSourceRule 数据源配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
+            this.dataSourceRule = dataSourceRule;
+            return this;
+        }
+        
+        /**
+         * 构建表配置规则.
+         *
+         * @param tableRules 表配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder tableRules(final Collection<TableRule> tableRules) {
+            this.tableRules = tableRules;
+            return this;
+        }
+        
+        /**
+         * 构建绑定表配置规则.
+         *
+         * @param bindingTableRules 绑定表配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder bindingTableRules(final Collection<BindingTableRule> bindingTableRules) {
+            this.bindingTableRules = bindingTableRules;
+            return this;
+        }
+        
+        /**
+         * 构建默认分库策略.
+         *
+         * @param databaseShardingStrategy 默认分库策略
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
+            this.databaseShardingStrategy = databaseShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建数据源分片规则.
+         *
+         * @param tableShardingStrategy 默认分表策略
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
+            this.tableShardingStrategy = tableShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建数据源分片规则.
+         *
+         * @param masterSlaveRules 读写分离策略集合
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder masterSlaveRules(final Collection<MasterSlaveRule> masterSlaveRules) {
+            this.masterSlaveRules = masterSlaveRules;
+            return this;
+        }
+        
+        /**
+         * 构建分片规则配置对象.
+         *
+         * @return 分片规则配置对象
+         */
+        public ShardingRule build() {
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, masterSlaveRules);
+        }
     }
 }

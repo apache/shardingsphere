@@ -18,9 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,27 +55,30 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * 根据数据源名称获取相应的数据库连接.
      * 
      * @param dataSourceName 数据源名称
+     * @param sqlStatementType SQL语句类型
      * @return 数据库连接
      */
-    public Connection getConnection(final String dataSourceName) throws SQLException {
-        Connection result = getConnectionInternal(dataSourceName);
+    public Connection getConnection(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
+        Connection result = getConnectionInternal(dataSourceName, sqlStatementType);
         replayMethodsInvocation(result);
         return result;
     }
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next()).getMetaData();
+        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLStatementType.SELECT).getMetaData();
     }
     
-    private Connection getConnectionInternal(final String dataSourceName) throws SQLException {
-        if (connectionMap.containsKey(dataSourceName)) {
-            return connectionMap.get(dataSourceName);
+    private Connection getConnectionInternal(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
+        Optional<MasterSlaveRule> masterSlaveRule = shardingContext.getShardingRule().findMasterSlaveRule(dataSourceName);
+        String actualDataSourceName = masterSlaveRule.isPresent() ? masterSlaveRule.get().getMasterOrSlaveDataSource(sqlStatementType) : dataSourceName;
+        if (connectionMap.containsKey(actualDataSourceName)) {
+            return connectionMap.get(actualDataSourceName);
         }
-        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
-        Connection result = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName).getConnection();
+        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", actualDataSourceName));
+        Connection result = shardingContext.getShardingRule().getDataSourceRule().getDataSource(actualDataSourceName).getConnection();
         MetricsContext.stop(metricsContext);
-        connectionMap.put(dataSourceName, result);
+        connectionMap.put(actualDataSourceName, result);
         return result;
     }
     
