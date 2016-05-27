@@ -29,11 +29,8 @@
             </list>
         </constructor-arg>
         <constructor-arg index="3" ref="dataSourceRule"/>
-        <constructor-arg index="4">
-            <null />
-        </constructor-arg>
-        <constructor-arg index="5" ref="databaseShardingStrategy"/>
-        <constructor-arg index="6" ref="tableShardingStrategy"/>
+        <constructor-arg index="4" ref="databaseShardingStrategy"/>
+        <constructor-arg index="5" ref="tableShardingStrategy"/>
     </bean>
     
     <bean id="orderItemTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
@@ -48,11 +45,8 @@
             </list>
         </constructor-arg>
         <constructor-arg index="3" ref="dataSourceRule"/>
-        <constructor-arg index="4">
-            <null />
-        </constructor-arg>
-        <constructor-arg index="5" ref="databaseShardingStrategy"/>
-        <constructor-arg index="6" ref="tableShardingStrategy"/>
+        <constructor-arg index="4" ref="databaseShardingStrategy"/>
+        <constructor-arg index="5" ref="tableShardingStrategy"/>
     </bean>
     
     <bean id="databaseShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy">

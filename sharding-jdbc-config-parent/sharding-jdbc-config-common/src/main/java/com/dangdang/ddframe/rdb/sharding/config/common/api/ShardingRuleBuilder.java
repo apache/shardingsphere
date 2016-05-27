@@ -97,17 +97,11 @@ public class ShardingRuleBuilder {
     private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {
         Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
         for (Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
-            String logicTable = each.getKey();
-            TableRuleConfig tableRuleConfig = each.getValue();
-            TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(logicTable).dataSourceRule(dataSourceRule)
-                    .dynamic(tableRuleConfig.isDynamic())
-                    .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy(), DatabaseShardingStrategy.class))
-                    .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy(), TableShardingStrategy.class));
-            if (null != tableRuleConfig.getActualTables()) {
-                tableRuleBuilder.actualTables(new InlineParser(tableRuleConfig.getActualTables()).evaluate());
-            }
-            if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
-                tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
+            TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(each.getKey()).dataSourceRule(dataSourceRule).dynamic(each.getValue().isDynamic())
+                    .databaseShardingStrategy(buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class))
+                    .tableShardingStrategy(buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class));
+            if (null != each.getValue().getActualTables()) {
+                tableRuleBuilder.actualTables(new InlineParser(each.getValue().getActualTables()).evaluate());
             }
             result.add(tableRuleBuilder.build());
         }

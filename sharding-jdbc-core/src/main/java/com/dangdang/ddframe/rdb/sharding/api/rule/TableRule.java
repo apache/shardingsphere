@@ -59,7 +59,7 @@ public final class TableRule {
      * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
      */
     @Deprecated
-    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames, 
+    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, 
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
@@ -71,9 +71,9 @@ public final class TableRule {
             this.actualTables = generateDataNodes(dataSourceRule);
         } else if (null == actualTables || actualTables.isEmpty()) {
             Preconditions.checkNotNull(dataSourceRule);
-            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), dataSourceRule, dataSourceNames);
+            this.actualTables = generateDataNodes(Collections.singletonList(logicTable), dataSourceRule);
         } else {
-            this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
+            this.actualTables = generateDataNodes(actualTables, dataSourceRule);
         }
     }
     
@@ -96,8 +96,8 @@ public final class TableRule {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
-        Collection<String> dataSourceNames = getDataSourceNames(dataSourceRule, actualDataSourceNames);
+    private List<DataNode> generateDataNodes(final List<String> actualTables, final DataSourceRule dataSourceRule) {
+        Collection<String> dataSourceNames = null == dataSourceRule ? Collections.<String>emptyList() : dataSourceRule.getDataSourceNames();
         List<DataNode> result = new ArrayList<>(actualTables.size() * (dataSourceNames.isEmpty() ? 1 : dataSourceNames.size()));
         for (String actualTable : actualTables) {
             if (DataNode.isValidDataNode(actualTable)) {
@@ -109,16 +109,6 @@ public final class TableRule {
             }
         }
         return result;
-    }
-    
-    private Collection<String> getDataSourceNames(final DataSourceRule dataSourceRule, final Collection<String> actualDataSourceNames) {
-        if (null == dataSourceRule) {
-            return Collections.emptyList();
-        }
-        if (null == actualDataSourceNames || actualDataSourceNames.isEmpty()) {
-            return dataSourceRule.getDataSourceNames();
-        }
-        return actualDataSourceNames;
     }
     
     /**
@@ -204,10 +194,8 @@ public final class TableRule {
         private boolean dynamic;
         
         private List<String> actualTables;
-    
+        
         private DataSourceRule dataSourceRule;
-    
-        private Collection<String> dataSourceNames;
         
         private DatabaseShardingStrategy databaseShardingStrategy;
         
@@ -245,17 +233,6 @@ public final class TableRule {
             this.dataSourceRule = dataSourceRule;
             return this;
         }
-    
-        /**
-         * 构建数据源分片规则.
-         *
-         * @param dataSourceNames 数据源名称集合
-         * @return 规则配置对象构建器
-         */
-        public TableRuleBuilder dataSourceNames(final Collection<String> dataSourceNames) {
-            this.dataSourceNames = dataSourceNames;
-            return this;
-        }
         
         /**
          * 构建数据库分片策略.
@@ -285,7 +262,7 @@ public final class TableRule {
          * @return 表规则配置对象
          */
         public TableRule build() {
-            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy);
+            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, databaseShardingStrategy, tableShardingStrategy);
         }
     }
 }

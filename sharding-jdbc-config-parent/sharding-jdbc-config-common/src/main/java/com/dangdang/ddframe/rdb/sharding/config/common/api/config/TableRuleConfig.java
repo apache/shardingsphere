@@ -33,8 +33,6 @@ public class TableRuleConfig {
     
     private String actualTables;
     
-    private String dataSourceNames;
-    
     private StrategyConfig databaseStrategy;
     
     private StrategyConfig tableStrategy;

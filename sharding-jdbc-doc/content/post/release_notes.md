@@ -8,13 +8,9 @@ weight = 1
 
 ## 1.2.2-SNAPSHOT
 
-### 功能提升
-
-1. [ISSUE #82](https://github.com/dangdangdotcom/sharding-jdbc/issues/82) TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源
-
 ### 缺陷修正
 
-1. [ISSUE #81](https://github.com/dangdangdotcom/sharding-jdbc/issues/81) 关联表查询使用or查询条件解析结果异常
+1. [ISSUE #63](https://github.com/dangdangdotcom/sharding-jdbc/issues/81) 关联表查询使用or查询条件解析结果异常
 
 ## 1.2.1
 
