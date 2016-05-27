@@ -34,9 +34,6 @@
         <constructor-arg index="5">
             <null />
         </constructor-arg>
-        <constructor-arg index="6">
-            <null />
-        </constructor-arg>
     </bean>
     
     <bean id="orderItemTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
@@ -55,9 +52,6 @@
             <null />
         </constructor-arg>
         <constructor-arg index="5">
-            <null />
-        </constructor-arg>
-        <constructor-arg index="6">
             <null />
         </constructor-arg>
     </bean>
