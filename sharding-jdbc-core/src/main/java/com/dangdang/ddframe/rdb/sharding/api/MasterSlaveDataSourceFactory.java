@@ -17,40 +17,31 @@
 
 package com.dangdang.ddframe.rdb.sharding.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
-import java.util.Properties;
 
 /**
- * 分片数据源工厂.
+ * 读写分离数据源工厂.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDataSourceFactory {
+public final class MasterSlaveDataSourceFactory {
     
     /**
-     * 创建分片数据源.
+     * 创建读写分离数据源.
      * 
-     * @param shardingRule 分片规则
-     * @return 分片数据源
+     * @param logicDataSourceName 逻辑数据源名称
+     * @param masterDataSource 主节点数据源
+     * @param slaveDataSource 从节点数据源
+     * @param otherSlaveDataSources 其他从节点数据源
+     * @return 读写分离数据源
      */
-    public static DataSource createDataSource(final ShardingRule shardingRule) {
-        return new ShardingDataSource(shardingRule);
-    }
-    
-    /**
-     * 创建分片数据源.
-     * 
-     * @param shardingRule 分片规则
-     * @param props 属性配置
-     * @return 分片数据源
-     */
-    public static DataSource createDataSource(final ShardingRule shardingRule, final Properties props) {
-        return new ShardingDataSource(shardingRule, props);
+    public static DataSource createDataSource(final String logicDataSourceName, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) {
+        return new MasterSlaveDataSource(logicDataSourceName, masterDataSource, Lists.asList(slaveDataSource, otherSlaveDataSources));
     }
 }

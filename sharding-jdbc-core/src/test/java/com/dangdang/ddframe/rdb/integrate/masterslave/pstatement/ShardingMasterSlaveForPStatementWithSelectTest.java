@@ -30,8 +30,9 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
     private ShardingDataSource shardingDataSource;
     
     @Before
-    public void init() throws SQLException {
+    public void init() throws SQLException, NoSuchFieldException, IllegalAccessException {
         shardingDataSource = getShardingDataSource();
+        reset();
     }
     
     @Test

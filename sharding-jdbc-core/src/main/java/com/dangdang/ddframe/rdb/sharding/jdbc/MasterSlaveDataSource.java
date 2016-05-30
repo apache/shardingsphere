@@ -15,24 +15,26 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.rule;
+package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 读写分离配置规则.
+ * 支持读写分离的数据源.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-public final class MasterSlaveRule {
+public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private static final ThreadLocal<Boolean> WAS_UPDATED = new ThreadLocal<Boolean>() {
         
@@ -42,35 +44,30 @@ public final class MasterSlaveRule {
         }
     };
     
-    private final String logicDataSource;
+    private final String logicDataSourceName;
     
-    private final String masterDataSource;
+    private final DataSource masterDataSource;
     
-    private final List<String> slaveDataSources;
+    private final List<DataSource> slaveDataSources;
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
     /**
      * 获取主或从节点的数据源名称.
-     * 
+     *
      * @param sqlStatementType SQL类型
-     * @return 主或从节点的数据源名称
+     * @return 主或从节点的数据源
      */
-    public String getMasterOrSlaveDataSource(final SQLStatementType sqlStatementType) {
+    public DataSource getDataSource(final SQLStatementType sqlStatementType) {
         if (SQLStatementType.SELECT != sqlStatementType || WAS_UPDATED.get()) {
             WAS_UPDATED.set(true);
             return masterDataSource;
         }
-        return slaveLoadBalanceStrategy.getDataSource(logicDataSource, slaveDataSources);
+        return slaveLoadBalanceStrategy.getDataSource(logicDataSourceName, slaveDataSources);
     }
     
-    /**
-     * 判断该真实数据源是否属于本读写分离规则配置.
-     * 
-     * @param actualDataSource 真实数据源名称
-     * @return 是否属于本读写分离规则配置
-     */
-    public boolean within(final String actualDataSource) {
-        return actualDataSource.equals(masterDataSource) || slaveDataSources.contains(actualDataSource);
+    @Override
+    public Connection getConnection() throws SQLException {
+        throw new UnsupportedOperationException("Master slave data source cannot support get connection directly.");
     }
 }

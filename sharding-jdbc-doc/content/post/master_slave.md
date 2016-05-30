@@ -24,18 +24,14 @@ weight = 6
 ## 开发示例
 
 ```java
- // 构建读写分离规则
- Collection<MasterSlaveRule> masterSlaveRules = new ArrayList<>(2);
- // ds_0, ds_1是读写分离逻辑数据源, ds_0_master, ds_0_slave_1等数据源是真实数据源
- masterSlaveRules.add(new MasterSlaveRule("ds_0", "ds_0_master", Arrays.asList("ds_0_slave_1", "ds_0_slave_2"));
- masterSlaveRules.add(new MasterSlaveRule("ds_1", "ds_1_master", Arrays.asList("ds_1_slave_1", "ds_1_slave_2"));
- 
- ShardingRule shardingRule = ShardingRule.builder()
-        .dataSourceRule(dataSourceRule)
-        // 请注意, TableRule也需要通过builder传入Collection<MasterSlaveRule>
-        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-        .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new ModuloDatabaseShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy("order_id", new ModuloTableShardingAlgorithm()))
-        .masterSlaveRules(masterSlaveRules)
-        .build();
+// 构建读写分离数据源
+MasterSlaveDataSource masterSlaveDs0 = new MasterSlaveDataSourceFactory.createDataSource("ms_0", masterDataSource0, slaveDataSource00, slaveDataSource01);
+MasterSlaveDataSource masterSlaveDs1 = new MasterSlaveDataSourceFactory.createDataSource("ms_1", masterDataSource1, slaveDataSource11, slaveDataSource11);
+
+// 构建分库分表数据源
+Map<String, DataSource> dataSourceMap = new HashMap<>(2);
+dataSourceMap.put("ms_0", masterSlaveDs0);
+dataSourceMap.put("ms_1", masterSlaveDs1);
+
+// 通过ShardingDataSourceFactory继续创建ShardingDataSource
 ```

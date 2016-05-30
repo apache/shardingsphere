@@ -18,16 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -70,15 +69,17 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     private Connection getConnectionInternal(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
-        Optional<MasterSlaveRule> masterSlaveRule = shardingContext.getShardingRule().findMasterSlaveRule(dataSourceName);
-        String actualDataSourceName = masterSlaveRule.isPresent() ? masterSlaveRule.get().getMasterOrSlaveDataSource(sqlStatementType) : dataSourceName;
-        if (connectionMap.containsKey(actualDataSourceName)) {
-            return connectionMap.get(actualDataSourceName);
+        if (connectionMap.containsKey(dataSourceName)) {
+            return connectionMap.get(dataSourceName);
         }
-        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", actualDataSourceName));
-        Connection result = shardingContext.getShardingRule().getDataSourceRule().getDataSource(actualDataSourceName).getConnection();
+        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
+        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        if (dataSource instanceof MasterSlaveDataSource) {
+            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlStatementType);
+        }
+        Connection result = dataSource.getConnection();
         MetricsContext.stop(metricsContext);
-        connectionMap.put(actualDataSourceName, result);
+        connectionMap.put(dataSourceName, result);
         return result;
     }
     

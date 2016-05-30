@@ -22,11 +22,11 @@ import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardin
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.MasterSlaveRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -34,8 +34,8 @@ import org.junit.Before;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +46,9 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = MasterSlaveRule.class.getDeclaredField("WAS_UPDATED");
+        Field field = MasterSlaveDataSource.class.getDeclaredField("WAS_UPDATED");
         field.setAccessible(true);
-        ((ThreadLocal) field.get(MasterSlaveRule.class)).remove();
+        ((ThreadLocal) field.get(MasterSlaveDataSource.class)).remove();
     }
     
     @Override
@@ -102,19 +102,29 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     }
     
     protected final ShardingDataSource getShardingDataSource() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(dataSourceName);
+        Map<String, DataSource> masterSlaveDataSourceMap = createDataSourceMap(dataSourceName);
+        MasterSlaveDataSource masterSlaveDs0 = new MasterSlaveDataSource("ms_0", masterSlaveDataSourceMap.get("dataSource_master_0"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_0")));
+        MasterSlaveDataSource masterSlaveDs1 = new MasterSlaveDataSource("ms_1", masterSlaveDataSourceMap.get("dataSource_master_1"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_1")));
+        MasterSlaveDataSource masterSlaveDs2 = new MasterSlaveDataSource("ms_2", masterSlaveDataSourceMap.get("dataSource_master_2"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_2")));
+        MasterSlaveDataSource masterSlaveDs3 = new MasterSlaveDataSource("ms_3", masterSlaveDataSourceMap.get("dataSource_master_3"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_3")));
+        MasterSlaveDataSource masterSlaveDs4 = new MasterSlaveDataSource("ms_4", masterSlaveDataSourceMap.get("dataSource_master_4"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_4")));
+        MasterSlaveDataSource masterSlaveDs5 = new MasterSlaveDataSource("ms_5", masterSlaveDataSourceMap.get("dataSource_master_5"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_5")));
+        MasterSlaveDataSource masterSlaveDs6 = new MasterSlaveDataSource("ms_6", masterSlaveDataSourceMap.get("dataSource_master_6"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_6")));
+        MasterSlaveDataSource masterSlaveDs7 = new MasterSlaveDataSource("ms_7", masterSlaveDataSourceMap.get("dataSource_master_7"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_7")));
+        MasterSlaveDataSource masterSlaveDs8 = new MasterSlaveDataSource("ms_8", masterSlaveDataSourceMap.get("dataSource_master_8"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_8")));
+        MasterSlaveDataSource masterSlaveDs9 = new MasterSlaveDataSource("ms_9", masterSlaveDataSourceMap.get("dataSource_master_9"), Collections.singletonList(masterSlaveDataSourceMap.get("dataSource_slave_9")));
+        Map<String, DataSource> dataSourceMap = new HashMap<>(10);
+        dataSourceMap.put("ms_0", masterSlaveDs0);
+        dataSourceMap.put("ms_1", masterSlaveDs1);
+        dataSourceMap.put("ms_2", masterSlaveDs2);
+        dataSourceMap.put("ms_3", masterSlaveDs3);
+        dataSourceMap.put("ms_4", masterSlaveDs4);
+        dataSourceMap.put("ms_5", masterSlaveDs5);
+        dataSourceMap.put("ms_6", masterSlaveDs6);
+        dataSourceMap.put("ms_7", masterSlaveDs7);
+        dataSourceMap.put("ms_8", masterSlaveDs8);
+        dataSourceMap.put("ms_9", masterSlaveDs9);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        Collection<MasterSlaveRule> masterSlaveRules = Arrays.asList(
-                new MasterSlaveRule("ms_0", "dataSource_master_0", Collections.singletonList("dataSource_slave_0")),
-                new MasterSlaveRule("ms_1", "dataSource_master_1", Collections.singletonList("dataSource_slave_1")),
-                new MasterSlaveRule("ms_2", "dataSource_master_2", Collections.singletonList("dataSource_slave_2")),
-                new MasterSlaveRule("ms_3", "dataSource_master_3", Collections.singletonList("dataSource_slave_3")),
-                new MasterSlaveRule("ms_4", "dataSource_master_4", Collections.singletonList("dataSource_slave_4")),
-                new MasterSlaveRule("ms_5", "dataSource_master_5", Collections.singletonList("dataSource_slave_5")),
-                new MasterSlaveRule("ms_6", "dataSource_master_6", Collections.singletonList("dataSource_slave_6")),
-                new MasterSlaveRule("ms_7", "dataSource_master_7", Collections.singletonList("dataSource_slave_7")),
-                new MasterSlaveRule("ms_8", "dataSource_master_8", Collections.singletonList("dataSource_slave_8")),
-                new MasterSlaveRule("ms_9", "dataSource_master_9", Collections.singletonList("dataSource_slave_9")));
         TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
                 "t_order_0",
                 "t_order_1",
@@ -125,7 +135,7 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
                 "t_order_6",
                 "t_order_7",
                 "t_order_8",
-                "t_order_9")).masterSlaveRules(masterSlaveRules).dataSourceRule(dataSourceRule).build();
+                "t_order_9")).dataSourceRule(dataSourceRule).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
                 "t_order_item_0",
                 "t_order_item_1",
@@ -136,13 +146,12 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
                 "t_order_item_6",
                 "t_order_item_7",
                 "t_order_item_8",
-                "t_order_item_9")).masterSlaveRules(masterSlaveRules).dataSourceRule(dataSourceRule).build();
+                "t_order_item_9")).dataSourceRule(dataSourceRule).build();
         TableRule configRule = TableRule.builder("t_config").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule, configRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm()))
-                .masterSlaveRules(masterSlaveRules).build();
+                .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);
     }
 }

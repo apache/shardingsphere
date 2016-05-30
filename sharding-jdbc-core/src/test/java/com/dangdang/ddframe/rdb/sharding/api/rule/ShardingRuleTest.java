@@ -202,24 +202,10 @@ public final class ShardingRuleTest {
         assertThat(createShardingRuleWithStrategy().getAllShardingColumns(), is((Collection<String>) Sets.newHashSet("column")));
     }
     
-    @Test
-    public void assertFindMasterSlaveRule() {
-        ShardingRule shardingRule = createShardingRule(
-                Arrays.asList(new MasterSlaveRule("ds0", "ds0_master", Collections.singletonList("ds0_slave")), new MasterSlaveRule("ds1", "ds1_master", Arrays.asList("ds1_slave_1", "ds1_slave_2"))));
-        assertThat(shardingRule.findMasterSlaveRule("ds0").get().getMasterDataSource(), is("ds0_master"));
-        assertThat(shardingRule.findMasterSlaveRule("ds1").get().getMasterDataSource(), is("ds1_master"));
-        assertFalse(shardingRule.findMasterSlaveRule("ds2").isPresent());
-    }
     
     private ShardingRule createShardingRule() {
         return ShardingRule.builder().dataSourceRule(createDataSourceRule())
                 .tableRules(Collections.singletonList(createTableRule())).bindingTableRules(Collections.singletonList(createBindingTableRule())).build();
-    }
-    
-    private ShardingRule createShardingRule(final Collection<MasterSlaveRule> masterSlaveRules) {
-        return ShardingRule.builder().dataSourceRule(createDataSourceRule())
-                .tableRules(Collections.singletonList(createTableRule())).bindingTableRules(Collections.singletonList(createBindingTableRule()))
-                .masterSlaveRules(masterSlaveRules).build();
     }
     
     private DataSourceRule createDataSourceRule() {

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.slave;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,12 +32,10 @@ public final class RoundRobinSlaveLoadBalanceStrategy implements SlaveLoadBalanc
     private static final ConcurrentHashMap<String, AtomicInteger> COUNT_MAP = new ConcurrentHashMap<>();
     
     @Override
-    public String getDataSource(final String logicDataSource, final List<String> slaveDataSources) {
+    public DataSource getDataSource(final String logicDataSource, final List<DataSource> slaveDataSources) {
         AtomicInteger count = COUNT_MAP.containsKey(logicDataSource) ? COUNT_MAP.get(logicDataSource) : new AtomicInteger(0);
         COUNT_MAP.putIfAbsent(logicDataSource, count);
-        if (count.get() >= slaveDataSources.size()) {
-            count.set(0);
-        }
+        count.compareAndSet(slaveDataSources.size(), 0);
         return slaveDataSources.get(count.getAndIncrement() % slaveDataSources.size());
     }
 }

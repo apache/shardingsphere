@@ -27,17 +27,14 @@
                 <value>t_order_3</value>
             </list>
         </constructor-arg>
-        <constructor-arg index="3">
+        <constructor-arg index="3" ref="dataSourceRule"/>
+        <constructor-arg index="4">
             <null />
         </constructor-arg>
-        <constructor-arg index="4" ref="dataSourceRule"/>
         <constructor-arg index="5">
             <null />
         </constructor-arg>
         <constructor-arg index="6">
-            <null />
-        </constructor-arg>
-        <constructor-arg index="7">
             <null />
         </constructor-arg>
     </bean>
@@ -53,17 +50,14 @@
                 <value>t_order_item_3</value>
             </list>
         </constructor-arg>
-        <constructor-arg index="3">
+        <constructor-arg index="3" ref="dataSourceRule"/>
+        <constructor-arg index="4">
             <null />
         </constructor-arg>
-        <constructor-arg index="4" ref="dataSourceRule"/>
         <constructor-arg index="5">
             <null />
         </constructor-arg>
         <constructor-arg index="6">
-            <null />
-        </constructor-arg>
-        <constructor-arg index="7">
             <null />
         </constructor-arg>
     </bean>
@@ -95,9 +89,6 @@
         </constructor-arg>
         <constructor-arg index="3" ref="databaseShardingStrategy"/>
         <constructor-arg index="4" ref="tableShardingStrategy"/>
-        <constructor-arg index="5">
-            <null />
-        </constructor-arg>
     </bean>
     
     <bean id="shardingDataSource" class="com.dangdang.ddframe.rdb.sharding.api.ShardingDataSourceFactory" factory-method="createDataSource">

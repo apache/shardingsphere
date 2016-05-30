@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.api.rule.fixture;
+package com.dangdang.ddframe.rdb.sharding.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import lombok.EqualsAndHashCode;
@@ -33,10 +33,5 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     @Override
     public Connection getConnection() throws SQLException {
         return null;
-    }
-    
-    @Override
-    public Connection getConnection(final String username, final String password) throws SQLException {
-        return getConnection();
     }
 }

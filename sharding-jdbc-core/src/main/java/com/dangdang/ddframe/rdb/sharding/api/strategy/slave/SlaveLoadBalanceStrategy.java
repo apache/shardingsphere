@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.slave;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -33,5 +34,5 @@ public interface SlaveLoadBalanceStrategy {
      * @param slaveDataSources 从库数据源列表
      * @return 选中的从库数据源
      */
-    String getDataSource(final String logicDataSource, final List<String> slaveDataSources);
+    DataSource getDataSource(final String logicDataSource, final List<DataSource> slaveDataSources);
 }

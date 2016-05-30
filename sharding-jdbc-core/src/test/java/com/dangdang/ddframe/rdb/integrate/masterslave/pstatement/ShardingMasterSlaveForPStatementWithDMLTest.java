@@ -155,7 +155,7 @@ public final class ShardingMasterSlaveForPStatementWithDMLTest extends AbstractS
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/masterslave/expect/%s/master_%s.xml", expectedDataSetPattern, i),
-                        shardingDataSource.getConnection().getConnection(String.format("dataSource_master_%s", i), SQLStatementType.SELECT), 
+                        shardingDataSource.getConnection().getConnection(String.format("ms_%s", i), SQLStatementType.SELECT), 
                         String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
             }
         }

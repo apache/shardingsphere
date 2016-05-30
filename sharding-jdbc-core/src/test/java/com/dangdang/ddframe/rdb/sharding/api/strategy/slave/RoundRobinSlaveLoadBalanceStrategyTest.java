@@ -17,8 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.slave;
 
+import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
@@ -30,8 +32,10 @@ public final class RoundRobinSlaveLoadBalanceStrategyTest {
     
     @Test
     public void assertGetDataSource() {
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList("ds_0", "ds_1")), is("ds_0"));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList("ds_0", "ds_1")), is("ds_1"));
-        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList("ds_0", "ds_1")), is("ds_0"));
+        DataSource slaveDataSource1 = new TestDataSource("test_ds_slave_1");
+        DataSource slaveDataSource2 = new TestDataSource("test_ds_slave_2");
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList(slaveDataSource1, slaveDataSource2)), is(slaveDataSource1));
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList(slaveDataSource1, slaveDataSource2)), is(slaveDataSource2));
+        assertThat(roundRobinSlaveLoadBalanceStrategy.getDataSource("ds", Arrays.asList(slaveDataSource1, slaveDataSource2)), is(slaveDataSource1));
     }
 }

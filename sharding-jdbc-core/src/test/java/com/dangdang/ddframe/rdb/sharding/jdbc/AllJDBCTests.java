@@ -54,7 +54,8 @@ import org.junit.runners.Suite;
     ResultSetGetterAdapterTest.class, 
     ResultSetAdapterTest.class, 
     JdbcMethodInvocationTest.class, 
-    RowSetResultSetAdapterTest.class
+    RowSetResultSetAdapterTest.class,
+    MasterSlaveDataSourceTest.class
     })
 public class AllJDBCTests {
 }

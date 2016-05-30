@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOpe
 import lombok.RequiredArgsConstructor;
 
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
@@ -48,5 +49,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Override
     public final Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    }
+    
+    @Override
+    public final Connection getConnection(final String username, final String password) throws SQLException {
+        return getConnection();
     }
 }

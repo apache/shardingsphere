@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.google.common.base.Preconditions;
 
@@ -64,7 +65,13 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         String result = null;
         Collection<Connection> connections = new ArrayList<>(shardingRule.getDataSourceRule().getDataSources().size());
         for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
-            Connection connection = each.getConnection();
+            DataSource dataSource;
+            if (each instanceof MasterSlaveDataSource) {
+                dataSource = ((MasterSlaveDataSource) each).getDataSource(SQLStatementType.SELECT);
+            } else {
+                dataSource = each;
+            }
+            Connection connection = dataSource.getConnection();
             connections.add(connection);
             String databaseProductName = connection.getMetaData().getDatabaseProductName();
             Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
@@ -80,10 +87,5 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingConnection getConnection() throws SQLException {
         MetricsContext.init(shardingProperties);
         return new ShardingConnection(shardingContext);
-    }
-    
-    @Override
-    public final ShardingConnection getConnection(final String username, final String password) throws SQLException {
-        return getConnection();
     }
 }

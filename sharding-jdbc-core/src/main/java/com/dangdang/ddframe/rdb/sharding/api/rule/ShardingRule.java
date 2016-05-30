@@ -21,11 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -54,9 +50,6 @@ public final class ShardingRule {
     
     private final TableShardingStrategy tableShardingStrategy;
     
-    @Getter(AccessLevel.NONE)
-    private final Map<String, MasterSlaveRule> masterSlaveRuleMap;
-    
     /**
      * 全属性构造器.
      * 
@@ -69,7 +62,7 @@ public final class ShardingRule {
     @Deprecated
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final Collection<MasterSlaveRule> masterSlaveRules) {
+            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         Preconditions.checkNotNull(dataSourceRule);
         Preconditions.checkNotNull(tableRules);
         this.dataSourceRule = dataSourceRule;
@@ -79,13 +72,6 @@ public final class ShardingRule {
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
-        masterSlaveRuleMap = Maps.uniqueIndex(null == masterSlaveRules ? Collections.<MasterSlaveRule>emptyList() : masterSlaveRules, new Function<MasterSlaveRule, String>() {
-            
-            @Override
-            public String apply(final MasterSlaveRule input) {
-                return input.getLogicDataSource();
-            }
-        });
     }
     
     /**
@@ -227,16 +213,6 @@ public final class ShardingRule {
     }
     
     /**
-     * 根据逻辑数据源名称获取读写分离配置.
-     * 
-     * @param logicDataSource 逻辑数据源名称
-     * @return 读写分离配置
-     */
-    public Optional<MasterSlaveRule> findMasterSlaveRule(final String logicDataSource) {
-        return Optional.fromNullable(masterSlaveRuleMap.get(logicDataSource));
-    }
-    
-    /**
      * 分片规则配置对象构建器.
      */
     @RequiredArgsConstructor
@@ -252,8 +228,6 @@ public final class ShardingRule {
     
         private TableShardingStrategy tableShardingStrategy;
     
-        private Collection<MasterSlaveRule> masterSlaveRules;
-        
         /**
          * 构建数据源配置规则.
          *
@@ -310,23 +284,12 @@ public final class ShardingRule {
         }
         
         /**
-         * 构建数据源分片规则.
-         *
-         * @param masterSlaveRules 读写分离策略集合
-         * @return 分片规则配置对象构建器
-         */
-        public ShardingRuleBuilder masterSlaveRules(final Collection<MasterSlaveRule> masterSlaveRules) {
-            this.masterSlaveRules = masterSlaveRules;
-            return this;
-        }
-        
-        /**
          * 构建分片规则配置对象.
          *
          * @return 分片规则配置对象
          */
         public ShardingRule build() {
-            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, masterSlaveRules);
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy);
         }
     }
 }
