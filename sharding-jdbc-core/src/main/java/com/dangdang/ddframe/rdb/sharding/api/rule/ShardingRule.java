@@ -219,15 +219,15 @@ public final class ShardingRule {
     public static class ShardingRuleBuilder {
         
         private DataSourceRule dataSourceRule;
-    
+        
         private Collection<TableRule> tableRules;
-    
+        
         private Collection<BindingTableRule> bindingTableRules;
-    
+        
         private DatabaseShardingStrategy databaseShardingStrategy;
-    
+        
         private TableShardingStrategy tableShardingStrategy;
-    
+        
         /**
          * 构建数据源配置规则.
          *

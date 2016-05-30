@@ -99,27 +99,4 @@ public abstract class AbstractShardingBothDataBasesAndTablesSpringDBUnitTest ext
             preparedStatement.close();
         }
     }
-    
-//    private void selectDefaultData() throws SQLException {
-//        String sql = "SELECT * FROM `t_config`";
-//        try (Connection connection = getShardingDataSource().getConnection()) {
-//            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-//            preparedStatement.setInt(1, 1);
-//            preparedStatement.setInt(2, 1);
-//            preparedStatement.setInt(3, 1);
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//            int count = 0;
-//            while (resultSet.next()) {
-//                if (0 == count) {
-//                    assertThat(resultSet.getInt(1), is(1));
-//                    assertThat(resultSet.getInt(2), is(5));
-//                } else if (1 == count) {
-//                    assertThat(resultSet.getInt(1), is(1));
-//                    assertThat(resultSet.getInt(2), is(1));
-//                }
-//                count++;
-//            }
-//            preparedStatement.close();
-//        }
-//    }
 }
