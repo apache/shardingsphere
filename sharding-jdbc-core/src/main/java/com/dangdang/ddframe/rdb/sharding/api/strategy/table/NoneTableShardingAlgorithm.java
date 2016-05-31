@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 /**
  * 无需分表的分片算法.
@@ -29,22 +30,22 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 public final class NoneTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<String>, MultipleKeysTableShardingAlgorithm {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTableNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(SQLStatementType sqlStatementType, final Collection<String> availableTableNames, final Collection<ShardingValue<?>> shardingValues) {
         return availableTableNames;
     }
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public String doEqualSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return availableTargetNames.isEmpty() ? null : availableTargetNames.iterator().next();
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public Collection<String> doInSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return availableTargetNames;
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public Collection<String> doBetweenSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return availableTargetNames;
     }
 }

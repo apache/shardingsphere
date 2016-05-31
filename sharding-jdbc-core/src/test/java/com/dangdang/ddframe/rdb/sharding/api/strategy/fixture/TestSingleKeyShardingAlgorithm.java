@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorithm;
@@ -28,17 +29,17 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingAlgorit
 public final class TestSingleKeyShardingAlgorithm implements SingleKeyShardingAlgorithm<String>, DatabaseShardingAlgorithm, TableShardingAlgorithm {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public String doEqualSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return shardingValue.getValue();
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public Collection<String> doInSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         return shardingValue.getValues();
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
+    public Collection<String> doBetweenSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<String> shardingValue) {
         Collection<String> result = new ArrayList<>();
         for (Integer i = Integer.parseInt(shardingValue.getValueRange().lowerEndpoint()); i <= Integer.parseInt(shardingValue.getValueRange().upperEndpoint()); i++) {
             result.add(i.toString());

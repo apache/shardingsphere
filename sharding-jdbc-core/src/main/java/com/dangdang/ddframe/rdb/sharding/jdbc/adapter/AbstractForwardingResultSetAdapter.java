@@ -28,17 +28,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -344,6 +334,24 @@ public abstract class AbstractForwardingResultSetAdapter extends AbstractUnsuppo
     @Override
     public final Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
         return delegate.getObject(columnLabel, map);
+    }
+
+    @Override
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        try {
+            return delegate.getObject(columnIndex, type);
+        } catch (AbstractMethodError e) {
+            throw new SQLFeatureNotSupportedException("getObject(int columnIndex, Class<T> type), please upgrade your datasource provider.");
+        }
+    }
+
+    @Override
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        try {
+            return delegate.getObject(columnLabel, type);
+        } catch (AbstractMethodError e) {
+            throw new SQLFeatureNotSupportedException("getObject(int columnIndex, Class<T> type), please upgrade your datasource provider.");
+        }
     }
     
     @Override
