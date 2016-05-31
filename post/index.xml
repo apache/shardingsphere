@@ -1716,13 +1716,8 @@ jobConfig:
 &lt;ol&gt;
 &lt;li&gt;提供了一主多从的读写分离配置，可配合分库分表使用。&lt;/li&gt;
 &lt;li&gt;同一线程如果有写入操作，以后的读操作均从主库读取，用于保证同一线程中的数据一致性。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&#34;待支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;待支持项&lt;/h2&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Spring命名空间&lt;/li&gt;
-&lt;li&gt;基于Hint的强制主库读取配置&lt;/li&gt;
+&lt;li&gt;Spring命名空间。&lt;/li&gt;
+&lt;li&gt;基于Hint的强制主库路由。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;不支持范围:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;不支持范围&lt;/h2&gt;
@@ -1733,22 +1728,100 @@ jobConfig:
 &lt;li&gt;主库双写或多写。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;开发示例&lt;/h2&gt;
+&lt;h2 id=&#34;代码开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;代码开发示例&lt;/h2&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; // 构建读写分离规则
- Collection&amp;lt;MasterSlaveRule&amp;gt; masterSlaveRules = new ArrayList&amp;lt;&amp;gt;(2);
- // ds_0, ds_1是读写分离逻辑数据源, ds_0_master, ds_0_slave_1等数据源是真实数据源
- masterSlaveRules.add(new MasterSlaveRule(&amp;quot;ds_0&amp;quot;, &amp;quot;ds_0_master&amp;quot;, Arrays.asList(&amp;quot;ds_0_slave_1&amp;quot;, &amp;quot;ds_0_slave_2&amp;quot;));
- masterSlaveRules.add(new MasterSlaveRule(&amp;quot;ds_1&amp;quot;, &amp;quot;ds_1_master&amp;quot;, Arrays.asList(&amp;quot;ds_1_slave_1&amp;quot;, &amp;quot;ds_1_slave_2&amp;quot;));
- 
- ShardingRule shardingRule = ShardingRule.builder()
-        .dataSourceRule(dataSourceRule)
-        // 请注意, TableRule也需要通过builder传入Collection&amp;lt;MasterSlaveRule&amp;gt;
-        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-        .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm()))
-        .masterSlaveRules(masterSlaveRules)
-        .build();
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
+DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_0&amp;quot;, masterDataSource0, slaveDataSource00, slaveDataSource01);
+DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_1&amp;quot;, masterDataSource1, slaveDataSource11, slaveDataSource11);
+
+// 构建分库分表数据源
+Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(2);
+dataSourceMap.put(&amp;quot;ms_0&amp;quot;, masterSlaveDs0);
+dataSourceMap.put(&amp;quot;ms_1&amp;quot;, masterSlaveDs1);
+
+// 通过ShardingDataSourceFactory继续创建ShardingDataSource
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;spring命名空间配置示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;Spring命名空间配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+    xmlns:rdb=&amp;quot;http://www.dangdang.com/schema/ddframe/rdb&amp;quot; 
+    xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &amp;quot;&amp;gt;
+    &amp;lt;!-- 配置真实数据源 --&amp;gt;
+    &amp;lt;bean id=&amp;quot;dbtbl_0_master&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_master&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0_slave_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0_slave_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_master&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_master&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_slave_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_slave_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 --&amp;gt;
+    &amp;lt;rdb:master-slave-data-source id=&amp;quot;dbtbl_0&amp;quot; master-data-source-ref=&amp;quot;dbtbl_0_master&amp;quot; slave-data-sources-ref=&amp;quot;dbtbl_0_slave_0, dbtbl_0_slave_1&amp;quot; /&amp;gt;
+    &amp;lt;rdb:master-slave-data-source id=&amp;quot;dbtbl_1&amp;quot; master-data-source-ref=&amp;quot;dbtbl_1_master&amp;quot; slave-data-sources-ref=&amp;quot;dbtbl_1_slave_0, dbtbl_1_slave_1&amp;quot; /&amp;gt;
+    
+    &amp;lt;!-- 通过rdb:strategy和rdb:data-source继续构建分片数据源 --&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;databaseStrategy&amp;quot; sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${user_id.longValue() % 2}&amp;quot;/&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;orderTableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-expression=&amp;quot;t_order_${order_id.longValue() % 4}&amp;quot;/&amp;gt;
+    
+    &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0, dbtbl_1&amp;quot;&amp;gt;
+            &amp;lt;rdb:table-rules&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;orderTableStrategy&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:table-rules&amp;gt;
+        &amp;lt;/rdb:sharding-rule&amp;gt;
+    &amp;lt;/rdb:data-source&amp;gt;
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;使用hint强制路由主库示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;使用Hint强制路由主库示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;HintManager hintManager = HintManager.getInstance();
+hintManager.setMasterRouteOnly();
+// 继续JDBC操作
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>

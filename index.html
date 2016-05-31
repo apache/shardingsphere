@@ -134,11 +134,9 @@ body {
 <li>岳令 &nbsp;&nbsp;&nbsp;<a href="http://www.dangdang.com/">当当</a> yueling@dangdang.com</li>
 </ul>
 
-<p><strong>讨论QQ群：</strong>532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流）</p>
+<p><strong>讨论QQ群：</strong>532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。由于QQ群已接近饱和，我们希望您在申请加群之前仔细阅读文档，并在加群申请中正确回答问题，以及在申请时写上您的姓名和公司名称。并且在入群后及时修改群名片。否则我们将有权拒绝您的入群申请。谢谢合作。）</p>
 
 <h1 id="简介:d680e8a854a7cbad6d490c445cba2eba">简介</h1>
-
-<p><code>Sharding-JDBC</code>是当当应用框架<code>ddframe</code>中，关系型数据库模块<code>dd-rdb</code>中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。</p>
 
 <p><code>Sharding-JDBC</code>直接封装<code>JDBC API</code>，可以理解为增强版的<code>JDBC</code>驱动，旧代码迁移成本几乎为零：</p>
 
@@ -155,6 +153,15 @@ body {
 <ul>
 <li>分片策略灵活，可支持<code>=</code>，<code>BETWEEN</code>，<code>IN</code>等多维度分片，也可支持多分片键共用。</li>
 <li><code>SQL</code>解析功能完善，支持聚合，分组，排序，<code>Limit</code>，<code>OR</code>等查询，并且支持<code>Binding Table</code>以及笛卡尔积的表查询。</li>
+<li>支持柔性事务(目前仅最大努力送达型)。</li>
+<li>支持读写分离。</li>
+</ul>
+
+<p><code>Sharding-JDBC</code>配置多样：</p>
+
+<ul>
+<li>可支持YAML和Spring命名空间配置</li>
+<li>灵活多样的<code>inline</code>方式</li>
 </ul>
 
 <hr />
@@ -253,11 +260,12 @@ body {
 
 <p><code>Sharding-JDBC</code>的分库分表通过规则配置描述，请简单浏览配置全貌：</p>
 
-<pre><code class="language-java"> ShardingRule shardingRule = new ShardingRule(
-                dataSourceRule, 
-                Arrays.asList(tableRule), 
-                new DatabaseShardingStrategy(&quot;sharding_column_1&quot;, new XXXShardingAlgorithm()),
-                new TableShardingStrategy(&quot;sharding_column_2&quot;, new XXXShardingAlgorithm()));
+<pre><code class="language-java">ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(tableRuleList)
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&quot;sharding_column&quot;, new XXXShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&quot;sharding_column&quot;, new XXXShardingAlgorithm())))
+        .build();
 </code></pre>
 
 <p>规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和<code>tableRule</code>绑定等。</p>
@@ -282,10 +290,52 @@ try (
         while(rs.next()) {
             System.out.println(rs.getInt(1));
             System.out.println(rs.getInt(2));
-            System.out.println(rs.getInt(3));
         }
     }
 }
+</code></pre>
+
+<h2 id="使用spring命名空间配置:d680e8a854a7cbad6d490c445cba2eba">使用Spring命名空间配置</h2>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot; 
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &quot;&gt;
+    &lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot;/&gt;
+    
+    &lt;bean id=&quot;dbtbl_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    &lt;bean id=&quot;dbtbl_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;rdb:strategy id=&quot;orderTableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-expression=&quot;t_order_${order_id.longValue() % 4}&quot;/&gt;
+    &lt;rdb:strategy id=&quot;orderItemTableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-expression=&quot;t_order_item_${order_id.longValue() % 4}&quot;/&gt;
+    &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1&quot;&gt;
+            &lt;rdb:table-rules&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;orderTableStrategy&quot;/&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; table-strategy=&quot;orderItemTableStrategy&quot;/&gt;
+            &lt;/rdb:table-rules&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${user_id.longValue() % 2 + 1}&quot;/&gt;
+        &lt;/rdb:sharding-rule&gt;
+    &lt;/rdb:data-source&gt;
+&lt;/beans&gt;
 </code></pre>
 
                 </div>
