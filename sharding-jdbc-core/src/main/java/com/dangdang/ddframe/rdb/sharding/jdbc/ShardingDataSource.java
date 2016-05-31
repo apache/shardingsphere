@@ -17,22 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
 import com.google.common.base.Preconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -63,22 +60,17 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private String getDatabaseProductName(final ShardingRule shardingRule) throws SQLException {
         String result = null;
-        Collection<Connection> connections = new ArrayList<>(shardingRule.getDataSourceRule().getDataSources().size());
         for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
-            DataSource dataSource;
+            String databaseProductName;
             if (each instanceof MasterSlaveDataSource) {
-                dataSource = ((MasterSlaveDataSource) each).getDataSource(SQLStatementType.SELECT);
+                databaseProductName = ((MasterSlaveDataSource) each).getDatabaseProductName();
             } else {
-                dataSource = each;
+                try (Connection connection = each.getConnection()) {
+                    databaseProductName = connection.getMetaData().getDatabaseProductName();    
+                }
             }
-            Connection connection = dataSource.getConnection();
-            connections.add(connection);
-            String databaseProductName = connection.getMetaData().getDatabaseProductName();
             Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
             result = databaseProductName;
-        }
-        for (Connection each : connections) {
-            each.close();
         }
         return result;
     }

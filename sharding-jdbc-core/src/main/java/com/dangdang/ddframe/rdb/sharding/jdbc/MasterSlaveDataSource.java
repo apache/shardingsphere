@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadB
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -64,6 +65,21 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             return masterDataSource;
         }
         return slaveLoadBalanceStrategy.getDataSource(logicDataSourceName, slaveDataSources);
+    }
+    
+    String getDatabaseProductName() throws SQLException {
+        String result;
+        try (Connection masterConnection = masterDataSource.getConnection()) {
+            result = masterConnection.getMetaData().getDatabaseProductName();    
+        }
+        for (DataSource each : slaveDataSources) {
+            String slaveDatabaseProductName;
+            try (Connection slaveConnection = each.getConnection()) {
+                slaveDatabaseProductName = slaveConnection.getMetaData().getDatabaseProductName();    
+            }
+            Preconditions.checkState(result.equals(slaveDatabaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, slaveDatabaseProductName));
+        }
+        return result;
     }
     
     @Override
