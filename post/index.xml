@@ -19,7 +19,7 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
-&lt;h2 id=&#34;1-2-2-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.2-SNAPSHOT&lt;/h2&gt;
+&lt;h2 id=&#34;1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.0&lt;/h2&gt;
 
 &lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
 
@@ -31,6 +31,7 @@
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/82&#34;&gt;ISSUE #82&lt;/a&gt; TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/88&#34;&gt;ISSUE #88&lt;/a&gt; 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
@@ -150,7 +151,7 @@
 
 &lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
     &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
-    &amp;lt;artifactId&amp;gt;sharding-jdbc-yaml&amp;lt;/artifactId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-config-yaml&amp;lt;/artifactId&amp;gt;
     &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -270,7 +271,7 @@ props: 属性配置(可选)
 
 &lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
     &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
-    &amp;lt;artifactId&amp;gt;sharding-jdbc-spring&amp;lt;/artifactId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-config-spring&amp;lt;/artifactId&amp;gt;
     &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;

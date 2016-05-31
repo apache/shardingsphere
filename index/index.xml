@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Indexes on Sharding-JDBC</title>
+    <title>Indices on Sharding-JDBC</title>
     <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
-    <description>Recent content in Indexes on Sharding-JDBC</description>
+    <description>Recent content in Indices on Sharding-JDBC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
