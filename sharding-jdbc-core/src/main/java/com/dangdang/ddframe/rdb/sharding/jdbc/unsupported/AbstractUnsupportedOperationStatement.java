@@ -40,12 +40,7 @@ public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapt
     public final void setFetchDirection(final int direction) throws SQLException {
         throw new SQLFeatureNotSupportedException("setFetchDirection");
     }
-    
-    @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getGeneratedKeys");
-    }
-    
+
     @Override
     public final void addBatch(final String sql) throws SQLException {
         throw new SQLFeatureNotSupportedException("addBatch sql");
