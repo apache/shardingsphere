@@ -66,7 +66,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
                 databaseProductName = ((MasterSlaveDataSource) each).getDatabaseProductName();
             } else {
                 try (Connection connection = each.getConnection()) {
-                    databaseProductName = connection.getMetaData().getDatabaseProductName();    
+                    databaseProductName = connection.getMetaData().getDatabaseProductName();
                 }
             }
             Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
