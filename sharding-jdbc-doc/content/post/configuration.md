@@ -11,7 +11,7 @@ weight = 2
 ```xml
 <dependency>
     <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-yaml</artifactId>
+    <artifactId>sharding-jdbc-config-yaml</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -134,7 +134,7 @@ props: 属性配置(可选)
 ```xml
 <dependency>
     <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-spring</artifactId>
+    <artifactId>sharding-jdbc-config-spring</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```

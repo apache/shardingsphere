@@ -28,9 +28,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingJdbcStrategyBeanDefinitionParserTag {
     
-    public static final String SHARDING_COLUMNS_TAG = "sharding-columns";
+    public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
     
-    public static final String ALGORITHM_CLASS_TAG = "algorithm-class";
+    public static final String ALGORITHM_CLASS_ATTRIBUTE = "algorithm-class";
     
-    public static final String ALGORITHM_EXPRESSION_TAG = "algorithm-expression";
+    public static final String ALGORITHM_EXPRESSION_ATTRIBUTE = "algorithm-expression";
 }

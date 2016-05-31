@@ -42,14 +42,22 @@ public class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefin
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
     //CHECKSTYLE:ON
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSource.class);
-        factory.addConstructorArgValue(element.getAttribute(ID_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_REF_ATTR));
+        factory.addConstructorArgValue(parseId(element));
+        factory.addConstructorArgReference(parseMasterDataSourceRef(element));
         factory.addConstructorArgValue(parseSlaveDataSources(element, parserContext));
         return factory.getBeanDefinition();
     }
     
+    private String parseId(final Element element) {
+        return element.getAttribute(ID_ATTRIBUTE);
+    }
+    
+    private String parseMasterDataSourceRef(final Element element) {
+        return element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.MASTER_DATA_SOURCE_REF_ATTRIBUTE);
+    }
+    
     private List<BeanDefinition> parseSlaveDataSources(final Element element, final ParserContext parserContext) {
-        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCES_REF_ATTR));
+        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveDataSourceBeanDefinitionParserTag.SLAVE_DATA_SOURCES_REF_ATTRIBUTE));
         List<BeanDefinition> result = new ManagedList<>(slaveDataSources.size());
         for (String each : slaveDataSources) {
             result.add(parserContext.getRegistry().getBeanDefinition(each));
