@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class SQLRouteResult {
+    
+    private final SQLStatementType sqlStatementType;
     
     private final MergeContext mergeContext;
     

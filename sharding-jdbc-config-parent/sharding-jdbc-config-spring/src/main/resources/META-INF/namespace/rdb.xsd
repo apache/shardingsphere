@@ -85,4 +85,11 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
+    <xsd:element name="master-slave-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-sources-ref" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
 </xsd:schema>

@@ -72,8 +72,7 @@ public abstract class AbstractSpringDBUnitTest extends AbstractJUnit4SpringConte
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    private List<String> getSchemaFiles() {
+    protected List<String> getSchemaFiles() {
         return Arrays.asList("schema/dbtbl_0.sql", "schema/dbtbl_1.sql");
     }
-    
 }

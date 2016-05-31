@@ -73,6 +73,15 @@ public final class HintManagerHolder {
     }
     
     /**
+     * 判断是否数据库操作只路由至主库.
+     * 
+     * @return 是否数据库操作只路由至主库
+     */
+    public static boolean isMasterRouteOnly() {
+        return isUseHint() ? HINT_MANAGER_HOLDER.get().isMasterRouteOnly() : false;
+    }
+    
+    /**
      * 清理线索分片管理器的本地线程持有者.
      */
     public static void clear() {

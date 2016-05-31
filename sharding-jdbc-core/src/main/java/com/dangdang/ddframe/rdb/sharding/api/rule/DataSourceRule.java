@@ -72,6 +72,7 @@ public final class DataSourceRule {
      *
      * @return 默认数据源实例
      */
+    // TODO getDefaultDataSource暂时不支持读写分离
     public Optional<DataSource> getDefaultDataSource() {
         return Optional.fromNullable(dataSourceMap.get(defaultDataSourceName));
     }

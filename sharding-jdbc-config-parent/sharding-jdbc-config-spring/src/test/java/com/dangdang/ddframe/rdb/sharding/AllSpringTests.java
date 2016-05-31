@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceBin
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDefaultStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceDifferentTablesTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForIndicatedDataSourceNamesTest;
+import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceForMasterSlaveTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -43,7 +44,8 @@ import org.junit.runners.Suite.SuiteClasses;
     WithoutNamespaceTest.class, 
     WithoutNamespaceDefaultStrategyTest.class, 
     WithNamespaceDifferentTablesTest.class,
-    WithNamespaceForIndicatedDataSourceNamesTest.class
+    WithNamespaceForIndicatedDataSourceNamesTest.class,
+    WithNamespaceForMasterSlaveTest.class
     })
 public class AllSpringTests {
 }

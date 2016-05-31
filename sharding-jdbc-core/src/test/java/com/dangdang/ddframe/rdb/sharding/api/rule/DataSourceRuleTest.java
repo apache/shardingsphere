@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.fixture.TestDataSource;
+import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;

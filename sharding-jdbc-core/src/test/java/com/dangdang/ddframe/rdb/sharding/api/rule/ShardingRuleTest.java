@@ -202,6 +202,7 @@ public final class ShardingRuleTest {
         assertThat(createShardingRuleWithStrategy().getAllShardingColumns(), is((Collection<String>) Sets.newHashSet("column")));
     }
     
+    
     private ShardingRule createShardingRule() {
         return ShardingRule.builder().dataSourceRule(createDataSourceRule())
                 .tableRules(Collections.singletonList(createTableRule())).bindingTableRules(Collections.singletonList(createBindingTableRule())).build();

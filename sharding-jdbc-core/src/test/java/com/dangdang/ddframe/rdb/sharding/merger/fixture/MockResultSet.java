@@ -264,7 +264,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
         }
         
         @Override
-        public <T> T unwrap(final Class<T> iface) throws SQLException {
+        public <I> I unwrap(final Class<I> iface) throws SQLException {
             throw new SQLFeatureNotSupportedException();
         }
         

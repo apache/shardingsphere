@@ -51,6 +51,18 @@ public final class HintManagerHolderTest {
     }
     
     @Test
+    public void assertIsMasterRouteOnlyWithoutSet() {
+        hintManager.close();
+        assertFalse(HintManagerHolder.isMasterRouteOnly());
+    }
+    
+    @Test
+    public void assertIsMasterRouteOnly() {
+        hintManager.setMasterRouteOnly();
+        assertTrue(HintManagerHolder.isMasterRouteOnly());
+    }
+    
+    @Test
     public void assertClear() {
         hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", 1);
         hintManager.close();

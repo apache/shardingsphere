@@ -167,7 +167,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         mergeContext.setExecutorEngine(getShardingConnection().getShardingContext().getExecutorEngine());
         setMergeContext(mergeContext);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = generatePrepareStatement(getShardingConnection().getConnection(each.getDataSource()), each.getSql());
+            PreparedStatement preparedStatement = generatePrepareStatement(getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatementType()), each.getSql());
             replayMethodsInvocation(preparedStatement);
             setParameters(preparedStatement, parameters);
             result.add(new PreparedStatementExecutorWrapper(preparedStatement, parameters, each));

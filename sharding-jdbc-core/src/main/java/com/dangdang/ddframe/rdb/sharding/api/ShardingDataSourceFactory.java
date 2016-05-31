@@ -27,6 +27,8 @@ import java.util.Properties;
 
 /**
  * 分片数据源工厂.
+ * 
+ * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingDataSourceFactory {

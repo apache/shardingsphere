@@ -45,7 +45,8 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     
     @Test
     public void assertEqual() {
-        Collection<String> result = createClosureShardingAlgorithm().doSharding(Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
+        Collection<String> result = createClosureShardingAlgorithm().doSharding(
+                Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
         assertThat(result.size(), is(1));
         assertThat(result, hasItem("target_1"));
     }

@@ -59,7 +59,7 @@ public final class TableRule {
      * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
      */
     @Deprecated
-    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames, 
+    public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
@@ -79,7 +79,7 @@ public final class TableRule {
     
     /**
      * 获取表规则配置对象构建器.
-     * 
+     *
      * @param logicTable 逻辑表名称 
      * @return 表规则配置对象构建器
      */
@@ -123,7 +123,7 @@ public final class TableRule {
     
     /**
      * 根据数据源名称过滤获取真实数据单元.
-     * 
+     *
      * @param targetDataSources 数据源名称集合
      * @param targetTables 真实表名称集合
      * @return 真实数据单元
@@ -168,7 +168,7 @@ public final class TableRule {
     
     /**
      * 根据数据源名称过滤获取真实表名称.
-     * 
+     *
      * @param targetDataSources 数据源名称
      * @return 真实表名称
      */
@@ -204,9 +204,9 @@ public final class TableRule {
         private boolean dynamic;
         
         private List<String> actualTables;
-    
+        
         private DataSourceRule dataSourceRule;
-    
+        
         private Collection<String> dataSourceNames;
         
         private DatabaseShardingStrategy databaseShardingStrategy;
@@ -215,7 +215,7 @@ public final class TableRule {
         
         /**
          * 构建是否为动态表.
-         * 
+         *
          * @param dynamic 是否为动态表
          * @return 真实表集合
          */
@@ -226,7 +226,7 @@ public final class TableRule {
         
         /**
          * 构建真实表集合.
-         * 
+         *
          * @param actualTables 真实表集合
          * @return 真实表集合
          */
@@ -237,7 +237,7 @@ public final class TableRule {
         
         /**
          * 构建数据源分片规则.
-         * 
+         *
          * @param dataSourceRule 数据源分片规则
          * @return 规则配置对象构建器
          */
@@ -245,7 +245,7 @@ public final class TableRule {
             this.dataSourceRule = dataSourceRule;
             return this;
         }
-    
+        
         /**
          * 构建数据源分片规则.
          *
@@ -259,7 +259,7 @@ public final class TableRule {
         
         /**
          * 构建数据库分片策略.
-         * 
+         *
          * @param databaseShardingStrategy 数据库分片策略
          * @return 规则配置对象构建器
          */
@@ -270,7 +270,7 @@ public final class TableRule {
         
         /**
          * 构建表分片策略.
-         * 
+         *
          * @param tableShardingStrategy 表分片策略
          * @return 规则配置对象构建器
          */
@@ -281,7 +281,7 @@ public final class TableRule {
         
         /**
          * 构建表规则配置对象.
-         * 
+         *
          * @return 表规则配置对象
          */
         public TableRule build() {

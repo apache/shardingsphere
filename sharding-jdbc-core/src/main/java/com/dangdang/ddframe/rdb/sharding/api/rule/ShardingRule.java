@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,6 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter
-@Builder
 public final class ShardingRule {
     
     private final DataSourceRule dataSourceRule;
@@ -47,9 +46,9 @@ public final class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules;
     
-    private DatabaseShardingStrategy databaseShardingStrategy;
+    private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private TableShardingStrategy tableShardingStrategy;
+    private final TableShardingStrategy tableShardingStrategy;
     
     /**
      * 全属性构造器.
@@ -73,6 +72,15 @@ public final class ShardingRule {
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
+    }
+    
+    /**
+     * 获取表规则配置对象构建器.
+     *
+     * @return 分片规则配置对象构建器
+     */
+    public static ShardingRuleBuilder builder() {
+        return new ShardingRuleBuilder();
     }
     
     /**
@@ -202,5 +210,86 @@ public final class ShardingRule {
             }
         }
         return result;
+    }
+    
+    /**
+     * 分片规则配置对象构建器.
+     */
+    @RequiredArgsConstructor
+    public static class ShardingRuleBuilder {
+        
+        private DataSourceRule dataSourceRule;
+        
+        private Collection<TableRule> tableRules;
+        
+        private Collection<BindingTableRule> bindingTableRules;
+        
+        private DatabaseShardingStrategy databaseShardingStrategy;
+        
+        private TableShardingStrategy tableShardingStrategy;
+        
+        /**
+         * 构建数据源配置规则.
+         *
+         * @param dataSourceRule 数据源配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder dataSourceRule(final DataSourceRule dataSourceRule) {
+            this.dataSourceRule = dataSourceRule;
+            return this;
+        }
+        
+        /**
+         * 构建表配置规则.
+         *
+         * @param tableRules 表配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder tableRules(final Collection<TableRule> tableRules) {
+            this.tableRules = tableRules;
+            return this;
+        }
+        
+        /**
+         * 构建绑定表配置规则.
+         *
+         * @param bindingTableRules 绑定表配置规则
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder bindingTableRules(final Collection<BindingTableRule> bindingTableRules) {
+            this.bindingTableRules = bindingTableRules;
+            return this;
+        }
+        
+        /**
+         * 构建默认分库策略.
+         *
+         * @param databaseShardingStrategy 默认分库策略
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder databaseShardingStrategy(final DatabaseShardingStrategy databaseShardingStrategy) {
+            this.databaseShardingStrategy = databaseShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建数据源分片规则.
+         *
+         * @param tableShardingStrategy 默认分表策略
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder tableShardingStrategy(final TableShardingStrategy tableShardingStrategy) {
+            this.tableShardingStrategy = tableShardingStrategy;
+            return this;
+        }
+        
+        /**
+         * 构建分片规则配置对象.
+         *
+         * @return 分片规则配置对象
+         */
+        public ShardingRule build() {
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy);
+        }
     }
 }
