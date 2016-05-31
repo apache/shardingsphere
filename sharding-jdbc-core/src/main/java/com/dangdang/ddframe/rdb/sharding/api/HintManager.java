@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
@@ -42,6 +43,9 @@ public final class HintManager implements AutoCloseable {
     private final Map<ShardingKey, ShardingValue<?>> databaseShardingValues = new HashMap<>();
     
     private final Map<ShardingKey, ShardingValue<?>> tableShardingValues = new HashMap<>();
+    
+    @Getter
+    private boolean masterRouteOnly;
     
     /**
      * 获取线索分片管理器实例.
@@ -137,6 +141,13 @@ public final class HintManager implements AutoCloseable {
      */
     public ShardingValue<?> getTableShardingValue(final ShardingKey shardingKey) {
         return tableShardingValues.get(shardingKey);
+    }
+    
+    /**
+     * 设置数据库操作只路由至主库.
+     */
+    public void setMasterRouteOnly() {
+        masterRouteOnly = true;
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
@@ -67,6 +68,14 @@ public final class MasterSlaveDataSourceTest {
     public void assertGetDataSourceForDMLAndDQL() {
         assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.INSERT), is(masterDataSource));
         assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+    }
+    
+    @Test
+    public void assertGetDataSourceForHintToMasterOnly() {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.setMasterRouteOnly();
+        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+        hintManager.close();
     }
     
     @Test(expected = IllegalStateException.class)

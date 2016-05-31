@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Preconditions;
@@ -60,7 +61,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @return 主或从节点的数据源
      */
     public DataSource getDataSource(final SQLStatementType sqlStatementType) {
-        if (SQLStatementType.SELECT != sqlStatementType || WAS_UPDATED.get()) {
+        if (SQLStatementType.SELECT != sqlStatementType || WAS_UPDATED.get() || HintManagerHolder.isMasterRouteOnly()) {
             WAS_UPDATED.set(true);
             return masterDataSource;
         }
@@ -70,7 +71,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     String getDatabaseProductName() throws SQLException {
         String result;
         try (Connection masterConnection = masterDataSource.getConnection()) {
-            result = masterConnection.getMetaData().getDatabaseProductName();    
+            result = masterConnection.getMetaData().getDatabaseProductName();
         }
         for (DataSource each : slaveDataSources) {
             String slaveDatabaseProductName;

@@ -11,10 +11,9 @@ weight = 6
 ## 支持项
 1. 提供了一主多从的读写分离配置，可配合分库分表使用。
 1. 同一线程如果有写入操作，以后的读操作均从主库读取，用于保证同一线程中的数据一致性。
+1. Spring命名空间。
+1. 基于Hint的强制主库路由。
 
-## 待支持项
-1. Spring命名空间
-1. 基于Hint的强制主库读取配置
 
 ## 不支持范围
 1. 主库和从库的数据同步。
@@ -110,4 +109,12 @@ dataSourceMap.put("ms_1", masterSlaveDs1);
         </rdb:sharding-rule>
     </rdb:data-source>
 </beans>
+```
+
+## 使用Hint强制路由主库示例
+
+```java
+HintManager hintManager = HintManager.getInstance();
+hintManager.setMasterRouteOnly();
+// 继续JDBC操作
 ```
