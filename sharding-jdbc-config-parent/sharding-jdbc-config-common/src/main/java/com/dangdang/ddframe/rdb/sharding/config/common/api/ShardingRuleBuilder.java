@@ -117,8 +117,8 @@ public final class ShardingRuleBuilder {
     private Collection<BindingTableRule> buildBindingTableRules(final Collection<TableRule> tableRules) {
         Collection<BindingTableRule> result = new ArrayList<>(shardingRuleConfig.getBindingTables().size());
         for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
-            result.add(new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {    
-            
+            result.add(new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
+                
                 @Override
                 public TableRule apply(final String input) {
                     return findTableRuleByLogicTableName(tableRules, input);
@@ -134,7 +134,7 @@ public final class ShardingRuleBuilder {
                 return each;
             }
         }
-        throw new IllegalArgumentException("Sharding JDBC: Binding table %s is not an available Table rule");
+        throw new IllegalArgumentException(String.format("Sharding JDBC: Binding table `%s` is not an available Table rule", logicTableName));
     }
     
     private <T extends ShardingStrategy> T buildShardingStrategy(final StrategyConfig config, final Class<T> returnClass) {

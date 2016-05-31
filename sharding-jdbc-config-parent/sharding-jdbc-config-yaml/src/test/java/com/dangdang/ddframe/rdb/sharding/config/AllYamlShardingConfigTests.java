@@ -18,12 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.config;
 
 import com.dangdang.ddframe.rdb.sharding.config.yaml.YamlShardingConfigTest;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.YamlintegratedTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses(
-        YamlShardingConfigTest.class
-    )
+@Suite.SuiteClasses({
+    YamlShardingConfigTest.class,
+    YamlintegratedTest.class
+    })
 public class AllYamlShardingConfigTests {
 }

@@ -3,7 +3,7 @@ tables:
     actualTables: t_order_${0..1}
     databaseStrategy: &db001
       shardingColumns: order_id
-      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
     tableStrategy: &table001
       shardingColumns: id
       algorithmExpression: t_order_${id.longValue() % 2}
