@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 import java.util.Collection;
 
@@ -31,9 +32,11 @@ public interface MultipleKeysShardingAlgorithm extends ShardingAlgorithm {
     /**
      * 根据分片值计算分片结果名称集合.
      * 
+     *
+     * @param sqlStatementType
      * @param availableTargetNames 所有的可用目标名称集合, 一般是数据源或表名称
      * @param shardingValues 分片值集合
      * @return 分片后指向的目标名称集合, 一般是数据源或表名称
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue<?>> shardingValues);
+    Collection<String> doSharding(SQLStatementType sqlStatementType, Collection<String> availableTargetNames, Collection<ShardingValue<?>> shardingValues);
 }

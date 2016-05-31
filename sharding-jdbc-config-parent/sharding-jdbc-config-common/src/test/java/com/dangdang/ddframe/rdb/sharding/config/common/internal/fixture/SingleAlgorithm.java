@@ -21,21 +21,22 @@ import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 public class SingleAlgorithm implements SingleKeyDatabaseShardingAlgorithm {
     
     @Override
-    public String doEqualSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
+    public String doEqualSharding(SQLStatementType sqlStatementType, final Collection availableTargetNames, final ShardingValue shardingValue) {
         return null;
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
+    public Collection<String> doInSharding(SQLStatementType sqlStatementType, final Collection availableTargetNames, final ShardingValue shardingValue) {
         return null;
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection availableTargetNames, final ShardingValue shardingValue) {
+    public Collection<String> doBetweenSharding(SQLStatementType sqlStatementType, final Collection availableTargetNames, final ShardingValue shardingValue) {
         return null;
     }
 }

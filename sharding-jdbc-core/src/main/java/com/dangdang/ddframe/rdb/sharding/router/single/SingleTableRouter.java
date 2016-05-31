@@ -123,7 +123,7 @@ public final class SingleTableRouter {
         logBeforeRoute("table", logicTable, tableRule.getActualTables(), strategy.getShardingColumns(), shardingValues);
         Collection<String> result;
         if (tableRule.isDynamic()) {
-            result = new HashSet<>(strategy.doDynamicSharding(shardingValues));
+            result = new HashSet<>(strategy.doDynamicSharding(sqlStatementType, shardingValues));
         } else {
             result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.getActualTableNames(routedDataSources), shardingValues));    
         }

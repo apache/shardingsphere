@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,26 +35,26 @@ public final class NoneDatabaseShardingAlgorithmTest {
     
     @Test
     public void assertDoSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doSharding(targets, null), is(targets));
+        assertThat(noneDatabaseShardingAlgorithm.doSharding(SQLStatementType.SELECT, targets, null), is(targets));
     }
     
     @Test
     public void assertDoEqualShardingForTargetsEmpty() {
-        assertNull(noneDatabaseShardingAlgorithm.doEqualSharding(Collections.<String>emptyList(), null));
+        assertNull(noneDatabaseShardingAlgorithm.doEqualSharding(SQLStatementType.SELECT, Collections.<String>emptyList(), null));
     }
     
     @Test
     public void assertDoEqualSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doEqualSharding(targets, null), is("ds"));
+        assertThat(noneDatabaseShardingAlgorithm.doEqualSharding(SQLStatementType.SELECT, targets, null), is("ds"));
     }
     
     @Test
     public void assertDoInSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doInSharding(targets, null), is(targets));
+        assertThat(noneDatabaseShardingAlgorithm.doInSharding(SQLStatementType.SELECT, targets, null), is(targets));
     }
     
     @Test
     public void assertDoBetweenSharding() {
-        assertThat(noneDatabaseShardingAlgorithm.doBetweenSharding(targets, null), is(targets));
+        assertThat(noneDatabaseShardingAlgorithm.doBetweenSharding(SQLStatementType.SELECT, targets, null), is(targets));
     }
 }

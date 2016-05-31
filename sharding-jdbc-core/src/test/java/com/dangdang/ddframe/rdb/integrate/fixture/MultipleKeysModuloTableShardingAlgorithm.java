@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.collect.Range;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ public final class MultipleKeysModuloTableShardingAlgorithm implements MultipleK
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         ShardingValue<?> shardingValue = shardingValues.iterator().next();
         switch (shardingValue.getType()) {
             case SINGLE: 
