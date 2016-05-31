@@ -59,7 +59,7 @@ import java.util.Map.Entry;
  * @author gaohongtao
  */
 @AllArgsConstructor
-public class ShardingRuleBuilder {
+public final class ShardingRuleBuilder {
     
     private final String logRoot;
     
