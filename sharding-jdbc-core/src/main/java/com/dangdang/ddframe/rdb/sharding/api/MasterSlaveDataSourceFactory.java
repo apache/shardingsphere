@@ -35,13 +35,13 @@ public final class MasterSlaveDataSourceFactory {
     /**
      * 创建读写分离数据源.
      * 
-     * @param logicDataSourceName 逻辑数据源名称
+     * @param name 读写分离数据源名称
      * @param masterDataSource 主节点数据源
      * @param slaveDataSource 从节点数据源
      * @param otherSlaveDataSources 其他从节点数据源
      * @return 读写分离数据源
      */
-    public static DataSource createDataSource(final String logicDataSourceName, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) {
-        return new MasterSlaveDataSource(logicDataSourceName, masterDataSource, Lists.asList(slaveDataSource, otherSlaveDataSources));
+    public static DataSource createDataSource(final String name, final DataSource masterDataSource, final DataSource slaveDataSource, final DataSource... otherSlaveDataSources) {
+        return new MasterSlaveDataSource(name, masterDataSource, Lists.asList(slaveDataSource, otherSlaveDataSources));
     }
 }

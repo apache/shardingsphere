@@ -45,7 +45,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         }
     };
     
-    private final String logicDataSourceName;
+    private final String name;
     
     private final DataSource masterDataSource;
     
@@ -64,7 +64,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             WAS_UPDATED.set(true);
             return masterDataSource;
         }
-        return slaveLoadBalanceStrategy.getDataSource(logicDataSourceName, slaveDataSources);
+        return slaveLoadBalanceStrategy.getDataSource(name, slaveDataSources);
     }
     
     String getDatabaseProductName() throws SQLException {
