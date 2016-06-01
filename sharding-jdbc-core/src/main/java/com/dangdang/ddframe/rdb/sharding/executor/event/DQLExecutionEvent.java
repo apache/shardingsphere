@@ -17,10 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
+import java.util.List;
+
 /**
- * DML类SQL执行时事件监听器.
+ * DQL类SQL执行时事件.
  * 
- * @author zhangliang
+ * @author gaohongtao
  */
-public interface DMLExecutionEventListener extends ExecutionEventListener {
+public final class DQLExecutionEvent extends ExecutionEvent {
+    
+    public DQLExecutionEvent(final String dataSource, final String sql) {
+        super(dataSource, sql);
+    }
+    
+    public DQLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+        super(dataSource, sql, parameters);
+    }
 }

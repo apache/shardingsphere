@@ -11,6 +11,7 @@ weight = 1
 ### 功能提升
 
 1. [ISSUE #91](https://github.com/dangdangdotcom/sharding-jdbc/issues/91) 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键
+1. [ISSUE #91](https://github.com/dangdangdotcom/sharding-jdbc/issues/92) 查询类DQL语句事件发送
 
 ### 缺陷修正
 
