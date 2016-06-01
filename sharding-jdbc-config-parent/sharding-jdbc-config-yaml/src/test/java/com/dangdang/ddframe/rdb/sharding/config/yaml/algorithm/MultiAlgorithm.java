@@ -21,11 +21,12 @@ import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 public class MultiAlgorithm implements MultipleKeysTableShardingAlgorithm {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         return null;
     }
 }

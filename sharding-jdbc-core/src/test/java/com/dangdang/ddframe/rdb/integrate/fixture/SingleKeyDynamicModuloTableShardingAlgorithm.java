@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 
@@ -31,12 +32,12 @@ public final class SingleKeyDynamicModuloTableShardingAlgorithm implements Singl
     private final String tablePrefix;
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doEqualSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         return tablePrefix + shardingValue.getValue() % 10;
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doInSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(shardingValue.getValues().size());
         for (Integer value : shardingValue.getValues()) {
             result.add(tablePrefix + value % 10);
@@ -45,7 +46,7 @@ public final class SingleKeyDynamicModuloTableShardingAlgorithm implements Singl
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {

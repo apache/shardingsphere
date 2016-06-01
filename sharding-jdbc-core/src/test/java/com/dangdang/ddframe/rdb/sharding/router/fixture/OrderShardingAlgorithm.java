@@ -23,11 +23,12 @@ import java.util.HashSet;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer>, SingleKeyTableShardingAlgorithm<Integer> {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doEqualSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
                 return each;
@@ -37,7 +38,7 @@ public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAl
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doInSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new HashSet<>(2);
         for (String each : availableTargetNames) {
             for (int value : shardingValue.getValues()) {
@@ -50,7 +51,7 @@ public final class OrderShardingAlgorithm implements SingleKeyDatabaseShardingAl
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new HashSet<>(2);
         for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {

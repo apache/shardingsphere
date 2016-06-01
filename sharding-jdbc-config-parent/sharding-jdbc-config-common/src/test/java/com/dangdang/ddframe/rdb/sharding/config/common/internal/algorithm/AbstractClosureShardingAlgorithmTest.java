@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import groovy.lang.MissingMethodException;
@@ -46,14 +47,14 @@ public abstract class AbstractClosureShardingAlgorithmTest {
     @Test
     public void assertEqual() {
         Collection<String> result = createClosureShardingAlgorithm().doSharding(
-                Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
+                SQLStatementType.SELECT, Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
         assertThat(result.size(), is(1));
         assertThat(result, hasItem("target_1"));
     }
     
     @Test
     public void assertIn() {
-        Collection<String> result = createClosureShardingAlgorithm().doSharding(Arrays.asList("target_0", "target_1"), 
+        Collection<String> result = createClosureShardingAlgorithm().doSharding(SQLStatementType.SELECT, Arrays.asList("target_0", "target_1"),
                 Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", Arrays.asList(1, 2))));
         assertThat(result.size(), is(2));
         assertThat(result, hasItem("target_0"));
@@ -62,12 +63,12 @@ public abstract class AbstractClosureShardingAlgorithmTest {
         
     @Test(expected = UnsupportedOperationException.class)
     public void assertBetween() {
-        createClosureShardingAlgorithm().doSharding(Arrays.asList("target_0", "target_1"), 
+        createClosureShardingAlgorithm().doSharding(SQLStatementType.SELECT, Arrays.asList("target_0", "target_1"),
                 Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", Range.range(1, BoundType.CLOSED, 2, BoundType.OPEN))));
     }
     
     @Test(expected = MissingMethodException.class)
     public void assertEvaluateInlineExpressionFailure() {
-        createErrorClosureShardingAlgorithm().doSharding(Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
+        createErrorClosureShardingAlgorithm().doSharding(SQLStatementType.SELECT, Collections.singletonList("target_1"), Collections.<ShardingValue<?>>singletonList(new ShardingValue<>("target", "id", 1L)));
     }
 }

@@ -80,31 +80,31 @@ public final class ShardingStrategyTest {
     @Test(expected = IllegalStateException.class)
     public void assertDoDynamicShardingWithoutShardingColumns() {
         ShardingStrategy strategy = new ShardingStrategy(Collections.singletonList("column"), null);
-        strategy.doDynamicSharding(Collections.<ShardingValue<?>>emptyList());
+        strategy.doDynamicSharding(SQLStatementType.SELECT, Collections.<ShardingValue<?>>emptyList());
     }
     
     @Test
     public void assertDoDynamicShardingForEqualSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.singletonList("1")));
+        assertThat(strategy.doDynamicSharding(SQLStatementType.SELECT, createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.singletonList("1")));
     }
     
     @Test
     public void assertDoDynamicShardingForInSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
+        assertThat(strategy.doDynamicSharding(SQLStatementType.SELECT, createShardingValues(new ShardingValue<>("logicTable", "column", Arrays.asList("1", "3")))), is((Collection<String>) Arrays.asList("1", "3")));
     }
     
     @Test
     public void assertDoDynamicShardingForBetweenSingleKey() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestSingleKeyShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
+        assertThat(strategy.doDynamicSharding(SQLStatementType.SELECT, createShardingValues(new ShardingValue<>("logicTable", "column", Range.open("1", "3")))), is((Collection<String>) Arrays.asList("1", "2", "3")));
     }
     
     @Test
     public void assertDoDynamicShardingForMultipleKeys() {
         ShardingStrategy strategy = new ShardingStrategy("column", new TestMultipleKeysShardingAlgorithm());
-        assertThat(strategy.doDynamicSharding(createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptyList()));
+        assertThat(strategy.doDynamicSharding(SQLStatementType.SELECT, createShardingValues(new ShardingValue<>("logicTable", "column", "1"))), is((Collection<String>) Collections.<String>emptyList()));
     }
     
     private Collection<ShardingValue<?>> createShardingValues(final ShardingValue<String> shardingValue) {
