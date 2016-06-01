@@ -60,11 +60,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingDat
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetGeneratedKeys() throws SQLException {
-        actual.getGeneratedKeys();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAddBatch() throws SQLException {
         actual.addBatch("");
     }

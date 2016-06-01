@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -203,5 +204,19 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
         actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
         actual.setQueryTimeout(10);
         assertThat(actual.getQueryTimeout(), is(10));
+    }
+    
+    @Test
+    public void assertGetGeneratedKeysForSingleRoutedStatement() throws SQLException {
+        actual.executeUpdate("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')");
+        ResultSet generatedKeysResult = actual.getGeneratedKeys();
+        assertTrue(generatedKeysResult.next());
+        assertTrue(generatedKeysResult.getInt(1) > 0);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
+        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `order_id` IN 1, 2");
+        actual.getGeneratedKeys();
     }
 }

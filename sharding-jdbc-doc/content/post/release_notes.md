@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.3.1-SNAPSHOT
 
+### 功能提升
+
+1. [ISSUE #91](https://github.com/dangdangdotcom/sharding-jdbc/issues/91) 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键
+
 ### 缺陷修正
 
 1. [ISSUE #89](https://github.com/dangdangdotcom/sharding-jdbc/issues/89) 读写分离和分片的hint一起使用导致冲突
