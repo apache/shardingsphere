@@ -20,8 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.config.yaml;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
@@ -29,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.Driver;
 import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
 import java.io.File;
