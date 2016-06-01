@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.masterslave.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.masterslave.AbstractShardingMasterSlaveDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
@@ -94,5 +95,24 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
                 + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? GROUP BY o.`user_id`";
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
+    }
+    
+    @Test
+    public void assertSelectForHint() throws SQLException, DatabaseUnitException {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_order", "user_id", 10);
+        hintManager.addTableShardingValue("t_order", "order_id", 1000);
+        String sql = "SELECT `t_order`.order_id, `t_order`.user_id, `t_order`.status FROM `t_order` WHERE `t_order`.`user_id` = ? AND `t_order`.`order_id` = ?";
+        assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
+    }
+    
+    @Test
+    public void assertSelectForHintAndForceMaster() throws SQLException, DatabaseUnitException {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.setMasterRouteOnly();
+        hintManager.addDatabaseShardingValue("t_order", "user_id", 10);
+        hintManager.addTableShardingValue("t_order", "order_id", 1000);
+        String sql = "SELECT `t_order`.order_id, `t_order`.user_id, `t_order`.status FROM `t_order` WHERE `t_order`.`user_id` = ? AND `t_order`.`order_id` = ?";
+        assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleMasterTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
     }
 }

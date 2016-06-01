@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.3.1-SNAPSHOT
 
+### 缺陷修正
+
+1. [ISSUE #89](https://github.com/dangdangdotcom/sharding-jdbc/issues/89) 读写分离和分片的hint一起使用导致冲突
+
 ## 1.3.0
 
 ### 新功能
