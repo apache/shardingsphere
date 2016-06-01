@@ -17,97 +17,64 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNode;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.dbcp.BasicDataSource;
+import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-@Slf4j
-public class YamlintegratedTest {
+@RunWith(Parameterized.class)
+@RequiredArgsConstructor
+public class YamlIntegratedTest extends AbstractYamlShardingDataSourceTest {
     
-    @Test
-    public void testAll() {
-        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(YamlintegratedTest.class.getResourceAsStream("/config/config-all.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder("config-all.yaml", config).build();
-        assertThat(shardingRule.getTableRules().size(), is(3));
-        assertThat(shardingRule.getBindingTableRules().size(), is(1));
-        assertThat(Arrays.asList(shardingRule.getTableRules().toArray()), hasItems(shardingRule.getBindingTableRules().iterator().next().getTableRules().toArray()));
-        assertThat(shardingRule.getDataSourceRule().getDefaultDataSourceName(), is("db0"));
+    private final String filePath;
+    
+    private final boolean hasDataSource;
+    
+    @Parameterized.Parameters(name = "{index}:{0}-{1}")
+    public static Collection init() {
+        return Arrays.asList(new Object[][]{
+                {"/configWithDataSourceWithoutProps.yaml", true},
+                {"/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/configWithDataSourceWithProps.yaml", true},
+                {"/configWithoutDataSourceWithProps.yaml", false},
+        });
     }
     
     @Test
-    public void testMin() {
-        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        Map<String, DataSource> dsMap = new HashMap<>();
-        dsMap.put("ds", new BasicDataSource());
-        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(YamlintegratedTest.class.getResourceAsStream("/config/config-min.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder("config-min.yaml", dsMap, config).build();
-        assertThat(shardingRule.getTableRules().size(), is(1));
-    }
-    
-    @Test
-    public void testDynamic() {
-        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        Map<String, DataSource> dsMap = new HashMap<>();
-        dsMap.put("ds", new BasicDataSource());
-        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(YamlintegratedTest.class.getResourceAsStream("/config/config-dynamic.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder("config-dynamic.yaml", dsMap, config).build();
-        int i = 0;
-        for (TableRule each : shardingRule.getTableRules()) {
-            i++;
-            assertThat(each.getActualTables().size(), is(2));
-            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db0")));
-            assertThat(each.getActualTables(), hasItem(new DynamicDataNode("db1")));
-            switch (i) {
-                case 1:
-                    assertThat(each.getLogicTable(), is("config"));
-                    break;
-                case 2:
-                    assertThat(each.getLogicTable(), is("t_order"));
-                    break;
-                case 3:
-                    assertThat(each.getLogicTable(), is("t_order_item"));
-                    break;
-                default:
-                    fail();
-            }
+    public void testWithDataSource() throws SQLException, URISyntaxException, IOException {
+        File yamlFile = new File(YamlIntegratedTest.class.getResource(filePath).toURI());
+        DataSource dataSource;
+        if (hasDataSource) {
+            dataSource = new YamlShardingDataSource(yamlFile);
+        } else {
+            dataSource = new YamlShardingDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), new Function<String, DataSource>() {
+                @Override
+                public DataSource apply(final String key) {
+                    return createDataSource(key);
+                }
+            }), yamlFile);
+        }
+        
+        try (Connection conn = dataSource.getConnection();
+             Statement stm = conn.createStatement()) {
+            stm.executeQuery("SELECT * FROM t_order");
+            stm.executeQuery("SELECT * FROM t_order_item");
+            stm.executeQuery("SELECT * FROM config");
         }
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testClassNotFound() {
-        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(YamlintegratedTest.class.getResourceAsStream("/config/config-classNotFound.yaml"));
-        new ShardingRuleBuilder(config).build();
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testBindingError() {
-        Yaml yaml = new Yaml(new Constructor(ShardingRuleConfig.class));
-        Map<String, DataSource> dsMap = new HashMap<>();
-        dsMap.put("ds", new BasicDataSource());
-        ShardingRuleConfig config = (ShardingRuleConfig) yaml.load(YamlintegratedTest.class.getResourceAsStream("/config/config-bindingError.yaml"));
-        ShardingRule shardingRule = new ShardingRuleBuilder("config-bindingError.yaml", dsMap, config).build();
-        for (TableRule tableRule : shardingRule.getBindingTableRules().iterator().next().getTableRules()) {
-            log.info(tableRule.toString());
-        }
-    }
 }
