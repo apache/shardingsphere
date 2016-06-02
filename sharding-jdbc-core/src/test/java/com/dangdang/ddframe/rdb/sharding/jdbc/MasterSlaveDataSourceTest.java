@@ -50,6 +50,7 @@ public final class MasterSlaveDataSourceTest {
     @After
     public void reset() {
         HintManagerHolder.clear();
+        MasterSlaveDataSource.resetDMLFlag();
     }
     
     @Test
@@ -120,5 +121,13 @@ public final class MasterSlaveDataSourceTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertGetConnection() throws SQLException {
         masterSlaveDataSource.getConnection();
+    }
+    
+    @Test
+    public void assertResetDMLFlag() {
+        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.INSERT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+        MasterSlaveDataSource.resetDMLFlag();
+        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(slaveDataSource));
     }
 }
