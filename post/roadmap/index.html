@@ -129,9 +129,16 @@ body {
 <li>简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule <code>(完成)</code></li>
 </ol>
 
-<h2 id="进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</h2>
-
 <h3 id="读写分离:cd4a1b36ed2b93cfc52abf77a7d25d03">读写分离</h3>
+
+<ol>
+<li>一主多从的读写分离，可配合分库分表使用 <code>(完成)</code></li>
+<li>同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 <code>(完成)</code></li>
+<li>Spring命名空间 <code>(完成)</code></li>
+<li>Hint强制主库路由 <code>(完成)</code></li>
+</ol>
+
+<h2 id="进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</h2>
 
 <h2 id="计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</h2>
 
@@ -202,11 +209,9 @@ body {
 <ul>
 <li><a href="#transaction:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction</a></li>
 <li><a href="#config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">config 2.0</a></li>
-</ul></li>
-<li><a href="#进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</a>
-<ul>
 <li><a href="#读写分离:cd4a1b36ed2b93cfc52abf77a7d25d03">读写分离</a></li>
 </ul></li>
+<li><a href="#进行中:cd4a1b36ed2b93cfc52abf77a7d25d03">进行中</a></li>
 <li><a href="#计划中:cd4a1b36ed2b93cfc52abf77a7d25d03">计划中</a>
 <ul>
 <li><a href="#transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03">transaction 2.0</a></li>

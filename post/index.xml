@@ -2351,9 +2351,16 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 &lt;li&gt;简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
-
 &lt;h3 id=&#34;读写分离:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;读写分离&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;一主多从的读写分离，可配合分库分表使用 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Spring命名空间 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Hint强制主库路由 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
 
 &lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
 
