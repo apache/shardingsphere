@@ -17,42 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * DML类SQL执行时事件.
  * 
  * @author zhangliang
  */
-@Getter
-public final class DMLExecutionEvent {
+public final class DMLExecutionEvent extends ExecutionEvent {
     
-    private final String id;
-    
-    private final String dataSource;
-    
-    private final String sql;
-    
-    private final List<Object> parameters;
-    
-    @Setter
-    private EventExecutionType eventExecutionType;
-    
-    public DMLExecutionEvent(final String dataSource, final String sql, final EventExecutionType eventExecutionType) {
-        this(dataSource, sql, Collections.emptyList(), eventExecutionType);
+    public DMLExecutionEvent(final String dataSource, final String sql) {
+        super(dataSource, sql);
     }
     
-    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters, final EventExecutionType eventExecutionType) {
-        // TODO 替换UUID为更有效率的id生成器
-        id = UUID.randomUUID().toString();
-        this.dataSource = dataSource;
-        this.sql = sql;
-        this.parameters = parameters;
-        this.eventExecutionType = eventExecutionType;
+    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+        super(dataSource, sql, parameters);
     }
 }

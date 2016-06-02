@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationConnection;
+import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Collection;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 
 /**
  * 数据库连接适配类.
@@ -75,7 +75,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public final void close() throws SQLException {
+    public void close() throws SQLException {
         for (Connection each : getConnections()) {
             each.close();
         }

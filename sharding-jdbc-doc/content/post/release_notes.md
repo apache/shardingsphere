@@ -6,7 +6,34 @@ weight = 1
 
 # Release Notes
 
-## 1.2.1-SNAPSHOT
+## 1.3.1-SNAPSHOT
+
+### 功能提升
+
+1. [ISSUE #91](https://github.com/dangdangdotcom/sharding-jdbc/issues/91) 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键
+1. [ISSUE #92](https://github.com/dangdangdotcom/sharding-jdbc/issues/92) 查询类DQL语句事件发送
+
+### 缺陷修正
+
+1. [ISSUE #89](https://github.com/dangdangdotcom/sharding-jdbc/issues/89) 读写分离和分片的hint一起使用导致冲突
+1. [ISSUE #95](https://github.com/dangdangdotcom/sharding-jdbc/issues/95) 同一线程内写入操作后的读操作均从主库读取改为同一线程且同一连接内
+
+## 1.3.0
+
+### 新功能
+
+1. [ISSUE #85](https://github.com/dangdangdotcom/sharding-jdbc/issues/85) 读写分离
+
+### 功能提升
+
+1. [ISSUE #82](https://github.com/dangdangdotcom/sharding-jdbc/issues/82) TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源
+1. [ISSUE #88](https://github.com/dangdangdotcom/sharding-jdbc/issues/88) 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持
+
+### 缺陷修正
+
+1. [ISSUE #81](https://github.com/dangdangdotcom/sharding-jdbc/issues/81) 关联表查询使用or查询条件解析结果异常
+
+## 1.2.1
 
 ### 结构调整
 

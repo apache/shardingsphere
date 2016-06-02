@@ -42,6 +42,8 @@
 
 * 分片策略灵活，可支持`=`，`BETWEEN`，`IN`等多维度分片，也可支持多分片键共用。
 * `SQL`解析功能完善，支持聚合，分组，排序，`Limit`，`OR`等查询，并且支持`Binding Table`以及笛卡尔积的表查询。
+* 支持柔性事务(目前仅最大努力送达型)。
+* 支持读写分离。
 
 `Sharding-JDBC`配置多样：
 
@@ -78,13 +80,15 @@
 
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
-[核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/)
+[核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/)
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
 [Yaml文件和Spring命名空间配置](http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/)
 
-[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
+[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/)
+
+[读写分离](http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave)
 
 [柔性事务](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
 
@@ -121,14 +125,16 @@
 
 ## 规则配置
 `Sharding-JDBC`的分库分表通过规则配置描述，请简单浏览配置全貌：
+
 ```java
- ShardingRule shardingRule = ShardingRule.builder()
+ShardingRule shardingRule = ShardingRule.builder()
         .dataSourceRule(dataSourceRule)
-        .tableRules(tableRules)
-        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column_1", new XXXShardingAlgorithm()))
-        .tableShardingStrategy(new TableShardingStrategy("sharding_column_2", new XXXShardingAlgorithm())))
+        .tableRules(tableRuleList)
+        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
         .build();
 ```
+
 规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和`tableRule`绑定等。
 
 >详细的规则配置请参考[用户指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
@@ -136,6 +142,7 @@
 ## 使用原生JDBC接口
 通过`ShardingDataSourceFactory`工厂和规则配置对象获取`ShardingDataSource`，`ShardingDataSource`实现自`JDBC`的标准接口`DataSource`。然后可通过`DataSource`选择使用原生`JDBC`开发，或者使用`JPA`, `MyBatis`等`ORM`工具。
 以`JDBC`原生实现为例：
+
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
@@ -148,15 +155,14 @@ try (
         while(rs.next()) {
             System.out.println(rs.getInt(1));
             System.out.println(rs.getInt(2));
-            System.out.println(rs.getInt(3));
         }
     }
 }
 ```
 
 ## 使用Spring命名空间配置
-```xml
 
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 

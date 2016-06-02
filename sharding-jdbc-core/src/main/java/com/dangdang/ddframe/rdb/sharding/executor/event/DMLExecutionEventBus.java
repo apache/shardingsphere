@@ -17,11 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
-import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DML类SQL执行时的事件发布总线.
@@ -31,9 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DMLExecutionEventBus {
     
-    private static final EventBus INSTANCE = new EventBus();
-    
-    private static final ConcurrentHashMap<String, DMLExecutionEventListener> LISTENERS = new ConcurrentHashMap<>();
+    private static final String NAME = "DML-EventBus";
     
     /**
      * 发布DML类SQL执行事件.
@@ -41,7 +36,7 @@ public final class DMLExecutionEventBus {
      * @param event DML类SQL执行事件
      */
     public static void post(final DMLExecutionEvent event) {
-        INSTANCE.post(event);
+        ExecutionEventBusFactory.getInstance(NAME).post(event);
     }
     
     /**
@@ -50,9 +45,13 @@ public final class DMLExecutionEventBus {
      * @param listener DML类SQL执行事件监听器
      */
     public static void register(final DMLExecutionEventListener listener) {
-        if (!LISTENERS.containsKey(listener.getName())) {
-            INSTANCE.register(listener);
-            LISTENERS.putIfAbsent(listener.getName(), listener);
-        }
+        ExecutionEventBusFactory.getInstance(NAME).register(listener);
+    }
+    
+    /**
+     * 清除监听器.
+     */
+    public static void clearListener() {
+        ExecutionEventBusFactory.getInstance(NAME).clearListener();
     }
 }

@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.transaction.soft.integrate;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.base.AbstractSoftTransactionIntegrationTest;
@@ -49,8 +50,8 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
     private void insert() throws SQLException {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
-            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
-            PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLStatementType.INSERT);
+                PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
             e.printStackTrace();
@@ -61,7 +62,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (
-            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans");
+            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLStatementType.SELECT);
             PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {

@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapp
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
 import com.google.common.base.Charsets;
@@ -148,17 +149,17 @@ public class ShardingStatement extends AbstractStatementAdapter {
         mergeContext = sqlRouteResult.getMergeContext();
         mergeContext.setExecutorEngine(shardingConnection.getShardingContext().getExecutorEngine());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            result.addStatement(new StatementExecutorWrapper(generateStatement(each.getSql(), each.getDataSource()), each));
+            result.addStatement(new StatementExecutorWrapper(generateStatement(each.getSql(), each.getDataSource(), sqlRouteResult.getSqlStatementType()), each));
         }
         return result;
     }
     
-    private Statement generateStatement(final String sql, final String dataSourceName) throws SQLException {
+    private Statement generateStatement(final String sql, final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
         HashCode hashCode =  Hashing.md5().newHasher().putString(sql, Charsets.UTF_8).putString(dataSourceName, Charsets.UTF_8).hash();
         if (cachedRoutedStatements.containsKey(hashCode)) {
             return cachedRoutedStatements.get(hashCode);
         }
-        Connection connection = shardingConnection.getConnection(dataSourceName);
+        Connection connection = shardingConnection.getConnection(dataSourceName, sqlStatementType);
         Statement result;
         if (0 == resultSetHoldability) {
             result = connection.createStatement(resultSetType, resultSetConcurrency);

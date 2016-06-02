@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -38,19 +38,31 @@ public final class PreparedStatementExecutorWrapper extends AbstractExecutorWrap
     
     private final Optional<DMLExecutionEvent> dmlExecutionEvent;
     
+    private final Optional<DQLExecutionEvent> dqlExecutionEvent;
+    
     public PreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final List<Object> parameters,
                                             final SQLExecutionUnit sqlExecutionUnit) {
         super(sqlExecutionUnit);
         this.preparedStatement = preparedStatement;
         if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), parameters, EventExecutionType.BEFORE_EXECUTE));
+            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), parameters));
+            dqlExecutionEvent = Optional.absent();
+        } else if (isDQL()) {
+            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), parameters));
+            dmlExecutionEvent = Optional.absent();
         } else {
             dmlExecutionEvent = Optional.absent();
+            dqlExecutionEvent = Optional.absent();
         }
     }
     
     @Override
     public Optional<DMLExecutionEvent> getDMLExecutionEvent() {
         return dmlExecutionEvent;
+    }
+    
+    @Override
+    public Optional<DQLExecutionEvent> getDQLExecutionEvent() {
+        return dqlExecutionEvent;
     }
 }

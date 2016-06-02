@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,5 +93,11 @@ public final class DataSourceAdapterTest extends AbstractShardingDataBasesOnlyDB
     @Test
     public void assertGetParentLogger() throws SQLException {
         assertThat(shardingDataSource.getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
+    }
+    
+    
+    @Test
+    public void assertGetConnectionWithUsername() throws SQLException {
+        assertThat(shardingDataSource.getConnection("username", "password"), instanceOf(ShardingConnection.class));
     }
 }

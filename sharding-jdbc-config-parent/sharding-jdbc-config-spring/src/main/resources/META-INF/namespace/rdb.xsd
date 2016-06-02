@@ -39,6 +39,7 @@
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
             <xsd:attribute name="dynamic" type="xsd:string" use="optional" />
             <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
+            <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy" type="xsd:string" use="optional" />
         </xsd:complexType>
@@ -82,6 +83,13 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:propsType"/>
             </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="master-slave-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-sources-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

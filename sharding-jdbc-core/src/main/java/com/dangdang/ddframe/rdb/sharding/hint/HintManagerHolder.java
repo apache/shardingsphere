@@ -48,8 +48,8 @@ public final class HintManagerHolder {
      * 判断当前线程是否使用线索分片.
      * @return 当前线程是否使用线索分片
      */
-    public static boolean isUseHint() {
-        return null != HINT_MANAGER_HOLDER.get();
+    public static boolean isUseShardingHint() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isShardingHint();
     }
     
     /**
@@ -59,7 +59,7 @@ public final class HintManagerHolder {
      * @return 分库分片键值
      */
     public static Optional<ShardingValue<?>> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return isUseHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
+        return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
     }
     
     /**
@@ -69,7 +69,16 @@ public final class HintManagerHolder {
      * @return 分表分片键值
      */
     public static Optional<ShardingValue<?>> getTableShardingValue(final ShardingKey shardingKey) {
-        return isUseHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
+        return isUseShardingHint() ? Optional.<ShardingValue<?>>fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue<?>>absent();
+    }
+    
+    /**
+     * 判断是否数据库操作只路由至主库.
+     * 
+     * @return 是否数据库操作只路由至主库
+     */
+    public static boolean isMasterRouteOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
     }
     
     /**

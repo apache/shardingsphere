@@ -17,6 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,16 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
-import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-
-import lombok.Getter;
-import lombok.ToString;
 
 /**
  * 单表路由结果.

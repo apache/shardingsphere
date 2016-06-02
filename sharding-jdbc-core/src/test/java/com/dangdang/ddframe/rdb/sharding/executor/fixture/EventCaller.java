@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface EventCaller {
@@ -30,4 +31,6 @@ public interface EventCaller {
     void verifyParameters(List<Object> parameters);
     
     void verifyEventExecutionType(EventExecutionType eventExecutionType);
+    
+    void verifyException(SQLException exp);
 }

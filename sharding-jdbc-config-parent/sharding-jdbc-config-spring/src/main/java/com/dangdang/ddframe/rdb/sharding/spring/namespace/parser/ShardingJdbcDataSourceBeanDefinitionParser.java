@@ -55,7 +55,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
-
+    
     private BeanDefinition parseShardingRuleConfig(final Element element, final ParserContext parserContext) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingJdbcDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfig.class);
@@ -69,7 +69,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
     }
     
     private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
-        List<String> dataSources = Splitter.on(",").splitToList(element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCES_TAG));
         Map<String, BeanDefinition> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, parserContext.getRegistry().getBeanDefinition(each));
@@ -89,26 +89,30 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
         Map<String, BeanDefinition> result = new ManagedMap<>(tableRuleElements.size());
         for (Element each : tableRuleElements) {
-            result.put(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTR), parseTableRuleConfig(each));
+            result.put(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLE_ATTRIBUTE), parseTableRuleConfig(each));
         }
         return result;
     }
     
     private BeanDefinition parseTableRuleConfig(final Element tableElement) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfig.class);
-        String dynamic = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DYNAMIC_TABLE_ATTR);
+        String dynamic = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DYNAMIC_TABLE_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(dynamic)) {
             factory.addPropertyValue("dynamic", dynamic);
         }
-        String actualTables = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_TABLES_ATTR);
+        String actualTables = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ACTUAL_TABLES_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(actualTables)) {
             factory.addPropertyValue("actualTables", actualTables);
         }
-        String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_ATTR);
+        String dataSourceNames = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(dataSourceNames)) {
+            factory.addPropertyValue("dataSourceNames", dataSourceNames);
+        }
+        String databaseStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.DATABASE_STRATEGY_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(databaseStrategy)) {
             factory.addPropertyReference("databaseStrategy", databaseStrategy);    
         }
-        String tableStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_STRATEGY_ATTR);
+        String tableStrategy = tableElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.TABLE_STRATEGY_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableStrategy", tableStrategy);
         }
@@ -124,18 +128,18 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         BeanDefinitionBuilder bindingTableRuleFactory = BeanDefinitionBuilder.rootBeanDefinition(BindingTableRuleConfig.class);
         List<BeanDefinition> result = new ManagedList<>(bindingTableRuleElements.size());
         for (Element bindingTableRuleElement : bindingTableRuleElements) {
-            bindingTableRuleFactory.addPropertyValue("tableNames", bindingTableRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTR));
+            bindingTableRuleFactory.addPropertyValue("tableNames", bindingTableRuleElement.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.LOGIC_TABLES_ATTRIBUTE));
             result.add(bindingTableRuleFactory.getBeanDefinition());
         }
         return result;
     }
     
     private BeanDefinition parseDefaultDatabaseStrategyConfig(final Element element) {
-        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATABASE_STRATEGY_ATTR);
+        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_DATABASE_STRATEGY_ATTRIBUTE);
     }
     
     private BeanDefinition parseDefaultTableStrategyConfig(final Element element) {
-        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_TABLE_STRATEGY_ATTR);
+        return parseDefaultStrategyConfig(element, ShardingJdbcDataSourceBeanDefinitionParserTag.DEFAULT_TABLE_STRATEGY_ATTRIBUTE);
     }
     
     private BeanDefinition parseDefaultStrategyConfig(final Element element, final String attr) {

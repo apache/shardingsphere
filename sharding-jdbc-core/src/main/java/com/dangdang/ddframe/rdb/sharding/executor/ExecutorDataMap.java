@@ -30,15 +30,15 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutorDataMap {
-
+    
     private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
-
+        
         @Override
         protected Map<String, Object> initialValue() {
             return new HashMap<>();
         }
     };
-
+    
     /**
      * 设置数据Map.
      *
@@ -47,7 +47,7 @@ public final class ExecutorDataMap {
     public static void setDataMap(final Map<String, Object> dataMap) {
         ExecutorDataMap.dataMap.set(dataMap);
     }
-
+    
     /**
      * 获取数据Map.
      *
@@ -56,5 +56,4 @@ public final class ExecutorDataMap {
     public static Map<String, Object> getDataMap() {
         return dataMap.get();
     }
-
 }

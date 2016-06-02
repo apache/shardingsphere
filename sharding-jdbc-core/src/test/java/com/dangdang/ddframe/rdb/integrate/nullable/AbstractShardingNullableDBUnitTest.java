@@ -70,8 +70,8 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
         
         TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
-        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule))
-                .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule))))
+        ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(orderTableRule))
+                .bindingTableRules(Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
         return new ShardingDataSource(shardingRule);

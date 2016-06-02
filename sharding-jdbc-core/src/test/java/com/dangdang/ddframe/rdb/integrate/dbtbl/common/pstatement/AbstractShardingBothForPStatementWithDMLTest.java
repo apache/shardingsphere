@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
@@ -157,7 +158,7 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i),
-                        shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i)), 
+                        shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i), SQLStatementType.SELECT), 
                         String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
             }
         }

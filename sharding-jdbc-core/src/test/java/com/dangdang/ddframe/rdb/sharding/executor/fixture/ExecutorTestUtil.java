@@ -39,7 +39,7 @@ public final class ExecutorTestUtil {
     }
     
     public static void clear() throws NoSuchFieldException, IllegalAccessException {
-        Field field = ExecutorExceptionHandler.class.getDeclaredField("isExceptionThrown");
+        Field field = ExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
         field.setAccessible(true);
         ((ThreadLocal) field.get(ExecutorExceptionHandler.class)).remove();
     }

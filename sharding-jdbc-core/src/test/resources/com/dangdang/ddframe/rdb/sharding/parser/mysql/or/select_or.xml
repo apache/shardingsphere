@@ -120,4 +120,23 @@
             <table name="travel_record" />
         </tables>
     </assert>
+
+    <assert id="assertOrJoin" sql="select u.id, i.name from user u, item i where u.id = i.id and (i.id = 1 or i.id = 2)"  expected-sql="SELECT [Token(u)].id, [Token(i)].name FROM [Token(user)] u, [Token(item)] i WHERE u.id = i.id AND (i.id = 1 OR i.id = 2)">
+        <tables>
+            <table name="user" alias="u"/>
+            <table name="item" alias="i"/>
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="id" table-name="item" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="item" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
 </asserts>

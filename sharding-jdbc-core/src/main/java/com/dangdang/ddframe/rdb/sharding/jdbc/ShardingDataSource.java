@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
@@ -30,8 +30,6 @@ import com.google.common.base.Preconditions;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -62,16 +60,17 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private String getDatabaseProductName(final ShardingRule shardingRule) throws SQLException {
         String result = null;
-        Collection<Connection> connections = new ArrayList<>(shardingRule.getDataSourceRule().getDataSources().size());
         for (DataSource each : shardingRule.getDataSourceRule().getDataSources()) {
-            Connection connection = each.getConnection();
-            connections.add(connection);
-            String databaseProductName = connection.getMetaData().getDatabaseProductName();
+            String databaseProductName;
+            if (each instanceof MasterSlaveDataSource) {
+                databaseProductName = ((MasterSlaveDataSource) each).getDatabaseProductName();
+            } else {
+                try (Connection connection = each.getConnection()) {
+                    databaseProductName = connection.getMetaData().getDatabaseProductName();
+                }
+            }
             Preconditions.checkState(null == result || result.equals(databaseProductName), String.format("Database type inconsistent with '%s' and '%s'", result, databaseProductName));
             result = databaseProductName;
-        }
-        for (Connection each : connections) {
-            each.close();
         }
         return result;
     }
@@ -80,10 +79,5 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingConnection getConnection() throws SQLException {
         MetricsContext.init(shardingProperties);
         return new ShardingConnection(shardingContext);
-    }
-    
-    @Override
-    public final ShardingConnection getConnection(final String username, final String password) throws SQLException {
-        return getConnection();
     }
 }

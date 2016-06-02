@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
@@ -39,11 +38,6 @@ public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapt
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
         throw new SQLFeatureNotSupportedException("setFetchDirection");
-    }
-    
-    @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getGeneratedKeys");
     }
     
     @Override
