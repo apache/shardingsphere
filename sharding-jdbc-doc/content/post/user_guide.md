@@ -406,4 +406,4 @@ String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.orde
 ```
 该数据源与普通数据源完全相同，你可以通过上例的API形式来使用，也可以将其配置在Spring，Hibernate等框架中使用。
 
-> 如果希望不依赖于表中的列传入分片键值，参考：[基于暗示(Hint)的分片键值注册方法](../hint_shardingvalue)
+> 如果希望不依赖于表中的列传入分片键值，参考：[基于暗示(Hint)的分片键值注册方法](../hint_sharding_value)

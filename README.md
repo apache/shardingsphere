@@ -80,13 +80,13 @@
 
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
-[核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/)
+[核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/)
 
 [架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
 
 [Yaml文件和Spring命名空间配置](http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/)
 
-[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
+[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/)
 
 [读写分离](http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave)
 
