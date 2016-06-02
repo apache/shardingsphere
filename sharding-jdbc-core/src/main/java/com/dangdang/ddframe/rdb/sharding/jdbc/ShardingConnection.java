@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
@@ -131,5 +132,12 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public Collection<Connection> getConnections() {
         return connectionMap.values();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        super.close();
+        HintManagerHolder.clear();
+        MasterSlaveDataSource.resetDMLFlag();
     }
 }

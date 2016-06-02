@@ -47,6 +47,7 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
         HintManagerHolder.clear();
+        MasterSlaveDataSource.resetDMLFlag();
     }
     
     @Override

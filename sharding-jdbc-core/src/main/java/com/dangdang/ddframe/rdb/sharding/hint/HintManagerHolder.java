@@ -82,17 +82,6 @@ public final class HintManagerHolder {
     }
     
     /**
-     * 设置数据库操作只路由至主库.
-     */
-    public static void setMasterRouteOnly() {
-        if (null != HINT_MANAGER_HOLDER.get()) {
-            HINT_MANAGER_HOLDER.get().setMasterRouteOnly();
-        } else {
-            HintManager.getInstance().setMasterRouteOnly();
-        }
-    }
-    
-    /**
      * 清理线索分片管理器的本地线程持有者.
      */
     public static void clear() {

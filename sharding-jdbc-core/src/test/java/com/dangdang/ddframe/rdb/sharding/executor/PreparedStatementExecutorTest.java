@@ -121,7 +121,7 @@ public final class PreparedStatementExecutorTest {
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
         PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
-        assertThat(actual.executeQuery(), is(Collections.singletonList(((ResultSet) null))));
+        assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(preparedStatement).executeQuery();
         verify(eventCaller, times(2)).verifyDataSource("ds_0");
         verify(eventCaller, times(2)).verifySQL("SELECT * FROM dual");
