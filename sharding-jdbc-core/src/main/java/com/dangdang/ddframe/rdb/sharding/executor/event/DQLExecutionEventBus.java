@@ -21,30 +21,30 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * DML类SQL执行时的事件发布总线.
+ * DQL类SQL执行时的事件发布总线.
  * 
- * @author zhangliang
+ * @author gaohongtao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DMLExecutionEventBus {
+public final class DQLExecutionEventBus {
     
-    private static final String NAME = "DML-EventBus";
+    private static final String NAME = "DQL-EventBus";
     
     /**
-     * 发布DML类SQL执行事件.
+     * 发布DQL类SQL执行事件.
      * 
-     * @param event DML类SQL执行事件
+     * @param event DQL类SQL执行事件
      */
-    public static void post(final DMLExecutionEvent event) {
+    public static void post(final DQLExecutionEvent event) {
         ExecutionEventBusFactory.getInstance(NAME).post(event);
     }
     
     /**
-     * 发布DML类SQL执行事件监听器.
+     * 发布DQL类SQL执行事件监听器.
      * 
-     * @param listener DML类SQL执行事件监听器
+     * @param listener DQL类SQL执行事件监听器
      */
-    public static void register(final DMLExecutionEventListener listener) {
+    public static void register(final DQLExecutionEventListener listener) {
         ExecutionEventBusFactory.getInstance(NAME).register(listener);
     }
     

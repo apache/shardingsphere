@@ -4,5 +4,3 @@ tables:
     databaseStrategy: 
       shardingColumns: order_id
       algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.NoThisClass
-
-        

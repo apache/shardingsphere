@@ -45,6 +45,9 @@ public final class HintManager implements AutoCloseable {
     private final Map<ShardingKey, ShardingValue<?>> tableShardingValues = new HashMap<>();
     
     @Getter
+    private boolean shardingHint;
+    
+    @Getter
     private boolean masterRouteOnly;
     
     /**
@@ -80,6 +83,7 @@ public final class HintManager implements AutoCloseable {
      * @param values 分片值
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
+        shardingHint = true;
         databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
     }
     
@@ -105,6 +109,7 @@ public final class HintManager implements AutoCloseable {
      * @param values 分片值
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
+        shardingHint = true;
         tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
     }
     

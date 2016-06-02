@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class ExecutorExceptionHandler {
     
-    private static ThreadLocal<Boolean> isExceptionThrown = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<>();
     
     /**
      * 设置是否将异常抛出.
@@ -39,7 +39,7 @@ public final class ExecutorExceptionHandler {
      * @param isExceptionThrown 是否将异常抛出
      */
     public static void setExceptionThrown(final boolean isExceptionThrown) {
-        ExecutorExceptionHandler.isExceptionThrown.set(isExceptionThrown);
+        ExecutorExceptionHandler.IS_EXCEPTION_THROWN.set(isExceptionThrown);
     }
     
     /**
@@ -48,7 +48,7 @@ public final class ExecutorExceptionHandler {
      * @return 是否将异常抛出
      */
     public static boolean isExceptionThrown() {
-        return null == isExceptionThrown.get() ? true : isExceptionThrown.get();
+        return null == IS_EXCEPTION_THROWN.get() ? true : IS_EXCEPTION_THROWN.get();
     }
     
     /**

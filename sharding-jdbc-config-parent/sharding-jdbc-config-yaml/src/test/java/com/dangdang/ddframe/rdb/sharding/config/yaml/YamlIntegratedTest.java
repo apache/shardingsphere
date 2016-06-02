@@ -17,16 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
-import javax.sql.DataSource;
-
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -35,6 +25,16 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor

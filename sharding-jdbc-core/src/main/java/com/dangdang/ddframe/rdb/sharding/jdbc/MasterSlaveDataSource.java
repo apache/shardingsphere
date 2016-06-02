@@ -38,14 +38,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private static final ThreadLocal<Boolean> WAS_UPDATED = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-    
     private final String name;
     
     private final DataSource masterDataSource;
@@ -61,8 +53,8 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @return 主或从节点的数据源
      */
     public DataSource getDataSource(final SQLStatementType sqlStatementType) {
-        if (SQLStatementType.SELECT != sqlStatementType || WAS_UPDATED.get() || HintManagerHolder.isMasterRouteOnly()) {
-            WAS_UPDATED.set(true);
+        if (SQLStatementType.SELECT != sqlStatementType || HintManagerHolder.isMasterRouteOnly()) {
+            HintManagerHolder.setMasterRouteOnly();
             return masterDataSource;
         }
         return slaveLoadBalanceStrategy.getDataSource(name, slaveDataSources);

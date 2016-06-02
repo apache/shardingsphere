@@ -20,13 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
+import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -48,10 +48,8 @@ public final class MasterSlaveDataSourceTest {
     
     @Before
     @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = MasterSlaveDataSource.class.getDeclaredField("WAS_UPDATED");
-        field.setAccessible(true);
-        ((ThreadLocal) field.get(MasterSlaveDataSource.class)).remove();
+    public void reset() {
+        HintManagerHolder.clear();
     }
     
     @Test

@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
@@ -196,6 +197,14 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         for (Statement each : getRoutedStatements()) {
             each.setQueryTimeout(seconds);
         }
+    }
+    
+    @Override
+    public final ResultSet getGeneratedKeys() throws SQLException {
+        if (1 == getRoutedStatements().size()) {
+            return getRoutedStatements().iterator().next().getGeneratedKeys();
+        }
+        throw new IllegalStateException("Cannot call getGeneratedKeys if sharding statements more than 1.");
     }
     
     /**

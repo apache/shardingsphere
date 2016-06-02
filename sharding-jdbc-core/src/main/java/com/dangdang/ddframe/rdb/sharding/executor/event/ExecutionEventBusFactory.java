@@ -20,38 +20,29 @@ package com.dangdang.ddframe.rdb.sharding.executor.event;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
- * DML类SQL执行时的事件发布总线.
+ * 事件总线工厂.
  * 
- * @author zhangliang
+ * @author gaohongtao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DMLExecutionEventBus {
+final class ExecutionEventBusFactory {
     
-    private static final String NAME = "DML-EventBus";
+    private static final ConcurrentHashMap<String, ExecutionEventBus> CONTAINER = new ConcurrentHashMap<>();
     
     /**
-     * 发布DML类SQL执行事件.
+     * 获取事件总线实例.
      * 
-     * @param event DML类SQL执行事件
+     * @param name 事件总线名称
+     * @return 事件总线实例
      */
-    public static void post(final DMLExecutionEvent event) {
-        ExecutionEventBusFactory.getInstance(NAME).post(event);
-    }
-    
-    /**
-     * 发布DML类SQL执行事件监听器.
-     * 
-     * @param listener DML类SQL执行事件监听器
-     */
-    public static void register(final DMLExecutionEventListener listener) {
-        ExecutionEventBusFactory.getInstance(NAME).register(listener);
-    }
-    
-    /**
-     * 清除监听器.
-     */
-    public static void clearListener() {
-        ExecutionEventBusFactory.getInstance(NAME).clearListener();
+    public static ExecutionEventBus getInstance(final String name) {
+        if (CONTAINER.containsKey(name)) {
+            return CONTAINER.get(name);
+        }
+        CONTAINER.putIfAbsent(name, new ExecutionEventBus());
+        return CONTAINER.get(name);
     }
 }

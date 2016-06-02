@@ -100,7 +100,7 @@ public final class SingleTableRouter {
     private Collection<String> routeDataSources() {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
-        if (HintManagerHolder.isUseHint()) {
+        if (HintManagerHolder.isUseShardingHint()) {
             shardingValues = getDatabaseShardingValuesFromHint(strategy.getShardingColumns());
         } else {
             shardingValues = getShardingValues(strategy.getShardingColumns());
@@ -115,7 +115,7 @@ public final class SingleTableRouter {
     private Collection<String> routeTables(final Collection<String> routedDataSources) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
-        if (HintManagerHolder.isUseHint()) {
+        if (HintManagerHolder.isUseShardingHint()) {
             shardingValues = getTableShardingValuesFromHint(strategy.getShardingColumns());
         } else {
             shardingValues = getShardingValues(strategy.getShardingColumns());
