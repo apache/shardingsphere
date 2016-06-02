@@ -5,5 +5,5 @@
         <version>1.3.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sharding-jdbc-example-spring-masterslave</artifactId>
+    <artifactId>sharding-jdbc-example-config-spring-masterslave</artifactId>
 </project>
