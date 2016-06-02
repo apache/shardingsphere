@@ -25,12 +25,14 @@
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/91&#34;&gt;ISSUE #91&lt;/a&gt; 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/92&#34;&gt;ISSUE #92&lt;/a&gt; 查询类DQL语句事件发送&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/89&#34;&gt;ISSUE #89&lt;/a&gt; 读写分离和分片的hint一起使用导致冲突&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/95&#34;&gt;ISSUE #95&lt;/a&gt; 同一线程内写入操作后的读操作均从主库读取改为同一线程且同一连接内&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.0&lt;/h2&gt;
@@ -1317,7 +1319,7 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
 &lt;p&gt;该数据源与普通数据源完全相同，你可以通过上例的API形式来使用，也可以将其配置在Spring，Hibernate等框架中使用。&lt;/p&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;如果希望不依赖于表中的列传入分片键值，参考：&lt;a href=&#34;../hint_shardingvalue&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;如果希望不依赖于表中的列传入分片键值，参考：&lt;a href=&#34;../hint_sharding_value&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
     </item>
@@ -1396,43 +1398,43 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     
     <item>
       <title>核心概念</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/</link>
       <pubDate>Thu, 03 Mar 2016 16:14:21 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/</guid>
       <description>
 
 &lt;p&gt;本文介绍&lt;code&gt;Sharding-JDBC&lt;/code&gt;包含的一些核心概念。&lt;/p&gt;
 
-&lt;h2 id=&#34;logictable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;LogicTable&lt;/h2&gt;
+&lt;h2 id=&#34;logictable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;LogicTable&lt;/h2&gt;
 
 &lt;p&gt;数据分片的逻辑表，对于水平拆分的数据库(表)，同一类表的总称。例：订单数据根据主键尾数拆分为&lt;code&gt;10&lt;/code&gt;张表,分别是&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;，他们的逻辑表名为&lt;code&gt;t_order&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h2 id=&#34;actualtable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ActualTable&lt;/h2&gt;
+&lt;h2 id=&#34;actualtable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ActualTable&lt;/h2&gt;
 
 &lt;p&gt;在分片的数据库中真实存在的物理表。即上个示例中的&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h2 id=&#34;datanode:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;DataNode&lt;/h2&gt;
+&lt;h2 id=&#34;datanode:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;DataNode&lt;/h2&gt;
 
 &lt;p&gt;数据分片的最小单元。由数据源名称和数据表组成，例：&lt;code&gt;ds_1.t_order_0&lt;/code&gt;。配置时默认各个分片数据库的表结构均相同，直接配置逻辑表和真实表对应关系即可。如果各数据库的表结果不同，可使用&lt;code&gt;ds.actual_table&lt;/code&gt;配置。&lt;/p&gt;
 
-&lt;h2 id=&#34;dynamictable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;DynamicTable&lt;/h2&gt;
+&lt;h2 id=&#34;dynamictable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;DynamicTable&lt;/h2&gt;
 
 &lt;p&gt;逻辑表和真实表不一定需要在配置规则中静态配置。比如按照日期分片的场景，真实表的名称随着时间的推移会产生变化。此类需求&lt;code&gt;Sharding-JDBC&lt;/code&gt;是支持的，不过目前配置并不友好，会在新版本中提升。&lt;/p&gt;
 
-&lt;h2 id=&#34;bindingtable:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;BindingTable&lt;/h2&gt;
+&lt;h2 id=&#34;bindingtable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;BindingTable&lt;/h2&gt;
 
 &lt;p&gt;指在任何场景下分片规则均一致的主表和子表。例：订单表和订单项表，均按照订单ID分片，则此两张表互为&lt;code&gt;BindingTable&lt;/code&gt;关系。&lt;code&gt;BindingTable&lt;/code&gt;关系的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。&lt;/p&gt;
 
-&lt;h2 id=&#34;shardingcolumn:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ShardingColumn&lt;/h2&gt;
+&lt;h2 id=&#34;shardingcolumn:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ShardingColumn&lt;/h2&gt;
 
 &lt;p&gt;分片字段。用于将数据库(表)水平拆分的关键字段。例：订单表订单ID分片尾数取模分片，则订单ID为分片字段。&lt;code&gt;SQL&lt;/code&gt;中如果无分片字段，将执行全路由，性能较差。&lt;code&gt;Sharding-JDBC&lt;/code&gt;支持多分片字段。&lt;/p&gt;
 
-&lt;h2 id=&#34;shardingalgorithm:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;ShardingAlgorithm&lt;/h2&gt;
+&lt;h2 id=&#34;shardingalgorithm:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ShardingAlgorithm&lt;/h2&gt;
 
 &lt;p&gt;分片算法。&lt;code&gt;Sharding-JDBC&lt;/code&gt;通过分片算法将数据分片，支持通过等号、&lt;code&gt;BETWEEN&lt;/code&gt;和&lt;code&gt;IN&lt;/code&gt;分片。分片算法目前需要业务方开发者自行实现，可实现的灵活度非常高。未来&lt;code&gt;Sharding-JDBC&lt;/code&gt;也将会实现常用分片算法，如&lt;code&gt;range&lt;/code&gt;，&lt;code&gt;hash&lt;/code&gt;和&lt;code&gt;tag&lt;/code&gt;等。&lt;/p&gt;
 
-&lt;h2 id=&#34;sql-hint:530dfd8b555485ef9b9e7f42804b5687&#34;&gt;SQL Hint&lt;/h2&gt;
+&lt;h2 id=&#34;sql-hint:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;SQL Hint&lt;/h2&gt;
 
 &lt;p&gt;对于分片字段非&lt;code&gt;SQL&lt;/code&gt;决定，而由其他外置条件决定的场景，可使用&lt;code&gt;SQL Hint&lt;/code&gt;灵活的注入分片字段。例：内部系统，按照员工登录ID分库，而数据库中并无此字段。&lt;code&gt;SQL Hint&lt;/code&gt;支持通过&lt;code&gt;ThreadLocal&lt;/code&gt;和&lt;code&gt;SQL&lt;/code&gt;注释(待实现)两种方式使用。&lt;/p&gt;
 </description>
@@ -1730,7 +1732,7 @@ jobConfig:
 
 &lt;ol&gt;
 &lt;li&gt;提供了一主多从的读写分离配置，可配合分库分表使用。&lt;/li&gt;
-&lt;li&gt;同一&lt;code&gt;HintManager&lt;/code&gt;生命周期内，如有写入操作，以后的读操作均从主库读取，用于保证同一线程中的数据一致性。&lt;/li&gt;
+&lt;li&gt;同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;Spring&lt;/code&gt;命名空间。&lt;/li&gt;
 &lt;li&gt;基于&lt;code&gt;Hint&lt;/code&gt;的强制主库路由。&lt;/li&gt;
 &lt;/ol&gt;
@@ -2416,19 +2418,19 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
     
     <item>
       <title>基于暗示(Hint)的分片键值注册方法</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/</link>
       <pubDate>Fri, 05 Feb 2016 17:03:18 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/</guid>
       <description>
 
-&lt;h1 id=&#34;基于暗示-hint-的分片键值注册方法:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/h1&gt;
+&lt;h1 id=&#34;基于暗示-hint-的分片键值注册方法:eafa718523618279bf7f67a77c7e58f8&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/h1&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;提示:阅读本文前请详细预读 &lt;a href=&#34;../user_guide&#34;&gt;使用指南&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&#34;背景:c5f80a6139537602865bbe0a8146efe1&#34;&gt;背景&lt;/h2&gt;
+&lt;h2 id=&#34;背景:eafa718523618279bf7f67a77c7e58f8&#34;&gt;背景&lt;/h2&gt;
 
 &lt;p&gt;对&lt;code&gt;Shanrding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
 例如逻辑表&lt;code&gt;t_order&lt;/code&gt;如果其数据源分片键为&lt;code&gt;user_id&lt;/code&gt;，
@@ -2448,7 +2450,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;p&gt;答案是肯定的。下面就介绍一下&lt;code&gt;Sharding-JDBC&lt;/code&gt;对这个问题的解决方法。&lt;/p&gt;
 
-&lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
+&lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:eafa718523618279bf7f67a77c7e58f8&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
 
 &lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintManager&lt;/code&gt;。
 该管理器是使用&lt;code&gt;ThreadLocal&lt;/code&gt;技术管理分片键值的。
@@ -2470,11 +2472,11 @@ try (
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;实例化:c5f80a6139537602865bbe0a8146efe1&#34;&gt;实例化&lt;/h3&gt;
+&lt;h3 id=&#34;实例化:eafa718523618279bf7f67a77c7e58f8&#34;&gt;实例化&lt;/h3&gt;
 
 &lt;p&gt;使用&lt;code&gt;HintManager hintManager = new HintManager()&lt;/code&gt;实例化后将初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
 
-&lt;h3 id=&#34;添加分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;添加分片键值&lt;/h3&gt;
+&lt;h3 id=&#34;添加分片键值:eafa718523618279bf7f67a77c7e58f8&#34;&gt;添加分片键值&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用&lt;code&gt;hintManager.addDatabaseShardingValue&lt;/code&gt;来添加数据源分片键值&lt;/li&gt;
@@ -2483,7 +2485,7 @@ try (
 
 &lt;p&gt;每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。&lt;/p&gt;
 
-&lt;h3 id=&#34;清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1&#34;&gt;清除添加的分片键值&lt;/h3&gt;
+&lt;h3 id=&#34;清除添加的分片键值:eafa718523618279bf7f67a77c7e58f8&#34;&gt;清除添加的分片键值&lt;/h3&gt;
 
 &lt;p&gt;分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束时调用&lt;code&gt;hintManager.close()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。&lt;/p&gt;
 

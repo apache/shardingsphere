@@ -108,13 +108,13 @@ body {
               <div class="col-sm-8">
 		 
 
-<h1 id="基于暗示-hint-的分片键值注册方法:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值注册方法</h1>
+<h1 id="基于暗示-hint-的分片键值注册方法:eafa718523618279bf7f67a77c7e58f8">基于暗示(Hint)的分片键值注册方法</h1>
 
 <blockquote>
 <p>提示:阅读本文前请详细预读 <a href="../user_guide">使用指南</a></p>
 </blockquote>
 
-<h2 id="背景:c5f80a6139537602865bbe0a8146efe1">背景</h2>
+<h2 id="背景:eafa718523618279bf7f67a77c7e58f8">背景</h2>
 
 <p>对<code>Shanrding-JDBC</code>有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自<code>SQL</code>语句中<code>WHERE</code>条件的。
 例如逻辑表<code>t_order</code>如果其数据源分片键为<code>user_id</code>，
@@ -134,7 +134,7 @@ body {
 
 <p>答案是肯定的。下面就介绍一下<code>Sharding-JDBC</code>对这个问题的解决方法。</p>
 
-<h2 id="基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值管理器</h2>
+<h2 id="基于暗示-hint-的分片键值管理器:eafa718523618279bf7f67a77c7e58f8">基于暗示(Hint)的分片键值管理器</h2>
 
 <p>要解决上面的问题，我们使用<code>com.dangdang.ddframe.rdb.sharding.api.HintManager</code>。
 该管理器是使用<code>ThreadLocal</code>技术管理分片键值的。
@@ -156,11 +156,11 @@ try (
 }
 </code></pre>
 
-<h3 id="实例化:c5f80a6139537602865bbe0a8146efe1">实例化</h3>
+<h3 id="实例化:eafa718523618279bf7f67a77c7e58f8">实例化</h3>
 
 <p>使用<code>HintManager hintManager = new HintManager()</code>实例化后将初始化<code>ThreadLocal</code>中的数据。</p>
 
-<h3 id="添加分片键值:c5f80a6139537602865bbe0a8146efe1">添加分片键值</h3>
+<h3 id="添加分片键值:eafa718523618279bf7f67a77c7e58f8">添加分片键值</h3>
 
 <ul>
 <li>使用<code>hintManager.addDatabaseShardingValue</code>来添加数据源分片键值</li>
@@ -169,7 +169,7 @@ try (
 
 <p>每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。</p>
 
-<h3 id="清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1">清除添加的分片键值</h3>
+<h3 id="清除添加的分片键值:eafa718523618279bf7f67a77c7e58f8">清除添加的分片键值</h3>
 
 <p>分片键值保存在<code>ThreadLocal</code>中，所以需要在操作结束时调用<code>hintManager.close()</code>来清除<code>ThreadLocal</code>中的内容。</p>
 
@@ -179,14 +179,14 @@ try (
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
 		 <nav id="TableOfContents">
 <ul>
-<li><a href="#基于暗示-hint-的分片键值注册方法:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值注册方法</a>
+<li><a href="#基于暗示-hint-的分片键值注册方法:eafa718523618279bf7f67a77c7e58f8">基于暗示(Hint)的分片键值注册方法</a>
 <ul>
-<li><a href="#背景:c5f80a6139537602865bbe0a8146efe1">背景</a></li>
-<li><a href="#基于暗示-hint-的分片键值管理器:c5f80a6139537602865bbe0a8146efe1">基于暗示(Hint)的分片键值管理器</a>
+<li><a href="#背景:eafa718523618279bf7f67a77c7e58f8">背景</a></li>
+<li><a href="#基于暗示-hint-的分片键值管理器:eafa718523618279bf7f67a77c7e58f8">基于暗示(Hint)的分片键值管理器</a>
 <ul>
-<li><a href="#实例化:c5f80a6139537602865bbe0a8146efe1">实例化</a></li>
-<li><a href="#添加分片键值:c5f80a6139537602865bbe0a8146efe1">添加分片键值</a></li>
-<li><a href="#清除添加的分片键值:c5f80a6139537602865bbe0a8146efe1">清除添加的分片键值</a></li>
+<li><a href="#实例化:eafa718523618279bf7f67a77c7e58f8">实例化</a></li>
+<li><a href="#添加分片键值:eafa718523618279bf7f67a77c7e58f8">添加分片键值</a></li>
+<li><a href="#清除添加的分片键值:eafa718523618279bf7f67a77c7e58f8">清除添加的分片键值</a></li>
 </ul></li>
 </ul></li>
 </ul>

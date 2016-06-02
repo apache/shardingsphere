@@ -110,35 +110,35 @@ body {
 
 <p>本文介绍<code>Sharding-JDBC</code>包含的一些核心概念。</p>
 
-<h2 id="logictable:530dfd8b555485ef9b9e7f42804b5687">LogicTable</h2>
+<h2 id="logictable:f672fea773fb5554fdcc9faa6e7b5093">LogicTable</h2>
 
 <p>数据分片的逻辑表，对于水平拆分的数据库(表)，同一类表的总称。例：订单数据根据主键尾数拆分为<code>10</code>张表,分别是<code>t_order_0</code>到<code>t_order_9</code>，他们的逻辑表名为<code>t_order</code>。</p>
 
-<h2 id="actualtable:530dfd8b555485ef9b9e7f42804b5687">ActualTable</h2>
+<h2 id="actualtable:f672fea773fb5554fdcc9faa6e7b5093">ActualTable</h2>
 
 <p>在分片的数据库中真实存在的物理表。即上个示例中的<code>t_order_0</code>到<code>t_order_9</code>。</p>
 
-<h2 id="datanode:530dfd8b555485ef9b9e7f42804b5687">DataNode</h2>
+<h2 id="datanode:f672fea773fb5554fdcc9faa6e7b5093">DataNode</h2>
 
 <p>数据分片的最小单元。由数据源名称和数据表组成，例：<code>ds_1.t_order_0</code>。配置时默认各个分片数据库的表结构均相同，直接配置逻辑表和真实表对应关系即可。如果各数据库的表结果不同，可使用<code>ds.actual_table</code>配置。</p>
 
-<h2 id="dynamictable:530dfd8b555485ef9b9e7f42804b5687">DynamicTable</h2>
+<h2 id="dynamictable:f672fea773fb5554fdcc9faa6e7b5093">DynamicTable</h2>
 
 <p>逻辑表和真实表不一定需要在配置规则中静态配置。比如按照日期分片的场景，真实表的名称随着时间的推移会产生变化。此类需求<code>Sharding-JDBC</code>是支持的，不过目前配置并不友好，会在新版本中提升。</p>
 
-<h2 id="bindingtable:530dfd8b555485ef9b9e7f42804b5687">BindingTable</h2>
+<h2 id="bindingtable:f672fea773fb5554fdcc9faa6e7b5093">BindingTable</h2>
 
 <p>指在任何场景下分片规则均一致的主表和子表。例：订单表和订单项表，均按照订单ID分片，则此两张表互为<code>BindingTable</code>关系。<code>BindingTable</code>关系的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。</p>
 
-<h2 id="shardingcolumn:530dfd8b555485ef9b9e7f42804b5687">ShardingColumn</h2>
+<h2 id="shardingcolumn:f672fea773fb5554fdcc9faa6e7b5093">ShardingColumn</h2>
 
 <p>分片字段。用于将数据库(表)水平拆分的关键字段。例：订单表订单ID分片尾数取模分片，则订单ID为分片字段。<code>SQL</code>中如果无分片字段，将执行全路由，性能较差。<code>Sharding-JDBC</code>支持多分片字段。</p>
 
-<h2 id="shardingalgorithm:530dfd8b555485ef9b9e7f42804b5687">ShardingAlgorithm</h2>
+<h2 id="shardingalgorithm:f672fea773fb5554fdcc9faa6e7b5093">ShardingAlgorithm</h2>
 
 <p>分片算法。<code>Sharding-JDBC</code>通过分片算法将数据分片，支持通过等号、<code>BETWEEN</code>和<code>IN</code>分片。分片算法目前需要业务方开发者自行实现，可实现的灵活度非常高。未来<code>Sharding-JDBC</code>也将会实现常用分片算法，如<code>range</code>，<code>hash</code>和<code>tag</code>等。</p>
 
-<h2 id="sql-hint:530dfd8b555485ef9b9e7f42804b5687">SQL Hint</h2>
+<h2 id="sql-hint:f672fea773fb5554fdcc9faa6e7b5093">SQL Hint</h2>
 
 <p>对于分片字段非<code>SQL</code>决定，而由其他外置条件决定的场景，可使用<code>SQL Hint</code>灵活的注入分片字段。例：内部系统，按照员工登录ID分库，而数据库中并无此字段。<code>SQL Hint</code>支持通过<code>ThreadLocal</code>和<code>SQL</code>注释(待实现)两种方式使用。</p>
 
@@ -148,14 +148,14 @@ body {
 <ul>
 <li>
 <ul>
-<li><a href="#logictable:530dfd8b555485ef9b9e7f42804b5687">LogicTable</a></li>
-<li><a href="#actualtable:530dfd8b555485ef9b9e7f42804b5687">ActualTable</a></li>
-<li><a href="#datanode:530dfd8b555485ef9b9e7f42804b5687">DataNode</a></li>
-<li><a href="#dynamictable:530dfd8b555485ef9b9e7f42804b5687">DynamicTable</a></li>
-<li><a href="#bindingtable:530dfd8b555485ef9b9e7f42804b5687">BindingTable</a></li>
-<li><a href="#shardingcolumn:530dfd8b555485ef9b9e7f42804b5687">ShardingColumn</a></li>
-<li><a href="#shardingalgorithm:530dfd8b555485ef9b9e7f42804b5687">ShardingAlgorithm</a></li>
-<li><a href="#sql-hint:530dfd8b555485ef9b9e7f42804b5687">SQL Hint</a></li>
+<li><a href="#logictable:f672fea773fb5554fdcc9faa6e7b5093">LogicTable</a></li>
+<li><a href="#actualtable:f672fea773fb5554fdcc9faa6e7b5093">ActualTable</a></li>
+<li><a href="#datanode:f672fea773fb5554fdcc9faa6e7b5093">DataNode</a></li>
+<li><a href="#dynamictable:f672fea773fb5554fdcc9faa6e7b5093">DynamicTable</a></li>
+<li><a href="#bindingtable:f672fea773fb5554fdcc9faa6e7b5093">BindingTable</a></li>
+<li><a href="#shardingcolumn:f672fea773fb5554fdcc9faa6e7b5093">ShardingColumn</a></li>
+<li><a href="#shardingalgorithm:f672fea773fb5554fdcc9faa6e7b5093">ShardingAlgorithm</a></li>
+<li><a href="#sql-hint:f672fea773fb5554fdcc9faa6e7b5093">SQL Hint</a></li>
 </ul></li>
 </ul>
 </nav>
