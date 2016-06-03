@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertUpdate" sql="update `order` set 'state'='STOPED' where order_id in (1, 2, 3)" expected-sql="UPDATE [Token(order)] SET 'state' = 'STOPED' WHERE order_id IN (1, 2, 3)">
+    <assert id="assertUpdate" sql="update `order` set 'state'='STOPPED' where order_id in (1, 2, 3)" expected-sql="UPDATE [Token(order)] SET 'state' = 'STOPPED' WHERE order_id IN (1, 2, 3)">
         <tables>
             <table name="order" />
         </tables>

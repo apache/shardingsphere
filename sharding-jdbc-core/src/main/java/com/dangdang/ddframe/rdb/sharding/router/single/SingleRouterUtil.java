@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,11 +46,12 @@ public class SingleRouterUtil {
             case EQUAL:
             case IN:
                 if (1 == conditionValues.size()) {
-                    return new ShardingValue<Comparable<?>>(condition.getColumn().getColumnName(), conditionValues.get(0));
+                    return new ShardingValue<Comparable<?>>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), conditionValues.get(0));
                 }
-                return new ShardingValue<>(condition.getColumn().getColumnName(), conditionValues);
+                return new ShardingValue<>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), conditionValues);
             case BETWEEN:
-                return new ShardingValue<>(condition.getColumn().getColumnName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
+                return new ShardingValue<>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), 
+                        Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(condition.getOperator().getExpression());
         }

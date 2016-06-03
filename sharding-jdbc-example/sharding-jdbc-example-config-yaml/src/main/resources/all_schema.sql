@@ -1,5 +1,8 @@
+CREATE SCHEMA IF NOT EXISTS `ds_config`;
 CREATE SCHEMA IF NOT EXISTS `ds_0`;
 CREATE SCHEMA IF NOT EXISTS `ds_1`;
+
+CREATE TABLE IF NOT EXISTS `ds_config`.`t_config`(`id` INT NOT NULL, `name` VARCHAR(20), `value` VARCHAR(50));
 
 CREATE TABLE IF NOT EXISTS `ds_0`.`t_order_0` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`));
 CREATE TABLE IF NOT EXISTS `ds_0`.`t_order_1` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`));
@@ -10,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `ds_1`.`t_order_0` (`order_id` INT NOT NULL, `user_id
 CREATE TABLE IF NOT EXISTS `ds_1`.`t_order_1` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(50), PRIMARY KEY (`order_id`));
 CREATE TABLE IF NOT EXISTS `ds_1`.`t_order_item_0` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`));
 CREATE TABLE IF NOT EXISTS `ds_1`.`t_order_item_1` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, PRIMARY KEY (`item_id`));
+
+INSERT INTO `ds_config`.`t_config` VALUES (1, 'config_key', 'config_value');
 
 INSERT INTO `ds_0`.`t_order_0` VALUES (1000, 10, 'INIT');
 INSERT INTO `ds_0`.`t_order_0` VALUES (1002, 10, 'INIT');

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,29 +17,25 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.NClob;
 import java.sql.ResultSet;
-import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 
 public final class ResultSetUpdaterAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -448,31 +444,31 @@ public final class ResultSetUpdaterAdapterTest extends AbstractShardingDataBases
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateArrayForColumnIndex() throws SQLException {
-        actual.updateArray(1, (Array) null);
+        actual.updateArray(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateArrayForColumnLabel() throws SQLException {
-        actual.updateArray("label", (Array) null);
+        actual.updateArray("label", null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateRowIdForColumnIndex() throws SQLException {
-        actual.updateRowId(1, (RowId) null);
+        actual.updateRowId(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateRowIdForColumnLabel() throws SQLException {
-        actual.updateRowId("label", (RowId) null);
+        actual.updateRowId("label", null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertUpdateSQLxmlForColumnIndex() throws SQLException {
-        actual.updateSQLXML(1, (SQLXML) null);
+    public void assertUpdateSQLXMLForColumnIndex() throws SQLException {
+        actual.updateSQLXML(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertUpdateSQLxmlForColumnLabel() throws SQLException {
-        actual.updateSQLXML("label", (SQLXML) null);
+    public void assertUpdateSQXMLForColumnLabel() throws SQLException {
+        actual.updateSQLXML("label", null);
     }
 }

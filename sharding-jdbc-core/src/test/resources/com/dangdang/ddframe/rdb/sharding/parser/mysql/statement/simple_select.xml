@@ -93,21 +93,6 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertSelectForNotIn" sql="select * from order where order_id not in (1,2,3) and other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE order_id NOT IN (1, 2, 3) AND other_state = 'RUNNING'">
-        <tables>
-            <table name="order" />
-        </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="NOT_IN">
-                    <value value="1" type="int" />
-                    <value value="2" type="int" />
-                    <value value="3" type="int" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
-    </assert>
-    
     <assert id="assertSelectWithDateFunction" sql="select * from order where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')" expected-sql="SELECT * FROM [Token(order)] WHERE date = str_to_date('2013-01-01 01:21:01', '%Y-%m-%d %H:%i:%s')">
         <tables>
             <table name="order" />

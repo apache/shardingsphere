@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.Arrays;
-
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.collect.Lists;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     
@@ -30,7 +29,8 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     public void assertBindingTableWithUnBoundTable() throws SQLParserException {
         assertSingleTarget("select * from order o join order_item i join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id) WHERE o.order_id = 1");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_item i join order_attr a using(order_id)", "ds_1",
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), 
+                "select * from order o join order_item i join order_attr a using(order_id)", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_item_1 i JOIN order_attr_b a USING (order_id)");
     }
     
@@ -38,7 +38,7 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     public void assertConditionFromRelationship() throws SQLParserException {
         assertSingleTarget("select * from order o join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_attr_b a USING (order_id) WHERE o.order_id = 1");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_attr a using(order_id)", "ds_1",
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), "select * from order o join order_attr a using(order_id)", "ds_1",
                 "SELECT * FROM order_1 o JOIN order_attr_b a USING (order_id)");
     }
     
@@ -49,15 +49,7 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
                         "SELECT * FROM order_0 o, order_attr_b a", "SELECT * FROM order_1 o, order_attr_b a"));
     }
     
-    @Test
-    public void assertSelectWithoutTableRule() throws SQLParserException {
-        assertSingleTarget("select * from order o join product p using(prod_id) where o.order_id = 1", "ds_1",
-                "SELECT * FROM order_1 o JOIN product p USING (prod_id) WHERE o.order_id = 1");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join product p using(prod_id)", "ds_1",
-                "SELECT * FROM order_1 o JOIN product p USING (prod_id)");
-    }
-    
-    @Test(expected = ShardingJdbcException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertSelectTableWithoutRules() throws SQLParserException {
         assertSingleTarget("select * from aaa, bbb, ccc", null, null);
     }

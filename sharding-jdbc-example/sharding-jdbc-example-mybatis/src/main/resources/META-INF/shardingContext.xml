@@ -3,13 +3,17 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context" 
     xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:rdb="http://www.dangdang.com/schema/ddframe/rdb"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://www.springframework.org/schema/tx 
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd">
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd">
     <context:component-scan base-package="com.dangdang.ddframe.rdb.sharding.example.jdbc" />
+    
     <bean id="ds_0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/ds_0"/>
@@ -24,59 +28,19 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean id="dataSourceRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule">
-        <constructor-arg>
-            <map>
-                <entry key="ds_0" value-ref="ds_0"/>
-                <entry key="ds_1" value-ref="ds_1"/>
-            </map>
-        </constructor-arg>
-    </bean>
+    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
     
-    <bean id="orderTableRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.TableRule">
-        <constructor-arg value="t_order" index="0"/>
-        <constructor-arg index="1">
-            <list>
-                <value>t_order_0</value>
-                <value>t_order_1</value>
-            </list>
-        </constructor-arg>
-        <constructor-arg index="2" ref="dataSourceRule"/>
-    </bean>
+    <rdb:data-source id="shardingDataSource">
+        <rdb:sharding-rule data-sources="ds_0, ds_1">
+            <rdb:table-rules>
+                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy"/>
+            </rdb:table-rules>
+        </rdb:sharding-rule>
+    </rdb:data-source>
     
-    <bean id="databaseShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy">
-        <constructor-arg index="0" value="user_id"/>
-        <constructor-arg index="1">
-            <bean class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloDatabaseShardingAlgorithm" />
-        </constructor-arg>
-    </bean>
-    
-    <bean id="tableShardingStrategy" class="com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy">
-        <constructor-arg index="0" value="order_id"/>
-        <constructor-arg index="1">
-            <bean class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloTableShardingAlgorithm" />
-        </constructor-arg>
-    </bean>
-    
-    <bean id="shardingRule" class="com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule">
-        <constructor-arg index="0" ref="dataSourceRule"/>
-        <constructor-arg index="1">
-            <list>
-                <ref bean="orderTableRule"/>
-            </list>
-        </constructor-arg>
-        <constructor-arg index="2" ref="databaseShardingStrategy"/>
-        <constructor-arg index="3" ref="tableShardingStrategy"/>
-    </bean>
-    
-    <bean id="shardingDataSource" class="com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource">
-        <constructor-arg ref="shardingRule"/>
-    </bean>
-
-    <bean id="transactionManager"
-          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDataSource" />
     </bean>
-
     <tx:annotation-driven transaction-manager="transactionManager" />
 </beans>

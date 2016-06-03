@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,5 +23,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.router;
  * @author gaohongtao
  */
 public enum SQLStatementType {
+    
     INSERT, DELETE, UPDATE, SELECT
 }

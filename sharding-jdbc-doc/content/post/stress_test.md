@@ -84,6 +84,6 @@ chart = true
 <canvas id="singleAndDubbleUpdate" width="400" height="150"></canvas>
 
 ## Sharding-JDBC疲劳测试
-经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生fullgc。
+经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生Full GC。
 <canvas id="fatigueTest" width="400" height="150"></canvas>
 

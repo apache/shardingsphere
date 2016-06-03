@@ -21,10 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.common.SingleKeyShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.MultipleKeysDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
@@ -38,6 +34,10 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfi
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -59,7 +59,7 @@ import java.util.Map.Entry;
  * @author gaohongtao
  */
 @AllArgsConstructor
-public class ShardingRuleBuilder {
+public final class ShardingRuleBuilder {
     
     private final String logRoot;
     
@@ -72,7 +72,7 @@ public class ShardingRuleBuilder {
     }
     
     public ShardingRuleBuilder(final String logRoot, final ShardingRuleConfig shardingRuleConfig) {
-        this(logRoot, Collections.<String, DataSource> emptyMap(), shardingRuleConfig);
+        this(logRoot, Collections.<String, DataSource>emptyMap(), shardingRuleConfig);
     }
     
     /**
@@ -83,22 +83,33 @@ public class ShardingRuleBuilder {
     public ShardingRule build() {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
-        return new ShardingRule(dataSourceRule, tableRules, buildBindingTableRules(tableRules),
-                buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class),
-                buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class));
+        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
+                .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class))
+                .tableShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultTableStrategy(), TableShardingStrategy.class)).build();
     }
     
     private DataSourceRule buildDataSourceRule() {
         Preconditions.checkArgument(!shardingRuleConfig.getDataSource().isEmpty() || MapUtils.isNotEmpty(externalDataSourceMap), "Sharding JDBC: No data source config");
-        return !shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(shardingRuleConfig.getDataSource()) : new DataSourceRule(externalDataSourceMap);
+        return shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(externalDataSourceMap, shardingRuleConfig.getDefaultDataSourceName())
+                : new DataSourceRule(shardingRuleConfig.getDataSource(), shardingRuleConfig.getDefaultDataSourceName());
     }
     
     private Collection<TableRule> buildTableRules(final DataSourceRule dataSourceRule) {
         Collection<TableRule> result = new ArrayList<>(shardingRuleConfig.getTables().size());
         for (Entry<String, TableRuleConfig> each : shardingRuleConfig.getTables().entrySet()) {
-            result.add(new TableRule(each.getKey(), new InlineParser(each.getValue().getActualTables()).evaluate(), dataSourceRule,
-                    buildShardingStrategy(each.getValue().getDatabaseStrategy(), DatabaseShardingStrategy.class),
-                    buildShardingStrategy(each.getValue().getTableStrategy(), TableShardingStrategy.class)));
+            String logicTable = each.getKey();
+            TableRuleConfig tableRuleConfig = each.getValue();
+            TableRule.TableRuleBuilder tableRuleBuilder = TableRule.builder(logicTable).dataSourceRule(dataSourceRule)
+                    .dynamic(tableRuleConfig.isDynamic())
+                    .databaseShardingStrategy(buildShardingStrategy(tableRuleConfig.getDatabaseStrategy(), DatabaseShardingStrategy.class))
+                    .tableShardingStrategy(buildShardingStrategy(tableRuleConfig.getTableStrategy(), TableShardingStrategy.class));
+            if (null != tableRuleConfig.getActualTables()) {
+                tableRuleBuilder.actualTables(new InlineParser(tableRuleConfig.getActualTables()).evaluate());
+            }
+            if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
+                tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
+            }
+            result.add(tableRuleBuilder.build());
         }
         return result;
     }
@@ -106,8 +117,8 @@ public class ShardingRuleBuilder {
     private Collection<BindingTableRule> buildBindingTableRules(final Collection<TableRule> tableRules) {
         Collection<BindingTableRule> result = new ArrayList<>(shardingRuleConfig.getBindingTables().size());
         for (BindingTableRuleConfig each : shardingRuleConfig.getBindingTables()) {
-            result.add(new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {    
-            
+            result.add(new BindingTableRule(Lists.transform(new InlineParser(each.getTableNames()).split(), new Function<String, TableRule>() {
+                
                 @Override
                 public TableRule apply(final String input) {
                     return findTableRuleByLogicTableName(tableRules, input);
@@ -123,7 +134,7 @@ public class ShardingRuleBuilder {
                 return each;
             }
         }
-        throw new IllegalArgumentException("Sharding JDBC: Binding table %s is not an available Table rule");
+        throw new IllegalArgumentException(String.format("Sharding JDBC: Binding table `%s` is not an available Table rule", logicTableName));
     }
     
     private <T extends ShardingStrategy> T buildShardingStrategy(final StrategyConfig config, final Class<T> returnClass) {

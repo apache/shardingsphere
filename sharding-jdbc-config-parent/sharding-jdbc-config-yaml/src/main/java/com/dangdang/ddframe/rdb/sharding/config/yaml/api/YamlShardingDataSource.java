@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.api;
 
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.internel.YamlConfig;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -46,6 +46,11 @@ public class YamlShardingDataSource extends ShardingDataSource {
     }
     
     private static YamlConfig unmarshal(final File yamlFile) throws IOException {
-        return new Yaml(new Constructor(YamlConfig.class)).loadAs(new InputStreamReader(new FileInputStream(yamlFile), "UTF-8"), YamlConfig.class);
+        try (
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+            ) {
+            return new Yaml(new Constructor(YamlConfig.class)).loadAs(inputStreamReader, YamlConfig.class);
+        }
     }
 }

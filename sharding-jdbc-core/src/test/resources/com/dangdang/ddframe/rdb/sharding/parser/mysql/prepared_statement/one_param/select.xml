@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithParameter" sql="select * from order where order_id in (?,2,3) and other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE order_id IN (?, 2, 3) AND other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="IN">
+                    <value value="1" type="int" />
+                    <value value="2" type="int" />
+                    <value value="3" type="int" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+</asserts>

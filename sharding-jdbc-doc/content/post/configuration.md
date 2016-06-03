@@ -11,7 +11,7 @@ weight = 2
 ```xml
 <dependency>
     <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-yaml</artifactId>
+    <artifactId>sharding-jdbc-config-yaml</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -37,6 +37,8 @@ dataSource:
     username: root
     password: 
     
+defaultDataSourceName: ds_0
+
 tables:
   config:
     actualTables: t_config
@@ -78,38 +80,42 @@ dataSource: 数据源配置
     username: 数据库用户名
     password: 数据库密码
     ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
   
-  tables: 分库分表配置，可配置多个logic_table_name
+tables: 分库分表配置，可配置多个logic_table_name
     <logic_table_name>: 逻辑表名
-        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式
+        dynamic: 是否为动态表
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
         databaseStrategy: 分库策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
         tableStrategy: 分表策略
             shardingColumns: 分片列名，多个列以逗号分隔
-            algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
             algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   bindingTables: 绑定表列表
   - tableNames: 逻辑表名列表，多个<logic_table_name>以逗号分隔
   
 defaultDatabaseStrategy: 默认数据库分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分库算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
   
 defaultTableStrategy: 默认数据表分片策略
   shardingColumns: 分片列名，多个列以逗号分隔
-  algorithmClassName: 分表算法全类名，与algorithmExpression出现一个即可
+  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
   algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
 
 props: 属性配置(可选)
-    metrics.enable: 是否开启度量采集，默认值为false不开启
-    metrics.second.period: 度量输出周期，单位为秒，默认为1秒
-    metrics.package.name: 度量输出在日志中的标识名称，默认为com.dangdang.ddframe.rdb.sharding.metrics
-    parallelExecutor.worker.minIdleSize: 最小空闲工作线程数量，默认为0
-    parallelExecutor.worker.maxSize: 最大工作线程数量，默认为CPU核数乘2
-    parallelExecutor.worker.maxIdleTimeout: 工作线程空闲时超时时间，单位为秒，默认为60秒
+    metrics.enable: 是否开启度量采集，默认值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
+    metrics.logger.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
+    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
 ```
 
 ### Yaml格式特别说明
@@ -128,7 +134,7 @@ props: 属性配置(可选)
 ```xml
 <dependency>
     <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-spring</artifactId>
+    <artifactId>sharding-jdbc-config-spring</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -167,18 +173,18 @@ props: 属性配置(可选)
     <rdb:strategy id="tableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1">
+        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0">
             <rdb:table-rules>
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" table-strategy="tableStrategy"/>
                 <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy"/>
             </rdb:table-rules>
+            <rdb:binding-table-rules>
+                <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
+            </rdb:binding-table-rules>
+            <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id.longValue() % 2 + 1}"/>
         </rdb:sharding-rule>
-        <rdb:binding-table-rules>
-            <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
-        </rdb:binding-table-rules>
-        <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id % 2 + 1}"/>
         <rdb:props>
-            <prop key="metrics.enable">${metrics.enable}</prop>
+            <prop key="metrics.enable">true</prop>
         </rdb:props>
     </rdb:data-source>
 </beans>
@@ -189,86 +195,89 @@ props: 属性配置(可选)
 
 定义sharding-jdbc数据源
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| id                            | 属性         |  String     |   是  | Spring Bean ID |
-| sharding-rule                 | 标签         |   -         |   是  | 分片规则 |
-| binding-table-rules`?`        | 标签         |   -         |   是  | 绑定表规则 |  
-| default-database-strategy`?`  | 标签         |   -         |   是  | 默认分库策略 |  
-| default-table-strategy`?`     | 标签         |   -         |   是  | 默认分表策略 |
-| props`?`                      | 标签         |   -         |   是  | 相关属性配置 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*         |
+| ----------------------------- | ------------ |  --------- | ------ | -------------- |
+| id                            | 属性         |  String     |   是   | Spring Bean ID |
+| sharding-rule                 | 标签         |   -         |   是   | 分片规则        |
+| binding-table-rules`?`        | 标签         |   -         |   是   | 绑定表规则       |
+| default-database-strategy`?`  | 标签         |   -         |   是   | 默认分库策略     |
+| default-table-strategy`?`     | 标签         |   -         |   是   | 默认分表策略     |
+| props`?`                      | 标签         |   -         |   是   | 相关属性配置     |
 
 ### \<rdb:sharding-rule/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     | ---------  | ------| -----   |
-| data-sources                  | 属性         | String      |   是  | 数据源Bean列表，多个Bean以逗号分隔 |
-| table-rules                   | 标签         |   -         |   是  | 分片规则列表 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                    |
+| ----------------------------- | ------------ | ---------- | ------ | -------------------------------------------------------- |
+| data-sources                  | 属性         | String      |   是   | 数据源Bean列表，多个Bean以逗号分隔                           |
+| default-data-source           | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位           |
+| table-rules                   | 标签         |   -         |   是   | 分片规则列表                                               |
 
 ### \<rdb:table-rules/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     | ---------  | ------| -----   |
+| *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
+| ----------------------------- | ----------- | ---------- | ------ | ------- |
 | table-rule`+`                 | 标签         |   -         |   是  | 分片规则 |
 
 ### \<rdb:table-rule/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| logic-table                   | 属性         |  String     |   是  | 逻辑表名 |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| database-strategy             | 属性         |  String     |   是  | 分库策略，对应`<rdb:strategy>`中分库策略id |
-| table-strategy                | 属性         |  String     |   是  | 分表策略，对应`<rdb:strategy>`中分表策略id |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
+| --------------------          | ------------ | ---------- | ------ | ------- |
+| logic-table                   | 属性         |  String     |   是   | 逻辑表名 |
+| dynamic                       | 属性         |  boolean    |   否   | 是否动态表 |
+| actual-tables                 | 属性         |  String     |   否   | 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true) |
+| data-source-names             | 属性         |  String     |   否   | 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源                |
+| database-strategy             | 属性         |  String     |   否   | 分库策略，对应`<rdb:strategy>`中分库策略id, 如果不填需配置`<rdb:default-database-strategy/>` |
+| table-strategy                | 属性         |  String     |   否   | 分表策略，对应`<rdb:strategy>`中分表策略id, 如果不填需配置`<rdb:default-table-strategy/>`    |
 
 ### \<rdb:binding-table-rules/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| binding-table-rule           | 标签         |   -         |   是  | 绑定规则 |
+| *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
+| ----------------------------- | ----------- |  --------- | ------ | ------- |
+| binding-table-rule            | 标签         |   -         |   是  | 绑定规则 |
 
 ### \<rdb:binding-table-rule/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| logic-tables                  | 属性         |  String     |   是  | 逻辑表名，多个表名以逗号分隔 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                   |
+| ----------------------------- | ------------ | ---------- | ------ | ------------------------ |
+| logic-tables                  | 属性         |  String     |   是   | 逻辑表名，多个表名以逗号分隔 |
 
 ### \<rdb:default-database-strategy/>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
+| ----------------------------- | ------------ | ---------- | ------ | ------- |
 | sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否  | 默认分库算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:default-table-strategy/\>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 默认分表算法全类名，与`algorithm-expression`有且仅有一个出现 |
-| algorithm-expression          | 属性         |  String     |   否  | 默认分表算法表达式，与`algorithm-class`有且仅有一个出现 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
+| ----------------------------- | ------------ |  --------- | ------ | ------- |
+| sharding-columns              | 属性         |  String     |   是   | 分片列名，多个列以逗号分隔 |
+| algorithm-class               | 属性         |  Class      |   否   | 默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-expression          | 属性         |  String     |   否   | 默认分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:strategy/\>`*`
 
 定义数据分库或分表策略
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| id                            | 属性         |  String     |   是  | Spring Bean ID |
-| sharding-columns              | 属性         |  String     |   是  | 分片列名，多个列以逗号分隔 |
-| algorithm-class               | 属性         |  Class      |   否  | 分库或分表算法全类名，与`algorithm-expression`有且仅有一个出现 |
-| algorithm-expression          | 属性         |  String     |   否  | 分库或分表算法表达式，与`algorithm-class`有且仅有一个出现 |
+| *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
+| ----------------------------- | ------------ | ---------- | ------ | ------- |
+| id                            | 属性         |  String     |   是   | Spring Bean ID |
+| sharding-columns              | 属性         |  String     |   是   | 分片列名，多个列以逗号分隔 |
+| algorithm-class               | 属性         |  Class      |   否   | 分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
+| algorithm-expression          | 属性         |  String     |   否   | 分库或分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
 ### \<rdb:props/\>
 
-| *名称*                         | 类型         | *数据类型*  |  *必填*| *说明*  |
-| --------------------          | --------     |  --------- | ------| -----   |
-| metrics.enable                | 属性         |  boolean   |   否  | 是否开启度量采集，默认为false不开启 |
-| metrics.second.period         | 属性         |  String    |   否  | 度量输出周期，单位为秒 |
-| metrics.package.name          | 属性         |  String    |   否  | 度量输出在日志中的标识名称 |
-| parallelExecutor.worker.minIdleSize| 属性         |  int    |   否  | 最小空闲工作线程数量 |
-| parallelExecutor.worker.maxSize| 属性         |  int    |   否  | 最大工作线程数量 |
-| parallelExecutor.worker.maxIdleTimeout| 属性         |  int    |   否  | 工作线程空闲时超时时间，默认以秒为单位 |
+| *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
+| ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
+| metrics.enable                       | 属性         |  boolean   |   否   | 是否开启度量采集，默认为false不开启     |
+| metrics.millisecond.period           | 属性         |  String    |   否   | 度量输出周期，单位为毫秒               |
+| metrics.logger.name                  | 属性         |  String    |   否   | 度量输出在日志中的标识名称             |
+| executor.min.idle.size               | 属性         |  int       |   否   | 最小空闲工作线程数量                  |
+| executor.max.size                    | 属性         |  int       |   否   | 最大工作线程数量                      |
+| executor.max.idle.timeout.millisecond| 属性         |  int       |   否   | 工作线程空闲时超时时间，默认以毫秒为单位 |
 
 ### Spring格式特别说明
 如需使用inline表达式，需配置`ignore-unresolvable`为`true`，否则placeholder会把inline表达式当成属性key值导致出错. 
@@ -280,6 +289,12 @@ props: 属性配置(可选)
 `${begin..end}` 表示范围区间
 
 `${[unit1, unit2, unitX]}` 表示枚举值
+
+inline表达式中连续多个`${...}`表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：
+```groovy
+dbtbl_${[online, offline]}_${1..3}
+```
+最终会解析为`dbtbl_online_1`，`dbtbl_online_2`，`dbtbl_online_3`，`dbtbl_offline_1`，`dbtbl_offline_2`和`dbtbl_ offline_3`这6张表。
 
 ## 字符串内嵌groovy代码
 表达式本质上是一段字符串，字符串中使用`${}`来嵌入`groovy`代码。
@@ -299,11 +314,11 @@ data_source_${id.longValue() % 2 + 1}
 
 方法列表如下：
 
-| *方法名*                  | *入参*         | *返回类型* |
-| ------------------------ | -------------- | --------- |
-| longValue()              |                | long      |
-| doubleValue()            |                | double    |
+| *方法名*                  | *入参*         | *返回类型*      |
+| ------------------------ | -------------- | -------------- |
+| longValue()              |                | long           |
+| doubleValue()            |                | double         |
 | dateValue(String format) | 时间格式化表达式 | java.util.Date |
 | dateValue()              |                | java.util.Date |
-| toString(String format)  | 时间格式化表达式 | String |
-| toString()               |                | STring |
+| toString(String format)  | 时间格式化表达式 | String         |
+| toString()               |                | String         |

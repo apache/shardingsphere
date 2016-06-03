@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.dangdang</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.3.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-example-mybatis</artifactId>
     

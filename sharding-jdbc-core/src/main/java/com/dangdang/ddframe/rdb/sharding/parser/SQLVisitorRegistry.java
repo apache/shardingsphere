@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLDeleteVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;
@@ -57,25 +57,41 @@ public final class SQLVisitorRegistry {
     private static void registerSelectVistor() {
         SELECT_REGISTRY.put(DatabaseType.H2, MySQLSelectVisitor.class);
         SELECT_REGISTRY.put(DatabaseType.MySQL, MySQLSelectVisitor.class);
-        // TODO 其他数据库
+        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
+        SELECT_REGISTRY.put(DatabaseType.Oracle, MySQLSelectVisitor.class);
+        SELECT_REGISTRY.put(DatabaseType.SQLServer, MySQLSelectVisitor.class);
+        SELECT_REGISTRY.put(DatabaseType.DB2, MySQLSelectVisitor.class);
+        SELECT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLSelectVisitor.class);
     }
     
     private static void registerInsertVistor() {
         INSERT_REGISTRY.put(DatabaseType.H2, MySQLInsertVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.MySQL, MySQLInsertVisitor.class);
-        // TODO 其他数据库
+        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
+        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLInsertVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLInsertVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLInsertVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLInsertVisitor.class);
     }
     
     private static void registerUpdateVistor() {
         UPDATE_REGISTRY.put(DatabaseType.H2, MySQLUpdateVisitor.class);
         UPDATE_REGISTRY.put(DatabaseType.MySQL, MySQLUpdateVisitor.class);
-        // TODO 其他数据库
+        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
+        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLUpdateVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLUpdateVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLUpdateVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLUpdateVisitor.class);
     }
     
     private static void registerDeleteVistor() {
         DELETE_REGISTRY.put(DatabaseType.H2, MySQLDeleteVisitor.class);
         DELETE_REGISTRY.put(DatabaseType.MySQL, MySQLDeleteVisitor.class);
-        // TODO 其他数据库
+        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
+        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLDeleteVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLDeleteVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLDeleteVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLDeleteVisitor.class);
     }
     
     /**

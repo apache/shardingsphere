@@ -37,7 +37,7 @@
         </aggregation-columns>
     </assert>
     
-    <assert id="assertSelectWithAggregateAndGroupBy" sql="SELECT order_id, MAX(date) FROM order GROUP BY order_id" expected-sql="SELECT order_id, MAX(date)[Token(, order_id AS sharding_gen_1)] FROM [Token(order)] GROUP BY order_id">
+    <assert id="assertSelectWithAggregateAndGroupBy" sql="SELECT order_id, MAX(date) FROM order GROUP BY order_id" expected-sql="SELECT order_id, MAX(date) FROM [Token(order)] GROUP BY order_id">
         <tables>
             <table name="order"/>
         </tables>
@@ -45,7 +45,7 @@
             <condition-context />
         </condition-contexts>
         <group-by-columns>
-            <group-by-column name="order_id" alias="sharding_gen_1" order-by-type="ASC" />
+            <group-by-column name="order_id" order-by-type="ASC" />
         </group-by-columns>
         <aggregation-columns>
             <aggregation-column expression="MAX(date)" aggregation-type="MAX" index="2" />

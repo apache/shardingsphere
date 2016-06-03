@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,15 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.rule;
 
+import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.junit.Test;
 
 public final class BindingTableRuleTest {
     
@@ -45,8 +48,13 @@ public final class BindingTableRuleTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertGetBindingActualTablesFailure() {
+    public void assertGetBindingActualTablesFailureWhenNotFound() {
         createBindingTableRule().getBindingActualTable("no_ds", "subLogicTable", "table_1");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertGetBindingActualTablesFailureWhenIsDynamicTable() {
+        createDynamicBindingTableRule().getBindingActualTable("no_ds", "subLogicTable", "table_1");
     }
     
     @Test
@@ -68,11 +76,30 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return new TableRule("logicTable", Arrays.asList(new DataNode("ds1", "table_0"), new DataNode("ds1", "table_1"), new DataNode("ds2", "table_0"), new DataNode("ds2", "table_1")));
+        return TableRule.builder("logicTable").actualTables(Arrays.asList("ds1.table_0", "ds1.table_1", "ds2.table_0", "ds2.table_1")).dataSourceRule(createDataSourceRule()).build();
     }
     
     private TableRule createSubTableRule() {
-        return new TableRule("subLogicTable", Arrays.asList(
-                new DataNode("ds1", "sub_table_0"), new DataNode("ds1", "sub_table_1"), new DataNode("ds2", "sub_table_0"), new DataNode("ds2", "sub_table_1")));
+        return TableRule.builder("subLogicTable").actualTables(Arrays.asList("ds1.sub_table_0", "ds1.sub_table_1", "ds2.sub_table_0", "ds2.sub_table_1"))
+                .dataSourceRule(createDataSourceRule()).build();
+    }
+    
+    private DataSourceRule createDataSourceRule() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2);
+        dataSourceMap.put("ds1", null);
+        dataSourceMap.put("ds2", null);
+        return new DataSourceRule(dataSourceMap);
+    }
+    
+    private BindingTableRule createDynamicBindingTableRule() {
+        return new BindingTableRule(Arrays.asList(createDynamicTableRule(), createDynamicSubTableRule()));
+    }
+    
+    private TableRule createDynamicTableRule() {
+        return TableRule.builder("logicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
+    }
+    
+    private TableRule createDynamicSubTableRule() {
+        return TableRule.builder("subLogicTable").dynamic(true).dataSourceRule(createDataSourceRule()).build();
     }
 }

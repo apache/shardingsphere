@@ -7,9 +7,13 @@
 <!-- Bootstrap Core JavaScript -->
 <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <!-- Custom Theme JavaScript -->
-<script src="{{ .Site.BaseURL }}js/prism.js"></script>
-
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
 {{ if isset .Params "chart" }}
 <script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
 <script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
@@ -19,7 +23,7 @@
         var data =  chartData[$(this).attr("id")];
         $(data.datasets).each(function(index, obj){
             $.extend(obj, charStyle[index])
-        })
+        });
         new Chart(this.getContext("2d"),{
             type: 'line',
             data: data

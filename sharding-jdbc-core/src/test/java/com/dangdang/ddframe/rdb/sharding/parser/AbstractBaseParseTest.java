@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,6 @@
  */
 
 package com.dangdang.ddframe.rdb.sharding.parser;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
@@ -49,6 +40,15 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -76,7 +76,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Limit limit;
     
-    public AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
+    protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
                                  final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
         this.testCaseName = testCaseName;
         this.sql = sql;
@@ -89,7 +89,7 @@ public abstract class AbstractBaseParseTest {
         this.limit = expectedMergeContext.getLimit();
     }
     
-    public static Collection<Object[]> dataParameters(final String path) {
+    protected static Collection<Object[]> dataParameters(final String path) {
         Collection<Object[]> result = new ArrayList<>();
         for (File each : new File(AbstractBaseParseTest.class.getClassLoader().getResource(path).getPath()).listFiles()) {
             result.addAll(dataParameters(each));
@@ -158,8 +158,9 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public OrderByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase()))
-                            : new OrderByColumn(input.getName(), input.getAlias(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderByColumn(Optional.fromNullable(input.getOwner()), input.getName(), 
+                                    Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }
@@ -168,7 +169,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public GroupByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
-                    return new GroupByColumn(input.getName(), input.getAlias(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                    return new GroupByColumn(
+                            Optional.fromNullable(input.getOwner()), input.getName(), Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }
@@ -181,7 +183,7 @@ public abstract class AbstractBaseParseTest {
                             AggregationColumn result = new AggregationColumn(input.getExpression(), 
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()), Optional.fromNullable(input.getOption()));
                             if (null != input.getIndex()) {
-                                result.setIndex(input.getIndex());
+                                result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn each : input.getDerivedColumns()) {
                                 result.getDerivedColumns().add(new AggregationColumn(each.getExpression(), 

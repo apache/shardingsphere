@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,11 +76,11 @@ public class NullableAggregationResultSetTest {
         List<ResultSet> resultSetList = new ArrayList<>();
         if (aggregationType.equals(AggregationColumn.AggregationType.AVG)) {
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, null, null})));
-            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, 1, 1})));
+            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(null, 1, 1)));
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"), Lists.newArrayList(new Integer[]{null, null, null})));
         } else {
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{null})));
-            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{1})));
+            resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(1)));
             resultSetList.add(MergerTestUtil.createMock(Lists.newArrayList(aggregationType.name()), Lists.newArrayList(new Integer[]{null})));
         }
         ResultSet resultSet = ResultSetFactory.getResultSet(resultSetList, result);

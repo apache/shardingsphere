@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectWithGroupBy" sql="SELECT * FROM order o GROUP BY o.state" expected-sql="SELECT *[Token(, o.state AS sharding_gen_1)] FROM [Token(order)] o GROUP BY o.state">
+    <assert id="assertSelectWithGroupByAndDirectiveColumn" sql="SELECT o.order_id FROM order o GROUP BY o.state" expected-sql="SELECT [Token(o)].order_id[Token(, o.state AS sharding_gen_1)] FROM [Token(order)] o GROUP BY o.state">
         <tables>
             <table name="order" alias="o" />
         </tables>
@@ -8,11 +8,23 @@
             <condition-context />
         </condition-contexts>
         <group-by-columns>
-            <group-by-column name="o.state" alias="sharding_gen_1" order-by-type="ASC" />
+            <group-by-column owner="o" name="state" alias="sharding_gen_1" order-by-type="ASC" />
+        </group-by-columns>
+    </assert>
+
+    <assert id="assertSelectWithGroupBy" sql="SELECT o.state FROM order o GROUP BY o.state" expected-sql="SELECT [Token(o)].state FROM [Token(order)] o GROUP BY o.state">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context />
+        </condition-contexts>
+        <group-by-columns>
+            <group-by-column owner="o" name="state" order-by-type="ASC" />
         </group-by-columns>
     </assert>
     
-    <assert id="assertSelectWithGroupByAndOrderBy" sql="SELECT * FROM order o GROUP BY o.state ASC, o.order_id DESC" expected-sql="SELECT *[Token(, o.state AS sharding_gen_1, o.order_id AS sharding_gen_2)] FROM [Token(order)] o GROUP BY o.state ASC, o.order_id DESC">
+    <assert id="assertSelectWithGroupByAndOrderByAndDirectiveColumn" sql="SELECT o.order_id orderId FROM order o GROUP BY o.state ASC, o.order_id DESC" expected-sql="SELECT [Token(o)].order_id AS orderId[Token(, o.state AS sharding_gen_1, o.order_id AS sharding_gen_2)] FROM [Token(order)] o GROUP BY o.state ASC, o.order_id DESC">
         <tables>
             <table name="order" alias="o" />
         </tables>
@@ -20,8 +32,8 @@
             <condition-context />
         </condition-contexts>
         <group-by-columns>
-            <group-by-column name="o.state" alias="sharding_gen_1" order-by-type="ASC" />
-            <group-by-column name="o.order_id" alias="sharding_gen_2" order-by-type="DESC" />
+            <group-by-column owner="o" name="state" alias="sharding_gen_1" order-by-type="ASC" />
+            <group-by-column owner="o" name="order_id" alias="sharding_gen_2" order-by-type="DESC" />
         </group-by-columns>
     </assert>
 </asserts>

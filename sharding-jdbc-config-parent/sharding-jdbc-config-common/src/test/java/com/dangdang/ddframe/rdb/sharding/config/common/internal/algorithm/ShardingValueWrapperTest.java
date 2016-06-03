@@ -29,11 +29,11 @@ import static org.junit.Assert.assertThat;
 
 public final class ShardingValueWrapperTest {
     
-    private static final String formatText = "yyyy-MM-dd";
+    private static final String FORMAT_TEXT = "yyyy-MM-dd";
     
-    private static final String dateText = "2016-02-13";
+    private static final String DATE_TEXT = "2016-02-13";
     
-    private static final Date now = new Date();
+    private static final Date NOW = new Date();
     
     private static SimpleDateFormat format;
     
@@ -41,8 +41,8 @@ public final class ShardingValueWrapperTest {
     
     @BeforeClass
     public static void init() throws ParseException {
-        format = new SimpleDateFormat(formatText);
-        date = format.parse(dateText);
+        format = new SimpleDateFormat(FORMAT_TEXT);
+        date = format.parse(DATE_TEXT);
     }
     
     @Test
@@ -65,7 +65,7 @@ public final class ShardingValueWrapperTest {
         assertThat(new ShardingValueWrapper(1.0F).doubleValue(), is(1.0D));
         assertThat(new ShardingValueWrapper(1.0D).doubleValue(), is(1.0D));
         assertThat(new ShardingValueWrapper("1").doubleValue(), is(1.0D));
-        assertThat(new ShardingValueWrapper(now).doubleValue(), is((double) now.getTime()));
+        assertThat(new ShardingValueWrapper(NOW).doubleValue(), is((double) NOW.getTime()));
     }
     
     @Test
@@ -73,7 +73,7 @@ public final class ShardingValueWrapperTest {
         Date now = new Date();
         assertThat(new ShardingValueWrapper(now).dateValue(), is(now));
         assertThat(new ShardingValueWrapper(now.getTime()).dateValue(), is(now));
-        assertThat(new ShardingValueWrapper(format.format(date)).dateValue(formatText), is(date));
+        assertThat(new ShardingValueWrapper(format.format(date)).dateValue(FORMAT_TEXT), is(date));
     }
     
     @Test
@@ -84,10 +84,10 @@ public final class ShardingValueWrapperTest {
         assertThat(new ShardingValueWrapper(1.0F).toString(), is("1.0"));
         assertThat(new ShardingValueWrapper(1.0D).toString(), is("1.0"));
         assertThat(new ShardingValueWrapper("1").toString(), is("1"));
-        assertThat(new ShardingValueWrapper(now).toString(), is(now.toString()));
-        assertThat(new ShardingValueWrapper(date).toString(formatText), is(dateText));
-        assertThat(new ShardingValueWrapper(date.getTime()).toString(formatText), is(dateText));
-        assertThat(new ShardingValueWrapper(dateText).toString(formatText), is(dateText));
+        assertThat(new ShardingValueWrapper(NOW).toString(), is(NOW.toString()));
+        assertThat(new ShardingValueWrapper(date).toString(FORMAT_TEXT), is(DATE_TEXT));
+        assertThat(new ShardingValueWrapper(date.getTime()).toString(FORMAT_TEXT), is(DATE_TEXT));
+        assertThat(new ShardingValueWrapper(DATE_TEXT).toString(FORMAT_TEXT), is(DATE_TEXT));
     }
     
     @Test(expected = IllegalArgumentException.class)

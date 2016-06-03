@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,6 +42,8 @@ import com.google.common.collect.Range;
 @ToString
 public final class ShardingValue<T extends Comparable<?>> {
     
+    private final String logicTableName;
+    
     private final String columnName;
     
     private final T value;
@@ -50,16 +52,16 @@ public final class ShardingValue<T extends Comparable<?>> {
     
     private final Range<T> valueRange;
     
-    public ShardingValue(final String columnName, final T value) {
-        this(columnName, value, Collections.<T>emptyList(), null);
+    public ShardingValue(final String logicTableName, final String columnName, final T value) {
+        this(logicTableName, columnName, value, Collections.<T>emptyList(), null);
     }
     
-    public ShardingValue(final String columnName, final Collection<T> values) {
-        this(columnName, null, values, null);
+    public ShardingValue(final String logicTableName, final String columnName, final Collection<T> values) {
+        this(logicTableName, columnName, null, values, null);
     }
     
-    public ShardingValue(final String columnName, final Range<T> valueRange) {
-        this(columnName, null, Collections.<T>emptyList(), valueRange);
+    public ShardingValue(final String logicTableName, final String columnName, final Range<T> valueRange) {
+        this(logicTableName, columnName, null, Collections.<T>emptyList(), valueRange);
     }
     
     /**

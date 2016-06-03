@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,7 +61,8 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     public void assertSelectWithInAndIntersection() throws SQLParserException {
         assertMultipleTargets("select * from order where order_id in (?,?) or order_id in (?,?)", Arrays.<Object>asList(1, 2, 100, 2), 4,
-                Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)", "SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)"));
+                Arrays.asList("ds_0", "ds_1"), 
+                Arrays.asList("SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)", "SELECT * FROM order_1 WHERE order_id IN (?, ?) OR order_id IN (?, ?)"));
     }
     
     @Test
@@ -75,6 +76,8 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     public void assertSelectWithBetweenAndIntersection() throws SQLParserException {
         assertMultipleTargets("select * from order where order_id between ? and ? or order_id between ? and ? ", Arrays.<Object>asList(1, 50, 29, 100), 4,
-                Arrays.asList("ds_0", "ds_1"), Arrays.asList("SELECT * FROM order_0 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?", "SELECT * FROM order_1 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?"));
+                Arrays.asList("ds_0", "ds_1"), 
+                Arrays.asList("SELECT * FROM order_0 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?", 
+                        "SELECT * FROM order_1 WHERE order_id BETWEEN ? AND ? OR order_id BETWEEN ? AND ?"));
     }
 }

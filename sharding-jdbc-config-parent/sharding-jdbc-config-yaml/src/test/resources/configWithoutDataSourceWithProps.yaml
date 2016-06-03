@@ -1,6 +1,3 @@
-props:
-  metrics.second.period: true
-  
 tables:
   config:
     actualTables: t_config
@@ -30,3 +27,6 @@ defaultDatabaseStrategy:
 defaultTableStrategy:
   shardingColumns: id, order_id
   algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+  
+props:
+  metrics.enable: true

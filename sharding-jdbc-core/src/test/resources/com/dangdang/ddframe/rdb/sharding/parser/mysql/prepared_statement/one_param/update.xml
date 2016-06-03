@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertUpdateWithParameter" sql="update `order` set 'state'='STOPPED' where order_id = ?" expected-sql="UPDATE [Token(order)] SET 'state' = 'STOPPED' WHERE order_id = ?">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+</asserts>

@@ -21,3 +21,5 @@ CREATE TABLE IF NOT EXISTS `t_order_item_7` (`item_id` INT NOT NULL, `order_id` 
 CREATE TABLE IF NOT EXISTS `t_order_item_8` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`item_id`));
 CREATE TABLE IF NOT EXISTS `t_order_item_9` (`item_id` INT NOT NULL, `order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`item_id`));
 CREATE TABLE IF NOT EXISTS `t_config` (`id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`id`));
+
+CREATE TABLE IF NOT EXISTS `t_global` (`id` INT NOT NULL, `status` VARCHAR(45) NULL, PRIMARY KEY (`id`));
