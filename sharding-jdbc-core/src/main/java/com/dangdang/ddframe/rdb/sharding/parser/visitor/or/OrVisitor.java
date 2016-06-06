@@ -92,7 +92,15 @@ public class OrVisitor extends AbstractMySQLVisitor {
         if (Boolean.TRUE.equals(WallVisitorUtils.getValue(x))) {
             return false;
         }
-        orASTNode = new SimpleOrASTNode(x, new OrVisitor(this));
+        if(orASTNode == null){
+        	orASTNode = new SimpleOrASTNode(x, new OrVisitor(this));
+        }else{
+        	
+            CompositeOrASTNode existingOutConditionOrASTNode = new CompositeOrASTNode();
+            existingOutConditionOrASTNode.addSubNode(orASTNode);
+            existingOutConditionOrASTNode.addSubNode(new SimpleOrASTNode(x, new OrVisitor(this)));
+            orASTNode = existingOutConditionOrASTNode;
+        }
         return false;
     }
 }
