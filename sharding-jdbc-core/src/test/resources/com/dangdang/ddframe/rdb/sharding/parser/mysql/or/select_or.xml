@@ -139,4 +139,44 @@
             </condition-context>
         </condition-contexts>
     </assert>
+
+    <assert id="assertOrAnd" sql="select * from order where (id=1 or user_id=2) and (name=3 or age=4)"  expected-sql="SELECT * FROM [Token(order)] WHERE (id = 1 OR user_id = 2) AND (name = 3 OR age = 4)">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="user_id" table-name="order" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="age" table-name="order" operator="EQUAL">
+                    <value value="4" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="user_id" table-name="order" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="name" table-name="order" operator="EQUAL">
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="age" table-name="order" operator="EQUAL">
+                    <value value="4" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="name" table-name="order" operator="EQUAL">
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
 </asserts>
