@@ -41,6 +41,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     private final int size;
     
+    @SafeVarargs
     public MockResultSet(@SuppressWarnings("unchecked") final T... data) {
         columnNamesMetaData = new ArrayList<>(1);
         columnNamesMetaData.add("name");
@@ -126,7 +127,7 @@ public final class MockResultSet<T> extends AbstractUnsupportedOperationMockResu
     
     private void validateColumn(final String columnLabel) throws SQLException {
         if (!columnNamesMetaData.contains(columnLabel)) {
-            throw new SQLException(String.format("can not contains column %s, column is %s", columnLabel, columnNamesMetaData));
+            throw new SQLException(String.format("can not inRange column %s, column is %s", columnLabel, columnNamesMetaData));
         }
     }
     

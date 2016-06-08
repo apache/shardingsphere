@@ -60,7 +60,7 @@ public final class SQLParsedResultTest {
                 + "name=Optional.of(id), alias=Optional.of(a), orderByType=DESC), index=Optional.absent(), columnIndex=0)], "
                 + "groupByColumns=[GroupByColumn(super=AbstractSortableColumn(owner=Optional.absent(), name=Optional.of(id), alias=Optional.of(d), orderByType=ASC), columnIndex=0)], "
                 + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], columnIndex=-1)], "
-                + "limit=Limit(offset=0, rowCount=10), executorEngine=null, columnLabelIndexMap=null, currentOrderByKeys=[]))"));
+                + "limit=Limit(offset=0, rowCount=10)))"));
     }
     
     private void generateRouteContext(final RouteContext routeContext) throws IOException {

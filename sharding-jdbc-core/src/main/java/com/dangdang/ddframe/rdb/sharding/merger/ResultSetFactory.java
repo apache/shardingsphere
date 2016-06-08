@@ -17,14 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.component.ComponentResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.GroupByCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.LimitCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.coupling.MemoryOrderByCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.other.WrapperResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.MemoryOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.component.reducer.StreamingOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByCouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 创建归并分片结果集的工厂.
+ * 分片结果集归并工厂.
  *
  * @author gaohongtao
+ * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -52,66 +50,56 @@ public final class ResultSetFactory {
      * @return 结果集包装
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {
-        List<ResultSet> filteredResultSets = filterResultSets(resultSets);
-        if (filteredResultSets.isEmpty()) {
-            log.trace("Sharding-JDBC: No data found in origin result sets");
-            return resultSets.get(0);
+        ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);
+        log.trace("Sharding-JDBC: Sharding result sets type is '{}'", shardingResultSets.getType().toString());
+        switch (shardingResultSets.getType()) {
+            case EMPTY:
+                return buildEmpty(resultSets);
+            case SINGLE:
+                return buildSingle(shardingResultSets, mergeContext);
+            case MULTIPLE:
+                return buildMultiple(shardingResultSets, mergeContext);
+            default:
+                throw new UnsupportedOperationException(shardingResultSets.getType().toString());
         }
-        if (1 == filteredResultSets.size()) {
-            log.trace("Sharding-JDBC: Only one result set");
-            return joinLimit(filteredResultSets.get(0), mergeContext);
-        }
-        mergeContext.buildContextWithResultSet((WrapperResultSet) filteredResultSets.get(0));
-        return buildCoupling(buildReducer(filteredResultSets, mergeContext), mergeContext);
     }
     
-    private static List<ResultSet> filterResultSets(final List<ResultSet> resultSets) throws SQLException {
-        List<ResultSet> result = new LinkedList<>();
-        for (ResultSet each : resultSets) {
-            WrapperResultSet wrapperResultSet = new WrapperResultSet(each);
-            if (!wrapperResultSet.isEmpty()) {
-                result.add(wrapperResultSet);
-            }
+    private static ResultSet buildEmpty(final List<ResultSet> resultSets) {
+        return resultSets.get(0);
+    }
+    
+    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {
+        return mergeContext.hasLimit() ? new LimitCouplingResultSet(shardingResultSets.getResultSets().get(0), mergeContext) : shardingResultSets.getResultSets().get(0);
+    }
+    
+    private static ResultSet buildMultiple(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {
+        ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, mergeContext);
+        return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
+    }
+    
+    private static ResultSet buildReducer(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        if (resultSetMergeContext.isNeedMemorySortForGroupBy()) {
+            resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
+            return new MemoryOrderByReducerResultSet(resultSetMergeContext);
+        }
+        if (resultSetMergeContext.getMergeContext().hasGroupBy() || resultSetMergeContext.getMergeContext().hasOrderBy()) {
+            return new StreamingOrderByReducerResultSet(resultSetMergeContext);
+        }
+        return new IteratorReducerResultSet(resultSetMergeContext);
+    }
+    
+    private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        ResultSet result = resultSet;
+        if (resultSetMergeContext.getMergeContext().hasGroupByOrAggregation()) {
+            result = new GroupByCouplingResultSet(result, resultSetMergeContext);
+        }
+        if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
+            resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
+            result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
+        }
+        if (resultSetMergeContext.getMergeContext().hasLimit()) {
+            result = new LimitCouplingResultSet(result, resultSetMergeContext.getMergeContext());
         }
         return result;
-    }
-    
-    private static ResultSet buildReducer(final List<ResultSet> filteredResultSets, final MergeContext mergeContext) throws SQLException {
-        if (mergeContext.hasGroupBy()) {
-            if (mergeContext.groupByKeysEqualsOrderByKeys()) {
-                return join(new StreamingOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
-            }
-            return join(new MemoryOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
-        } else if (mergeContext.hasOrderBy()) {
-            return join(new StreamingOrderByReducerResultSet(mergeContext.getCurrentOrderByKeys()), filteredResultSets);
-        } else {
-            return join(new IteratorReducerResultSet(), filteredResultSets);
-        }
-    }
-    
-    private static ResultSet buildCoupling(final ResultSet preResultSet, final MergeContext mergeContext) throws SQLException {
-        ResultSet currentResultSet = preResultSet;
-        if (mergeContext.hasGroupByOrAggregation()) {
-            currentResultSet = join(new GroupByCouplingResultSet(mergeContext.getGroupByColumns(), mergeContext.getAggregationColumns()), currentResultSet);
-        }
-        if (mergeContext.needToSort()) {
-            currentResultSet = join(new MemoryOrderByCouplingResultSet(mergeContext.getCurrentOrderByKeys()), currentResultSet);
-        }
-        currentResultSet = joinLimit(currentResultSet, mergeContext);
-        return currentResultSet;
-    }
-    
-    private static <T> ComponentResultSet<T> join(final ComponentResultSet<T> resultSet, final T preResultSet) throws SQLException {
-        log.trace("{} joined", resultSet.getClass().getSimpleName());
-        resultSet.init(preResultSet);
-        return resultSet;
-    }
-    
-    private static ResultSet joinLimit(final ResultSet preResultSet, final MergeContext mergeContext) throws SQLException {
-        if (mergeContext.hasLimit()) {
-            return join(new LimitCouplingResultSet(mergeContext.getLimit()), preResultSet);
-        } else {
-            return preResultSet;
-        }
     }
 }

@@ -17,9 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement;
+import com.mysql.jdbc.Blob;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,19 +41,11 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement;
-import com.mysql.jdbc.Blob;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PreparedStatementAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection shardingConnection;
     
@@ -57,8 +53,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         actual = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` IN (? ,? ,? ,? ,?)");
     }
     

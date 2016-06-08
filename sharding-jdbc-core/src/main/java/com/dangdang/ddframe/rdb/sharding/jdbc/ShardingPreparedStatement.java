@@ -92,8 +92,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public ResultSet executeQuery() throws SQLException {
         hasExecuted = true;
-        setCurrentResultSet(ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                getRoutedPreparedStatements()).executeQuery(), getMergeContext()));
+        setCurrentResultSet(ResultSetFactory.getResultSet(
+                new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRoutedPreparedStatements()).executeQuery(), getMergeContext()));
         return getCurrentResultSet();
     }
     
@@ -164,7 +164,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = getShardingConnection().getShardingContext().getSqlRouteEngine().route(sql, parameters);
         MergeContext mergeContext = sqlRouteResult.getMergeContext();
-        mergeContext.setExecutorEngine(getShardingConnection().getShardingContext().getExecutorEngine());
         setMergeContext(mergeContext);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = generatePrepareStatement(getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatementType()), each.getSql());

@@ -39,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -58,8 +59,20 @@ public final class SQLRouteEngine {
     
     /**
      * SQL路由.
+     *
+     * @param logicSql 逻辑SQL
+     * @return 路由结果
+     * @throws SQLParserException SQL解析失败异常
+     */
+    public SQLRouteResult route(final String logicSql) throws SQLParserException {
+        return route(logicSql, Collections.emptyList());
+    }
+    
+    /**
+     * SQL路由.
      * 
      * @param logicSql 逻辑SQL
+     * @param parameters 参数列表
      * @return 路由结果
      * @throws SQLParserException SQL解析失败异常
      */

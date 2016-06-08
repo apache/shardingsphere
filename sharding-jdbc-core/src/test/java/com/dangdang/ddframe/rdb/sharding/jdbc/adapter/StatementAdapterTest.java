@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingStatement;
 import org.junit.After;
 import org.junit.Before;
@@ -39,16 +38,13 @@ import static org.junit.Assert.assertTrue;
 
 public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
-    private ShardingDataSource shardingDataSource;
-    
     private ShardingConnection shardingConnection;
     
     private Statement actual;
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         shardingConnection.setReadOnly(false);
         actual = shardingConnection.createStatement();
     }

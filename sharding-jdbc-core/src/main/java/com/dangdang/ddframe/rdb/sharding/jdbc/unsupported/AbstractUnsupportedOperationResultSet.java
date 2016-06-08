@@ -30,7 +30,7 @@ import java.sql.SQLFeatureNotSupportedException;
  * 
  * @author zhangliang
  */
-public abstract class AbstractUnsupportedOperationResultSet extends AbstractResultSetUpdaterAdapter {
+public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsupportedUpdateOperationResultSet {
     
     @Override
     public final boolean previous() throws SQLException {

@@ -17,10 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,19 +33,12 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collections;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection shardingConnection;
     
@@ -52,8 +48,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         statement = shardingConnection.createStatement();
         actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init' ORDER BY `uid`");
         actual.next();

@@ -17,16 +17,23 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractRowSetResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.row.Row;
+import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.AbstractMemoryResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.AbstractResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
+import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
-public class MockRowSetResultSet extends AbstractRowSetResultSetAdapter {
+public class MockRowSetResultSet extends AbstractMemoryResultSet {
     
     private ResultSet resultSet;
+    
+    public MockRowSetResultSet(final ResultSet resultSet) throws SQLException {
+        super(Collections.singletonList(resultSet));
+    }
     
     @Override
     protected void initRows(final List<ResultSet> resultSets) throws SQLException {
@@ -34,10 +41,10 @@ public class MockRowSetResultSet extends AbstractRowSetResultSetAdapter {
     }
     
     @Override
-    protected Row nextRow() throws SQLException {
+    protected Optional<? extends ResultSetRow> nextRow() throws SQLException {
         if (resultSet.next()) {
-            return new Row(resultSet);
+            return Optional.of(new AbstractResultSetRow(resultSet) { });
         }
-        return null;
+        return Optional.absent();
     }
 }

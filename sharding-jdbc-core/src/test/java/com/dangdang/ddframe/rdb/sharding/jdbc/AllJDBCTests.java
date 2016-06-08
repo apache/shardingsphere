@@ -17,20 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.RowSetResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.StatementAdapterTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.ResultSetUpdaterAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationPreparedStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationRowResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedUpdateOperationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -45,8 +43,7 @@ import org.junit.runners.Suite;
     UnsupportedOperationStatementTest.class, 
     UnsupportedOperationPreparedStatementTest.class, 
     UnsupportedOperationResultSetTest.class,
-    UnsupportedOperationRowResultSetTest.class,
-    ResultSetUpdaterAdapterTest.class, 
+    UnsupportedUpdateOperationResultSetTest.class, 
     DataSourceAdapterTest.class, 
     ConnectionAdapterTest.class, 
     StatementAdapterTest.class, 
@@ -54,7 +51,6 @@ import org.junit.runners.Suite;
     ResultSetGetterAdapterTest.class, 
     ResultSetAdapterTest.class, 
     JdbcMethodInvocationTest.class, 
-    RowSetResultSetAdapterTest.class,
     MasterSlaveDataSourceTest.class
     })
 public class AllJDBCTests {

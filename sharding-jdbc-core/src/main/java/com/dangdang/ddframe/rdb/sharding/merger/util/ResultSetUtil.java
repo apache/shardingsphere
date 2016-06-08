@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 /**
- * 结果集处理工具类.
+ * 结果集工具类.
  * 
  * @author gaohongtao
  */

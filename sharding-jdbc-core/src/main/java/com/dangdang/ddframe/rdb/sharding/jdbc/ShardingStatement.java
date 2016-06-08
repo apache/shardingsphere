@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,9 +144,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
-        SQLRouteResult sqlRouteResult = shardingConnection.getShardingContext().getSqlRouteEngine().route(sql, Collections.emptyList());
+        SQLRouteResult sqlRouteResult = shardingConnection.getShardingContext().getSqlRouteEngine().route(sql);
         mergeContext = sqlRouteResult.getMergeContext();
-        mergeContext.setExecutorEngine(shardingConnection.getShardingContext().getExecutorEngine());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             result.addStatement(new StatementExecutorWrapper(generateStatement(each.getSql(), each.getDataSource(), sqlRouteResult.getSqlStatementType()), each));
         }

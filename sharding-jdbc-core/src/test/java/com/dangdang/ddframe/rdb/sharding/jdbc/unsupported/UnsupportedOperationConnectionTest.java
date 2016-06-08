@@ -17,29 +17,24 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Properties;
-
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Properties;
 
 public final class UnsupportedOperationConnectionTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection actual;
     
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        actual = shardingDataSource.getConnection();
+        actual = getShardingDataSource().getConnection();
     }
     
     @After

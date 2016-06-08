@@ -17,23 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.StringReader;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-
 public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection shardingConnection;
     
@@ -41,8 +37,7 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         actual = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
     }
     
