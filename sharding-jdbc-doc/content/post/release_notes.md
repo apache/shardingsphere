@@ -6,6 +6,8 @@ weight = 1
 
 # Release Notes
 
+## 1.3.2-SNAPSHOT
+
 ## 1.3.1
 
 ### 功能提升
