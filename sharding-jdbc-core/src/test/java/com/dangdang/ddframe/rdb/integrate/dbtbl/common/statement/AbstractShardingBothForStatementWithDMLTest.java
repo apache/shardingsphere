@@ -77,7 +77,7 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    Statement stmt = connection.prepareStatement(sql);
+                    Statement stmt = connection.createStatement();
                     assertThat(stmt.executeUpdate(String.format(sql, i * 100 + j, i)), is(1));
                 }
             }

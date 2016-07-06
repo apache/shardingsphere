@@ -146,6 +146,9 @@ public abstract class AbstractBaseParseTest {
                                 return input.getValueWithType();
                             }
                         }));
+                        if (null != each.getValueIndices()) {
+                            condition.getValueIndices().addAll(each.getValueIndices());
+                        }
                         result.add(condition);
                     }
                     return result;

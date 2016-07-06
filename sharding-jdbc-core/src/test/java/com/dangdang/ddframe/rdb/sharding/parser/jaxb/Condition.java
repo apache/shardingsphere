@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.jaxb;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,4 +42,7 @@ public final class Condition {
     
     @XmlElement(name = "value") 
     private List<Value> values;
+    
+    @XmlElement(name = "valueIndices")
+    private List<Integer> valueIndices;
 }

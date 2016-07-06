@@ -8,6 +8,7 @@
             <condition-context>
                 <condition column-name="order_id" table-name="order" operator="IN">
                     <value value="1" type="java.lang.Integer" />
+                    <valueIndices>0</valueIndices>
                 </condition>
             </condition-context>
         </condition-contexts>

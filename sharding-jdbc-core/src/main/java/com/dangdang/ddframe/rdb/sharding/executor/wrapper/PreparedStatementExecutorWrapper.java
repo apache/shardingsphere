@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.sql.PreparedStatement;
@@ -31,7 +32,7 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
+public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     
     @Getter
     private final PreparedStatement preparedStatement;
@@ -45,10 +46,10 @@ public final class PreparedStatementExecutorWrapper extends AbstractExecutorWrap
         super(sqlExecutionUnit);
         this.preparedStatement = preparedStatement;
         if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), parameters));
+            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
             dqlExecutionEvent = Optional.absent();
         } else if (isDQL()) {
-            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), parameters));
+            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
             dmlExecutionEvent = Optional.absent();
         } else {
             dmlExecutionEvent = Optional.absent();

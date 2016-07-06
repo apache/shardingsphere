@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.google.common.base.Optional;
-
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 条件对象上下文.
@@ -84,5 +84,21 @@ public final class ConditionContext {
     
     public Collection<Condition> getAllConditions() {
         return conditions.values();
+    }
+    
+    public void setNewConditionValue(final List<Object> parameters) {
+        for (Condition each : conditions.values()) {
+            if (each.getValueIndices().isEmpty()) {
+                continue;
+            }
+            for (int i = 0; i < each.getValueIndices().size(); i++) {
+                Object value = parameters.get(each.getValueIndices().get(i));
+                if (value instanceof Comparable<?>) {
+                    each.getValues().set(i, (Comparable<?>) value);
+                } else {
+                    each.getValues().set(i, "");
+                }
+            }
+        }
     }
 }

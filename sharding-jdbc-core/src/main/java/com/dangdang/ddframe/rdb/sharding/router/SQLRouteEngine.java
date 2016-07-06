@@ -80,14 +80,24 @@ public final class SQLRouteEngine {
         return routeSQL(parseSQL(logicSql, parameters));
     }
     
-    private SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
+    /**
+     * 预解析SQL路由.
+     * 
+     * @param logicSql 逻辑SQL
+     * @return 预解析SQL路由器
+     */
+    public PreparedSQLRouter prepareSQL(final String logicSql) {
+        return new PreparedSQLRouter(logicSql, this);
+    }
+    
+    SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
         Context context = MetricsContext.start("Parse SQL");
         SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule.getAllShardingColumns()).parse();
         MetricsContext.stop(context);
         return result;
     }
     
-    private SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
+    SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {

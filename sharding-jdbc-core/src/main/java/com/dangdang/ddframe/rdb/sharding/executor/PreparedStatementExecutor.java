@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.wrapper.BatchPreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Optional;
@@ -192,6 +193,80 @@ public final class PreparedStatementExecutor {
         }
         postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
         return result;
+    }
+    
+    
+    /**
+     * 执行批量接口.
+     *
+     * @return 每个
+     */
+    public int[] executeBatch() {
+        Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
+        postExecutionEvents();
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
+        try {
+            if (1 == preparedStatementExecutorWrappers.size()) {
+                return executeBatchInternal((BatchPreparedStatementExecutorWrapper) preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
+            }
+            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
+                
+                @Override
+                public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
+                    return executeBatchInternal((BatchPreparedStatementExecutorWrapper) input, isExceptionThrown, dataMap);
+                }
+            }, new MergeUnit<int[], int[]>() {
+                
+                @Override
+                public int[] merge(final List<int[]> results) {
+                    if (null == results) {
+                        return new int[]{0};
+                    }
+                    int length = 0;
+                    for (int[] array : results) {
+                        length += array.length;
+                    }
+                    int[] result = new int[length];
+                    int pos = 0;
+                    for (int[] array : results) {
+                        System.arraycopy(array, 0, result, pos, array.length);
+                        pos += array.length;
+                    }
+                    return result;
+                }
+            });
+        } finally {
+            MetricsContext.stop(context);
+        }
+    }
+    
+    private int[] executeBatchInternal(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+        int[] result;
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
+        try {
+            result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
+        } catch (final SQLException ex) {
+            postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            ExecutorExceptionHandler.handleException(ex);
+            return null;
+        }
+        postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper);
+        return result;
+    }
+    
+    private void postBatchExecutionEventsAfterExecution(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper) {
+        postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS, Optional.<SQLException>absent());
+    }
+    
+    private void postBatchExecutionEventsAfterExecution(
+            final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final EventExecutionType eventExecutionType, final Optional<SQLException> exp) {
+        for (DMLExecutionEvent each : batchPreparedStatementExecutorWrapper.getDmlExecutionEvents()) {
+            each.setEventExecutionType(eventExecutionType);
+            each.setExp(exp);
+            DMLExecutionEventBus.post(each);
+        }
     }
     
     private void postExecutionEvents() {

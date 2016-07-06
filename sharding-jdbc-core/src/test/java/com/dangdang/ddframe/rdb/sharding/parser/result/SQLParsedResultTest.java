@@ -54,7 +54,7 @@ public final class SQLParsedResultTest {
                 + "sqlStatementType=null, "
                 + "sqlBuilder=SELECT * FROM [Token(order)]), "
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
-                + "operator=IN, values=[1, 2, 3])})], "
+                + "operator=IN, values=[1, 2, 3], valueIndices=[])})], "
                 + "mergeContext=MergeContext("
                 + "orderByColumns=[OrderByColumn(super=AbstractSortableColumn(owner=Optional.absent(), "
                 + "name=Optional.of(id), alias=Optional.of(a), orderByType=DESC), index=Optional.absent(), columnIndex=0)], "

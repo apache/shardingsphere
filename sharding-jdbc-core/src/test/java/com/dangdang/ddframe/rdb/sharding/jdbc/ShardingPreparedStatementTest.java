@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.mysql.jdbc.Statement;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.mysql.jdbc.Statement;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -52,6 +51,14 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
+            preparedStatement.setString(1, "null");
+            resultSet = preparedStatement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getLong(1), is(0L));
+            preparedStatement.setString(1, "init");
+            resultSet = preparedStatement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getLong(1), is(40L));
         }
     }
     
@@ -62,6 +69,12 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getLong(1), is(40L));
+            resultSet = preparedStatement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getLong(1), is(40L));
+            resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getLong(1), is(40L));
         }
@@ -75,6 +88,10 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, "init");
             assertThat(preparedStatement.executeUpdate(), is(40));
+            preparedStatement.setString(1, "null");
+            assertThat(preparedStatement.executeUpdate(), is(0));
+            preparedStatement.setString(1, "init");
+            assertThat(preparedStatement.executeUpdate(), is(0));
         }
     }
     
@@ -85,6 +102,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             assertThat(preparedStatement.executeUpdate(), is(40));
+            assertThat(preparedStatement.executeUpdate(), is(0));
+            assertThat(preparedStatement.executeUpdate(), is(0));
         }
     }
     
@@ -98,6 +117,14 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             assertTrue(preparedStatement.execute());
             assertTrue(preparedStatement.getResultSet().next());
             assertThat(preparedStatement.getResultSet().getLong(1), is(40L));
+            preparedStatement.setString(1, "null");
+            assertTrue(preparedStatement.execute());
+            assertTrue(preparedStatement.getResultSet().next());
+            assertThat(preparedStatement.getResultSet().getLong(1), is(0L));
+            preparedStatement.setString(1, "init");
+            assertTrue(preparedStatement.execute());
+            assertTrue(preparedStatement.getResultSet().next());
+            assertThat(preparedStatement.getResultSet().getLong(1), is(40L));
         }
     }
     
@@ -107,6 +134,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            assertFalse(preparedStatement.execute());
+            assertFalse(preparedStatement.execute());
             assertFalse(preparedStatement.execute());
         }
     }
@@ -203,6 +232,14 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             preparedStatement.setInt(2, 12);
             preparedStatement.setString(3, "BATCH");
             preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3111);
+            preparedStatement.setInt(2, 21);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3112);
+            preparedStatement.setInt(2, 22);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
             for (int each : result) {
                 assertThat(each, is(1));
@@ -210,7 +247,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         }
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertClearBatch() throws SQLException {
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
@@ -221,7 +258,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             preparedStatement.setString(3, "BATCH");
             preparedStatement.addBatch();
             preparedStatement.clearBatch();
-            preparedStatement.executeBatch();
+            int[] result = preparedStatement.executeBatch();
+            assertThat(result.length, is(0));
         }
     }
 }

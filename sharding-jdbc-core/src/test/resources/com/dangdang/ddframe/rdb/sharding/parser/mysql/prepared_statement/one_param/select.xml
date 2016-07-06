@@ -10,6 +10,7 @@
                     <value value="1" type="int" />
                     <value value="2" type="int" />
                     <value value="3" type="int" />
+                    <valueIndices>0</valueIndices>
                 </condition>
             </condition-context>
         </condition-contexts>

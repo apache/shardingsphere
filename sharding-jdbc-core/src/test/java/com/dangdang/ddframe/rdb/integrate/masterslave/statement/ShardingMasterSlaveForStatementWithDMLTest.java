@@ -47,7 +47,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
         assertSelectBeforeUpdate();
         String sql = "UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
+            Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format(sql, "updated", "init_master")), is(100));
         }
         assertDataSet("update", "updated");
@@ -57,7 +57,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
     private void assertSelectBeforeUpdate() throws SQLException, DatabaseUnitException {
         String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
+            Statement stmt = connection.createStatement();
             assertFalse(stmt.executeQuery(String.format(sql, "updated")).next());
         }
     }
@@ -65,7 +65,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
     private void assertSelectAfterUpdate() throws SQLException, DatabaseUnitException {
         String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
+            Statement stmt = connection.createStatement();
             assertTrue(stmt.executeQuery(String.format(sql, "updated")).next());
         }
     }
@@ -74,7 +74,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         String sql = "DELETE `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
+            Statement stmt = connection.createStatement();
             assertThat(stmt.executeUpdate(String.format(sql, "init_master")), is(100));
         }
         assertDataSet("delete", "init");

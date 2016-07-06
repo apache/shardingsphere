@@ -17,17 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -42,13 +31,24 @@ import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
     protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
     
-    private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
+    protected static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
     private final DataBaseEnvironment dbEnv = new DataBaseEnvironment(CURRENT_DB_TYPE);
     

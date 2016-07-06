@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 条件对象.
@@ -41,6 +41,8 @@ public final class Condition {
     private final BinaryOperator operator;
     
     private final List<Comparable<?>> values = new ArrayList<>();
+    
+    private final List<Integer> valueIndices = new ArrayList<>();
     
     /**
      * 列对象.
