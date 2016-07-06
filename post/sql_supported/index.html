@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>SQL支持详细列表</title>
+    
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
+    
+    
+    <link href='http://fonts.useso.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
+    
+    <style>
+    .navbar {
+    border-color: #e7e7e7;
+}
+
+.content-section-a,
+footer,
+.navbar {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: rgb(51, 51, 51);
+}
+
+.content-section-b {
+    background-color: white;
+    color: #333;
+}
+
+body {
+    color: rgb(51, 51, 51);
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+    color: rgb(51, 51, 51);
+}
+
+  </style>
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
+</head>
+<body>
+
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+    
+</nav>
+
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 
+
+<h1 id="sql支持详细列表:2312c1dfe7eea37ff98fa3b80281d998">SQL支持详细列表</h1>
+
+<p>由于<code>SQL</code>语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的<code>SQL</code>出现。
+本文详细罗列出已明确可支持的<code>SQL</code>种类以及已明确不支持的<code>SQL</code>种类，尽量让使用者避免踩坑。
+其中必然有未涉及到的<code>SQL</code>欢迎补充，未支持的<code>SQL</code>也尽量会在未来的版本中支持。</p>
+
+<h2 id="全局不支持项:2312c1dfe7eea37ff98fa3b80281d998">全局不支持项</h2>
+
+<h3 id="动态表:2312c1dfe7eea37ff98fa3b80281d998">动态表</h3>
+
+<p>未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在<code>SQL</code>或<code>Hint</code>中包含分片键的<code>SQL</code>均不支持。
+原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。</p>
+
+<h3 id="除-dql-和-dml-以外的语句:2312c1dfe7eea37ff98fa3b80281d998">除<code>DQL</code>和<code>DML</code>以外的语句</h3>
+
+<p><code>Sharding-JDBC</code>定位于<code>CRUD</code>操作，目前仅针对<code>DQL</code>和<code>DML</code>语句进行支持。</p>
+
+<h3 id="子查询未详细测试:2312c1dfe7eea37ff98fa3b80281d998">子查询未详细测试</h3>
+
+<h2 id="支持的sql:2312c1dfe7eea37ff98fa3b80281d998">支持的SQL</h2>
+
+<h3 id="dql:2312c1dfe7eea37ff98fa3b80281d998">DQL</h3>
+
+<h4 id="select主语句:2312c1dfe7eea37ff98fa3b80281d998">SELECT主语句</h4>
+
+<pre><code class="language-sql">SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
+[WHERE where_condition] 
+[GROUP BY {col_name | position} [ASC | DESC]] 
+[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[LIMIT {[offset,] row_count | row_count OFFSET offset}]
+</code></pre>
+
+<h4 id="select-expr:2312c1dfe7eea37ff98fa3b80281d998">select_expr</h4>
+
+<pre><code class="language-sql">* | 
+COLUMN_NAME [AS] [alias] | 
+(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
+COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+</code></pre>
+
+<h4 id="table-reference:2312c1dfe7eea37ff98fa3b80281d998">table_reference</h4>
+
+<pre><code class="language-sql">tbl_name [AS] alias] [index_hint_list] | 
+table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+</code></pre>
+
+<h4 id="示例:2312c1dfe7eea37ff98fa3b80281d998">示例</h4>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>SELECT * FROM tbl_name</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="dml:2312c1dfe7eea37ff98fa3b80281d998">DML</h3>
+
+<h4 id="insert:2312c1dfe7eea37ff98fa3b80281d998">INSERT</h4>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2,&hellip;) VALUES (val1, val2,&hellip;.)</td>
+<td><code>否</code></td>
+<td>插入列需要包含分片键</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name VALUES (val1, val2,&hellip;.)</td>
+<td><code>否</code></td>
+<td>通过<code>Hint</code>注入分片键</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="update:2312c1dfe7eea37ff98fa3b80281d998">UPDATE</h4>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>UPDATE tbl_name SET col1 = val1 WHERE col2 = val2</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="delete:2312c1dfe7eea37ff98fa3b80281d998">DELETE</h4>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>DELETE FROM tbl_name WHERE col1 = val1</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="不支持的sql:2312c1dfe7eea37ff98fa3b80281d998">不支持的SQL</h2>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) VALUES <code>(val1, val2,....), (val3, val4,....)</code></td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) <code>SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3</code></td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name <code>SET col1 = val1</code></td>
+</tr>
+
+<tr>
+<td>SELECT <code>DISTINCT</code> * FROM tbl_name WHERE column1 = value1</td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 <code>HAVING count_alias &gt; val1</code></td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 <code>UNION</code> SELECT * FROM tbl_name2</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 <code>UNION ALL</code> SELECT * FROM tbl_name2</td>
+</tr>
+</tbody>
+</table>
+
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 <nav id="TableOfContents">
+<ul>
+<li><a href="#sql支持详细列表:2312c1dfe7eea37ff98fa3b80281d998">SQL支持详细列表</a>
+<ul>
+<li><a href="#全局不支持项:2312c1dfe7eea37ff98fa3b80281d998">全局不支持项</a>
+<ul>
+<li><a href="#动态表:2312c1dfe7eea37ff98fa3b80281d998">动态表</a></li>
+<li><a href="#除-dql-和-dml-以外的语句:2312c1dfe7eea37ff98fa3b80281d998">除<code>DQL</code>和<code>DML</code>以外的语句</a></li>
+<li><a href="#子查询未详细测试:2312c1dfe7eea37ff98fa3b80281d998">子查询未详细测试</a></li>
+</ul></li>
+<li><a href="#支持的sql:2312c1dfe7eea37ff98fa3b80281d998">支持的SQL</a>
+<ul>
+<li><a href="#dql:2312c1dfe7eea37ff98fa3b80281d998">DQL</a>
+<ul>
+<li><a href="#select主语句:2312c1dfe7eea37ff98fa3b80281d998">SELECT主语句</a></li>
+<li><a href="#select-expr:2312c1dfe7eea37ff98fa3b80281d998">select_expr</a></li>
+<li><a href="#table-reference:2312c1dfe7eea37ff98fa3b80281d998">table_reference</a></li>
+<li><a href="#示例:2312c1dfe7eea37ff98fa3b80281d998">示例</a></li>
+</ul></li>
+<li><a href="#dml:2312c1dfe7eea37ff98fa3b80281d998">DML</a>
+<ul>
+<li><a href="#insert:2312c1dfe7eea37ff98fa3b80281d998">INSERT</a></li>
+<li><a href="#update:2312c1dfe7eea37ff98fa3b80281d998">UPDATE</a></li>
+<li><a href="#delete:2312c1dfe7eea37ff98fa3b80281d998">DELETE</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#不支持的sql:2312c1dfe7eea37ff98fa3b80281d998">不支持的SQL</a></li>
+</ul></li>
+</ul>
+</nav>
+	</div>
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="copyright text-muted small">Copyright &copy; SQL支持详细列表 All Rights Reserved</p>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
+
+
+</body>
+</html>
+
