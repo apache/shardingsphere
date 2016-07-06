@@ -34,7 +34,7 @@ db1
 ```
 表规则可以使用默认的配置
 ```java
- TableRule orderTableRule = new TableRule("t_order", Arrays.asList("t_order_0", "t_order_1"), dataSourceRule);
+ TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("t_order_0", "t_order_1")).dataSourceRule(dataSourceRule).build();
 ```
 ### 自定义分布
 数据表呈现有特定规则的分布
@@ -49,7 +49,7 @@ db1
 ```
 表规则可以指定每张表在数据源中的分布情况
 ```java
- TableRule orderTableRule = new TableRule("t_order", Arrays.asList("db0.t_order_0", "db0.t_order_1", "db1.t_order_2", "db1.t_order_3", "db1.t_order_4"), dataSourceRule);
+ TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList("db0.t_order_0", "db0.t_order_1", "db1.t_order_2", "db1.t_order_3", "db1.t_order_4")).dataSourceRule(dataSourceRule).build();
 ```
 
 ### 本教程采用的数据分布例子
