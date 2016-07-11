@@ -62,7 +62,7 @@ public interface TransactionLogStorage {
     void increaseAsyncDeliveryTryTimes(String id);
     
     /**
-     * 增加事务日志异步重试次数.
+     * 处理事务数据.
      *
      * @param connection 业务数据库连接
      * @param transactionLog 事务日志
