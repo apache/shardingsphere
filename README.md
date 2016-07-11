@@ -1,4 +1,6 @@
-##Sharding-JDBC - A JDBC driver for shard databases and tables [中文主页](README_cn.md)
+##Sharding-JDBC - A JDBC driver for shard databases and tables 
+
+# [中文主页](README_cn.md)
 
 [![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
@@ -48,7 +50,7 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 
 ## Add maven dependency
 
-xml
+```xml
 <!-- import sharding-jdbc core -->
 <dependency>
     <groupId>com.dangdang</groupId>
@@ -57,22 +59,22 @@ xml
 </dependency>
 
 <!-- import other module if need -->
-
+```
 
 ## Rule configuration
 
-java
+```java
 ShardingRule shardingRule = ShardingRule.builder()
         .dataSourceRule(dataSourceRule)
         .tableRules(tableRuleList)
         .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
         .tableShardingStrategy(new TableShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
         .build();
-
+```
 
 ## Use raw JDBC API
 
-java
+```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
@@ -87,11 +89,11 @@ try (
         }
     }
 }
-
+```
 
 ## Use spring namespace
 
-xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -131,3 +133,4 @@ xml
         </rdb:sharding-rule>
     </rdb:data-source>
 </beans>
+```
