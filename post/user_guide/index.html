@@ -145,7 +145,7 @@ db1
 
 <p>表规则可以使用默认的配置</p>
 
-<pre><code class="language-java"> TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;), dataSourceRule);
+<pre><code class="language-java"> TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;).actualTables(Arrays.asList(&quot;t_order_0&quot;, &quot;t_order_1&quot;)).dataSourceRule(dataSourceRule).build();
 </code></pre>
 
 <h3 id="自定义分布:74c632aa9613b8dd6b95bfab1ba313e2">自定义分布</h3>
@@ -163,7 +163,7 @@ db1
 
 <p>表规则可以指定每张表在数据源中的分布情况</p>
 
-<pre><code class="language-java"> TableRule orderTableRule = new TableRule(&quot;t_order&quot;, Arrays.asList(&quot;db0.t_order_0&quot;, &quot;db0.t_order_1&quot;, &quot;db1.t_order_2&quot;, &quot;db1.t_order_3&quot;, &quot;db1.t_order_4&quot;), dataSourceRule);
+<pre><code class="language-java"> TableRule orderTableRule = TableRule.builder(&quot;t_order&quot;).actualTables(Arrays.asList(&quot;db0.t_order_0&quot;, &quot;db0.t_order_1&quot;, &quot;db1.t_order_2&quot;, &quot;db1.t_order_3&quot;, &quot;db1.t_order_4&quot;)).dataSourceRule(dataSourceRule).build();
 </code></pre>
 
 <h3 id="本教程采用的数据分布例子:74c632aa9613b8dd6b95bfab1ba313e2">本教程采用的数据分布例子</h3>
