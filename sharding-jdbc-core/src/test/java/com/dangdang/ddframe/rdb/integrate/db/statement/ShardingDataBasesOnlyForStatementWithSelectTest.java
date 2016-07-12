@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 public final class ShardingDataBasesOnlyForStatementWithSelectTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -63,6 +63,14 @@ public final class ShardingDataBasesOnlyForStatementWithSelectTest extends Abstr
                 + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
         assertDataSet("integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 2));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 10000, 2));
+    }
+    
+    @Test
+    public void assertSelectLimitOffsetWithBindingTable() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s OFFSET %s";
+        assertDataSet("integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 2));
+        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 10000));
     }
     
     @Test

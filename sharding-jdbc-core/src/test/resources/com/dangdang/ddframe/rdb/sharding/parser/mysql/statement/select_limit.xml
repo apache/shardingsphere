@@ -19,4 +19,14 @@
         </condition-contexts>
         <limit offset="0" row-count="5" />
     </assert>
+
+    <assert id="assertSelectForLimitOffset" sql="SELECT * FROM order o LIMIT 5 OFFSET 4" expected-sql="SELECT * FROM [Token(order)] o LIMIT 0, 9">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context />
+        </condition-contexts>
+        <limit offset="4" row-count="5" />
+    </assert>
 </asserts>

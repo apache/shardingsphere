@@ -12,6 +12,7 @@ weight = 1
 
 1. [ISSUE #36](https://github.com/dangdangdotcom/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数
 1. [ISSUE #114](https://github.com/dangdangdotcom/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
+1. [ISSUE #33](https://github.com/dangdangdotcom/sharding-jdbc/issues/33) Limit支持问题
 
 ## 1.3.1
 
