@@ -3,25 +3,25 @@
 ## SQL
 - [x] CRUD
     - [x] Simple CRUD
-    - [ ] Batch insert
-    - [ ] Update multiple tables
-- [x] Aggregation functions
+    - [ ] Batch Insert
+    - [ ] Update Multiple Tables
+- [x] Aggregation Functions
     - [x] MAX
     - [x] MIN
     - [x] COUNT
     - [x] SUM
     - [x] AVG
-- [x] Group by
-    - [x] Simple group by
+- [x] Group By
+    - [x] Simple GROUP BY
     - [ ] Distinct
     - [ ] Having
-- [x] Order by
+- [x] Order By
 - [x] Limit
 - [x] Join
-    - [x] inner
-    - [x] outer
-    - [x] binding table
-    - [x] Cartesian product
+    - [x] INNER
+    - [x] OUTER
+    - [x] Binding Table
+    - [x] Cartesian Product
 - [ ] DDL
 - [ ] Complicated SQL
     - [x] OR
@@ -37,23 +37,28 @@
 ## Distributed features
 - [x] Sharding
 - [x] Read/Write Splitting
-- [x] BASE Transaction
 - [ ] Distributed PK
 
 ## BASE transaction
-- [x] Best efforts delivery
-- [ ] Try confirm cancel
+- [x] Best Efforts Delivery
+- [ ] Try Confirm Cancel
 
 ## API 
 - [x] JDBC API
-- [ ] MySQL protocol server
+- [ ] MySQL Protocol Server
 
 ## Configuration
 - [x] Java API
-- [x] Spring namespace
+- [x] Spring Namespace
 - [x] Yaml
 
+## Operation Tool
+- [ ] High Availability
+- [ ] Scale Out / Data Migration
+- [ ] Registry Center 
+
 ## Optimize
-- [ ] Parse module without Druid
-- [ ] Hint skip Parse SQL
-- [ ] Customize SQL rewrite
+- [ ] Parse Module Without Druid
+- [ ] Hint Skip Parse SQL
+- [ ] Customize SQL Rewrite
+- [ ] Dictionary Table Multicast
