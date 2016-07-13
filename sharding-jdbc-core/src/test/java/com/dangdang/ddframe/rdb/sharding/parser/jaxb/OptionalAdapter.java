@@ -15,32 +15,28 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
+package com.dangdang.ddframe.rdb.sharding.parser.jaxb;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import com.google.common.base.Strings;
 
-/**
- * 分页对象.
- * 
- * @author gaohongtao
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public class Limit {
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+class OptionalAdapter extends XmlAdapter<String, Optional<Integer>> {
     
-    public static final String OFFSET_NAME = "limit_offset";
+    @Override
+    public Optional<Integer> unmarshal(final String v) throws Exception {
+        if (Strings.isNullOrEmpty(v)) {
+            return Optional.absent();
+        }
+        return Optional.of(Integer.valueOf(v));
+    }
     
-    public static final String COUNT_NAME = "limit_count";
-    
-    private final int offset;
-    
-    private final int rowCount;
-    
-    private final Optional<Integer> offsetParameterIndex;
-    
-    private final Optional<Integer> rowCountParameterIndex;
+    @Override
+    public String marshal(final Optional<Integer> v) throws Exception {
+        if (v.isPresent()) {
+            return v.get().toString();
+        }
+        return "";
+    }
 }

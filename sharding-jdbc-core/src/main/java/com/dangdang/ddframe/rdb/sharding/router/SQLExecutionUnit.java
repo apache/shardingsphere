@@ -17,8 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,16 +32,20 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "sqlBuilder")
 public class SQLExecutionUnit {
     
     private final String dataSource;
     
-    private final String sql;
+    @Setter
+    private String sql;
     
-    public SQLExecutionUnit(final String dataSource, final String sql) {
+    private final SQLBuilder sqlBuilder;
+    
+    public SQLExecutionUnit(final String dataSource, final SQLBuilder sqlBuilder) {
         this.dataSource = dataSource;
-        this.sql = sql;
+        this.sqlBuilder = sqlBuilder.cloneBuilder();
+        sql = sqlBuilder.toSQL();
         log.trace("route sql to db: [{}] sql: [{}]", dataSource, sql);
     }
 }

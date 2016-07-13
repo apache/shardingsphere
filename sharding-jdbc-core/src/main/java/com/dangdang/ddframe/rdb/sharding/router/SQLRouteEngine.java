@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
@@ -77,7 +78,7 @@ public final class SQLRouteEngine {
      * @throws SQLParserException SQL解析失败异常
      */
     public SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParserException {
-        return routeSQL(parseSQL(logicSql, parameters));
+        return routeSQL(parseSQL(logicSql, parameters), parameters);
     }
     
     /**
@@ -97,7 +98,7 @@ public final class SQLRouteEngine {
         return result;
     }
     
-    SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
+    SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
@@ -109,6 +110,7 @@ public final class SQLRouteEngine {
                 }
             })), parsedResult.getRouteContext().getSqlBuilder(), parsedResult.getRouteContext().getSqlStatementType()));
         }
+        processLimit(result.getExecutionUnits(), parsedResult, parameters);
         MetricsContext.stop(context);
         log.debug("final route result:{}", result.getExecutionUnits());
         log.debug("merge context:{}", result.getMergeContext());
@@ -129,5 +131,35 @@ public final class SQLRouteEngine {
             throw new ShardingJdbcException("Sharding-JDBC: cannot route any result, please check your sharding rule.");
         }
         return result.getSQLExecutionUnits(sqlBuilder);
+    }
+    
+    private void processLimit(final Set<SQLExecutionUnit> sqlExecutionUnits, final SQLParsedResult parsedResult, final List<Object> parameters) {
+        if (!parsedResult.getMergeContext().hasLimit()) {
+            return;
+        }
+        int offset;
+        int rowCount;
+        Limit limit = parsedResult.getMergeContext().getLimit();
+        if (sqlExecutionUnits.size() > 1) {
+            offset = 0;
+            rowCount = limit.getOffset() + limit.getRowCount();
+        } else {
+            offset = limit.getOffset();
+            rowCount = limit.getRowCount();
+        }
+        if (parsedResult.getRouteContext().getSqlBuilder().containsToken(Limit.OFFSET_NAME) || parsedResult.getRouteContext().getSqlBuilder().containsToken(Limit.COUNT_NAME)) {
+            for (SQLExecutionUnit each : sqlExecutionUnits) {
+                SQLBuilder sqlBuilder = each.getSqlBuilder();
+                sqlBuilder.buildSQL(Limit.OFFSET_NAME, String.valueOf(offset));
+                sqlBuilder.buildSQL(Limit.COUNT_NAME, String.valueOf(rowCount));
+                each.setSql(sqlBuilder.toSQL());
+            }
+        }
+        if (limit.getOffsetParameterIndex().isPresent()) {
+            parameters.set(limit.getOffsetParameterIndex().get(), offset);
+        }
+        if (limit.getRowCountParameterIndex().isPresent()) {
+            parameters.set(limit.getRowCountParameterIndex().get(), rowCount);
+        }
     }
 }

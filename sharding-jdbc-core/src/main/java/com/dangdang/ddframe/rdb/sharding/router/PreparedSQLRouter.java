@@ -52,7 +52,7 @@ public class PreparedSQLRouter {
                 each.setNewConditionValue(parameters);
             }
         }
-        return engine.routeSQL(sqlParsedResult);
+        return engine.routeSQL(sqlParsedResult, parameters);
     }
 }
 

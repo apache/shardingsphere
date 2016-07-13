@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import java.util.Collections;
-
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import org.junit.Test;
+
+import java.util.Collections;
 
 public final class UnsupportedParseTest {
     
@@ -43,6 +43,11 @@ public final class UnsupportedParseTest {
     @Test(expected = SQLParserException.class)
     public void assertAlter() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", Collections.emptyList(), Collections.<String>emptyList());
+    }
+    
+    @Test(expected = SQLParserException.class)
+    public void assertNegativeLimitRowCount() throws SQLParserException {
+        SQLParserFactory.create(DatabaseType.MySQL, "select * from order limit -2,-1", Collections.emptyList(), Collections.<String>emptyList()).parse();
     }
     
 }

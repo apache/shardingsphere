@@ -32,6 +32,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AbstractSortableColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
@@ -162,26 +163,42 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     public boolean visit(final MySqlSelectQueryBlock.Limit x) {
         print("LIMIT ");
         int offset = 0;
+        Optional<Integer> offSetIndex;
         if (null != x.getOffset()) {
             if (x.getOffset() instanceof SQLNumericLiteralExpr) {
                 offset = ((SQLNumericLiteralExpr) x.getOffset()).getNumber().intValue();
-                print("0, ");
+                offSetIndex = Optional.absent();
+                printToken(Limit.OFFSET_NAME);
+                print(", ");
             } else {
                 offset = ((Number) getParameters().get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
-                getParameters().set(((SQLVariantRefExpr) x.getOffset()).getIndex(), 0);
+                offSetIndex = Optional.of(((SQLVariantRefExpr) x.getOffset()).getIndex());
                 print("?, ");
             }
+        } else {
+            offSetIndex = Optional.absent();
         }
         int rowCount;
+        Optional<Integer> rowCountIndex;
         if (x.getRowCount() instanceof SQLNumericLiteralExpr) {
             rowCount = ((SQLNumericLiteralExpr) x.getRowCount()).getNumber().intValue();
-            print(rowCount + offset);
+            rowCountIndex = Optional.absent();
+            printToken(Limit.COUNT_NAME);
         } else {
             rowCount = ((Number) getParameters().get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
-            getParameters().set(((SQLVariantRefExpr) x.getRowCount()).getIndex(), rowCount + offset);
+            rowCountIndex = Optional.of(((SQLVariantRefExpr) x.getRowCount()).getIndex());
             print("?");
         }
-        getParseContext().getParsedResult().getMergeContext().setLimit(new Limit(offset, rowCount));
+        if (offset < 0 || rowCount < 0) {
+            throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+        }
+        // "LIMIT {rowCount} OFFSET {offset}" will transform to "LIMIT {offset}, {rowCount}".So exchange parameter index
+        if (offSetIndex.isPresent() && rowCountIndex.isPresent() && offSetIndex.get() > rowCountIndex.get()) {
+            Optional<Integer> tmp = rowCountIndex;
+            rowCountIndex = offSetIndex;
+            offSetIndex = tmp;
+        }
+        getParseContext().getParsedResult().getMergeContext().setLimit(new Limit(offset, rowCount, offSetIndex, rowCountIndex));
         return false;
     }
     

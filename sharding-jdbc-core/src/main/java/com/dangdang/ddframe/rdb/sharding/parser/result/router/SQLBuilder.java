@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import com.google.common.base.Joiner;
 
 /**
  * SQL构建器.
@@ -92,6 +92,16 @@ public class SQLBuilder implements Appendable {
     }
     
     /**
+     * 是否包含占位符.
+     * 
+     * @param token 占位符
+     * @return true 包含 false 不包含
+     */
+    public boolean containsToken(final String token) {
+        return tokenMap.containsKey(token);
+    }
+    
+    /**
      * 生成SQL语句.
      * 
      * @return SQL语句
@@ -132,6 +142,22 @@ public class SQLBuilder implements Appendable {
             }
         }
         return result.toString();
+    }
+    
+    public SQLBuilder cloneBuilder() {
+        SQLBuilder result = new SQLBuilder();
+        for (Object each : segments) {
+            if (each instanceof StringToken) {
+                StringToken token = (StringToken) each;
+                StringToken newToken = new StringToken();
+                newToken.value = token.value;
+                result.segments.add(newToken);
+                result.tokenMap.put(newToken.value, newToken);
+            } else {
+                result.segments.add(each);
+            }
+        }
+        return result;
     }
     
     private class StringToken {

@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
@@ -34,6 +31,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.visitor.or.OrParser;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 不包含OR语句的SQL构建器解析.
@@ -66,7 +66,7 @@ public final class SQLParseEngine {
         sqlStatement.accept(visitor);
         SQLParsedResult result;
         if (sqlVisitor.getParseContext().isHasOrCondition()) {
-            result = new OrParser(sqlStatement, visitor).parse();
+            result = new OrParser(sqlStatement, visitor).parse(sqlVisitor.getParseContext().getParsedResult());
         } else {
             sqlVisitor.getParseContext().mergeCurrentConditionContext();
             result = sqlVisitor.getParseContext().getParsedResult();

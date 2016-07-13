@@ -43,13 +43,14 @@ public final class OrParser {
      *  解析SQL.
      * 
      * @return SQL解析结果
+     * @param parsedResult 初步解析结果
      */
-    public SQLParsedResult parse() {
-        SQLParsedResult result = orVisitor.getParseContext().getParsedResult();
+    public SQLParsedResult parse(final SQLParsedResult parsedResult) {
         Optional<AbstractOrASTNode> rootASTNode = orVisitor.visitHandle(sqlStatement);
         if (rootASTNode.isPresent()) {
-            result.getConditionContexts().addAll(rootASTNode.get().getCondition());
+            parsedResult.getConditionContexts().clear();
+            parsedResult.getConditionContexts().addAll(rootASTNode.get().getCondition());
         }
-        return result;
+        return parsedResult;
     }
 }

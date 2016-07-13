@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.3.2-SNAPSHOT
 
+### 功能提升
+
+1. [ISSUE #79](https://github.com/dangdangdotcom/sharding-jdbc/issues/79) 关于MySQL 分页limit
+
 ### 缺陷修正
 
 1. [ISSUE #36](https://github.com/dangdangdotcom/sharding-jdbc/issues/36) ShardingPreparedStatement无法反复设置参数

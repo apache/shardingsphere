@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.fixture.ExecutorTestUtil;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDMLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDQLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -470,10 +472,18 @@ public final class StatementExecutorTest {
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDQL(final Statement statement, final String dataSource) {
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, SELECT_FROM_DUAL));
+        try {
+            return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, (SQLBuilder) new SQLBuilder().append(SELECT_FROM_DUAL)));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDML(final Statement statement, final String dataSource) {
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, DELETE_FROM_DUAL));
+        try {
+            return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, (SQLBuilder) new SQLBuilder().append(DELETE_FROM_DUAL)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
