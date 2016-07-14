@@ -27,7 +27,6 @@ import org.junit.Test;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -66,29 +65,5 @@ public final class IteratorResultSetTest {
             count++;
         }
         assertThat(count, is(1));
-    }
-    
-    @Test
-    public void assertNextWithLimitForSingleResultSet() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.setLimit(new Limit(2, 3, Optional.<Integer>absent(), Optional.<Integer>absent()));
-        ResultSet resultSet = ResultSetFactory.getResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(1, 2, 3, 4, 5, 6)), mergeContext);
-        int count = 0;
-        while (resultSet.next()) {
-            count++;
-        }
-        assertThat(count, is(3));
-    }
-    
-    @Test
-    public void assertNextWithLimitForSingleResultSetNotFull() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.setLimit(new Limit(2, 10, Optional.<Integer>absent(), Optional.<Integer>absent()));
-        ResultSet resultSet = ResultSetFactory.getResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(1, 2, 3, 4, 5, 6)), mergeContext);
-        int count = 0;
-        while (resultSet.next()) {
-            count++;
-        }
-        assertThat(count, is(4));
     }
 }

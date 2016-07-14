@@ -51,12 +51,12 @@ public final class ResultSetFactory {
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {
         ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);
-        log.trace("Sharding-JDBC: Sharding result sets type is '{}'", shardingResultSets.getType().toString());
+        log.debug("Sharding-JDBC: Sharding result sets type is '{}'", shardingResultSets.getType().toString());
         switch (shardingResultSets.getType()) {
             case EMPTY:
                 return buildEmpty(resultSets);
             case SINGLE:
-                return buildSingle(shardingResultSets, mergeContext);
+                return buildSingle(shardingResultSets);
             case MULTIPLE:
                 return buildMultiple(shardingResultSets, mergeContext);
             default:
@@ -68,8 +68,8 @@ public final class ResultSetFactory {
         return resultSets.get(0);
     }
     
-    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {
-        return mergeContext.hasLimit() ? new LimitCouplingResultSet(shardingResultSets.getResultSets().get(0), mergeContext) : shardingResultSets.getResultSets().get(0);
+    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets) throws SQLException {
+        return shardingResultSets.getResultSets().get(0);
     }
     
     private static ResultSet buildMultiple(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {

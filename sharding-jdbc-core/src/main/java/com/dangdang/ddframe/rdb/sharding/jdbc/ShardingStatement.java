@@ -179,6 +179,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
             return currentResultSet;
         }
         List<ResultSet> resultSets = new ArrayList<>(getRoutedStatements().size());
+        if (getRoutedStatements().size() == 1) {
+            currentResultSet = getRoutedStatements().iterator().next().getResultSet();
+            return currentResultSet;
+        }
         for (Statement each : getRoutedStatements()) {
             resultSets.add(each.getResultSet());
         }
