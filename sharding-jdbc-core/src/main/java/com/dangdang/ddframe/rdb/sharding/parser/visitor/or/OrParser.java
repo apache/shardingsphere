@@ -40,17 +40,15 @@ public final class OrParser {
     }
     
     /**
-     *  解析SQL.
+     *  填充条件上下文.
      * 
-     * @return SQL解析结果
      * @param parsedResult 初步解析结果
      */
-    public SQLParsedResult parse(final SQLParsedResult parsedResult) {
+    public void fillConditionContext(final SQLParsedResult parsedResult) {
         Optional<AbstractOrASTNode> rootASTNode = orVisitor.visitHandle(sqlStatement);
         if (rootASTNode.isPresent()) {
             parsedResult.getConditionContexts().clear();
             parsedResult.getConditionContexts().addAll(rootASTNode.get().getCondition());
         }
-        return parsedResult;
     }
 }

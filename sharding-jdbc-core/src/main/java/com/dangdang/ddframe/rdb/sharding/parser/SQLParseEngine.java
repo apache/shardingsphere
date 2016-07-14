@@ -64,12 +64,11 @@ public final class SQLParseEngine {
         visitor.setParameters(parameters);
         sqlVisitor.getParseContext().setShardingColumns(shardingColumns);
         sqlStatement.accept(visitor);
-        SQLParsedResult result;
+        SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
         if (sqlVisitor.getParseContext().isHasOrCondition()) {
-            result = new OrParser(sqlStatement, visitor).parse(sqlVisitor.getParseContext().getParsedResult());
+            new OrParser(sqlStatement, visitor).fillConditionContext(result);
         } else {
             sqlVisitor.getParseContext().mergeCurrentConditionContext();
-            result = sqlVisitor.getParseContext().getParsedResult();
         }
         log.debug("Parsed SQL result: {}", result);
         log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());

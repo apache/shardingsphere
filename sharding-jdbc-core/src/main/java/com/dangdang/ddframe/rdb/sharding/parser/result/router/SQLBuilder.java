@@ -144,6 +144,11 @@ public class SQLBuilder implements Appendable {
         return result.toString();
     }
     
+    /**
+     * 复制构建器.
+     * 
+     * @return 新的构建器
+     */
     public SQLBuilder cloneBuilder() {
         SQLBuilder result = new SQLBuilder();
         for (Object each : segments) {
