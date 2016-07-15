@@ -69,6 +69,8 @@ public final class ParseContext {
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
+    private final int parseContextIndex;
+    
     @Setter
     private Collection<String> shardingColumns;
     
@@ -93,6 +95,7 @@ public final class ParseContext {
     private int itemIndex;
     
     public ParseContext(final int parseContextIndex) {
+        this.parseContextIndex = parseContextIndex;
         autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
     }
     

@@ -161,6 +161,9 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
      */
     @Override
     public boolean visit(final MySqlSelectQueryBlock.Limit x) {
+        if (getParseContext().getParseContextIndex() > 0) {
+            return super.visit(x);
+        }
         print("LIMIT ");
         int offset = 0;
         Optional<Integer> offSetIndex;
