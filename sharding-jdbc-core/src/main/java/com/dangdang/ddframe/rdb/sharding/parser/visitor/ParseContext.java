@@ -371,12 +371,16 @@ public final class ParseContext {
      */
     public void mergeCurrentConditionContext() {
         if (!parsedResult.getRouteContext().getTables().isEmpty()) {
-            parsedResult.getConditionContexts().add(currentConditionContext);
+            if (parsedResult.getConditionContexts().isEmpty()) {
+                parsedResult.getConditionContexts().add(currentConditionContext);
+            }
             return;
         }
         Optional<SQLParsedResult> target = findValidParseResult();
         if (!target.isPresent()) {
-            parsedResult.getConditionContexts().add(currentConditionContext);
+            if (parsedResult.getConditionContexts().isEmpty()) {
+                parsedResult.getConditionContexts().add(currentConditionContext);
+            }
             return;
         }
         parsedResult.getRouteContext().getTables().addAll(target.get().getRouteContext().getTables());

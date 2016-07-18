@@ -67,9 +67,8 @@ public final class SQLParseEngine {
         SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
         if (sqlVisitor.getParseContext().isHasOrCondition()) {
             new OrParser(sqlStatement, visitor).fillConditionContext(result);
-        } else {
-            sqlVisitor.getParseContext().mergeCurrentConditionContext();
-        }
+        } 
+        sqlVisitor.getParseContext().mergeCurrentConditionContext();
         log.debug("Parsed SQL result: {}", result);
         log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());
         result.getRouteContext().setSqlBuilder(sqlVisitor.getSQLBuilder());

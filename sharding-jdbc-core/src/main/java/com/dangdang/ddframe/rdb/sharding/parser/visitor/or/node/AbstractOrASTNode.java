@@ -17,16 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.or.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-
 import lombok.AccessLevel;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 抽象的OR语法树节点.
@@ -64,8 +65,8 @@ public abstract class AbstractOrASTNode {
      * @return 解析后的条件
      */
     public final List<ConditionContext> getCondition() {
-        return Lists.transform(nestedConditions, new Function<List<Condition>, ConditionContext>() {
-            
+        return Lists.newArrayList(Iterators.filter(Lists.transform(nestedConditions, new Function<List<Condition>, ConditionContext>() {
+    
             @Override
             public ConditionContext apply(final List<Condition> input) {
                 ConditionContext result = new ConditionContext();
@@ -74,7 +75,12 @@ public abstract class AbstractOrASTNode {
                 }
                 return result;
             }
-        });
+        }).iterator(), new Predicate<ConditionContext>() {
+            @Override
+            public boolean apply(final ConditionContext input) {
+                return !input.isEmpty();
+            }
+        }));
     }
     
     /**
