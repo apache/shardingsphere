@@ -35,7 +35,7 @@
             <aggregation-column expression="SUM(i.SUM_PRICE)" aggregation-type="SUM" alias="sharding_gen_2" />
         </aggregation-columns>
     </assert>
-    <assert id="assertSelectWithWhereSubQuery" sql="SELECT * FROM order o WHERE o.order_id = 2 and exists (select 1 from t_user u where u.user_id = o.user_id and u.user_id = 1)" expected-sql="SELECT * FROM [Token(order)] o WHERE o.order_id = 2 AND EXISTS (SELECT 1 FROM [Token(t_user)] u WHERE u.user_id = [Token(o)].user_id AND u.user_id = 1)">
+    <assert id="assertSelectWithWhereSubQuery" sql="SELECT * FROM order o WHERE o.order_id = 2 and exists (select 1 from t_user u where u.user_id = o.user_id and u.user_id = 1)" expected-sql="SELECT * FROM [Token(order)] o WHERE o.order_id = 2 AND EXISTS ( SELECT 1 FROM [Token(t_user)] u WHERE u.user_id = [Token(o)].user_id AND u.user_id = 1 )">
         <tables>
             <table name="order" alias="o" />
         </tables>
