@@ -129,6 +129,18 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     }
     
     @Test
+    public void assertGetUpdateCountNoData() throws SQLException {
+        actual.execute("DELETE FROM `t_order` WHERE `status` = 'none'");
+        assertThat(actual.getUpdateCount(), is(-1));
+    }
+    
+    @Test
+    public void assertGetUpdateCountSelect() throws SQLException {
+        actual.execute("SELECT * FROM `t_order`");
+        assertThat(actual.getUpdateCount(), is(-1));
+    }
+    
+    @Test
     public void assertGetWarnings() throws SQLException {
         assertNull(actual.getWarnings());
     }

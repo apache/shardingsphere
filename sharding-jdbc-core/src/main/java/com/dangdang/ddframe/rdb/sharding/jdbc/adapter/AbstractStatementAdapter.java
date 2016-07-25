@@ -123,9 +123,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final int getUpdateCount() throws SQLException {
         int result = 0;
         for (Statement each : getRoutedStatements()) {
+            if (each.getUpdateCount() == -1) {
+                continue;
+            }
             result += each.getUpdateCount();
         }
-        return result;
+        return (result < 1) ? -1 : result;
     }
     
     @Override
@@ -211,7 +214,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
      * 获取路由的静态语句对象集合.
      * 
      * @return 路由的静态语句对象集合
-     * @throws SQLException
+     * @throws SQLException SQL执行异常
      */
     protected abstract Collection<? extends Statement> getRoutedStatements() throws SQLException;
 }
