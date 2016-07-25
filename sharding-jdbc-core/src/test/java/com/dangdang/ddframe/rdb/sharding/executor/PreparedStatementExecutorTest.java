@@ -75,6 +75,14 @@ public final class PreparedStatementExecutorTest {
     }
     
     @Test
+    public void assertNoStatement() throws SQLException {
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.EMPTY_LIST);
+        assertThat(actual.execute(), is(false));
+        assertThat(actual.executeUpdate(), is(0));
+        assertThat(actual.executeQuery().size(), is(0));
+    }
+    
+    @Test
     public void assertExecuteQueryForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");

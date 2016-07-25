@@ -112,6 +112,9 @@ public final class SQLRouteEngine {
         }
         processLimit(result.getExecutionUnits(), parsedResult, parameters);
         MetricsContext.stop(context);
+        if (result.getExecutionUnits().isEmpty()) {
+            throw new ShardingJdbcException("Sharding-JDBC: cannot route any result, please check your sharding rule.");
+        }
         log.debug("final route result:{}", result.getExecutionUnits());
         log.debug("merge context:{}", result.getMergeContext());
         return result;
@@ -126,9 +129,6 @@ public final class SQLRouteEngine {
         } else {
             // TODO 可配置是否执行笛卡尔积
             result = new MixedTablesRouter(shardingRule, logicTables, conditionContext, type).route();
-        }
-        if (null == result) {
-            throw new ShardingJdbcException("Sharding-JDBC: cannot route any result, please check your sharding rule.");
         }
         return result.getSQLExecutionUnits(sqlBuilder);
     }

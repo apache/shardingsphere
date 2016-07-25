@@ -163,13 +163,14 @@ public final class PreparedStatementExecutor {
                 PreparedStatementExecutorWrapper preparedStatementExecutorWrapper = preparedStatementExecutorWrappers.iterator().next();
                 return executeInternal(preparedStatementExecutorWrapper, isExceptionThrown, dataMap, Optional.fromNullable(context));
             }
-            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
+            List<Boolean> result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
         
                 @Override
                 public Boolean execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     return executeInternal(input, isExceptionThrown, dataMap, Optional.<Context>absent());
                 }
-            }).get(0);
+            });
+            return (null == result || result.isEmpty()) ? false : result.get(0);
         } finally {
             MetricsContext.stop(context);
         }

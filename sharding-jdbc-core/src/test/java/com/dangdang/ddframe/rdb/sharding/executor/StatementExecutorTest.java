@@ -79,6 +79,14 @@ public final class StatementExecutorTest {
     }
     
     @Test
+    public void assertNoStatement() throws SQLException {
+        StatementExecutor actual = new StatementExecutor(executorEngine);
+        assertThat(actual.execute(), is(false));
+        assertThat(actual.executeUpdate(), is(0));
+        assertThat(actual.executeQuery().size(), is(0));
+    }
+    
+    @Test
     public void assertExecuteQueryForSingleStatementSuccess() throws SQLException {
         Statement statement = mock(Statement.class);
         StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDQL(statement, "ds_0");

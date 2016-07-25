@@ -258,7 +258,7 @@ public final class StatementExecutor {
                     return executeInternal(executor, input, isExceptionThrown, dataMap);
                 }
             });
-            return null == result ? false : result.get(0);
+            return (null == result || result.isEmpty()) ? false : result.get(0);
         } finally {
             MetricsContext.stop(context);
         }
