@@ -37,6 +37,8 @@ public class ShardingRuleConfig {
     
     private Map<String, DataSource> dataSource = new HashMap<>();
     
+    private String defaultDataSourceName;
+    
     private Map<String, TableRuleConfig> tables = new HashMap<>();
     
     private List<BindingTableRuleConfig> bindingTables = new ArrayList<>();

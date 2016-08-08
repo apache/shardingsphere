@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public final class DMLTest extends AbstractDynamicRouteSqlTest {
     
@@ -42,8 +41,8 @@ public final class DMLTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertInsertError() {
-        expectedException.expect(ShardingJdbcException.class);
-        expectedException.expectMessage("INSERT statement must contains sharding value");
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("INSERT statement should contain sharding value.");
         assertSingleTarget("insert into `order` value (1,'test')", null, null);
     }
     

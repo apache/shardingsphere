@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.metrics;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.api.props.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.LoggerFactory;

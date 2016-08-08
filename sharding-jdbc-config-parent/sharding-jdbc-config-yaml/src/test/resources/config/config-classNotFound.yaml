@@ -1,0 +1,6 @@
+tables:
+  t_order: 
+    actualTables: t_order_${0..1}
+    databaseStrategy: 
+      shardingColumns: order_id
+      algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.NoThisClass

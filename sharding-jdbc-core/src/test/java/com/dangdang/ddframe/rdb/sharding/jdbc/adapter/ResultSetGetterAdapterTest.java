@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,19 +33,12 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collections;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection shardingConnection;
     
@@ -52,8 +48,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         statement = shardingConnection.createStatement();
         actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init' ORDER BY `uid`");
         actual.next();
@@ -406,11 +401,11 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDataBasesO
     public void assertGetObjectForColumnIndexWithMap() throws SQLException {
         if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
             try {
-                actual.getObject("1", Collections.<String, Class<?>>emptyMap());
+                actual.getObject(1, Collections.<String, Class<?>>emptyMap());
             } catch (final SQLException ignore) {
             }
         } else {
-            assertThat(actual.getObject("uid", Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
+            assertThat(actual.getObject(1, Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
         }
     }
     

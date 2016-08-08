@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,16 +40,15 @@ public final class OrParser {
     }
     
     /**
-     *  解析SQL.
+     *  填充条件上下文.
      * 
-     * @return SQL解析结果
+     * @param parsedResult 初步解析结果
      */
-    public SQLParsedResult parse() {
-        SQLParsedResult result = orVisitor.getParseContext().getParsedResult();
+    public void fillConditionContext(final SQLParsedResult parsedResult) {
         Optional<AbstractOrASTNode> rootASTNode = orVisitor.visitHandle(sqlStatement);
         if (rootASTNode.isPresent()) {
-            result.getConditionContexts().addAll(rootASTNode.get().getCondition());
+            parsedResult.getConditionContexts().clear();
+            parsedResult.getConditionContexts().addAll(rootASTNode.get().getCondition());
         }
-        return result;
     }
 }

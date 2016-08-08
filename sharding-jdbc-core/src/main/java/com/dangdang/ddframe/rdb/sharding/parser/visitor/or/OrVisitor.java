@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,8 +41,10 @@ public class OrVisitor extends AbstractMySQLVisitor {
     public OrVisitor(final SQLASTOutputVisitor dependencyVisitor) {
         setParameters(dependencyVisitor.getParameters());
         SQLVisitor visitor = (SQLVisitor) dependencyVisitor;
-        String currentTableName = null == visitor.getParseContext().getCurrentTable() ? "" : visitor.getParseContext().getCurrentTable().getName();
-        getParseContext().setCurrentTable(currentTableName, Optional.<String>absent());
+        if (null != visitor.getParseContext().getCurrentTable()) {
+            getParseContext().setCurrentTable(visitor.getParseContext().getCurrentTable().getName(), Optional.<String>absent());
+        }
+        getParseContext().getParsedResult().getRouteContext().getTables().addAll(visitor.getParseContext().getParsedResult().getRouteContext().getTables());
         getParseContext().setShardingColumns(visitor.getParseContext().getShardingColumns());
     }
     
@@ -92,7 +94,14 @@ public class OrVisitor extends AbstractMySQLVisitor {
         if (Boolean.TRUE.equals(WallVisitorUtils.getValue(x))) {
             return false;
         }
-        orASTNode = new SimpleOrASTNode(x, new OrVisitor(this));
+        if (orASTNode == null) {
+            orASTNode = new SimpleOrASTNode(x, new OrVisitor(this));
+        } else {
+            CompositeOrASTNode existingOutConditionOrASTNode = new CompositeOrASTNode();
+            existingOutConditionOrASTNode.addSubNode(orASTNode);
+            existingOutConditionOrASTNode.addSubNode(new SimpleOrASTNode(x, new OrVisitor(this)));
+            orASTNode = existingOutConditionOrASTNode;
+        }
         return false;
     }
 }

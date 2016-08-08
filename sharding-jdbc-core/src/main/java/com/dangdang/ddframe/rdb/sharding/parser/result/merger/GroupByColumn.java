@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-
+import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -28,14 +28,24 @@ import lombok.ToString;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public final class GroupByColumn {
+@ToString(callSuper = true)
+public final class GroupByColumn extends AbstractSortableColumn implements IndexColumn {
     
-    private final String name;
+    @Setter
+    private int columnIndex;
     
-    private final String alias;
+    public GroupByColumn(final Optional<String> owner, final String name, final Optional<String> alias, final OrderByType orderByType) {
+        super(owner, Optional.of(name), alias, orderByType);
+    }
     
-    private final OrderByType orderByType;
+    @Override
+    public Optional<String> getColumnLabel() {
+        return getAlias();
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return getName();
+    }
 }

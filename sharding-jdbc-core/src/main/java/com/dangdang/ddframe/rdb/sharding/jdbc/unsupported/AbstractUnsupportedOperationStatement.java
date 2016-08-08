@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
@@ -32,36 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
     
     @Override
-    public final int getMaxFieldSize() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getMaxFieldSize");
-    }
-    
-    @Override
-    public final void setMaxFieldSize(final int max) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setMaxFieldSize");
-    }
-    
-    @Override
-    public final int getMaxRows() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getMaxRows");
-    }
-    
-    @Override
-    public final void setMaxRows(final int max) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setMaxRows");
-    }
-    
-    @Override
-    public final int getQueryTimeout() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getQueryTimeout");
-    }
-    
-    @Override
-    public final void setQueryTimeout(final int seconds) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setQueryTimeout");
-    }
-    
-    @Override
     public final int getFetchDirection() throws SQLException {
         throw new SQLFeatureNotSupportedException("getFetchDirection");
     }
@@ -69,11 +38,6 @@ public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapt
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
         throw new SQLFeatureNotSupportedException("setFetchDirection");
-    }
-    
-    @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getGeneratedKeys");
     }
     
     @Override

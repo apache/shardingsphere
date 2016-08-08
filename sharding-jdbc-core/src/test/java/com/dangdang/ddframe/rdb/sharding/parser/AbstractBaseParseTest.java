@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,6 +146,9 @@ public abstract class AbstractBaseParseTest {
                                 return input.getValueWithType();
                             }
                         }));
+                        if (null != each.getValueIndices()) {
+                            condition.getValueIndices().addAll(each.getValueIndices());
+                        }
                         result.add(condition);
                     }
                     return result;
@@ -158,8 +161,9 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public OrderByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase()))
-                            : new OrderByColumn(input.getName(), input.getAlias(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderByColumn(Optional.fromNullable(input.getOwner()), input.getName(), 
+                                    Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }
@@ -168,7 +172,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public GroupByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
-                    return new GroupByColumn(input.getName(), input.getAlias(), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                    return new GroupByColumn(
+                            Optional.fromNullable(input.getOwner()), input.getName(), Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
                 }
             }));
         }
@@ -181,7 +186,7 @@ public abstract class AbstractBaseParseTest {
                             AggregationColumn result = new AggregationColumn(input.getExpression(), 
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()), Optional.fromNullable(input.getOption()));
                             if (null != input.getIndex()) {
-                                result.setIndex(input.getIndex());
+                                result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn each : input.getDerivedColumns()) {
                                 result.getDerivedColumns().add(new AggregationColumn(each.getExpression(), 
@@ -192,7 +197,7 @@ public abstract class AbstractBaseParseTest {
                 }));
         }
         if (null != assertObj.getLimit()) {
-            mergeContext.setLimit(new Limit(assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount()));
+            mergeContext.setLimit(new Limit(assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
         }
         result[5] = mergeContext;
         return result;

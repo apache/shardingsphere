@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectForLimitWithOffsetAndRowCount" sql="SELECT * FROM order o LIMIT 4, 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT 0, 9">
+    <assert id="assertSelectForLimitWithOffsetAndRowCount" sql="SELECT * FROM order o LIMIT 4, 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT [Token(limit_offset)], [Token(limit_count)]">
         <tables>
             <table name="order" alias="o" />
         </tables>
         <condition-contexts>
             <condition-context />
         </condition-contexts>
-        <limit offset="4" row-count="5" />
+        <limit offset="4" row-count="5" offset-index="" row-count-index=""/>
     </assert>
     
-    <assert id="assertSelectForLimitWithRowCountOnly" sql="SELECT * FROM order o LIMIT 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT 5">
+    <assert id="assertSelectForLimitWithRowCountOnly" sql="SELECT * FROM order o LIMIT 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT [Token(limit_count)]">
         <tables>
             <table name="order" alias="o" />
         </tables>
         <condition-contexts>
             <condition-context />
         </condition-contexts>
-        <limit offset="0" row-count="5" />
+        <limit offset="0" row-count="5" offset-index="" row-count-index="" />
+    </assert>
+
+    <assert id="assertSelectForLimitOffset" sql="SELECT * FROM order o LIMIT 5 OFFSET 4" expected-sql="SELECT * FROM [Token(order)] o LIMIT [Token(limit_offset)], [Token(limit_count)]">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context />
+        </condition-contexts>
+        <limit offset="4" row-count="5" offset-index="" row-count-index="" />
+    </assert>
+
+    <assert id="assertSubSelectForLimit" sql="SELECT * FROM (select * from order where num = 1 LIMIT 5,4)" expected-sql="SELECT * FROM (SELECT * FROM [Token(order)] WHERE num = 1 LIMIT 5, 4 )">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context />
+        </condition-contexts>
     </assert>
 </asserts>

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,21 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
-
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.api.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 
 public final class UnsupportedOperationStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
     
     private ShardingConnection shardingConnection;
     
@@ -39,8 +35,7 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingDat
     
     @Before
     public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = getShardingDataSource().getConnection();
         actual = shardingConnection.createStatement();
     }
     
@@ -51,36 +46,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingDat
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetMaxFieldSize() throws SQLException {
-        actual.getMaxFieldSize();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetMaxFieldSize() throws SQLException {
-        actual.setMaxFieldSize(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetMaxRows() throws SQLException {
-        actual.getMaxRows();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetMaxRows() throws SQLException {
-        actual.setMaxRows(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetQueryTimeout() throws SQLException {
-        actual.getQueryTimeout();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetQueryTimeout() throws SQLException {
-        actual.setQueryTimeout(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetFetchDirection() throws SQLException {
         actual.getFetchDirection();
     }
@@ -88,11 +53,6 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingDat
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetFetchDirection() throws SQLException {
         actual.setFetchDirection(0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetGeneratedKeys() throws SQLException {
-        actual.getGeneratedKeys();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

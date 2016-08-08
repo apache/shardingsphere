@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,18 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
@@ -42,13 +31,24 @@ import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
     protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
     
-    private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
+    protected static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
     private final DataBaseEnvironment dbEnv = new DataBaseEnvironment(CURRENT_DB_TYPE);
     
@@ -77,10 +77,10 @@ public abstract class AbstractDBUnitTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected final Map<String, DataSource> createDataSourceMap(final String dataSourceName) {
+    protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {
         Map<String, DataSource> result = new HashMap<>(getDataSetFiles().size());
         for (String each : getDataSetFiles()) {
-            result.put(String.format(dataSourceName, getFileName(each)), createDataSource(each));
+            result.put(String.format(dataSourceNamePattern, getFileName(each)), createDataSource(each));
         }
         return result;
     }
@@ -111,7 +111,7 @@ public abstract class AbstractDBUnitTest {
             throws SQLException, DatabaseUnitException {
         try (
                 Connection conn = connection;
-                PreparedStatement ps = connection.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
             for (Object each : params) {
                 ps.setObject(i++, each);
@@ -125,7 +125,7 @@ public abstract class AbstractDBUnitTest {
     protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
             throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
-            ITable actualTable = getConnection(connection).createQueryTable(actualTableName, sql);
+            ITable actualTable = getConnection(conn).createQueryTable(actualTableName, sql);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.example.config.spring.service;
 
 import com.dangdang.ddframe.rdb.sharding.example.config.spring.repository.ConfigRepository;
-import com.dangdang.ddframe.rdb.sharding.example.config.spring.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

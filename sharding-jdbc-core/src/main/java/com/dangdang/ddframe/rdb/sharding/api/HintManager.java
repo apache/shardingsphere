@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
@@ -42,6 +43,12 @@ public final class HintManager implements AutoCloseable {
     private final Map<ShardingKey, ShardingValue<?>> databaseShardingValues = new HashMap<>();
     
     private final Map<ShardingKey, ShardingValue<?>> tableShardingValues = new HashMap<>();
+    
+    @Getter
+    private boolean shardingHint;
+    
+    @Getter
+    private boolean masterRouteOnly;
     
     /**
      * 获取线索分片管理器实例.
@@ -76,7 +83,8 @@ public final class HintManager implements AutoCloseable {
      * @param values 分片值
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
-        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(shardingColumn, binaryOperator, values));
+        shardingHint = true;
+        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
     }
     
     /**
@@ -101,19 +109,20 @@ public final class HintManager implements AutoCloseable {
      * @param values 分片值
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
-        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(shardingColumn, binaryOperator, values));
+        shardingHint = true;
+        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
     }
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>[] values) {
+    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>[] values) {
         Preconditions.checkArgument(null != values && values.length > 0);
         switch (binaryOperator) {
             case EQUAL:
-                return new ShardingValue<Comparable<?>>(shardingColumn, values[0]);
+                return new ShardingValue<Comparable<?>>(logicTable, shardingColumn, values[0]);
             case IN:
-                return new ShardingValue(shardingColumn, Arrays.asList(values));
+                return new ShardingValue(logicTable, shardingColumn, Arrays.asList(values));
             case BETWEEN:
-                return new ShardingValue(shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
+                return new ShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(binaryOperator.getExpression());
         }
@@ -137,6 +146,13 @@ public final class HintManager implements AutoCloseable {
      */
     public ShardingValue<?> getTableShardingValue(final ShardingKey shardingKey) {
         return tableShardingValues.get(shardingKey);
+    }
+    
+    /**
+     * 设置数据库操作只路由至主库.
+     */
+    public void setMasterRouteOnly() {
+        masterRouteOnly = true;
     }
     
     @Override

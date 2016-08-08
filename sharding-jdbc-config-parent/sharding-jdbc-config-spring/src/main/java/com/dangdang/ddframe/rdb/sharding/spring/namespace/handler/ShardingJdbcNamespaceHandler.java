@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.handler;
 
+import com.dangdang.ddframe.rdb.sharding.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.parser.ShardingJdbcDataSourceBeanDefinitionParser;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.parser.ShardingJdbcStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * Spring命名空间处理器.
  * 
  * @author caohao
+ * @author zhangliang
  */
 public final class ShardingJdbcNamespaceHandler extends NamespaceHandlerSupport {
     
@@ -32,5 +34,6 @@ public final class ShardingJdbcNamespaceHandler extends NamespaceHandlerSupport 
     public void init() {
         registerBeanDefinitionParser("strategy", new ShardingJdbcStrategyBeanDefinitionParser());
         registerBeanDefinitionParser("data-source", new ShardingJdbcDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser("master-slave-data-source", new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }

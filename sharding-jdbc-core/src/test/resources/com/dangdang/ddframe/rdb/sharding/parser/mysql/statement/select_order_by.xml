@@ -8,7 +8,7 @@
             <condition-context />
         </condition-contexts>
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" order-by-type="ASC" />
             <order-by-column index="2" order-by-type="DESC" />
         </order-by-columns>
     </assert>
@@ -26,12 +26,12 @@
             </condition-context>
         </condition-contexts>
         <order-by-columns>
-            <order-by-column name="order_id" order-by-type="DESC" />
+            <order-by-column owner="o" name="order_id" order-by-type="DESC" />
             <order-by-column index="2" order-by-type="ASC" />
         </order-by-columns>
     </assert>
 
-    <assert id="assertSelectWithOrderByForAlias" sql="SELECT o.order_id as `gen_order_id_` FROM order o ORDER BY o.order_id" expected-sql="SELECT [Token(o)].order_id AS `gen_order_id_`[Token(, order_id AS sharding_gen_1)] FROM [Token(order)] o ORDER BY o.order_id">
+    <assert id="assertSelectWithOrderByForAlias" sql="SELECT o.order_id as `gen_order_id_` FROM order o ORDER BY o.order_id" expected-sql="SELECT [Token(o)].order_id AS `gen_order_id_`[Token(, o.order_id AS sharding_gen_1)] FROM [Token(order)] o ORDER BY o.order_id">
         <tables>
             <table name="order" alias="o" />
         </tables>
@@ -40,7 +40,7 @@
             </condition-context>
         </condition-contexts>
         <order-by-columns>
-            <order-by-column name="order_id" alias="sharding_gen_1" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="sharding_gen_1" order-by-type="ASC" />
         </order-by-columns>
     </assert>
 </asserts>

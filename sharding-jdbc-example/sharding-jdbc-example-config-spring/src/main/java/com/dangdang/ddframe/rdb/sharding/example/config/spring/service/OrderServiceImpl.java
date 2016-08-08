@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,9 @@ public class OrderServiceImpl implements OrderService {
     public void insert() {
         try {
             orderRepository.insert();
-        } catch (Exception ex) {
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:ON
             ex.printStackTrace();
         }
     }

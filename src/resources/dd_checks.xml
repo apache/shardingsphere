@@ -48,7 +48,6 @@
     <module name="NeedBraces"/>
     <module name="RightCurly"/>
     <module name="FinalClass"/>
-    <module name="HideUtilityClassConstructor"/>
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle"/>
@@ -93,7 +92,7 @@
     <module name="JavadocParagraph"/>
     <module name="InterfaceTypeParameterName"/>
     <module name="AbbreviationAsWordInName">
-      <property name="allowedAbbreviationLength" value="4"/>
+      <property name="allowedAbbreviationLength" value="6"/>
     </module>
     <module name="CustomImportOrder"/>
     <module name="EmptyLineSeparator"/>

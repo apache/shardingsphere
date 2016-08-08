@@ -1,140 +1,82 @@
-##Sharding-JDBC - A JDBC driver for shard databases and tables
+##Sharding-JDBC - A JDBC driver for shard databases and tables 
 
-`Sharding-JDBC`是当当应用框架`ddframe`中，关系型数据库模块`dd-rdb`中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。
+# [中文主页](README_cn.md)
 
-`Sharding-JDBC`继`dubbox`和`elastic-job`之后，是`ddframe`系列开源的第三个产品。
-
-# Release Notes
-* sharding-jdbc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-* sharding-jdbc-core&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-core)
-* sharding-jdbc-config-yaml&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-yaml/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-yaml)
-* sharding-jdbc-config-spring&nbsp;&nbsp;[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-spring/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc-config-spring)
-
-# License
 [![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-
-# Build Status
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
 
-# 主要贡献者
+# Overview
 
-* 张亮 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) zhangliang@dangdang.com
-* 高洪涛 [当当](http://www.dangdang.com/) gaohongtao@dangdang.com
-* 曹昊 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) caohao@dangdang.com
-* 岳令 &nbsp;&nbsp;&nbsp;[当当](http://www.dangdang.com/) yueling@dangdang.com
+Sharding-JDBC is a JDBC extension, provides distributed features such as sharding, read/write splitting and BASE transaction.
 
-**讨论QQ群：**532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。）
+# Features
 
-# 简介
+## 1. Sharding
+* Aggregation functions, group by, order by and limit SQL supported in distributed database.
+* Join (inner/outer) query supported.
+* Sharding operator `=`, `BETWEEN` and `IN` supported.
+* Sharding algorithm customization supported.
+* Hint supported.
 
-`Sharding-JDBC`直接封装`JDBC API`，可以理解为增强版的`JDBC`驱动，旧代码迁移成本几乎为零：
+## 2. Read/Write Splitting
+* Same transaction data concurrency guarantee.
+* Hint supported.
 
-* 可适用于任何基于`java`的`ORM`框架，如：`JPA`, `Hibernate`, `Mybatis`, `Spring JDBC Template`或直接使用`JDBC`。
-* 可基于任何第三方的数据库连接池，如：`DBCP`, `C3P0`, `BoneCP`, `Druid`等。
-* 理论上可支持任意实现`JDBC`规范的数据库。虽然目前仅支持`MySQL`，但已有支持`Oracle`，`SQLServer`，`DB2`等数据库的计划。
+## 3. BASE Transaction
+* Best efforts delivery transaction.
+* Try confirm cancel transaction (TBD).
 
-`Sharding-JDBC`定位为轻量级`java`框架，使用客户端直连数据库，以`jar`包形式提供服务，未使用中间层，无需额外部署，无其他依赖，`DBA`也无需改变原有的运维方式。`SQL`解析使用`Druid`解析器，是目前性能最高的`SQL`解析器。
+## 4. Compatibility
+* ORM self-adapting. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
+* Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
+* Any Database supported theoretically. MySQL support only, will support Oracle, SQLServer, DB2 and PostgreSQL in future.
 
-`Sharding-JDBC`功能灵活且全面：
-
-* 分片策略灵活，可支持`=`，`BETWEEN`，`IN`等多维度分片，也可支持多分片键共用。
-* `SQL`解析功能完善，支持聚合，分组，排序，`Limit`，`OR`等查询，并且支持`Binding Table`以及笛卡尔积的表查询。
-
-`Sharding-JDBC`配置多样：
-
-* 可支持YAML和Spring命名空间配置
-* 灵活多样的`inline`方式
-
-***
-
-以下是常见的分库分表产品和`Sharding-JDBC`的对比：
-
-| 功能          | Cobar         | Cobar-client  | TDDL        | Sharding-JDBC  |
-| ------------- |:-------------:| -------------:| -----------:|---------------:|
-| 分库          | 有            | 有             | 未开源      | 有              |
-| 分表          | 无            | 无             | 未开源      | 有              |
-| 中间层        | 是            | 否             | 否          | 否              |
-| ORM支持       | 任意          | 仅MyBatis      | 任意        | 任意            |
-| 数据库支持     | 仅MySQL       | 任意           | 任意        | 任意            |
-| 异构语言       | 可           | 仅Java          | 仅Java     | 仅Java          |
-| 外部依赖       | 无           | 无              | Diamond    | 无              |
+## 5. Configuration
+* Java config
+* Spring namespace
+* YAML
+* Inline expression
 
 ***
 
-# 整体架构图
+# Architecture
 
-![整体架构图](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
+![Architecture](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture_en.png)
 
-![柔性事务-最大努力送达型](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture-soft-transaction-bed.png)
-
-# 相关文档
-
-[Release Notes](http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/)
-
-[使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
-
-[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
-
-[核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/conpects/)
-
-[架构图](http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/)
-
-[Yaml文件和Spring命名空间配置](http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/)
-
-[基于暗示(Hint)的分片键值注册方法](http://dangdangdotcom.github.io/sharding-jdbc/post/hint_shardingvalue/)
-
-[柔性事务](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
-
-[目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
-
-[阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/post/source_code_guide)
-
-[使用限制](http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/)
-
-[SQL支持详细列表](http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/)
-
-[压力测试报告](http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/)
-
-[未来线路规划](http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/)
-
-[事务支持说明](http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/)
-
-[InfoQ新闻](http://www.infoq.com/cn/news/2016/01/sharding-jdbc-dangdang)
-
-[CSDN文章](http://geek.csdn.net/news/detail/55513)
+# [Roadmap](ROADMAP.md)
 
 # Quick Start
 
-## 引入maven依赖
+## Add maven dependency
 
 ```xml
-<!-- 引入sharding-jdbc核心模块 -->
+<!-- import sharding-jdbc core -->
 <dependency>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
+
+<!-- import other module if need -->
 ```
 
-## 规则配置
-`Sharding-JDBC`的分库分表通过规则配置描述，请简单浏览配置全貌：
+## Rule configuration
+
 ```java
- ShardingRule shardingRule = new ShardingRule(
-                dataSourceRule, 
-                Arrays.asList(tableRule), 
-                new DatabaseShardingStrategy("sharding_column_1", new XXXShardingAlgorithm()),
-                new TableShardingStrategy("sharding_column_2", new XXXShardingAlgorithm()));
+ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(tableRuleList)
+        .databaseShardingStrategy(new DatabaseShardingStrategy("sharding_column", new XXXShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy("sharding_column", new XXXShardingAlgorithm())))
+        .build();
 ```
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和`tableRule`绑定等。
 
->详细的规则配置请参考[用户指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
+## Use raw JDBC API
 
-## 使用原生JDBC接口
-通过规则配置对象获取`ShardingDataSource`，`ShardingDataSource`实现自`JDBC`的标准接口`DataSource`。然后可通过`DataSource`选择使用原生`JDBC`开发，或者使用`JPA`, `MyBatis`等`ORM`工具。
-以`JDBC`原生实现为例：
 ```java
-DataSource dataSource = new ShardingDataSource(shardingRule);
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
@@ -145,15 +87,14 @@ try (
         while(rs.next()) {
             System.out.println(rs.getInt(1));
             System.out.println(rs.getInt(2));
-            System.out.println(rs.getInt(3));
         }
     }
 }
 ```
 
-## 使用Spring命名空间配置
-```xml
+## Use spring namespace
 
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 

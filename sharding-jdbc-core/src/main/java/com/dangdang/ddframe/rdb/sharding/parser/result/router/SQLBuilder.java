@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import com.google.common.base.Joiner;
 
 /**
  * SQL构建器.
@@ -92,6 +92,16 @@ public class SQLBuilder implements Appendable {
     }
     
     /**
+     * 是否包含占位符.
+     * 
+     * @param token 占位符
+     * @return true 包含 false 不包含
+     */
+    public boolean containsToken(final String token) {
+        return tokenMap.containsKey(token);
+    }
+    
+    /**
      * 生成SQL语句.
      * 
      * @return SQL语句
@@ -132,6 +142,27 @@ public class SQLBuilder implements Appendable {
             }
         }
         return result.toString();
+    }
+    
+    /**
+     * 复制构建器.
+     * 
+     * @return 新的构建器
+     */
+    public SQLBuilder cloneBuilder() {
+        SQLBuilder result = new SQLBuilder();
+        for (Object each : segments) {
+            if (each instanceof StringToken) {
+                StringToken token = (StringToken) each;
+                StringToken newToken = new StringToken();
+                newToken.value = token.value;
+                result.segments.add(newToken);
+                result.tokenMap.put(newToken.value, newToken);
+            } else {
+                result.segments.add(each);
+            }
+        }
+        return result;
     }
     
     private class StringToken {

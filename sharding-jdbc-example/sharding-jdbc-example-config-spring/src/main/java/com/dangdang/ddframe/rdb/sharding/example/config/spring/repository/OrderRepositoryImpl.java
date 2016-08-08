@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,9 @@ public class OrderRepositoryImpl implements OrderRepository {
                     preparedStatement.setString(4, "insert");
                     preparedStatement.execute();
                     preparedStatement.close();
-                }  catch (Exception ex) {
+                // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                // CHECKSTYLE:ON
                     ex.printStackTrace();
                 }
             }
@@ -70,7 +72,9 @@ public class OrderRepositoryImpl implements OrderRepository {
             preparedStatement = connection.prepareStatement(orderItemSql);
             preparedStatement.execute();
             preparedStatement.close();
-        } catch (Exception ex) {
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:ON
             ex.printStackTrace();
         }
     }
@@ -84,12 +88,14 @@ public class OrderRepositoryImpl implements OrderRepository {
             preparedStatement.setInt(1, 1);
             preparedStatement.setInt(2, 2);
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                while(rs.next()) {
-                    System.out.println("orderItemId:" + rs.getInt(1) + ",orderId:" + rs.getInt(2) + 
-                        ",userId:" + rs.getInt(3) + ",status:" + rs.getString(4));
+                while (rs.next()) {
+                    System.out.println("orderItemId:" + rs.getInt(1) + ",orderId:" + rs.getInt(2) 
+                        + ",userId:" + rs.getInt(3) + ",status:" + rs.getString(4));
                 }
             }
-        } catch (Exception ex) {
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:ON
             ex.printStackTrace();
         }
     }

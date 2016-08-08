@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -30,8 +24,10 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
-import com.dangdang.ddframe.rdb.sharding.api.DatabaseType;
+import com.alibaba.druid.util.JdbcUtils;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
@@ -43,10 +39,19 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOp
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 解析过程的上下文对象.
@@ -56,9 +61,15 @@ import lombok.Setter;
 @Getter
 public final class ParseContext {
     
+    private static final String AUTO_GEN_TOKE_KEY_TEMPLATE = "sharding_auto_gen_%d";
+    
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
     
+    private final String autoGenTokenKey;
+    
     private final SQLParsedResult parsedResult = new SQLParsedResult();
+    
+    private final int parseContextIndex;
     
     @Setter
     private Collection<String> shardingColumns;
@@ -75,6 +86,25 @@ public final class ParseContext {
     private final Collection<String> selectItems = new HashSet<>();
     
     private boolean hasAllColumn;
+    
+    @Setter
+    private ParseContext parentParseContext;
+    
+    private List<ParseContext> subParseContext = new LinkedList<>();
+    
+    private int itemIndex;
+    
+    public ParseContext(final int parseContextIndex) {
+        this.parseContextIndex = parseContextIndex;
+        autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
+    }
+    
+    /**
+     * 增加查询投射项数量.
+     */
+    public void increaseItemIndex() {
+        itemIndex++;
+    }
     
     /**
      * 设置当前正在访问的表.
@@ -110,12 +140,12 @@ public final class ParseContext {
      */
     public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final DatabaseType databaseType, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
-        if (!column.isPresent()) {
+        if (!column.isPresent() || !shardingColumns.contains(column.get().getColumnName())) {
             return;
         }
-        List<Comparable<?>> values = new ArrayList<>(valueExprList.size());
+        List<ValuePair> values = new ArrayList<>(valueExprList.size());
         for (SQLExpr each : valueExprList) {
-            Comparable<?> evalValue = evalExpression(databaseType, each, parameters);
+            ValuePair evalValue = evalExpression(databaseType, each, parameters);
             if (null != evalValue) {
                 values.add(evalValue);
             }
@@ -137,16 +167,17 @@ public final class ParseContext {
      * @param parameters 通过占位符传进来的参数
      */
     public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> parameters) {
-        Comparable<?> value = evalExpression(databaseType, valueExpr, parameters);
-        if (null != value) {
-            addCondition(createColumn(columnName, tableName), operator, Collections.<Comparable<?>>singletonList(value));
-        }
-    }
-    
-    private void addCondition(final Column column, final BinaryOperator operator, final List<Comparable<?>> values) {
+        Column column = createColumn(columnName, tableName);
         if (!shardingColumns.contains(column.getColumnName())) {
             return;
         }
+        ValuePair value = evalExpression(databaseType, valueExpr, parameters);
+        if (null != value) {
+            addCondition(column, operator, Collections.singletonList(value));
+        }
+    }
+    
+    private void addCondition(final Column column, final BinaryOperator operator, final List<ValuePair> valuePairs) {
         Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
@@ -156,23 +187,48 @@ public final class ParseContext {
             condition = new Condition(column, operator);
             currentConditionContext.add(condition);
         }
-        condition.getValues().addAll(values);
+        for (ValuePair each : valuePairs) {
+            condition.getValues().add(each.value);
+            if (each.paramIndex > -1) {
+                condition.getValueIndices().add(each.paramIndex);
+            }
+        }
     }
     
-    private Comparable<?> evalExpression(final DatabaseType databaseType, final SQLObject sqlObject, final List<Object> parameters) {
+    private ValuePair evalExpression(final DatabaseType databaseType, final SQLObject sqlObject, final List<Object> parameters) {
         if (sqlObject instanceof SQLMethodInvokeExpr) {
             // TODO 解析函数中的sharingValue不支持
             return null;
         }
-        Object result = SQLEvalVisitorUtils.eval(databaseType.name().toLowerCase(), sqlObject, parameters, false);
-        if (null == result) {
+        SQLEvalVisitor visitor;
+        switch (databaseType.name().toLowerCase()) {
+            case JdbcUtils.MYSQL:
+            case JdbcUtils.H2: 
+                visitor = new MySQLEvalVisitor();
+                break;
+            default: 
+                visitor = SQLEvalVisitorUtils.createEvalVisitor(databaseType.name());    
+        }
+        visitor.setParameters(parameters);
+        sqlObject.accept(visitor);
+        
+        Object value = SQLEvalVisitorUtils.getValue(sqlObject);
+        if (null == value) {
+            // TODO 对于NULL目前解析为空字符串,此处待考虑解决方法
             return null;
         }
-        if (result instanceof Comparable<?>) {
-            return (Comparable<?>) result;
+        
+        Comparable<?> finalValue;
+        if (value instanceof Comparable<?>) {
+            finalValue = (Comparable<?>) value;
+        } else {
+            finalValue = "";
         }
-        // TODO 对于NULL目前解析为空字符串,此处待考虑解决方法
-        return "";
+        Integer index = (Integer) sqlObject.getAttribute(MySQLEvalVisitor.EVAL_VAR_INDEX);
+        if (null == index) {
+            index = -1;
+        }
+        return new ValuePair(finalValue, index);
     }
     
     private Optional<Column> getColumn(final SQLExpr expr) {
@@ -252,6 +308,10 @@ public final class ParseContext {
         return new AggregationColumn(expression, AggregationType.COUNT, Optional.of(generateDerivedColumnAlias()), avgColumn.getOption());
     }
     
+    private String generateDerivedColumnAlias() {
+        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
+    }
+    
     private AggregationColumn getDerivedSumColumn(final AggregationColumn avgColumn) {
         String expression = avgColumn.getExpression().replaceFirst(AggregationType.AVG.toString(), AggregationType.SUM.toString());
         if (avgColumn.getOption().isPresent()) {
@@ -273,16 +333,20 @@ public final class ParseContext {
     /**
      * 将排序列加入解析上下文.
      * 
+     * @param owner 列拥有者
      * @param name 列名称
      * @param orderByType 排序类型
      */
-    public void addOrderByColumn(final String name, final OrderByType orderByType) {
+    public void addOrderByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
         String rawName = SQLUtil.getExactlyValue(name);
-        String alias = null;
-        if (!containsSelectItem(rawName)) {
-            alias = generateDerivedColumnAlias();
+        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(owner, rawName, getAlias(rawName), orderByType));
+    }
+    
+    private Optional<String> getAlias(final String name) {
+        if (containsSelectItem(name)) {
+            return Optional.absent();
         }
-        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(rawName, alias, orderByType));
+        return Optional.of(generateDerivedColumnAlias());
     }
     
     private boolean containsSelectItem(final String selectItem) {
@@ -292,28 +356,46 @@ public final class ParseContext {
     /**
      * 将分组列加入解析上下文.
      * 
+     * @param owner 列拥有者
      * @param name 列名称
-     * @param alias 列别名
      * @param orderByType 排序类型
      */
-    public void addGroupByColumns(final String name, final String alias, final OrderByType orderByType) {
-        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(SQLUtil.getExactlyValue(name), alias, orderByType));
+    public void addGroupByColumns(final Optional<String> owner, final String name, final OrderByType orderByType) {
+        String rawName = SQLUtil.getExactlyValue(name);
+        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(owner, rawName, getAlias(rawName), orderByType));
     }
     
-    /**
-     * 生成补列别名.
-     * 
-     * @return 补列的别名
-     */
-    public String generateDerivedColumnAlias() {
-        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
-    }
     
     /**
      * 将当前解析的条件对象归并入解析结果.
      */
     public void mergeCurrentConditionContext() {
-        parsedResult.getConditionContexts().add(currentConditionContext);
+        if (!parsedResult.getRouteContext().getTables().isEmpty()) {
+            if (parsedResult.getConditionContexts().isEmpty()) {
+                parsedResult.getConditionContexts().add(currentConditionContext);
+            }
+            return;
+        }
+        Optional<SQLParsedResult> target = findValidParseResult();
+        if (!target.isPresent()) {
+            if (parsedResult.getConditionContexts().isEmpty()) {
+                parsedResult.getConditionContexts().add(currentConditionContext);
+            }
+            return;
+        }
+        parsedResult.getRouteContext().getTables().addAll(target.get().getRouteContext().getTables());
+        parsedResult.getConditionContexts().addAll(target.get().getConditionContexts());
+    }
+    
+    private Optional<SQLParsedResult> findValidParseResult() {
+        for (ParseContext each : subParseContext) {
+            each.mergeCurrentConditionContext();
+            if (each.getParsedResult().getRouteContext().getTables().isEmpty()) {
+                continue;
+            }
+            return Optional.of(each.getParsedResult()); 
+        }
+        return Optional.absent();
     }
     
     /**
@@ -330,4 +412,11 @@ public final class ParseContext {
         selectItems.add(rawItemExpr);
     }
     
+    @RequiredArgsConstructor
+    private static class ValuePair {
+        
+        private final Comparable<?> value;
+        
+        private final Integer paramIndex;
+    }
 }

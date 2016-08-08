@@ -17,13 +17,14 @@
     </xsd:element>
     <xsd:element name="sharding-rule">
         <xsd:complexType>
-            <xsd:all>
+            <xsd:sequence>
                 <xsd:element ref="table-rules" minOccurs="1" maxOccurs="1"/>
                 <xsd:element ref="binding-table-rules" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-database-strategy" minOccurs="0" maxOccurs="1"/>
                 <xsd:element ref="default-table-strategy" minOccurs="0" maxOccurs="1"/>
-            </xsd:all>
+            </xsd:sequence>
             <xsd:attribute name="data-sources" type="xsd:string" use="required" />
+            <xsd:attribute name="default-data-source" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="table-rules">
@@ -36,7 +37,9 @@
     <xsd:element name="table-rule">
         <xsd:complexType>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
-            <xsd:attribute name="actual-tables" type="xsd:string" use="required" />
+            <xsd:attribute name="dynamic" type="xsd:string" use="optional" />
+            <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
+            <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy" type="xsd:string" use="optional" />
         </xsd:complexType>
@@ -80,6 +83,13 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:propsType"/>
             </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="master-slave-data-source">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="master-data-source-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="slave-data-sources-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

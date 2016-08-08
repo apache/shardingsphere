@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,11 +38,13 @@ public class ConfigRepositoryImpl implements ConfigRepository {
             Connection conn = shardingDataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             try (ResultSet rs = preparedStatement.executeQuery()) {
-                while(rs.next()) {
+                while (rs.next()) {
                     System.out.println("configName:" + rs.getString(2) + ",configValue:" + rs.getString(3));
                 }
             }
-        } catch (Exception ex) {
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+        // CHECKSTYLE:ON
             ex.printStackTrace();
         }
     }

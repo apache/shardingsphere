@@ -7,6 +7,6 @@
         <condition-contexts>
             <condition-context />
         </condition-contexts>
-        <limit offset="1" row-count="2" />
+        <limit offset="1" row-count="2" offset-index="0" row-count-index="1"/>
     </assert>
 </asserts>

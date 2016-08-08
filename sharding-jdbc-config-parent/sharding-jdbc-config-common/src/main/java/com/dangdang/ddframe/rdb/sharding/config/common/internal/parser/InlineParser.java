@@ -40,7 +40,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class InlineParser {
     
-    private final static char SPLITTER = ',';
+    private static final char SPLITTER = ',';
     
     private final String inlineExpression;
     

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 1999-2015 dangdang.com.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,16 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
-import java.sql.SQLException;
-
-import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.ConfigService;
 import com.dangdang.ddframe.rdb.sharding.example.config.spring.service.OrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
+
 public final class SpringNamespaceWithDefaultDataSourceMain {
     
+    // CHECKSTYLE:OFF
     public static void main(final String[] args) throws SQLException {
+    // CHECKSTYLE:ON
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/applicationContextWithDefaultDataSource.xml");
         OrderService orderService =  applicationContext.getBean(OrderService.class);
         orderService.insert();

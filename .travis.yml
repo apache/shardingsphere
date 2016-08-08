@@ -1,7 +1,9 @@
 language: java
 jdk:
-  - oraclejdk8
+#  - oraclejdk8
   - oraclejdk7
   - openjdk7
+before_script:
+  - echo "MAVEN_OPTS='-Xmx1024g -XX:MaxPermSize=256m'" > ~/.mavenrc
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
