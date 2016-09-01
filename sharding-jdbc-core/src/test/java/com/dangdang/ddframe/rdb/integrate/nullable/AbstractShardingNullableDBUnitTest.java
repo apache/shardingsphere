@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitTest {
+public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitTest {
     
     private static boolean isShutdown;
     
