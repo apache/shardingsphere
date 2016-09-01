@@ -1,3 +1,4 @@
+
 +++
 date = "2016-02-05T17:03:18+08:00"
 title = "Release Notes"
@@ -18,6 +19,8 @@ weight = 1
 1. [ISSUE #114](https://github.com/dangdangdotcom/sharding-jdbc/issues/114) ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom
 1. [ISSUE #33](https://github.com/dangdangdotcom/sharding-jdbc/issues/33) Limit支持问题
 1. [ISSUE #124](https://github.com/dangdangdotcom/sharding-jdbc/issues/124) com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范
+1. [ISSUE #141](https://github.com/dangdangdotcom/sharding-jdbc/issues/141) 多线程执行器参数设置失效
+
 
 ## 1.3.1
 

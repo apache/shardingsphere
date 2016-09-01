@@ -70,10 +70,10 @@ public enum ShardingPropertiesConstant {
      * 最大工作线程数量.
      * 
      * <p>
-     * 默认值: CPU的核数 * 2
+     * 默认值: 100
      * </p>
      */
-    EXECUTOR_MAX_SIZE("executor.max.size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
+    EXECUTOR_MAX_SIZE("executor.max.size", "100", int.class),
     
     /**
      * 工作线程空闲时超时时间.

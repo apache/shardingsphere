@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import org.junit.AfterClass;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +35,9 @@ import java.util.List;
 
 public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUnitTest {
     
-    private final String dataSourceName = "dataSource_%s";
+    private static boolean isShutdown;
+    
+    private static ShardingDataSource shardingDataSource;
     
     @Override
     protected List<String> getSchemaFiles() {
@@ -47,7 +50,11 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
     }
     
     protected final ShardingDataSource getShardingDataSource() {
-        DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap(dataSourceName));
+        if (null != shardingDataSource && !isShutdown) {
+            return shardingDataSource;
+        }
+        isShutdown = false;
+        DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap("dataSource_%s"));
         TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
                 "t_order_0",
                 "t_order_1",
@@ -76,6 +83,14 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
-        return new ShardingDataSource(shardingRule);
+        shardingDataSource = new ShardingDataSource(shardingRule);
+        return shardingDataSource;
+    }
+    
+    
+    @AfterClass
+    public static void clear() {
+        isShutdown = true;
+        shardingDataSource.shutdown();
     }
 }

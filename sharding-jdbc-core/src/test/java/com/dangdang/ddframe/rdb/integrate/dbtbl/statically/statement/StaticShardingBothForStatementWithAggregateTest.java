@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.StaticShardingBothHelper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,11 +29,19 @@ import java.sql.SQLException;
 
 public final class StaticShardingBothForStatementWithAggregateTest extends AbstractShardingBothTest {
     
-    private ShardingDataSource shardingDataSource;
+    private static ShardingDataSource shardingDataSource;
     
     @Before
-    public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
+    public void init() {
+        if (null != shardingDataSource) {
+            return;
+        }
+        shardingDataSource = StaticShardingBothHelper.getShardingDataSource(createDataSourceMap("dataSource_%s"));
+    }
+    
+    @AfterClass
+    public static void clear() {
+        shardingDataSource.shutdown();
     }
     
     @Override

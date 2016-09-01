@@ -21,15 +21,27 @@ import com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement.AbstractShardi
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.StaticShardingBothHelper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
 public final class StaticShardingBothForPStatementWithSelectTest extends AbstractShardingBothForPStatementWithSelectTest {
     
+    private static ShardingDataSource shardingDataSource;
+    
     @Override
     protected ShardingDataSource getShardingDataSource() {
-        return StaticShardingBothHelper.getShardingDataSource(createDataSourceMap("dataSource_%s"));
+        if (null != shardingDataSource) {
+            return shardingDataSource;
+        }
+        shardingDataSource = StaticShardingBothHelper.getShardingDataSource(createDataSourceMap("dataSource_%s"));
+        return shardingDataSource;
+    }
+    
+    @AfterClass
+    public static void clear() {
+        shardingDataSource.shutdown();
     }
     
     @Test

@@ -72,8 +72,10 @@ public final class PreparedStatementExecutorTest {
         ExecutorTestUtil.clear();
         DMLExecutionEventBus.clearListener();
         DQLExecutionEventBus.clearListener();
+        executorEngine.shutdown();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
         PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.EMPTY_LIST);

@@ -41,6 +41,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     private final ShardingProperties shardingProperties;
     
+    private final ExecutorEngine executorEngine;
+    
     private final ShardingContext shardingContext;
     
     public ShardingDataSource(final ShardingRule shardingRule) {
@@ -51,8 +53,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         Preconditions.checkNotNull(shardingRule);
         Preconditions.checkNotNull(props);
         shardingProperties = new ShardingProperties(props);
+        executorEngine = new ExecutorEngine(shardingProperties);
         try {
-            shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), new ExecutorEngine(shardingProperties));
+            shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), executorEngine);
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
@@ -79,5 +82,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingConnection getConnection() throws SQLException {
         MetricsContext.init(shardingProperties);
         return new ShardingConnection(shardingContext);
+    }
+    
+    /**
+     * 关闭数据源,释放相关资源.
+     */
+    public void shutdown() {
+        executorEngine.shutdown();
     }
 }

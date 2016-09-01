@@ -76,6 +76,7 @@ public final class StatementExecutorTest {
         ExecutorTestUtil.clear();
         DMLExecutionEventBus.clearListener();
         DQLExecutionEventBus.clearListener();
+        executorEngine.shutdown();
     }
     
     @Test

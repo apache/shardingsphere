@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +52,7 @@ public final class ExecutorEngine {
         int executorMaxSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_SIZE);
         long executorMaxIdleTimeoutMilliseconds = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_IDLE_TIMEOUT_MILLISECONDS);
         executorService = MoreExecutors.listeningDecorator(MoreExecutors.getExitingExecutorService(
-                new ThreadPoolExecutor(executorMinIdleSize, executorMaxSize, executorMaxIdleTimeoutMilliseconds, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>())));
+                new ThreadPoolExecutor(executorMinIdleSize, executorMaxSize, executorMaxIdleTimeoutMilliseconds, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>())));
     }
     
     /**
@@ -82,6 +83,20 @@ public final class ExecutorEngine {
      */
     public <I, M, O> O execute(final Collection<I> inputs, final ExecuteUnit<I, M> executeUnit, final MergeUnit<M, O> mergeUnit) {
         return mergeUnit.merge(execute(inputs, executeUnit));
+    }
+    
+    /**
+     * 安全关闭执行器,并释放线程.
+     */
+    public void shutdown() {
+        executorService.shutdownNow();
+        try {
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (final InterruptedException ignored) {
+        }
+        if (!executorService.isTerminated()) {
+            throw new ShardingJdbcException("ExecutorEngine can not been terminated");
+        }
     }
     
     private <I, O> ListenableFuture<List<O>> submitFutures(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
