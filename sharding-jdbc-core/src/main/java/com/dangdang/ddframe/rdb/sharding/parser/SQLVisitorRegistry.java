@@ -27,6 +27,10 @@ import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLDeleteV
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLSelectVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLUpdateVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.sqlserver.SQLServerDeleteVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.sqlserver.SQLServerInsertVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.sqlserver.SQLServerSelectVisitor;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.sqlserver.SQLServerUpdateVisitor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -59,7 +63,7 @@ public final class SQLVisitorRegistry {
         SELECT_REGISTRY.put(DatabaseType.MySQL, MySQLSelectVisitor.class);
         // TODO 其他数据库先使用MySQL, 只能使用标准SQL
         SELECT_REGISTRY.put(DatabaseType.Oracle, MySQLSelectVisitor.class);
-        SELECT_REGISTRY.put(DatabaseType.SQLServer, MySQLSelectVisitor.class);
+        SELECT_REGISTRY.put(DatabaseType.SQLServer, SQLServerSelectVisitor.class);
         SELECT_REGISTRY.put(DatabaseType.DB2, MySQLSelectVisitor.class);
         SELECT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLSelectVisitor.class);
     }
@@ -69,7 +73,7 @@ public final class SQLVisitorRegistry {
         INSERT_REGISTRY.put(DatabaseType.MySQL, MySQLInsertVisitor.class);
         // TODO 其他数据库先使用MySQL, 只能使用标准SQL
         INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLInsertVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLInsertVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, SQLServerInsertVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.DB2, MySQLInsertVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLInsertVisitor.class);
     }
@@ -79,7 +83,7 @@ public final class SQLVisitorRegistry {
         UPDATE_REGISTRY.put(DatabaseType.MySQL, MySQLUpdateVisitor.class);
         // TODO 其他数据库先使用MySQL, 只能使用标准SQL
         INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLUpdateVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLUpdateVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, SQLServerUpdateVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.DB2, MySQLUpdateVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLUpdateVisitor.class);
     }
@@ -89,7 +93,7 @@ public final class SQLVisitorRegistry {
         DELETE_REGISTRY.put(DatabaseType.MySQL, MySQLDeleteVisitor.class);
         // TODO 其他数据库先使用MySQL, 只能使用标准SQL
         INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLDeleteVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLDeleteVisitor.class);
+        INSERT_REGISTRY.put(DatabaseType.SQLServer, SQLServerDeleteVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.DB2, MySQLDeleteVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLDeleteVisitor.class);
     }
