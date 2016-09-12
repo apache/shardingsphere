@@ -197,7 +197,8 @@ public abstract class AbstractBaseParseTest {
                 }));
         }
         if (null != assertObj.getLimit()) {
-            mergeContext.setLimit(new Limit(assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
+            mergeContext.setLimit(
+                    new Limit(assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
         }
         result[5] = mergeContext;
         return result;

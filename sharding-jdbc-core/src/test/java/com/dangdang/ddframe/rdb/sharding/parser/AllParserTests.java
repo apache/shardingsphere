@@ -31,10 +31,10 @@ import org.junit.runners.Suite;
         SQLParsedResultTest.class, 
         MySQLStatementTest.class, 
         MySQLPreparedStatementForOneParameterTest.class, 
-        MySQLPreparedStatementForTowParametersTest.class, 
+        MySQLPreparedStatementForTowParametersTest.class,  
         OrParseTest.class, 
-        UnsupportedParseTest.class,
-        MySQLEvalVisitorTest.class,
+        UnsupportedParseTest.class, 
+        MySQLEvalVisitorTest.class
     })
 public class AllParserTests {
 }

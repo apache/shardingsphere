@@ -47,10 +47,10 @@ public final class ShardingPropertiesTest {
         boolean actualMetricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
         long actualMetricsMillisecondsPeriod = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
         String actualMetricsPackageName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
-        int executorMaxSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_SIZE);
         assertThat(actualMetricsEnabled, is(Boolean.valueOf(ShardingPropertiesConstant.METRICS_ENABLE.getDefaultValue())));
         assertThat(actualMetricsMillisecondsPeriod, is(Long.valueOf(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD.getDefaultValue())));
         assertThat(actualMetricsPackageName, is(ShardingPropertiesConstant.METRICS_LOGGER_NAME.getDefaultValue()));
+        int executorMaxSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_MAX_SIZE);
         assertThat(executorMaxSize, is(Integer.valueOf(ShardingPropertiesConstant.EXECUTOR_MAX_SIZE.getDefaultValue())));
     }
     

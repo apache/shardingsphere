@@ -33,7 +33,7 @@ public class MySQLEvalVisitorTest {
         SQLVariantRefExpr expr = new SQLVariantRefExpr("?");
         expr.setIndex(1);
         MySQLEvalVisitor visitor = new MySQLEvalVisitor();
-        visitor.setParameters(Lists.<Object>newArrayList(1 ,2));
+        visitor.setParameters(Lists.<Object>newArrayList(1, 2));
         expr.accept(visitor);
         assertThat((Integer) SQLEvalVisitorUtils.getValue(expr), is(2));
         assertThat((Integer) expr.getAttribute(MySQLEvalVisitor.EVAL_VAR_INDEX), is(1));
@@ -44,7 +44,7 @@ public class MySQLEvalVisitorTest {
         SQLVariantRefExpr expr = new SQLVariantRefExpr("?");
         expr.setIndex(2);
         MySQLEvalVisitor visitor = new MySQLEvalVisitor();
-        visitor.setParameters(Lists.<Object>newArrayList(1 ,2));
+        visitor.setParameters(Lists.<Object>newArrayList(1, 2));
         expr.accept(visitor);
         assertThat(SQLEvalVisitorUtils.getValue(expr), nullValue());
     }
@@ -55,7 +55,7 @@ public class MySQLEvalVisitorTest {
         expr.setIndex(1);
         expr.getAttributes().put(MySQLEvalVisitor.EVAL_VALUE, "test");
         MySQLEvalVisitor visitor = new MySQLEvalVisitor();
-        visitor.setParameters(Lists.<Object>newArrayList(1 ,2));
+        visitor.setParameters(Lists.<Object>newArrayList(1, 2));
         expr.accept(visitor);
         assertThat((String) SQLEvalVisitorUtils.getValue(expr), is("test"));
     }
@@ -65,7 +65,7 @@ public class MySQLEvalVisitorTest {
         SQLVariantRefExpr expr = new SQLVariantRefExpr("");
         expr.setIndex(1);
         MySQLEvalVisitor visitor = new MySQLEvalVisitor();
-        visitor.setParameters(Lists.<Object>newArrayList(1 ,2));
+        visitor.setParameters(Lists.<Object>newArrayList(1, 2));
         expr.accept(visitor);
         assertThat(SQLEvalVisitorUtils.getValue(expr), nullValue());
     }
@@ -75,7 +75,7 @@ public class MySQLEvalVisitorTest {
         SQLVariantRefExpr expr = new SQLVariantRefExpr("?");
         expr.setIndex(1);
         MySQLEvalVisitor visitor = new MySQLEvalVisitor();
-        visitor.setParameters(Lists.<Object>newArrayList(1 ,null));
+        visitor.setParameters(Lists.<Object>newArrayList(1, null));
         expr.accept(visitor);
         assertThat(SQLEvalVisitorUtils.getValue(expr), is(MySQLEvalVisitor.EVAL_VALUE_NULL));
     }

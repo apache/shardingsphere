@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
@@ -48,7 +47,6 @@ import java.util.Map;
  * 
  * @author zhangliang
  */
-@Slf4j
 public abstract class AbstractDelegateResultSet extends AbstractResultSetAdapter {
     
     @Getter(AccessLevel.PROTECTED)
@@ -70,7 +68,8 @@ public abstract class AbstractDelegateResultSet extends AbstractResultSetAdapter
         boolean result = beforeFirst ? firstNext() : afterFirstNext();
         beforeFirst = false;
         if (result) {
-            LoggerFactory.getLogger(this.getClass().getName()).trace("Access result set, total size is: {}, result set hashcode is: {}, offset is: {}", getResultSets().size(), delegate.hashCode(), ++offset);
+            LoggerFactory.getLogger(this.getClass().getName()).trace(
+                    "Access result set, total size is: {}, result set hashcode is: {}, offset is: {}", getResultSets().size(), delegate.hashCode(), ++offset);
         }
         return result;
     }

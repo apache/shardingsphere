@@ -60,7 +60,7 @@ public final class ShardingDataBasesOnlyForStatementWithSelectTest extends Abstr
     @Test
     public void assertSelectLimitWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = "SELECT * FROM `t_order` WHERE `order_id` in (%s, %s, %s) AND `user_id` in (%s,%s) limit 1,2";
-        assertDataSet("integrate/dataset/db/expect/select/SelectLimitWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 1000, 1001, 2000,10,20));
+        assertDataSet("integrate/dataset/db/expect/select/SelectLimitWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 1000, 1001, 2000, 10, 20));
     }
     
     @Test
