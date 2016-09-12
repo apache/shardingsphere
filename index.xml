@@ -241,18 +241,27 @@ try (
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
-&lt;h2 id=&#34;1-3-2-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.2-SNAPSHOT&lt;/h2&gt;
+&lt;h2 id=&#34;1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.2&lt;/h2&gt;
+
+&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/79&#34;&gt;ISSUE #79&lt;/a&gt; 关于MySQL 分页limit&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/36&#34;&gt;ISSUE #36&lt;/a&gt; ShardingPreparedStatement无法反复设置参数&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/114&#34;&gt;ISSUE #114&lt;/a&gt; ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/33&#34;&gt;ISSUE #33&lt;/a&gt; Limit支持问题&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/124&#34;&gt;ISSUE #124&lt;/a&gt; com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/141&#34;&gt;ISSUE #141&lt;/a&gt; 多线程执行器参数设置失效&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.1&lt;/h2&gt;
 
-&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/91&#34;&gt;ISSUE #91&lt;/a&gt; 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键&lt;/li&gt;
@@ -274,7 +283,7 @@ try (
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/85&#34;&gt;ISSUE #85&lt;/a&gt; 读写分离&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/82&#34;&gt;ISSUE #82&lt;/a&gt; TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源&lt;/li&gt;
@@ -297,7 +306,7 @@ try (
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/77&#34;&gt;ISSUE #77&lt;/a&gt; ShardingRule和TableRule调整为Builder模式&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/61&#34;&gt;ISSUE #61&lt;/a&gt; 在ShardingValue类中加入逻辑表名&lt;/li&gt;
@@ -359,7 +368,7 @@ try (
 
 &lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
 
-&lt;h3 id=&#34;功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+&lt;h3 id=&#34;功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
@@ -2670,7 +2679,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 &lt;h2 id=&#34;背景:eafa718523618279bf7f67a77c7e58f8&#34;&gt;背景&lt;/h2&gt;
 
-&lt;p&gt;对&lt;code&gt;Shanrding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
+&lt;p&gt;对&lt;code&gt;Sharding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
 例如逻辑表&lt;code&gt;t_order&lt;/code&gt;如果其数据源分片键为&lt;code&gt;user_id&lt;/code&gt;，
 分片算法是奇数值路由到&lt;code&gt;db1&lt;/code&gt;偶数值路由到&lt;code&gt;db2&lt;/code&gt;；表分片键为&lt;code&gt;order_id&lt;/code&gt;，
 分片算法是奇数值路由到&lt;code&gt;t_order_1&lt;/code&gt;偶数值路由到&lt;code&gt;t_order_2&lt;/code&gt;，如果执行如下sql语句：&lt;/p&gt;

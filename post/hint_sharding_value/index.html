@@ -116,7 +116,7 @@ body {
 
 <h2 id="背景:eafa718523618279bf7f67a77c7e58f8">背景</h2>
 
-<p>对<code>Shanrding-JDBC</code>有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自<code>SQL</code>语句中<code>WHERE</code>条件的。
+<p>对<code>Sharding-JDBC</code>有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自<code>SQL</code>语句中<code>WHERE</code>条件的。
 例如逻辑表<code>t_order</code>如果其数据源分片键为<code>user_id</code>，
 分片算法是奇数值路由到<code>db1</code>偶数值路由到<code>db2</code>；表分片键为<code>order_id</code>，
 分片算法是奇数值路由到<code>t_order_1</code>偶数值路由到<code>t_order_2</code>，如果执行如下sql语句：</p>

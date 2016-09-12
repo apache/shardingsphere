@@ -110,18 +110,27 @@ body {
 
 <h1 id="release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</h1>
 
-<h2 id="1-3-2-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2-SNAPSHOT</h2>
+<h2 id="1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2</h2>
+
+<h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/79">ISSUE #79</a> 关于MySQL 分页limit</li>
+</ol>
 
 <h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/36">ISSUE #36</a> ShardingPreparedStatement无法反复设置参数</li>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/114">ISSUE #114</a> ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/33">ISSUE #33</a> Limit支持问题</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/124">ISSUE #124</a> com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/141">ISSUE #141</a> 多线程执行器参数设置失效</li>
 </ol>
 
 <h2 id="1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.1</h2>
 
-<h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+<h3 id="功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/91">ISSUE #91</a> 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键</li>
@@ -143,7 +152,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/85">ISSUE #85</a> 读写分离</li>
 </ol>
 
-<h3 id="功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+<h3 id="功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/82">ISSUE #82</a> TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源</li>
@@ -166,7 +175,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/77">ISSUE #77</a> ShardingRule和TableRule调整为Builder模式</li>
 </ol>
 
-<h3 id="功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+<h3 id="功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/61">ISSUE #61</a> 在ShardingValue类中加入逻辑表名</li>
@@ -228,7 +237,7 @@ body {
 
 <h2 id="1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</h2>
 
-<h3 id="功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+<h3 id="功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/39">ISSUE #39</a> 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能</li>
@@ -257,25 +266,26 @@ body {
 <ul>
 <li><a href="#release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</a>
 <ul>
-<li><a href="#1-3-2-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2-SNAPSHOT</a>
+<li><a href="#1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2</a>
 <ul>
+<li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
 <li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.1</a>
 <ul>
-<li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
 <li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.0</a>
 <ul>
 <li><a href="#新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
-<li><a href="#功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
 <li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-2-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1</a>
 <ul>
 <li><a href="#结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
-<li><a href="#功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
 <li><a href="#缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</a>
@@ -291,7 +301,7 @@ body {
 </ul></li>
 <li><a href="#1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</a>
 <ul>
-<li><a href="#功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
 <li><a href="#缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</a></li>
