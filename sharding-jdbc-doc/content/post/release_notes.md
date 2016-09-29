@@ -1,4 +1,5 @@
 
+
 +++
 date = "2016-02-05T17:03:18+08:00"
 title = "Release Notes"
@@ -6,6 +7,12 @@ weight = 1
 +++
 
 # Release Notes
+
+## 1.3.3-SNAPSHOT
+
+### 缺陷修正
+
+1. [ISSUE #149](https://github.com/dangdangdotcom/sharding-jdbc/issues/149) INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0 
 
 ## 1.3.2
 
