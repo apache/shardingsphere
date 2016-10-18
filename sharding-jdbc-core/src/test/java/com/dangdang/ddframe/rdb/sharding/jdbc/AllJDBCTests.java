@@ -56,6 +56,7 @@ import org.junit.runners.Suite;
     MasterSlaveDataSourceTest.class, 
     ParameterListTest.class, 
     AbstractPreparedStatementAdapterTest.class,
+    ShardingConnectionTest.class,
     })
 public class AllJDBCTests {
 }

@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -70,18 +71,62 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     private Connection getConnectionInternal(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
-        if (connectionMap.containsKey(dataSourceName)) {
-            return connectionMap.get(dataSourceName);
+        Optional<Connection> connectionOptional = fetchCachedConnectionBySqlStatementType(dataSourceName, sqlStatementType);
+        if (connectionOptional.isPresent()) {
+            return connectionOptional.get();
         }
         Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        String realDataSourceName = dataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
             dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlStatementType);
+            realDataSourceName = getRealDataSourceName(dataSourceName, sqlStatementType);
         }
         Connection result = dataSource.getConnection();
         MetricsContext.stop(metricsContext);
-        connectionMap.put(dataSourceName, result);
+        connectionMap.put(realDataSourceName, result);
         return result;
+    }
+    
+    private String getRealDataSourceName(final String dataSourceName, final SQLStatementType sqlStatementType) {
+        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
+        if (!MasterSlaveDataSource.isDML(sqlStatementType)) {
+            return slaveDataSourceName;
+        }
+        Connection slaveConnection = connectionMap.remove(slaveDataSourceName);
+        if (null != slaveConnection) {
+            try {
+                slaveConnection.close();
+            } catch (final SQLException ignored) {
+            }
+        }
+        return getMasterDataSourceName(dataSourceName);
+    }
+    
+    private Optional<Connection> fetchCachedConnectionBySqlStatementType(final String dataSourceName, final SQLStatementType sqlStatementType) {
+        if (connectionMap.containsKey(dataSourceName)) {
+            return Optional.of(connectionMap.get(dataSourceName));
+        }
+        String masterDataSourceName = getMasterDataSourceName(dataSourceName);
+        if (connectionMap.containsKey(masterDataSourceName)) {
+            return Optional.of(connectionMap.get(masterDataSourceName));
+        }
+        if (MasterSlaveDataSource.isDML(sqlStatementType)) {
+            return Optional.absent();
+        }
+        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
+        if (connectionMap.containsKey(slaveDataSourceName)) {
+            return Optional.of(connectionMap.get(slaveDataSourceName));
+        }
+        return Optional.absent();
+    }
+    
+    private String getMasterDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "MASTER");
+    }
+    
+    private String getSlaveDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "SLAVE");
     }
     
     @Override

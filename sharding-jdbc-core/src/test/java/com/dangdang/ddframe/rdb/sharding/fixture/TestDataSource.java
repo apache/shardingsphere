@@ -20,9 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.fixture;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.mockito.Mockito;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.mockito.Mockito.doThrow;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -30,8 +34,15 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     
     private final String name;
     
+    @Setter
+    private boolean throwExceptionWhenClosing;
+    
     @Override
     public Connection getConnection() throws SQLException {
-        return null;
+        Connection result = Mockito.mock(Connection.class);
+        if (throwExceptionWhenClosing) {
+            doThrow(SQLException.class).when(result).close();
+        }
+        return result;
     }
 }
