@@ -65,7 +65,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         return parseContext;
     }
     
-    protected final void stepInQuery() {
+    final void stepInQuery() {
         if (0 == parseContextIndex) {
             parseContextIndex++;
             return;
@@ -77,7 +77,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         this.parseContext = parseContext;
     }
     
-    protected final void stepOutQuery() {
+    final void stepOutQuery() {
         if (null == parseContext.getParentParseContext()) {
             return;
         }
@@ -92,6 +92,11 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     @Override
     public final void printToken(final String token) {
         getSQLBuilder().appendToken(SQLUtil.getExactlyValue(token));
+    }
+    
+    @Override
+    public final void printToken(final String label, final String token) {
+        getSQLBuilder().appendToken(label, SQLUtil.getExactlyValue(token));
     }
     
     /**

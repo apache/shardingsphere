@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import com.google.common.base.Optional;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * 分页对象.
  * 
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public class Limit {
@@ -40,7 +40,38 @@ public class Limit {
     
     private final int rowCount;
     
-    private final Optional<Integer> offsetParameterIndex;
+    private final int offsetParameterIndex;
     
-    private final Optional<Integer> rowCountParameterIndex;
+    private final int rowCountParameterIndex;
+    
+    private final int multiShardingOffset;
+    
+    private final int multiShardingRowCount;
+    
+    
+    public Limit(final int offset, final int rowCount, final int offsetParameterIndex, final int rowCountParameterIndex) {
+        this.offset = offset;
+        this.rowCount = rowCount;
+        this.offsetParameterIndex = offsetParameterIndex;
+        this.rowCountParameterIndex = rowCountParameterIndex;
+        this.multiShardingOffset = 0;
+        this.multiShardingRowCount = offset + rowCount;
+    }
+    
+    public void replaceSQL(final SQLBuilder sqlBuilder, final boolean isVarious) {
+        if (!isVarious) {
+            return;
+        }
+        sqlBuilder.buildSQL(OFFSET_NAME, String.valueOf(multiShardingOffset));
+        sqlBuilder.buildSQL(COUNT_NAME, String.valueOf(multiShardingRowCount));
+    }
+    
+    public void replaceParameters(final List<Object> parameters, final boolean isVarious) {
+        if (offsetParameterIndex > -1) {
+            parameters.set(offsetParameterIndex, isVarious ? multiShardingOffset : offset);
+        }
+        if (rowCountParameterIndex > -1) {
+            parameters.set(rowCountParameterIndex, isVarious ? multiShardingRowCount : rowCount);
+        }
+    }
 }

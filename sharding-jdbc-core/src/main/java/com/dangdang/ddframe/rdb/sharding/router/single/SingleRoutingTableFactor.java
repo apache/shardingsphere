@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -29,20 +28,35 @@ import lombok.ToString;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-@Getter
-@ToString
+@ToString(exclude = "builder")
 public class SingleRoutingTableFactor {
     
+    @Getter
     private final String logicTable;
     
+    @Getter
     private final String actualTable;
+    
+    private SQLBuilder builder;
+    
+    /**
+     * 修改SQL.
+     * 
+     * @param builder SQL构建器
+     * @return 单表路由表单元
+     */
+    public SingleRoutingTableFactor replaceSQL(final SQLBuilder builder) {
+        builder.recordNewToken(logicTable, actualTable);
+        this.builder = builder;
+        return this;
+    }
     
     /**
      * 构建SQL.
      * 
-     * @param builder SQL构建器
+     * @return SQL构建器
      */
-    public void buildSQL(final SQLBuilder builder) {
-        builder.buildSQL(logicTable, actualTable);
+    SQLBuilder buildSQL() {
+        return builder.buildSQLWithNewToken();
     }
 }

@@ -27,7 +27,7 @@ import java.util.List;
  * 
  * @author gaohongtao
  */
-public interface MergeUnit<I, O> {
+interface MergeUnit<I, O> {
     
     /**
      * 合并执行结果.
@@ -35,5 +35,5 @@ public interface MergeUnit<I, O> {
      * @param params 合并前数据 
      * @return 合并后结果
      */
-    O merge(final List<I> params);
+    O merge(List<I> params);
 }

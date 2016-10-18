@@ -18,36 +18,17 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
 
-/**
- * 反射调用JDBC相关方法的工具类.
- * 
- * @author gaohongtao
- */
-@RequiredArgsConstructor
-public final class JdbcMethodInvocation {
+
+public class ParameterListTest {
     
-    @Getter
-    private final Method method;
-    
-    @Getter
-    private final Object[] arguments;
-    
-    /**
-     *  调用方法.
-     * 
-     * @param target 目标对象
-     */
-    public void invoke(final Object target) {
-        try {
-            method.invoke(target, arguments);
-        } catch (final IllegalAccessException | InvocationTargetException ex) {
-            throw new ShardingJdbcException("Invoke jdbc method exception", ex);
-        }
+    @Test(expected = ShardingJdbcException.class)
+    public void recordMethodInvocation() throws Exception {
+        ParameterList list = new ParameterList(PreparedStatement.class);
+        list.recordMethodInvocation(1, "noThatMethod", null , null);
     }
+    
 }

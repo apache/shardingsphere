@@ -55,7 +55,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
     protected void printSelectList(final List<SQLSelectItem> selectList) {
         super.printSelectList(selectList);
         // TODO 提炼成print，或者是否不应该由token的方式替换？
-        getSQLBuilder().appendToken(getParseContext().getAutoGenTokenKey(), false);
+        printToken(getParseContext().getAutoGenTokenKey(), null);
     }
     
     @Override
@@ -166,38 +166,35 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         }
         print("LIMIT ");
         int offset = 0;
-        Optional<Integer> offSetIndex;
+        int offSetIndex = -1;
         if (null != x.getOffset()) {
             if (x.getOffset() instanceof SQLNumericLiteralExpr) {
                 offset = ((SQLNumericLiteralExpr) x.getOffset()).getNumber().intValue();
-                offSetIndex = Optional.absent();
-                printToken(Limit.OFFSET_NAME);
+                printToken(Limit.OFFSET_NAME, String.valueOf(offset));
                 print(", ");
             } else {
                 offset = ((Number) getParameters().get(((SQLVariantRefExpr) x.getOffset()).getIndex())).intValue();
-                offSetIndex = Optional.of(((SQLVariantRefExpr) x.getOffset()).getIndex());
+                offSetIndex = ((SQLVariantRefExpr) x.getOffset()).getIndex();
                 print("?, ");
             }
-        } else {
-            offSetIndex = Optional.absent();
         }
+        
         int rowCount;
-        Optional<Integer> rowCountIndex;
+        int rowCountIndex = -1;
         if (x.getRowCount() instanceof SQLNumericLiteralExpr) {
             rowCount = ((SQLNumericLiteralExpr) x.getRowCount()).getNumber().intValue();
-            rowCountIndex = Optional.absent();
-            printToken(Limit.COUNT_NAME);
+            printToken(Limit.COUNT_NAME, String.valueOf(rowCount));
         } else {
             rowCount = ((Number) getParameters().get(((SQLVariantRefExpr) x.getRowCount()).getIndex())).intValue();
-            rowCountIndex = Optional.of(((SQLVariantRefExpr) x.getRowCount()).getIndex());
+            rowCountIndex = ((SQLVariantRefExpr) x.getRowCount()).getIndex();
             print("?");
         }
         if (offset < 0 || rowCount < 0) {
             throw new SQLParserException("LIMIT offset and row count can not be a negative value");
         }
         // "LIMIT {rowCount} OFFSET {offset}" will transform to "LIMIT {offset}, {rowCount}".So exchange parameter index
-        if (offSetIndex.isPresent() && rowCountIndex.isPresent() && offSetIndex.get() > rowCountIndex.get()) {
-            Optional<Integer> tmp = rowCountIndex;
+        if (offSetIndex > -1 && rowCountIndex > -1 && offSetIndex > rowCountIndex) {
+            int tmp = rowCountIndex;
             rowCountIndex = offSetIndex;
             offSetIndex = tmp;
         }

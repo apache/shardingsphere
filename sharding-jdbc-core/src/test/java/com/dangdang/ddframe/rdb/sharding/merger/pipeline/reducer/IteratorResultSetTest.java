@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.google.common.base.Optional;
 import org.junit.Test;
 
 import java.sql.ResultSet;
@@ -46,7 +45,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForAllData() throws SQLException {
         MergeContext mergeContext = new MergeContext();
-        mergeContext.setLimit(new Limit(1, 10, Optional.<Integer>absent(), Optional.<Integer>absent()));
+        mergeContext.setLimit(new Limit(1, 10, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), mergeContext);
         int count = 0;
         while (resultSet.next()) {
@@ -58,7 +57,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForPartData() throws SQLException {
         MergeContext mergeContext = new MergeContext();
-        mergeContext.setLimit(new Limit(1, 1, Optional.<Integer>absent(), Optional.<Integer>absent()));
+        mergeContext.setLimit(new Limit(1, 1, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), mergeContext);
         int count = 0;
         while (resultSet.next()) {

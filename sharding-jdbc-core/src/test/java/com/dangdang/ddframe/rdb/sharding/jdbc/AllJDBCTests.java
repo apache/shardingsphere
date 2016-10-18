@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
@@ -30,6 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationRe
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedUpdateOperationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.ParameterListTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -51,7 +53,9 @@ import org.junit.runners.Suite;
     ResultSetGetterAdapterTest.class, 
     ResultSetAdapterTest.class, 
     JdbcMethodInvocationTest.class, 
-    MasterSlaveDataSourceTest.class
+    MasterSlaveDataSourceTest.class, 
+    ParameterListTest.class, 
+    AbstractPreparedStatementAdapterTest.class,
     })
 public class AllJDBCTests {
 }

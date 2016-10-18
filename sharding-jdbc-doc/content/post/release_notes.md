@@ -1,5 +1,6 @@
 
 
+
 +++
 date = "2016-02-05T17:03:18+08:00"
 title = "Release Notes"
@@ -9,6 +10,10 @@ weight = 1
 # Release Notes
 
 ## 1.3.3-SNAPSHOT
+
+### 功能提升
+
+1. [ISSUE #59](https://github.com/dangdangdotcom/sharding-jdbc/issues/59) PreparedStatement设置参数时可以根据参数类型调用正确的底层set方法
 
 ### 缺陷修正
 

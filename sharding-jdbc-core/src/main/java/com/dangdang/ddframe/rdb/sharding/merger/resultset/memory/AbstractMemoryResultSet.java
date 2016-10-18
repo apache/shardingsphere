@@ -77,7 +77,7 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
         return false;
     }
     
-    protected abstract void initRows(final List<ResultSet> resultSets) throws SQLException;
+    protected abstract void initRows(List<ResultSet> resultSets) throws SQLException;
     
     protected abstract Optional<? extends ResultSetRow> nextRow() throws SQLException;
     

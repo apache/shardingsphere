@@ -48,11 +48,12 @@ public class PreparedSQLRouter {
         if (null == sqlParsedResult) {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
         } else {
+            engine.setParameters(parameters);
             for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
                 each.setNewConditionValue(parameters);
             }
         }
-        return engine.routeSQL(sqlParsedResult, parameters);
+        return engine.routeSQL(sqlParsedResult);
     }
 }
 

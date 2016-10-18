@@ -54,8 +54,7 @@ public class SingleRoutingDataSource {
     Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
         Collection<SQLExecutionUnit> result = new ArrayList<>();
         for (SingleRoutingTableFactor each : routingTableFactors) {
-            each.buildSQL(sqlBuilder);
-            result.add(new SQLExecutionUnit(dataSource, sqlBuilder));
+            result.add(new SQLExecutionUnit(dataSource, each.replaceSQL(sqlBuilder).buildSQL()));
         }
         return result;
     }

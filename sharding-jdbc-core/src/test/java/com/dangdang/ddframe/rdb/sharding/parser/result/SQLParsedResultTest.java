@@ -60,7 +60,7 @@ public final class SQLParsedResultTest {
                 + "name=Optional.of(id), alias=Optional.of(a), orderByType=DESC), index=Optional.absent(), columnIndex=0)], "
                 + "groupByColumns=[GroupByColumn(super=AbstractSortableColumn(owner=Optional.absent(), name=Optional.of(id), alias=Optional.of(d), orderByType=ASC), columnIndex=0)], "
                 + "aggregationColumns=[AggregationColumn(expression=COUNT(id), aggregationType=COUNT, alias=Optional.of(c), option=Optional.absent(), derivedColumns=[], columnIndex=-1)], "
-                + "limit=Limit(offset=0, rowCount=10, offsetParameterIndex=Optional.absent(), rowCountParameterIndex=Optional.absent())))"));
+                + "limit=Limit(offset=0, rowCount=10, offsetParameterIndex=-1, rowCountParameterIndex=-1, multiShardingOffset=0, multiShardingRowCount=10)))"));
     }
     
     private void generateRouteContext(final RouteContext routeContext) throws IOException {
@@ -88,6 +88,6 @@ public final class SQLParsedResultTest {
         mergeContext.getAggregationColumns().add(new AggregationColumn("COUNT(id)", AggregationType.COUNT, Optional.of("c"), Optional.<String>absent()));
         mergeContext.getOrderByColumns().add(new OrderByColumn(Optional.<String>absent(), "id", Optional.of("a"), OrderByType.DESC));
         mergeContext.getGroupByColumns().add(new GroupByColumn(Optional.<String>absent(), "id", Optional.of("d"), OrderByType.ASC));
-        mergeContext.setLimit(new Limit(0, 10, Optional.<Integer>absent(), Optional.<Integer>absent()));
+        mergeContext.setLimit(new Limit(0, 10, -1, -1));
     }
 }

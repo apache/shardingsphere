@@ -20,32 +20,32 @@ package com.dangdang.ddframe.rdb.sharding.router;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * SQL最小执行单元.
  * 
  * @author gaohongtao
  */
-@Getter
-@Slf4j
 @ToString
+@RequiredArgsConstructor
 @EqualsAndHashCode(exclude = "sqlBuilder")
 public class SQLExecutionUnit {
     
+    @Getter
     private final String dataSource;
     
-    @Setter
     private String sql;
     
     private final SQLBuilder sqlBuilder;
     
-    public SQLExecutionUnit(final String dataSource, final SQLBuilder sqlBuilder) {
-        this.dataSource = dataSource;
-        this.sqlBuilder = sqlBuilder.cloneBuilder();
-        sql = sqlBuilder.toSQL();
-        log.trace("route sql to db: [{}] sql: [{}]", dataSource, sql);
+    public String getSql() {
+        if (null == sql) {
+            sql = sqlBuilder.toSQL();
+        } else {
+            sql = sqlBuilder.isChanged() ? sqlBuilder.toSQL() : sql;
+        }
+        return sql;
     }
 }

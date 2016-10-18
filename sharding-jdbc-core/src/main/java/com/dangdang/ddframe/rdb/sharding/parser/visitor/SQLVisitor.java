@@ -54,4 +54,12 @@ public interface SQLVisitor {
      * @param token 替换标记
      */
     void printToken(String token);
+    
+    /**
+     * 打印替换标记.
+     *
+     * @param label 标签
+     * @param token 替换标记
+     */
+    void printToken(String label, String token);
 }

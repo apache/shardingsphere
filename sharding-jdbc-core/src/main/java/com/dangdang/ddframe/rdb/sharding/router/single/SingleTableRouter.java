@@ -166,11 +166,11 @@ public final class SingleTableRouter {
     }
     
     private void logBeforeRoute(final String type, final String logicTable, final Collection<?> targets, final Collection<String> shardingColumns, final List<ShardingValue<?>> shardingValues) {
-        log.trace("Before {} sharding {} routes db names: {} sharding columns: {} sharding values: {}", type, logicTable, targets, shardingColumns, shardingValues);
+        log.debug("Before {} sharding {} routes db names: {} sharding columns: {} sharding values: {}", type, logicTable, targets, shardingColumns, shardingValues);
     }
     
     private void logAfterRoute(final String type, final String logicTable, final Collection<String> shardingResults) {
-        log.trace("After {} sharding {} result: {}", type, logicTable, shardingResults);
+        log.debug("After {} sharding {} result: {}", type, logicTable, shardingResults);
     }
     
     private SingleRoutingResult generateRoutingResult(final Collection<String> routedDataSources, final Collection<String> routedTables) {

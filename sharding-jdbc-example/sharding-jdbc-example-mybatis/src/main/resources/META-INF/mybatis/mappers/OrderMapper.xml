@@ -4,7 +4,7 @@
     <resultMap id="baseResultMap" type="com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order">
         <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="CLOB"/>
     </resultMap>
     
     <sql id="baseColumnList">
@@ -20,7 +20,7 @@
         VALUES (
         #{orderId,jdbcType=INTEGER},
         #{userId,jdbcType=INTEGER},
-        #{status,jdbcType=VARCHAR}
+        #{status,jdbcType=CLOB}
         );
     </insert>
     

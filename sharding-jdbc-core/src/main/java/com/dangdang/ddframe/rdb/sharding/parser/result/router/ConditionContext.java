@@ -86,6 +86,11 @@ public final class ConditionContext {
         return conditions.values();
     }
     
+    /**
+     * 解析参数中间的新数据.
+     * 
+     * @param parameters 参数列表
+     */
     public void setNewConditionValue(final List<Object> parameters) {
         for (Condition each : conditions.values()) {
             if (each.getValueIndices().isEmpty()) {

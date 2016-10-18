@@ -17,9 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
@@ -34,10 +31,12 @@ import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.VisitorLogProxy;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * SQL解析器工厂.
@@ -60,7 +59,7 @@ public final class SQLParserFactory {
      * @throws SQLParserException SQL解析异常
      */
     public static SQLParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final Collection<String> shardingColumns) throws SQLParserException {
-        log.debug("Logic SQL: {}", sql);
+        log.debug("Logic SQL: {}, {}", sql, parameters);
         SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql).parseStatement();
         log.trace("Get {} SQL Statement", sqlStatement.getClass().getName());
         return new SQLParseEngine(sqlStatement, parameters, getSQLVisitor(databaseType, sqlStatement), shardingColumns);

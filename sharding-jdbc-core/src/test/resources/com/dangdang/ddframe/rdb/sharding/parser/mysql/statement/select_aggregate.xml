@@ -14,7 +14,7 @@
         </aggregation-columns>
     </assert>
     
-    <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order" expected-sql="SELECT AVG(MAX(date)) AS date, AVG(DISTINCT time), order_id[Token(, COUNT(MAX(date)) AS sharding_gen_1, SUM(MAX(date)) AS sharding_gen_2, COUNT(DISTINCT time) AS sharding_gen_3, SUM(time) AS sharding_gen_4)] FROM [Token(order)]">
+    <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order" expected-sql="SELECT AVG(MAX(date)) AS date, AVG(DISTINCT time), order_id[sharding_auto_gen_0(, COUNT(MAX(date)) AS sharding_gen_1, SUM(MAX(date)) AS sharding_gen_2, COUNT(DISTINCT time) AS sharding_gen_3, SUM(time) AS sharding_gen_4)] FROM [Token(order)]">
         <tables>
             <table name="order"/>
         </tables>

@@ -66,7 +66,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
     @Test
     public void assertSetNull() throws SQLException {
         actual.setNull(1, Types.VARCHAR);
-        actual.setNull(1, Types.VARCHAR, "");
+        actual.setNull(2, Types.VARCHAR, "");
         assertParameter(actual, 1, null);
         assertParameter(actual, 2, null);
     }

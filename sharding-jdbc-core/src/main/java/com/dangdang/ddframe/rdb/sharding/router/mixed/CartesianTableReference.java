@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.mixed;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingTableFactor;
-
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 笛卡尔积表路由组.
@@ -42,9 +41,10 @@ final class CartesianTableReference {
         this.routingTableFactors = new ArrayList<>(routingTableFactors);
     }
     
-    void buildSQL(final SQLBuilder builder) {
+    SQLBuilder buildSQL(final SQLBuilder builder) {
         for (SingleRoutingTableFactor each : routingTableFactors) {
-            each.buildSQL(builder);
+            each.replaceSQL(builder);
         }
+        return builder.buildSQLWithNewToken();
     }
 }

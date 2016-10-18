@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.binding;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingTableFactor;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Binding表路由表单元.
@@ -43,10 +42,11 @@ final class BindingRoutingTableFactor extends SingleRoutingTableFactor {
     }
     
     @Override
-    public void buildSQL(final SQLBuilder builder) {
-        super.buildSQL(builder);
+    public BindingRoutingTableFactor replaceSQL(final SQLBuilder builder) {
+        super.replaceSQL(builder);
         for (BindingRoutingTableFactor each : bindingRoutingTableFactors) {
-            each.buildSQL(builder);
+            each.replaceSQL(builder);
         }
+        return this;
     }
 }
