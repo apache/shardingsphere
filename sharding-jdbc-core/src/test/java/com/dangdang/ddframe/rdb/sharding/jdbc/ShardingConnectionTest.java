@@ -103,4 +103,11 @@ public class ShardingConnectionTest {
         assertSame(masterConnection, connection.getConnection(DS_NAME, SQLStatementType.SELECT));
         assertSame(masterConnection, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
     }
+    
+    @Test
+    public void releaseBrokenConnectionTest() throws Exception {
+        Connection conn = connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
+        connection.releaseBrokenConnection(conn);
+        assertNotSame(conn, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+    }
 }

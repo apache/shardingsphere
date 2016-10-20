@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +66,26 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return result;
     }
     
+    /**
+     * 释放缓存中已经中断的数据库连接.
+     * 
+     * @param brokenConnection 已经中断的数据库连接
+     */
+    public void releaseBrokenConnection(final Connection brokenConnection) {
+        Preconditions.checkNotNull(brokenConnection);
+        closeConnection(brokenConnection);
+        connectionMap.values().remove(brokenConnection);
+    }
+    
+    private void closeConnection(final Connection connection) {
+        if (null != connection) {
+            try {
+                connection.close();
+            } catch (final SQLException ignored) {
+            }
+        }
+    }
+    
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLStatementType.SELECT).getMetaData();
@@ -93,13 +114,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (!MasterSlaveDataSource.isDML(sqlStatementType)) {
             return slaveDataSourceName;
         }
-        Connection slaveConnection = connectionMap.remove(slaveDataSourceName);
-        if (null != slaveConnection) {
-            try {
-                slaveConnection.close();
-            } catch (final SQLException ignored) {
-            }
-        }
+        closeConnection(connectionMap.remove(slaveDataSourceName));
         return getMasterDataSourceName(dataSourceName);
     }
     
