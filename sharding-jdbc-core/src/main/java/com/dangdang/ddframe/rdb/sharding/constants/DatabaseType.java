@@ -38,6 +38,11 @@ public enum DatabaseType {
         try {
             return DatabaseType.valueOf(databaseProductName);
         } catch (final IllegalArgumentException ex) {
+            String name = databaseProductName.toLowerCase();
+            if (name.equals("microsoft sql server")) {
+                return SQLServer;
+            }
+            
             throw new DatabaseTypeUnsupportedException(databaseProductName);
         }
     }
