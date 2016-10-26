@@ -1,0 +1,2548 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Sharding-JDBC</title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/post/</link>
+    <description>Recent content in Posts on Sharding-JDBC</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Feb 2016 17:03:18 +0800</lastBuildDate>
+    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Release Notes</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/</link>
+      <pubDate>Fri, 05 Feb 2016 17:03:18 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/</guid>
+      <description>
+
+&lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
+
+&lt;h2 id=&#34;1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.2&lt;/h2&gt;
+
+&lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/79&#34;&gt;ISSUE #79&lt;/a&gt; 关于MySQL 分页limit&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/36&#34;&gt;ISSUE #36&lt;/a&gt; ShardingPreparedStatement无法反复设置参数&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/114&#34;&gt;ISSUE #114&lt;/a&gt; ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/33&#34;&gt;ISSUE #33&lt;/a&gt; Limit支持问题&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/124&#34;&gt;ISSUE #124&lt;/a&gt; com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/141&#34;&gt;ISSUE #141&lt;/a&gt; 多线程执行器参数设置失效&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.1&lt;/h2&gt;
+
+&lt;h3 id=&#34;功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/91&#34;&gt;ISSUE #91&lt;/a&gt; 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/92&#34;&gt;ISSUE #92&lt;/a&gt; 查询类DQL语句事件发送&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/89&#34;&gt;ISSUE #89&lt;/a&gt; 读写分离和分片的hint一起使用导致冲突&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/95&#34;&gt;ISSUE #95&lt;/a&gt; 同一线程内写入操作后的读操作均从主库读取改为同一线程且同一连接内&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.3.0&lt;/h2&gt;
+
+&lt;h3 id=&#34;新功能:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/85&#34;&gt;ISSUE #85&lt;/a&gt; 读写分离&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/82&#34;&gt;ISSUE #82&lt;/a&gt; TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/88&#34;&gt;ISSUE #88&lt;/a&gt; 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/81&#34;&gt;ISSUE #81&lt;/a&gt; 关联表查询使用or查询条件解析结果异常&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-2-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.1&lt;/h2&gt;
+
+&lt;h3 id=&#34;结构调整:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/60&#34;&gt;ISSUE #60&lt;/a&gt; API调整，抽离ShardingDataSource，使用工厂代替&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/76&#34;&gt;ISSUE #76&lt;/a&gt; ShardingRule和TableRule调整为Builder模式&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/77&#34;&gt;ISSUE #77&lt;/a&gt; ShardingRule和TableRule调整为Builder模式&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/61&#34;&gt;ISSUE #61&lt;/a&gt; 在ShardingValue类中加入逻辑表名&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/66&#34;&gt;ISSUE #66&lt;/a&gt; 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/72&#34;&gt;ISSUE #72&lt;/a&gt; 对于select union all形式的批量插入支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/78&#34;&gt;ISSUE #78&lt;/a&gt; 简化只分库配置，无需配置逻辑表和真实表对应关系&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/80&#34;&gt;ISSUE #80&lt;/a&gt; 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/63&#34;&gt;ISSUE #63&lt;/a&gt; ORDER BY与GROUP BY衍生列未添加表名或表别名&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/65&#34;&gt;ISSUE #65&lt;/a&gt; 解析条件上下文性能提升&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/67&#34;&gt;ISSUE #67&lt;/a&gt; 分片路由到多表时柔性事务日志无法删除&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/71&#34;&gt;ISSUE #71&lt;/a&gt; 路由单分片LIMIT的OFFSET计算错误&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/75&#34;&gt;ISSUE #75&lt;/a&gt; MemoryTransactionLogStorage重试次数更新并发问题&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.2.0&lt;/h2&gt;
+
+&lt;h3 id=&#34;新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/53&#34;&gt;ISSUE #53&lt;/a&gt; 动态表配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/58&#34;&gt;ISSUE #58&lt;/a&gt; 柔性事务：最大努力送达型初始版本&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;结构调整&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/49&#34;&gt;ISSUE #49&lt;/a&gt; 调整属性配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/51&#34;&gt;ISSUE #51&lt;/a&gt; 重构Hint接口&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/48&#34;&gt;ISSUE #48&lt;/a&gt; yaml文件读取后未关闭&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/57&#34;&gt;ISSUE #57&lt;/a&gt; SQL解析子查询改进&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.1.0&lt;/h2&gt;
+
+&lt;h3 id=&#34;新功能-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;新功能&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/40&#34;&gt;ISSUE #40&lt;/a&gt; 支持YAML文件配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/41&#34;&gt;ISSUE #41&lt;/a&gt; 支持Spring命名空间配置&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/42&#34;&gt;ISSUE #42&lt;/a&gt; 支持inline表达式配置&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.1&lt;/h2&gt;
+
+&lt;h3 id=&#34;功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/13&#34;&gt;ISSUE #13&lt;/a&gt; Insert 语句 没有写列名 进行了全路由&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/16&#34;&gt;ISSUE #16&lt;/a&gt; 改造多线程执行模型&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/18&#34;&gt;ISSUE #18&lt;/a&gt; 查询Count时，使用getObject()取数会报异常&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/19&#34;&gt;ISSUE #19&lt;/a&gt; sum和avg函数，不加别名不执行merger，加了空指针异常&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/38&#34;&gt;ISSUE #38&lt;/a&gt; JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.0.0&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;初始版本。&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Spring命名空间和Yaml配置</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/</link>
+      <pubDate>Fri, 25 Mar 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/</guid>
+      <description>
+
+&lt;h1 id=&#34;yaml配置:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Yaml配置&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖:a66b35d20295cb764719ac8bd35837ec&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-config-yaml&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;java示例:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Java示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    DataSource dataSource = new YamlShardingDataSource(yamlFile);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置示例:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;dataSource:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password: 
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password: 
+    
+defaultDataSourceName: ds_0
+
+tables:
+  config:
+    actualTables: t_config
+    
+  t_order: 
+    actualTables: t_order_${0..1}
+    tableStrategy: &amp;amp;table001
+      shardingColumns: order_id
+      algorithmExpression: t_order_${order_id.longValue() % 2}
+  
+  #绑定表中其余的表的策略与t_order的策略相同
+  t_order_item:
+    actualTables: t_order_item_${0..1}
+    tableStrategy: *table001
+
+bindingTables:
+  - tableNames: t_order,t_order_item
+  - tableNames: ...
+
+defaultDatabaseStrategy:
+  shardingColumns: user_id
+  algorithmExpression: ds_${user_id.longValue() % 2}
+
+defaultTableStrategy:
+  shardingColumns: id, order_id
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+
+props:
+  metrics.enable: false
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置项说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置项说明&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;dataSource: 数据源配置
+  &amp;lt;data_source_name&amp;gt; 可配置多个: !!数据库连接池实现类
+    driverClassName: 数据库驱动类名
+    url: 数据库url连接
+    username: 数据库用户名
+    password: 数据库密码
+    ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
+  
+tables: 分库分表配置，可配置多个logic_table_name
+    &amp;lt;logic_table_name&amp;gt;: 逻辑表名
+        dynamic: 是否为动态表
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
+        databaseStrategy: 分库策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+        tableStrategy: 分表策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  bindingTables: 绑定表列表
+  - tableNames: 逻辑表名列表，多个&amp;lt;logic_table_name&amp;gt;以逗号分隔
+  
+defaultDatabaseStrategy: 默认数据库分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+  algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  
+defaultTableStrategy: 默认数据表分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+  algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
+
+props: 属性配置(可选)
+    metrics.enable: 是否开启度量采集，默认值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
+    metrics.logger.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
+    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Yaml格式特别说明&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;!!&lt;/code&gt; 表示实现类&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;&amp;amp;&lt;/code&gt; 表示变量定义&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;*&lt;/code&gt; 表示变量引用&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;-&lt;/code&gt; 表示多个&lt;/p&gt;
+
+&lt;h1 id=&#34;spring命名空间配置:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Spring命名空间配置&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖-1:a66b35d20295cb764719ac8bd35837ec&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-config-spring&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;配置示例-1:a66b35d20295cb764719ac8bd35837ec&#34;&gt;配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+    xmlns:rdb=&amp;quot;http://www.dangdang.com/schema/ddframe/rdb&amp;quot; 
+    xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &amp;quot;&amp;gt;
+    &amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;bean id=&amp;quot;dbtbl_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;rdb:strategy id=&amp;quot;databaseStrategy&amp;quot; sharding-columns=&amp;quot;user_id&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloDatabaseShardingAlgorithm&amp;quot;/&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;tableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&amp;quot;/&amp;gt;
+
+    &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0,dbtbl_1&amp;quot; default-data-source=&amp;quot;dbtbl_0&amp;quot;&amp;gt;
+            &amp;lt;rdb:table-rules&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;tableStrategy&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:table-rules&amp;gt;
+            &amp;lt;rdb:binding-table-rules&amp;gt;
+                &amp;lt;rdb:binding-table-rule logic-tables=&amp;quot;t_order, t_order_item&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:binding-table-rules&amp;gt;
+            &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${id.longValue() % 2 + 1}&amp;quot;/&amp;gt;
+        &amp;lt;/rdb:sharding-rule&amp;gt;
+        &amp;lt;rdb:props&amp;gt;
+            &amp;lt;prop key=&amp;quot;metrics.enable&amp;quot;&amp;gt;true&amp;lt;/prop&amp;gt;
+        &amp;lt;/rdb:props&amp;gt;
+    &amp;lt;/rdb:data-source&amp;gt;
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;标签说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;标签说明&lt;/h2&gt;
+
+&lt;h3 id=&#34;rdb-data-source:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:data-source/&amp;gt;&lt;/h3&gt;
+
+&lt;p&gt;定义sharding-jdbc数据源&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;id&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;Spring Bean ID&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;sharding-rule&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;binding-table-rules&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;绑定表规则&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-database-strategy&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;默认分库策略&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-table-strategy&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;默认分表策略&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;props&lt;code&gt;?&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;相关属性配置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-sharding-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:sharding-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;data-sources&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;数据源Bean列表，多个Bean以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;default-data-source&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认数据源名称，未配置分片规则的表将通过默认数据源定位&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;table-rules&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-table-rules:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:table-rules/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;table-rule&lt;code&gt;+&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片规则&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-table-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:table-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;logic-table&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;逻辑表名&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;dynamic&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;是否动态表&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;actual-tables&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;data-source-names&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;database-strategy&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分库策略id, 如果不填需配置&lt;code&gt;&amp;lt;rdb:default-database-strategy/&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;table-strategy&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分表策略，对应&lt;code&gt;&amp;lt;rdb:strategy&amp;gt;&lt;/code&gt;中分表策略id, 如果不填需配置&lt;code&gt;&amp;lt;rdb:default-table-strategy/&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:binding-table-rules/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;binding-table-rule&lt;/td&gt;
+&lt;td&gt;标签&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;绑定规则&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:binding-table-rule/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;logic-tables&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;逻辑表名，多个表名以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-default-database-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:default-database-strategy/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分库算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-default-table-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:default-table-strategy/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;默认分表算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-strategy:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:strategy/&amp;gt;&lt;code&gt;*&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;定义数据分库或分表策略&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;id&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;Spring Bean ID&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;sharding-columns&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;分片列名，多个列以逗号分隔&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-class&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;Class&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与&lt;code&gt;algorithm-expression&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;algorithm-expression&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;分库或分表算法表达式，与&lt;code&gt;algorithm-class&lt;/code&gt;有且仅有一个出现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;rdb-props:a66b35d20295cb764719ac8bd35837ec&#34;&gt;&amp;lt;rdb:props/&amp;gt;&lt;/h3&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;数据类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;metrics.enable&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;是否开启度量采集，默认为false不开启&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;metrics.millisecond.period&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;度量输出周期，单位为毫秒&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;metrics.logger.name&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;度量输出在日志中的标识名称&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;executor.min.idle.size&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;最小空闲工作线程数量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;executor.max.size&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;最大工作线程数量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;executor.max.idle.timeout.millisecond&lt;/td&gt;
+&lt;td&gt;属性&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;工作线程空闲时超时时间，默认以毫秒为单位&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;spring格式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;Spring格式特别说明&lt;/h3&gt;
+
+&lt;p&gt;如需使用inline表达式，需配置&lt;code&gt;ignore-unresolvable&lt;/code&gt;为&lt;code&gt;true&lt;/code&gt;，否则placeholder会把inline表达式当成属性key值导致出错.&lt;/p&gt;
+
+&lt;h1 id=&#34;分片算法表达式语法说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;分片算法表达式语法说明&lt;/h1&gt;
+
+&lt;h2 id=&#34;inline表达式特别说明:a66b35d20295cb764719ac8bd35837ec&#34;&gt;inline表达式特别说明&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;${begin..end}&lt;/code&gt; 表示范围区间&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;${[unit1, unit2, unitX]}&lt;/code&gt; 表示枚举值&lt;/p&gt;
+
+&lt;p&gt;inline表达式中连续多个&lt;code&gt;${...}&lt;/code&gt;表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-groovy&#34;&gt;dbtbl_${[online, offline]}_${1..3}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最终会解析为&lt;code&gt;dbtbl_online_1&lt;/code&gt;，&lt;code&gt;dbtbl_online_2&lt;/code&gt;，&lt;code&gt;dbtbl_online_3&lt;/code&gt;，&lt;code&gt;dbtbl_offline_1&lt;/code&gt;，&lt;code&gt;dbtbl_offline_2&lt;/code&gt;和&lt;code&gt;dbtbl_ offline_3&lt;/code&gt;这6张表。&lt;/p&gt;
+
+&lt;h2 id=&#34;字符串内嵌groovy代码:a66b35d20295cb764719ac8bd35837ec&#34;&gt;字符串内嵌groovy代码&lt;/h2&gt;
+
+&lt;p&gt;表达式本质上是一段字符串，字符串中使用&lt;code&gt;${}&lt;/code&gt;来嵌入&lt;code&gt;groovy&lt;/code&gt;代码。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-groovy&#34;&gt;data_source_${id.longValue() % 2 + 1}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上面的表达式中&lt;code&gt;data_source_&lt;/code&gt;是字符串前缀，&lt;code&gt;id.longValue() % 2 + 1&lt;/code&gt;是&lt;code&gt;groovy&lt;/code&gt;代码。&lt;/p&gt;
+
+&lt;h2 id=&#34;分区键值获取:a66b35d20295cb764719ac8bd35837ec&#34;&gt;分区键值获取&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;groovy&lt;/code&gt;代码中可以使用分区键的名字直接获取表达式的值对象。&lt;/p&gt;
+
+&lt;p&gt;该对象是&lt;code&gt;com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapper&lt;/code&gt;类型的对象。&lt;/p&gt;
+
+&lt;p&gt;该类中提供了一些方法，方便数据类型的转换。包装的原始类型一般为&lt;code&gt;Number&lt;/code&gt;，&lt;code&gt;java.util.Date&lt;/code&gt;，&lt;code&gt;String&lt;/code&gt; 三种类型。使用类中的方法可以将这三种类型转换为需要的其他类型。&lt;/p&gt;
+
+&lt;p&gt;方法列表如下：&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;方法名&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;入参&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;返回类型&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;longValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;doubleValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;double&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;dateValue(String format)&lt;/td&gt;
+&lt;td&gt;时间格式化表达式&lt;/td&gt;
+&lt;td&gt;java.util.Date&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;dateValue()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;java.util.Date&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;toString(String format)&lt;/td&gt;
+&lt;td&gt;时间格式化表达式&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;toString()&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用指南</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</guid>
+      <description>
+
+&lt;h1 id=&#34;使用指南:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;使用指南&lt;/h1&gt;
+
+&lt;p&gt;阅读本指南前，请先阅读快速起步。本文档使用更复杂的场景进一步介绍&lt;code&gt;Sharding-JDBC&lt;/code&gt;的分库分表能力。&lt;/p&gt;
+
+&lt;h2 id=&#34;数据库模式:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据库模式&lt;/h2&gt;
+
+&lt;p&gt;本文档中提供了两个数据源&lt;code&gt;db0&lt;/code&gt;和&lt;code&gt;db1&lt;/code&gt;，每个数据源之中包含了两组表&lt;code&gt;t_order_0&lt;/code&gt;和&lt;code&gt;t_order_1&lt;/code&gt;，&lt;code&gt;t_order_item_0&lt;/code&gt;和&lt;code&gt;t_order_item_1&lt;/code&gt;。这两组表的建表语句为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;CREATE TABLE IF NOT EXISTS `t_order_x` (
+  `order_id` INT NOT NULL,
+  `user_id`  INT NOT NULL,
+  PRIMARY KEY (`order_id`)
+);
+CREATE TABLE IF NOT EXISTS `t_order_item_x` (
+  `item_id`  INT NOT NULL,
+  `order_id` INT NOT NULL,
+  `user_id`  INT NOT NULL,
+  PRIMARY KEY (`item_id`)
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;逻辑表与实际表映射关系:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;逻辑表与实际表映射关系&lt;/h2&gt;
+
+&lt;h3 id=&#34;均匀分布:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;均匀分布&lt;/h3&gt;
+
+&lt;p&gt;数据表在每个数据源内呈现均匀分布的态势&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db0
+  ├── t_order_0 
+  └── t_order_1 
+db1
+  ├── t_order_0 
+  └── t_order_1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;表规则可以使用默认的配置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)).dataSourceRule(dataSourceRule).build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;自定义分布:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;自定义分布&lt;/h3&gt;
+
+&lt;p&gt;数据表呈现有特定规则的分布&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db0
+  ├── t_order_0 
+  └── t_order_1 
+db1
+  ├── t_order_2
+  ├── t_order_3
+  └── t_order_4
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;表规则可以指定每张表在数据源中的分布情况&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actualTables(Arrays.asList(&amp;quot;db0.t_order_0&amp;quot;, &amp;quot;db0.t_order_1&amp;quot;, &amp;quot;db1.t_order_2&amp;quot;, &amp;quot;db1.t_order_3&amp;quot;, &amp;quot;db1.t_order_4&amp;quot;)).dataSourceRule(dataSourceRule).build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;本教程采用的数据分布例子:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;本教程采用的数据分布例子&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;db0
+  ├── t_order_0               user_id为偶数   order_id为偶数
+  ├── t_order_1               user_id为偶数   order_id为奇数
+  ├── t_order_item_0          user_id为偶数   order_id为偶数
+  └── t_order_item_1          user_id为偶数   order_id为奇数
+db1
+  ├── t_order_0               user_id为奇数   order_id为偶数
+  ├── t_order_1               user_id为奇数   order_id为奇数
+  ├── t_order_item_0          user_id为奇数   order_id为偶数
+  └── t_order_item_1          user_id为奇数   order_id为奇数
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;逻辑表与实际表:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;逻辑表与实际表&lt;/h2&gt;
+
+&lt;p&gt;配置分库分表的目的是将原有一张表的数据分散到不同库不同表中，且不改变原有&lt;code&gt;SQL&lt;/code&gt;语句的情况下来使用这一张表。那么从一张表到多张的映射关系需要使用逻辑表与实际表这两种概念。下面通过一个例子来解释一下。假设在使用&lt;code&gt;PreparedStatement&lt;/code&gt;访问数据库，&lt;code&gt;SQL&lt;/code&gt;如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from t_order where user_id = ? and order_id = ?;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当&lt;code&gt;user_id=0&lt;/code&gt;且&lt;code&gt;order=0&lt;/code&gt;时，&lt;code&gt;Sharding-JDBC&lt;/code&gt;将会将&lt;code&gt;SQL&lt;/code&gt;语句转换为如下形式：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from db0.t_order_0 where user_id = ? and order_id = ?;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中原始&lt;code&gt;SQL&lt;/code&gt;中的&lt;code&gt;t_order&lt;/code&gt;就是 &lt;strong&gt;逻辑表&lt;/strong&gt;，而转换后的&lt;code&gt;db0.t_order_0&lt;/code&gt;就是 &lt;strong&gt;实际表&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;规则配置:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;规则配置&lt;/h2&gt;
+
+&lt;p&gt;以上分库分表的形式&lt;code&gt;Sharding-JDBC&lt;/code&gt;是通过规则配置来进行的描述的，下面讲通过几个小节来描述规则的详细配置：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+        .build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;数据源配置:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据源配置&lt;/h2&gt;
+
+&lt;p&gt;首先我们来构造&lt;code&gt;DataSourceRule&lt;/code&gt;对象，它是来描述数据源的分布规则的。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里构造器需要一个入参：数据源名称与真实数据源之间的映射关系，这个关系的构造方法如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(2);
+dataSourceMap.put(&amp;quot;ds_0&amp;quot;, createDataSource(&amp;quot;ds_0&amp;quot;));
+dataSourceMap.put(&amp;quot;ds_1&amp;quot;, createDataSource(&amp;quot;ds_1&amp;quot;));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;真实的数据源可以使用任意一种数据库连接池，这里使用DBCP来举例&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;private static DataSource createDataSource(final String dataSourceName) {
+    BasicDataSource result = new BasicDataSource();
+    result.setDriverClassName(com.mysql.jdbc.Driver.class.getName());
+    result.setUrl(String.format(&amp;quot;jdbc:mysql://localhost:3306/%s&amp;quot;, dataSourceName));
+    result.setUsername(&amp;quot;root&amp;quot;);
+    result.setPassword(&amp;quot;&amp;quot;);
+    return result;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;策略配置:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;策略配置&lt;/h2&gt;
+
+&lt;h3 id=&#34;数据源策略与表策略:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;数据源策略与表策略&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/StrategyClass.900.png&#34; alt=&#34;策略类图&#34; /&gt;
+Sharding-JDBC认为对于分片策略存有两种维度
+- 数据源分片策略&lt;code&gt;DatabaseShardingStrategy&lt;/code&gt;：数据被分配的目标数据源
+- 表分片策略&lt;code&gt;TableShardingStrategy&lt;/code&gt;：数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的
+这里注意的是两种策略的API完全相同，以下针对策略API的讲解将适用于这两种策略&lt;/p&gt;
+
+&lt;h3 id=&#34;全局默认策略与特定表策略:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;全局默认策略与特定表策略&lt;/h3&gt;
+
+&lt;p&gt;策略是作用在特定的表规则上的，数据源策略与表策略与特定表相关&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+         .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+         .dataSourceRule(dataSourceRule)
+         .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+         .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+         .build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果分片规则中的所有表或大部分表的分片策略相同，可以使用默认策略来简化配置。以下两种配置是等价的:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;  //使用了默认策略配置
+  TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+          .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&amp;quot;t_order_item&amp;quot;)
+            .actualTables(Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;)
+            .dataSourceRule(dataSourceRule)
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;  //未使用默认策略配置
+  TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;)
+          .actualTables(Arrays.asList(&amp;quot;t_order_0&amp;quot;, &amp;quot;t_order_1&amp;quot;)
+          .dataSourceRule(dataSourceRule)
+          .build();
+  TableRule orderItemTableRule = TableRule.builder(&amp;quot;t_order_item&amp;quot;)
+            .actualTables(Arrays.asList(&amp;quot;t_order_item_0&amp;quot;, &amp;quot;t_order_item_1&amp;quot;)
+            .dataSourceRule(dataSourceRule)
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
+  ShardingRule shardingRule = ShardingRule.builder()
+            .dataSourceRule(dataSourceRule)
+            .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+            .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;user_id&amp;quot;, new ModuloDatabaseShardingAlgorithm()))
+            .tableShardingStrategy(new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new ModuloTableShardingAlgorithm())))
+            .build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;分片键:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片键&lt;/h3&gt;
+
+&lt;p&gt;分片键是分片策略的第一个参数。分片键表示的是SQL语句中WHERE中的条件列。分片键可以配置多个&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;单分片策略&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new SingleKeyShardingAlgorithm()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;多分片策略&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;new TableShardingStrategy(Arrays.asList(&amp;quot;order_id&amp;quot;, &amp;quot;order_type&amp;quot;, &amp;quot;order_date&amp;quot;), new MultiKeyShardingAlgorithm()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;分片算法:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片算法&lt;/h3&gt;
+
+&lt;p&gt;分片算法接口类图关系如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/AlgorithmClass.900.png&#34; alt=&#34;算法&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;绑定表:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;绑定表&lt;/h3&gt;
+
+&lt;p&gt;绑定表代表一组表，这组表的逻辑表与实际表之间的映射关系是相同的。比如&lt;code&gt;t_order&lt;/code&gt;与&lt;code&gt;t_order_item&lt;/code&gt;就是这样一组绑定表关系,它们的分库与分表策略是完全相同的,那么可以使用它们的表规则将它们配置成绑定表&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么在进行SQL路由时，如果SQL为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中&lt;code&gt;t_order&lt;/code&gt;在FROM的最左侧，Sharding-JDBC将会以它作为整个绑定表的主表。所有路由计算将会只使用主表的策略，那么&lt;code&gt;t_order_item&lt;/code&gt;表的分片计算将会使用&lt;code&gt;t_order&lt;/code&gt;的条件。故绑定表之间的分区键要完全相同。&lt;/p&gt;
+
+&lt;h2 id=&#34;分片算法详解:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片算法详解&lt;/h2&gt;
+
+&lt;h3 id=&#34;单分片键算法与多分片键算法:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;单分片键算法与多分片键算法&lt;/h3&gt;
+
+&lt;p&gt;这两种算法从名字上就可以知道前者是针对只有一个分片键，后者是针对有多个分片键的。单分片键算法是多分片键算法的一种简便形式，所以完全可以使用多分片算法去替代单分片键算法。下面两种形式是等价的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;new TableShardingStrategy(&amp;quot;order_id&amp;quot;, new SingleKeyShardingAlgorithm()))
+new TableShardingStrategy(Arrays.asList(&amp;quot;order_id&amp;quot;), new MultiKeyShardingAlgorithm()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同时在算法内部，&lt;code&gt;doSharding&lt;/code&gt;等方法的&lt;code&gt;shardingValue&lt;/code&gt;入参根据使用算法类型不同而不同
+单分片键算法，方法签名&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public String doEqualSharding(final Collection&amp;lt;String&amp;gt; dataSourceNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue) 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多分片键算法，方法签名&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final Collection&amp;lt;ShardingValue&amp;lt;?&amp;gt;&amp;gt; shardingValues)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;分片键算法类型:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;分片键算法类型&lt;/h3&gt;
+
+&lt;p&gt;根据数据源策略与表策略、单分片与多分片，这两种组合，一共产生了4种可供实现的分片算法的接口&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;单分片键数据源分片算法&lt;code&gt;SingleKeyDatabaseShardingAlgorithm&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;单分片表分片算法&lt;code&gt;SingleKeyTableShardingAlgorithm&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;多分片键数据源分片算法&lt;code&gt;MultipleKeyDatabaseShardingAlgorithm&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;多分片表分片算法&lt;code&gt;MultipleKeyTableShardingAlgorithm&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;单分片键算法:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;单分片键算法&lt;/h3&gt;
+
+&lt;p&gt;单分片键算法需要实现三个方法，下面以”单分片键数据源分片算法“举例&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Override
+public String doEqualSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue)
+
+@Override
+public Collection&amp;lt;String&amp;gt; doInSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue)
+
+@Override
+public Collection&amp;lt;String&amp;gt; doBetweenSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这三种算法作用如下
+- &lt;code&gt;doEqualSharding&lt;/code&gt;在WHERE使用&lt;code&gt;=&lt;/code&gt;作为条件分片键。算法中使用&lt;code&gt;shardingValue.getValue()&lt;/code&gt;获取等&lt;code&gt;=&lt;/code&gt;后的值
+- &lt;code&gt;doInSharding&lt;/code&gt;在WHERE使用&lt;code&gt;IN&lt;/code&gt;作为条件分片键。算法中使用&lt;code&gt;shardingValue.getValues()&lt;/code&gt;获取&lt;code&gt;IN&lt;/code&gt;后的值
+- &lt;code&gt;doBetweenSharding&lt;/code&gt;在WHERE使用&lt;code&gt;BETWEEN&lt;/code&gt;作为条件分片键。算法中使用&lt;code&gt;shardingValue.getValueRange()&lt;/code&gt;获取&lt;code&gt;BETWEEN&lt;/code&gt;后的值&lt;/p&gt;
+
+&lt;p&gt;下面是一个余2的算法的例子，当分片键的值除以2余数就是实际表的结尾。注意注释中提供了一些算法生成SQL的结果，参数&lt;code&gt;tableNames&lt;/code&gt;集合中有两个参数&lt;code&gt;t_order_0&lt;/code&gt;和&lt;code&gt;t_order_1&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt; public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm&amp;lt;Integer&amp;gt; {
+    
+    /**
+    *  select * from t_order from t_order where order_id = 11 
+    *          └── SELECT *  FROM t_order_1 WHERE order_id = 11
+    *  select * from t_order from t_order where order_id = 44
+    *          └── SELECT *  FROM t_order_0 WHERE order_id = 44
+    */
+    public String doEqualSharding(final Collection&amp;lt;String&amp;gt; tableNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue) {
+        for (String each : tableNames) {
+            if (each.endsWith(shardingValue.getValue() % 2 + &amp;quot;&amp;quot;)) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+    
+    /**
+    *  select * from t_order from t_order where order_id in (11,44)  
+    *          ├── SELECT *  FROM t_order_0 WHERE order_id IN (11,44) 
+    *          └── SELECT *  FROM t_order_1 WHERE order_id IN (11,44) 
+    *  select * from t_order from t_order where order_id in (11,13,15)  
+    *          └── SELECT *  FROM t_order_1 WHERE order_id IN (11,13,15)  
+    *  select * from t_order from t_order where order_id in (22,24,26)  
+    *          └──SELECT *  FROM t_order_0 WHERE order_id IN (22,24,26) 
+    */
+    public Collection&amp;lt;String&amp;gt; doInSharding(final Collection&amp;lt;String&amp;gt; tableNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue) {
+        Collection&amp;lt;String&amp;gt; result = new LinkedHashSet&amp;lt;&amp;gt;(tableNames.size());
+        for (Integer value : shardingValue.getValues()) {
+            for (String tableName : tableNames) {
+                if (tableName.endsWith(value % 2 + &amp;quot;&amp;quot;)) {
+                    result.add(tableName);
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+    *  select * from t_order from t_order where order_id between 10 and 20 
+    *          ├── SELECT *  FROM t_order_0 WHERE order_id BETWEEN 10 AND 20 
+    *          └── SELECT *  FROM t_order_1 WHERE order_id BETWEEN 10 AND 20 
+    */
+    public Collection&amp;lt;String&amp;gt; doBetweenSharding(final Collection&amp;lt;String&amp;gt; tableNames, final ShardingValue&amp;lt;Integer&amp;gt; shardingValue) {
+        Collection&amp;lt;String&amp;gt; result = new LinkedHashSet&amp;lt;&amp;gt;(tableNames.size());
+        Range&amp;lt;Integer&amp;gt; range = (Range&amp;lt;Integer&amp;gt;) shardingValue.getValueRange();
+        for (Integer i = range.lowerEndpoint(); i &amp;lt;= range.upperEndpoint(); i++) {
+            for (String each : tableNames) {
+                if (each.endsWith(i % 2 + &amp;quot;&amp;quot;)) {
+                    result.add(each);
+                }
+            }
+        }
+        return result;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;多分片键算法:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;多分片键算法&lt;/h3&gt;
+
+&lt;p&gt;多分片键试用于使用场景比较复杂，为了能提供更高的灵活性，故只提供实现一个方法。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Override
+public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final Collection&amp;lt;ShardingValue&amp;lt;?&amp;gt;&amp;gt; shardingValues)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;算法实现的时候根据&lt;code&gt;shardingValue.getType()&lt;/code&gt;来获取条件是&lt;code&gt;=&lt;/code&gt;，&lt;code&gt;IN&lt;/code&gt;或者&lt;code&gt;BETWEEN&lt;/code&gt;。然后根据业务进行灵活的实现。&lt;/p&gt;
+
+&lt;p&gt;如果表的数据分布如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;db0
+  ├── t_order_00               user_id以a偶数   order_id为偶数
+  ├── t_order_01               user_id以a偶数   order_id为奇数
+  ├── t_order_10               user_id以b奇数   order_id为偶数
+  └── t_order_11               user_id以b奇数   order_id为奇数
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;算法实现如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public final class MultipleKeysModuloTableShardingAlgorithm implements MultipleKeysTableShardingAlgorithm {
+    
+    @Override
+    public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;String&amp;gt; availableTargetNames, final Collection&amp;lt;ShardingValue&amp;lt;?&amp;gt;&amp;gt; shardingValues) {
+        Set&amp;lt;Integer&amp;gt; orderIdValueSet = getShardingValue(shardingValues, &amp;quot;order_id&amp;quot;);
+        Set&amp;lt;Integer&amp;gt; userIdValueSet = getShardingValue(shardingValues, &amp;quot;user_id&amp;quot;);
+    
+        List&amp;lt;String&amp;gt; result = new ArrayList&amp;lt;&amp;gt;();
+        /*
+        userIdValueSet[10,11] + orderIdValueSet[101,102] =&amp;gt; valueResult[[10,101],[10,102],[11,101],[11,102]]
+         */
+        Set&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt; valueResult = Sets.cartesianProduct(userIdValueSet, orderIdValueSet);
+        for (List&amp;lt;Integer&amp;gt; value : valueResult) {
+            String suffix = Joiner.on(&amp;quot;&amp;quot;).join(value.get(0) % 2, value.get(1) % 2);
+            for (String tableName : availableTargetNames) {
+                if (tableName.endsWith(suffix)) {
+                    result.add(tableName);
+                }
+            }
+        
+        }
+        return result;
+    }
+    
+    private Set&amp;lt;Integer&amp;gt; getShardingValue(final Collection&amp;lt;ShardingValue&amp;lt;?&amp;gt;&amp;gt; shardingValues, final String shardingKey) {
+        Set&amp;lt;Integer&amp;gt; valueSet = new HashSet&amp;lt;&amp;gt;();
+        ShardingValue&amp;lt;Integer&amp;gt; shardingValue = null;
+        for (ShardingValue&amp;lt;?&amp;gt; each : shardingValues) {
+            if (each.getColumnName().equals(shardingKey)) {
+                shardingValue = (ShardingValue&amp;lt;Integer&amp;gt;) each;
+                break;
+            }
+        }
+        if (null == shardingValue) {
+            return valueSet;
+        }
+        switch (shardingValue.getType()) {
+            case SINGLE:
+                valueSet.add(shardingValue.getValue());
+                break;
+            case LIST:
+                valueSet.addAll(shardingValue.getValues());
+                break;
+            case RANGE:
+                for (Integer i = shardingValue.getValueRange().lowerEndpoint(); i &amp;lt;= shardingValue.getValueRange().upperEndpoint(); i++) {
+                    valueSet.add(i);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return valueSet;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;构造shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;构造ShardingDataSource&lt;/h2&gt;
+
+&lt;p&gt;完成规则配置后，我们可以通过&lt;code&gt;ShardingDataSourceFactory&lt;/code&gt;工厂得到&lt;code&gt;ShardingDataSource&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = new ShardingDataSourceFactory.createDataSource(shardingRule);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;使用shardingdatasource:74c632aa9613b8dd6b95bfab1ba313e2&#34;&gt;使用ShardingDataSource&lt;/h2&gt;
+
+&lt;p&gt;通过一个例子来看看如何使用该数据源&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String sql = &amp;quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&amp;quot;;
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                ) {
+            preparedStatement.setInt(1, 10);
+            preparedStatement.setInt(2, 1001);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt(1));
+                System.out.println(rs.getInt(2));
+                System.out.println(rs.getInt(3));
+            }
+            rs.close();
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;该数据源与普通数据源完全相同，你可以通过上例的API形式来使用，也可以将其配置在Spring，Hibernate等框架中使用。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;如果希望不依赖于表中的列传入分片键值，参考：&lt;a href=&#34;../hint_sharding_value&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>详细功能列表</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</guid>
+      <description>
+
+&lt;h1 id=&#34;详细功能列表:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;详细功能列表&lt;/h1&gt;
+
+&lt;h2 id=&#34;功能性需求:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;功能性需求&lt;/h2&gt;
+
+&lt;h3 id=&#34;分库分表-同时支持分库和分表:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;分库分表：同时支持分库和分表&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;分片规则自由定制&lt;/li&gt;
+&lt;li&gt;支持多分片键&lt;/li&gt;
+&lt;li&gt;支持通过&lt;code&gt;=&lt;/code&gt;，&lt;code&gt;BETWEEN&lt;/code&gt;，&lt;code&gt;IN&lt;/code&gt;分片&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;Binding Table&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持多表笛卡尔积查询&lt;/li&gt;
+&lt;li&gt;支持多表结果归并&lt;/li&gt;
+&lt;li&gt;支持聚合查询结果归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;AVG&lt;/code&gt;函数改写为&lt;code&gt;SUM/COUNT&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;ORDER BY&lt;/code&gt;结果归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;GROUP BY&lt;/code&gt;结果归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;LIMIT&lt;/code&gt;分页查询以及多库表结果改写及归并&lt;/li&gt;
+&lt;li&gt;支持&lt;code&gt;OR&lt;/code&gt;查询&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;柔性事务:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;柔性事务&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;最大努力送达型&lt;/li&gt;
+&lt;li&gt;TCC型(待开源)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;易用性:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;易用性&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;JDBC&lt;/code&gt;协议适配&lt;/p&gt;
+
+&lt;p&gt;1.1. 全&lt;code&gt;ORM&lt;/code&gt;支持&lt;/p&gt;
+
+&lt;p&gt;1.2. 全数据库连接池支持&lt;/p&gt;
+
+&lt;p&gt;1.3. 多数据库支持(目前仅&lt;code&gt;MySQL&lt;/code&gt;，未来计划支持&lt;code&gt;Oracle&lt;/code&gt;，&lt;code&gt;SQLServer&lt;/code&gt;和&lt;code&gt;DB2&lt;/code&gt;)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;配置简化&lt;/p&gt;
+
+&lt;p&gt;2.1. &lt;code&gt;Spring&lt;/code&gt;命名空间支持&lt;/p&gt;
+
+&lt;p&gt;2.2. &lt;code&gt;Yaml&lt;/code&gt;命名空间支持&lt;/p&gt;
+
+&lt;p&gt;2.3. 基于动态语言的分片策略配置&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;Metrics&lt;/code&gt;统计监控&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;性能:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;性能&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;基于&lt;code&gt;Druid&lt;/code&gt;的高性能&lt;code&gt;SQL&lt;/code&gt;解析&lt;/li&gt;
+&lt;li&gt;多线程处理结果归并&lt;/li&gt;
+&lt;li&gt;性能损失率约&lt;code&gt;0.02%&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;稳定性:e1ec7fcfd5aa4d3ea3e990d9b707a3b4&#34;&gt;稳定性&lt;/h2&gt;
+
+&lt;p&gt;完善的疲劳测试，普通查询无&lt;code&gt;Full GC&lt;/code&gt;（&lt;code&gt;GROUP BY&lt;/code&gt;除外）&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>核心概念</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/</link>
+      <pubDate>Thu, 03 Mar 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/</guid>
+      <description>
+
+&lt;p&gt;本文介绍&lt;code&gt;Sharding-JDBC&lt;/code&gt;包含的一些核心概念。&lt;/p&gt;
+
+&lt;h2 id=&#34;logictable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;LogicTable&lt;/h2&gt;
+
+&lt;p&gt;数据分片的逻辑表，对于水平拆分的数据库(表)，同一类表的总称。例：订单数据根据主键尾数拆分为&lt;code&gt;10&lt;/code&gt;张表,分别是&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;，他们的逻辑表名为&lt;code&gt;t_order&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;actualtable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ActualTable&lt;/h2&gt;
+
+&lt;p&gt;在分片的数据库中真实存在的物理表。即上个示例中的&lt;code&gt;t_order_0&lt;/code&gt;到&lt;code&gt;t_order_9&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;datanode:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;DataNode&lt;/h2&gt;
+
+&lt;p&gt;数据分片的最小单元。由数据源名称和数据表组成，例：&lt;code&gt;ds_1.t_order_0&lt;/code&gt;。配置时默认各个分片数据库的表结构均相同，直接配置逻辑表和真实表对应关系即可。如果各数据库的表结果不同，可使用&lt;code&gt;ds.actual_table&lt;/code&gt;配置。&lt;/p&gt;
+
+&lt;h2 id=&#34;dynamictable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;DynamicTable&lt;/h2&gt;
+
+&lt;p&gt;逻辑表和真实表不一定需要在配置规则中静态配置。比如按照日期分片的场景，真实表的名称随着时间的推移会产生变化。此类需求&lt;code&gt;Sharding-JDBC&lt;/code&gt;是支持的，不过目前配置并不友好，会在新版本中提升。&lt;/p&gt;
+
+&lt;h2 id=&#34;bindingtable:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;BindingTable&lt;/h2&gt;
+
+&lt;p&gt;指在任何场景下分片规则均一致的主表和子表。例：订单表和订单项表，均按照订单ID分片，则此两张表互为&lt;code&gt;BindingTable&lt;/code&gt;关系。&lt;code&gt;BindingTable&lt;/code&gt;关系的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。&lt;/p&gt;
+
+&lt;h2 id=&#34;shardingcolumn:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ShardingColumn&lt;/h2&gt;
+
+&lt;p&gt;分片字段。用于将数据库(表)水平拆分的关键字段。例：订单表订单ID分片尾数取模分片，则订单ID为分片字段。&lt;code&gt;SQL&lt;/code&gt;中如果无分片字段，将执行全路由，性能较差。&lt;code&gt;Sharding-JDBC&lt;/code&gt;支持多分片字段。&lt;/p&gt;
+
+&lt;h2 id=&#34;shardingalgorithm:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;ShardingAlgorithm&lt;/h2&gt;
+
+&lt;p&gt;分片算法。&lt;code&gt;Sharding-JDBC&lt;/code&gt;通过分片算法将数据分片，支持通过等号、&lt;code&gt;BETWEEN&lt;/code&gt;和&lt;code&gt;IN&lt;/code&gt;分片。分片算法目前需要业务方开发者自行实现，可实现的灵活度非常高。未来&lt;code&gt;Sharding-JDBC&lt;/code&gt;也将会实现常用分片算法，如&lt;code&gt;range&lt;/code&gt;，&lt;code&gt;hash&lt;/code&gt;和&lt;code&gt;tag&lt;/code&gt;等。&lt;/p&gt;
+
+&lt;h2 id=&#34;sql-hint:f672fea773fb5554fdcc9faa6e7b5093&#34;&gt;SQL Hint&lt;/h2&gt;
+
+&lt;p&gt;对于分片字段非&lt;code&gt;SQL&lt;/code&gt;决定，而由其他外置条件决定的场景，可使用&lt;code&gt;SQL Hint&lt;/code&gt;灵活的注入分片字段。例：内部系统，按照员工登录ID分库，而数据库中并无此字段。&lt;code&gt;SQL Hint&lt;/code&gt;支持通过&lt;code&gt;ThreadLocal&lt;/code&gt;和&lt;code&gt;SQL&lt;/code&gt;注释(待实现)两种方式使用。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>架构图</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</guid>
+      <description>
+
+&lt;h1 id=&#34;架构图:1bf455b3a3c6e1e40be41ef6023b75eb&#34;&gt;架构图&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/parse.png&#34; alt=&#34;SQL解析&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/route.png&#34; alt=&#34;SQL路由&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/execute.png&#34; alt=&#34;SQL执行&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/merge.png&#34; alt=&#34;结果归并&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>柔性事务</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction/</guid>
+      <description>
+
+&lt;h1 id=&#34;最大努力送达型:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;最大努力送达型&lt;/h1&gt;
+
+&lt;h2 id=&#34;概念:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;概念&lt;/h2&gt;
+
+&lt;p&gt;在分布式数据库的场景下，相信对于该数据库的操作最终一定可以成功，所以通过最大努力反复尝试送达操作。&lt;/p&gt;
+
+&lt;h2 id=&#34;架构图:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;架构图&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/architecture-soft-transaction-bed.png&#34; alt=&#34;最大努力送达型事务&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;适用场景:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;适用场景&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;根据主键删除数据。&lt;/li&gt;
+&lt;li&gt;更新记录永久状态，如更新通知送达状态。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;使用限制:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;使用限制&lt;/h2&gt;
+
+&lt;p&gt;使用最大努力送达型柔性事务的&lt;code&gt;SQL&lt;/code&gt;需要满足幂等性。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;INSERT语句要求必须包含主键，且不能是自增主键。&lt;/li&gt;
+&lt;li&gt;UPDATE语句要求幂等，不能是&lt;code&gt;UPDATE xxx SET x=x+1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;DELETE语句无要求。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;开发指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发指南&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;完全基于&lt;code&gt;java&lt;/code&gt;开发，直接提供&lt;code&gt;jar&lt;/code&gt;包，可直接使用maven导入坐标即可使用。&lt;/li&gt;
+&lt;li&gt;为了保证事务不丢失，&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;需要提供数据库存储事务日志，配置方法可参见事务管理器配置项。&lt;/li&gt;
+&lt;li&gt;由于柔性事务采用异步尝试，需要部署独立的作业和&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;采用&lt;code&gt;elastic-job&lt;/code&gt;实现的&lt;code&gt;Sharding-JDBC-transaction-async-job&lt;/code&gt;，通过简单配置即可启动高可用作业异步送达柔性事务，启动脚本为&lt;code&gt;start.sh&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;为了便于开发，&lt;code&gt;Sharding-JDBC-transaction&lt;/code&gt;提供了基于内存的事务日志存储器和内嵌异步作业。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;开发示例:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;开发示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    // 1. 配置SoftTransactionConfiguration
+    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+    
+    // 2. 初始化SoftTransactionManager
+    SoftTransactionManager transactionManager = new SoftTransactionManager(transactionConfig);
+    transactionManager.init();
+    
+    // 3. 获取BEDSoftTransaction
+    BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
+    
+    // 4. 开启事务
+    transaction.begin(connection);
+    
+    // 5. 执行JDBC
+    /* 
+        codes here
+    */
+    * 
+    // 6.关闭事务
+    transaction.end();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;事务管理器配置项:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;事务管理器配置项&lt;/h2&gt;
+
+&lt;h3 id=&#34;softtransactionconfiguration-配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;SoftTransactionConfiguration&lt;/code&gt;配置&lt;/h3&gt;
+
+&lt;p&gt;用于配置事务管理器。&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;默认值&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;shardingDataSource&lt;/td&gt;
+&lt;td&gt;ShardingDataSource&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;是&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;事务管理器管理的数据源&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;syncMaxDeliveryTryTimes&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;同步的事务送达的最大尝试次数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;storageType&lt;/td&gt;
+&lt;td&gt;enum&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;RDB&lt;/td&gt;
+&lt;td&gt;事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;transactionLogDataSource&lt;/td&gt;
+&lt;td&gt;DataSource&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;null&lt;/td&gt;
+&lt;td&gt;存储事务日志的数据源，如果storageType为RDB则必填&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;bestEffortsDeliveryJobConfiguration&lt;/td&gt;
+&lt;td&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;null&lt;/td&gt;
+&lt;td&gt;最大努力送达型内嵌异步作业配置对象。如需使用，请参考&lt;code&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/code&gt;配置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;nestedbesteffortsdeliveryjobconfiguration-配置-仅开发环境:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;&lt;code&gt;NestedBestEffortsDeliveryJobConfiguration&lt;/code&gt;配置 (仅开发环境)&lt;/h3&gt;
+
+&lt;p&gt;用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;名称&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;类型&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;必填&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;默认值&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;说明&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;zookeeperPort&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;4181&lt;/td&gt;
+&lt;td&gt;内嵌的注册中心端口号&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;zookeeperDataDir&lt;/td&gt;
+&lt;td&gt;String&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;target/test_zk_data/nano/&lt;/td&gt;
+&lt;td&gt;内嵌的注册中心的数据存放目录&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;asyncMaxDeliveryTryTimes&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;异步的事务送达的最大尝试次数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;asyncMaxDeliveryTryDelayMillis&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;td&gt;否&lt;/td&gt;
+&lt;td&gt;60000&lt;/td&gt;
+&lt;td&gt;执行异步送达事务的延迟毫秒数，早于此间隔时间的入库事务才会被异步作业执行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;独立部署作业指南:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;独立部署作业指南&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;部署用于存储事务日志的数据库。&lt;/li&gt;
+&lt;li&gt;部署用于异步作业使用的&lt;code&gt;Zookeeper&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;配置&lt;code&gt;yaml&lt;/code&gt;文件,参照示例。&lt;/li&gt;
+&lt;li&gt;下载并解压文件&lt;code&gt;sharding-jdbc-transaction-async-job-$VERSION.tar&lt;/code&gt;，通过&lt;code&gt;start.sh&lt;/code&gt;脚本启动异步作业。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;异步作业yaml文件配置:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;异步作业yaml文件配置&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;#目标数据库的数据源.
+targetDataSource:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password:
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password:
+
+#事务日志的数据源.
+transactionLogDataSource:
+  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trans_log
+    username: root
+    password:
+
+#注册中心配置
+zkConfig:
+  #注册中心的连接地址
+  connectionString: localhost:2181
+  
+  #作业的命名空间
+  namespace: Best-Efforts-Delivery-Job
+  
+  #注册中心的等待重试的间隔时间的初始值
+  baseSleepTimeMilliseconds: 1000
+  
+  #注册中心的等待重试的间隔时间的最大值
+  maxSleepTimeMilliseconds: 3000
+  
+  #注册中心的最大重试次数
+  maxRetries: 3
+
+#作业配置
+jobConfig:
+  #作业名称
+  name: bestEffortsDeliveryJob
+  
+  #触发作业的cron表达式
+  cron: 0/5 * * * * ?
+  
+  #每次作业获取的事务日志最大数量
+  transactionLogFetchDataCount: 100
+  
+  #事务送达的最大尝试次数.
+  maxDeliveryTryTimes: 3
+  
+  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
+  maxDeliveryTryDelayMillis: 60000
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;tcc型:dd5cc724d0260c85f8f2c3800b365c2d&#34;&gt;TCC型&lt;/h1&gt;
+
+&lt;p&gt;开发中&amp;hellip;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>读写分离</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave/</guid>
+      <description>
+
+&lt;h1 id=&#34;读写分离:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;读写分离&lt;/h1&gt;
+
+&lt;h2 id=&#34;概念:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;概念&lt;/h2&gt;
+
+&lt;p&gt;为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。&lt;/p&gt;
+
+&lt;h2 id=&#34;支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;支持项&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;提供了一主多从的读写分离配置，可配合分库分表使用。&lt;/li&gt;
+&lt;li&gt;同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Spring&lt;/code&gt;命名空间。&lt;/li&gt;
+&lt;li&gt;基于&lt;code&gt;Hint&lt;/code&gt;的强制主库路由。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;不支持范围:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;不支持范围&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;主库和从库的数据同步。&lt;/li&gt;
+&lt;li&gt;主库和从库的数据同步延迟导致的数据不一致。&lt;/li&gt;
+&lt;li&gt;主库双写或多写。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;代码开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;代码开发示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
+DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_0&amp;quot;, masterDataSource0, slaveDataSource00, slaveDataSource01);
+DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource(&amp;quot;ms_1&amp;quot;, masterDataSource1, slaveDataSource11, slaveDataSource11);
+
+// 构建分库分表数据源
+Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(2);
+dataSourceMap.put(&amp;quot;ms_0&amp;quot;, masterSlaveDs0);
+dataSourceMap.put(&amp;quot;ms_1&amp;quot;, masterSlaveDs1);
+
+// 通过ShardingDataSourceFactory继续创建ShardingDataSource
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;spring命名空间配置示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;Spring命名空间配置示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+    xmlns:rdb=&amp;quot;http://www.dangdang.com/schema/ddframe/rdb&amp;quot; 
+    xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &amp;quot;&amp;gt;
+    &amp;lt;!-- 配置真实数据源 --&amp;gt;
+    &amp;lt;bean id=&amp;quot;dbtbl_0_master&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_master&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0_slave_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0_slave_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_master&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_master&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_slave_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_1_slave_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    
+    &amp;lt;!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 --&amp;gt;
+    &amp;lt;rdb:master-slave-data-source id=&amp;quot;dbtbl_0&amp;quot; master-data-source-ref=&amp;quot;dbtbl_0_master&amp;quot; slave-data-sources-ref=&amp;quot;dbtbl_0_slave_0, dbtbl_0_slave_1&amp;quot; /&amp;gt;
+    &amp;lt;rdb:master-slave-data-source id=&amp;quot;dbtbl_1&amp;quot; master-data-source-ref=&amp;quot;dbtbl_1_master&amp;quot; slave-data-sources-ref=&amp;quot;dbtbl_1_slave_0, dbtbl_1_slave_1&amp;quot; /&amp;gt;
+    
+    &amp;lt;!-- 通过rdb:strategy和rdb:data-source继续构建分片数据源 --&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;databaseStrategy&amp;quot; sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${user_id.longValue() % 2}&amp;quot;/&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;orderTableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-expression=&amp;quot;t_order_${order_id.longValue() % 4}&amp;quot;/&amp;gt;
+    
+    &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0, dbtbl_1&amp;quot;&amp;gt;
+            &amp;lt;rdb:table-rules&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; database-strategy=&amp;quot;databaseStrategy&amp;quot; table-strategy=&amp;quot;orderTableStrategy&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:table-rules&amp;gt;
+        &amp;lt;/rdb:sharding-rule&amp;gt;
+    &amp;lt;/rdb:data-source&amp;gt;
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;使用hint强制路由主库示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2&#34;&gt;使用Hint强制路由主库示例&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;HintManager hintManager = HintManager.getInstance();
+hintManager.setMasterRouteOnly();
+// 继续JDBC操作
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>目录结构说明</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</link>
+      <pubDate>Thu, 28 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</guid>
+      <description>
+
+&lt;h1 id=&#34;目录结构说明:b4b5a29fe5be663d2644d30f96759d37&#34;&gt;目录结构说明&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code&gt;sharding-jdbc
+    ├──sharding-jdbc-core                               分库分表核心模块，可直接使用
+    ├──sharding-jdbc-config-parent                      配置父模块，不应直接使用
+    ├      ├──sharding-jdbc-config-common               配置公共模块，不应直接使用
+    ├      ├──sharding-jdbc-config-spring               Spring命名空间支持模块，可直接使用
+    ├      ├──sharding-jdbc-config-yaml                 Yaml配置，可直接使用
+    ├──sharding-jdbc-transaction-parent                 柔性事务父模块，不应直接使用
+    ├      ├──sharding-jdbc-transaction                 柔性事务核心模块，可直接使用
+    ├      ├──sharding-jdbc-transaction-storage         柔性事务存储模块，不应直接使用
+    ├      ├──sharding-jdbc-transaction-async-job       柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可
+    ├──sharding-jdbc-example                            使用示例
+    ├      ├──sharding-jdbc-example-jdbc                基于JDBC的使用示例
+    ├      ├──sharding-jdbc-example-jpa                 基于JPA的使用示例
+    ├      ├──sharding-jdbc-example-mybatis             基于MyBatis的使用示例
+    ├      ├──sharding-jdbc-example-config-spring       基于Spring命名空间配置的使用示例
+    ├      ├──sharding-jdbc-example-config-yaml         基于Yaml配置的使用示例
+    ├      ├──sharding-jdbc-example-jdbc-transaction    柔性事务的使用示例
+    ├──sharding-jdbc-doc                                markdown生成文档的项目，使用方无需关注
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用限制</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/</guid>
+      <description>
+
+&lt;h1 id=&#34;使用限制:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;使用限制&lt;/h1&gt;
+
+&lt;h2 id=&#34;jdbc-未支持列表:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;JDBC&lt;/code&gt;未支持列表&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;暂时未支持不常用的&lt;code&gt;JDBC&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;h3 id=&#34;datasource-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;DataSource&lt;/code&gt;接口&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不支持&lt;code&gt;timeout&lt;/code&gt;相关操作&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;connection-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;Connection&lt;/code&gt;接口&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不支持存储过程，函数，游标的操作&lt;/li&gt;
+&lt;li&gt;不支持执行&lt;code&gt;native&lt;/code&gt;的&lt;code&gt;SQL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;不支持&lt;code&gt;savepoint&lt;/code&gt;相关操作&lt;/li&gt;
+&lt;li&gt;不支持&lt;code&gt;Schema/Catalog&lt;/code&gt;的操作&lt;/li&gt;
+&lt;li&gt;不支持自定义类型映射&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;statement-和-preparedstatement-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;&lt;code&gt;Statement&lt;/code&gt;和&lt;code&gt;PreparedStatement&lt;/code&gt;接口&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不支持返回多结果集的语句（即存储过程，非&lt;code&gt;SELECT&lt;/code&gt;多条数据）&lt;/li&gt;
+&lt;li&gt;不支持国际化字符的操作&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;对于-resultset-接口:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;对于&lt;code&gt;ResultSet&lt;/code&gt;接口&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不支持对于结果集指针位置判断&lt;/li&gt;
+&lt;li&gt;不支持通过非next方法改变结果指针位置&lt;/li&gt;
+&lt;li&gt;不支持修改结果集内容&lt;/li&gt;
+&lt;li&gt;不支持获取国际化字符&lt;/li&gt;
+&lt;li&gt;不支持获取&lt;code&gt;Array&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;jdbc-4-1:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;JDBC 4.1&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不支持JDBC 4.1接口新功能&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;查询所有未支持方法，请阅读&lt;code&gt;com.dangdang.ddframe.rdb.sharding.jdbc.unsupported&lt;/code&gt;包。&lt;/p&gt;
+
+&lt;h2 id=&#34;sql语句限制:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;SQL语句限制&lt;/h2&gt;
+
+&lt;h3 id=&#34;不支持ddl语句:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持DDL语句&lt;/h3&gt;
+
+&lt;h3 id=&#34;不支持子语句:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持子语句&lt;/h3&gt;
+
+&lt;h3 id=&#34;不支持-union-和-union-all:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;UNION&lt;/code&gt; 和 &lt;code&gt;UNION ALL&lt;/code&gt;&lt;/h3&gt;
+
+&lt;h3 id=&#34;不支持特殊-insert:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持特殊&lt;code&gt;INSERT&lt;/code&gt;&lt;/h3&gt;
+
+&lt;p&gt;每条&lt;code&gt;INSERT&lt;/code&gt;语句只能插入一条数据，不支持&lt;code&gt;VALUES&lt;/code&gt;后有多行数据的语句&lt;/p&gt;
+
+&lt;h3 id=&#34;不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;DISTINCT&lt;/code&gt;聚合&lt;/h3&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>SQL支持详细列表</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</guid>
+      <description>
+
+&lt;h1 id=&#34;sql支持详细列表:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;SQL支持详细列表&lt;/h1&gt;
+
+&lt;p&gt;由于&lt;code&gt;SQL&lt;/code&gt;语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的&lt;code&gt;SQL&lt;/code&gt;出现。
+本文详细罗列出已明确可支持的&lt;code&gt;SQL&lt;/code&gt;种类以及已明确不支持的&lt;code&gt;SQL&lt;/code&gt;种类，尽量让使用者避免踩坑。
+其中必然有未涉及到的&lt;code&gt;SQL&lt;/code&gt;欢迎补充，未支持的&lt;code&gt;SQL&lt;/code&gt;也尽量会在未来的版本中支持。&lt;/p&gt;
+
+&lt;h2 id=&#34;全局不支持项:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;全局不支持项&lt;/h2&gt;
+
+&lt;h3 id=&#34;动态表:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;动态表&lt;/h3&gt;
+
+&lt;p&gt;未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在&lt;code&gt;SQL&lt;/code&gt;或&lt;code&gt;Hint&lt;/code&gt;中包含分片键的&lt;code&gt;SQL&lt;/code&gt;均不支持。
+原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。&lt;/p&gt;
+
+&lt;h3 id=&#34;除-dql-和-dml-以外的语句:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;除&lt;code&gt;DQL&lt;/code&gt;和&lt;code&gt;DML&lt;/code&gt;以外的语句&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;定位于&lt;code&gt;CRUD&lt;/code&gt;操作，目前仅针对&lt;code&gt;DQL&lt;/code&gt;和&lt;code&gt;DML&lt;/code&gt;语句进行支持。&lt;/p&gt;
+
+&lt;h3 id=&#34;子查询未详细测试:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;子查询未详细测试&lt;/h3&gt;
+
+&lt;h2 id=&#34;支持的sql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;支持的SQL&lt;/h2&gt;
+
+&lt;h3 id=&#34;dql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DQL&lt;/h3&gt;
+
+&lt;h4 id=&#34;select主语句:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;SELECT主语句&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
+[WHERE where_condition] 
+[GROUP BY {col_name | position} [ASC | DESC]] 
+[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[LIMIT {[offset,] row_count | row_count OFFSET offset}]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;select-expr:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;select_expr&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;* | 
+COLUMN_NAME [AS] [alias] | 
+(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
+COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;table-reference:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;table_reference&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;tbl_name [AS] alias] [index_hint_list] | 
+table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;示例:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;示例&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;dml:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DML&lt;/h3&gt;
+
+&lt;h4 id=&#34;insert:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;INSERT&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;否&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;插入列需要包含分片键&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name VALUES (val1, val2,&amp;hellip;.)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;否&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;通过&lt;code&gt;Hint&lt;/code&gt;注入分片键&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;update:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;UPDATE&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;UPDATE tbl_name SET col1 = val1 WHERE col2 = val2&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;delete:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;DELETE&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;th&gt;无条件支持&lt;/th&gt;
+&lt;th&gt;必要条件&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;DELETE FROM tbl_name WHERE col1 = val1&lt;/td&gt;
+&lt;td&gt;是&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;不支持的sql:2312c1dfe7eea37ff98fa3b80281d998&#34;&gt;不支持的SQL&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;SQL&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2, &amp;hellip;) VALUES &lt;code&gt;(val1, val2,....), (val3, val4,....)&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name (col1, col2, &amp;hellip;) &lt;code&gt;SELECT col1, col2, ... FROM tbl_name WHERE col3 = val3&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;INSERT INTO tbl_name &lt;code&gt;SET col1 = val1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT &lt;code&gt;DISTINCT&lt;/code&gt; * FROM tbl_name WHERE column1 = value1&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 &lt;code&gt;HAVING count_alias &amp;gt; val1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name1 &lt;code&gt;UNION&lt;/code&gt; SELECT * FROM tbl_name2&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;SELECT * FROM tbl_name1 &lt;code&gt;UNION ALL&lt;/code&gt; SELECT * FROM tbl_name2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>压力测试报告</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</guid>
+      <description>
+
+&lt;h1 id=&#34;压力测试报告:da68abc810593941936aaba3d62b3b96&#34;&gt;压力测试报告&lt;/h1&gt;
+
+&lt;h2 id=&#34;测试目的:da68abc810593941936aaba3d62b3b96&#34;&gt;测试目的&lt;/h2&gt;
+
+&lt;p&gt;对&lt;code&gt;Sharding-JDBC&lt;/code&gt;进行性能测试，客观、公正评估系统的性能，目的有三:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;对比&lt;code&gt;Sharding-JDBC&lt;/code&gt;和&lt;code&gt;JDBC&lt;/code&gt;的性能。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;是否通过扩展数据库解决&lt;code&gt;JDBC&lt;/code&gt;吞吐量不足的问题。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;的稳定性。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;测试数据库配置:da68abc810593941936aaba3d62b3b96&#34;&gt;测试数据库配置&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据库实例&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;DB1&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;DB2&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;操作系统&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;centOS5.4&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;centOS5.4&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;CPU&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2C四核&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2C四核&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;内存&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32GB&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;32GB&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;硬盘&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;250G*2_RAID1+600G*4_RAID10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;250G*2_RAID1+600G*4_RAID10&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Mysql版本&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.5.19&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.5.19&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据表字段数量&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;70&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据表行数&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1000万&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1000万&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;网络拓扑:da68abc810593941936aaba3d62b3b96&#34;&gt;网络拓扑&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../img/stress_test_arch.png&#34; alt=&#34;网络拓扑图&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;单库情况下sharding-jdbc与jdbc性能对比:da68abc810593941936aaba3d62b3b96&#34;&gt;单库情况下Sharding-JDBC与JDBC性能对比&lt;/h2&gt;
+
+&lt;p&gt;测试结论：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查询操作，Sharding-JDBC的TPS为JDBC的TPS的99.8%&lt;/li&gt;
+&lt;li&gt;插入操作，Sharding-JDBC的TPS为JDBC的TPS的90.2%&lt;/li&gt;
+&lt;li&gt;更新操作，Sharding-JDBC的TPS为JDBC的TPS的93.1%&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;查询:da68abc810593941936aaba3d62b3b96&#34;&gt;查询&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareQuery&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;插入:da68abc810593941936aaba3d62b3b96&#34;&gt;插入&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareInsert&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;更新:da68abc810593941936aaba3d62b3b96&#34;&gt;更新&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;compareUpdate&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h2 id=&#34;sharding-jdbc单库与双库性能对比:da68abc810593941936aaba3d62b3b96&#34;&gt;Sharding-JDBC单库与双库性能对比&lt;/h2&gt;
+
+&lt;p&gt;对比测试：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;单库用例中所有数据全部在DB1中&lt;/li&gt;
+&lt;li&gt;双库用例中所有数据均匀分布在DB1与DB2中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;结论：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查询操作，TPS双库比单库可以增加大约94%的性能&lt;/li&gt;
+&lt;li&gt;插入操作，TPS双库比单库可以增加大约60%的性能&lt;/li&gt;
+&lt;li&gt;更新操作，TPS双库比单库可以增加大约89%的性能&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;查询-1:da68abc810593941936aaba3d62b3b96&#34;&gt;查询&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleQuery&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;插入-1:da68abc810593941936aaba3d62b3b96&#34;&gt;插入&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleInsert&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h3 id=&#34;更新-1:da68abc810593941936aaba3d62b3b96&#34;&gt;更新&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横坐标：并发用户数&lt;/li&gt;
+&lt;li&gt;纵坐标：TPS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;canvas id=&#34;singleAndDubbleUpdate&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;
+
+&lt;h2 id=&#34;sharding-jdbc疲劳测试:da68abc810593941936aaba3d62b3b96&#34;&gt;Sharding-JDBC疲劳测试&lt;/h2&gt;
+
+&lt;p&gt;经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生Full GC。
+&lt;canvas id=&#34;fatigueTest&#34; width=&#34;400&#34; height=&#34;150&#34;&gt;&lt;/canvas&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>未来线路规划</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</link>
+      <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</guid>
+      <description>
+
+&lt;h1 id=&#34;未来线路规划:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;未来线路规划&lt;/h1&gt;
+
+&lt;h2 id=&#34;已完成:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;已完成&lt;/h2&gt;
+
+&lt;h3 id=&#34;transaction:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;sharding-jdbc-core发送SQL执行事件 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;bed类型事务日志存储设计 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;bed类型事务同步尝试 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;基于elastic-job的bed类型事务异步尝试 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;config-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;config 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;动态表配置 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;简化只分库配置，无需配置逻辑表和真实表对应关系 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;读写分离:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;读写分离&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;一主多从的读写分离，可配合分库分表使用 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Spring命名空间 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Hint强制主库路由 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;进行中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;进行中&lt;/h2&gt;
+
+&lt;h2 id=&#34;计划中:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;计划中&lt;/h2&gt;
+
+&lt;h3 id=&#34;transaction-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;transaction 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;基于tcc的柔性事务&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;distribution-id:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;distribution id&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;JDBC接口改写&lt;/li&gt;
+&lt;li&gt;分布式主键策略接口制定&lt;/li&gt;
+&lt;li&gt;基于snowflake的分布式主键算法实现&lt;/li&gt;
+&lt;li&gt;基于groupsequence的分布式主键算法实现&lt;/li&gt;
+&lt;li&gt;基于数据库的分布式主键算法实现&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;parser-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;parser 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;判断不支持SQL并直接报错&lt;/li&gt;
+&lt;li&gt;支持DISTINCT&lt;/li&gt;
+&lt;li&gt;支持GROUP BY聚合之后进行HAVING&lt;/li&gt;
+&lt;li&gt;支持计算表达式，如：SUM(pv) / COUNT(uv)&lt;/li&gt;
+&lt;li&gt;支持通过SQL注释指定SQL Hint&lt;/li&gt;
+&lt;li&gt;SQL重写优化，进一步提升性能&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;merger-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;merger 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;管道化结果归并 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;支持OR语句根据row的唯一标识去重&lt;/li&gt;
+&lt;li&gt;支持DISTINCT&lt;/li&gt;
+&lt;li&gt;支持GROUP BY聚合之后进行HAVING&lt;/li&gt;
+&lt;li&gt;支持计算表达式，如：SUM(pv) / COUNT(uv)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;router-2-0:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;router 2.0&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;支持通过SQL注释指定SQL Hint&lt;/li&gt;
+&lt;li&gt;ThreadLocal Hints需重新考虑生命周期是否和connection以及statement绑定 &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;释放资源时，自动清理ThreadLocal Hints &lt;code&gt;(完成)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;待定:cd4a1b36ed2b93cfc52abf77a7d25d03&#34;&gt;待定&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;字典表复制广播&lt;/li&gt;
+&lt;li&gt;HA相关&lt;/li&gt;
+&lt;li&gt;流量控制&lt;/li&gt;
+&lt;li&gt;建表工具&lt;/li&gt;
+&lt;li&gt;动态扩容&lt;/li&gt;
+&lt;li&gt;配置中心&lt;/li&gt;
+&lt;li&gt;其他数据库支持&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>基于暗示(Hint)的分片键值注册方法</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/</link>
+      <pubDate>Fri, 05 Feb 2016 17:03:18 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/</guid>
+      <description>
+
+&lt;h1 id=&#34;基于暗示-hint-的分片键值注册方法:eafa718523618279bf7f67a77c7e58f8&#34;&gt;基于暗示(Hint)的分片键值注册方法&lt;/h1&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;提示:阅读本文前请详细预读 &lt;a href=&#34;../user_guide&#34;&gt;使用指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;背景:eafa718523618279bf7f67a77c7e58f8&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;对&lt;code&gt;Sharding-JDBC&lt;/code&gt;有初步了解的朋友已经发现了：在编写分片算法的时候，传入的分片键值是来自&lt;code&gt;SQL&lt;/code&gt;语句中&lt;code&gt;WHERE&lt;/code&gt;条件的。
+例如逻辑表&lt;code&gt;t_order&lt;/code&gt;如果其数据源分片键为&lt;code&gt;user_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;db1&lt;/code&gt;偶数值路由到&lt;code&gt;db2&lt;/code&gt;；表分片键为&lt;code&gt;order_id&lt;/code&gt;，
+分片算法是奇数值路由到&lt;code&gt;t_order_1&lt;/code&gt;偶数值路由到&lt;code&gt;t_order_2&lt;/code&gt;，如果执行如下sql语句：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from t_order where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么在数据源分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;1&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;db1&lt;/code&gt;;
+表分片算法的&lt;code&gt;shardingValue&lt;/code&gt;参数将会传入&lt;code&gt;2&lt;/code&gt;用于分片计算，结果为路由到&lt;code&gt;t_order_2&lt;/code&gt;。最终SQL为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;select * from db1.t_order_2 where user_id = 1 and order_id = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;现有一个假设，如果&lt;code&gt;WHERE&lt;/code&gt;中没有&lt;code&gt;user_id&lt;/code&gt;和&lt;code&gt;order_id&lt;/code&gt;的条件，那么是否可以进行分片计算呢？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;答案是肯定的。下面就介绍一下&lt;code&gt;Sharding-JDBC&lt;/code&gt;对这个问题的解决方法。&lt;/p&gt;
+
+&lt;h2 id=&#34;基于暗示-hint-的分片键值管理器:eafa718523618279bf7f67a77c7e58f8&#34;&gt;基于暗示(Hint)的分片键值管理器&lt;/h2&gt;
+
+&lt;p&gt;要解决上面的问题，我们使用&lt;code&gt;com.dangdang.ddframe.rdb.sharding.api.HintManager&lt;/code&gt;。
+该管理器是使用&lt;code&gt;ThreadLocal&lt;/code&gt;技术管理分片键值的。
+使用例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String sql = &amp;quot;SELECT * FROM t_order&amp;quot;;
+        
+try (
+        HintManager hintManager = new HintManager();
+        Connection conn = dataSource.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    hintManager.addDatabaseShardingValue(&amp;quot;t_order&amp;quot;, &amp;quot;user_id&amp;quot;, 1);
+    hintManager.addTableShardingValue(&amp;quot;t_order&amp;quot;, &amp;quot;order_id&amp;quot;, 2);
+    try (ResultSet rs = preparedStatement.executeQuery()) {
+        while (rs.next()) {
+            ...
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;实例化:eafa718523618279bf7f67a77c7e58f8&#34;&gt;实例化&lt;/h3&gt;
+
+&lt;p&gt;使用&lt;code&gt;HintManager hintManager = new HintManager()&lt;/code&gt;实例化后将初始化&lt;code&gt;ThreadLocal&lt;/code&gt;中的数据。&lt;/p&gt;
+
+&lt;h3 id=&#34;添加分片键值:eafa718523618279bf7f67a77c7e58f8&#34;&gt;添加分片键值&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用&lt;code&gt;hintManager.addDatabaseShardingValue&lt;/code&gt;来添加数据源分片键值&lt;/li&gt;
+&lt;li&gt;使用&lt;code&gt;hintManager.addTableShardingValue&lt;/code&gt;来添加表分片键值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;每种分片键值注册方法中有两个重载方法，参数较短的方法可以简化相等条件的分片值注入。&lt;/p&gt;
+
+&lt;h3 id=&#34;清除添加的分片键值:eafa718523618279bf7f67a77c7e58f8&#34;&gt;清除添加的分片键值&lt;/h3&gt;
+
+&lt;p&gt;分片键值保存在&lt;code&gt;ThreadLocal&lt;/code&gt;中，所以需要在操作结束时调用&lt;code&gt;hintManager.close()&lt;/code&gt;来清除&lt;code&gt;ThreadLocal&lt;/code&gt;中的内容。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;hintManager&lt;/code&gt;实现了&lt;code&gt;AutoCloseable&lt;/code&gt;接口，可推荐使用&lt;code&gt;try with resource&lt;/code&gt;自动关闭。&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>事务支持说明</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/</link>
+      <pubDate>Fri, 29 Jan 2016 16:14:21 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/</guid>
+      <description>
+
+&lt;h1 id=&#34;事务支持说明:2e47673b0e2fecf4f97d6b00d496cdc9&#34;&gt;事务支持说明&lt;/h1&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;由于性能方面的考量，决定不支持&lt;code&gt;强一致性&lt;/code&gt;分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。&lt;/p&gt;
+
+&lt;p&gt;目前&lt;code&gt;最大努力送达型&lt;/code&gt;柔性事务已开发完成。&lt;/p&gt;
+
+&lt;p&gt;如果不使用柔性事务，也会自动包含&lt;code&gt;弱XA&lt;/code&gt;事务支持，有以下几点说明：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库死机，则只有第二个库数据提交。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

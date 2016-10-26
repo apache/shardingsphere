@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Release Notes</title>
+    
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
+    
+    
+    <link href='http://fonts.useso.com/css?family=Open+Sans:300,400,600&subset=latin,latin-ext' rel='stylesheet'>
+    
+    <style>
+    .navbar {
+    border-color: #e7e7e7;
+}
+
+.content-section-a,
+footer,
+.navbar {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: rgb(51, 51, 51);
+}
+
+.content-section-b {
+    background-color: white;
+    color: #333;
+}
+
+body {
+    color: rgb(51, 51, 51);
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+    color: rgb(51, 51, 51);
+}
+
+  </style>
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
+</head>
+<body>
+
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+    
+</nav>
+
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 
+
+<h1 id="release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</h1>
+
+<h2 id="1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2</h2>
+
+<h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/79">ISSUE #79</a> 关于MySQL 分页limit</li>
+</ol>
+
+<h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/36">ISSUE #36</a> ShardingPreparedStatement无法反复设置参数</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/114">ISSUE #114</a> ShardingPreparedStatement执行批处理任务时,反复解析sql导致oom</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/33">ISSUE #33</a> Limit支持问题</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/124">ISSUE #124</a> com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter.getUpdateCount返回值不符合JDBC规范</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/141">ISSUE #141</a> 多线程执行器参数设置失效</li>
+</ol>
+
+<h2 id="1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.1</h2>
+
+<h3 id="功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/91">ISSUE #91</a> 开放对Statement.getGeneratedKeys的支持，可返回原生的数据库自增主键</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/92">ISSUE #92</a> 查询类DQL语句事件发送</li>
+</ol>
+
+<h3 id="缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/89">ISSUE #89</a> 读写分离和分片的hint一起使用导致冲突</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/95">ISSUE #95</a> 同一线程内写入操作后的读操作均从主库读取改为同一线程且同一连接内</li>
+</ol>
+
+<h2 id="1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.0</h2>
+
+<h3 id="新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/85">ISSUE #85</a> 读写分离</li>
+</ol>
+
+<h3 id="功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/82">ISSUE #82</a> TableRule可传入dataSourceName属性，用于指定该TableRule对应的数据源</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/88">ISSUE #88</a> 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持</li>
+</ol>
+
+<h3 id="缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/81">ISSUE #81</a> 关联表查询使用or查询条件解析结果异常</li>
+</ol>
+
+<h2 id="1-2-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1</h2>
+
+<h3 id="结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/60">ISSUE #60</a> API调整，抽离ShardingDataSource，使用工厂代替</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/76">ISSUE #76</a> ShardingRule和TableRule调整为Builder模式</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/77">ISSUE #77</a> ShardingRule和TableRule调整为Builder模式</li>
+</ol>
+
+<h3 id="功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/61">ISSUE #61</a> 在ShardingValue类中加入逻辑表名</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/66">ISSUE #66</a> 在JDBC层的Statement增加对get/set MaxFieldSize，MaxRows和QueryTimeout的支持</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/72">ISSUE #72</a> 对于select union all形式的批量插入支持</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/78">ISSUE #78</a> 简化只分库配置，无需配置逻辑表和真实表对应关系</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/80">ISSUE #80</a> 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule</li>
+</ol>
+
+<h3 id="缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/63">ISSUE #63</a> ORDER BY与GROUP BY衍生列未添加表名或表别名</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/65">ISSUE #65</a> 解析条件上下文性能提升</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/67">ISSUE #67</a> 分片路由到多表时柔性事务日志无法删除</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/71">ISSUE #71</a> 路由单分片LIMIT的OFFSET计算错误</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/75">ISSUE #75</a> MemoryTransactionLogStorage重试次数更新并发问题</li>
+</ol>
+
+<h2 id="1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</h2>
+
+<h3 id="新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/53">ISSUE #53</a> 动态表配置</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/58">ISSUE #58</a> 柔性事务：最大努力送达型初始版本</li>
+</ol>
+
+<h3 id="结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/49">ISSUE #49</a> 调整属性配置</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/51">ISSUE #51</a> 重构Hint接口</li>
+</ol>
+
+<h3 id="缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/43">ISSUE #43</a> yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/48">ISSUE #48</a> yaml文件读取后未关闭</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/57">ISSUE #57</a> SQL解析子查询改进</li>
+</ol>
+
+<h2 id="1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.1.0</h2>
+
+<h3 id="新功能-2:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/40">ISSUE #40</a> 支持YAML文件配置</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/41">ISSUE #41</a> 支持Spring命名空间配置</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/42">ISSUE #42</a> 支持inline表达式配置</li>
+</ol>
+
+<h3 id="缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/25">ISSUE #25</a> OR表达式下会出现重复结果问题</li>
+</ol>
+
+<h2 id="1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</h2>
+
+<h3 id="功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/39">ISSUE #39</a> 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能</li>
+</ol>
+
+<h3 id="缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/11">ISSUE #11</a> count函数在某些情况下返回不正确</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/13">ISSUE #13</a> Insert 语句 没有写列名 进行了全路由</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/16">ISSUE #16</a> 改造多线程执行模型</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/18">ISSUE #18</a> 查询Count时，使用getObject()取数会报异常</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/19">ISSUE #19</a> sum和avg函数，不加别名不执行merger，加了空指针异常</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/38">ISSUE #38</a> JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。</li>
+</ol>
+
+<h2 id="1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</h2>
+
+<ol>
+<li>初始版本。</li>
+</ol>
+
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 <nav id="TableOfContents">
+<ul>
+<li><a href="#release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</a>
+<ul>
+<li><a href="#1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2</a>
+<ul>
+<li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.1</a>
+<ul>
+<li><a href="#功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.0</a>
+<ul>
+<li><a href="#新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
+<li><a href="#功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-2-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1</a>
+<ul>
+<li><a href="#结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
+<li><a href="#功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</a>
+<ul>
+<li><a href="#新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
+<li><a href="#结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
+<li><a href="#缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.1.0</a>
+<ul>
+<li><a href="#新功能-2:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
+<li><a href="#缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</a>
+<ul>
+<li><a href="#功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
+<li><a href="#缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
+<li><a href="#1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</a></li>
+</ul></li>
+</ul>
+</nav>
+	</div>
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="copyright text-muted small">Copyright &copy; Release Notes All Rights Reserved</p>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
+
+
+</body>
+</html>
+
