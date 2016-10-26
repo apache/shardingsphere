@@ -9,7 +9,7 @@ weight = 1
 
 # Release Notes
 
-## 1.3.3-SNAPSHOT
+## 1.3.3
 
 ### 功能提升
 
