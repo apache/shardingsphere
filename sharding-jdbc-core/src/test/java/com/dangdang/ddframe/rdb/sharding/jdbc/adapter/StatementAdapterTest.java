@@ -154,7 +154,12 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
         
         AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
             @Override
-            protected Collection<? extends Statement> getRoutedStatements() throws SQLException {
+            protected void clearRouteStatements() {
+        
+            }
+    
+            @Override
+            protected Collection<? extends Statement> getRoutedStatements() {
                 return Lists.newArrayList(st1, st2);
             }
     

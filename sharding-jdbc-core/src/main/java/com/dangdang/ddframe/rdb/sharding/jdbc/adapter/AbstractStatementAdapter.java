@@ -42,13 +42,15 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private int fetchSize;
     
+    protected abstract void clearRouteStatements();
+    
     @Override
     public final void close() throws SQLException {
         for (Statement each : getRoutedStatements()) {
             each.close();
         }
         closed = true;
-        getRoutedStatements().clear();
+        clearRouteStatements();
     }
     
     @Override
@@ -218,7 +220,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
      * 获取路由的静态语句对象集合.
      * 
      * @return 路由的静态语句对象集合
-     * @throws SQLException SQL执行异常
      */
-    protected abstract Collection<? extends Statement> getRoutedStatements() throws SQLException;
+    protected abstract Collection<? extends Statement> getRoutedStatements();
 }

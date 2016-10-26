@@ -115,9 +115,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         }
     }
     
-    private void clearRouteContext() throws SQLException {
+    protected void clearRouteContext() throws SQLException {
+        super.clearRouteContext();
         clearParameters();
-        setCurrentResultSet(null);
     }
     
     @Override
