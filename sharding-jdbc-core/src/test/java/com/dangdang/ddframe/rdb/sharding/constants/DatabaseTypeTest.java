@@ -30,7 +30,7 @@ public final class DatabaseTypeTest {
         assertThat(DatabaseType.valueFrom("H2"), is(DatabaseType.H2));
         assertThat(DatabaseType.valueFrom("MySQL"), is(DatabaseType.MySQL));
         assertThat(DatabaseType.valueFrom("Oracle"), is(DatabaseType.Oracle));
-        assertThat(DatabaseType.valueFrom("SQLServer"), is(DatabaseType.SQLServer));
+        assertThat(DatabaseType.valueFrom("Microsoft SQL Server"), is(DatabaseType.SQLServer));
         assertThat(DatabaseType.valueFrom("DB2"), is(DatabaseType.DB2));
     }
     
