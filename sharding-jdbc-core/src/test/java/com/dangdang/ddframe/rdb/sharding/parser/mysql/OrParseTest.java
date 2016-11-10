@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.mysql;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
+import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(Parameterized.class)
 public final class OrParseTest extends AbstractBaseParseTest {
@@ -49,7 +48,8 @@ public final class OrParseTest extends AbstractBaseParseTest {
     // TODO 归并字段，整合进mySQL测试
     @Test
     public void assertParse() {
-        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Collections.emptyList(), 
-                Arrays.asList("id", "user_id", "name", "age", "days", "fee", "travel_date", "long")).parse());
+        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Collections.emptyList(), new ShardingRuleMockBuilder()
+                .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
+                .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parse());
     }
 }

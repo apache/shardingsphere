@@ -16,4 +16,38 @@
             </condition-context>
         </condition-contexts>
     </assert>
+    <assert id="assertInsertWithParameterAndAutoincrementColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="INSERT INTO [Token(order)] ('state', order_id) VALUES (?, ?)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="state" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <valueIndices>0</valueIndices>
+                </condition>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <valueIndices>1</valueIndices>
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+    <assert id="assertInsertWithParameterAndAutoincrementColumn" sql="insert into `payment`('state') values(?)" expected-sql="INSERT INTO [Token(payment)] ('state', order_id, pay_no) VALUES (?, ?, ?)">
+        <tables>
+            <table name="payment" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="state" table-name="payment" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <valueIndices>0</valueIndices>
+                </condition>
+                <condition column-name="order_id" table-name="payment" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <valueIndices>1</valueIndices>
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
 </asserts>

@@ -67,7 +67,7 @@ public final class SingleTableRouter {
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;
         this.sqlStatementType = sqlStatementType;
-        Optional<TableRule> tableRuleOptional = shardingRule.findTableRule(logicTable);
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(logicTable);
         if (tableRuleOptional.isPresent()) {
             tableRule = tableRuleOptional.get();
         } else if (shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {

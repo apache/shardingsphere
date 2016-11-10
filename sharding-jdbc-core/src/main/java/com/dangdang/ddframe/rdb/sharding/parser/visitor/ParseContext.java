@@ -27,6 +27,7 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcUtils;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -42,6 +43,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
+import com.google.common.base.Supplier;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -52,6 +56,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * 解析过程的上下文对象.
@@ -72,7 +79,7 @@ public final class ParseContext {
     private final int parseContextIndex;
     
     @Setter
-    private Collection<String> shardingColumns;
+    private ShardingRule shardingRule;
     
     @Setter
     private boolean hasOrCondition;
@@ -93,6 +100,13 @@ public final class ParseContext {
     private List<ParseContext> subParseContext = new LinkedList<>();
     
     private int itemIndex;
+    
+    private final Multimap<String, String> tableShardingColumnsMap = Multimaps.newSetMultimap(new TreeMap<String, Collection<String>>(String.CASE_INSENSITIVE_ORDER), new Supplier<Set<String>>() {
+        @Override
+        public Set<String> get() {
+            return new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        }
+    });
     
     public ParseContext(final int parseContextIndex) {
         this.parseContextIndex = parseContextIndex;
@@ -140,7 +154,10 @@ public final class ParseContext {
      */
     public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final DatabaseType databaseType, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
-        if (!column.isPresent() || !shardingColumns.contains(column.get().getColumnName())) {
+        if (!column.isPresent()) {
+            return;
+        }
+        if (notShardingColumns(column.get())) {
             return;
         }
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
@@ -168,8 +185,8 @@ public final class ParseContext {
      */
     public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> parameters) {
         Column column = createColumn(columnName, tableName);
-        if (!shardingColumns.contains(column.getColumnName())) {
-            return;
+        if (notShardingColumns(column)) {
+            return; 
         }
         ValuePair value = evalExpression(databaseType, valueExpr, parameters);
         if (null != value) {
@@ -193,6 +210,13 @@ public final class ParseContext {
                 condition.getValueIndices().add(each.paramIndex);
             }
         }
+    }
+    
+    private boolean notShardingColumns(final Column column) {
+        if (!tableShardingColumnsMap.containsKey(column.getTableName())) {
+            tableShardingColumnsMap.putAll(column.getTableName(), shardingRule.getAllShardingColumns(column.getTableName()));
+        }
+        return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
     private ValuePair evalExpression(final DatabaseType databaseType, final SQLObject sqlObject, final List<Object> parameters) {

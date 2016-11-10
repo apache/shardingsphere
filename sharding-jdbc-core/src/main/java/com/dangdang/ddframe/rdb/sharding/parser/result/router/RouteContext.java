@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 /**
  * SQL路由上下文.
@@ -41,4 +42,6 @@ public final class RouteContext {
     private SQLStatementType sqlStatementType;
     
     private SQLBuilder sqlBuilder;
+    
+    private Collection<String> autoIncrementColumns = new LinkedList<>();
 }

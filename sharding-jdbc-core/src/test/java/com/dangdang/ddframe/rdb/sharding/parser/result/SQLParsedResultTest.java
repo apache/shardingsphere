@@ -52,7 +52,7 @@ public final class SQLParsedResultTest {
                 + "routeContext=RouteContext("
                 + "tables=[Table(name=order, alias=Optional.of(o)), Table(name=order_item, alias=Optional.absent())], "
                 + "sqlStatementType=null, "
-                + "sqlBuilder=SELECT * FROM [Token(order)]), "
+                + "sqlBuilder=SELECT * FROM [Token(order)], autoIncrementColumns=[]), "
                 + "conditionContexts=[ConditionContext(conditions={Condition.Column(columnName=id, tableName=order)=Condition(column=Condition.Column(columnName=id, tableName=order), "
                 + "operator=IN, values=[1, 2, 3], valueIndices=[])})], "
                 + "mergeContext=MergeContext("

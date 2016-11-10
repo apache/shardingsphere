@@ -70,6 +70,13 @@ public class ParameterList extends AbstractList<Object> {
         }
     }
     
+    @Override
+    public boolean add(final Object o) {
+        int index = jdbcMethodInvocations.size() + 1;
+        recordMethodInvocation(index, "setObject", new Class[]{int.class, Object.class}, new Object[]{index, o});
+        return true;
+    }
+    
     /**
      * 根据索引设置列表中的值.
      * 

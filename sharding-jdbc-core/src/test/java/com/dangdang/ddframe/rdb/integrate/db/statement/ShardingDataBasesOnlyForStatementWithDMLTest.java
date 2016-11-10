@@ -17,20 +17,19 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -47,6 +46,19 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, '%s')", i, i, "insert"));
+                connection.commit();
+                connection.close();
+            }
+        }
+        assertDataSet("insert", "insert");
+    }
+    
+    @Test
+    public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
+        for (int i = 1; i <= 10; i++) {
+            try (Connection connection = shardingDataSource.getConnection()) {
+                connection.setAutoCommit(false);
+                connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`order_id`, `status`) VALUES (%s, '%s')", i, "insert"));
                 connection.commit();
                 connection.close();
             }

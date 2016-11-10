@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.junit.AfterClass;
 
@@ -75,7 +76,7 @@ public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDB
         }
         isShutdown = false;
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap("dataSource_%s"));
-        TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
+        TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).autoIncrementColumns("user_id").tableIdGenerator(IncrementIdGenerator.class).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))

@@ -23,6 +23,7 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
@@ -32,7 +33,6 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public final class SQLParseEngine {
     
     private final SQLASTOutputVisitor visitor;
     
-    private final Collection<String> shardingColumns;
+    private final ShardingRule shardingRule;
     
     /**
      *  解析SQL.
@@ -62,7 +62,7 @@ public final class SQLParseEngine {
         Preconditions.checkArgument(visitor instanceof SQLVisitor);
         SQLVisitor sqlVisitor = (SQLVisitor) visitor;
         visitor.setParameters(parameters);
-        sqlVisitor.getParseContext().setShardingColumns(shardingColumns);
+        sqlVisitor.getParseContext().setShardingRule(shardingRule);
         sqlStatement.accept(visitor);
         SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
         if (sqlVisitor.getParseContext().isHasOrCondition()) {

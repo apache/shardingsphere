@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.mysql;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import com.google.common.collect.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
+import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.google.common.collect.Lists;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Collection;
 
 @RunWith(Parameterized.class)
 public final class MySQLPreparedStatementForOneParameterTest extends AbstractBaseParseTest {
@@ -48,6 +47,8 @@ public final class MySQLPreparedStatementForOneParameterTest extends AbstractBas
     
     @Test
     public void assertParse() {
-        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Lists.<Object>newArrayList(1), Arrays.asList("user_id", "order_id", "state")).parse());
+        assertSQLParsedResult(SQLParserFactory.create(DatabaseType.MySQL, getSql(), Lists.<Object>newArrayList(1), 
+                new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state").addAutoIncrementColumn("order", "order_id")
+                        .addAutoIncrementColumn("payment", "order_id").addAutoIncrementColumn("payment", "pay_no").build()).parse());
     }
 }

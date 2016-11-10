@@ -45,7 +45,7 @@ public class OrVisitor extends AbstractMySQLVisitor {
             getParseContext().setCurrentTable(visitor.getParseContext().getCurrentTable().getName(), Optional.<String>absent());
         }
         getParseContext().getParsedResult().getRouteContext().getTables().addAll(visitor.getParseContext().getParsedResult().getRouteContext().getTables());
-        getParseContext().setShardingColumns(visitor.getParseContext().getShardingColumns());
+        getParseContext().setShardingRule(visitor.getParseContext().getShardingRule());
     }
     
     /**

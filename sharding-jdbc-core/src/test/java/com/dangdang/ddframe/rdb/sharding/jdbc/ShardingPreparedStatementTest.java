@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.mysql.jdbc.Statement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -243,6 +243,52 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             int[] result = preparedStatement.executeBatch();
             for (int each : result) {
                 assertThat(each, is(1));
+            }
+        }
+    }
+    
+    @Test
+    public void assertAddBatchWithAutoIncrementColumn() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `status`) VALUES (?,?)";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                java.sql.Statement queryStatement = connection.createStatement()) {
+            preparedStatement.setInt(1, 11);
+            preparedStatement.setString(2, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 12);
+            preparedStatement.setString(2, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 21);
+            preparedStatement.setString(2, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 22);
+            preparedStatement.setString(2, "BATCH");
+            preparedStatement.addBatch();
+            int[] result = preparedStatement.executeBatch();
+            for (int each : result) {
+                assertThat(each, is(1));
+            }
+            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 1")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(11));
+                assertThat(rs.next(), is(false));
+            }
+            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 2")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(12));
+                assertThat(rs.next(), is(false));
+            }
+            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 3")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(21));
+                assertThat(rs.next(), is(false));
+            }
+            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 4")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(22));
+                assertThat(rs.next(), is(false));
             }
         }
     }

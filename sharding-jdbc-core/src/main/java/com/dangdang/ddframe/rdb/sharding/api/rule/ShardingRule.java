@@ -21,16 +21,19 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 分库分表规则配置对象.
@@ -84,18 +87,32 @@ public final class ShardingRule {
     }
     
     /**
-     * 根据逻辑表名称查找分片规则.
+     * 试着根据逻辑表名称查找分片规则.
      * 
      * @param logicTableName 逻辑表名称
      * @return 该逻辑表的分片规则
      */
-    public Optional<TableRule> findTableRule(final String logicTableName) {
+    public Optional<TableRule> tryFindTableRule(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equals(logicTableName)) {
                 return Optional.of(each);
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * 根据逻辑表名找到指定分片规则.
+     * 
+     * @param logicTableName 逻辑表名称
+     * @return 该逻辑表的分片规则
+     */
+    public TableRule findTableRule(final String logicTableName) {
+        Optional<TableRule> tableRuleOptional = tryFindTableRule(logicTableName);
+        if (tableRuleOptional.isPresent()) {
+            return tableRuleOptional.get();
+        }
+        throw new ShardingJdbcException(String.format("%s does not exist in ShardingRule", logicTableName));
     }
     
     /**
@@ -194,14 +211,17 @@ public final class ShardingRule {
     /**
      * 获取所有的分片列名.
      *
+     * @param tableName 表名
      * @return 分片列名集合
      */
-    // TODO 目前使用分片列名称, 为了进一步提升解析性能，应考虑使用表名 + 列名
-    public Collection<String> getAllShardingColumns() {
-        Set<String> result = new HashSet<>();
+    public Collection<String> getAllShardingColumns(final String tableName) {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(databaseShardingStrategy.getShardingColumns());
         result.addAll(tableShardingStrategy.getShardingColumns());
         for (TableRule each : tableRules) {
+            if (!each.getLogicTable().equalsIgnoreCase(tableName)) {
+                continue;
+            }
             if (null != each.getDatabaseShardingStrategy()) {
                 result.addAll(each.getDatabaseShardingStrategy().getShardingColumns());
             }
@@ -210,6 +230,22 @@ public final class ShardingRule {
             }
         }
         return result;
+    }
+    
+    /**
+     * 获取所有需要自增的列名.
+     * 
+     * @param tableName 表名
+     * @return 自增列
+     */
+    public Collection<String> getAutoIncrementColumns(final String tableName) {
+        for (TableRule each : tableRules) {
+            if (!each.getLogicTable().equalsIgnoreCase(tableName)) {
+                continue;
+            }
+            return Sets.newLinkedHashSet(each.getAutoIncrementColumnMap().keySet());
+        }
+        return Collections.emptySet();
     }
     
     /**
@@ -227,6 +263,8 @@ public final class ShardingRule {
         private DatabaseShardingStrategy databaseShardingStrategy;
         
         private TableShardingStrategy tableShardingStrategy;
+        
+        private Class<? extends IdGenerator> idGeneratorClass;
         
         /**
          * 构建数据源配置规则.
@@ -282,6 +320,17 @@ public final class ShardingRule {
             this.tableShardingStrategy = tableShardingStrategy;
             return this;
         }
+    
+        /**
+         * 构建默认id生成器.
+         * 
+         * @param idGeneratorClass 默认的Id生成器
+         * @return 分片规则配置对象构建器
+         */
+        public ShardingRuleBuilder idGenerator(final Class<? extends IdGenerator> idGeneratorClass) {
+            this.idGeneratorClass = idGeneratorClass;
+            return this;
+        }
         
         /**
          * 构建分片规则配置对象.
@@ -289,7 +338,14 @@ public final class ShardingRule {
          * @return 分片规则配置对象
          */
         public ShardingRule build() {
-            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy);
+            ShardingRule result = new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy);
+            if (null == idGeneratorClass) {
+                return result;
+            }
+            for (TableRule each : tableRules) {
+                each.fillIdGenerator(idGeneratorClass);
+            }
+            return result;
         }
     }
 }

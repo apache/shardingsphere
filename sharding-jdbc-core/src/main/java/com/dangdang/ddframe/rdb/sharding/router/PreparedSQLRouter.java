@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,11 @@ public class PreparedSQLRouter {
     
     private final SQLRouteEngine engine;
     
+    private final ShardingRule shardingRule;
+    
     private SQLParsedResult sqlParsedResult;
+    
+    private TableRule tableRule;
     
     /**
      * 使用参数进行SQL路由.
@@ -47,7 +53,11 @@ public class PreparedSQLRouter {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlParsedResult) {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
+            tableRule = shardingRule.findTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
         } else {
+            for (String each : sqlParsedResult.getRouteContext().getAutoIncrementColumns()) {
+                parameters.add(tableRule.generateId(each));
+            }
             engine.setParameters(parameters);
             for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
                 each.setNewConditionValue(parameters);

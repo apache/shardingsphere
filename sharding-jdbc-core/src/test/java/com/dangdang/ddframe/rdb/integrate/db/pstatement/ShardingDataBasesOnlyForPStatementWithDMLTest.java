@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,6 +49,20 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
                 preparedStatement.setInt(1, i);
                 preparedStatement.setInt(2, i);
                 preparedStatement.setString(3, "insert");
+                preparedStatement.executeUpdate();
+            }
+        }
+        assertDataSet("insert", "insert");
+    }
+    
+    @Test
+    public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
+        String sql = "INSERT INTO `t_order` (`order_id`, `status`) VALUES (?, ?)";
+        try (Connection connection = shardingDataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                for (int i = 1; i <= 10; i++) {
+                preparedStatement.setInt(1, i);
+                preparedStatement.setString(2, "insert");
                 preparedStatement.executeUpdate();
             }
         }

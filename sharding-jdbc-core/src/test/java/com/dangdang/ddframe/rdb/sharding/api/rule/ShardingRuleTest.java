@@ -85,8 +85,8 @@ public final class ShardingRuleTest {
                 .tableRules(Collections.singletonList(createTableRule()))
                 .databaseShardingStrategy(createDatabaseShardingStrategy())
                 .tableShardingStrategy(createTableShardingStrategy()).build();
-        assertTrue(actual.findTableRule("logicTable").isPresent());
-        assertFalse(actual.findTableRule("null").isPresent());
+        assertTrue(actual.tryFindTableRule("logicTable").isPresent());
+        assertFalse(actual.tryFindTableRule("null").isPresent());
     }
     
     @Test
@@ -194,12 +194,12 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetAllShardingColumnsWithoutStrategy() {
-        assertThat(createShardingRule().getAllShardingColumns(), is((Collection<String>) Collections.<String>emptySet()));
+        assertThat(createShardingRule().getAllShardingColumns("logicTable"), is((Collection<String>) Collections.<String>emptySet()));
     }
     
     @Test
     public void assertGetAllShardingColumnsWithStrategy() {
-        assertThat(createShardingRuleWithStrategy().getAllShardingColumns(), is((Collection<String>) Sets.newHashSet("column")));
+        assertThat(createShardingRuleWithStrategy().getAllShardingColumns("logicTable"), is((Collection<String>) Sets.newHashSet("column")));
     }
     
     

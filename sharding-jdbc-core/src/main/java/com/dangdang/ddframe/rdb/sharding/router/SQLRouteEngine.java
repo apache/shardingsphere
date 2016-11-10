@@ -80,13 +80,13 @@ public final class SQLRouteEngine {
      * @return 预解析SQL路由器
      */
     public PreparedSQLRouter prepareSQL(final String logicSql) {
-        return new PreparedSQLRouter(logicSql, this);
+        return new PreparedSQLRouter(logicSql, this, shardingRule);
     }
     
     SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
         this.parameters = parameters;
         Context context = MetricsContext.start("Parse SQL");
-        SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule.getAllShardingColumns()).parse();
+        SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule).parse();
         MetricsContext.stop(context);
         return result;
     }
