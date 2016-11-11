@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -252,7 +253,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         String sql = "INSERT INTO `t_order`(`order_id`, `status`) VALUES (?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 java.sql.Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setString(2, "BATCH");
@@ -270,6 +271,16 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             for (int each : result) {
                 assertThat(each, is(1));
             }
+            assertTrue(preparedStatement.getGeneratedKeys().next());
+            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 1);
+            assertTrue(preparedStatement.getGeneratedKeys().next());
+            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 2);
+            assertTrue(preparedStatement.getGeneratedKeys().next());
+            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 3);
+            assertTrue(preparedStatement.getGeneratedKeys().next());
+            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 4);
+            assertFalse(preparedStatement.getGeneratedKeys().next());
+            
             try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 1")) {
                 assertThat(rs.next(), is(true));
                 assertThat(rs.getInt(1), is(11));

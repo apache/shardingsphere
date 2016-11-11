@@ -24,6 +24,7 @@ import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -65,13 +66,15 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
     
     private void supplyAutoIncrementColumn(final Collection<String> autoIncrementColumns, final String tableName, final List<SQLExpr> columns, final List<SQLExpr> values) {
         boolean isPreparedStatement = !getParameters().isEmpty();
+        GeneratedKeyContext generatedKeyContext = getParseContext().getParsedResult().getGeneratedKeyContext();
         if (isPreparedStatement) {
-            getParseContext().getParsedResult().getRouteContext().getAutoIncrementColumns().addAll(autoIncrementColumns);
+            generatedKeyContext.getColumns().addAll(autoIncrementColumns);
         }
         TableRule tableRule = getParseContext().getShardingRule().findTableRule(tableName);
         for (String each : autoIncrementColumns) {
             SQLExpr sqlExpr;
             Object id = tableRule.generateId(each);
+            generatedKeyContext.putValue(each, id);
             if (isPreparedStatement) {
                 sqlExpr = new SQLVariantRefExpr("?");
                 getParameters().add(id);

@@ -19,8 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public class PreparedSQLRouter {
     
     private SQLParsedResult sqlParsedResult;
     
-    private TableRule tableRule;
+    private Optional<TableRule> tableRuleOptional;
     
     /**
      * 使用参数进行SQL路由.
@@ -53,17 +55,28 @@ public class PreparedSQLRouter {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlParsedResult) {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
-            tableRule = shardingRule.findTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
+            tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
         } else {
-            for (String each : sqlParsedResult.getRouteContext().getAutoIncrementColumns()) {
-                parameters.add(tableRule.generateId(each));
-            }
+            generateId(parameters);
             engine.setParameters(parameters);
             for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
                 each.setNewConditionValue(parameters);
             }
         }
         return engine.routeSQL(sqlParsedResult);
+    }
+    
+    private void generateId(final List<Object> parameters) {
+        if (!tableRuleOptional.isPresent()) {
+            return;
+        }
+        TableRule tableRule = tableRuleOptional.get();
+        GeneratedKeyContext generatedKeyContext = sqlParsedResult.getGeneratedKeyContext();
+        for (String each : generatedKeyContext.getColumns()) {
+            Object id = tableRule.generateId(each);
+            parameters.add(id);
+            generatedKeyContext.putValue(each, id);
+        }
     }
 }
 

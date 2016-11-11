@@ -209,7 +209,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
+    public ResultSet getGeneratedKeys() throws SQLException {
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
         }

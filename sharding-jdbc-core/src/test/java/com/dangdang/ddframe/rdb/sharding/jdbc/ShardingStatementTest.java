@@ -17,19 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -182,6 +183,32 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
                 Connection connection = shardingDataSource.getConnection();
                 Statement stmt = connection.createStatement()) {
             assertThat(stmt.getConnection(), is(connection));
+        }
+    }
+    
+    @Test
+    public void assertAutoIncrement() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `status`) VALUES (%d,'%s')";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                Statement stmt = connection.createStatement()) {
+            assertFalse(stmt.execute(String.format(sql, 1, "init")));
+            assertFalse(stmt.getGeneratedKeys().next());
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), Statement.NO_GENERATED_KEYS));
+            assertFalse(stmt.getGeneratedKeys().next());
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), Statement.RETURN_GENERATED_KEYS));
+            assertTrue(stmt.getGeneratedKeys().next());
+            assertEquals(stmt.getGeneratedKeys().getLong(1), 3);
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{1}));
+            assertTrue(stmt.getGeneratedKeys().next());
+            assertEquals(stmt.getGeneratedKeys().getLong(1), 4);
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"user_id"}));
+            assertTrue(stmt.getGeneratedKeys().next());
+            assertEquals(stmt.getGeneratedKeys().getLong(1), 5);
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{2}));
+            assertFalse(stmt.getGeneratedKeys().next());
+            assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"no"}));
+            assertFalse(stmt.getGeneratedKeys().next());
         }
     }
 }

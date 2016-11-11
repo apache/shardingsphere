@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * SQL路由结果.
@@ -37,6 +38,8 @@ public final class SQLRouteResult {
     private final SQLStatementType sqlStatementType;
     
     private final MergeContext mergeContext;
+    
+    private final GeneratedKeyContext generatedKeyContext;
     
     private final Set<SQLExecutionUnit> executionUnits = new HashSet<>();
 }

@@ -93,7 +93,7 @@ public final class SQLRouteEngine {
     
     SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
         Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext());
+        SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
             RoutingResult routingResult = routeSQL(each, parsedResult);
             result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getRouteContext().getSqlBuilder()));

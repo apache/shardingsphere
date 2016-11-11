@@ -318,9 +318,9 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
         assertTrue(generatedKeysResult.getInt(1) > 0);
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
         actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `order_id` IN 1, 2");
-        actual.getGeneratedKeys();
+        assertThat(actual.getGeneratedKeys().next(), is(false));
     }
 }
