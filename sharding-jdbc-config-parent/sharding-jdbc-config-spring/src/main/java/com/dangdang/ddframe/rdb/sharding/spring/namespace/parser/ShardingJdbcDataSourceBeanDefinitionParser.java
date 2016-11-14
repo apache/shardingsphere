@@ -65,7 +65,15 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         factory.addPropertyValue("bindingTables", parseBindingTablesConfig(shardingRuleElement));
         factory.addPropertyValue("defaultDatabaseStrategy", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
         factory.addPropertyValue("defaultTableStrategy", parseDefaultTableStrategyConfig(shardingRuleElement));
+        parseIdGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
+    }
+    
+    private void parseIdGenerator(final BeanDefinitionBuilder factory, final Element element) {
+        String idGeneratorClass = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ID_GENERATOR_CLASS);
+        if (!Strings.isNullOrEmpty(idGeneratorClass)) {
+            factory.addPropertyValue("idGeneratorClass", idGeneratorClass);
+        }
     }
     
     private Map<String, BeanDefinition> parseDataSources(final Element element, final ParserContext parserContext) {
@@ -116,6 +124,16 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableStrategy", tableStrategy);
         }
+        List<Element> autoIncrementColumns = DomUtils.getChildElementsByTagName(tableElement, ShardingJdbcDataSourceBeanDefinitionParserTag.AUTO_INCREMENT_COLUMN);
+        if (null == autoIncrementColumns || autoIncrementColumns.isEmpty()) {
+            return factory.getBeanDefinition();
+        }
+        Map<String, String> autoIncrementColumnMap = new ManagedMap<>(autoIncrementColumns.size());
+        for (Element each : autoIncrementColumns) {
+            autoIncrementColumnMap.put(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME), 
+                    Strings.emptyToNull(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_ID_GENERATOR_CLASS)));
+        }
+        factory.addPropertyValue("autoIncrementColumns", autoIncrementColumnMap);
         return factory.getBeanDefinition();
     }
     

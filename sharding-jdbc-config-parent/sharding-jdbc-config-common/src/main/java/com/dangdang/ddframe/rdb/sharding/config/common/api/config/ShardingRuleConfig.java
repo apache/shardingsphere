@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 分片规则配置.
@@ -46,4 +46,6 @@ public class ShardingRuleConfig {
     private StrategyConfig defaultDatabaseStrategy;
     
     private StrategyConfig defaultTableStrategy;
+    
+    private String idGeneratorClass;
 }

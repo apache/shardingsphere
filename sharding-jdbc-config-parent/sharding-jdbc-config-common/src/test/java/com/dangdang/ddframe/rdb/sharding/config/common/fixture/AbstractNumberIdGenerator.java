@@ -15,32 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
+package com.dangdang.ddframe.rdb.sharding.config.common.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * 表规则配置.
- * 
- * @author gaohongtao
- */
-@Getter
-@Setter
-public class TableRuleConfig {
+abstract class AbstractNumberIdGenerator implements IdGenerator{
     
-    private boolean dynamic;
+    final AtomicInteger sequence = new AtomicInteger(100);
     
-    private String actualTables;
+    @Override
+    public void initContext(final String tableName, final String columnName) {
+        
+    }
     
-    private String dataSourceNames;
-    
-    private StrategyConfig databaseStrategy;
-    
-    private StrategyConfig tableStrategy;
-    
-    private Map<String, String> autoIncrementColumns = new HashMap<>();
 }

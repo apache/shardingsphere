@@ -25,6 +25,7 @@
             </xsd:sequence>
             <xsd:attribute name="data-sources" type="xsd:string" use="required" />
             <xsd:attribute name="default-data-source" type="xsd:string" use="optional" />
+            <xsd:attribute name="id-generator-class" type="xsd:string" use="optional" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="table-rules">
@@ -36,12 +37,21 @@
     </xsd:element>
     <xsd:element name="table-rule">
         <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="auto-increment-column" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
             <xsd:attribute name="logic-table" type="xsd:string" use="required" />
             <xsd:attribute name="dynamic" type="xsd:string" use="optional" />
             <xsd:attribute name="actual-tables" type="xsd:string" use="optional" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="optional" />
             <xsd:attribute name="database-strategy" type="xsd:string" use="optional" />
             <xsd:attribute name="table-strategy" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="auto-increment-column">
+        <xsd:complexType>
+            <xsd:attribute name="column-name" type="xsd:string" use="required"/>
+            <xsd:attribute name="column-id-generator-class" type="xsd:string" use="optional"/>
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="binding-table-rules">

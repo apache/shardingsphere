@@ -68,6 +68,18 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig("xxx.Algorithm"));
         new ShardingRuleBuilder(shardingRuleConfig).build();
     }
+    @Test(expected = IllegalArgumentException.class)
+    public void assertBuildFailureWhenAutoIncrementClassNotExisted() {
+        ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
+        shardingRuleConfig.setDataSource(createDataSourceMap());
+        shardingRuleConfig.setDefaultDataSourceName("ds_0");
+        shardingRuleConfig.setTables(createTableRuleConfigMap());
+        shardingRuleConfig.setIdGeneratorClass("not.existed");
+        shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
+        shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
+        shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
+        new ShardingRuleBuilder(shardingRuleConfig).build();
+    }
     
     @Test
     public void assertBuildSuccess() {
@@ -75,6 +87,7 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDataSource(createDataSourceMap());
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         shardingRuleConfig.setTables(createTableRuleConfigMap());
+        shardingRuleConfig.setIdGeneratorClass("com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementIdGenerator");
         shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
@@ -144,6 +157,10 @@ public final class ShardingRuleBuilderTest {
         result.setDataSourceNames("ds_${0..1}");
         result.setDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         result.setTableStrategy(getTableStrategyConfigForExpression());
+        Map<String, String> autoIncrementColumnMap = new HashMap<>();
+        autoIncrementColumnMap.put("order_id", null);
+        autoIncrementColumnMap.put("order_item_id", "com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator");
+        result.setAutoIncrementColumns(autoIncrementColumnMap);
         return result;
     }
     

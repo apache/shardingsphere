@@ -15,32 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
+package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * 表规则配置.
- * 
- * @author gaohongtao
- */
-@Getter
-@Setter
-public class TableRuleConfig {
+public class IncrementIdGenerator extends AbstractNumberIdGenerator{
     
-    private boolean dynamic;
-    
-    private String actualTables;
-    
-    private String dataSourceNames;
-    
-    private StrategyConfig databaseStrategy;
-    
-    private StrategyConfig tableStrategy;
-    
-    private Map<String, String> autoIncrementColumns = new HashMap<>();
+    @Override
+    public Object generateId() {
+        return sequence.incrementAndGet();
+    }
 }

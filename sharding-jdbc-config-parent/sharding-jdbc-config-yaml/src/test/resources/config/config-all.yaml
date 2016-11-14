@@ -13,6 +13,8 @@ dataSource:
     maxActive: 100
     
 defaultDataSourceName: db0
+
+idGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.IncrementIdGenerator
     
 tables:
   config:
@@ -21,6 +23,8 @@ tables:
     
   t_order: 
     actualTables: t_order_${0..1}
+    autoIncrementColumns:
+      order_id: 
     databaseStrategy: &db001
       shardingColumns: order_id
       algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.SingleAlgorithm
@@ -30,6 +34,8 @@ tables:
         
   t_order_item:
     actualTables: t_order_item_${0..1}
+    autoIncrementColumns:
+      order_item_id: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.DecrementIdGenerator
     #绑定表中其余的表的策略与第一张表的策略相同
     databaseStrategy: *db001
     tableStrategy: *table001
