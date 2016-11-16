@@ -17,10 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.ArrayList;
+import java.util.List;
+
 // CHECKSTYLE:OFF
 public final class Main {
     
@@ -37,17 +40,18 @@ public final class Main {
         System.out.println(orderRepository.selectOrderBy());
         System.out.println("--------------");
     
-        for (int i = 10000; i < 10010; i++) {
+        List<Long> orderIds = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
             Order order = new Order();
-            order.setOrderId(i);
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
             orderRepository.create(order);
-            System.out.println(orderRepository.selectById(i));
+            orderIds.add(order.getOrderId());
+            System.out.println(orderRepository.selectById(order.getOrderId()));
             System.out.println("--------------");
             order.setStatus("UPDATE_TEST");
             orderRepository.update(order);
-            System.out.println(orderRepository.selectById(i));
+            System.out.println(orderRepository.selectById(order.getOrderId()));
             System.out.println("--------------");
         }
     
@@ -57,8 +61,8 @@ public final class Main {
         System.out.println(orderRepository.selectOrderBy());
         System.out.println("--------------");
     
-        for (int i = 10000; i < 10010; i++) {
-            orderRepository.delete(i);
+        for (Long each : orderIds) {
+            orderRepository.delete(each);
         }
         applicationContext.close();
     }

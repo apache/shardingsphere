@@ -32,9 +32,11 @@
     <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
     
     <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="ds_0, ds_1">
+        <rdb:sharding-rule data-sources="ds_0, ds_1" id-generator-class="com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator">
             <rdb:table-rules>
-                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy"/>
+                <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
+                    <rdb:auto-increment-column column-name="order_id"/>
+                </rdb:table-rule>
             </rdb:table-rules>
         </rdb:sharding-rule>
     </rdb:data-source>

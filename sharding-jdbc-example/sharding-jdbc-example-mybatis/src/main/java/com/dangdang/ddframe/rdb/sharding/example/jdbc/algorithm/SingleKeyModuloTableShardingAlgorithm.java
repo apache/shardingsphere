@@ -17,17 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
 
-public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
+public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Long> {
     
     @Override
-    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         for (String each : availableTargetNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
@@ -37,10 +37,10 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
     }
     
     @Override
-    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Collection<Integer> values = shardingValue.getValues();
-        for (Integer value : values) {
+        Collection<Long> values = shardingValue.getValues();
+        for (Long value : values) {
             for (String tableNames : availableTargetNames) {
                 if (tableNames.endsWith(value % 2 + "")) {
                     result.add(tableNames);
@@ -51,10 +51,10 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
     }
     
     @Override
-    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
+    public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        Range<Integer> range = shardingValue.getValueRange();
-        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
+        Range<Long> range = shardingValue.getValueRange();
+        for (Long i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(i % 2 + "")) {
                     result.add(each);

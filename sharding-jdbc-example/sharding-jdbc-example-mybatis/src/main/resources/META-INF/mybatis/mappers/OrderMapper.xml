@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository">
     <resultMap id="baseResultMap" type="com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order">
-        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="status" property="status" jdbcType="CLOB"/>
     </resultMap>
@@ -13,12 +13,11 @@
         status
     </sql>
     
-    <insert id="insert">
+    <insert id="insert" keyProperty="orderId" useGeneratedKeys="true" >
         INSERT INTO `t_order`(
-        <include refid="baseColumnList"/>
+        `user_id`,`status`
         )
         VALUES (
-        #{orderId,jdbcType=INTEGER},
         #{userId,jdbcType=INTEGER},
         #{status,jdbcType=CLOB}
         );
@@ -27,7 +26,7 @@
     <update id="update">
         UPDATE `t_order`
         SET `status` = 'UPDATED'
-        WHERE `order_id` = 1 AND `user_id` in
+        WHERE `user_id` in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
         </foreach>

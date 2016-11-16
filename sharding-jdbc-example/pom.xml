@@ -64,6 +64,11 @@
             <version>${sharding-jdbc.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>sharding-jdbc-self-id-generator</artifactId>
+            <version>${sharding-jdbc.version}</version>
+        </dependency>
+        <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>${commons-dbcp.version}</version>

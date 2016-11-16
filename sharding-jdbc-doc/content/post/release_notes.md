@@ -10,13 +10,21 @@ weight = 1
 
 # Release Notes
 
+## 1.4.0-SNAPSHOT
+
+### 功能提升
+
+1. 自动生成键实现，包含
+   [ISSUE #162](https://github.com/dangdangdotcom/sharding-jdbc/issues/162)
+   [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163)
+   [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171)
+   [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172)
+
 ## 1.3.3
 
 ### 缺陷修正
 
 1. [ISSUE #166](https://github.com/dangdangdotcom/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
-
-## 1.3.3
 
 ### 功能提升
 

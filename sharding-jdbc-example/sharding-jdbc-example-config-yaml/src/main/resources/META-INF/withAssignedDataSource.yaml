@@ -15,12 +15,16 @@ dataSource:
     username: root
     password:
 
+idGeneratorClass: com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator
+
 tables:
   t_config:
     actualTables: ds_config.t_config
 
   t_order: 
     actualTables: ds_${0..1}.t_order_${0..1}
+    autoIncrementColumns:
+      order_id:
     tableStrategy:
       shardingColumns: order_id
       algorithmExpression: t_order_${order_id.longValue() % 2}

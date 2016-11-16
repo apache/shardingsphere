@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.repository;
 
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
+
+import java.util.List;
 
 public interface OrderRepository {
     
-    Order selectById(int orderId);
+    Order selectById(long orderId);
     
     List<Order> selectAll();
     
@@ -33,5 +33,5 @@ public interface OrderRepository {
     
     void update(Order order);
     
-    void delete(int orderId);
+    void delete(long orderId);
 }

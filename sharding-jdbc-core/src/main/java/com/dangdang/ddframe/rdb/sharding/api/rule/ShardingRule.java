@@ -94,7 +94,7 @@ public final class ShardingRule {
      */
     public Optional<TableRule> tryFindTableRule(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTableName)) {
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
                 return Optional.of(each);
             }
         }

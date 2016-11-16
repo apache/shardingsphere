@@ -6,6 +6,9 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <logger name="com.dangdang.ddframe.rdb.sharding.id.generator" level="info" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
     <logger name="com.dangdang" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>

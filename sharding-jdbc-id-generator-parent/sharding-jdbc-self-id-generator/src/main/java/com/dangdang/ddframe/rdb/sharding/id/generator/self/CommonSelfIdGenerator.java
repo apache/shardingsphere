@@ -23,6 +23,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 自生成Id生成器.
@@ -43,6 +47,7 @@ import lombok.Setter;
  * @author gaohongtao.
  */
 @Getter
+@Slf4j
 public class CommonSelfIdGenerator implements IdGenerator {
     
     public static final long SJDBC_EPOCH = 1477933200000L;
@@ -90,6 +95,11 @@ public class CommonSelfIdGenerator implements IdGenerator {
         setWorkerId(Long.valueOf(workerId));
     }
     
+    /**
+     * 设置工作进程Id.
+     * 
+     * @param workerId
+     */
     public static void setWorkerId(final Long workerId) {
         Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE);
         CommonSelfIdGenerator.workerId = workerId;
@@ -124,6 +134,9 @@ public class CommonSelfIdGenerator implements IdGenerator {
             sequence = 0;
         }
         lastTime = time;
+        if (log.isDebugEnabled()) {
+            log.debug("{}.{}:{}-{}-{}", tableName, columnName, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
+        }
         return ((time - SJDBC_EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     

@@ -17,15 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.repository;
 
-import java.util.List;
+import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Repository;
-
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -35,7 +34,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     private EntityManager entityManager;
     
     @Override
-    public Order selectById(final int orderId) {
+    public Order selectById(final long orderId) {
         return entityManager.find(Order.class, orderId);
     }
     
@@ -58,11 +57,17 @@ public class OrderRepositoryImpl implements OrderRepository {
     
     @Override
     public void update(final Order order) {
-        entityManager.merge(order);
+        Query query = entityManager.createQuery("UPDATE Order o SET o.status = ?1 WHERE o.orderId = ?2 AND o.userId = ?3");
+        query.setParameter(1, order.getStatus());
+        query.setParameter(2, order.getOrderId());
+        query.setParameter(3, order.getUserId());
+        query.executeUpdate();
     }
     
     @Override
-    public void delete(final int orderId) {
-        entityManager.remove(selectById(orderId));
+    public void delete(final long orderId) {
+        Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND o.userId = 51");
+        query.setParameter(1, orderId);
+        query.executeUpdate();
     }
 }

@@ -17,12 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "t_order")
@@ -32,7 +33,8 @@ public class Order implements Serializable {
     
     @Id
     @Column(name = "order_id")
-    private int orderId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long orderId;
     
     @Column(name = "user_id")
     private int userId;
@@ -40,11 +42,11 @@ public class Order implements Serializable {
     @Column(name = "status")
     private String status;
     
-    public int getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
     
-    public void setOrderId(final int orderId) {
+    public void setOrderId(final long orderId) {
         this.orderId = orderId;
     }
     

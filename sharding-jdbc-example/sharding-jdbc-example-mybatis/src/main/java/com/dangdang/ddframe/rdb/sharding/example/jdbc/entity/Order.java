@@ -19,17 +19,17 @@ package com.dangdang.ddframe.rdb.sharding.example.jdbc.entity;
 
 public final class Order {
     
-    private int orderId;
+    private long orderId;
     
     private int userId;
     
     private String status;
     
-    public int getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
     
-    public void setOrderId(final int orderId) {
+    public void setOrderId(final long orderId) {
         this.orderId = orderId;
     }
     
