@@ -21,14 +21,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
-public class SystemEnvWorkerIdTest extends AbstractWorkerIdTest{
+public class SystemEnvWorkerIdTest extends AbstractWorkerIdTest {
     
     @Rule
-    public final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
     
     @Before
     public void setup() {
-        ENVIRONMENT_VARIABLES.set("SJDBC_SELF_ID_GENERATOR_WORKER_ID", "13");
+        environmentVariables.set("SJDBC_SELF_ID_GENERATOR_WORKER_ID", "13");
         super.setup();
     }
     

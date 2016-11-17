@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class IncrementIdGenerator implements IdGenerator{
+public class IncrementIdGenerator implements IdGenerator {
     
     private final AtomicInteger i = new AtomicInteger();
     

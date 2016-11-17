@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
 import com.google.common.collect.Sets;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -204,22 +205,9 @@ public final class TableRuleTest {
     @Test
     public void assertAutoIncrementColumn() {
         TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).autoIncrementColumns("col_1", IncrementIdGenerator.class)
-                .autoIncrementColumns("col_2").tableIdGenerator(MockIdGenerator.class).build();
+                .autoIncrementColumns("col_2").tableIdGenerator(Mockito.mock(IdGenerator.class).getClass()).build();
         assertThat(actual.getAutoIncrementColumnMap().get("col_1"), instanceOf(IncrementIdGenerator.class));
-        assertThat(actual.getAutoIncrementColumnMap().get("col_2"), instanceOf(MockIdGenerator.class));
-    }
-    
-    public static class MockIdGenerator implements IdGenerator {
-    
-        @Override
-        public void initContext(final String tableName, final String columnName) {
-        
-        }
-    
-        @Override
-        public Object generateId() {
-            return null;
-        }
+        assertThat(actual.getAutoIncrementColumnMap().get("col_2"), instanceOf(Mockito.mock(IdGenerator.class).getClass()));
     }
     
     private DataSourceRule createDataSourceRule() {

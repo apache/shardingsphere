@@ -48,7 +48,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllUtilTests.class, 
     AllMetricsTests.class, 
     AllIntegrateTests.class, 
-    AllIdGeneratorTest.class,
+    AllIdGeneratorTest.class
     })
 public class AllTests {
 }

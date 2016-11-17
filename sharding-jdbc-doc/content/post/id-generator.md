@@ -80,7 +80,7 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
 
 ## 时间位(41bit)
 
-从2016年11月1日零点到现在的毫秒数
+从2016年11月1日零点到现在的毫秒数，时间可以使用到2156年，满足大部分系统的要求。
 
 ## 工作进程位(10bit)
 

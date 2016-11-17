@@ -34,5 +34,5 @@ public interface SlaveLoadBalanceStrategy {
      * @param slaveDataSources 从库数据源列表
      * @return 选中的从库数据源
      */
-    DataSource getDataSource(final String name, final List<DataSource> slaveDataSources);
+    DataSource getDataSource(String name, List<DataSource> slaveDataSources);
 }

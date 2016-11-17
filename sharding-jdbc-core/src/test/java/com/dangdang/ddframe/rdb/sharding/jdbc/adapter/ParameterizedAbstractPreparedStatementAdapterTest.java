@@ -53,7 +53,7 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class AbstractPreparedStatementAdapterTest {
+public class ParameterizedAbstractPreparedStatementAdapterTest {
     
     private final String methodName;
     
@@ -67,8 +67,8 @@ public class AbstractPreparedStatementAdapterTest {
                 {"setNull", new Class[]{int.class, int.class}, new Object[] {1, Types.CHAR}},
                 {"setNull", new Class[]{int.class, int.class, String.class}, new Object[] {1, Types.CHAR, "USER_DEFINE"}},
                 {"setBoolean", new Class[]{int.class, boolean.class}, new Object[] {1, true}},
-                {"setByte", new Class[]{int.class, byte.class}, new Object[] {1, (byte)1}},
-                {"setShort", new Class[]{int.class, short.class}, new Object[] {1, (short)1}},
+                {"setByte", new Class[]{int.class, byte.class}, new Object[] {1, (byte) 1}},
+                {"setShort", new Class[]{int.class, short.class}, new Object[] {1, (short) 1}},
                 {"setInt", new Class[]{int.class, int.class}, new Object[] {1, 1}},
                 {"setLong", new Class[]{int.class, long.class}, new Object[] {1, 12121212332L}},
                 {"setFloat", new Class[]{int.class, float.class}, new Object[] {1, 1F}},
@@ -132,6 +132,6 @@ public class AbstractPreparedStatementAdapterTest {
         assertThat(method.getParameterTypes(), is(parameterClasses));
         Field argumentsField = JdbcMethodInvocation.class.getDeclaredField("arguments");
         argumentsField.setAccessible(true);
-        assertThat((Object[])argumentsField.get(invocation), is(parameters));
+        assertThat((Object[]) argumentsField.get(invocation), is(parameters));
     }
 }

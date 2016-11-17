@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceAutoIncrementColumns.xml")
-public class AutoIncrementDBUnitTest extends AbstractSpringDBUnitTest{
+public class AutoIncrementDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test
     public void test() throws SQLException {

@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ParameterizedAbstractPreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.StatementAdapterTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSetTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedGeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationPreparedStatementTest;
@@ -47,7 +47,7 @@ import org.junit.runners.Suite;
     UnsupportedOperationPreparedStatementTest.class, 
     UnsupportedOperationResultSetTest.class,
     UnsupportedUpdateOperationResultSetTest.class,
-    AbstractUnsupportedGeneratedKeysResultSetTest.class,
+    UnsupportedGeneratedKeysResultSetTest.class,
     DataSourceAdapterTest.class, 
     ConnectionAdapterTest.class, 
     StatementAdapterTest.class, 
@@ -57,11 +57,11 @@ import org.junit.runners.Suite;
     JdbcMethodInvocationTest.class, 
     MasterSlaveDataSourceTest.class, 
     ParameterListTest.class, 
-    AbstractPreparedStatementAdapterTest.class,
+    ParameterizedAbstractPreparedStatementAdapterTest.class,
     ShardingConnectionTest.class, 
     ShardingPreparedStatementTableOnlyTest.class,
     GeneratedKeysResultSetTest.class,
-    GeneratedKeysResultSetMetaDataTest.class,
+    GeneratedKeysResultSetMetaDataTest.class
     })
 public class AllJDBCTests {
 }

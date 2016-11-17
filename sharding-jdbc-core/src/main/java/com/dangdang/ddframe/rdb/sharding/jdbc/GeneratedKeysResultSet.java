@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * 生成键结果集.
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @RequiredArgsConstructor
 public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {

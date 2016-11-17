@@ -60,7 +60,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
         String sql = "INSERT INTO `t_order` (`order_id`, `status`) VALUES (?, ?)";
         try (Connection connection = shardingDataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                for (int i = 1; i <= 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
                 preparedStatement.setString(2, "insert");
                 preparedStatement.executeUpdate();

@@ -281,22 +281,22 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 4);
             assertFalse(preparedStatement.getGeneratedKeys().next());
             
-            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 1")) {
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 1")) {
                 assertThat(rs.next(), is(true));
                 assertThat(rs.getInt(1), is(11));
                 assertThat(rs.next(), is(false));
             }
-            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 2")) {
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 2")) {
                 assertThat(rs.next(), is(true));
                 assertThat(rs.getInt(1), is(12));
                 assertThat(rs.next(), is(false));
             }
-            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 3")) {
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 3")) {
                 assertThat(rs.next(), is(true));
                 assertThat(rs.getInt(1), is(21));
                 assertThat(rs.next(), is(false));
             }
-            try(ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 4")) {
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 4")) {
                 assertThat(rs.next(), is(true));
                 assertThat(rs.getInt(1), is(22));
                 assertThat(rs.next(), is(false));

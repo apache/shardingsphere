@@ -51,7 +51,7 @@ public abstract class AbstractBestEffortsDeliveryJobFactory<T extends AbstractBe
         jobScheduler.init();
     }
     
-    protected abstract ZookeeperConfiguration createZookeeperConfiguration(final T config);
+    protected abstract ZookeeperConfiguration createZookeeperConfiguration(T config);
     
     private JobConfiguration createBedJobConfiguration(final T bedJobConfig) {
         JobConfiguration result = new JobConfiguration(bedJobConfig.getJobName(), NestedBestEffortsDeliveryJob.class, 1, bedJobConfig.getCron());

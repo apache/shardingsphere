@@ -34,7 +34,7 @@ import java.util.Collection;
  * 消息投递员.
  * 负责SQL执行消息的投递
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @RequiredArgsConstructor
 class EventPostman {

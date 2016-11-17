@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 
-public class AbstractUnsupportedGeneratedKeysResultSetTest {
+public class UnsupportedGeneratedKeysResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getBoolean() throws Exception {

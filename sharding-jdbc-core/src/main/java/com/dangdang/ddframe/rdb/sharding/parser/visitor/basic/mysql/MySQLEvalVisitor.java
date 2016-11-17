@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * MySQL变量中提取参数值与编号.
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 public class MySQLEvalVisitor extends MySqlEvalVisitorImpl {
     

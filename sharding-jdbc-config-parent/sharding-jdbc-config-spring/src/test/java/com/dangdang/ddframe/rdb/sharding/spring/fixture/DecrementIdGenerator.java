@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
-public class DecrementIdGenerator extends AbstractNumberIdGenerator{
+public class DecrementIdGenerator extends AbstractNumberIdGenerator {
     
     @Override
     public Object generateId() {
-        return sequence.decrementAndGet();
+        return getSequence().decrementAndGet();
     }
 }

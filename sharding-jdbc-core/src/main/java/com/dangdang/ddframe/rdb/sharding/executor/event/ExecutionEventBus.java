@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 事件总线.
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 public class ExecutionEventBus {
     

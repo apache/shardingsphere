@@ -109,7 +109,6 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteQueryForMultipleStatementsSuccess() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         ResultSet resultSet1 = mock(ResultSet.class);
         ResultSet resultSet2 = mock(ResultSet.class);
@@ -118,6 +117,7 @@ public final class StatementExecutorTest {
         when(statement2.executeQuery(SELECT_FROM_DUAL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -158,7 +158,6 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteQueryForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         SQLException exp = new SQLException();
         when(statement1.executeQuery(SELECT_FROM_DUAL)).thenThrow(exp);
@@ -166,6 +165,7 @@ public final class StatementExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -204,13 +204,13 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteUpdateForMultipleStatementsSuccess() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         when(statement1.executeUpdate(DELETE_FROM_DUAL)).thenReturn(10);
         when(statement2.executeUpdate(DELETE_FROM_DUAL)).thenReturn(20);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -249,7 +249,6 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteUpdateForMultipleStatementsFailure() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         SQLException exp = new SQLException();
         when(statement1.executeUpdate(DELETE_FROM_DUAL)).thenThrow(exp);
@@ -257,6 +256,7 @@ public final class StatementExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -345,13 +345,13 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteForMultipleStatementsSuccessWithDML() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         when(statement1.execute(DELETE_FROM_DUAL)).thenReturn(false);
         when(statement2.execute(DELETE_FROM_DUAL)).thenReturn(false);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -390,7 +390,6 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteForMultipleStatementsFailureWithDML() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         SQLException exp = new SQLException();
         when(statement1.execute(DELETE_FROM_DUAL)).thenThrow(exp);
@@ -398,6 +397,7 @@ public final class StatementExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
         actual.addStatement(wrapper2);
@@ -435,13 +435,13 @@ public final class StatementExecutorTest {
     @Test
     public void assertExecuteForMultipleStatements() throws SQLException {
         Statement statement1 = mock(Statement.class);
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         Statement statement2 = mock(Statement.class);
         when(statement1.execute(SELECT_FROM_DUAL)).thenReturn(true);
         when(statement2.execute(SELECT_FROM_DUAL)).thenReturn(true);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
         StatementExecutor actual = new StatementExecutor(executorEngine);
+        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
         actual.addStatement(wrapper1);
         StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_0");
         actual.addStatement(wrapper2);

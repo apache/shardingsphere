@@ -63,7 +63,7 @@ public class CommonSelfIdGeneratorTest {
         assertThat(maxId((1 << 12) - 1), is((1L << 12L) - 2));
         assertThat(maxId(1 << 12), is((1L << 12L) - 1));
         assertThat(maxId((1 << 12) + 1), is((1L << 12L) - 1));
-        assertThat(maxId((1 << 13)), is((1L << 12L) - 1));
+        assertThat(maxId(1 << 13), is((1L << 12L) - 1));
         assertThat(maxId((1 << 13) + 1), is((1L << 12L) - 1));
     }
     

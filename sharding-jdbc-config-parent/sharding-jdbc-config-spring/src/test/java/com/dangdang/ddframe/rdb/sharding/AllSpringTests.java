@@ -47,7 +47,7 @@ import org.junit.runners.Suite.SuiteClasses;
     WithNamespaceDifferentTablesTest.class,
     WithNamespaceForIndicatedDataSourceNamesTest.class,
     WithNamespaceForMasterSlaveTest.class,
-    AutoIncrementDBUnitTest.class,
+    AutoIncrementDBUnitTest.class
     })
 public class AllSpringTests {
 }

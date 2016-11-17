@@ -68,6 +68,7 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig("xxx.Algorithm"));
         new ShardingRuleBuilder(shardingRuleConfig).build();
     }
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildFailureWhenAutoIncrementClassNotExisted() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();

@@ -25,7 +25,7 @@ import lombok.ToString;
 /**
  * 可排序列.
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @ToString
 @Getter

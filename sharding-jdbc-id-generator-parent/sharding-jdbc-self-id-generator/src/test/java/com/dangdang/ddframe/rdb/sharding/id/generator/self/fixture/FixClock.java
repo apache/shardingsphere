@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
-public class FixClock extends AbstractClock{
+public class FixClock extends AbstractClock {
     
     private final int expectedInvokedTimes;
     

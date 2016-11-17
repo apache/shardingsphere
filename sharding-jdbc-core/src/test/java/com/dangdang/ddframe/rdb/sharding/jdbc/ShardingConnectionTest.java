@@ -60,7 +60,8 @@ public class ShardingConnectionTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1);
         dataSourceMap.put(DS_NAME, MASTER_SLAVE_DATA_SOURCE);
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
-        ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule).tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
+        ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule)
+                .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
         ShardingContext sc = new ShardingContext(rule, null, null);
         connection = new ShardingConnection(sc);
     }
@@ -69,7 +70,7 @@ public class ShardingConnectionTest {
     public void clear() {
         try {
             connection.close();
-        } catch (SQLException ignored) {
+        } catch (final SQLException ignored) {
         }
     }
     

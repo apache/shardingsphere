@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * 自动生成键上下文.
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @ToString
 public class GeneratedKeyContext {

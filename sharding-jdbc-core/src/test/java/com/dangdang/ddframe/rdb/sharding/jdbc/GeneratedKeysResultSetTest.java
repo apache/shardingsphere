@@ -37,11 +37,11 @@ import static org.junit.Assert.assertTrue;
 
 public class GeneratedKeysResultSetTest {
     
+    private static final Statement STATEMENT = Mockito.mock(Statement.class);
+    
     private GeneratedKeysResultSet actualResultSet;
     
-    private static final Statement statement = Mockito.mock(Statement.class);
-    
-    public static GeneratedKeysResultSet createMock() {
+    static GeneratedKeysResultSet createMock() {
         Map<String, Integer> columnMap = new HashMap<>();
         columnMap.put("order_id", 0);
         columnMap.put("order_no", 1);
@@ -50,7 +50,7 @@ public class GeneratedKeysResultSetTest {
         valueTable.put(0, 1, "OL_1");
         valueTable.put(1, 0, 2L);
         valueTable.put(1, 1, "OL_2");
-        return new GeneratedKeysResultSet(valueTable, columnMap, statement);
+        return new GeneratedKeysResultSet(valueTable, columnMap, STATEMENT);
     }
     
     @Before
@@ -96,18 +96,18 @@ public class GeneratedKeysResultSetTest {
     @Test
     public void getByte() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getByte(1), is((byte)1L));
+        assertThat(actualResultSet.getByte(1), is((byte) 1L));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getByte("order_id"), is((byte)2L));
+        assertThat(actualResultSet.getByte("order_id"), is((byte) 2L));
         assertFalse(actualResultSet.next());
     }
     
     @Test
     public void getShort() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getShort(1), is((short)1L));
+        assertThat(actualResultSet.getShort(1), is((short) 1L));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getShort("order_id"), is((short)2L));
+        assertThat(actualResultSet.getShort("order_id"), is((short) 2L));
         assertFalse(actualResultSet.next());
     }
     
@@ -170,9 +170,9 @@ public class GeneratedKeysResultSetTest {
     @Test
     public void getObject() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject(2), is((Object)"OL_1"));
+        assertThat(actualResultSet.getObject(2), is((Object) "OL_1"));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject("order_no"), is((Object)"OL_2"));
+        assertThat(actualResultSet.getObject("order_no"), is((Object) "OL_2"));
         assertFalse(actualResultSet.next());
     }
     
@@ -188,7 +188,7 @@ public class GeneratedKeysResultSetTest {
     
     @Test
     public void getStatement() throws Exception {
-        assertThat(actualResultSet.getStatement(), is(statement));
+        assertThat(actualResultSet.getStatement(), is(STATEMENT));
     }
     
 }

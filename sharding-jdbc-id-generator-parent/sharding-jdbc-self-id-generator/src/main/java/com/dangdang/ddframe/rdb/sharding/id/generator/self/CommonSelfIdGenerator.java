@@ -44,7 +44,7 @@ import java.util.Date;
  * 工作进程Id获取优先级: 系统变量{@code sjdbc.self.id.generator.worker.id} > 环境变量{@code SJDBC_SELF_ID_GENERATOR_WORKER_ID}
  * ,另外可以调用@{@code CommonSelfIdGenerator.setWorkerId}进行设置
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @Getter
 @Slf4j

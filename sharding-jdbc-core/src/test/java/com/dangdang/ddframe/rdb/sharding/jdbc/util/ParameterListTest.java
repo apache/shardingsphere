@@ -28,7 +28,7 @@ public class ParameterListTest {
     @Test(expected = ShardingJdbcException.class)
     public void recordMethodInvocation() throws Exception {
         ParameterList list = new ParameterList(PreparedStatement.class);
-        list.recordMethodInvocation(1, "noThatMethod", null , null);
+        list.recordMethodInvocation(1, "noThatMethod", null, null);
     }
     
 }

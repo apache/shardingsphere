@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * 参数列表.
  * 对外提供参数值统一访问方式
  * 
- * @author gaohongtao.
+ * @author gaohongtao
  */
 @RequiredArgsConstructor
 public class ParameterList extends AbstractList<Object> {

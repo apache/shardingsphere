@@ -18,12 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-abstract class AbstractNumberIdGenerator implements IdGenerator{
+abstract class AbstractNumberIdGenerator implements IdGenerator {
     
-    final AtomicInteger sequence = new AtomicInteger(100);
+    @Getter(AccessLevel.PACKAGE)
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Override
     public void initContext(final String tableName, final String columnName) {

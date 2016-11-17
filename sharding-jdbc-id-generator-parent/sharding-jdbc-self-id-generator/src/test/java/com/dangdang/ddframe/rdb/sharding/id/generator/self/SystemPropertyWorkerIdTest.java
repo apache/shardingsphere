@@ -20,10 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.id.generator.self;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 
-public class SystemPropertyWorkerIdTest extends AbstractWorkerIdTest{
+public class SystemPropertyWorkerIdTest extends AbstractWorkerIdTest {
     
     @Rule
-    public final ProvideSystemProperty PROVIDE_SYSTEM_PROPERTY = new ProvideSystemProperty("sjdbc.self.id.generator.worker.id", "12");
+    public final ProvideSystemProperty provideSystemProperty = new ProvideSystemProperty("sjdbc.self.id.generator.worker.id", "12");
     
     @Override
     protected long getWorkerId() {
