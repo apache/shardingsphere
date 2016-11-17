@@ -102,9 +102,7 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
         Preconditions.checkState(null != currentRow, "After end of result set");
         Preconditions.checkArgument(currentRow.inRange(columnIndex), String.format("Column Index %d out of range", columnIndex));
         Object result = currentRow.getCell(columnIndex);
-        if (null == result) {
-            wasNull = true;
-        }
+        wasNull = null == result;
         return result;
     }
     
@@ -127,7 +125,6 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     public boolean getBoolean(final int columnIndex) throws SQLException {
         Object cell = getObject(columnIndex);
         if (null == cell) {
-            wasNull = true;
             return false;
         }
         return (cell instanceof Boolean) ? (Boolean) cell : Boolean.valueOf(cell.toString());
@@ -223,7 +220,6 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     public byte[] getBytes(final int columnIndex) throws SQLException {
         String value = getString(columnIndex);
         if (null == value) {
-            wasNull = true;
             return null;
         }
         return value.getBytes();
@@ -299,7 +295,6 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     public URL getURL(final int columnIndex) throws SQLException {
         String value = getString(columnIndex);
         if (null == value) {
-            wasNull = true;
             return null;
         }
         try {

@@ -1,7 +1,3 @@
-
-
-
-
 +++
 date = "2016-02-05T17:03:18+08:00"
 title = "Release Notes"
@@ -19,12 +15,12 @@ weight = 1
    [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163)
    [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171)
    [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172)
+   
+### 缺陷修正
+   
+1. [ISSUE #176](https://github.com/dangdangdotcom/sharding-jdbc/issues/176) AbstractMemoryResultSet对SQL的wasNull实现有问题
 
 ## 1.3.3
-
-### 缺陷修正
-
-1. [ISSUE #166](https://github.com/dangdangdotcom/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
 
 ### 功能提升
 
@@ -37,6 +33,7 @@ weight = 1
 1. [ISSUE #122](https://github.com/dangdangdotcom/sharding-jdbc/issues/122) bed的fail重试问题
 1. [ISSUE #152](https://github.com/dangdangdotcom/sharding-jdbc/issues/152) 可能同一个connection多线程导致问题
 1. [ISSUE #150](https://github.com/dangdangdotcom/sharding-jdbc/issues/150) 与最新SQLserver jdbc驱动兼容问题
+1. [ISSUE #166](https://github.com/dangdangdotcom/sharding-jdbc/issues/166) druid数据源stat过滤器多线程报错
 
 ## 1.3.2
 
