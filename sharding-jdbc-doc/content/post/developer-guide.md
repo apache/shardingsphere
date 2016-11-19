@@ -1,0 +1,90 @@
++++
+date = "2016-11-19T11:38:41+08:00"
+draft = false
+title = "开发者指南"
+weight = 3
+
++++
+
+本文档帮助开发者搭建开发环境并贡献代码，示例和文档
+
+# 编译代码
+
+`Sharding-JDBC`的代码编译需要`Maven`，请保证IDE中正确配置了它。
+代码用到的所有依赖完全都可以从公网下载，请根据自身的网络情况选择合理的镜像。
+
+代码使用了[Lombok](https://projectlombok.org/download.html)来生成类属性的访问方法，构造器等。
+故请以上从链接内容来获取适合你的IDE的解决方法。
+
+# 代码结构（待完善...)
+
+# 文档生成
+
+文档使用博客生成引擎[HUGO](https://gohugo.io/)，请根据文档安装环境。
+文档全部在`sharding-jdbc/shardig-jdbc-doc/content/post`目录中。
+
+# 贡献方法
+
+请按照下面的步骤贡献代码，示例和文档
+
+ - 所有的问题与新功能请使用[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)进行管理
+ - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明你当前正在这个Issue上工作。
+   并在回复的时候为自己设置一个deadline，并添加的回复内容中
+ - 在核心贡献者找到一个`导师(shepherd)`，导师会在设计与功能实现上给予即时的反馈。
+   现阶段导师为QQ群中`当当架构师`，如果你没有熟悉的架构师，请联系 __高洪涛(QQ:305653740)__
+ - 你应该新建一个分支来开始你的工作，分支的名字为`功能名称/issueId`。
+   例如，你想完成一个SQL解析(parser)功能中 __Issue 111__，那么你的branch名字应为 __parser/111__。
+   功能名称与`导师`讨论后确定
+ - 完成后，发送一个`pull request`到`dangdangdotcom/sharding-jdbc`，
+   接着`导师`做`CodeReview`，然后他会与你讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，`导师`会将提交合并到`master`分支。
+ - 最后，恭喜您已经成为了`Sharding-JDBC`的`官方贡献者`！
+
+# 开发理念
+
+ - 用心写代码，提炼真正的非功能性需求
+ - 代码整洁干净到极致, 请参见《重构》和《代码整洁之道》
+ - 极简代码, 高度复用，无重复代码和配置
+ - 代码应在同一抽象层级
+ - 修改功能时多考虑影响面, 不可留下没修改完全的部分
+ - 只有一个需求时，不需扩展性。两个类似需求时, 再提炼扩展性
+
+# 开发行为规范
+
+ - 提交之前先确定模块的测试套件，并使用测试覆盖率工具检查覆盖率不能低于`master分支的覆盖率`
+ - 使用`Checkstyle`检查代码, 违反验证规则的需要有特殊理由。模板位置在`sharding-jdbc/src/resources/dd_checks.xml`
+ - 执行`mvn clean install`可以测试和编译通过
+ - 及时删除无用代码
+ 
+# 编码规范
+
+ - 写代码之前看一下系统已有的代码, 保持风格和使用方式一致
+ - 变量命名要有意义, 如果方法只有唯一的返回值, 使用result命名返回值. 循环中使用each命名循环变量, map中使用entry代替each
+ - 嵌套循环尽量提成方法
+ - 优先使用卫语句
+ - 配置文件使用驼峰命名, 文件名首字母小写
+ - 类和方法的访问权限控制为最小, 例如: 可以设为包私有的就不用public
+ - 方法所用到的私有方法应紧跟着该方法, 如果有多个私有方法, 书写私有方法应与私有方法在原方法的出现顺序相同
+ - 优先使用guava而非apache commons, 如：优先使用Strings而非StringUtils
+ - 优先使用lombok代替构造器, get, set, log方法
+ - 使用linux换行符
+ - 缩进（包含空行）和上一行保持一致
+ - 不应有无意义的空行
+ - 方法入参和返回值不允许为null，如有特殊情况需注释说明
+ - 需要注释解释的代码尽量提成小方法，用方法名称解释，注释应只包含javadoc和todo，fixme等
+ - 禁止使用static import
+ - 不需要公开的类放入internal包，包中类尽量包私有
+ - 日志一律使用英文
+ - 使用annotation获取spring的业务bean
+ - 如果模块中有公用的切入点，应在模块一级路径创建pointcut包
+ - 属性配置项需要添加到各个模块的常量枚举中
+
+# 单元测试规范
+
+ - 测试代码和生产代码需遵守相同代码规范
+ - 如无特殊理由, 测试需全覆盖
+ - 准备环境的代码和测试代码分离
+ - 单数据断言, 应使用assertTrue, assertFalse, assertNull, assertNotNull
+ - 多数据断言, 应使用assertThat
+ - 精确断言, 尽量不使用not, containsString断言
+ - 调用业务方法的变量, 应命名为actualXXX, 期望值应命名为expectedXXX
+ - 只有junit assertXXX, hamcrest, mocktio相关可以使用static import

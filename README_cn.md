@@ -78,6 +78,8 @@
 
 [使用指南](http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/)
 
+[开发者指南指南](http://dangdangdotcom.github.io/sharding-jdbc/post/developer-guide/)
+
 [详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
 
 [核心概念](http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/)
