@@ -1,0 +1,10 @@
+table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: keep-all; }
+table th {
+    font-weight: bold; }
+table th, table td {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e9ebec; }

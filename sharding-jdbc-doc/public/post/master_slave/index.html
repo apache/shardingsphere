@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>读写分离</title>
+    
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
+    
+    
+    
+    
+    <style>
+    .navbar {
+    border-color: #e7e7e7;
+}
+
+.content-section-a,
+footer,
+.navbar {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: rgb(51, 51, 51);
+}
+
+.content-section-b {
+    background-color: white;
+    color: #333;
+}
+
+body {
+    color: rgb(51, 51, 51);
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+    color: rgb(51, 51, 51);
+}
+
+  </style>
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
+</head>
+<body>
+
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+    
+</nav>
+
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 
+
+<h1 id="读写分离:a9734cdb2b9c3c83fd2d7bf9f09f36b2">读写分离</h1>
+
+<h2 id="概念:a9734cdb2b9c3c83fd2d7bf9f09f36b2">概念</h2>
+
+<p>为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。</p>
+
+<h2 id="支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2">支持项</h2>
+
+<ol>
+<li>提供了一主多从的读写分离配置，可配合分库分表使用。</li>
+<li>同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。</li>
+<li><code>Spring</code>命名空间。</li>
+<li>基于<code>Hint</code>的强制主库路由。</li>
+</ol>
+
+<h2 id="不支持范围:a9734cdb2b9c3c83fd2d7bf9f09f36b2">不支持范围</h2>
+
+<ol>
+<li>主库和从库的数据同步。</li>
+<li>主库和从库的数据同步延迟导致的数据不一致。</li>
+<li>主库双写或多写。</li>
+</ol>
+
+<h2 id="代码开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">代码开发示例</h2>
+
+<pre><code class="language-java">// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
+DataSource masterSlaveDs0 = MasterSlaveDataSourceFactory.createDataSource(&quot;ms_0&quot;, masterDataSource0, slaveDataSource00, slaveDataSource01);
+DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource(&quot;ms_1&quot;, masterDataSource1, slaveDataSource11, slaveDataSource11);
+
+// 构建分库分表数据源
+Map&lt;String, DataSource&gt; dataSourceMap = new HashMap&lt;&gt;(2);
+dataSourceMap.put(&quot;ms_0&quot;, masterSlaveDs0);
+dataSourceMap.put(&quot;ms_1&quot;, masterSlaveDs1);
+
+// 通过ShardingDataSourceFactory继续创建ShardingDataSource
+</code></pre>
+
+<h2 id="spring命名空间配置示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">Spring命名空间配置示例</h2>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot; 
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &quot;&gt;
+    &lt;!-- 配置真实数据源 --&gt;
+    &lt;bean id=&quot;dbtbl_0_master&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_master&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_0_slave_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_0_slave_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_master&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_master&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_slave_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_slave_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 --&gt;
+    &lt;rdb:master-slave-data-source id=&quot;dbtbl_0&quot; master-data-source-ref=&quot;dbtbl_0_master&quot; slave-data-sources-ref=&quot;dbtbl_0_slave_0, dbtbl_0_slave_1&quot; /&gt;
+    &lt;rdb:master-slave-data-source id=&quot;dbtbl_1&quot; master-data-source-ref=&quot;dbtbl_1_master&quot; slave-data-sources-ref=&quot;dbtbl_1_slave_0, dbtbl_1_slave_1&quot; /&gt;
+    
+    &lt;!-- 通过rdb:strategy和rdb:data-source继续构建分片数据源 --&gt;
+    &lt;rdb:strategy id=&quot;databaseStrategy&quot; sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${user_id.longValue() % 2}&quot;/&gt;
+    &lt;rdb:strategy id=&quot;orderTableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-expression=&quot;t_order_${order_id.longValue() % 4}&quot;/&gt;
+    
+    &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0, dbtbl_1&quot;&gt;
+            &lt;rdb:table-rules&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;orderTableStrategy&quot;/&gt;
+            &lt;/rdb:table-rules&gt;
+        &lt;/rdb:sharding-rule&gt;
+    &lt;/rdb:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h2 id="使用hint强制路由主库示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">使用Hint强制路由主库示例</h2>
+
+<pre><code class="language-java">HintManager hintManager = HintManager.getInstance();
+hintManager.setMasterRouteOnly();
+// 继续JDBC操作
+</code></pre>
+
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 <nav id="TableOfContents">
+<ul>
+<li><a href="#读写分离:a9734cdb2b9c3c83fd2d7bf9f09f36b2">读写分离</a>
+<ul>
+<li><a href="#概念:a9734cdb2b9c3c83fd2d7bf9f09f36b2">概念</a></li>
+<li><a href="#支持项:a9734cdb2b9c3c83fd2d7bf9f09f36b2">支持项</a></li>
+<li><a href="#不支持范围:a9734cdb2b9c3c83fd2d7bf9f09f36b2">不支持范围</a></li>
+<li><a href="#代码开发示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">代码开发示例</a></li>
+<li><a href="#spring命名空间配置示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">Spring命名空间配置示例</a></li>
+<li><a href="#使用hint强制路由主库示例:a9734cdb2b9c3c83fd2d7bf9f09f36b2">使用Hint强制路由主库示例</a></li>
+</ul></li>
+</ul>
+</nav>
+	</div>
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="copyright text-muted small">Copyright &copy; 读写分离 All Rights Reserved</p>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
+
+
+</body>
+</html>
+

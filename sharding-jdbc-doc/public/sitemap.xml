@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/index/</loc>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/release_notes/</loc>
+    <lastmod>2016-02-05T17:03:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/configuration/</loc>
+    <lastmod>2016-03-25T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/concepts/</loc>
+    <lastmod>2016-03-03T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/architecture/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/master_slave/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure/</loc>
+    <lastmod>2016-01-28T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/limitations/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/sql_supported/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/stress_test/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/roadmap/</loc>
+    <lastmod>2016-01-08T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/hint_sharding_value/</loc>
+    <lastmod>2016-02-05T17:03:18+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/transaction/</loc>
+    <lastmod>2016-01-29T16:14:21+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/id-generator/</loc>
+    <lastmod>2016-11-16T15:07:10+08:00</lastmod>
+  </url>
+  
+</urlset>
