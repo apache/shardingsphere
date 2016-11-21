@@ -34,16 +34,17 @@ import java.util.Date;
  * 
  * <p>
  * 长度为64bit,从高位到低位依次为
+ * </p>
+ * 
  * <pre>
  * 1bit   符号位 
  * 41bits 时间偏移量从2016年11月1日零点到现在的毫秒数
  * 10bits 工作进程Id
  * 12bits 同一个毫秒内的自增量
  * </pre>
- * </p>
  * 
  * <p>
- * 工作进程Id获取优先级: 系统变量{@code sjdbc.self.id.generator.worker.id} > 环境变量{@code SJDBC_SELF_ID_GENERATOR_WORKER_ID}
+ * 工作进程Id获取优先级: 系统变量{@code sjdbc.self.id.generator.worker.id} 大于 环境变量{@code SJDBC_SELF_ID_GENERATOR_WORKER_ID}
  * ,另外可以调用@{@code CommonSelfIdGenerator.setWorkerId}进行设置
  * </p>
  * 
