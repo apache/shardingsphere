@@ -26,6 +26,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -50,7 +51,7 @@ import java.util.Date;
 @Slf4j
 public class CommonSelfIdGenerator implements IdGenerator {
     
-    public static final long SJDBC_EPOCH = 1477933200000L;
+    public static final long SJDBC_EPOCH;
     
     private static final long SEQUENCE_BITS = 12L;
     
@@ -71,16 +72,19 @@ public class CommonSelfIdGenerator implements IdGenerator {
     private static long workerId;
     
     static {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2016, Calendar.NOVEMBER, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        SJDBC_EPOCH = calendar.getTimeInMillis();
         initWorkerId();
     }
     
     private long sequence;
     
     private long lastTime;
-    
-    private String tableName;
-    
-    private String columnName;
     
     static void initWorkerId() {
         String workerId = System.getProperty("sjdbc.self.id.generator.worker.id");
@@ -106,24 +110,12 @@ public class CommonSelfIdGenerator implements IdGenerator {
     }
     
     /**
-     * 初始化环境.
-     * 
-     * @param tableName 逻辑表名称
-     * @param columnName 需要生成的列名称
-     */
-    @Override
-    public void initContext(final String tableName, final String columnName) {
-        this.tableName = tableName;
-        this.columnName = columnName;
-    }
-    
-    /**
      * 生成Id.
      * 
      * @return 返回@{@link Long}类型的Id
      */
     @Override
-    public synchronized Object generateId() {
+    public synchronized Number generateId() {
         long time = clock.millis();
         Preconditions.checkState(lastTime <= time, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, time);
         if (lastTime == time) {
@@ -135,7 +127,7 @@ public class CommonSelfIdGenerator implements IdGenerator {
         }
         lastTime = time;
         if (log.isDebugEnabled()) {
-            log.debug("{}.{}:{}-{}-{}", tableName, columnName, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
+            log.debug("{}-{}-{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
         }
         return ((time - SJDBC_EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }

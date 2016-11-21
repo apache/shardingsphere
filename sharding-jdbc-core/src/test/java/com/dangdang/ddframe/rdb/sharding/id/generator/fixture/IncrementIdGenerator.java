@@ -26,12 +26,7 @@ public class IncrementIdGenerator implements IdGenerator {
     private final AtomicInteger i = new AtomicInteger();
     
     @Override
-    public void initContext(final String tableName, final String columnName) {
-        
-    }
-    
-    @Override
-    public Object generateId() {
+    public Number generateId() {
         return i.incrementAndGet();
     }
 }

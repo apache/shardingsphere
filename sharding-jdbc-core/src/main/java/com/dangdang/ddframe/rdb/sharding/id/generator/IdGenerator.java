@@ -25,17 +25,9 @@ package com.dangdang.ddframe.rdb.sharding.id.generator;
 public interface IdGenerator {
     
     /**
-     * 初始化配置环境.
-     * 
-     * @param tableName 逻辑表名称
-     * @param columnName 需要生成的列名称
-     */
-    void initContext(String tableName, String columnName);
-    
-    /**
      * 生成Id.
      * 
      * @return 返回生成的Id,返回值应为@{@link Number}对象或者为@{@link String}对象
      */
-    Object generateId();
+    Number generateId();
 }

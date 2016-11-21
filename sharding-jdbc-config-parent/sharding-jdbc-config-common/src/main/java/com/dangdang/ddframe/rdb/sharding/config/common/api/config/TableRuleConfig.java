@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 表规则配置.
@@ -42,5 +42,5 @@ public class TableRuleConfig {
     
     private StrategyConfig tableStrategy;
     
-    private Map<String, String> autoIncrementColumns = new HashMap<>();
+    private List<AutoIncrementColumnConfig> autoIncrementColumns = new ArrayList<>();
 }

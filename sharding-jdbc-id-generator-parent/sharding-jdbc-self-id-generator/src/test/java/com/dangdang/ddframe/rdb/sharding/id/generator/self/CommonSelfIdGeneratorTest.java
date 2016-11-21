@@ -45,7 +45,6 @@ public class CommonSelfIdGeneratorTest {
     
         final int taskNumber = threadNumber << 2;
         final CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
-        idGenerator.initContext("order", "id");
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {

@@ -21,16 +21,19 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.MultiAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm;
 import com.google.common.base.Joiner;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -160,8 +163,13 @@ public final class ShardingRuleBuilderTest {
         result.setTableStrategy(getTableStrategyConfigForExpression());
         Map<String, String> autoIncrementColumnMap = new HashMap<>();
         autoIncrementColumnMap.put("order_id", null);
+        AutoIncrementColumnConfig orderIdConfig = new AutoIncrementColumnConfig();
+        orderIdConfig.setColumnName("order_id");
         autoIncrementColumnMap.put("order_item_id", "com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator");
-        result.setAutoIncrementColumns(autoIncrementColumnMap);
+        AutoIncrementColumnConfig orderItemIdConfig = new AutoIncrementColumnConfig();
+        orderItemIdConfig.setColumnName("order_item_id");
+        orderItemIdConfig.setColumnIdGeneratorClass(DecrementIdGenerator.class.getName());
+        result.setAutoIncrementColumns(Arrays.asList(orderIdConfig, orderItemIdConfig));
         return result;
     }
     

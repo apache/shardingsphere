@@ -17,13 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.spring.datasource.SpringShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.constants.ShardingJdbcDataSourceBeanDefinitionParserTag;
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -128,12 +131,15 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (null == autoIncrementColumns || autoIncrementColumns.isEmpty()) {
             return factory.getBeanDefinition();
         }
-        Map<String, String> autoIncrementColumnMap = new ManagedMap<>(autoIncrementColumns.size());
-        for (Element each : autoIncrementColumns) {
-            autoIncrementColumnMap.put(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME), 
-                    Strings.emptyToNull(each.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_ID_GENERATOR_CLASS)));
-        }
-        factory.addPropertyValue("autoIncrementColumns", autoIncrementColumnMap);
+        factory.addPropertyValue("autoIncrementColumns", Lists.transform(autoIncrementColumns, new Function<Element, AutoIncrementColumnConfig>() {
+            @Override
+            public AutoIncrementColumnConfig apply(final Element input) {
+                AutoIncrementColumnConfig result = new AutoIncrementColumnConfig();
+                result.setColumnName(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME));
+                result.setColumnIdGeneratorClass(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_ID_GENERATOR_CLASS));
+                return result;
+            }
+        }));
         return factory.getBeanDefinition();
     }
     

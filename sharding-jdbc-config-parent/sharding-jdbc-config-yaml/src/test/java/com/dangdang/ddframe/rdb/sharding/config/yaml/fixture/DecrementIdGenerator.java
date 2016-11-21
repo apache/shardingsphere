@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.config.yaml.fixture;
 public class DecrementIdGenerator extends AbstractNumberIdGenerator {
     
     @Override
-    public Object generateId() {
+    public Number generateId() {
         return getSequence().decrementAndGet();
     }
 }

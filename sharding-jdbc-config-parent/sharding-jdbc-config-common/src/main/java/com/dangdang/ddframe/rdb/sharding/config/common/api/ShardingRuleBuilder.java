@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabase
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
@@ -121,11 +122,11 @@ public final class ShardingRuleBuilder {
     }
     
     private void buildAutoIncrementColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
-        for (Entry<String, String> each : tableRuleConfig.getAutoIncrementColumns().entrySet()) {
-            if (null == each.getValue()) {
-                tableRuleBuilder.autoIncrementColumns(each.getKey());
+        for (AutoIncrementColumnConfig each : tableRuleConfig.getAutoIncrementColumns()) {
+            if (Strings.isNullOrEmpty(each.getColumnIdGeneratorClass())) {
+                tableRuleBuilder.autoIncrementColumns(each.getColumnName());
             } else {
-                tableRuleBuilder.autoIncrementColumns(each.getKey(), loadClass(each.getValue(), IdGenerator.class));
+                tableRuleBuilder.autoIncrementColumns(each.getColumnName(), loadClass(each.getColumnIdGeneratorClass(), IdGenerator.class));
             }
         }
     }
@@ -194,7 +195,7 @@ public final class ShardingRuleBuilder {
     @SuppressWarnings("unchecked")
     private <T> Class<? extends T> loadClass(final String className, final Class<T> superClass) {
         try {
-            return (Class<? extends T>) Class.forName(className);
+            return (Class<? extends T>) superClass.getClassLoader().loadClass(className);
         } catch (final ClassNotFoundException ex) {
             throw new IllegalArgumentException(ex);
         }

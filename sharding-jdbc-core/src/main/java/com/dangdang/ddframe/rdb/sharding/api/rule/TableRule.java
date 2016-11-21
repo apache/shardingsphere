@@ -203,7 +203,8 @@ public final class TableRule {
     void fillIdGenerator(final Class<? extends IdGenerator> idGeneratorClass) {
         for (Map.Entry<String, IdGenerator> each : autoIncrementColumnMap.entrySet()) {
             if (null == each.getValue()) {
-                each.setValue(TableRuleBuilder.instanceIdGenerator(idGeneratorClass));
+                IdGenerator idGenerator = TableRuleBuilder.instanceIdGenerator(idGeneratorClass);
+                each.setValue(idGenerator);
             }
         }
     }
@@ -215,9 +216,8 @@ public final class TableRule {
      * @return 生成的id
      */
     public Object generateId(final String columnName) {
-        Object result = autoIncrementColumnMap.get(columnName).generateId();
+        Number result = autoIncrementColumnMap.get(columnName).generateId();
         Preconditions.checkNotNull(result);
-        Preconditions.checkState(result instanceof Number || result instanceof String, "id %s(%s) should be Number or String", result.toString(), result.getClass().getName());
         return result;
     }
     

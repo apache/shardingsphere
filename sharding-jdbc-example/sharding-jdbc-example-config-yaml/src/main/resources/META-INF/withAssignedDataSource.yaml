@@ -24,7 +24,7 @@ tables:
   t_order: 
     actualTables: ds_${0..1}.t_order_${0..1}
     autoIncrementColumns:
-      order_id:
+      - columnName: order_id
     tableStrategy:
       shardingColumns: order_id
       algorithmExpression: t_order_${order_id.longValue() % 2}

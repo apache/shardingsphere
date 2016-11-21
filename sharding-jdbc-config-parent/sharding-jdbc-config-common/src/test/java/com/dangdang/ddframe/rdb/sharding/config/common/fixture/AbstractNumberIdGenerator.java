@@ -28,9 +28,4 @@ abstract class AbstractNumberIdGenerator implements IdGenerator {
     @Getter(AccessLevel.PACKAGE)
     private final AtomicInteger sequence = new AtomicInteger(100);
     
-    @Override
-    public void initContext(final String tableName, final String columnName) {
-        
-    }
-    
 }

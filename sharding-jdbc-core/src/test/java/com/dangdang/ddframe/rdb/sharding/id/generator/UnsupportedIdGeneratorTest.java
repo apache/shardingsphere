@@ -41,14 +41,8 @@ public class UnsupportedIdGeneratorTest {
     }
     
     private static class IllegalIdGenerator implements IdGenerator {
-    
         @Override
-        public void initContext(final String tableName, final String columnName) {
-        
-        }
-    
-        @Override
-        public Object generateId() {
+        public Number generateId() {
             return null;
         }
     }

@@ -45,11 +45,8 @@ public abstract class AbstractWorkerIdTest {
     @Test
     public void testWorkerId() {
         CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
-        idGenerator.initContext("order", "id");
         
         assertThat((Long) idGenerator.generateId(), is(getWorkerId() << 12L));
-        assertThat(idGenerator.getTableName(), is("order"));
-        assertThat(idGenerator.getColumnName(), is("id"));
         assertThat(idGenerator.getLastTime(), is(CommonSelfIdGenerator.SJDBC_EPOCH));
         assertThat(idGenerator.getSequence(), is(0L));
         assertThat(CommonSelfIdGenerator.getWorkerId(), is(getWorkerId()));

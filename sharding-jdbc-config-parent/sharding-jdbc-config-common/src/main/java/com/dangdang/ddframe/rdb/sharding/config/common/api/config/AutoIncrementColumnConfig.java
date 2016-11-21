@@ -15,12 +15,21 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.spring.fixture;
+package com.dangdang.ddframe.rdb.sharding.config.common.api.config;
 
-public class IncrementIdGenerator extends AbstractNumberIdGenerator {
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 自增列配置.
+ * 
+ * @author gaohongtao
+ */
+@Getter
+@Setter
+public class AutoIncrementColumnConfig {
     
-    @Override
-    public Number generateId() {
-        return getSequence().incrementAndGet();
-    }
+    private String columnName;
+    
+    private String columnIdGeneratorClass;
 }
