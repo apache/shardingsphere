@@ -19,16 +19,17 @@
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
 
-&lt;h2 id=&#34;1-4-0-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.4.0-SNAPSHOT&lt;/h2&gt;
+&lt;h2 id=&#34;1-4-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.4.0&lt;/h2&gt;
 
 &lt;h3 id=&#34;功能提升:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;功能提升&lt;/h3&gt;
 
+&lt;p&gt;自动生成键实现，包含&lt;/p&gt;
+
 &lt;ol&gt;
-&lt;li&gt;自动生成键实现，包含
-&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/162&#34;&gt;ISSUE #162&lt;/a&gt;
-&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/163&#34;&gt;ISSUE #163&lt;/a&gt;
-&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/171&#34;&gt;ISSUE #171&lt;/a&gt;
-&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/172&#34;&gt;ISSUE #172&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/162&#34;&gt;ISSUE #162&lt;/a&gt; 分布式主键算法实现&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/163&#34;&gt;ISSUE #163&lt;/a&gt; 获取自增序列jdbc接口实现&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/171&#34;&gt;ISSUE #171&lt;/a&gt; sharding-jdbc-core配合自动生成序列改造&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/172&#34;&gt;ISSUE #172&lt;/a&gt; Yaml与Spring的配置方式增加对于自增序列的支持&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
