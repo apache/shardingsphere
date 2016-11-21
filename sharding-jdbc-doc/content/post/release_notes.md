@@ -10,11 +10,12 @@ weight = 1
 
 ### 功能提升
 
-1. 自动生成键实现，包含
-   [ISSUE #162](https://github.com/dangdangdotcom/sharding-jdbc/issues/162)
-   [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163)
-   [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171)
-   [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172)
+自动生成键实现，包含
+
+1. [ISSUE #162](https://github.com/dangdangdotcom/sharding-jdbc/issues/162) 分布式主键算法实现
+1. [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163) 获取自增序列jdbc接口实现
+1. [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171) sharding-jdbc-core配合自动生成序列改造
+1. [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172) Yaml与Spring的配置方式增加对于自增序列的支持
    
 ### 缺陷修正
    
