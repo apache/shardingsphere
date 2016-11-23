@@ -6,8 +6,28 @@
     <description>Recent content in Posts on Sharding-JDBC</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 05 Feb 2016 17:03:18 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 23 Nov 2016 20:30:55 +0800</lastBuildDate>
     <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>FAQ</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/faq/</link>
+      <pubDate>Wed, 23 Nov 2016 20:30:55 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/faq/</guid>
+      <description>
+
+&lt;h2 id=&#34;阅读源码时为什么会出现编译错误:4a1318da06786ac52626178ca960109e&#34;&gt;阅读源码时为什么会出现编译错误?&lt;/h2&gt;
+
+&lt;p&gt;代码使用&lt;a href=&#34;https://projectlombok.org/download.html&#34;&gt;Lombok&lt;/a&gt;实现极简代码。关于更多使用和安装细节，请参考官网。&lt;/p&gt;
+
+&lt;h2 id=&#34;使用spring命名空间时在网上相应地址找不到xsd:4a1318da06786ac52626178ca960109e&#34;&gt;使用Spring命名空间时在网上相应地址找不到xsd?&lt;/h2&gt;
+
+&lt;p&gt;Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，只需在jar包的&lt;code&gt;META-INF\spring.schemas&lt;/code&gt;配置，并在jar包中相关位置存在即可。&lt;/p&gt;
+
+&lt;p&gt;我们并未将&lt;code&gt;http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd&lt;/code&gt;部署至公网，但并不影响使用。相关问题请参考Spring命名空间规范。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Release Notes</title>
@@ -1381,109 +1401,6 @@ public Collection&amp;lt;String&amp;gt; doSharding(final Collection&amp;lt;Strin
     </item>
     
     <item>
-      <title>开发者指南</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/post/developer-guide/</link>
-      <pubDate>Sat, 19 Nov 2016 11:38:41 +0800</pubDate>
-      
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/post/developer-guide/</guid>
-      <description>
-
-&lt;p&gt;本文档帮助开发者搭建开发环境并贡献代码，示例和文档&lt;/p&gt;
-
-&lt;h1 id=&#34;编译代码:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;编译代码&lt;/h1&gt;
-
-&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;的代码编译需要&lt;code&gt;Maven&lt;/code&gt;，请保证IDE中正确配置了它。
-代码用到的所有依赖完全都可以从公网下载，请根据自身的网络情况选择合理的镜像。&lt;/p&gt;
-
-&lt;p&gt;代码使用了&lt;a href=&#34;https://projectlombok.org/download.html&#34;&gt;Lombok&lt;/a&gt;来生成类属性的访问方法，构造器等。
-故请以上从链接内容来获取适合你的IDE的解决方法。&lt;/p&gt;
-
-&lt;h1 id=&#34;代码结构-待完善:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;代码结构（待完善&amp;hellip;)&lt;/h1&gt;
-
-&lt;h1 id=&#34;文档生成:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;文档生成&lt;/h1&gt;
-
-&lt;p&gt;文档使用博客生成引擎&lt;a href=&#34;https://gohugo.io/&#34;&gt;HUGO&lt;/a&gt;，请根据文档安装环境。
-文档全部在&lt;code&gt;sharding-jdbc/shardig-jdbc-doc/content/post&lt;/code&gt;目录中。&lt;/p&gt;
-
-&lt;h1 id=&#34;贡献方法:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;贡献方法&lt;/h1&gt;
-
-&lt;p&gt;请按照下面的步骤贡献代码，示例和文档&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;所有的问题与新功能请使用&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues&#34;&gt;Issue Page&lt;/a&gt;进行管理&lt;/li&gt;
-&lt;li&gt;任何人想要开发任何功能，请先回复该功能所关联的Issue，表明你当前正在这个Issue上工作。
-并在回复的时候为自己设置一个deadline，并添加的回复内容中&lt;/li&gt;
-&lt;li&gt;在核心贡献者找到一个&lt;code&gt;导师(shepherd)&lt;/code&gt;，导师会在设计与功能实现上给予即时的反馈。
-现阶段导师为QQ群中&lt;code&gt;当当架构师&lt;/code&gt;，如果你没有熟悉的架构师，请联系 &lt;strong&gt;高洪涛(QQ:305653740)&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;你应该新建一个分支来开始你的工作，分支的名字为&lt;code&gt;功能名称/issueId&lt;/code&gt;。
-例如，你想完成一个SQL解析(parser)功能中 &lt;strong&gt;Issue 111&lt;/strong&gt;，那么你的branch名字应为 &lt;strong&gt;parser/111&lt;/strong&gt;。
-功能名称与&lt;code&gt;导师&lt;/code&gt;讨论后确定&lt;/li&gt;
-&lt;li&gt;完成后，发送一个&lt;code&gt;pull request&lt;/code&gt;到&lt;code&gt;dangdangdotcom/sharding-jdbc&lt;/code&gt;，
-接着&lt;code&gt;导师&lt;/code&gt;做&lt;code&gt;CodeReview&lt;/code&gt;，然后他会与你讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，&lt;code&gt;导师&lt;/code&gt;会将提交合并到&lt;code&gt;master&lt;/code&gt;分支。&lt;/li&gt;
-&lt;li&gt;最后，恭喜您已经成为了&lt;code&gt;Sharding-JDBC&lt;/code&gt;的&lt;code&gt;官方贡献者&lt;/code&gt;！&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;开发理念:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;开发理念&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;用心写代码，提炼真正的非功能性需求&lt;/li&gt;
-&lt;li&gt;代码整洁干净到极致, 请参见《重构》和《代码整洁之道》&lt;/li&gt;
-&lt;li&gt;极简代码, 高度复用，无重复代码和配置&lt;/li&gt;
-&lt;li&gt;代码应在同一抽象层级&lt;/li&gt;
-&lt;li&gt;修改功能时多考虑影响面, 不可留下没修改完全的部分&lt;/li&gt;
-&lt;li&gt;只有一个需求时，不需扩展性。两个类似需求时, 再提炼扩展性&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;开发行为规范:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;开发行为规范&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;提交之前先确定模块的测试套件，并使用测试覆盖率工具检查覆盖率不能低于&lt;code&gt;master分支的覆盖率&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;使用&lt;code&gt;Checkstyle&lt;/code&gt;检查代码, 违反验证规则的需要有特殊理由。模板位置在&lt;code&gt;sharding-jdbc/src/resources/dd_checks.xml&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;执行&lt;code&gt;mvn clean install&lt;/code&gt;可以测试和编译通过&lt;/li&gt;
-&lt;li&gt;及时删除无用代码&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;编码规范:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;编码规范&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;写代码之前看一下系统已有的代码, 保持风格和使用方式一致&lt;/li&gt;
-&lt;li&gt;变量命名要有意义, 如果方法只有唯一的返回值, 使用result命名返回值. 循环中使用each命名循环变量, map中使用entry代替each&lt;/li&gt;
-&lt;li&gt;嵌套循环尽量提成方法&lt;/li&gt;
-&lt;li&gt;优先使用卫语句&lt;/li&gt;
-&lt;li&gt;配置文件使用驼峰命名, 文件名首字母小写&lt;/li&gt;
-&lt;li&gt;类和方法的访问权限控制为最小, 例如: 可以设为包私有的就不用public&lt;/li&gt;
-&lt;li&gt;方法所用到的私有方法应紧跟着该方法, 如果有多个私有方法, 书写私有方法应与私有方法在原方法的出现顺序相同&lt;/li&gt;
-&lt;li&gt;优先使用guava而非apache commons, 如：优先使用Strings而非StringUtils&lt;/li&gt;
-&lt;li&gt;优先使用lombok代替构造器, get, set, log方法&lt;/li&gt;
-&lt;li&gt;使用linux换行符&lt;/li&gt;
-&lt;li&gt;缩进（包含空行）和上一行保持一致&lt;/li&gt;
-&lt;li&gt;不应有无意义的空行&lt;/li&gt;
-&lt;li&gt;方法入参和返回值不允许为null，如有特殊情况需注释说明&lt;/li&gt;
-&lt;li&gt;需要注释解释的代码尽量提成小方法，用方法名称解释，注释应只包含javadoc和todo，fixme等&lt;/li&gt;
-&lt;li&gt;禁止使用static import&lt;/li&gt;
-&lt;li&gt;不需要公开的类放入internal包，包中类尽量包私有&lt;/li&gt;
-&lt;li&gt;日志一律使用英文&lt;/li&gt;
-&lt;li&gt;使用annotation获取spring的业务bean&lt;/li&gt;
-&lt;li&gt;如果模块中有公用的切入点，应在模块一级路径创建pointcut包&lt;/li&gt;
-&lt;li&gt;属性配置项需要添加到各个模块的常量枚举中&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;单元测试规范:68ff842f88ebfba73c833f4e171f79e3&#34;&gt;单元测试规范&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;测试代码和生产代码需遵守相同代码规范&lt;/li&gt;
-&lt;li&gt;如无特殊理由, 测试需全覆盖&lt;/li&gt;
-&lt;li&gt;准备环境的代码和测试代码分离&lt;/li&gt;
-&lt;li&gt;单数据断言, 应使用assertTrue, assertFalse, assertNull, assertNotNull&lt;/li&gt;
-&lt;li&gt;多数据断言, 应使用assertThat&lt;/li&gt;
-&lt;li&gt;精确断言, 尽量不使用not, containsString断言&lt;/li&gt;
-&lt;li&gt;调用业务方法的变量, 应命名为actualXXX, 期望值应命名为expectedXXX&lt;/li&gt;
-&lt;li&gt;只有junit assertXXX, hamcrest, mocktio相关可以使用static import&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
       <title>详细功能列表</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/post/features/</link>
       <pubDate>Fri, 08 Jan 2016 16:14:21 +0800</pubDate>
@@ -2102,6 +2019,8 @@ hintManager.setMasterRouteOnly();
 &lt;p&gt;每条&lt;code&gt;INSERT&lt;/code&gt;语句只能插入一条数据，不支持&lt;code&gt;VALUES&lt;/code&gt;后有多行数据的语句&lt;/p&gt;
 
 &lt;h3 id=&#34;不支持-distinct-聚合:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;DISTINCT&lt;/code&gt;聚合&lt;/h3&gt;
+
+&lt;h3 id=&#34;不支持-dual-虚拟表:187f2cad6c4cc3b3972d4d058186f234&#34;&gt;不支持&lt;code&gt;dual&lt;/code&gt;虚拟表&lt;/h3&gt;
 </description>
     </item>
     

@@ -3,7 +3,13 @@
   
   <url>
     <loc>http://dangdangdotcom.github.io/sharding-jdbc/</loc>
+    <lastmod>2016-11-23T20:30:55+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/faq/</loc>
+    <lastmod>2016-11-23T20:30:55+08:00</lastmod>
   </url>
   
   <url>
@@ -23,11 +29,6 @@
   <url>
     <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/user_guide/</loc>
     <lastmod>2016-01-08T16:14:21+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/post/developer-guide/</loc>
-    <lastmod>2016-11-19T11:38:41+08:00</lastmod>
   </url>
   
   <url>
