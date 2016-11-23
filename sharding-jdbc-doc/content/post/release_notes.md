@@ -16,9 +16,9 @@ weight = 1
 1. [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163) 获取自增序列jdbc接口实现
 1. [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171) sharding-jdbc-core配合自动生成序列改造
 1. [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172) Yaml与Spring的配置方式增加对于自增序列的支持
-   
+
 ### 缺陷修正
-   
+
 1. [ISSUE #176](https://github.com/dangdangdotcom/sharding-jdbc/issues/176) AbstractMemoryResultSet对SQL的wasNull实现有问题
 
 ## 1.3.3
