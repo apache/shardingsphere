@@ -39,6 +39,9 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 * YAML
 * Inline expression
 
+## 6. ID Generation
+* Distributed Unique Time-Sequence Generation
+
 ***
 
 # Architecture

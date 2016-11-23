@@ -44,3 +44,4 @@ weight = 8
 ###  不支持特殊`INSERT`
 每条`INSERT`语句只能插入一条数据，不支持`VALUES`后有多行数据的语句
 ###  不支持`DISTINCT`聚合
+###  不支持`dual`虚拟表
