@@ -50,7 +50,7 @@
 ![复现步骤的屏幕截图和动态GIF图](图片的url)
 
 **Sharding-JDBC版本:** [输入Sharding-JDBC的版本]
-**操作系统及版本:** [收入操作系统及版本]
+**操作系统及版本:** [输入操作系统及版本]
 
 ```
 
@@ -62,7 +62,7 @@
  
  - 请先检查[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
  - 请确定这不是一个重复的功能增强建议。
-   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索你要提交的bug是否已经被报告过。
+   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索你要提交的功能增强建议是否已经被提交过。
 
 ### 如何提交一个好的功能增强建议
 
