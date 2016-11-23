@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Spring命名空间和Yaml配置</title>
+    
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    
+    
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/landing-page.css" rel="stylesheet">
+    
+    
+    
+    
+    <style>
+    .navbar {
+    border-color: #e7e7e7;
+}
+
+.content-section-a,
+footer,
+.navbar {
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+.navbar a:link,
+.navbar-default .navbar-nav>li>a {
+    color: #777;
+}
+
+.navbar a:hover,
+.navbar-default .navbar-nav>li>a:hover {
+    color: rgb(51, 51, 51);
+}
+
+.content-section-b {
+    background-color: white;
+    color: #333;
+}
+
+body {
+    color: rgb(51, 51, 51);
+}
+
+.header-container h1,
+.header-container h2,
+.header-container h3,
+.header-container h4 {
+    color: rgb(51, 51, 51);
+}
+
+  </style>
+    <link href="//cdn.bootcss.com/prism/1.4.1/themes/prism.min.css" rel="stylesheet">
+    <link href="http://dangdangdotcom.github.io/sharding-jdbc/css/table.css" rel="stylesheet">
+</head>
+<body>
+
+<style>
+    .container {
+        width: 95%;
+    }
+</style>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="page-scroll navbar-brand" href="#intro">Sharding-JDBC</a>
+        </div>
+        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom/sharding-jdbc>Github</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=http://dangdangdotcom.github.io/sharding-jdbc>Docs</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href=https://github.com/dangdangdotcom>DangDang</a>
+                </li>
+            </ul>
+        </div>
+        
+    </div>
+    
+</nav>
+
+
+<section id="services">
+   <div class="content-section-a">
+
+      <div class="container">
+        <div class="clearfix"></div>
+        <div class="row">
+	
+              <div class="col-sm-8">
+		 
+
+<h1 id="yaml配置:a66b35d20295cb764719ac8bd35837ec">Yaml配置</h1>
+
+<h2 id="引入maven依赖:a66b35d20295cb764719ac8bd35837ec">引入maven依赖</h2>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.dangdang&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-config-yaml&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h2 id="java示例:a66b35d20295cb764719ac8bd35837ec">Java示例</h2>
+
+<pre><code class="language-java">    DataSource dataSource = new YamlShardingDataSource(yamlFile);
+</code></pre>
+
+<h2 id="配置示例:a66b35d20295cb764719ac8bd35837ec">配置示例</h2>
+
+<pre><code class="language-yaml">dataSource:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password: 
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password: 
+    
+defaultDataSourceName: ds_0
+
+tables:
+  config:
+    actualTables: t_config
+    
+  t_order: 
+    actualTables: t_order_${0..1}
+    tableStrategy: &amp;table001
+      shardingColumns: order_id
+      algorithmExpression: t_order_${order_id.longValue() % 2}
+  
+  #绑定表中其余的表的策略与t_order的策略相同
+  t_order_item:
+    actualTables: t_order_item_${0..1}
+    tableStrategy: *table001
+
+bindingTables:
+  - tableNames: t_order,t_order_item
+  - tableNames: ...
+
+defaultDatabaseStrategy:
+  shardingColumns: user_id
+  algorithmExpression: ds_${user_id.longValue() % 2}
+
+defaultTableStrategy:
+  shardingColumns: id, order_id
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+
+props:
+  metrics.enable: false
+</code></pre>
+
+<h2 id="配置项说明:a66b35d20295cb764719ac8bd35837ec">配置项说明</h2>
+
+<pre><code class="language-yaml">dataSource: 数据源配置
+  &lt;data_source_name&gt; 可配置多个: !!数据库连接池实现类
+    driverClassName: 数据库驱动类名
+    url: 数据库url连接
+    username: 数据库用户名
+    password: 数据库密码
+    ... 数据库连接池的其它属性
+    
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
+  
+tables: 分库分表配置，可配置多个logic_table_name
+    &lt;logic_table_name&gt;: 逻辑表名
+        dynamic: 是否为动态表
+        actualTables: 真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)。
+        dataSourceNames: 数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源
+        databaseStrategy: 分库策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+        tableStrategy: 分表策略
+            shardingColumns: 分片列名，多个列以逗号分隔
+            algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+            algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  bindingTables: 绑定表列表
+  - tableNames: 逻辑表名列表，多个&lt;logic_table_name&gt;以逗号分隔
+  
+defaultDatabaseStrategy: 默认数据库分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+  algorithmExpression: 分库算法表达式，与algorithmClassName出现一个即可
+  
+defaultTableStrategy: 默认数据表分片策略
+  shardingColumns: 分片列名，多个列以逗号分隔
+  algorithmClassName: 分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与algorithmExpression出现一个即可
+  algorithmExpression: 分表算法表达式，与algorithmClassName出现一个即可
+
+props: 属性配置(可选)
+    metrics.enable: 是否开启度量采集，默认值: false
+    metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
+    metrics.logger.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
+    executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
+    executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
+</code></pre>
+
+<h3 id="yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec">Yaml格式特别说明</h3>
+
+<p><code>!!</code> 表示实现类</p>
+
+<p><code>&amp;</code> 表示变量定义</p>
+
+<p><code>*</code> 表示变量引用</p>
+
+<p><code>-</code> 表示多个</p>
+
+<h1 id="spring命名空间配置:a66b35d20295cb764719ac8bd35837ec">Spring命名空间配置</h1>
+
+<h2 id="引入maven依赖-1:a66b35d20295cb764719ac8bd35837ec">引入maven依赖</h2>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.dangdang&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-config-spring&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h2 id="配置示例-1:a66b35d20295cb764719ac8bd35837ec">配置示例</h2>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:rdb=&quot;http://www.dangdang.com/schema/ddframe/rdb&quot; 
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &quot;&gt;
+    &lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot;/&gt;
+    
+    &lt;bean id=&quot;dbtbl_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;dbtbl_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;rdb:strategy id=&quot;databaseStrategy&quot; sharding-columns=&quot;user_id&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloDatabaseShardingAlgorithm&quot;/&gt;
+    &lt;rdb:strategy id=&quot;tableStrategy&quot; sharding-columns=&quot;order_id&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm&quot;/&gt;
+
+    &lt;rdb:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;rdb:sharding-rule data-sources=&quot;dbtbl_0,dbtbl_1&quot; default-data-source=&quot;dbtbl_0&quot;&gt;
+            &lt;rdb:table-rules&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
+                &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; database-strategy=&quot;databaseStrategy&quot; table-strategy=&quot;tableStrategy&quot;/&gt;
+            &lt;/rdb:table-rules&gt;
+            &lt;rdb:binding-table-rules&gt;
+                &lt;rdb:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot;/&gt;
+            &lt;/rdb:binding-table-rules&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${id.longValue() % 2 + 1}&quot;/&gt;
+        &lt;/rdb:sharding-rule&gt;
+        &lt;rdb:props&gt;
+            &lt;prop key=&quot;metrics.enable&quot;&gt;true&lt;/prop&gt;
+        &lt;/rdb:props&gt;
+    &lt;/rdb:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h2 id="标签说明:a66b35d20295cb764719ac8bd35837ec">标签说明</h2>
+
+<h3 id="rdb-data-source:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:data-source/&gt;</h3>
+
+<p>定义sharding-jdbc数据源</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>Spring Bean ID</td>
+</tr>
+
+<tr>
+<td>sharding-rule</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则</td>
+</tr>
+
+<tr>
+<td>binding-table-rules<code>?</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>绑定表规则</td>
+</tr>
+
+<tr>
+<td>default-database-strategy<code>?</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>默认分库策略</td>
+</tr>
+
+<tr>
+<td>default-table-strategy<code>?</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>默认分表策略</td>
+</tr>
+
+<tr>
+<td>props<code>?</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>相关属性配置</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-sharding-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:sharding-rule/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>data-sources</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>数据源Bean列表，多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>default-data-source</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认数据源名称，未配置分片规则的表将通过默认数据源定位</td>
+</tr>
+
+<tr>
+<td>table-rules</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则列表</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rules/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>table-rule<code>+</code></td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rule/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-table</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>逻辑表名</td>
+</tr>
+
+<tr>
+<td>dynamic</td>
+<td>属性</td>
+<td>boolean</td>
+<td>否</td>
+<td>是否动态表</td>
+</tr>
+
+<tr>
+<td>actual-tables</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>真实表名，多个表以逗号分隔，支持inline表达式，指定数据源需要加前缀，不加前缀为默认数据源 指定数据源需要加前缀，不加前缀为默认数据源。不填写表示为只分库不分表或动态表(需要配置dynamic=true)</td>
+</tr>
+
+<tr>
+<td>data-source-names</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>数据源名称，多个数据源用逗号分隔，支持inline表达式。不填写表示使用全部数据源</td>
+</tr>
+
+<tr>
+<td>database-strategy</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>分库策略，对应<code>&lt;rdb:strategy&gt;</code>中分库策略id, 如果不填需配置<code>&lt;rdb:default-database-strategy/&gt;</code></td>
+</tr>
+
+<tr>
+<td>table-strategy</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>分表策略，对应<code>&lt;rdb:strategy&gt;</code>中分表策略id, 如果不填需配置<code>&lt;rdb:default-table-strategy/&gt;</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rules/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>binding-table-rule</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>绑定规则</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rule/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-tables</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>逻辑表名，多个表名以逗号分隔</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-default-database-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-database-strategy/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sharding-columns</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名，多个列以逗号分隔</td>
+</tr>
+
+<tr>
+<td>algorithm-class</td>
+<td>属性</td>
+<td>Class</td>
+<td>否</td>
+<td>默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
+</tr>
+
+<tr>
+<td>algorithm-expression</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认分库算法表达式，与<code>algorithm-class</code>有且仅有一个出现</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-default-table-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-table-strategy/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sharding-columns</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名，多个列以逗号分隔</td>
+</tr>
+
+<tr>
+<td>algorithm-class</td>
+<td>属性</td>
+<td>Class</td>
+<td>否</td>
+<td>默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
+</tr>
+
+<tr>
+<td>algorithm-expression</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认分表算法表达式，与<code>algorithm-class</code>有且仅有一个出现</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:strategy/&gt;<code>*</code></h3>
+
+<p>定义数据分库或分表策略</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>Spring Bean ID</td>
+</tr>
+
+<tr>
+<td>sharding-columns</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名，多个列以逗号分隔</td>
+</tr>
+
+<tr>
+<td>algorithm-class</td>
+<td>属性</td>
+<td>Class</td>
+<td>否</td>
+<td>分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与<code>algorithm-expression</code>有且仅有一个出现</td>
+</tr>
+
+<tr>
+<td>algorithm-expression</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>分库或分表算法表达式，与<code>algorithm-class</code>有且仅有一个出现</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="rdb-props:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:props/&gt;</h3>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>metrics.enable</td>
+<td>属性</td>
+<td>boolean</td>
+<td>否</td>
+<td>是否开启度量采集，默认为false不开启</td>
+</tr>
+
+<tr>
+<td>metrics.millisecond.period</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>度量输出周期，单位为毫秒</td>
+</tr>
+
+<tr>
+<td>metrics.logger.name</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>度量输出在日志中的标识名称</td>
+</tr>
+
+<tr>
+<td>executor.min.idle.size</td>
+<td>属性</td>
+<td>int</td>
+<td>否</td>
+<td>最小空闲工作线程数量</td>
+</tr>
+
+<tr>
+<td>executor.max.size</td>
+<td>属性</td>
+<td>int</td>
+<td>否</td>
+<td>最大工作线程数量</td>
+</tr>
+
+<tr>
+<td>executor.max.idle.timeout.millisecond</td>
+<td>属性</td>
+<td>int</td>
+<td>否</td>
+<td>工作线程空闲时超时时间，默认以毫秒为单位</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="spring格式特别说明:a66b35d20295cb764719ac8bd35837ec">Spring格式特别说明</h3>
+
+<p>如需使用inline表达式，需配置<code>ignore-unresolvable</code>为<code>true</code>，否则placeholder会把inline表达式当成属性key值导致出错.</p>
+
+<h1 id="分片算法表达式语法说明:a66b35d20295cb764719ac8bd35837ec">分片算法表达式语法说明</h1>
+
+<h2 id="inline表达式特别说明:a66b35d20295cb764719ac8bd35837ec">inline表达式特别说明</h2>
+
+<p><code>${begin..end}</code> 表示范围区间</p>
+
+<p><code>${[unit1, unit2, unitX]}</code> 表示枚举值</p>
+
+<p>inline表达式中连续多个<code>${...}</code>表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：</p>
+
+<pre><code class="language-groovy">dbtbl_${[online, offline]}_${1..3}
+</code></pre>
+
+<p>最终会解析为<code>dbtbl_online_1</code>，<code>dbtbl_online_2</code>，<code>dbtbl_online_3</code>，<code>dbtbl_offline_1</code>，<code>dbtbl_offline_2</code>和<code>dbtbl_ offline_3</code>这6张表。</p>
+
+<h2 id="字符串内嵌groovy代码:a66b35d20295cb764719ac8bd35837ec">字符串内嵌groovy代码</h2>
+
+<p>表达式本质上是一段字符串，字符串中使用<code>${}</code>来嵌入<code>groovy</code>代码。</p>
+
+<pre><code class="language-groovy">data_source_${id.longValue() % 2 + 1}
+</code></pre>
+
+<p>上面的表达式中<code>data_source_</code>是字符串前缀，<code>id.longValue() % 2 + 1</code>是<code>groovy</code>代码。</p>
+
+<h2 id="分区键值获取:a66b35d20295cb764719ac8bd35837ec">分区键值获取</h2>
+
+<p><code>groovy</code>代码中可以使用分区键的名字直接获取表达式的值对象。</p>
+
+<p>该对象是<code>com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapper</code>类型的对象。</p>
+
+<p>该类中提供了一些方法，方便数据类型的转换。包装的原始类型一般为<code>Number</code>，<code>java.util.Date</code>，<code>String</code> 三种类型。使用类中的方法可以将这三种类型转换为需要的其他类型。</p>
+
+<p>方法列表如下：</p>
+
+<table>
+<thead>
+<tr>
+<th><em>方法名</em></th>
+<th><em>入参</em></th>
+<th><em>返回类型</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>longValue()</td>
+<td></td>
+<td>long</td>
+</tr>
+
+<tr>
+<td>doubleValue()</td>
+<td></td>
+<td>double</td>
+</tr>
+
+<tr>
+<td>dateValue(String format)</td>
+<td>时间格式化表达式</td>
+<td>java.util.Date</td>
+</tr>
+
+<tr>
+<td>dateValue()</td>
+<td></td>
+<td>java.util.Date</td>
+</tr>
+
+<tr>
+<td>toString(String format)</td>
+<td>时间格式化表达式</td>
+<td>String</td>
+</tr>
+
+<tr>
+<td>toString()</td>
+<td></td>
+<td>String</td>
+</tr>
+</tbody>
+</table>
+
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
+		 <nav id="TableOfContents">
+<ul>
+<li><a href="#yaml配置:a66b35d20295cb764719ac8bd35837ec">Yaml配置</a>
+<ul>
+<li><a href="#引入maven依赖:a66b35d20295cb764719ac8bd35837ec">引入maven依赖</a></li>
+<li><a href="#java示例:a66b35d20295cb764719ac8bd35837ec">Java示例</a></li>
+<li><a href="#配置示例:a66b35d20295cb764719ac8bd35837ec">配置示例</a></li>
+<li><a href="#配置项说明:a66b35d20295cb764719ac8bd35837ec">配置项说明</a>
+<ul>
+<li><a href="#yaml格式特别说明:a66b35d20295cb764719ac8bd35837ec">Yaml格式特别说明</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#spring命名空间配置:a66b35d20295cb764719ac8bd35837ec">Spring命名空间配置</a>
+<ul>
+<li><a href="#引入maven依赖-1:a66b35d20295cb764719ac8bd35837ec">引入maven依赖</a></li>
+<li><a href="#配置示例-1:a66b35d20295cb764719ac8bd35837ec">配置示例</a></li>
+<li><a href="#标签说明:a66b35d20295cb764719ac8bd35837ec">标签说明</a>
+<ul>
+<li><a href="#rdb-data-source:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:data-source/&gt;</a></li>
+<li><a href="#rdb-sharding-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:sharding-rule/&gt;</a></li>
+<li><a href="#rdb-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rules/&gt;</a></li>
+<li><a href="#rdb-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:table-rule/&gt;</a></li>
+<li><a href="#rdb-binding-table-rules:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rules/&gt;</a></li>
+<li><a href="#rdb-binding-table-rule:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:binding-table-rule/&gt;</a></li>
+<li><a href="#rdb-default-database-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-database-strategy/&gt;</a></li>
+<li><a href="#rdb-default-table-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:default-table-strategy/&gt;</a></li>
+<li><a href="#rdb-strategy:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:strategy/&gt;<code>*</code></a></li>
+<li><a href="#rdb-props:a66b35d20295cb764719ac8bd35837ec">&lt;rdb:props/&gt;</a></li>
+<li><a href="#spring格式特别说明:a66b35d20295cb764719ac8bd35837ec">Spring格式特别说明</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#分片算法表达式语法说明:a66b35d20295cb764719ac8bd35837ec">分片算法表达式语法说明</a>
+<ul>
+<li><a href="#inline表达式特别说明:a66b35d20295cb764719ac8bd35837ec">inline表达式特别说明</a></li>
+<li><a href="#字符串内嵌groovy代码:a66b35d20295cb764719ac8bd35837ec">字符串内嵌groovy代码</a></li>
+<li><a href="#分区键值获取:a66b35d20295cb764719ac8bd35837ec">分区键值获取</a></li>
+</ul></li>
+</ul>
+</nav>
+	</div>
+        </div>
+    </div>
+</div>
+</div>
+
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="copyright text-muted small">Copyright &copy; Spring命名空间和Yaml配置 All Rights Reserved</p>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script src="//cdn.bootcss.com/prism/1.4.1/prism.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-java.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-sql.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-groovy.min.js"></script>
+<script src="//cdn.bootcss.com/prism/1.4.1//components/prism-yaml.min.js"></script>
+
+
+</body>
+</html>
+
