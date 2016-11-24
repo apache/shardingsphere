@@ -106,7 +106,7 @@
 ### 文档生成
 
 文档使用博客生成引擎[HUGO](https://gohugo.io/)，请根据文档安装环境。
-文档全部在`sharding-jdbc/shardig-jdbc-doc/content/post`目录中。
+文档全部在`sharding-jdbc/sharding-jdbc-doc/content/post`目录中。
 
 ### 贡献方法
 
