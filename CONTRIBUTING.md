@@ -1,4 +1,4 @@
-# 如何贡献？
+# 如何成为贡献者？
 
 您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
 
@@ -8,17 +8,17 @@
 
 ### 报告一个新bug之前
 
- - 确定在最新版本中该bug存在
- - 确认该bug是可以复现的。可复现的意思是：按照确定的步骤该bug就可以重新出现
+ - 确定在最新版本中该bug存在。我们将不会持续维护所有的发布版本，所有的修改仅根据当前版本。
+ - 确认该bug是可以复现的。请尽量提供完整的重现步骤。
  - 请确定这不是一个重复的bug。
-   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索你要提交的bug是否已经被报告过。
+   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索您要提交的bug是否已经被报告过。
 
-### 如何提交一个好bug
+### 如何提交一个有质量的bug
 
 请在[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)页面中提交bug。
 
  - 使用一个清晰并有描述性的标题来定义bug
- - 详细的描述复现bug的步骤。包括你使用的SQL，配置情况，预计产生的结果，实际产生的结果。并附加详细的TRACE日志
+ - 详细的描述复现bug的步骤。包括您使用的SQL，配置情况，预计产生的结果，实际产生的结果。并附加详细的TRACE日志
  - 如果程序抛出异常，请附加完整的堆栈日志
  - 如有可能，请附上屏幕截图或动态的GIF图，这些图片能帮助演示整个问题的产生过程
  - 如果涉及性能问题，请附加上CPU，内存或网络磁盘IO的Profile截图
@@ -62,7 +62,7 @@
  
  - 请先检查[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)
  - 请确定这不是一个重复的功能增强建议。
-   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索你要提交的功能增强建议是否已经被提交过。
+   查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索您要提交的功能增强建议是否已经被提交过。
 
 ### 如何提交一个好的功能增强建议
 
@@ -93,17 +93,15 @@
 
 ## 贡献补丁(patch)
 
-本文档帮助贡献者搭建开发环境并贡献代码，示例和文档
+本文档帮助贡献者搭建开发环境并贡献代码，示例和文档。
 
 ### 编译代码
 
-`Sharding-JDBC`的代码编译需要`Maven`，请保证IDE中正确配置了它。
+`Sharding-JDBC`的代码编译需要[Maven](http://maven.apache.org/)，请保证IDE中正确配置了它。
 代码用到的所有依赖完全都可以从公网下载，请根据自身的网络情况选择合理的镜像。
 
 代码使用了[Lombok](https://projectlombok.org/download.html)来生成类属性的访问方法，构造器等。
-故请以上从链接内容来获取适合你的IDE的解决方法。
-
-### 代码结构（待完善...)
+故请以上从链接内容来获取适合您的IDE的解决方法。
 
 ### 文档生成
 
@@ -115,15 +113,15 @@
 请按照下面的步骤贡献代码，示例和文档
 
  - 所有的问题与新功能请使用[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)进行管理
- - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明你当前正在这个Issue上工作。
+ - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明您当前正在这个Issue上工作。
    并在回复的时候为自己设置一个deadline，并添加的回复内容中
  - 在核心贡献者找到一个`导师(shepherd)`，导师会在设计与功能实现上给予即时的反馈。
-   现阶段导师为QQ群中`当当架构师`，如果你没有熟悉的架构师，请联系 __高洪涛(QQ:305653740)__
- - 你应该新建一个分支来开始你的工作，分支的名字为`功能名称/issueId`。
-   例如，你想完成一个SQL解析(parser)功能中 __Issue 111__，那么你的branch名字应为 __parser/111__。
+   如果您没有熟悉的架构师，请向__sharding_jdbc@groups.163.com__发送邮件。
+ - 您应该新建一个分支来开始您的工作，分支的名字为`功能名称/issueId`。
+   例如，您想完成一个SQL解析(parser)功能中 __Issue 111__，那么您的branch名字应为 __parser/111__。
    功能名称与`导师`讨论后确定
  - 完成后，发送一个`pull request`到`dangdangdotcom/sharding-jdbc`，
-   接着`导师`做`CodeReview`，然后他会与你讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，`导师`会将提交合并到`master`分支。
+   接着`导师`做`CodeReview`，然后他会与您讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，`导师`会将提交合并到`master`分支。
  - 最后，恭喜您已经成为了`Sharding-JDBC`的`官方贡献者`！
 
 ### 开发理念
