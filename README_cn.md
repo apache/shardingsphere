@@ -100,6 +100,8 @@
 
 [柔性事务](http://dangdangdotcom.github.io/sharding-jdbc/post/soft_transaction)
 
+[Id生成器](http://dangdangdotcom.github.io/sharding-jdbc/post/id-generator)
+
 [目录结构说明](http://dangdangdotcom.github.io/sharding-jdbc/post/directory_structure)
 
 [阅读源码编译问题说明](http://dangdangdotcom.github.io/elastic-job/post/source_code_guide)
