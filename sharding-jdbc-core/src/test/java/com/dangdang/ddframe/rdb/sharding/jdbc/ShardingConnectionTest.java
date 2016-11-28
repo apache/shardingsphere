@@ -34,9 +34,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-
 
 public class ShardingConnectionTest {
     
@@ -106,9 +106,20 @@ public class ShardingConnectionTest {
     }
     
     @Test
-    public void releaseBrokenConnectionTest() throws Exception {
+    public void releaseBrokenConnection() throws Exception {
         Connection conn = connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
         connection.releaseBrokenConnection(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+    }
+    
+    @Test
+    public void closeExceptionConnection() throws SQLException {
+        connection.getConnection(DS_NAME, SQLStatementType.SELECT);
+        connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
+        try {
+            connection.close();
+        } catch (final SQLException exp) {
+            assertNotNull(exp.getNextException());
+        }
     }
 }

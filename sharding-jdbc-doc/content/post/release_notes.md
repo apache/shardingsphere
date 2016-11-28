@@ -8,6 +8,10 @@ weight = 1
 
 ## 1.4.1-SNAPSHOT
 
+### 缺陷修正
+
+1. [ISSUE #194](https://github.com/dangdangdotcom/sharding-jdbc/issues/194) jdbc接口中资源释放错误
+
 ## 1.4.0
 
 ### 功能提升

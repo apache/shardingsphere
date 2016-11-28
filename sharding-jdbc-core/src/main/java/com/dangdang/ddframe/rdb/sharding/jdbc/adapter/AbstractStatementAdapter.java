@@ -18,6 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -45,10 +47,14 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract void clearRouteStatements();
     
     @Override
+    @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
-        for (Statement each : getRoutedStatements()) {
-            each.close();
-        }
+        SQLUtil.safeInvoke(getRoutedStatements(), new ThrowableSQLExceptionMethod() {
+            @Override
+            public void apply(final Object object) throws SQLException {
+                ((Statement) object).close();
+            }
+        });
         closed = true;
         clearRouteStatements();
     }
