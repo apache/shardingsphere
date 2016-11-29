@@ -11,6 +11,7 @@ weight = 1
 ### 缺陷修正
 
 1. [ISSUE #194](https://github.com/dangdangdotcom/sharding-jdbc/issues/194) jdbc接口中资源释放错误
+1. [ISSUE #199](https://github.com/dangdangdotcom/sharding-jdbc/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
 
 ## 1.4.0
 

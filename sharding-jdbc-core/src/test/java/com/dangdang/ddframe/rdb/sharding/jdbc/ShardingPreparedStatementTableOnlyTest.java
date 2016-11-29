@@ -53,4 +53,55 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
             assertThat(sps.getRoutedStatements().size(), is(10));
         }
     }
+    
+    @Test
+    public void assertAddBatch() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                java.sql.Statement queryStatement = connection.createStatement()) {
+            preparedStatement.setInt(1, 3101);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3102);
+            preparedStatement.setInt(2, 12);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3111);
+            preparedStatement.setInt(2, 21);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3112);
+            preparedStatement.setInt(2, 22);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            int[] result = preparedStatement.executeBatch();
+            for (int each : result) {
+                assertThat(each, is(1));
+            }
+    
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3101")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(11));
+                assertThat(rs.next(), is(false));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3102")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(12));
+                assertThat(rs.next(), is(false));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3111")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(21));
+                assertThat(rs.next(), is(false));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3112")) {
+                assertThat(rs.next(), is(true));
+                assertThat(rs.getInt(1), is(22));
+                assertThat(rs.next(), is(false));
+            }
+        }
+    }
 }

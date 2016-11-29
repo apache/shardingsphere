@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
+import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
@@ -53,6 +54,13 @@ import java.util.Map;
  */
 public class ShardingStatement extends AbstractStatementAdapter {
     
+    private static final Function<BackendStatementWrapper, Statement> TRANSFORM_FUNCTION = new Function<BackendStatementWrapper, Statement>() {
+        @Override
+        public Statement apply(final BackendStatementWrapper input) {
+            return input.getStatement();
+        }
+    };
+    
     @Getter(AccessLevel.PROTECTED)
     private final ShardingConnection shardingConnection;
     
@@ -65,7 +73,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Getter
     private final int resultSetHoldability;
     
-    private final Deque<List<Statement>> cachedRoutedStatements = Lists.newLinkedList();
+    private final Deque<List<BackendStatementWrapper>> cachedRoutedStatements = Lists.newLinkedList();
     
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
@@ -94,8 +102,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
-        cachedRoutedStatements.add(new LinkedList<Statement>());
-        cachedRoutedStatements.add(new LinkedList<Statement>());
+        cachedRoutedStatements.add(new LinkedList<BackendStatementWrapper>());
+        cachedRoutedStatements.add(new LinkedList<BackendStatementWrapper>());
     }
     
     @Override
@@ -258,7 +266,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     protected void clearRouteContext() throws SQLException {
         setCurrentResultSet(null);
-        List<Statement> firstList = cachedRoutedStatements.pollFirst();
+        List<BackendStatementWrapper> firstList = cachedRoutedStatements.pollFirst();
         cachedRoutedStatements.getFirst().addAll(firstList);
         firstList.clear();
         cachedRoutedStatements.addLast(firstList);
@@ -279,10 +287,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     protected Statement getStatement(final Connection connection, final String sql) throws SQLException {
-        Statement statement = null;
-        for (Iterator<Statement> iterator = cachedRoutedStatements.getFirst().iterator(); iterator.hasNext();) {
-            Statement each = iterator.next();
-            if (each.getConnection() == connection) {
+        BackendStatementWrapper statement = null;
+        for (Iterator<BackendStatementWrapper> iterator = cachedRoutedStatements.getFirst().iterator(); iterator.hasNext();) {
+            BackendStatementWrapper each = iterator.next();
+            if (each.isBelongTo(connection, sql)) {
                 statement = each;
                 iterator.remove();
             }
@@ -291,17 +299,17 @@ public class ShardingStatement extends AbstractStatementAdapter {
             statement = generateStatement(connection, sql);
         }
         cachedRoutedStatements.getLast().add(statement);
-        return statement;
+        return statement.getStatement();
     }
     
-    protected Statement generateStatement(final Connection connection, final String sql) throws SQLException {
+    protected BackendStatementWrapper generateStatement(final Connection connection, final String sql) throws SQLException {
         Statement result;
         if (0 == resultSetHoldability) {
             result = connection.createStatement(resultSetType, resultSetConcurrency);
         } else {
             result = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         }
-        return result;
+        return new BackendStatementWrapper(result);
     }
     
     @Override
@@ -329,6 +337,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public Collection<? extends Statement> getRoutedStatements() {
-        return  Lists.newArrayList(Iterators.concat(cachedRoutedStatements.getFirst().iterator(), cachedRoutedStatements.getLast().iterator()));
+        return  Lists.newArrayList(Iterators.concat(Iterators.transform(cachedRoutedStatements.getFirst().iterator(), TRANSFORM_FUNCTION),
+                Iterators.transform(cachedRoutedStatements.getLast().iterator(), TRANSFORM_FUNCTION)));
     }
 }
