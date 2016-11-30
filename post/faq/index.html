@@ -118,6 +118,16 @@ body {
 
 <p>我们并未将<code>http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd</code>部署至公网，但并不影响使用。相关问题请参考Spring命名空间规范。</p>
 
+<h2 id="异常-cloud-not-resolve-placeholder-in-string-value:4a1318da06786ac52626178ca960109e">异常：Cloud not resolve placeholder &hellip; in string value &hellip;?</h2>
+
+<p>由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为<code>${}</code>,与Spring的Property占位符冲突。
+故需要在Spring的配置文件中增加<context:property-placeholder location="classpath:conf/rdb/conf.properties" **ignore-unresolvable="true"**/></p>
+
+<h2 id="inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e">inline表达式返回结果出现浮点数？</h2>
+
+<p>Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
+想获得除法整数结果需要将<code>A/B</code>改为<code>A.intdiv(B)</code></p>
+
 	</div>
 	<div class="col-sm-3 col-sm-offset-1 doc-sidebar">
 		 <nav id="TableOfContents">
@@ -126,6 +136,8 @@ body {
 <ul>
 <li><a href="#阅读源码时为什么会出现编译错误:4a1318da06786ac52626178ca960109e">阅读源码时为什么会出现编译错误?</a></li>
 <li><a href="#使用spring命名空间时在网上相应地址找不到xsd:4a1318da06786ac52626178ca960109e">使用Spring命名空间时在网上相应地址找不到xsd?</a></li>
+<li><a href="#异常-cloud-not-resolve-placeholder-in-string-value:4a1318da06786ac52626178ca960109e">异常：Cloud not resolve placeholder &hellip; in string value &hellip;?</a></li>
+<li><a href="#inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e">inline表达式返回结果出现浮点数？</a></li>
 </ul></li>
 </ul>
 </nav>

@@ -26,6 +26,16 @@
 &lt;p&gt;Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，只需在jar包的&lt;code&gt;META-INF\spring.schemas&lt;/code&gt;配置，并在jar包中相关位置存在即可。&lt;/p&gt;
 
 &lt;p&gt;我们并未将&lt;code&gt;http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd&lt;/code&gt;部署至公网，但并不影响使用。相关问题请参考Spring命名空间规范。&lt;/p&gt;
+
+&lt;h2 id=&#34;异常-cloud-not-resolve-placeholder-in-string-value:4a1318da06786ac52626178ca960109e&#34;&gt;异常：Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;?&lt;/h2&gt;
+
+&lt;p&gt;由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为&lt;code&gt;${}&lt;/code&gt;,与Spring的Property占位符冲突。
+故需要在Spring的配置文件中增加&lt;context:property-placeholder location=&#34;classpath:conf/rdb/conf.properties&#34; **ignore-unresolvable=&#34;true&#34;**/&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e&#34;&gt;inline表达式返回结果出现浮点数？&lt;/h2&gt;
+
+&lt;p&gt;Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
+想获得除法整数结果需要将&lt;code&gt;A/B&lt;/code&gt;改为&lt;code&gt;A.intdiv(B)&lt;/code&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -38,6 +48,15 @@
       <description>
 
 &lt;h1 id=&#34;release-notes:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;Release Notes&lt;/h1&gt;
+
+&lt;h2 id=&#34;1-4-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.4.1-SNAPSHOT&lt;/h2&gt;
+
+&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/194&#34;&gt;ISSUE #194&lt;/a&gt; jdbc接口中资源释放错误&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/199&#34;&gt;ISSUE #199&lt;/a&gt; 分表且复用PreparedStatement对象造成数据路由错误&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;h2 id=&#34;1-4-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.4.0&lt;/h2&gt;
 
@@ -52,7 +71,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/172&#34;&gt;ISSUE #172&lt;/a&gt; Yaml与Spring的配置方式增加对于自增序列的支持&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/176&#34;&gt;ISSUE #176&lt;/a&gt; AbstractMemoryResultSet对SQL的wasNull实现有问题&lt;/li&gt;
@@ -66,7 +85,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/59&#34;&gt;ISSUE #59&lt;/a&gt; PreparedStatement设置参数时可以根据参数类型调用正确的底层set方法&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/149&#34;&gt;ISSUE #149&lt;/a&gt; INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0&lt;/li&gt;
@@ -85,7 +104,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/79&#34;&gt;ISSUE #79&lt;/a&gt; 关于MySQL 分页limit&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/36&#34;&gt;ISSUE #36&lt;/a&gt; ShardingPreparedStatement无法反复设置参数&lt;/li&gt;
@@ -104,7 +123,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/92&#34;&gt;ISSUE #92&lt;/a&gt; 查询类DQL语句事件发送&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/89&#34;&gt;ISSUE #89&lt;/a&gt; 读写分离和分片的hint一起使用导致冲突&lt;/li&gt;
@@ -126,7 +145,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/88&#34;&gt;ISSUE #88&lt;/a&gt; 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/81&#34;&gt;ISSUE #81&lt;/a&gt; 关联表查询使用or查询条件解析结果异常&lt;/li&gt;
@@ -152,7 +171,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/80&#34;&gt;ISSUE #80&lt;/a&gt; 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/63&#34;&gt;ISSUE #63&lt;/a&gt; ORDER BY与GROUP BY衍生列未添加表名或表别名&lt;/li&gt;
@@ -178,7 +197,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/51&#34;&gt;ISSUE #51&lt;/a&gt; 重构Hint接口&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/43&#34;&gt;ISSUE #43&lt;/a&gt; yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析&lt;/li&gt;
@@ -196,7 +215,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/42&#34;&gt;ISSUE #42&lt;/a&gt; 支持inline表达式配置&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/25&#34;&gt;ISSUE #25&lt;/a&gt; OR表达式下会出现重复结果问题&lt;/li&gt;
@@ -210,7 +229,7 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/39&#34;&gt;ISSUE #39&lt;/a&gt; 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
+&lt;h3 id=&#34;缺陷修正-9:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;缺陷修正&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/11&#34;&gt;ISSUE #11&lt;/a&gt; count函数在某些情况下返回不正确&lt;/li&gt;

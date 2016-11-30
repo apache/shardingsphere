@@ -110,6 +110,15 @@ body {
 
 <h1 id="release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</h1>
 
+<h2 id="1-4-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.4.1-SNAPSHOT</h2>
+
+<h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+
+<ol>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/194">ISSUE #194</a> jdbc接口中资源释放错误</li>
+<li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/199">ISSUE #199</a> 分表且复用PreparedStatement对象造成数据路由错误</li>
+</ol>
+
 <h2 id="1-4-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.4.0</h2>
 
 <h3 id="功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</h3>
@@ -123,7 +132,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/172">ISSUE #172</a> Yaml与Spring的配置方式增加对于自增序列的支持</li>
 </ol>
 
-<h3 id="缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/176">ISSUE #176</a> AbstractMemoryResultSet对SQL的wasNull实现有问题</li>
@@ -137,7 +146,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/59">ISSUE #59</a> PreparedStatement设置参数时可以根据参数类型调用正确的底层set方法</li>
 </ol>
 
-<h3 id="缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/149">ISSUE #149</a> INSERT IGNORE INTO时如果数据重了忽略时返回的成-1了，应该返回0</li>
@@ -156,7 +165,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/79">ISSUE #79</a> 关于MySQL 分页limit</li>
 </ol>
 
-<h3 id="缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/36">ISSUE #36</a> ShardingPreparedStatement无法反复设置参数</li>
@@ -175,7 +184,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/92">ISSUE #92</a> 查询类DQL语句事件发送</li>
 </ol>
 
-<h3 id="缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/89">ISSUE #89</a> 读写分离和分片的hint一起使用导致冲突</li>
@@ -197,7 +206,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/88">ISSUE #88</a> 放开对其他数据库的限制，可支持标准SQL, 对个性化分页等语句不支持</li>
 </ol>
 
-<h3 id="缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/81">ISSUE #81</a> 关联表查询使用or查询条件解析结果异常</li>
@@ -223,7 +232,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/80">ISSUE #80</a> 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule</li>
 </ol>
 
-<h3 id="缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/63">ISSUE #63</a> ORDER BY与GROUP BY衍生列未添加表名或表别名</li>
@@ -249,7 +258,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/51">ISSUE #51</a> 重构Hint接口</li>
 </ol>
 
-<h3 id="缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/43">ISSUE #43</a> yaml文件中包含中文，且操作系统模式不是utf-8编码导致的yaml不能解析</li>
@@ -267,7 +276,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/42">ISSUE #42</a> 支持inline表达式配置</li>
 </ol>
 
-<h3 id="缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/25">ISSUE #25</a> OR表达式下会出现重复结果问题</li>
@@ -281,7 +290,7 @@ body {
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/39">ISSUE #39</a> 增加使用暗示(Hint)方式注册分片键值的方式进行SQL路由的功能</li>
 </ol>
 
-<h3 id="缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
+<h3 id="缺陷修正-9:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</h3>
 
 <ol>
 <li><a href="https://github.com/dangdangdotcom/sharding-jdbc/issues/11">ISSUE #11</a> count函数在某些情况下返回不正确</li>
@@ -304,53 +313,57 @@ body {
 <ul>
 <li><a href="#release-notes:0e7a0379e76a8b6dfd2072d5a9672bab">Release Notes</a>
 <ul>
+<li><a href="#1-4-1-snapshot:0e7a0379e76a8b6dfd2072d5a9672bab">1.4.1-SNAPSHOT</a>
+<ul>
+<li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+</ul></li>
 <li><a href="#1-4-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.4.0</a>
 <ul>
 <li><a href="#功能提升:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-3:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.3</a>
 <ul>
 <li><a href="#功能提升-1:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-1:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-2:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.2</a>
 <ul>
 <li><a href="#功能提升-2:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-2:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.1</a>
 <ul>
 <li><a href="#功能提升-3:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-3:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-3-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.3.0</a>
 <ul>
 <li><a href="#新功能:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
 <li><a href="#功能提升-4:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-4:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-2-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.1</a>
 <ul>
 <li><a href="#结构调整:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
 <li><a href="#功能提升-5:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-5:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-2-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.2.0</a>
 <ul>
 <li><a href="#新功能-1:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
 <li><a href="#结构调整-1:0e7a0379e76a8b6dfd2072d5a9672bab">结构调整</a></li>
-<li><a href="#缺陷修正-6:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-1-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.1.0</a>
 <ul>
 <li><a href="#新功能-2:0e7a0379e76a8b6dfd2072d5a9672bab">新功能</a></li>
-<li><a href="#缺陷修正-7:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-0-1:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.1</a>
 <ul>
 <li><a href="#功能提升-6:0e7a0379e76a8b6dfd2072d5a9672bab">功能提升</a></li>
-<li><a href="#缺陷修正-8:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
+<li><a href="#缺陷修正-9:0e7a0379e76a8b6dfd2072d5a9672bab">缺陷修正</a></li>
 </ul></li>
 <li><a href="#1-0-0:0e7a0379e76a8b6dfd2072d5a9672bab">1.0.0</a></li>
 </ul></li>
