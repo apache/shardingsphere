@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Indexes on Sharding-JDBC</title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+    <description>Recent content in Indexes on Sharding-JDBC</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/index/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title></title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/index/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/index/</guid>
+      <description>
+
+&lt;h1 id=&#34;主要贡献者:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;主要贡献者&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;张亮 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; zhangliang@dangdang.com&lt;/li&gt;
+&lt;li&gt;高洪涛 &lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; gaohongtao@dangdang.com&lt;/li&gt;
+&lt;li&gt;曹昊 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; caohao@dangdang.com&lt;/li&gt;
+&lt;li&gt;岳令 &amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&#34;http://www.dangdang.com/&#34;&gt;当当&lt;/a&gt; yueling@dangdang.com&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;交流与参与:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;交流与参与&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;讨论QQ群：&lt;/strong&gt; 532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。由于QQ群已接近饱和，我们希望您在申请加群之前仔细阅读文档，并在加群申请中正确回答问题，以及在申请时写上您的姓名和公司名称。并且在入群后及时修改群名片。否则我们将有权拒绝您的入群申请。谢谢合作。）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;邮件组 sharding_jdbc@groups.163.com&lt;/strong&gt; ，如果在使用上需要帮助，或者疑似的bug，请发邮件到该邮件组中。发邮件之前请先阅读&lt;a href=&#34;http://dangdangdotcom.github.io/sharding-jdbc/post/faq/&#34;&gt;FAQ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;报告bug，提交增强功能建议和提交补丁等，请阅读&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/blob/master/CONTRIBUTING.md&#34;&gt;如何进行贡献&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;简介:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;简介&lt;/h1&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;直接封装&lt;code&gt;JDBC API&lt;/code&gt;，可以理解为增强版的&lt;code&gt;JDBC&lt;/code&gt;驱动，旧代码迁移成本几乎为零：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可适用于任何基于&lt;code&gt;java&lt;/code&gt;的&lt;code&gt;ORM&lt;/code&gt;框架，如：&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;Hibernate&lt;/code&gt;, &lt;code&gt;Mybatis&lt;/code&gt;, &lt;code&gt;Spring JDBC Template&lt;/code&gt;或直接使用&lt;code&gt;JDBC&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;可基于任何第三方的数据库连接池，如：&lt;code&gt;DBCP&lt;/code&gt;, &lt;code&gt;C3P0&lt;/code&gt;, &lt;code&gt;BoneCP&lt;/code&gt;, &lt;code&gt;Druid&lt;/code&gt;等。&lt;/li&gt;
+&lt;li&gt;理论上可支持任意实现&lt;code&gt;JDBC&lt;/code&gt;规范的数据库。虽然目前仅支持&lt;code&gt;MySQL&lt;/code&gt;，但已有支持&lt;code&gt;Oracle&lt;/code&gt;，&lt;code&gt;SQLServer&lt;/code&gt;，&lt;code&gt;DB2&lt;/code&gt;等数据库的计划。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;定位为轻量级&lt;code&gt;java&lt;/code&gt;框架，使用客户端直连数据库，以&lt;code&gt;jar&lt;/code&gt;包形式提供服务，未使用中间层，无需额外部署，无其他依赖，&lt;code&gt;DBA&lt;/code&gt;也无需改变原有的运维方式。&lt;code&gt;SQL&lt;/code&gt;解析使用&lt;code&gt;Druid&lt;/code&gt;解析器，是目前性能最高的&lt;code&gt;SQL&lt;/code&gt;解析器。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;功能灵活且全面：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;分片策略灵活，可支持&lt;code&gt;=&lt;/code&gt;，&lt;code&gt;BETWEEN&lt;/code&gt;，&lt;code&gt;IN&lt;/code&gt;等多维度分片，也可支持多分片键共用。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SQL&lt;/code&gt;解析功能完善，支持聚合，分组，排序，&lt;code&gt;Limit&lt;/code&gt;，&lt;code&gt;OR&lt;/code&gt;等查询，并且支持&lt;code&gt;Binding Table&lt;/code&gt;以及笛卡尔积的表查询。&lt;/li&gt;
+&lt;li&gt;支持柔性事务(目前仅最大努力送达型)。&lt;/li&gt;
+&lt;li&gt;支持读写分离。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;配置多样：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可支持YAML和Spring命名空间配置&lt;/li&gt;
+&lt;li&gt;灵活多样的&lt;code&gt;inline&lt;/code&gt;方式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以下是常见的分库分表产品和&lt;code&gt;Sharding-JDBC&lt;/code&gt;的对比：&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Cobar&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Cobar-client&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;TDDL&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Sharding-JDBC&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;分库&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;有&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;未开源&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;分表&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;未开源&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;有&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;中间层&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;是&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;否&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;ORM支持&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅MyBatis&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;数据库支持&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;仅MySQL&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;任意&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;异构语言&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;可&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;仅Java&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;外部依赖&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;Diamond&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;无&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;整体架构图:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;整体架构图&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&#34;img/architecture.png&#34; alt=&#34;整体架构图1&#34; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;quick-start:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;Quick Start&lt;/h1&gt;
+
+&lt;h2 id=&#34;引入maven依赖:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;引入maven依赖&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!-- 引入sharding-jdbc核心模块 --&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;1.0.0&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;规则配置:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;规则配置&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;Sharding-JDBC&lt;/code&gt;的分库分表通过规则配置描述，请简单浏览配置全貌：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;ShardingRule shardingRule = ShardingRule.builder()
+        .dataSourceRule(dataSourceRule)
+        .tableRules(tableRuleList)
+        .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm()))
+        .tableShardingStrategy(new TableShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm())))
+        .build();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和&lt;code&gt;tableRule&lt;/code&gt;绑定等。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;详细的规则配置请参考&lt;a href=&#34;post/user_guide&#34;&gt;用户指南&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;使用基于shardingdatasource的jdbc接口:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;使用基于ShardingDataSource的JDBC接口&lt;/h2&gt;
+
+&lt;p&gt;通过&lt;code&gt;ShardingDataSourceFactory&lt;/code&gt;工厂和规则配置对象获取&lt;code&gt;ShardingDataSource&lt;/code&gt;，&lt;code&gt;ShardingDataSource&lt;/code&gt;实现自&lt;code&gt;JDBC&lt;/code&gt;的标准接口&lt;code&gt;DataSource&lt;/code&gt;。然后可通过&lt;code&gt;DataSource&lt;/code&gt;选择使用原生&lt;code&gt;JDBC&lt;/code&gt;开发，或者使用&lt;code&gt;JPA&lt;/code&gt;, &lt;code&gt;MyBatis&lt;/code&gt;等&lt;code&gt;ORM&lt;/code&gt;工具。
+以&lt;code&gt;JDBC&lt;/code&gt;原生实现为例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
+String sql = &amp;quot;SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?&amp;quot;;
+try (
+        Connection conn = dataSource.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    preparedStatement.setInt(1, 10);
+    preparedStatement.setInt(2, 1001);
+    try (ResultSet rs = preparedStatement.executeQuery()) {
+        while(rs.next()) {
+            System.out.println(rs.getInt(1));
+            System.out.println(rs.getInt(2));
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;使用spring命名空间配置:d680e8a854a7cbad6d490c445cba2eba&#34;&gt;使用Spring命名空间配置&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+    xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; 
+    xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+    xmlns:rdb=&amp;quot;http://www.dangdang.com/schema/ddframe/rdb&amp;quot; 
+    xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://www.dangdang.com/schema/ddframe/rdb 
+                        http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd 
+                        &amp;quot;&amp;gt;
+    &amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;
+    
+    &amp;lt;bean id=&amp;quot;dbtbl_0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_0&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+    &amp;lt;bean id=&amp;quot;dbtbl_1&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.mysql.jdbc.Driver&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/dbtbl_1&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;root&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;rdb:strategy id=&amp;quot;orderTableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-expression=&amp;quot;t_order_${order_id.longValue() % 4}&amp;quot;/&amp;gt;
+    &amp;lt;rdb:strategy id=&amp;quot;orderItemTableStrategy&amp;quot; sharding-columns=&amp;quot;order_id&amp;quot; algorithm-expression=&amp;quot;t_order_item_${order_id.longValue() % 4}&amp;quot;/&amp;gt;
+    &amp;lt;rdb:data-source id=&amp;quot;shardingDataSource&amp;quot;&amp;gt;
+        &amp;lt;rdb:sharding-rule data-sources=&amp;quot;dbtbl_0,dbtbl_1&amp;quot;&amp;gt;
+            &amp;lt;rdb:table-rules&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; table-strategy=&amp;quot;orderTableStrategy&amp;quot;/&amp;gt;
+                &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; table-strategy=&amp;quot;orderItemTableStrategy&amp;quot;/&amp;gt;
+            &amp;lt;/rdb:table-rules&amp;gt;
+            &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${user_id.longValue() % 2 + 1}&amp;quot;/&amp;gt;
+        &amp;lt;/rdb:sharding-rule&amp;gt;
+    &amp;lt;/rdb:data-source&amp;gt;
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
