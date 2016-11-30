@@ -43,11 +43,19 @@ class EventPostman {
     
     void postExecutionEvents() {
         for (AbstractExecutorWrapper each : statementExecutorWrappers) {
-            if (each.getDMLExecutionEvent().isPresent()) {
+            if (each instanceof BatchPreparedStatementExecutorWrapper) {
+                postBatchExecutionEvent((BatchPreparedStatementExecutorWrapper) each);
+            } else if (each.getDMLExecutionEvent().isPresent()) {
                 DMLExecutionEventBus.post(each.getDMLExecutionEvent().get());
             } else if (each.getDQLExecutionEvent().isPresent()) {
                 DQLExecutionEventBus.post(each.getDQLExecutionEvent().get());
             }
+        }
+    }
+    
+    private void postBatchExecutionEvent(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper) {
+        for (DMLExecutionEvent each : batchPreparedStatementExecutorWrapper.getDmlExecutionEvents()) {
+            DMLExecutionEventBus.post(each);
         }
     }
     

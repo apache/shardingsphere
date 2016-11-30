@@ -18,6 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -221,6 +228,24 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     
     @Test
     public void assertAddBatch() throws SQLException {
+        final AtomicInteger beforeEventSum = new AtomicInteger();
+        final AtomicInteger successEventSum = new AtomicInteger();
+        DMLExecutionEventBus.register(new DMLExecutionEventListener() {
+            @Override
+            public String getName() {
+                return "test";
+            }
+            
+            @Subscribe
+            @AllowConcurrentEvents
+            public void subscribe(final DMLExecutionEvent event) {
+                if (event.getEventExecutionType().equals(EventExecutionType.BEFORE_EXECUTE)) {
+                    beforeEventSum.incrementAndGet();
+                } else if (event.getEventExecutionType().equals(EventExecutionType.EXECUTE_SUCCESS)) {
+                    successEventSum.incrementAndGet();
+                }
+            }
+        });
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
@@ -246,6 +271,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
                 assertThat(each, is(1));
             }
         }
+        assertThat(beforeEventSum.get(), is(4));
+        assertThat(successEventSum.get(), is(4));
+        DMLExecutionEventBus.clearListener();
     }
     
     @Test
