@@ -42,9 +42,9 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Collection<Integer> values = shardingValue.getValues();
         for (Integer value : values) {
-            for (String tableNames : availableTargetNames) {
-                if (tableNames.endsWith(value % 4 + "")) {
-                    result.add(tableNames);
+            for (String each : availableTargetNames) {
+                if (each.endsWith(value % 4 + "")) {
+                    result.add(each);
                 }
             }
         }
@@ -55,9 +55,9 @@ public class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShar
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
-        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
+        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % 4 + "")) {
+                if (each.endsWith(value % 4 + "")) {
                     result.add(each);
                 }
             }

@@ -41,9 +41,9 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Collection<Long> values = shardingValue.getValues();
         for (Long value : values) {
-            for (String tableNames : availableTargetNames) {
-                if (tableNames.endsWith(value % 2 + "")) {
-                    result.add(tableNames);
+            for (String each : availableTargetNames) {
+                if (each.endsWith(value % 2 + "")) {
+                    result.add(each);
                 }
             }
         }

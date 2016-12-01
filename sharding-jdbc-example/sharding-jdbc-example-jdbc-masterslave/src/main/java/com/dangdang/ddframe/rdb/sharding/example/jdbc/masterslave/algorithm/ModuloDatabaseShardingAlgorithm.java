@@ -40,9 +40,9 @@ public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseS
     public Collection<String> doInSharding(final Collection<String> dataSourceNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(dataSourceNames.size());
         for (Integer value : shardingValue.getValues()) {
-            for (String dataSourceName : dataSourceNames) {
-                if (dataSourceName.endsWith(value % 2 + "")) {
-                    result.add(dataSourceName);
+            for (String each : dataSourceNames) {
+                if (each.endsWith(value % 2 + "")) {
+                    result.add(each);
                 }
             }
         }
@@ -53,9 +53,9 @@ public final class ModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseS
     public Collection<String> doBetweenSharding(final Collection<String> dataSourceNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(dataSourceNames.size());
         Range<Integer> range = shardingValue.getValueRange();
-        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
+        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : dataSourceNames) {
-                if (each.endsWith(i % 2 + "")) {
+                if (each.endsWith(value % 2 + "")) {
                     result.add(each);
                 }
             }

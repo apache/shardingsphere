@@ -40,9 +40,9 @@ public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardin
     public Collection<String> doInSharding(final Collection<String> tableNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(tableNames.size());
         for (Integer value : shardingValue.getValues()) {
-            for (String tableName : tableNames) {
-                if (tableName.endsWith(value % 2 + "")) {
-                    result.add(tableName);
+            for (String each : tableNames) {
+                if (each.endsWith(value % 2 + "")) {
+                    result.add(each);
                 }
             }
         }
@@ -53,9 +53,9 @@ public final class ModuloTableShardingAlgorithm implements SingleKeyTableShardin
     public Collection<String> doBetweenSharding(final Collection<String> tableNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(tableNames.size());
         Range<Integer> range = shardingValue.getValueRange();
-        for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
+        for (Integer value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : tableNames) {
-                if (each.endsWith(i % 2 + "")) {
+                if (each.endsWith(value % 2 + "")) {
                     result.add(each);
                 }
             }

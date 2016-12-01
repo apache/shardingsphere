@@ -41,9 +41,9 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Collection<Long> values = shardingValue.getValues();
         for (Long value : values) {
-            for (String tableNames : availableTargetNames) {
-                if (tableNames.endsWith(value % 2 + "")) {
-                    result.add(tableNames);
+            for (String each : availableTargetNames) {
+                if (each.endsWith(value % 2 + "")) {
+                    result.add(each);
                 }
             }
         }
@@ -54,9 +54,9 @@ public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTab
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         Range<Long> range = shardingValue.getValueRange();
-        for (Long i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
+        for (Long value = range.lowerEndpoint(); value <= range.upperEndpoint(); value++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % 2 + "")) {
+                if (each.endsWith(value % 2 + "")) {
                     result.add(each);
                 }
             }
