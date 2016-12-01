@@ -13,6 +13,7 @@ weight = 1
 1. [ISSUE #194](https://github.com/dangdangdotcom/sharding-jdbc/issues/194) jdbc接口中资源释放错误
 1. [ISSUE #199](https://github.com/dangdangdotcom/sharding-jdbc/issues/199) 分表且复用PreparedStatement对象造成数据路由错误
 1. [ISSUE #201](https://github.com/dangdangdotcom/sharding-jdbc/issues/201) 批量操作执行前事件发送缺失
+1. [ISSUE #203](https://github.com/dangdangdotcom/sharding-jdbc/issues/201) 合并batch操作发送的事件
 
 ## 1.4.0
 

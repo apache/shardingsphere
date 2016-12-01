@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.BatchPreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Optional;
@@ -213,14 +212,14 @@ public final class PreparedStatementExecutor {
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
             if (1 == preparedStatementExecutorWrappers.size()) {
-                return executeBatchInternal((BatchPreparedStatementExecutorWrapper) preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
+                return executeBatchInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
             }
             return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
                 
                 @Override
                 public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeBatchInternal((BatchPreparedStatementExecutorWrapper) input, isExceptionThrown, dataMap);
+                        return executeBatchInternal(input, isExceptionThrown, dataMap);
                     }
                 }
             }, new MergeUnit<int[], int[]>() {
@@ -248,18 +247,18 @@ public final class PreparedStatementExecutor {
         }
     }
     
-    private int[] executeBatchInternal(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         try {
             result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
         } catch (final SQLException ex) {
-            eventPostman.postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            eventPostman.postExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        eventPostman.postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper);
+        eventPostman.postExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper);
         return result;
     }
 }

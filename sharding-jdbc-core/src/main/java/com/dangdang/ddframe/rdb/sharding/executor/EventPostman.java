@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.AbstractExecutorWrapper;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.BatchPreparedStatementExecutorWrapper;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -43,19 +42,11 @@ class EventPostman {
     
     void postExecutionEvents() {
         for (AbstractExecutorWrapper each : statementExecutorWrappers) {
-            if (each instanceof BatchPreparedStatementExecutorWrapper) {
-                postBatchExecutionEvent((BatchPreparedStatementExecutorWrapper) each);
-            } else if (each.getDMLExecutionEvent().isPresent()) {
+            if (each.getDMLExecutionEvent().isPresent()) {
                 DMLExecutionEventBus.post(each.getDMLExecutionEvent().get());
             } else if (each.getDQLExecutionEvent().isPresent()) {
                 DQLExecutionEventBus.post(each.getDQLExecutionEvent().get());
             }
-        }
-    }
-    
-    private void postBatchExecutionEvent(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper) {
-        for (DMLExecutionEvent each : batchPreparedStatementExecutorWrapper.getDmlExecutionEvents()) {
-            DMLExecutionEventBus.post(each);
         }
     }
     
@@ -74,19 +65,6 @@ class EventPostman {
             event.setEventExecutionType(eventExecutionType);
             event.setExp(exp);
             DQLExecutionEventBus.post(event);
-        }
-    }
-    
-    void postBatchExecutionEventsAfterExecution(final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper) {
-        postBatchExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS, Optional.<SQLException>absent());
-    }
-    
-    void postBatchExecutionEventsAfterExecution(
-            final BatchPreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final EventExecutionType eventExecutionType, final Optional<SQLException> exp) {
-        for (DMLExecutionEvent each : batchPreparedStatementExecutorWrapper.getDmlExecutionEvents()) {
-            each.setEventExecutionType(eventExecutionType);
-            each.setExp(exp);
-            DMLExecutionEventBus.post(each);
         }
     }
 }

@@ -18,10 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -40,7 +42,7 @@ public class ExecutionEvent {
     
     private final String sql;
     
-    private final List<Object> parameters;
+    private final List<List<Object>> parameters = new ArrayList<>();
     
     @Setter
     private EventExecutionType eventExecutionType = EventExecutionType.BEFORE_EXECUTE;
@@ -57,6 +59,42 @@ public class ExecutionEvent {
         id = UUID.randomUUID().toString();
         this.dataSource = dataSource;
         this.sql = sql;
-        this.parameters = parameters;
+        this.parameters.add(parameters);
+    }
+    
+    /**
+     * 获取参数.
+     * 调用该方法前需要调用{@linkplain #isBatch()},
+     * 如果返回值为{@code false}那么可以调用该方法获取参数.
+     * 
+     * @return 参数列表
+     */
+    public List<Object> getParameters() {
+        return parameters.get(0);
+    }
+    
+    /**
+     * 判断事件是否为批量操作事件.
+     * 如果返回值为{@code false}那么可以调用{@link #getParameters()}获取参数,
+     * 如果返回值为{@code true}那么可以调用{@link #getBatchParameters()}获取参数.
+     * 
+     * @return {@code true}是批量操作事件,{@code false}不是批量操作事件
+     */
+    public boolean isBatch() {
+        return parameters.size() > 1;
+    }
+    
+    /**
+     * 获取批量参数.
+     * 不论{@linkplain #isBatch()}返回值是什么,该方法都可以获得所有的参数.
+     *
+     * @return 参数列表
+     */
+    public List<List<Object>> getBatchParameters() {
+        return parameters;
+    }
+    
+    public void addBatchParameters(final List<Object> parameters) {
+        this.parameters.add(Lists.newArrayList(parameters));
     }
 }

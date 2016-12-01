@@ -32,8 +32,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -228,9 +230,10 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     
     @Test
     public void assertAddBatch() throws SQLException {
-        final AtomicInteger beforeEventSum = new AtomicInteger();
-        final AtomicInteger successEventSum = new AtomicInteger();
         DMLExecutionEventBus.register(new DMLExecutionEventListener() {
+    
+            private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
+            
             @Override
             public String getName() {
                 return "test";
@@ -239,10 +242,12 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             @Subscribe
             @AllowConcurrentEvents
             public void subscribe(final DMLExecutionEvent event) {
+                assertTrue(event.isBatch());
+                assertThat(event.getBatchParameters().size(), is(2));
                 if (event.getEventExecutionType().equals(EventExecutionType.BEFORE_EXECUTE)) {
-                    beforeEventSum.incrementAndGet();
+                    beforeEvents.add(event);
                 } else if (event.getEventExecutionType().equals(EventExecutionType.EXECUTE_SUCCESS)) {
-                    successEventSum.incrementAndGet();
+                    assertThat(beforeEvents, hasItem(event));
                 }
             }
         });
@@ -270,10 +275,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             for (int each : result) {
                 assertThat(each, is(1));
             }
+        } finally {
+            DMLExecutionEventBus.clearListener();
         }
-        assertThat(beforeEventSum.get(), is(4));
-        assertThat(successEventSum.get(), is(4));
-        DMLExecutionEventBus.clearListener();
     }
     
     @Test
