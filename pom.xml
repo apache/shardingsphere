@@ -71,6 +71,7 @@
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+        <powermock.version>1.6.6</powermock.version>
     </properties>
     
     <dependencyManagement>
@@ -267,6 +268,24 @@
                 <groupId>com.dangdang</groupId>
                 <artifactId>elastic-job-core</artifactId>
                 <version>${elastic-job.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
