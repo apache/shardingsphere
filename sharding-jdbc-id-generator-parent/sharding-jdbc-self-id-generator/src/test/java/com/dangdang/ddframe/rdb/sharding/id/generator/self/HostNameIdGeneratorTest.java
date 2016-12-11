@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.id.generator.self;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,37 +40,38 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({HostNameIdGenerator.class})
+@PrepareForTest(HostNameIdGenerator.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HostNameIdGeneratorTest {
+    
+    private static InetAddress rightAddress;
+    
+    private static InetAddress wrongAddress;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-
-    private InetAddress rightAddr;
-
-    private InetAddress wrongAddr;
-
-    @Before
-    public void init() throws UnknownHostException {
-        int ipv4Int = -1062731412;
+    
+    @BeforeClass
+    public static void init() throws UnknownHostException {
+        String ipv4 = "192.168.1.108";
         byte[] ipv4Byte = new byte[4];
+        String[] ipv4StingArray = ipv4.split("\\.");
         for (int i = 0; i < 4; i++) {
-            ipv4Byte[i] = (byte) (ipv4Int >>> (24 - i * 8));
+            ipv4Byte[i] = (byte) Integer.valueOf(ipv4StingArray[i]).intValue();
         }
-        rightAddr = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
-        wrongAddr = InetAddress.getByAddress("dangdang-db-sharding-dev", ipv4Byte);
+        rightAddress = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
+        wrongAddress = InetAddress.getByAddress("dangdang-db-sharding-dev", ipv4Byte);
+        //static init HostNameIdGenerator
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddr);
-        new HostNameIdGenerator();
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
+        HostNameIdGenerator.initWorkerId();
     }
 
     @Test
     public void testRightHostName() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddr);
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameIdGenerator.initWorkerId();
-        HostNameIdGenerator idGenerator = new HostNameIdGenerator();
         assertThat(CommonSelfIdGenerator.getWorkerId(), is(233L));
     }
 
@@ -79,23 +80,23 @@ public class HostNameIdGeneratorTest {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Cannot get LocalHost InetAddress , please check your network!");
+        exception.expectMessage("Cannot get LocalHost InetAddress, please check your network!");
         HostNameIdGenerator.initWorkerId();
     }
 
     @Test
     public void testWrongHostName() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(wrongAddr);
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(wrongAddress);
         exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Wrong hostname , hostname must be end with number!");
+        exception.expectMessage(String.format("Wrong hostname:%s, hostname must be end with number!", wrongAddress.getHostName()));
         HostNameIdGenerator.initWorkerId();
     }
 
     @Test
     public void generateId() throws Exception {
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddr);
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameIdGenerator.initWorkerId();
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
