@@ -17,39 +17,21 @@ package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
-import java.util.List;
 import java.util.Map;
 
 public interface SQLObject {
-
+    
     void accept(SQLASTVisitor visitor);
-
-    SQLObject getParent();
-
-    void setParent(SQLObject parent);
-
+    
     Map<String, Object> getAttributes();
-
+    
     Object getAttribute(String name);
-
+    
     void putAttribute(String name, Object value);
-
-    Map<String, Object> getAttributesDirect();
     
-    void addBeforeComment(String comment);
-    void addBeforeComment(List<String> comments);
+    SQLObject getParent();
     
-    List<String> getBeforeCommentsDirect();
+    void setParent(SQLObject parent);
     
-    void addAfterComment(String comment);
-    
-    void addAfterComment(List<String> comments);
-    
-    List<String> getAfterCommentsDirect();
-    
-    boolean hasBeforeComment();
-    
-    boolean hasAfterComment();
-
     void output(StringBuffer buf);
 }

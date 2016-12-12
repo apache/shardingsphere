@@ -17,178 +17,74 @@ package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class SQLObjectImpl implements SQLObject {
     
+    private final Map<String, Object> attributes = new HashMap<>();
+    
     private SQLObject parent;
     
-    private Map<String, Object> attributes;
-    
-    public final void accept(SQLASTVisitor visitor) {
-        if (visitor == null) {
-            throw new IllegalArgumentException();
-        }
+    @Override
+    public final void accept(final SQLASTVisitor visitor) {
         visitor.preVisit(this);
         accept0(visitor);
         visitor.postVisit(this);
     }
     
-    protected abstract void accept0(SQLASTVisitor visitor);
+    protected abstract void accept0(final SQLASTVisitor visitor);
     
-    protected final void acceptChild(SQLASTVisitor visitor, List<? extends SQLObject> children) {
-        if (children == null) {
-            return;
-        }
-        
-        for (SQLObject child : children) {
-            acceptChild(visitor, child);
-        }
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+    
+    @Override
+    public Object getAttribute(final String name) {
+        return attributes.get(name);
     }
 
-    protected final void acceptChild(SQLASTVisitor visitor, SQLObject child) {
-        if (child == null) {
-            return;
-        }
-
-        child.accept(visitor);
+    public void putAttribute(final String name, final Object value) {
+        attributes.put(name, value);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append(super.toString());
+    
+    @Override
+    public SQLObject getParent() {
+        return parent;
     }
-
+    
+    @Override
+    public void setParent(SQLObject parent) {
+        this.parent = parent;
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append(super.toString());
+    }
+    
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         output(buf);
         return buf.toString();
     }
-
-    public SQLObject getParent() {
-        return parent;
-    }
-
-    public void setParent(SQLObject parent) {
-        this.parent = parent;
-    }
-
-    public Map<String, Object> getAttributes() {
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-
-        return attributes;
-    }
-
-    public Object getAttribute(String name) {
-        if (attributes == null) {
-            return null;
-        }
-
-        return attributes.get(name);
-    }
-
-    public void putAttribute(String name, Object value) {
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-
-        attributes.put(name, value);
-    }
-
-    public Map<String, Object> getAttributesDirect() {
-        return attributes;
-    }
     
-    @SuppressWarnings("unchecked")
-    public void addBeforeComment(String comment) {
-        if (comment == null) {
+    protected final void acceptChild(final SQLASTVisitor visitor, final List<? extends SQLObject> children) {
+        if (null == children) {
             return;
         }
-        
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-        
-        List<String> comments = (List<String>) attributes.get("format.before_comment");
-        if (comments == null) {
-            comments = new ArrayList<>(2);
-            attributes.put("format.before_comment", comments);
-        }
-        
-        comments.add(comment);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public void addBeforeComment(List<String> comments) {
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-        
-        List<String> attrComments = (List<String>) attributes.get("format.before_comment");
-        if (attrComments == null) {
-            attributes.put("format.before_comment", comments);
-        } else {
-            attrComments.addAll(comments);
+        for (SQLObject each : children) {
+            acceptChild(visitor, each);
         }
     }
     
-    @SuppressWarnings("unchecked")
-    public List<String> getBeforeCommentsDirect() {
-        if (attributes == null) {
-            return null;
+    protected final void acceptChild(final SQLASTVisitor visitor, SQLObject child) {
+        if (null == child) {
+            return;
         }
-        
-        return (List<String>) attributes.get("format.before_comment");
-    }
-    
-    @SuppressWarnings("unchecked")
-    public void addAfterComment(String comment) {
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-        
-        List<String> comments = (List<String>) attributes.get("format.after_comment");
-        if (comments == null) {
-            comments = new ArrayList<>(2);
-            attributes.put("format.after_comment", comments);
-        }
-        
-        comments.add(comment);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public void addAfterComment(List<String> comments) {
-        if (attributes == null) {
-            attributes = new HashMap<>(1);
-        }
-        
-        List<String> attrComments = (List<String>) attributes.get("format.after_comment");
-        if (attrComments == null) {
-            attributes.put("format.after_comment", comments);
-        } else {
-            attrComments.addAll(comments);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    public List<String> getAfterCommentsDirect() {
-        if (attributes == null) {
-            return null;
-        }
-        return (List<String>) attributes.get("format.after_comment");
-    }
-    
-    public boolean hasBeforeComment() {
-        List<String> comments = getBeforeCommentsDirect();
-        return null != comments && !comments.isEmpty();
-    }
-    
-    public boolean hasAfterComment() {
-        List<String> comments = getAfterCommentsDirect();
-        return null != comments && !comments.isEmpty();
+        child.accept(visitor);
     }
 }

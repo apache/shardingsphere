@@ -18,12 +18,9 @@ package com.alibaba.druid.sql.ast;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLCommentHint extends SQLObjectImpl implements SQLHint {
-
+    
     private String text;
-
-    public SQLCommentHint(){
-    }
-
+    
     public SQLCommentHint(String text){
         this.text = text;
     }

@@ -16,8 +16,4 @@
 package com.alibaba.druid.sql.ast;
 
 public abstract class SQLExprImpl extends SQLObjectImpl implements SQLExpr {
-
-    public abstract boolean equals(Object o);
-
-    public abstract int hashCode();
 }

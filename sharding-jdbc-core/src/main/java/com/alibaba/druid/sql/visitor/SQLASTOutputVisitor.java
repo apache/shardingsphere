@@ -236,11 +236,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         }
         print("'" + dateFormat.format(date) + "'");
     }
-
-    public void print(long value) {
-        print(Long.toString(value));
-    }
-
+    
     public void print(String text) {
         try {
             this.appender.append(text);
@@ -352,29 +348,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
         for (int i = groupList.size() - 1; i >= 0; --i) {
             SQLExpr item = groupList.get(i);
-            
-            if (relational) {
-                if (isPrettyFormat() && item.hasBeforeComment()) {
-                    printlnComments(item.getBeforeCommentsDirect());
-                }
-            }
-            
-            if (isPrettyFormat() && item.hasBeforeComment()) {
-                printlnComments(item.getBeforeCommentsDirect());
-            }
-            
             visitBinaryLeft(item, x.getOperator());
-
-            if (isPrettyFormat() && item.hasAfterComment()) {
-                print(' ');
-                printComment(item.getAfterCommentsDirect(), "\n");
-            }
-            
-            if (i != groupList.size() - 1 && isPrettyFormat() && item.getParent().hasAfterComment()) {
-                print(' ');
-                printComment(item.getParent().getAfterCommentsDirect(), "\n");
-            }
-            
             if (relational) {
                 println();
             } else {
@@ -394,10 +368,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     private void visitorBinaryRight(SQLBinaryOpExpr x) {
-        if (isPrettyFormat() && x.getRight().hasBeforeComment()) {
-            printlnComments(x.getRight().getBeforeCommentsDirect());
-        }
-        
         if (x.getRight() instanceof SQLBinaryOpExpr) {
             SQLBinaryOpExpr right = (SQLBinaryOpExpr) x.getRight();
             boolean rightRational = right.getOperator() == SQLBinaryOperator.BooleanAnd
@@ -420,11 +390,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             }
         } else {
             x.getRight().accept(this);
-        }
-        
-        if (x.getRight().hasAfterComment() && isPrettyFormat()) {
-            print(' ');
-            printlnComments(x.getRight().getAfterCommentsDirect());
         }
     }
 
@@ -748,12 +713,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     public boolean visit(SQLSelectQueryBlock x) {
-        if (isPrettyFormat() && x.hasBeforeComment()) {
-            printComment(x.getBeforeCommentsDirect(), "\n");
-        }
-        
         print("SELECT ");
-
         if (SQLSetQuantifier.ALL == x.getDistionOption()) {
             print("ALL ");
         } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
@@ -836,12 +796,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             print(' ');
             print(x.getAlias());
         }
-        
-        if (isPrettyFormat() && x.hasAfterComment()) {
-            print(' ');
-            printComment(x.getAfterCommentsDirect(), "\n");
-        }
-
         return false;
     }
 
@@ -2246,26 +2200,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getLike().accept(this);
         }
         return false;
-    }
-    
-    protected void printComment(List<String> comments, String seperator) {
-        if (comments != null) {
-            for (int i = 0; i < comments.size(); ++i) {
-                if (i != 0) {
-                    print(seperator);
-                }
-                String comment = comments.get(i);
-                print(comment);
-            }
-        }
-    }
-    
-    protected void printlnComments(List<String> comments) {
-        if (comments != null) {
-            for (String each : comments) {
-                println(each);
-            }
-        }
     }
     
     @Override
