@@ -15,47 +15,35 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OracleDataTypeIntervalDay extends SQLDataTypeImpl implements OracleSQLObject {
-
-    private boolean               toSecond          = false;
-
-    protected final List<SQLExpr> fractionalSeconds = new ArrayList<SQLExpr>();
-
+    
+    @Getter
+    private final List<SQLExpr> fractionalSeconds;
+    
     public OracleDataTypeIntervalDay(){
-        this.setName("INTERVAL DAY");
+        super("INTERVAL DAY");
+        fractionalSeconds = new ArrayList<>();
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getArguments());
         }
         visitor.endVisit(this);
     }
-
-    public boolean isToSecond() {
-        return toSecond;
-    }
-
-    public void setToSecond(boolean toSecond) {
-        this.toSecond = toSecond;
-    }
-
-    public List<SQLExpr> getFractionalSeconds() {
-        return fractionalSeconds;
-    }
-
 }

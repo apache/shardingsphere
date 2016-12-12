@@ -15,8 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLObject;
@@ -163,6 +161,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUnique;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
+
+import java.util.List;
 
 public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleASTVisitor {
 
@@ -356,7 +356,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     public boolean visit(OracleOrderBy x) {
-        if (x.getItems().size() > 0) {
+        if (!x.getItems().isEmpty()) {
             print("ORDER ");
             if (x.isSibings()) {
                 print("SIBLINGS ");
@@ -3165,7 +3165,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
         print(" TO SECOND");
 
-        if (x.getFractionalSeconds().size() > 0) {
+        if (!x.getFractionalSeconds().isEmpty()) {
             print("(");
             x.getFractionalSeconds().get(0).accept(this);
             print(")");

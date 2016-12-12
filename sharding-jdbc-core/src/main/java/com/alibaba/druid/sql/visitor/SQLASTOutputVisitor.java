@@ -766,9 +766,8 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     public boolean visit(SQLOrderBy x) {
-        if (x.getItems().size() > 0) {
+        if (!x.getItems().isEmpty()) {
             print("ORDER BY ");
-
             printAndAccept(x.getItems(), ", ");
         }
         return false;

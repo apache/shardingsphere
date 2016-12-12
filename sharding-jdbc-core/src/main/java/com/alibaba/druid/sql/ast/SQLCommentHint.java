@@ -16,24 +16,17 @@
 package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class SQLCommentHint extends SQLObjectImpl implements SQLHint {
     
-    private String text;
+    private final String text;
     
-    public SQLCommentHint(String text){
-        this.text = text;
-    }
-    
-    public String getText() {
-        return this.text;
-    }
-    
-    public void setText(String text) {
-        this.text = text;
-    }
-    
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

@@ -17,67 +17,30 @@ package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@EqualsAndHashCode
 public class SQLOrderBy extends SQLObjectImpl {
-
-    protected final List<SQLSelectOrderByItem> items = new ArrayList<SQLSelectOrderByItem>();
-
-    public SQLOrderBy(){
-
-    }
-
-    public SQLOrderBy(SQLExpr expr){
-        SQLSelectOrderByItem item = new SQLSelectOrderByItem(expr);
-        addItem(item);
-    }
-
-    public void addItem(SQLSelectOrderByItem item) {
-        if (item != null) {
+    
+    private final List<SQLSelectOrderByItem> items = new ArrayList<>();
+    
+    public void addItem(final SQLSelectOrderByItem item) {
+        if (null != item) {
             item.setParent(this);
         }
-        this.items.add(item);
+        items.add(item);
     }
-
-    public List<SQLSelectOrderByItem> getItems() {
-        return this.items;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
+            acceptChild(visitor, items);
         }
-
         visitor.endVisit(this);
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + items.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        SQLOrderBy other = (SQLOrderBy) obj;
-        return items.equals(other.items);
-    }
-
-    public void addItem(SQLExpr expr, SQLOrderingSpecification type) {
-        SQLSelectOrderByItem item = createItem();
-        item.setExpr(expr);
-        item.setType(type);
-        addItem(item);
-    }
-
-    protected SQLSelectOrderByItem createItem() {
-        return new SQLSelectOrderByItem();
     }
 }

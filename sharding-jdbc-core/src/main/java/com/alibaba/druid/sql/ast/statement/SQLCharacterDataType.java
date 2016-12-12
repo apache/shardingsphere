@@ -68,7 +68,7 @@ public class SQLCharacterDataType extends SQLDataTypeImpl {
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.arguments);
+            acceptChild(visitor, getArguments());
         }
 
         visitor.endVisit(this);

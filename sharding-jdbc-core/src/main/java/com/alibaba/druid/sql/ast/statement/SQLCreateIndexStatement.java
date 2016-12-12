@@ -15,12 +15,12 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLCreateIndexStatement extends SQLStatementImpl implements SQLDDLStatement {
 
@@ -32,10 +32,6 @@ public class SQLCreateIndexStatement extends SQLStatementImpl implements SQLDDLS
 
     private String                     type;
 
-    public SQLCreateIndexStatement(){
-
-    }
-    
     public SQLCreateIndexStatement(String dbType){
         super (dbType);
     }

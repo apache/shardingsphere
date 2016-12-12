@@ -17,6 +17,7 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
 /**
  * 
  * @Description: MySql cursor close statement
@@ -24,24 +25,21 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
  * @date 2015-9-14
  * @version V1.0
  */
-public class SQLCloseStatement extends SQLStatementImpl{
-	
-	//cursor name
-	private String cursorName; 
-	
-	public String getCursorName() {
-		return cursorName;
-	}
-	
-	public void setCursorName(String cursorName) {
-		this.cursorName = cursorName;
-	}
-
-	@Override
-	protected void acceptInternal(SQLASTVisitor visitor) {
-		visitor.visit(this);
-	    visitor.endVisit(this);
-		
-	}
-
+public class SQLCloseStatement extends SQLStatementImpl {
+    
+    private String cursorName; 
+    
+    public String getCursorName() {
+        return cursorName;
+    }
+    
+    public void setCursorName(String cursorName) {
+        this.cursorName = cursorName;
+    }
+    
+    @Override
+    protected void acceptInternal(SQLASTVisitor visitor) {
+        visitor.visit(this);
+        visitor.endVisit(this);
+    }
 }

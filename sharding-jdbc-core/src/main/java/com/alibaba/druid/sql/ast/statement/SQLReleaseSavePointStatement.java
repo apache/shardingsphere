@@ -23,10 +23,6 @@ public class SQLReleaseSavePointStatement extends SQLStatementImpl {
 
     private SQLExpr name;
     
-    public SQLReleaseSavePointStatement() {
-        
-    }
-    
     public SQLReleaseSavePointStatement(String dbType) {
         super (dbType);
     }

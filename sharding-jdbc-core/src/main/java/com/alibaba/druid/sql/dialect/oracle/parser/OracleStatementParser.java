@@ -1046,8 +1046,7 @@ public class OracleStatementParser extends SQLStatementParser {
                 accept(Token.IS);
                 SQLSelect select = this.createSQLSelectParser().select();
 
-                SQLDataTypeImpl dataType = new SQLDataTypeImpl();
-                dataType.setName("CURSOR");
+                SQLDataTypeImpl dataType = new SQLDataTypeImpl("CURSOR");
                 parameter.setDataType(dataType);
 
                 parameter.setDefaultValue(new SQLQueryExpr(select));

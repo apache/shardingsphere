@@ -145,7 +145,7 @@ public class OracleExprParser extends SQLExprParser {
                 
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
-                    interval.getFractionalSeconds().add(this.expr());
+                    interval.getFractionalSeconds().add(expr());
                     accept(Token.RIGHT_PAREN);
                 }
                 

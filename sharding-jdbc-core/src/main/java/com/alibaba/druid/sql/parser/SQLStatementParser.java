@@ -797,7 +797,7 @@ public class SQLStatementParser extends SQLParser {
         if (getLexer().equalToken(Token.TABLE)) {
             getLexer().nextToken();
 
-            SQLAlterTableStatement stmt = new SQLAlterTableStatement();
+            SQLAlterTableStatement stmt = new SQLAlterTableStatement(getDbType());
             stmt.setName(this.exprParser.name());
 
             while (true) {
@@ -1488,7 +1488,7 @@ public class SQLStatementParser extends SQLParser {
             brace = true;
         }
 
-        SQLCallStatement stmt = new SQLCallStatement(getDbType());
+        SQLCallStatement stmt = new SQLCallStatement();
 
         if (getLexer().equalToken(Token.QUESTION)) {
             getLexer().nextToken();
@@ -1981,7 +1981,7 @@ public class SQLStatementParser extends SQLParser {
     }
     
     public SQLStatement parseClose() {
-        SQLCloseStatement stmt=new SQLCloseStatement();
+        SQLCloseStatement stmt = new SQLCloseStatement();
         accept(Token.CLOSE);
         stmt.setCursorName(exprParser.name().getSimpleName());
         accept(Token.SEMI);

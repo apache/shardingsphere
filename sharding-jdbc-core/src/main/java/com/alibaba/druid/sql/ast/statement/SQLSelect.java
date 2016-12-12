@@ -114,17 +114,16 @@ public class SQLSelect extends SQLObjectImpl {
         } else if (!withSubQuery.equals(other.withSubQuery)) return false;
         return true;
     }
-
+    
+    @Override
     public String toString() {
-        SQLObject parent = this.getParent();
+        SQLObject parent = getParent();
         if (parent instanceof SQLStatement) {
             String dbType = ((SQLStatement) parent).getDbType();
-            
-            if (dbType != null) {
+            if (null != dbType) {
                 return SQLUtils.toSQLString(this, dbType);
             }
         }
-        
         return super.toString();
     }
 }

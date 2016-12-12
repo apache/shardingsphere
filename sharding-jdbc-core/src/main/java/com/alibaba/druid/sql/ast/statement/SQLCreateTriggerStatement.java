@@ -15,13 +15,13 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLCreateTriggerStatement extends SQLStatementImpl {
 
@@ -37,10 +37,6 @@ public class SQLCreateTriggerStatement extends SQLStatementImpl {
     private boolean                  forEachRow    = false;
 
     private SQLStatement             body;
-    
-    public SQLCreateTriggerStatement() {
-        
-    }
     
     public SQLCreateTriggerStatement(String dbType) {
         super (dbType);

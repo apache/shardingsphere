@@ -20,22 +20,21 @@ import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class OracleDataTypeIntervalYear extends SQLDataTypeImpl implements OracleSQLObject {
-
-    public OracleDataTypeIntervalYear(){
-        this.setName("INTERVAL YEAR");
+    
+    public OracleDataTypeIntervalYear() {
+        super("INTERVAL YEAR");
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getArguments());
         }
         visitor.endVisit(this);
     }
-
 }

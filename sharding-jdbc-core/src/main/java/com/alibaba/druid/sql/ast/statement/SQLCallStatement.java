@@ -15,14 +15,14 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLCallStatement extends SQLStatementImpl {
 
@@ -32,15 +32,7 @@ public class SQLCallStatement extends SQLStatementImpl {
 
     private SQLName             procedureName;
 
-    private final List<SQLExpr> parameters = new ArrayList<SQLExpr>();
-    
-    public SQLCallStatement() {
-        
-    }
-    
-    public SQLCallStatement(String dbType) {
-        super (dbType);
-    }
+    private final List<SQLExpr> parameters = new ArrayList<>();
 
     public SQLVariantRefExpr getOutParameter() {
         return outParameter;

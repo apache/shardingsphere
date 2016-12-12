@@ -34,9 +34,9 @@ public class OracleAnalytic extends SQLOver implements OracleExpr {
 
     public void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.partitionBy);
-            acceptChild(visitor, this.orderBy);
-            acceptChild(visitor, this.windowing);
+            acceptChild(visitor, getPartitionBy());
+            acceptChild(visitor, getOrderBy());
+            acceptChild(visitor, windowing);
         }
         visitor.endVisit(this);
     }

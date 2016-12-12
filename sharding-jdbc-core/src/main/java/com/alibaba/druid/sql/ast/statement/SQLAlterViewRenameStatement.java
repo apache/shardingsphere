@@ -23,7 +23,7 @@ public class SQLAlterViewRenameStatement extends SQLStatementImpl {
 
     private SQLName name;
     private SQLName to;
-
+    
     public SQLName getName() {
         return name;
     }

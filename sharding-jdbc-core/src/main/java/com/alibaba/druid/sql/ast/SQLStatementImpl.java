@@ -17,33 +17,28 @@ package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public abstract class SQLStatementImpl extends SQLObjectImpl implements SQLStatement {
-
-    private String dbType;
-
+    
+    private final String dbType;
+    
     public SQLStatementImpl(){
-
+        dbType = null;
     }
     
-    public SQLStatementImpl(String dbType){
+    public SQLStatementImpl(final String dbType){
         this.dbType = dbType;
     }
     
-    public String getDbType() {
-        return dbType;
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        throw new UnsupportedOperationException(getClass().getName());
     }
-
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-
+    
+    @Override
     public String toString() {
         return SQLUtils.toSQLString(this, dbType);
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        throw new UnsupportedOperationException(this.getClass().getName());
     }
 }

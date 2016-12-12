@@ -41,7 +41,7 @@ public class PGOrderBy extends SQLOrderBy {
 
     protected void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
+            acceptChild(visitor, getItems());
         }
 
         visitor.endVisit(this);

@@ -15,12 +15,12 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLCreateTableStatement extends SQLStatementImpl implements SQLDDLStatement {
 
@@ -32,11 +32,7 @@ public class SQLCreateTableStatement extends SQLStatementImpl implements SQLDDLS
 
     // for postgresql
     private SQLExprTableSource      inherits;
-
-    public SQLCreateTableStatement(){
-
-    }
-
+    
     public SQLCreateTableStatement(String dbType){
         super(dbType);
     }

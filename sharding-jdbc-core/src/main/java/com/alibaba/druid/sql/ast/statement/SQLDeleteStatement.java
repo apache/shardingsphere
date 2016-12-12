@@ -25,10 +25,6 @@ public class SQLDeleteStatement extends SQLStatementImpl {
 
     protected SQLTableSource tableSource;
     protected SQLExpr        where;
-
-    public SQLDeleteStatement(){
-
-    }
     
     public SQLDeleteStatement(String dbType){
         super (dbType);

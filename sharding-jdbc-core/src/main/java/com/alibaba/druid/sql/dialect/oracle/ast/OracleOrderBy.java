@@ -47,7 +47,7 @@ public class OracleOrderBy extends SQLOrderBy {
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
+            acceptChild(visitor, getItems());
         }
 
         visitor.endVisit(this);
@@ -61,11 +61,11 @@ public class OracleOrderBy extends SQLOrderBy {
         buf.append("BY ");
 
         int i = 0;
-        for (int size = this.items.size(); i < size; ++i) {
+        for (int size = getItems().size(); i < size; ++i) {
             if (i != 0) {
                 buf.append(", ");
             }
-            ((OracleOrderByItem) this.items.get(i)).output(buf);
+            getItems().get(i).output(buf);
         }
     }
     
