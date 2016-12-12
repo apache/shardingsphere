@@ -52,7 +52,7 @@ public class SQLForeignKeyImpl extends SQLConstraintImpl implements SQLForeignKe
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.getName());
             acceptChild(visitor, this.getReferencedTableName());

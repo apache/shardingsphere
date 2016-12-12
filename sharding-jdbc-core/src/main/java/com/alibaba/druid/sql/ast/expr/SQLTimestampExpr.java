@@ -96,7 +96,7 @@ public class SQLTimestampExpr extends SQLExprImpl {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

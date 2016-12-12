@@ -32,7 +32,7 @@ public class GroupingSetExpr extends SQLExprImpl {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

@@ -37,11 +37,11 @@ public class OracleOrderBy extends SQLOrderBy {
         this.sibings = sibings;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
             accept0((OracleASTVisitor) visitor);
         } else {
-            super.accept0(visitor);
+            super.acceptInternal(visitor);
         }
     }
 

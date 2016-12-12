@@ -79,7 +79,7 @@ public class SQLDropTableStatement extends SQLStatementImpl implements SQLDDLSta
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, tableSources);
         }

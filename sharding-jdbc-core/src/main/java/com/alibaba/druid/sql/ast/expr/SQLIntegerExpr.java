@@ -42,7 +42,7 @@ public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuable
         buf.append(this.number);
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

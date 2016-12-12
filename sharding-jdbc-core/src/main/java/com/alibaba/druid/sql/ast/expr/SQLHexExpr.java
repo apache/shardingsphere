@@ -42,7 +42,7 @@ public class SQLHexExpr extends SQLExprImpl implements SQLLiteralExpr {
         }
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

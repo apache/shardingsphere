@@ -55,7 +55,7 @@ public class SQLCommentStatement extends SQLStatementImpl implements SQLStatemen
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, on);
             acceptChild(visitor, comment);

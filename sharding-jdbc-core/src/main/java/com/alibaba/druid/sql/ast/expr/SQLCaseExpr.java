@@ -68,7 +68,7 @@ public class SQLCaseExpr extends SQLExprImpl implements Serializable {
         }
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.valueExpr);
             acceptChild(visitor, this.items);
@@ -115,7 +115,7 @@ public class SQLCaseExpr extends SQLExprImpl implements Serializable {
             this.valueExpr = valueExpr;
         }
 
-        protected void accept0(SQLASTVisitor visitor) {
+        protected void acceptInternal(SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, this.conditionExpr);
                 acceptChild(visitor, this.valueExpr);

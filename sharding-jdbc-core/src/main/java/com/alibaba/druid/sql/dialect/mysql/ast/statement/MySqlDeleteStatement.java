@@ -99,7 +99,7 @@ public class MySqlDeleteStatement extends SQLDeleteStatement {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {

@@ -31,7 +31,7 @@ public class SQLDefaultExpr extends SQLExprImpl implements SQLLiteralExpr {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

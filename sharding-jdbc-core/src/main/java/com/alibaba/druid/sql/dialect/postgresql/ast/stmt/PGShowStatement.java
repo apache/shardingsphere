@@ -32,7 +32,7 @@ public class PGShowStatement extends SQLStatementImpl implements PGSQLStatement 
         this.expr = expr;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 

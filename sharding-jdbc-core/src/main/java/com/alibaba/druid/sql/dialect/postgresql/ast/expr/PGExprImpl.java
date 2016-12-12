@@ -27,7 +27,7 @@ public abstract class PGExprImpl extends SQLExprImpl implements PGExpr {
     public abstract void accept0(PGASTVisitor visitor);
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 

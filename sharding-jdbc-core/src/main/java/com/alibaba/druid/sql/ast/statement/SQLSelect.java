@@ -77,7 +77,7 @@ public class SQLSelect extends SQLObjectImpl {
         this.orderBy = orderBy;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.query);
             acceptChild(visitor, this.orderBy);

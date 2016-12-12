@@ -61,7 +61,7 @@ public class SQLAssignItem extends SQLObjectImpl {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.target);
             acceptChild(visitor, this.value);

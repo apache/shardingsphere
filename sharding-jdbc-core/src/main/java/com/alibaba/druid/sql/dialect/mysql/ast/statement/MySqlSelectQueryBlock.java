@@ -241,13 +241,13 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
             return;
         }
 
-        super.accept0(visitor);
+        super.acceptInternal(visitor);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
         }
 
         @Override
-        protected void accept0(SQLASTVisitor visitor) {
+        protected void acceptInternal(SQLASTVisitor visitor) {
             if (visitor instanceof MySqlASTVisitor) {
                 MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
 

@@ -42,7 +42,7 @@ public class SQLDropUserStatement extends SQLStatementImpl implements SQLDDLStat
         this.users = users;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, users);
         }

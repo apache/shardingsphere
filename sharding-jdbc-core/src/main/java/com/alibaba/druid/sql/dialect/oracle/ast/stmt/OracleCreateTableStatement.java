@@ -208,7 +208,7 @@ public class OracleCreateTableStatement extends SQLCreateTableStatement implemen
         this.select = select;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

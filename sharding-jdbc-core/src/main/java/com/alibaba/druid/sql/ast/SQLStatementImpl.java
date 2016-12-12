@@ -43,7 +43,7 @@ public abstract class SQLStatementImpl extends SQLObjectImpl implements SQLState
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         throw new UnsupportedOperationException(this.getClass().getName());
     }
 }

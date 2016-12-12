@@ -79,7 +79,7 @@ public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatem
 		this.defaultValues = defaultValues;
 	}
 
-	protected void accept0(SQLASTVisitor visitor) {
+	protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 

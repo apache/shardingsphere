@@ -42,7 +42,7 @@ public class OracleExplainStatement extends SQLExplainStatement implements Oracl
         visitor.endVisit(this);
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

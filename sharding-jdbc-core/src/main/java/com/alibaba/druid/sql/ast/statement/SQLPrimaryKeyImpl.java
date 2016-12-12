@@ -20,7 +20,7 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 public class SQLPrimaryKeyImpl extends SQLUnique implements SQLPrimaryKey {
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.getName());
             acceptChild(visitor, this.getColumns());

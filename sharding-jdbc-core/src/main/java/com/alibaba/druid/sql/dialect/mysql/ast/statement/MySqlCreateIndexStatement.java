@@ -36,7 +36,7 @@ public class MySqlCreateIndexStatement extends SQLCreateIndexStatement implement
         this.using = using;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((MySqlASTVisitor) visitor);
     }
 

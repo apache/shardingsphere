@@ -41,7 +41,7 @@ public class SQLUseStatement extends SQLStatementImpl implements SQLStatement {
     }
 
     @Override
-    public void accept0(SQLASTVisitor visitor) {
+    public void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, database);
         }

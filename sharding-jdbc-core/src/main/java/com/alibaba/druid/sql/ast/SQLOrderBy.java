@@ -45,7 +45,7 @@ public class SQLOrderBy extends SQLObjectImpl {
         return this.items;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.items);
         }

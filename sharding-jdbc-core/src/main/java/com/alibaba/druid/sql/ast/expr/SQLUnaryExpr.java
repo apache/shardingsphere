@@ -52,7 +52,7 @@ public class SQLUnaryExpr extends SQLExprImpl implements Serializable {
         this.expr = expr;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
         }

@@ -40,7 +40,7 @@ public class SQLBooleanExpr extends SQLExprImpl implements SQLExpr, SQLLiteralEx
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

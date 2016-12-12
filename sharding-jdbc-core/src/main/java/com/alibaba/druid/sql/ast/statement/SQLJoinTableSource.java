@@ -37,7 +37,7 @@ public class SQLJoinTableSource extends SQLTableSourceImpl {
 
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.left);
             acceptChild(visitor, this.right);

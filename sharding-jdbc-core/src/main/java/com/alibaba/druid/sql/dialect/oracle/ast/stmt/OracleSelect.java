@@ -54,7 +54,7 @@ public class OracleSelect extends SQLSelect {
         }
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

@@ -30,11 +30,11 @@ public abstract class SQLObjectImpl implements SQLObject {
     @Override
     public final void accept(final SQLASTVisitor visitor) {
         visitor.preVisit(this);
-        accept0(visitor);
+        acceptInternal(visitor);
         visitor.postVisit(this);
     }
     
-    protected abstract void accept0(final SQLASTVisitor visitor);
+    protected abstract void acceptInternal(final SQLASTVisitor visitor);
     
     @Override
     public Map<String, Object> getAttributes() {

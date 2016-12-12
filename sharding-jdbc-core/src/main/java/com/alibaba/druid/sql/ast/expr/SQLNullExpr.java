@@ -30,7 +30,7 @@ public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr, SQLValua
         buf.append("NULL");
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

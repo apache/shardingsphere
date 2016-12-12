@@ -33,7 +33,7 @@ public class SQLAlterTableAlterColumn extends SQLObjectImpl implements SQLAlterT
     private boolean             dropDefault;
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, column);
             acceptChild(visitor, setDefault);

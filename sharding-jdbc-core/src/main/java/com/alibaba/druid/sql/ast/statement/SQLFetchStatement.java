@@ -30,7 +30,7 @@ public class SQLFetchStatement extends SQLStatementImpl {
     private List<SQLExpr> into = new ArrayList<SQLExpr>();
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, cursorName);
             acceptChild(visitor, into);

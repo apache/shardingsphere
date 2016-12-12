@@ -29,7 +29,7 @@ public class OracleDataTypeTimestamp extends SQLDataTypeImpl implements OracleSQ
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
 

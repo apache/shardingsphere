@@ -35,7 +35,7 @@ public class SQLServerSelectQueryBlock extends SQLSelectQueryBlock {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((SQLServerASTVisitor) visitor);
     }
 

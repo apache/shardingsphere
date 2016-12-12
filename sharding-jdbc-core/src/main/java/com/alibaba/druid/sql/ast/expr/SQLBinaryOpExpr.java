@@ -94,7 +94,7 @@ public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
         this.operator = operator;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.left);
             acceptChild(visitor, this.right);

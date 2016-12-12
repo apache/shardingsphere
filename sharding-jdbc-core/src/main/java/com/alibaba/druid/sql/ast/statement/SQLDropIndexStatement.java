@@ -53,7 +53,7 @@ public class SQLDropIndexStatement extends SQLStatementImpl implements SQLDDLSta
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, indexName);
             acceptChild(visitor, tableName);

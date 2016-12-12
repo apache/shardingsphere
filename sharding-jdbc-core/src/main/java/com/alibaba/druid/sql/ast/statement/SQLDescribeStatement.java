@@ -32,7 +32,7 @@ public class SQLDescribeStatement extends SQLStatementImpl {
     }
     
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         throw new UnsupportedOperationException(this.getClass().getName());
     }
 }

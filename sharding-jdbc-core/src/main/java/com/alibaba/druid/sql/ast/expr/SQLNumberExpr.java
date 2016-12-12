@@ -42,7 +42,7 @@ public class SQLNumberExpr extends SQLNumericLiteralExpr {
         buf.append(this.number.toString());
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

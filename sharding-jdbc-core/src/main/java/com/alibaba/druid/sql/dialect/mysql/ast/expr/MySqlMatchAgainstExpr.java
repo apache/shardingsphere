@@ -72,7 +72,7 @@ public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         if (mysqlVisitor.visit(this)) {
             acceptChild(visitor, this.columns);

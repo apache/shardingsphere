@@ -47,7 +47,7 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
         }

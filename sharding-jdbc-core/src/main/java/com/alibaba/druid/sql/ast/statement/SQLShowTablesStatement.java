@@ -50,7 +50,7 @@ public class SQLShowTablesStatement extends SQLStatementImpl {
     }
     
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, database);
             acceptChild(visitor, like);

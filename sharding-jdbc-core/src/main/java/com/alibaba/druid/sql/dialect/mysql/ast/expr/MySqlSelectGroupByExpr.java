@@ -27,7 +27,7 @@ public class MySqlSelectGroupByExpr extends SQLExprImpl implements MySqlExpr {
     protected SQLOrderingSpecification type;
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         if (mysqlVisitor.visit(this)) {
             acceptChild(visitor, this.expr);

@@ -57,13 +57,13 @@ public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
             accept0((OracleASTVisitor) visitor);
             return;
         }
 
-        super.accept0(visitor);
+        super.acceptInternal(visitor);
     }
 
     protected void accept0(OracleASTVisitor visitor) {

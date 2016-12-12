@@ -44,7 +44,7 @@ public class MySqlExtractExpr extends SQLExprImpl implements MySqlExpr {
         this.unit = unit;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         mysqlVisitor.visit(this);
         mysqlVisitor.endVisit(this);

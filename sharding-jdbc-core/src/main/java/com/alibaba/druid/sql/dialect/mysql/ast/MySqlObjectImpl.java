@@ -22,7 +22,7 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 public abstract class MySqlObjectImpl extends SQLObjectImpl implements MySqlObject {
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {

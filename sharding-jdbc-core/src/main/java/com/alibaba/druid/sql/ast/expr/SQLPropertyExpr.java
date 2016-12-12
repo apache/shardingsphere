@@ -63,7 +63,7 @@ public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
         buf.append(this.name);
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.owner);
         }

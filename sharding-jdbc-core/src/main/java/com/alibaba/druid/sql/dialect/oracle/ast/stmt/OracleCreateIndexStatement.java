@@ -79,7 +79,7 @@ public class OracleCreateIndexStatement extends SQLCreateIndexStatement implemen
         this.indexOnlyTopLevel = indexOnlyTopLevel;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

@@ -27,7 +27,7 @@ public abstract class OracleStatementImpl extends SQLStatementImpl implements Or
         super(JdbcConstants.ORACLE);
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 

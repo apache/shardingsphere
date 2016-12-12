@@ -51,7 +51,7 @@ public class MySqlIntervalExpr extends SQLExprImpl implements MySqlExpr {
         buf.append(unit.name());
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         if (mysqlVisitor.visit(this)) {
             acceptChild(visitor, this.value);

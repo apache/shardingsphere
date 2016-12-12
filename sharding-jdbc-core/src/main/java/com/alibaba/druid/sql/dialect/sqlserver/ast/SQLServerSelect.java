@@ -71,7 +71,7 @@ public class SQLServerSelect extends SQLSelect implements SQLServerObject {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((SQLServerASTVisitor) visitor);
     }
 

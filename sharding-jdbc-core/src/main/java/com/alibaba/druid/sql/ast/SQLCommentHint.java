@@ -33,7 +33,7 @@ public class SQLCommentHint extends SQLObjectImpl implements SQLHint {
         this.text = text;
     }
     
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

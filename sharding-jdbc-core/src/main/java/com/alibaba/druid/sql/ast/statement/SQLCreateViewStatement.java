@@ -127,7 +127,7 @@ public class SQLCreateViewStatement extends SQLStatementImpl implements SQLDDLSt
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.name);
             acceptChild(visitor, this.columns);
@@ -169,7 +169,7 @@ public class SQLCreateViewStatement extends SQLStatementImpl implements SQLDDLSt
         }
 
         @Override
-        protected void accept0(SQLASTVisitor visitor) {
+        protected void acceptInternal(SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, expr);
                 acceptChild(visitor, comment);

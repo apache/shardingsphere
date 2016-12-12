@@ -47,7 +47,7 @@ public class OracleOuterExpr extends SQLExprImpl implements OracleExpr {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
 

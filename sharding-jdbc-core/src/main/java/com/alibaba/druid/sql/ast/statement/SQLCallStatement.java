@@ -70,7 +70,7 @@ public class SQLCallStatement extends SQLStatementImpl {
         this.brace = brace;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.outParameter);
             acceptChild(visitor, this.procedureName);

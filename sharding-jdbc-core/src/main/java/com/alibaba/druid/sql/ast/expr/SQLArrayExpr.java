@@ -45,7 +45,7 @@ public class SQLArrayExpr extends SQLExprImpl {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, expr);
             acceptChild(visitor, values);

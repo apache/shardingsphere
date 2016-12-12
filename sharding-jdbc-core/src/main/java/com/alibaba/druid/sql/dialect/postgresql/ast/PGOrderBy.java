@@ -31,11 +31,11 @@ public class PGOrderBy extends SQLOrderBy {
         this.sibings = sibings;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof PGASTVisitor) {
             accept0((PGASTVisitor) visitor);
         } else {
-            super.accept0(visitor);
+            super.acceptInternal(visitor);
         }
     }
 

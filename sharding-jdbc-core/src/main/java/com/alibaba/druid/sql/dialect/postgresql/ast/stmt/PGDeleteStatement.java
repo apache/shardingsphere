@@ -77,7 +77,7 @@ public class PGDeleteStatement extends SQLDeleteStatement implements PGSQLStatem
         this.with = with;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 

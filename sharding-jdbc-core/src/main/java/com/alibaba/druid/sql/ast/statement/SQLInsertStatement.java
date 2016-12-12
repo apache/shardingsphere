@@ -31,7 +31,7 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, tableSource);
             this.acceptChild(visitor, columns);
@@ -78,7 +78,7 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
         }
 
         @Override
-        protected void accept0(SQLASTVisitor visitor) {
+        protected void acceptInternal(SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
                 this.acceptChild(visitor, values);
             }

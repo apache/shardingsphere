@@ -42,7 +42,7 @@ public class SQLColumnCheck extends SQLConstraintImpl implements SQLColumnConstr
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.getName());
             acceptChild(visitor, this.getExpr());

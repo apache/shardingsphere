@@ -53,7 +53,7 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 
@@ -287,7 +287,7 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
         }
         
         @Override
-        protected void accept0(SQLASTVisitor visitor) {
+        protected void acceptInternal(SQLASTVisitor visitor) {
             accept0((PGASTVisitor) visitor);
         }
 

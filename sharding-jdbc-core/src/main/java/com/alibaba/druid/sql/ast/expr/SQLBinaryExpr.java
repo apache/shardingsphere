@@ -39,7 +39,7 @@ public class SQLBinaryExpr extends SQLExprImpl implements SQLLiteralExpr {
         this.value = value;
     }
 
-    public void accept0(SQLASTVisitor visitor) {
+    public void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

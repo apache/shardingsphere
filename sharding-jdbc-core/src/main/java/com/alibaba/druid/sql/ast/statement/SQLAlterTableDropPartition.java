@@ -50,7 +50,7 @@ public class SQLAlterTableDropPartition extends SQLObjectImpl implements SQLAlte
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, partition);
         }

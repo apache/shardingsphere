@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 public class SQLAlterTableEnableKeys extends SQLObjectImpl implements SQLAlterTableItem {
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

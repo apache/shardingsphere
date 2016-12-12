@@ -32,7 +32,7 @@ public class PGTypeCastExpr extends SQLCastExpr implements PGExpr {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
 

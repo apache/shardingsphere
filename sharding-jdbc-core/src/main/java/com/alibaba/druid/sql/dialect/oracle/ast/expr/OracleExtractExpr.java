@@ -45,7 +45,7 @@ public class OracleExtractExpr extends SQLExprImpl implements OracleExpr {
         this.from = from;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
 

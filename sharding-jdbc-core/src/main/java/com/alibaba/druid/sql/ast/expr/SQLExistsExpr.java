@@ -59,7 +59,7 @@ public class SQLExistsExpr extends SQLExprImpl implements Serializable {
         this.subQuery = subQuery;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.subQuery);
         }

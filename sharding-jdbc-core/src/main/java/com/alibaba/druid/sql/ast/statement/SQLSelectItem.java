@@ -82,7 +82,7 @@ public class SQLSelectItem extends SQLObjectImpl {
         }
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
         }

@@ -38,7 +38,7 @@ public class SQLNCharExpr extends SQLTextLiteralExpr {
         buf.append("'");
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

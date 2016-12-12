@@ -69,7 +69,7 @@ public class SQLInListExpr extends SQLExprImpl implements Serializable {
         this.targetList = targetList;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
             acceptChild(visitor, this.targetList);

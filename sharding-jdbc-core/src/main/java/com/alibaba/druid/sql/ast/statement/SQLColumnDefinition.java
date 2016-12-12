@@ -89,7 +89,7 @@ public class SQLColumnDefinition extends SQLObjectImpl implements SQLTableElemen
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, name);
             this.acceptChild(visitor, dataType);

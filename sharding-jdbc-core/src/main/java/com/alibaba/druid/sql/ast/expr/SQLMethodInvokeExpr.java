@@ -94,7 +94,7 @@ public class SQLMethodInvokeExpr extends SQLExprImpl implements Serializable {
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.owner);
             acceptChild(visitor, this.parameters);

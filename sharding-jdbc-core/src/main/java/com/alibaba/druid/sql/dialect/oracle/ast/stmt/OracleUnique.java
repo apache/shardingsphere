@@ -29,7 +29,7 @@ public class OracleUnique extends SQLUnique implements OracleConstraint, OracleS
     private Boolean                deferrable;
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
             accept0((OracleASTVisitor) visitor);
             return;

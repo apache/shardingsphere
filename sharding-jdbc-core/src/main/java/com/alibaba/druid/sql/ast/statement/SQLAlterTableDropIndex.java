@@ -32,7 +32,7 @@ public class SQLAlterTableDropIndex extends SQLObjectImpl implements SQLAlterTab
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, indexName);
         }

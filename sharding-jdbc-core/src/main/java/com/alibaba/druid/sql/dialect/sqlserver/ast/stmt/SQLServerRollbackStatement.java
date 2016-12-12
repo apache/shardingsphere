@@ -36,7 +36,7 @@ public class SQLServerRollbackStatement extends SQLRollbackStatement implements 
     }
 
     @Override
-    public void accept0(SQLASTVisitor visitor) {
+    public void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof SQLServerASTVisitor) {
             accept0((SQLServerASTVisitor) visitor);
         } else {

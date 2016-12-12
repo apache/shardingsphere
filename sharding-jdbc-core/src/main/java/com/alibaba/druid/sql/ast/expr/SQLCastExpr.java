@@ -48,7 +48,7 @@ public class SQLCastExpr extends SQLExprImpl {
         this.dataType = dataType;
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
             acceptChild(visitor, this.dataType);

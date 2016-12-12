@@ -33,7 +33,7 @@ public class SQLDropTableSpaceStatement extends SQLStatementImpl implements SQLD
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }

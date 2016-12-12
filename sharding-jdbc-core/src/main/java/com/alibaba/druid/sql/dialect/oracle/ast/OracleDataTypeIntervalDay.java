@@ -34,7 +34,7 @@ public class OracleDataTypeIntervalDay extends SQLDataTypeImpl implements Oracle
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
 

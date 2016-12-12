@@ -61,7 +61,7 @@ public class SQLIdentifierExpr extends SQLExprImpl implements SQLName {
         buf.append(this.name);
     }
 
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         visitor.visit(this);
 
         visitor.endVisit(this);

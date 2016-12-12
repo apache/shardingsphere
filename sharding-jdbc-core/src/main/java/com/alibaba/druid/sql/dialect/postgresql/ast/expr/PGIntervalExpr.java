@@ -62,7 +62,7 @@ public class PGIntervalExpr extends SQLExprImpl implements SQLLiteralExpr,PGExpr
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((PGASTVisitor) visitor);
     }
 }

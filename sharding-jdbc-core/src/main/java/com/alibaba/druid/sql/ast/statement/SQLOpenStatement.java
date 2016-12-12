@@ -38,7 +38,7 @@ public class SQLOpenStatement extends SQLStatementImpl{
 	}
 
 	@Override
-	protected void accept0(SQLASTVisitor visitor) {
+	protected void acceptInternal(SQLASTVisitor visitor) {
 		// TODO Auto-generated method stub
 		visitor.visit(this);
 	    visitor.endVisit(this);

@@ -40,13 +40,12 @@ public class DB2SelectQueryBlock extends SQLSelectQueryBlock implements DB2Objec
     }
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof DB2ASTVisitor) {
             accept0((DB2ASTVisitor) visitor);
             return;
         }
-
-        super.accept0(visitor);
+        super.acceptInternal(visitor);
     }
 
     @Override

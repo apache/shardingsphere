@@ -24,7 +24,7 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 public class MySqlAlterTableImportTablespace extends MySqlObjectImpl implements SQLAlterTableItem, MySqlObject {
 
     @Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {

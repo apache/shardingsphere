@@ -33,7 +33,7 @@ public class MySqlDescribeStatement extends SQLDescribeStatement implements MySq
     }
 
     @Override
-    public void accept0(SQLASTVisitor visitor) {
+    public void acceptInternal(SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {

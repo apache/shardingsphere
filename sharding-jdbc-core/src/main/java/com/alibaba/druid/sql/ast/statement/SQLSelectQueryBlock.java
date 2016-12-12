@@ -105,7 +105,7 @@ public class SQLSelectQueryBlock extends SQLObjectImpl implements SQLSelectQuery
 	}
 
 	@Override
-    protected void accept0(SQLASTVisitor visitor) {
+    protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.selectList);
             acceptChild(visitor, this.from);
