@@ -54,6 +54,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.util.JdbcConstants;
@@ -233,7 +234,7 @@ public class MySqlExprParser extends SQLExprParser {
                 }
 
                 if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
                 String collate = getLexer().getLiterals();
                 getLexer().nextToken();
@@ -244,7 +245,7 @@ public class MySqlExprParser extends SQLExprParser {
                     getLexer().nextToken();
 
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
 
                     String collate = getLexer().getLiterals();
@@ -274,7 +275,7 @@ public class MySqlExprParser extends SQLExprParser {
                 getLexer().nextToken();
 
                 if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
 
                 String unitVal = getLexer().getLiterals();
@@ -316,7 +317,7 @@ public class MySqlExprParser extends SQLExprParser {
                     } else if (getLexer().equalToken(Token.RIGHT_PAREN)) {
                         break;
                     } else {
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
                 }
 
@@ -391,10 +392,10 @@ public class MySqlExprParser extends SQLExprParser {
                         acceptIdentifier("MODE");
                         matchAgainstExpr.setSearchModifier(SearchModifier.IN_BOOLEAN_MODE);
                     } else {
-                        throw new ParserException("TODO");
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else if (getLexer().equalToken(Token.WITH)) {
-                    throw new ParserException("TODO");
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
 
                 accept(Token.RIGHT_PAREN);
@@ -413,7 +414,7 @@ public class MySqlExprParser extends SQLExprParser {
                 if (getLexer().identifierEquals("USING")) {
                     getLexer().nextToken();
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
                     String charset = getLexer().getLiterals();
                     getLexer().nextToken();
@@ -460,7 +461,7 @@ public class MySqlExprParser extends SQLExprParser {
         }
 
         if (getLexer().equalToken(Token.ERROR)) {
-            throw new ParserException("syntax error, token: " + getLexer().getToken() + " " + getLexer().getLiterals() + ", currentPosition : " + getLexer().getCurrentPosition());
+            throw new ParserException(getLexer());
         }
 
         return super.primaryRest(expr);
@@ -488,7 +489,7 @@ public class MySqlExprParser extends SQLExprParser {
             SQLExpr value = expr();
 
             if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                throw new ParserException("Syntax error");
+                throw new ParserException(getLexer());
             }
 
             String unit = getLexer().getLiterals();
@@ -531,7 +532,7 @@ public class MySqlExprParser extends SQLExprParser {
         }
 
         if (getLexer().identifierEquals("PARTITION")) {
-            throw new ParserException("syntax error " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserException(getLexer());
         }
 
         if (getLexer().identifierEquals("STORAGE")) {

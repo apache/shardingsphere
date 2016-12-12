@@ -64,6 +64,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 
@@ -120,7 +121,7 @@ public class OracleSelectParser extends SQLSelectParser {
                 if (getLexer().identifierEquals("ONLY")) {
                     getLexer().nextToken();
                 } else {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
 
                 select.setRestriction(new OracleSelectRestriction.ReadOnly());
@@ -130,19 +131,19 @@ public class OracleSelectParser extends SQLSelectParser {
                 if (getLexer().identifierEquals("OPTION")) {
                     getLexer().nextToken();
                 } else {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
 
                 OracleSelectRestriction.CheckOption checkOption = new OracleSelectRestriction.CheckOption();
 
                 if (getLexer().equalToken(Token.CONSTRAINT)) {
                     getLexer().nextToken();
-                    throw new ParserException("TODO");
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
 
                 select.setRestriction(checkOption);
             } else {
-                throw new ParserException("syntax error");
+                throw new ParserException(getLexer());
             }
         }
 
@@ -175,7 +176,7 @@ public class OracleSelectParser extends SQLSelectParser {
                     SearchClause searchClause = new SearchClause();
 
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                        throw new ParserException("syntax erorr : " + getLexer().getToken());
+                        throw new ParserException(getLexer());
                     }
 
                     searchClause.setType(SearchClause.Type.valueOf(getLexer().getLiterals()));
@@ -526,7 +527,7 @@ public class OracleSelectParser extends SQLSelectParser {
     }
 
     private void parseModelColumnClause() {
-        throw new ParserException();
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     private void parseCellReferenceOptions(List<CellReferenceOption> options) {
@@ -703,7 +704,7 @@ public class OracleSelectParser extends SQLSelectParser {
             } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 tableSource = new OracleSelectSubqueryTableSource(select());
             } else {
-                throw new ParserException("TODO :" + getLexer().getToken());
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
             accept(Token.RIGHT_PAREN);
 
@@ -713,7 +714,7 @@ public class OracleSelectParser extends SQLSelectParser {
         }
 
         if (getLexer().equalToken(Token.SELECT)) {
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
 
         OracleSelectTableReference tableReference = new OracleSelectTableReference();
@@ -826,7 +827,7 @@ public class OracleSelectParser extends SQLSelectParser {
 
                 tableReference.setFlashback(clause);
             } else {
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
         }
 
@@ -1008,11 +1009,11 @@ public class OracleSelectParser extends SQLSelectParser {
             accept(Token.IN);
             accept(Token.LEFT_PAREN);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
 
             if (getLexer().equalToken(Token.SELECT)) {
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
 
             while (true) {
@@ -1080,13 +1081,11 @@ public class OracleSelectParser extends SQLSelectParser {
             accept(Token.IN);
             accept(Token.LEFT_PAREN);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
-
             if (getLexer().equalToken(Token.SELECT)) {
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
-
             while (true) {
                 item = new OracleSelectPivot.Item();
                 item.setExpr(this.exprParser.expr());

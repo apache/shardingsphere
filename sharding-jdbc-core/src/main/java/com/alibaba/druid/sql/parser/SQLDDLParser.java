@@ -30,13 +30,13 @@ public class SQLDDLParser extends SQLStatementParser {
         }
         if (getLexer().equalToken(Token.IDENTIFIER)) {
             this.exprParser.name();
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
         if (getLexer().equalToken(Token.PRIMARY)) {
             getLexer().nextToken();
             accept(Token.KEY);
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-        throw new ParserException("TODO");
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 }

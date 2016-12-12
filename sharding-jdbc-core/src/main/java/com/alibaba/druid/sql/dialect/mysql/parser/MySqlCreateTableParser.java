@@ -37,7 +37,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPartitioningClause
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPartitioningDef;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlTableIndex;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLCreateTableParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -490,9 +490,8 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                         clause.setPartitionCount(this.exprParser.expr());
                     }
                 } else {
-                    throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
-
                 if (getLexer().getToken() == Token.LEFT_PAREN) {
                     getLexer().nextToken();
                     while (true) {
@@ -563,7 +562,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
         }
 
         if (getLexer().getToken() == (Token.ON)) {
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
         
         if (getLexer().getToken() == (Token.AS)) {
@@ -694,7 +693,6 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
             fk.setHasConstraint(hasConstaint);
             return fk;
         }
-
-        throw new ParserException("TODO :" + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 }

@@ -191,7 +191,7 @@ public class SQLExprParser extends SQLParser {
             case INSERT:
                 getLexer().nextToken();
                 if (!getLexer().equalToken(Token.LEFT_PAREN)) {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
                 sqlExpr = new SQLIdentifierExpr("INSERT");
                 break;
@@ -200,7 +200,7 @@ public class SQLExprParser extends SQLParser {
                 getLexer().nextToken();
                 break;
             case NEW:
-                throw new ParserException("TODO");
+                throw new ParserUnsupportedException(getLexer().getToken());
             case LITERAL_INT:
                 sqlExpr = new SQLIntegerExpr(getLexer().integerValue());
                 getLexer().nextToken();
@@ -435,7 +435,7 @@ public class SQLExprParser extends SQLParser {
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Negative, sqlExpr);
                         break;
                     default:
-                        throw new ParserException("TODO : " + getLexer().getToken());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 break;
             case PLUS:
@@ -461,7 +461,7 @@ public class SQLExprParser extends SQLParser {
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Plus, sqlExpr);
                         break;
                     default:
-                        throw new ParserException("TODO");
+                        throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 break;
             case TILDE:
@@ -527,7 +527,7 @@ public class SQLExprParser extends SQLParser {
                 getLexer().nextToken();
                 break;
             case EOF:
-                throw new ParserException("EOF");
+                throw new ParserException(getLexer());
             case TRUE:
                 getLexer().nextToken();
                 sqlExpr = new SQLBooleanExpr(true);
@@ -537,7 +537,7 @@ public class SQLExprParser extends SQLParser {
                 sqlExpr = new SQLBooleanExpr(false);
                 break;
             default:
-                throw new ParserException("ERROR. token : " + tok + ", currentPosition : " + getLexer().getCurrentPosition());
+                throw new ParserException(getLexer(), tok);
         }
         return primaryRest(sqlExpr);
     }
@@ -597,7 +597,7 @@ public class SQLExprParser extends SQLParser {
     }
 
     protected SQLExpr parseInterval() {
-        throw new ParserException("TODO");
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLSelectParser createSelectParser() {
@@ -665,7 +665,7 @@ public class SQLExprParser extends SQLParser {
             }
             return primaryRest(methodInvokeExpr);
         }
-        throw new ParserException("not support token:" + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
     
     protected SQLExpr dotRest(SQLExpr expr) {
@@ -682,7 +682,7 @@ public class SQLExprParser extends SQLParser {
                 name = getLexer().getLiterals();
                 getLexer().nextToken();
             } else {
-                throw new ParserException("error : " + getLexer().getLiterals());
+                throw new ParserException(getLexer());
             }
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
@@ -811,7 +811,7 @@ public class SQLExprParser extends SQLParser {
                     getLexer().nextToken();
                     break;
                 default:
-                    throw new ParserException("error " + getLexer().getToken());
+                    throw new ParserException(getLexer());
             }
         }
         SQLName name = new SQLIdentifierExpr(identName);
@@ -831,7 +831,7 @@ public class SQLExprParser extends SQLParser {
 
             if (!getLexer().equalToken(Token.LITERAL_ALIAS) && !getLexer().equalToken(Token.IDENTIFIER)
                 && (!getLexer().containsToken())) {
-                throw new ParserException("error, " + getLexer().getToken());
+                throw new ParserException(getLexer());
             }
 
             if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
@@ -1254,7 +1254,7 @@ public class SQLExprParser extends SQLParser {
 
             return new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotRLike, rightExp, getDbType());
         } else {
-            throw new ParserException("TODO " + getLexer().getToken());
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
         return expr;
     }
@@ -1325,7 +1325,7 @@ public class SQLExprParser extends SQLParser {
             accept(Token.SET);
 
             if (!getLexer().equalToken(Token.IDENTIFIER) && !getLexer().equalToken(Token.LITERAL_CHARS)) {
-                throw new ParserException();
+                throw new ParserException(getLexer());
             }
             charType.setCharSetName(getLexer().getLiterals());
             getLexer().nextToken();
@@ -1341,7 +1341,7 @@ public class SQLExprParser extends SQLParser {
                 getLexer().nextToken();
 
                 if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                    throw new ParserException();
+                    throw new ParserException(getLexer());
                 }
                 charType.setCollate(getLexer().getLiterals());
                 getLexer().nextToken();
@@ -1349,12 +1349,13 @@ public class SQLExprParser extends SQLParser {
         }
         return charType;
     }
-
-    public void accept(Token token) {
+    
+    @Override
+    public void accept(final Token token) {
         if (getLexer().equalToken(token)) {
             getLexer().nextToken();
         } else {
-            throw new ParserException("syntax error, expect " + token + ", actual " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserException(getLexer(), token);
         }
     }
 
@@ -1465,8 +1466,7 @@ public class SQLExprParser extends SQLParser {
                 column.setDefaultExpr(expr);
                 return parseColumnRest(column);
             }
-
-            throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
 
         if (getLexer().equalToken(Token.CHECK)) {
@@ -1582,11 +1582,9 @@ public class SQLExprParser extends SQLParser {
         } else if (getLexer().equalToken(Token.CHECK)) {
             constraint = parseCheck();
         } else {
-            throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-
         constraint.setName(name);
-
         return constraint;
     }
 

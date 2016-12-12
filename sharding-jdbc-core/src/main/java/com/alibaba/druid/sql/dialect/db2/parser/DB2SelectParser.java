@@ -20,10 +20,10 @@ import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.dialect.db2.ast.stmt.DB2SelectQueryBlock;
 import com.alibaba.druid.sql.dialect.db2.ast.stmt.DB2SelectQueryBlock.Isolation;
-import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.sql.lexer.Token;
 
 public class DB2SelectParser extends SQLSelectParser {
     
@@ -94,7 +94,7 @@ public class DB2SelectParser extends SQLSelectParser {
                 } else if (getLexer().identifierEquals("UR")) {
                     queryBlock.setIsolation(Isolation.UR);
                 } else {
-                    throw new ParserException("TODO");
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 getLexer().nextToken();
                 continue;

@@ -17,7 +17,6 @@
 
 package com.alibaba.druid.sql.lexer;
 
-import com.alibaba.druid.sql.parser.ParserException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,13 +55,13 @@ public final class Term {
         return offset + length;
     }
     
-    void scanContentUntil(final int currentPosition, final char tailed, final Token defaultToken, final boolean contentOnly) {
+    void scanContentUntil(final int currentPosition, final char terminatedSign, final Token defaultToken, final boolean contentOnly) {
         offset = currentPosition;
         int position = currentPosition + 1;
         length = 2;
-        while (tailed != charAt(++position)) {
+        while (terminatedSign != charAt(++position)) {
             if (CharTypes.EOI == charAt(position)) {
-                throw new ParserException(String.format("Illegal input, no tailed '%s'.", tailed));
+                throw new UnterminatedSignException(terminatedSign);
             }
             length++;
         }
@@ -206,7 +205,7 @@ public final class Term {
         length = 1;
         while ('\'' != charAt(position) || hasEscapeChar(position)) {
             if (position >= input.length()) {
-                throw new ParserException("Unterminated char.");
+                throw new UnterminatedSignException('\'');
             }
             if (hasEscapeChar(position)) {
                 length++;
@@ -230,7 +229,7 @@ public final class Term {
         length = 4;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
-                throw new ParserException("unterminated /*! hint.");
+                throw new UnterminatedSignException("*/");
             }
             position++;
             length++;
@@ -258,7 +257,7 @@ public final class Term {
         length = 3;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
-                throw new ParserException("unterminated /* comment.");
+                throw new UnterminatedSignException("*/");
             }
             position++;
             length++;

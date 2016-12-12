@@ -290,13 +290,10 @@ public class SQLSelectParser extends SQLParser {
 
             return parseTableSourceRest(tableSource);
         }
-
         if (getLexer().equalToken(Token.SELECT)) {
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-
         SQLExprTableSource tableReference = new SQLExprTableSource();
-
         parseTableSourceQueryTableExpr(tableReference);
         return parseTableSourceRest(tableReference);
     }
@@ -307,7 +304,6 @@ public class SQLSelectParser extends SQLParser {
             tableReference.setExpr(this.exprParser.name());
             return;
         }
-
         tableReference.setExpr(expr());
     }
 

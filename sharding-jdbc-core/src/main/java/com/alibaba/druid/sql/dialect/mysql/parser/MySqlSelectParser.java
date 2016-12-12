@@ -37,14 +37,14 @@ import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateTableSource;
-import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.sql.lexer.Token;
 
 public class MySqlSelectParser extends SQLSelectParser {
 
@@ -146,7 +146,7 @@ public class MySqlSelectParser extends SQLSelectParser {
 
         if (getLexer().equalToken(Token.PROCEDURE)) {
             getLexer().nextToken();
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
 
         parseInto(queryBlock);
@@ -199,7 +199,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         }
 
         if (getLexer().equalToken(Token.SELECT)) {
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
 
         SQLExprTableSource tableReference = new SQLExprTableSource();

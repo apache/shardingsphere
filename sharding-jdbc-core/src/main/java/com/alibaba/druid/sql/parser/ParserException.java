@@ -15,12 +15,24 @@
  */
 package com.alibaba.druid.sql.parser;
 
-import lombok.NoArgsConstructor;
+import com.alibaba.druid.sql.lexer.Lexer;
+import com.alibaba.druid.sql.lexer.Token;
 
-@NoArgsConstructor
 public class ParserException extends RuntimeException {
     
     private static final long serialVersionUID = -6408790652103666096L;
+    
+    private static String UNMATCH_MESSAGE = "SQL syntax error, expected token is '%s', actual token is '%s', literals is '%s'.";
+    
+    private static String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
+    
+    public ParserException(final Lexer lexer, final Token expectedToken) {
+        super(String.format(UNMATCH_MESSAGE, lexer.getToken().getName(), lexer.getLiterals(), expectedToken.getName()));
+    }
+    
+    public ParserException(final Lexer lexer) {
+        super(String.format(TOKEN_ERROR_MESSAGE, lexer.getToken().getName(), lexer.getLiterals()));
+    }
     
     public ParserException(final String message) {
         super(message);

@@ -78,6 +78,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.util.JdbcConstants;
 
@@ -219,19 +220,15 @@ public class OracleExprParser extends SQLExprParser {
                 getLexer().nextToken();
                 typeName += "%ROWTYPE";
             } else {
-                throw new ParserException("syntax error : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                throw new ParserException(getLexer());
             }
         }
-        
-
-
         SQLDataType dataType = new SQLDataTypeImpl(typeName);
         return parseDataTypeRest(dataType);
     }
-
+    
     public SQLExpr primary() {
         final Token tok = getLexer().getToken();
-
         SQLExpr sqlExpr;
         switch (tok) {
             case SYSDATE:
@@ -261,9 +258,9 @@ public class OracleExprParser extends SQLExprParser {
                         getLexer().nextToken();
                         return new SQLVariantRefExpr(":" + name);
                     }
-                    throw new ParserException("syntax error : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserException(getLexer());
                 } else {
-                    throw new ParserException("syntax error : " + getLexer().getToken());
+                    throw new ParserException(getLexer());
                 }
             case LITERAL_ALIAS:
                 String alias = '"' + getLexer().getLiterals() + '"';
@@ -325,7 +322,7 @@ public class OracleExprParser extends SQLExprParser {
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Plus, sqlExpr);
                         break;
                     default:
-                        throw new ParserException("TODO");
+                        throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 return primaryRest(sqlExpr);
             case SUB:
@@ -377,7 +374,7 @@ public class OracleExprParser extends SQLExprParser {
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Negative, sqlExpr);
                         break;
                     default:
-                        throw new ParserException("TODO " + getLexer().getToken());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 return primaryRest(sqlExpr);
                 
@@ -577,7 +574,7 @@ public class OracleExprParser extends SQLExprParser {
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
                 interval.setPrecision(getLexer().integerValue().intValue());
                 getLexer().nextToken();
@@ -591,7 +588,7 @@ public class OracleExprParser extends SQLExprParser {
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
                     interval.setFactionalSecondsPrecision(getLexer().integerValue().intValue());
                     getLexer().nextToken();
@@ -766,7 +763,7 @@ public class OracleExprParser extends SQLExprParser {
                             windowing.setExpr(new SQLIdentifierExpr("CURRENT ROW"));
                             over.setWindowing(windowing);
                         }
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
                     if (getLexer().getLiterals().equalsIgnoreCase("UNBOUNDED")) {
                         getLexer().nextToken();
@@ -774,7 +771,7 @@ public class OracleExprParser extends SQLExprParser {
                             getLexer().nextToken();
                             windowing.setExpr(new SQLIdentifierExpr("UNBOUNDED PRECEDING"));
                         } else {
-                            throw new ParserException("syntax error");
+                            throw new ParserException(getLexer());
                         }
                     }
 
@@ -788,35 +785,12 @@ public class OracleExprParser extends SQLExprParser {
         }
         return aggregateExpr;
     }
-
-    @SuppressWarnings("unused")
-    private OracleIntervalType parseIntervalType() {
-        String currentTokenUpperValue = getLexer().getLiterals();
-        getLexer().nextToken();
-
-        if (currentTokenUpperValue.equals("YEAR")) {
-            return OracleIntervalType.YEAR;
-        }
-        if (currentTokenUpperValue.equals("MONTH")) {
-            return OracleIntervalType.MONTH;
-        }
-        if (currentTokenUpperValue.equals("HOUR")) {
-            return OracleIntervalType.HOUR;
-        }
-        if (currentTokenUpperValue.equals("MINUTE")) {
-            return OracleIntervalType.MINUTE;
-        }
-        if (currentTokenUpperValue.equals("SECOND")) {
-            return OracleIntervalType.SECOND;
-        }
-        throw new ParserException("syntax error");
-    }
-
+    
     @Override
     public OracleSelectParser createSelectParser() {
         return new OracleSelectParser(this);
     }
-
+    
     @Override
     public OracleOrderByItem parseSelectOrderByItem() {
         OracleOrderByItem item = new OracleOrderByItem();
@@ -840,7 +814,7 @@ public class OracleExprParser extends SQLExprParser {
                 getLexer().nextToken();
                 item.setNullsOrderType(OracleOrderByItem.NullsOrderType.NullsLast);
             } else {
-                throw new ParserException("TODO " + getLexer().getToken());
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
         }
 
@@ -865,7 +839,7 @@ public class OracleExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                throw new ParserException("syntax error");
+                throw new ParserException(getLexer());
             }
             interval.setPrecision(getLexer().integerValue().intValue());
             getLexer().nextToken();
@@ -873,7 +847,7 @@ public class OracleExprParser extends SQLExprParser {
             if (getLexer().equalToken(Token.COMMA)) {
                 getLexer().nextToken();
                 if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                    throw new ParserException("syntax error");
+                    throw new ParserException(getLexer());
                 }
                 interval.setFactionalSecondsPrecision(getLexer().integerValue().intValue());
                 getLexer().nextToken();
@@ -889,7 +863,7 @@ public class OracleExprParser extends SQLExprParser {
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                        throw new ParserException("syntax error");
+                        throw new ParserException(getLexer());
                     }
                     interval.setToFactionalSecondsPrecision(getLexer().integerValue().intValue());
                     getLexer().nextToken();
@@ -933,7 +907,7 @@ public class OracleExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.MONKEYS_AT)) {
             getLexer().nextToken();
             if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                throw new ParserException("syntax error, expect identifier, but " + getLexer().getToken());
+                throw new ParserException(getLexer(), Token.IDENTIFIER);
             }
             OracleDbLinkExpr dbLink = new OracleDbLinkExpr();
             dbLink.setExpr(name);
@@ -1285,7 +1259,7 @@ public class OracleExprParser extends SQLExprParser {
                     constraint.setDeferrable(false);
                     continue;
                 }
-                throw new ParserException("TODO " + getLexer().getToken());
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
             
             if (getLexer().identifierEquals("DEFERRABLE")) {

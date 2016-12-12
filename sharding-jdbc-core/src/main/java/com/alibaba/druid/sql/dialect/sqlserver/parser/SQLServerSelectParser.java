@@ -25,10 +25,10 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
-import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.sql.lexer.Token;
 
 public class SQLServerSelectParser extends SQLSelectParser {
     
@@ -83,7 +83,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
                     }
                 }
             } else {
-                throw new ParserException("syntax error, not support option : " + getLexer().getToken());
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
         }
         

@@ -19,9 +19,9 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.parser.ParserException;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 public class OracleUpdateParser extends SQLStatementParser {
 
@@ -57,7 +57,7 @@ public class OracleUpdateParser extends SQLStatementParser {
 
     private void parseErrorLoging() {
         if (getLexer().identifierEquals("LOG")) {
-            throw new ParserException("TODO");
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
     }
 

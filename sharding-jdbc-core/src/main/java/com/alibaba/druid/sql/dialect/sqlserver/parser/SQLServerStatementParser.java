@@ -46,6 +46,7 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerWaitForStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 
@@ -193,7 +194,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
                             constraint.setParent(item);
                             item.getTableElementList().add((SQLTableElement) constraint);
                         } else if (getLexer().equalToken(Token.TABLESPACE)) {
-                            throw new ParserException("TODO " + Token.TABLESPACE);
+                            throw new ParserUnsupportedException(getLexer().getToken());
                         } else {
                             SQLColumnDefinition column = this.exprParser.parseColumn();
                             item.getTableElementList().add(column);

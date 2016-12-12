@@ -209,7 +209,7 @@ public class SQLStatementParser extends SQLParser {
                     result.add(stmt);
                     continue;
                 } else {
-                    throw new ParserException("TODO " + getLexer().getToken());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
             }
             if (getLexer().equalToken(Token.TRUNCATE)) {
@@ -283,7 +283,9 @@ public class SQLStatementParser extends SQLParser {
             }
             if (getLexer().equalToken(Token.COMMENT)) {
                 result.add(this.parseComment());
+                continue;
             }
+            throw new ParserException(getLexer());
         }
     }
     
@@ -412,11 +414,11 @@ public class SQLStatementParser extends SQLParser {
     }
 
     public SQLStatement parseCommit() {
-        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLStatement parseShow() {
-        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLUseStatement parseUse() {
@@ -576,7 +578,7 @@ public class SQLStatementParser extends SQLParser {
                         accept(Token.VIEW);
                         privilege = "CREATE ANY MATERIALIZED VIEW";
                     } else {
-                        throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else if (getLexer().identifierEquals("SYNONYM")) {
                     privilege = "CREATE SYNONYM";
@@ -589,7 +591,7 @@ public class SQLStatementParser extends SQLParser {
                     accept(Token.TABLE);
                     privilege = "CREATE TEMPORARY TABLE";
                 } else {
-                    throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
             } else if (getLexer().equalToken(Token.ALTER)) {
                 getLexer().nextToken();
@@ -610,10 +612,10 @@ public class SQLStatementParser extends SQLParser {
                         accept(Token.VIEW);
                         privilege = "ALTER ANY MATERIALIZED VIEW";
                     } else {
-                        throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else {
-                    throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
             } else if (getLexer().equalToken(Token.DROP)) {
                 getLexer().nextToken();
@@ -634,7 +636,7 @@ public class SQLStatementParser extends SQLParser {
                         accept(Token.VIEW);
                         privilege = "DROP ANY MATERIALIZED VIEW";
                     } else {
-                        throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else {
                     privilege = "DROP";
@@ -850,7 +852,7 @@ public class SQLStatementParser extends SQLParser {
 
                         stmt.getItems().add(addPartition);
                     } else {
-                        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else if (getLexer().equalToken(Token.DISABLE)) {
                     getLexer().nextToken();
@@ -894,7 +896,7 @@ public class SQLStatementParser extends SQLParser {
                         SQLAlterTableAlterColumn alterColumn = parseAlterColumn();
                         stmt.getItems().add(alterColumn);
                     } else {
-                        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else if (getLexer().equalToken(Token.WITH)) {
                     getLexer().nextToken();
@@ -922,7 +924,7 @@ public class SQLStatementParser extends SQLParser {
                         setLifecycle.setLifecycle(this.exprParser.primary());
                         stmt.getItems().add(setLifecycle);
                     } else {
-                        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+                        throw new ParserUnsupportedException(getLexer().getToken());
                     }
                 } else if (getLexer().equalToken(Token.PARTITION)) {
                     getLexer().nextToken();
@@ -1014,9 +1016,9 @@ public class SQLStatementParser extends SQLParser {
 
                 return stmt;
             }
-            throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     protected SQLAlterTableItem parseAlterTableRename() {
@@ -1037,8 +1039,7 @@ public class SQLStatementParser extends SQLParser {
             item.setTo(this.exprParser.name());
             return item;
         }
-
-        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     protected SQLAlterTableAlterColumn parseAlterColumn() {
@@ -1107,28 +1108,24 @@ public class SQLStatementParser extends SQLParser {
 
             stmt.getItems().add(dropPartition);
         } else {
-            throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
     }
-
+    
     public SQLStatement parseRename() {
-        throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
-
+    
     protected SQLDropTableStatement parseDropTable(boolean acceptDrop) {
         if (acceptDrop) {
             accept(Token.DROP);
         }
-
         SQLDropTableStatement stmt = new SQLDropTableStatement(getDbType());
-
         if (getLexer().identifierEquals("TEMPORARY")) {
             getLexer().nextToken();
             stmt.setTemporary(true);
         }
-
         accept(Token.TABLE);
-
         if (getLexer().equalToken(Token.IF)) {
             getLexer().nextToken();
             accept(Token.EXISTS);
@@ -1360,7 +1357,7 @@ public class SQLStatementParser extends SQLParser {
                     acceptIdentifier("LOG");
                     stmt.setPurgeSnapshotLog(true);
                 } else {
-                    throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 continue;
             }
@@ -1546,10 +1543,8 @@ public class SQLStatementParser extends SQLParser {
         if (token == Token.TABLE || getLexer().identifierEquals("GLOBAL")) {
             SQLCreateTableParser createTableParser = getSQLCreateTableParser();
             return createTableParser.parseCrateTable(false);
-        } else if (token == Token.INDEX //
-                   || token == Token.UNIQUE //
-                   || getLexer().identifierEquals("NONCLUSTERED") // sql server
-        ) {
+            // TODO NONCLUSTERED only for sql server
+        } else if (token == Token.INDEX || token == Token.UNIQUE || getLexer().identifierEquals("NONCLUSTERED")) {
             return parseCreateIndex(false);
         } else if (getLexer().equalToken(Token.SEQUENCE)) {
             return parseCreateSequence(false);
@@ -1567,7 +1562,7 @@ public class SQLStatementParser extends SQLParser {
                 getLexer().setToken(Token.CREATE);
                 return parseCreateView();
             }
-            throw new ParserException("TODO " + getLexer().getToken() + " " + getLexer().getLiterals());
+            throw new ParserUnsupportedException(getLexer().getToken());
         } else if (token == Token.DATABASE) {
             getLexer().nextToken();
             if (getLexer().identifierEquals("LINK")) {
@@ -1587,20 +1582,17 @@ public class SQLStatementParser extends SQLParser {
         } else if (token == Token.TRIGGER) {
             return parseCreateTrigger();
         }
-
-        throw new ParserException("TODO " + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
-
+    
     public SQLStatement parseCreateDbLink() {
-        throw new ParserException("TODO " + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
-
+    
     public SQLStatement parseCreateTrigger() {
         accept(Token.TRIGGER);
-
         SQLCreateTriggerStatement stmt = new SQLCreateTriggerStatement(getDbType());
         stmt.setName(this.exprParser.name());
-
         if (getLexer().identifierEquals("BEFORE")) {
             stmt.setTriggerType(SQLCreateTriggerStatement.TriggerType.BEFORE);
             getLexer().nextToken();
@@ -1646,14 +1638,14 @@ public class SQLStatementParser extends SQLParser {
 
         List<SQLStatement> body = parseStatementList();
         if (body == null || body.isEmpty()) {
-            throw new ParserException("syntax error");
+            throw new ParserException(getLexer());
         }
         stmt.setBody(body.get(0));
         return stmt;
     }
 
     public SQLStatement parseBlock() {
-        throw new ParserException("TODO " + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLStatement parseCreateDatabase() {
@@ -1669,11 +1661,11 @@ public class SQLStatementParser extends SQLParser {
     }
 
     public SQLStatement parseCreateProcedure() {
-        throw new ParserException("TODO " + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLStatement parseCreateSequence(boolean acceptCreate) {
-        throw new ParserException("TODO " + getLexer().getToken());
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     public SQLStatement parseCreateIndex(boolean acceptCreate) {

@@ -34,7 +34,7 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.List;
@@ -276,7 +276,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             } else if (getLexer().equalToken(Token.VALUES)) {
                 query = this.parseSelect();
             } else {
-                throw new ParserException("syntax error, support token '" + getLexer().getToken() + "'");
+                throw new ParserUnsupportedException(getLexer().getToken());
             }
             withQuery.setQuery(query);
 
@@ -310,7 +310,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             stmt.setWith(with);
             return stmt;
         }
-        throw new ParserException("TODO");
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     protected SQLAlterTableAlterColumn parseAlterColumn() {

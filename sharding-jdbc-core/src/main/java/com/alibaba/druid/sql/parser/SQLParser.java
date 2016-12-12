@@ -47,7 +47,7 @@ public class SQLParser {
             lexer.nextToken();
             return;
         }
-        throw new ParserException(String.format("Syntax error, expect is '%s', actual is '%s'.", token, lexer.getToken()));
+        throw new ParserException(lexer, token);
     }
     
     protected final void acceptIdentifier(final String text) {
@@ -55,7 +55,7 @@ public class SQLParser {
             lexer.nextToken();
             return;
         }
-        throw new ParserException(String.format("Syntax error, expect is '%s', actual is '%s'.", text, lexer.getToken()));
+        throw new ParserException(lexer);
     }
     
     protected String as() {
@@ -157,7 +157,7 @@ public class SQLParser {
             if (lexer.equalToken(Token.LEFT_PAREN)) {
                 return null;
             }
-            throw new ParserException(String.format("Syntax error, token is '%s'.", lexer.getToken()));
+            throw new ParserException(lexer);
         }
         if (lexer.equalToken(Token.IDENTIFIER) || lexer.equalToken(Token.USER) || lexer.equalToken(Token.END)) {
             result = lexer.getLiterals();

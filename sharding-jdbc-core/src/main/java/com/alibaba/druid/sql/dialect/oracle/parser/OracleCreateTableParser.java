@@ -25,9 +25,9 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateTableStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateTableStatement.DeferredSegmentCreation;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.parser.ParserException;
-import com.alibaba.druid.sql.parser.SQLCreateTableParser;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
+import com.alibaba.druid.sql.parser.SQLCreateTableParser;
 
 public class OracleCreateTableParser extends SQLCreateTableParser {
 
@@ -213,7 +213,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                     stmt.setPartitioning(clause);
                     continue;
                 } else {
-                    throw new ParserException("TODO : " + getLexer().getToken() + " " + getLexer().getLiterals());
+                    throw new ParserUnsupportedException(getLexer().getToken());
                 }
             }
             break;
