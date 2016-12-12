@@ -30,7 +30,7 @@ public class MySQLDeleteVisitor extends AbstractMySQLVisitor {
     
     @Override
     public boolean visit(final MySqlDeleteStatement x) {
-        getParseContext().setCurrentTable(x.getTableName().toString(), Optional.fromNullable(x.getAlias()));
+        getParseContext().setCurrentTable(x.getTableName().getSimpleName(), Optional.fromNullable(x.getAlias()));
         return super.visit(x);
     }
 }

@@ -80,7 +80,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         if (Strings.isNullOrEmpty(x.getAlias())) {
             SQLExpr expr = x.getExpr();
             if (expr instanceof SQLIdentifierExpr) {
-                getParseContext().registerSelectItem(((SQLIdentifierExpr) expr).getName());
+                getParseContext().registerSelectItem(((SQLIdentifierExpr) expr).getSimpleName());
             } else if (expr instanceof SQLPropertyExpr) {
                 getParseContext().registerSelectItem(((SQLPropertyExpr) expr).getName());
             } else if (expr instanceof SQLAllColumnExpr) {
@@ -123,7 +123,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             if (expr instanceof SQLIntegerExpr) {
                 getParseContext().addOrderByColumn(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
             } else if (expr instanceof SQLIdentifierExpr) {
-                getParseContext().addOrderByColumn(Optional.<String>absent(), ((SQLIdentifierExpr) expr).getName(), orderByType);
+                getParseContext().addOrderByColumn(Optional.<String>absent(), ((SQLIdentifierExpr) expr).getSimpleName(), orderByType);
             } else if (expr instanceof SQLPropertyExpr) {
                 SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
                 getParseContext().addOrderByColumn(Optional.of(sqlPropertyExpr.getOwner().toString()), sqlPropertyExpr.getName(), orderByType);
@@ -148,7 +148,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getName(), orderByType);
         } else if (x.getExpr() instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
-            getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getName(), orderByType);
+            getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getSimpleName(), orderByType);
         }
         return super.visit(x);
     }

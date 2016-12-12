@@ -157,7 +157,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         if (!(x.getOwner() instanceof SQLIdentifierExpr)) {
             return super.visit(x);
         }
-        String tableOrAliasName = ((SQLIdentifierExpr) x.getOwner()).getLowerName();
+        String tableOrAliasName = ((SQLIdentifierExpr) x.getOwner()).getSimpleName();
         if (getParseContext().isBinaryOperateWithAlias(x, tableOrAliasName)) {
             return super.visit(x);
         }

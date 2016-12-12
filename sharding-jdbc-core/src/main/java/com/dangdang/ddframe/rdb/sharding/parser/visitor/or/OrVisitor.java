@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.alibaba.druid.wall.spi.WallVisitorUtils;
+import com.alibaba.druid.wall.WallVisitorUtils;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.AbstractMySQLVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.or.node.AbstractOrASTNode;

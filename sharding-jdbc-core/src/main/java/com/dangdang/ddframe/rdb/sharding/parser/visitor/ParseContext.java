@@ -26,7 +26,7 @@ import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
-import com.alibaba.druid.util.JdbcUtils;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
@@ -226,8 +226,8 @@ public final class ParseContext {
         }
         SQLEvalVisitor visitor;
         switch (databaseType.name().toLowerCase()) {
-            case JdbcUtils.MYSQL:
-            case JdbcUtils.H2: 
+            case JdbcConstants.MYSQL:
+            case JdbcConstants.H2: 
                 visitor = new MySQLEvalVisitor();
                 break;
             default: 
@@ -266,12 +266,12 @@ public final class ParseContext {
     }
     
     private Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getName());
+        Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getSimpleName());
         return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
     private Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
-        return null != currentTable ? createColumn(expr.getName(), currentTable.getName()) : null;
+        return null != currentTable ? createColumn(expr.getSimpleName(), currentTable.getName()) : null;
     }
     
     private Column createColumn(final String columnName, final String tableName) {
