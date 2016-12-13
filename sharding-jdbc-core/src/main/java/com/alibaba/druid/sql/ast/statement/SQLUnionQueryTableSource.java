@@ -16,50 +16,32 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLUnionQueryTableSource extends SQLTableSourceImpl {
-
-    private SQLUnionQuery union;
-
-    public SQLUnionQueryTableSource(){
-
+    
+    private final SQLUnionQuery union;
+    
+    public SQLUnionQueryTableSource(final SQLUnionQuery union){
+        if (null != union) {
+            union.setParent(this);
+        }
+        this.union = union;
     }
-
-    public SQLUnionQueryTableSource(String alias){
-        super(alias);
-    }
-
-    public SQLUnionQueryTableSource(SQLUnionQuery union, String alias){
-        super(alias);
-        this.setUnion(union);
-    }
-
-    public SQLUnionQueryTableSource(SQLUnionQuery union){
-        this.setUnion(union);
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, union);
         }
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("(");
-        this.union.output(buf);
-        buf.append(")");
-    }
-
-    public SQLUnionQuery getUnion() {
-        return union;
-    }
-
-    public void setUnion(SQLUnionQuery union) {
-        if (union != null) {
-            union.setParent(this);
-        }
-        this.union = union;
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("(");
+        union.output(buffer);
+        buffer.append(")");
     }
 }

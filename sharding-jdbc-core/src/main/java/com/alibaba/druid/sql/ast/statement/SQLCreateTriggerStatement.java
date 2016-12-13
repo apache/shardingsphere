@@ -19,30 +19,50 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCreateTriggerStatement extends SQLStatementImpl {
-
-    private SQLName                  name;
-
-    private boolean                  orReplace     = false;
-
-    private TriggerType              triggerType;
-    private final List<TriggerEvent> triggerEvents = new ArrayList<TriggerEvent>();
-
-    private SQLName                  on;
-
-    private boolean                  forEachRow    = false;
-
-    private SQLStatement             body;
     
-    public SQLCreateTriggerStatement(String dbType) {
+    private SQLName name;
+    
+    private boolean orReplace;
+    
+    private TriggerType triggerType;
+    
+    private SQLName on;
+    
+    private boolean forEachRow;
+    
+    private SQLStatement body;
+    
+    private final List<TriggerEvent> triggerEvents = new ArrayList<>();
+    
+    public SQLCreateTriggerStatement(final String dbType) {
         super (dbType);
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    public void setName(final SQLName name) {
+        if (null != name) {
+            name.setParent(this);
+        }
+        this.name = name;
+    }
+    
+    public void setBody(final SQLStatement body) {
+        if (null != body) {
+            body.setParent(this);
+        }
+        this.body = body;
+    }
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
             acceptChild(visitor, on);
@@ -50,70 +70,12 @@ public class SQLCreateTriggerStatement extends SQLStatementImpl {
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getOn() {
-        return on;
-    }
-
-    public void setOn(SQLName on) {
-        this.on = on;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        if (name != null) {
-            name.setParent(this);
-        }
-        this.name = name;
-    }
-
-    public SQLStatement getBody() {
-        return body;
-    }
-
-    public void setBody(SQLStatement body) {
-        if (body != null) {
-            body.setParent(this);
-        }
-        this.body = body;
-    }
-
-    public boolean isOrReplace() {
-        return orReplace;
-    }
-
-    public void setOrReplace(boolean orReplace) {
-        this.orReplace = orReplace;
-    }
-
-    public TriggerType getTriggerType() {
-        return triggerType;
-    }
-
-    public void setTriggerType(TriggerType triggerType) {
-        this.triggerType = triggerType;
-    }
-
-    public List<TriggerEvent> getTriggerEvents() {
-        return triggerEvents;
-    }
-
-    public boolean isForEachRow() {
-        return forEachRow;
-    }
-
-    public void setForEachRow(boolean forEachRow) {
-        this.forEachRow = forEachRow;
-    }
-
-    public static enum TriggerType {
+    
+    public enum TriggerType {
         BEFORE, AFTER, INSTEAD_OF
     }
-
-    public static enum TriggerEvent {
+    
+    public enum TriggerEvent {
         INSERT, UPDATE, DELETE
     }
 }

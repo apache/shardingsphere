@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGParameter;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
@@ -28,10 +27,10 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.IntoOption;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
+import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.sql.lexer.Token;
 
 import java.util.List;
 
@@ -58,13 +57,8 @@ public class PGSelectParser extends SQLSelectParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-
             SQLSelectQuery select = query();
-            if (select instanceof SQLSelectQueryBlock) {
-                ((SQLSelectQueryBlock) select).setParenthesized(true);
-            }
             accept(Token.RIGHT_PAREN);
-
             return queryRest(select);
         }
 

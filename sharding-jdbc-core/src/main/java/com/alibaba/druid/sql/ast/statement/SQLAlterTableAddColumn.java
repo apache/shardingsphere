@@ -15,26 +15,23 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
 public class SQLAlterTableAddColumn extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private final List<SQLColumnDefinition> columns = new ArrayList<SQLColumnDefinition>();
-
+    
+    private final List<SQLColumnDefinition> columns = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, columns);
         }
         visitor.endVisit(this);
     }
-
-    public List<SQLColumnDefinition> getColumns() {
-        return columns;
-    }
-
 }

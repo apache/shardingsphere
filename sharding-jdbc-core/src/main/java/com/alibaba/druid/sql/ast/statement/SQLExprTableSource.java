@@ -17,13 +17,16 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
+@EqualsAndHashCode
 public class SQLExprTableSource extends SQLTableSourceImpl {
-
-    protected SQLExpr expr;
-
+    
+    private SQLExpr expr;
+    
     public SQLExprTableSource(){
-
     }
 
     public SQLExprTableSource(SQLExpr expr){
@@ -31,51 +34,27 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     }
     
     public SQLExprTableSource(SQLExpr expr, String alias){
-        this.setExpr(expr);
-        this.setAlias(alias);
+        setExpr(expr);
+        setAlias(alias);
     }
-
-    public SQLExpr getExpr() {
-        return this.expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        if (expr != null) {
+    
+    public void setExpr(final SQLExpr expr) {
+        if (null != expr) {
             expr.setParent(this);
         }
         this.expr = expr;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
+            acceptChild(visitor, expr);
         }
         visitor.endVisit(this);
     }
 
-    public void output(StringBuffer buf) {
-        this.expr.output(buf);
-    }
-
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        expr.output(buffer);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        SQLExprTableSource other = (SQLExprTableSource) obj;
-        if (expr == null) {
-            if (other.expr != null) return false;
-        } else if (!expr.equals(other.expr)) return false;
-        return true;
-    }
-
 }

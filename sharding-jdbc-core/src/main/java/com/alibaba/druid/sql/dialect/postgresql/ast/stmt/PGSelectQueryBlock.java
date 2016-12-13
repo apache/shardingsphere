@@ -15,9 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -27,6 +24,9 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PGSelectQueryBlock extends SQLSelectQueryBlock {
 
@@ -59,18 +59,18 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
 
     protected void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.with);
-            acceptChild(visitor, this.distinctOn);
-            acceptChild(visitor, this.selectList);
-            acceptChild(visitor, this.into);
-            acceptChild(visitor, this.from);
-            acceptChild(visitor, this.where);
-            acceptChild(visitor, this.groupBy);
-            acceptChild(visitor, this.window);
-            acceptChild(visitor, this.orderBy);
-            acceptChild(visitor, this.limit);
-            acceptChild(visitor, this.fetch);
-            acceptChild(visitor, this.forClause);
+            acceptChild(visitor, with);
+            acceptChild(visitor, distinctOn);
+            acceptChild(visitor, getSelectList());
+            acceptChild(visitor, getInto());
+            acceptChild(visitor, getFrom());
+            acceptChild(visitor, getWhere());
+            acceptChild(visitor, getGroupBy());
+            acceptChild(visitor, window);
+            acceptChild(visitor, orderBy);
+            acceptChild(visitor, limit);
+            acceptChild(visitor, fetch);
+            acceptChild(visitor, forClause);
         }
         visitor.endVisit(this);
     }

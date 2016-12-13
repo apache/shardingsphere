@@ -20,76 +20,37 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLColumnDefinition extends SQLObjectImpl implements SQLTableElement {
-
-    protected SQLName                         name;
-    protected SQLDataType                     dataType;
-    protected SQLExpr                         defaultExpr;
-    protected final List<SQLColumnConstraint> constraints = new ArrayList<SQLColumnConstraint>(0);
-    protected SQLExpr                          comment;
-
-    protected Boolean                         enable;
-
-    public SQLColumnDefinition(){
-
-    }
-
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public SQLDataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(SQLDataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public SQLExpr getDefaultExpr() {
-        return defaultExpr;
-    }
-
-    public void setDefaultExpr(SQLExpr defaultExpr) {
-        if (defaultExpr != null) {
+    
+    private SQLName name;
+    
+    private SQLDataType dataType;
+    
+    private SQLExpr defaultExpr;
+    
+    private SQLExpr comment;
+    
+    private Boolean enable;
+    
+    private final List<SQLColumnConstraint> constraints = new ArrayList<>();
+    
+    public void setDefaultExpr(final SQLExpr defaultExpr) {
+        if (null != defaultExpr) {
             defaultExpr.setParent(this);
         }
         this.defaultExpr = defaultExpr;
     }
-
-    public List<SQLColumnConstraint> getConstraints() {
-        return constraints;
-    }
-
+    
     @Override
-    public void output(StringBuffer buf) {
-        name.output(buf);
-        buf.append(' ');
-        this.dataType.output(buf);
-        if (defaultExpr != null) {
-            buf.append(" DEFAULT ");
-            this.defaultExpr.output(buf);
-        }
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, name);
             this.acceptChild(visitor, dataType);
@@ -98,13 +59,15 @@ public class SQLColumnDefinition extends SQLObjectImpl implements SQLTableElemen
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getComment() {
-        return comment;
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        name.output(buffer);
+        buffer.append(' ');
+        dataType.output(buffer);
+        if (null != defaultExpr) {
+            buffer.append(" DEFAULT ");
+            defaultExpr.output(buffer);
+        }
     }
-
-    public void setComment(SQLExpr comment) {
-        this.comment = comment;
-    }
-
 }

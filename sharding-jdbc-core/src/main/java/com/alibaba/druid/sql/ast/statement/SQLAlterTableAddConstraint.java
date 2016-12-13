@@ -17,45 +17,32 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLAlterTableAddConstraint extends SQLObjectImpl implements SQLAlterTableItem {
-
+    
     private SQLConstraint constraint;
-    private boolean      withNoCheck = false;
-
-    public SQLAlterTableAddConstraint(){
-
+    
+    private final boolean withNoCheck;
+    
+    public SQLAlterTableAddConstraint(final SQLConstraint constraint){
+        this(constraint, false);
     }
-
-    public SQLAlterTableAddConstraint(SQLConstraint constraint){
-        this.setConstraint(constraint);
+    
+    public SQLAlterTableAddConstraint(final SQLConstraint constraint, final boolean withNoCheck){
+        if (null != constraint) {
+            constraint.setParent(this);
+        }
+        this.constraint = constraint;
+        this.withNoCheck = withNoCheck;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, constraint);
         }
         visitor.endVisit(this);
     }
-
-    public SQLConstraint getConstraint() {
-        return constraint;
-    }
-
-    public void setConstraint(SQLConstraint constraint) {
-        if (constraint != null) {
-            constraint.setParent(this);
-        }
-        this.constraint = constraint;
-    }
-
-    public boolean isWithNoCheck() {
-        return withNoCheck;
-    }
-
-    public void setWithNoCheck(boolean withNoCheck) {
-        this.withNoCheck = withNoCheck;
-    }
-
 }

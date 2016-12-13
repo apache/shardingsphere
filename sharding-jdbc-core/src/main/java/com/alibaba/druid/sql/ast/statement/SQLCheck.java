@@ -17,37 +17,26 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLCheck extends SQLConstraintImpl implements SQLTableElement {
-
+    
     private SQLExpr expr;
-
-    public SQLCheck(){
-
-    }
-
-    public SQLCheck(SQLExpr expr){
-        this.setExpr(expr);
-    }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        if (expr != null) {
+    
+    public void setExpr(final SQLExpr expr) {
+        if (null != expr) {
             expr.setParent(this);
         }
         this.expr = expr;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getExpr());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getExpr());
         }
         visitor.endVisit(this);
     }
-
 }

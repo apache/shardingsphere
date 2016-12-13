@@ -468,7 +468,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             }
 
             println();
-            print(JoinType.toString(x.getJoinType()));
+            print(x.getJoinType().getName());
             print(" ");
 
             x.getRight().accept(this);
@@ -507,7 +507,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
         if (x.getNullsOrderType() != null) {
             print(" ");
-            print(x.getNullsOrderType().toFormalString());
+            print(x.getNullsOrderType().getText());
         }
 
         return false;

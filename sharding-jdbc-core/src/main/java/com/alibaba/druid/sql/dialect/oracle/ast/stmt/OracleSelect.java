@@ -45,12 +45,11 @@ public class OracleSelect extends SQLSelect {
         this.forUpdate = forUpdate;
     }
 
-    public void output(StringBuffer buf) {
-        this.query.output(buf);
-        buf.append(" ");
-
-        if (this.orderBy != null) {
-            this.orderBy.output(buf);
+    public void output(StringBuffer buffer) {
+        getQuery().output(buffer);
+        buffer.append(" ");
+        if (null != getOrderBy()) {
+            getOrderBy().output(buffer);
         }
     }
 
@@ -60,11 +59,11 @@ public class OracleSelect extends SQLSelect {
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.withSubQuery);
-            acceptChild(visitor, this.query);
-            acceptChild(visitor, this.restriction);
-            acceptChild(visitor, this.orderBy);
-            acceptChild(visitor, this.forUpdate);
+            acceptChild(visitor, getWithSubQuery());
+            acceptChild(visitor, getQuery());
+            acceptChild(visitor, getRestriction());
+            acceptChild(visitor, getOrderBy());
+            acceptChild(visitor, forUpdate);
         }
         visitor.endVisit(this);
     }

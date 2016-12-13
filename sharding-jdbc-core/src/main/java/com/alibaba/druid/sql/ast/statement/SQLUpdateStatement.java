@@ -15,99 +15,81 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLUpdateStatement extends SQLStatementImpl {
-
-    protected final List<SQLUpdateSetItem> items = new ArrayList<SQLUpdateSetItem>();
-    protected SQLExpr                      where;
-
-    protected SQLTableSource               tableSource;
-
-    public SQLUpdateStatement(){
-
-    }
     
-    public SQLUpdateStatement(String dbType){
+    private SQLExpr where;
+    
+    private SQLTableSource tableSource;
+    
+    private final List<SQLUpdateSetItem> items = new ArrayList<>();
+    
+    public SQLUpdateStatement(final String dbType){
         super (dbType);
     }
-
-    public SQLTableSource getTableSource() {
-        return tableSource;
+    
+    public SQLName getTableName() {
+        return tableSource instanceof SQLExprTableSource ? (SQLName) ((SQLExprTableSource) tableSource).getExpr() : null;
     }
-
-    public void setTableSource(SQLExpr expr) {
-        this.setTableSource(new SQLExprTableSource(expr));
+    
+    public void setTableSource(final SQLExpr expr) {
+        setTableSource(new SQLExprTableSource(expr));
     }
-
-    public void setTableSource(SQLTableSource tableSource) {
-        if (tableSource != null) {
+    
+    public void setTableSource(final SQLTableSource tableSource) {
+        if (null != tableSource) {
             tableSource.setParent(this);
         }
         this.tableSource = tableSource;
     }
-
-    public SQLName getTableName() {
-        if (tableSource instanceof SQLExprTableSource) {
-            SQLExprTableSource exprTableSource = (SQLExprTableSource) tableSource;
-            return (SQLName) exprTableSource.getExpr();
-        }
-        return null;
-    }
-
-    public SQLExpr getWhere() {
-        return where;
-    }
-
-    public void setWhere(SQLExpr where) {
-        if (where != null) {
+    
+    public void setWhere(final SQLExpr where) {
+        if (null != where) {
             where.setParent(this);
         }
         this.where = where;
     }
-
-    public List<SQLUpdateSetItem> getItems() {
-        return items;
-    }
     
-    public void addItem(SQLUpdateSetItem item) {
-        this.items.add(item);
+    public void addItem(final SQLUpdateSetItem item) {
+        items.add(item);
         item.setParent(this);
     }
-
+    
     @Override
-    public void output(StringBuffer buf) {
-        buf.append("UPDATE ");
-
-        this.tableSource.output(buf);
-
-        buf.append(" SET ");
-        for (int i = 0, size = items.size(); i < size; ++i) {
-            if (i != 0) {
-                buf.append(", ");
-            }
-            items.get(i).output(buf);
-        }
-
-        if (this.where != null) {
-            buf.append(" WHERE ");
-            this.where.output(buf);
-        }
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, tableSource);
             acceptChild(visitor, items);
             acceptChild(visitor, where);
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("UPDATE ");
+        tableSource.output(buffer);
+        buffer.append(" SET ");
+        for (int i = 0, size = items.size(); i < size; ++i) {
+            if (i != 0) {
+                buffer.append(", ");
+            }
+            items.get(i).output(buffer);
+        }
+        if (null != where) {
+            buffer.append(" WHERE ");
+            where.output(buffer);
+        }
     }
 }

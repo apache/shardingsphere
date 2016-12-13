@@ -15,39 +15,27 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLName;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
+@Setter
 public class SQLColumnReference extends SQLConstraintImpl implements SQLColumnConstraint {
-
-    private SQLName       table;
-    private List<SQLName> columns = new ArrayList<SQLName>();
-
+    
+    private SQLName table;
+    
+    private final List<SQLName> columns = new ArrayList<>();
+    
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
+            acceptChild(visitor, getName());
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getTable() {
-        return table;
-    }
-
-    public void setTable(SQLName table) {
-        this.table = table;
-    }
-
-    public List<SQLName> getColumns() {
-        return columns;
-    }
-
-    public void setColumns(List<SQLName> columns) {
-        this.columns = columns;
-    }
-
 }

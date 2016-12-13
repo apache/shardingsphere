@@ -46,10 +46,10 @@ public class SQLServerColumnDefinition extends SQLColumnDefinition implements SQ
     @Override
     public void accept0(SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, name);
-            this.acceptChild(visitor, dataType);
-            this.acceptChild(visitor, defaultExpr);
-            this.acceptChild(visitor, constraints);
+            this.acceptChild(visitor, getName());
+            this.acceptChild(visitor, getDataType());
+            this.acceptChild(visitor, getDefaultExpr());
+            this.acceptChild(visitor, getConstraints());
             this.acceptChild(visitor, identity);
         }
         visitor.endVisit(this);

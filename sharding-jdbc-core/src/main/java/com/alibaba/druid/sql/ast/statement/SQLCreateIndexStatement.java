@@ -18,66 +18,38 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCreateIndexStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    private SQLName                    name;
-
-    private SQLTableSource             table;
-
-    private List<SQLSelectOrderByItem> items = new ArrayList<SQLSelectOrderByItem>();
-
-    private String                     type;
-
-    public SQLCreateIndexStatement(String dbType){
+    
+    private SQLName name;
+    
+    private SQLTableSource table;
+    
+    private String type;
+    
+    private final List<SQLSelectOrderByItem> items = new ArrayList<>();
+    
+    public SQLCreateIndexStatement(final String dbType){
         super (dbType);
     }
-
-    public SQLTableSource getTable() {
-        return table;
+    
+    public void setTable(final SQLName table) {
+        this.table = new SQLExprTableSource(table);
     }
-
-    public void setTable(SQLName table) {
-        this.setTable(new SQLExprTableSource(table));
-    }
-
-    public void setTable(SQLTableSource table) {
-        this.table = table;
-    }
-
-    public List<SQLSelectOrderByItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SQLSelectOrderByItem> items) {
-        this.items = items;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getName());
-            acceptChild(visitor, getTable());
-            acceptChild(visitor, getItems());
+            acceptChild(visitor, name);
+            acceptChild(visitor, table);
+            acceptChild(visitor, items);
         }
         visitor.endVisit(this);
     }

@@ -18,39 +18,23 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLAlterTableRenameColumn extends SQLObjectImpl implements SQLAlterTableItem {
-
+    
     private SQLName column;
+    
     private SQLName to;
-
-    public SQLAlterTableRenameColumn(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, column);
             acceptChild(visitor, to);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getColumn() {
-        return column;
-    }
-
-    public void setColumn(SQLName column) {
-        this.column = column;
-    }
-
-    public SQLName getTo() {
-        return to;
-    }
-
-    public void setTo(SQLName to) {
-        this.to = to;
-    }
-
 }

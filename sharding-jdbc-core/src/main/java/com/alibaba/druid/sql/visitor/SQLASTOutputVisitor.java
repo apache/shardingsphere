@@ -705,7 +705,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getOrderBy().accept(this);
         }
 
-        if (x.getHintsSize() > 0) {
+        if (!x.getHints().isEmpty()) {
             printAndAccept(x.getHints(), "");
         }
 
@@ -1131,7 +1131,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     public boolean visit(SQLUnionQuery x) {
         x.getLeft().accept(this);
         println();
-        print(x.getOperator().name);
+        print(x.getOperator().getText());
         println();
 
         boolean needParen = false;
@@ -1282,7 +1282,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     protected void printJoinType(JoinType joinType) {
-        print(JoinType.toString(joinType));
+        print(joinType.getName());
     }
 
     @Override
@@ -2046,11 +2046,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     @Override
     public boolean visit(SQLAlterTableAddIndex x) {
         print("ADD ");
-        if (x.getType() != null) {
-            print(x.getType());
-            print(" ");
-        }
-
         if (x.isUnique()) {
             print("UNIQUE ");
         }
@@ -2065,11 +2060,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         print("(");
         printAndAccept(x.getItems(), ", ");
         print(")");
-
-        if (x.getUsing() != null) {
-            print(" USING ");
-            print(x.getUsing());
-        }
         return false;
     }
 
@@ -2078,9 +2068,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         if (x.isWithNoCheck()) {
             print("WITH NOCHECK ");
         }
-
         print("ADD ");
-
         x.getConstraint().accept(this);
         return false;
     }

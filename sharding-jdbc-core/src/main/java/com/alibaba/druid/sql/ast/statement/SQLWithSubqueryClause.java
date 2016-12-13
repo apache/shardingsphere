@@ -19,44 +19,40 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLWithSubqueryClause extends SQLObjectImpl {
     
     private Boolean recursive;
     
     private final List<Entry> entries = new ArrayList<>();
-
-    public List<Entry> getEntries() {
-        return entries;
-    }
-
-    public Boolean getRecursive() {
-        return recursive;
-    }
-
-    public void setRecursive(final Boolean recursive) {
-        this.recursive = recursive;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, entries);
         }
         visitor.endVisit(this);
     }
-
+    
+    @Getter
+    @Setter
     public static class Entry extends SQLObjectImpl {
-
-        protected SQLIdentifierExpr   name;
-        protected final List<SQLName> columns = new ArrayList<SQLName>();
-        protected SQLSelect           subQuery;
-
+        
+        private SQLIdentifierExpr name;
+        
+        private SQLSelect subQuery;
+        
+        private final List<SQLName> columns = new ArrayList<>();
+        
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, name);
                 acceptChild(visitor, columns);
@@ -64,26 +60,5 @@ public class SQLWithSubqueryClause extends SQLObjectImpl {
             }
             visitor.endVisit(this);
         }
-
-        public SQLIdentifierExpr getName() {
-            return name;
-        }
-
-        public void setName(SQLIdentifierExpr name) {
-            this.name = name;
-        }
-
-        public SQLSelect getSubQuery() {
-            return subQuery;
-        }
-
-        public void setSubQuery(SQLSelect subQuery) {
-            this.subQuery = subQuery;
-        }
-
-        public List<SQLName> getColumns() {
-            return columns;
-        }
-
     }
 }

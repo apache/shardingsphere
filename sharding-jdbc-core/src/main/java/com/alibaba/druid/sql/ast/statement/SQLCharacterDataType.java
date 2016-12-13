@@ -17,60 +17,34 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLCharacterDataType extends SQLDataTypeImpl {
-
-    private String             charSetName;
-    private String             collate;
-
-    private String             charType;
-    private boolean            hasBinary;
-
+    
     public final static String CHAR_TYPE_BYTE = "BYTE";
+    
     public final static String CHAR_TYPE_CHAR = "CHAR";
-
-    public SQLCharacterDataType(String name){
+    
+    private String charSetName;
+    
+    private String collate;
+    
+    private String charType;
+    
+    private boolean hasBinary;
+    
+    public SQLCharacterDataType(final String name){
         super(name);
     }
-
-    public String getCharSetName() {
-        return charSetName;
-    }
-
-    public void setCharSetName(String charSetName) {
-        this.charSetName = charSetName;
-    }
     
-    public boolean isHasBinary() {
-        return hasBinary;
-    }
-
-    public void setHasBinary(boolean hasBinary) {
-        this.hasBinary = hasBinary;
-    }
-
-    public String getCollate() {
-        return collate;
-    }
-
-    public void setCollate(String collate) {
-        this.collate = collate;
-    }
-
-    public String getCharType() {
-        return charType;
-    }
-
-    public void setCharType(String charType) {
-        this.charType = charType;
-    }
-
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getArguments());
         }
-
         visitor.endVisit(this);
     }
 }

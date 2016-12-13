@@ -18,76 +18,60 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLDeleteStatement extends SQLStatementImpl {
-
-    protected SQLTableSource tableSource;
-    protected SQLExpr        where;
     
-    public SQLDeleteStatement(String dbType){
+    private SQLTableSource tableSource;
+    
+    private SQLExpr where;
+    
+    public SQLDeleteStatement(final String dbType){
         super (dbType);
     }
-
-    public SQLTableSource getTableSource() {
-        return tableSource;
+    
+    public void setTableSource(final SQLExpr expr) {
+        setTableSource(new SQLExprTableSource(expr));
     }
-
-    public SQLExprTableSource getExprTableSource() {
-        return (SQLExprTableSource) getTableSource();
-    }
-
-    public void setTableSource(SQLExpr expr) {
-        this.setTableSource(new SQLExprTableSource(expr));
-    }
-
-    public void setTableSource(SQLTableSource tableSource) {
-        if (tableSource != null) {
+    
+    public void setTableSource(final SQLTableSource tableSource) {
+        if (null != tableSource) {
             tableSource.setParent(this);
         }
         this.tableSource = tableSource;
     }
-
-    public SQLName getTableName() {
-        return (SQLName) getExprTableSource().getExpr();
-    }
-
-    public void setTableName(SQLName tableName) {
-        this.setTableSource(new SQLExprTableSource(tableName));
-    }
-
-    public void setTableName(String name) {
-        setTableName(new SQLIdentifierExpr(name));
-    }
-
-    public SQLExpr getWhere() {
-        return where;
-    }
-
-    public void setWhere(SQLExpr where) {
-        if (where != null) {
+    
+    public void setWhere(final SQLExpr where) {
+        if (null != where) {
             where.setParent(this);
         }
         this.where = where;
     }
-
+    
+    public SQLName getTableName() {
+        return (SQLName) ((SQLExprTableSource) tableSource).getExpr();
+    }
+    
+    public void setTableName(final SQLName tableName) {
+        setTableSource(new SQLExprTableSource(tableName));
+    }
+    
     public String getAlias() {
-        return this.tableSource.getAlias();
+        return tableSource.getAlias();
     }
-
-    public void setAlias(String alias) {
-        this.tableSource.setAlias(alias);
+    
+    public void setAlias(final String alias) {
+        tableSource.setAlias(alias);
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, tableSource);
             acceptChild(visitor, where);
         }
-
         visitor.endVisit(this);
     }
-
 }

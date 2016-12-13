@@ -18,25 +18,20 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLAlterTableEnableConstraint extends SQLObjectImpl implements SQLAlterTableItem {
-
+    
     private SQLName constraintName;
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.constraintName);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getConstraintName() {
-        return constraintName;
-    }
-
-    public void setConstraintName(SQLName constraintName) {
-        this.constraintName = constraintName;
-    }
-
 }

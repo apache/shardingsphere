@@ -15,17 +15,19 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum SQLUnionOperator {
-    UNION("UNION"), UNION_ALL("UNION ALL"), MINUS("MINUS"), EXCEPT("EXCEPT"), INTERSECT("INTERSECT"),
+    
+    UNION("UNION"), 
+    UNION_ALL("UNION ALL"), 
+    MINUS("MINUS"), 
+    EXCEPT("EXCEPT"), 
+    INTERSECT("INTERSECT"),
     DISTINCT("UNION DISTINCT");
-
-    public final String name;
-
-    private SQLUnionOperator(String name){
-        this.name = name;
-    }
-
-    public String toString() {
-        return name;
-    }
+    
+    private final String text;
 }

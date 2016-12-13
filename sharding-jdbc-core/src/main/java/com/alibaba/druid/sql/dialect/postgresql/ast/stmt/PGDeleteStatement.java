@@ -15,15 +15,15 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PGDeleteStatement extends SQLDeleteStatement implements PGSQLStatement {
 
@@ -85,9 +85,9 @@ public class PGDeleteStatement extends SQLDeleteStatement implements PGSQLStatem
     public void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
-            acceptChild(visitor, tableSource);
+            acceptChild(visitor, getTableSource());
             acceptChild(visitor, using);
-            acceptChild(visitor, where);
+            acceptChild(visitor, getWhere());
         }
 
         visitor.endVisit(this);

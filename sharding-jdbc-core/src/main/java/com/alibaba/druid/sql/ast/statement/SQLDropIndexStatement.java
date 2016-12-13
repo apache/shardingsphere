@@ -18,38 +18,31 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLDropIndexStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    private SQLExpr            indexName;
+    
+    private SQLExpr indexName;
+    
     private SQLExprTableSource tableName;
     
-    public SQLDropIndexStatement(String dbType) {
-        super (dbType);
+    public SQLDropIndexStatement(final String dbType) {
+        super(dbType);
     }
-
-    public SQLExpr getIndexName() {
-        return indexName;
+    
+    public void setTableName(final SQLExpr tableName) {
+        setTableName(new SQLExprTableSource(tableName));
     }
-
-    public void setIndexName(SQLExpr indexName) {
-        this.indexName = indexName;
-    }
-
-    public SQLExprTableSource getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(SQLExpr tableName) {
-        this.setTableName(new SQLExprTableSource(tableName));
-    }
-
-    public void setTableName(SQLExprTableSource tableName) {
+    
+    public void setTableName(final SQLExprTableSource tableName) {
         this.tableName = tableName;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, indexName);
             acceptChild(visitor, tableName);

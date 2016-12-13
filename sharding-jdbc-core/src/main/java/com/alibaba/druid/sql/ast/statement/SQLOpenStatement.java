@@ -17,32 +17,21 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * 
- * @Description: MySql cursor open statement
- * @author zz email:455910092@qq.com
- * @date 2015-9-14
- * @version V1.0
+ * MySql cursor open statement
  */
+@Getter
+@Setter
 public class SQLOpenStatement extends SQLStatementImpl{
-	
-	//cursor name
-	private String cursorName; 
-	
-	public String getCursorName() {
-		return cursorName;
-	}
-	
-	public void setCursorName(String cursorName) {
-		this.cursorName = cursorName;
-	}
-
-	@Override
-	protected void acceptInternal(SQLASTVisitor visitor) {
-		// TODO Auto-generated method stub
-		visitor.visit(this);
-	    visitor.endVisit(this);
-		
-	}
-
+    
+    private String cursorName; 
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        visitor.visit(this);
+        visitor.endVisit(this);
+    }
 }

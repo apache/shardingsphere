@@ -20,55 +20,31 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCallStatement extends SQLStatementImpl {
-
-    private boolean             brace      = false;
-
-    private SQLVariantRefExpr   outParameter;
-
-    private SQLName             procedureName;
-
+    
+    private boolean brace;
+    
+    private SQLVariantRefExpr outParameter;
+    
+    private SQLName procedureName;
+    
     private final List<SQLExpr> parameters = new ArrayList<>();
-
-    public SQLVariantRefExpr getOutParameter() {
-        return outParameter;
-    }
-
-    public void setOutParameter(SQLVariantRefExpr outParameter) {
-        this.outParameter = outParameter;
-    }
-
-    public SQLName getProcedureName() {
-        return procedureName;
-    }
-
-    public void setProcedureName(SQLName procedureName) {
-        this.procedureName = procedureName;
-    }
-
-    public List<SQLExpr> getParameters() {
-        return parameters;
-    }
-
-    public boolean isBrace() {
-        return brace;
-    }
-
-    public void setBrace(boolean brace) {
-        this.brace = brace;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.outParameter);
-            acceptChild(visitor, this.procedureName);
-            acceptChild(visitor, this.parameters);
+            acceptChild(visitor, outParameter);
+            acceptChild(visitor, procedureName);
+            acceptChild(visitor, parameters);
         }
         visitor.endVisit(this);
     }
-
 }

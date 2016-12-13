@@ -15,17 +15,17 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 
+import java.util.List;
+
 public interface SQLForeignKeyConstraint extends SQLConstraint, SQLTableElement, SQLTableConstraint {
-
+    
     List<SQLName> getReferencingColumns();
-
+    
     SQLName getReferencedTableName();
-
+    
     void setReferencedTableName(SQLName value);
-
+    
     List<SQLName> getReferencedColumns();
 }

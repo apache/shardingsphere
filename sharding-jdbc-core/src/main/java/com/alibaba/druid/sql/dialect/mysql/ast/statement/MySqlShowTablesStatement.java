@@ -44,8 +44,8 @@ public class MySqlShowTablesStatement extends SQLShowTablesStatement implements 
 
     public void accept0(MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, database);
-            acceptChild(visitor, like);
+            acceptChild(visitor, getDatabase());
+            acceptChild(visitor, getLike());
             acceptChild(visitor, where);
         }
         visitor.endVisit(this);

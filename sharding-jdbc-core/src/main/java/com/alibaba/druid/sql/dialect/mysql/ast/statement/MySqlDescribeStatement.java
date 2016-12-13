@@ -26,7 +26,7 @@ public class MySqlDescribeStatement extends SQLDescribeStatement implements MySq
 
     public void accept0(MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, object);
+            acceptChild(visitor, getObject());
             acceptChild(visitor, colName);
         }
         visitor.endVisit(this);

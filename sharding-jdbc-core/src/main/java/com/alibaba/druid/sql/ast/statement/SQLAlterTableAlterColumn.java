@@ -19,19 +19,23 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLAlterTableAlterColumn extends SQLObjectImpl implements SQLAlterTableItem {
-
+    
     private SQLColumnDefinition column;
-
-    private boolean             setNotNull;
-
-    private boolean             dropNotNull;
-
-    private SQLExpr             setDefault;
-
-    private boolean             dropDefault;
-
+    
+    private boolean setNotNull;
+    
+    private boolean dropNotNull;
+    
+    private SQLExpr setDefault;
+    
+    private boolean dropDefault;
+    
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
@@ -40,45 +44,4 @@ public class SQLAlterTableAlterColumn extends SQLObjectImpl implements SQLAlterT
         }
         visitor.endVisit(this);
     }
-
-    public SQLColumnDefinition getColumn() {
-        return column;
-    }
-
-    public void setColumn(SQLColumnDefinition column) {
-        this.column = column;
-    }
-
-    public boolean isSetNotNull() {
-        return setNotNull;
-    }
-
-    public void setSetNotNull(boolean setNotNull) {
-        this.setNotNull = setNotNull;
-    }
-
-    public boolean isDropNotNull() {
-        return dropNotNull;
-    }
-
-    public void setDropNotNull(boolean dropNotNull) {
-        this.dropNotNull = dropNotNull;
-    }
-
-    public SQLExpr getSetDefault() {
-        return setDefault;
-    }
-
-    public void setSetDefault(SQLExpr setDefault) {
-        this.setDefault = setDefault;
-    }
-
-    public boolean isDropDefault() {
-        return dropDefault;
-    }
-
-    public void setDropDefault(boolean dropDefault) {
-        this.dropDefault = dropDefault;
-    }
-
 }

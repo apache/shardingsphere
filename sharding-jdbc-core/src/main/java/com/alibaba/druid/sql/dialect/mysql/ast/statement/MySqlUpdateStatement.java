@@ -56,9 +56,9 @@ public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlSta
 
     public void accept0(MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, items);
-            acceptChild(visitor, where);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getItems());
+            acceptChild(visitor, getWhere());
             acceptChild(visitor, orderBy);
             acceptChild(visitor, limit);
         }

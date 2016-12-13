@@ -26,10 +26,6 @@ public class PGSelectStatement extends SQLSelectStatement implements PGSQLStatem
 
     private PGWithClause with;
 
-    public PGSelectStatement(){
-        super(JdbcConstants.POSTGRESQL);
-    }
-
     public PGSelectStatement(SQLSelect select){
         super(select, JdbcConstants.POSTGRESQL);
     }
@@ -48,8 +44,8 @@ public class PGSelectStatement extends SQLSelectStatement implements PGSQLStatem
 
     public void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.with);
-            acceptChild(visitor, this.select);
+            acceptChild(visitor, with);
+            acceptChild(visitor, getSelect());
         }
         visitor.endVisit(this);
     }

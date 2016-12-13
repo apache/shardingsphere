@@ -222,8 +222,8 @@ public class OracleCreateTableStatement extends SQLCreateTableStatement implemen
 
     public void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, tableSource);
-            this.acceptChild(visitor, tableElementList);
+            this.acceptChild(visitor, getTableSource());
+            this.acceptChild(visitor, getTableElementList());
             this.acceptChild(visitor, tablespace);
             this.acceptChild(visitor, select);
             this.acceptChild(visitor, storage);
@@ -232,7 +232,7 @@ public class OracleCreateTableStatement extends SQLCreateTableStatement implemen
         visitor.endVisit(this);
     }
 
-    public static enum DeferredSegmentCreation {
+    public enum DeferredSegmentCreation {
         IMMEDIATE, DEFERRED
     }
 }

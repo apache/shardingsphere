@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.PartitionExtensionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SampleClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.google.common.base.Strings;
 
 public class OracleSelectTableReference extends SQLExprTableSource implements OracleSelectTableSource {
 
@@ -84,7 +85,7 @@ public class OracleSelectTableReference extends SQLExprTableSource implements Or
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
+            acceptChild(visitor, getExpr());
             acceptChild(visitor, this.partition);
             acceptChild(visitor, this.sampleClause);
             acceptChild(visitor, this.pivot);
@@ -95,22 +96,22 @@ public class OracleSelectTableReference extends SQLExprTableSource implements Or
     public void output(StringBuffer buf) {
         if (this.only) {
             buf.append("ONLY (");
-            this.expr.output(buf);
+            getExpr().output(buf);
             buf.append(")");
         } else {
-            this.expr.output(buf);
+            getExpr().output(buf);
         }
 
         if (this.pivot != null) {
             buf.append(" ");
             this.pivot.output(buf);
         }
-
-        if ((this.alias != null) && (this.alias.length() != 0)) {
-            buf.append(this.alias);
+        if (!Strings.isNullOrEmpty(getAlias())) {
+            buf.append(getAlias());
         }
     }
     
+    @Override
     public String toString () {
         return SQLUtils.toOracleString(this);
     }

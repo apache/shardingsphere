@@ -15,9 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
@@ -25,6 +22,9 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatement {
 
@@ -80,9 +80,9 @@ public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatem
     public void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, items);
-            acceptChild(visitor, where);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getItems());
+            acceptChild(visitor, getWhere());
         }
         visitor.endVisit(this);
     }

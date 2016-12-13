@@ -67,13 +67,12 @@ public class SQLServerUpdateStatement extends SQLUpdateStatement implements SQLS
     public void accept0(SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, top);
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, items);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getItems());
             acceptChild(visitor, output);
             acceptChild(visitor, from);
-            acceptChild(visitor, where);
+            acceptChild(visitor, getWhere());
         }
         visitor.endVisit(this);
     }
-
 }

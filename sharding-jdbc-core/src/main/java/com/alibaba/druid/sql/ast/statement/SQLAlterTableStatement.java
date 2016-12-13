@@ -18,51 +18,37 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLAlterTableStatement extends SQLStatementImpl implements SQLDDLStatement {
     
-    private SQLExprTableSource      tableSource;
-    private List<SQLAlterTableItem> items = new ArrayList<>();
+    private SQLExprTableSource tableSource;
+    
+    private final List<SQLAlterTableItem> items = new ArrayList<>();
     
     public SQLAlterTableStatement(String dbType) {
-        super (dbType);
+        super(dbType);
     }
-
-    public List<SQLAlterTableItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SQLAlterTableItem> items) {
-        this.items = items;
-    }
-
-    public SQLExprTableSource getTableSource() {
-        return tableSource;
-    }
-
-    public void setTableSource(SQLExprTableSource tableSource) {
-        this.tableSource = tableSource;
-    }
-
+    
     public SQLName getName() {
-        if (getTableSource() == null) {
-            return null;
-        }
-        return (SQLName) getTableSource().getExpr();
+        return null == tableSource ? null : (SQLName) tableSource.getExpr();
     }
-
-    public void setName(SQLName name) {
-        this.setTableSource(new SQLExprTableSource(name));
+    
+    public void setName(final SQLName name) {
+        tableSource = new SQLExprTableSource(name);
     }
-
+    
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getTableSource());
-            acceptChild(visitor, getItems());
+            acceptChild(visitor, tableSource);
+            acceptChild(visitor, items);
         }
         visitor.endVisit(this);
     }

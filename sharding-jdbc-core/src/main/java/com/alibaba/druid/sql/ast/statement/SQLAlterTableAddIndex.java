@@ -19,74 +19,30 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLAlterTableAddIndex extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private boolean                          unique;
-
-    private SQLName                          name;
-
-    private final List<SQLSelectOrderByItem> items = new ArrayList<SQLSelectOrderByItem>();
-
-    private String                           type;
-
-    private String                           using;
     
-    private String                           keyOrIndex = Token.INDEX.getName();
-
+    private boolean unique;
+    
+    private SQLName name;
+    
+    private String keyOrIndex = Token.INDEX.getName();
+    
+    private final List<SQLSelectOrderByItem> items = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getName());
-            acceptChild(visitor, getItems());
+            acceptChild(visitor, name);
+            acceptChild(visitor, items);
         }
         visitor.endVisit(this);
-    }
-
-    public boolean isUnique() {
-        return unique;
-    }
-
-    public void setUnique(boolean unique) {
-        this.unique = unique;
-    }
-
-    public List<SQLSelectOrderByItem> getItems() {
-        return items;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getUsing() {
-        return using;
-    }
-
-    public void setUsing(String using) {
-        this.using = using;
-    }
-
-    public String getKeyOrIndex() {
-        return keyOrIndex;
-    }
-
-    public void setKeyOrIndex(String keyOrIndex) {
-        this.keyOrIndex = keyOrIndex;
     }
 }

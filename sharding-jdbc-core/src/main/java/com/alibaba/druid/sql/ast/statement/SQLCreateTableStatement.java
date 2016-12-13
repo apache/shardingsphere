@@ -18,90 +18,64 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCreateTableStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    protected boolean               ifNotExiists     = false;
-    protected Type                  type;
-    protected SQLExprTableSource    tableSource;
-
-    protected List<SQLTableElement> tableElementList = new ArrayList<SQLTableElement>();
-
-    // for postgresql
-    private SQLExprTableSource      inherits;
     
-    public SQLCreateTableStatement(String dbType){
+    private boolean ifNotExists;
+    
+    private Type type;
+    
+    private SQLExprTableSource tableSource;
+    
+    // for postgresql
+    private SQLExprTableSource inherits;
+    
+    private final List<SQLTableElement> tableElementList = new ArrayList<>();
+    
+    public SQLCreateTableStatement(final String dbType){
         super(dbType);
     }
-
+    
     public SQLName getName() {
-        if (tableSource == null) {
-            return null;
-        }
-
-        return (SQLName) tableSource.getExpr();
+        return null == tableSource ? null : (SQLName) tableSource.getExpr();
     }
-
+    
     public void setName(SQLName name) {
-        this.setTableSource(new SQLExprTableSource(name));
+        setTableSource(new SQLExprTableSource(name));
     }
-
-    public SQLExprTableSource getTableSource() {
-        return tableSource;
-    }
-
-    public void setTableSource(SQLExprTableSource tableSource) {
-        if (tableSource != null) {
+    
+    public void setTableSource(final SQLExprTableSource tableSource) {
+        if (null != tableSource) {
             tableSource.setParent(this);
         }
         this.tableSource = tableSource;
     }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public static enum Type {
-        GLOBAL_TEMPORARY, LOCAL_TEMPORARY
-    }
-
-    public List<SQLTableElement> getTableElementList() {
-        return tableElementList;
-    }
-
-    public boolean isIfNotExiists() {
-        return ifNotExiists;
-    }
-
-    public void setIfNotExiists(boolean ifNotExiists) {
-        this.ifNotExiists = ifNotExiists;
-    }
-
-    public SQLExprTableSource getInherits() {
-        return inherits;
-    }
-
-    public void setInherits(SQLExprTableSource inherits) {
-        if (inherits != null) {
+    
+    public void setInherits(final SQLExprTableSource inherits) {
+        if (null != inherits) {
             inherits.setParent(this);
         }
         this.inherits = inherits;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, tableSource);
-            this.acceptChild(visitor, tableElementList);
-            this.acceptChild(visitor, inherits);
+            acceptChild(visitor, tableSource);
+            acceptChild(visitor, tableElementList);
+            acceptChild(visitor, inherits);
         }
         visitor.endVisit(this);
+    }
+    
+    public enum Type {
+        GLOBAL_TEMPORARY, LOCAL_TEMPORARY
     }
 }

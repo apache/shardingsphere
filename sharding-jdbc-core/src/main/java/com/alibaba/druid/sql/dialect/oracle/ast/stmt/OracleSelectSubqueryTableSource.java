@@ -28,23 +28,12 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
 
     protected FlashbackQueryClause  flashback;
 
-    public OracleSelectSubqueryTableSource(){
-    }
-
     public FlashbackQueryClause getFlashback() {
         return flashback;
     }
 
     public void setFlashback(FlashbackQueryClause flashback) {
         this.flashback = flashback;
-    }
-
-    public OracleSelectSubqueryTableSource(String alias){
-        super(alias);
-    }
-
-    public OracleSelectSubqueryTableSource(SQLSelect select, String alias){
-        super(select, alias);
     }
 
     public OracleSelectSubqueryTableSource(SQLSelect select){
@@ -58,7 +47,7 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
     public void setPivot(OracleSelectPivotBase pivot) {
         this.pivot = pivot;
     }
-
+    
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
@@ -66,10 +55,10 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getHints());
-            acceptChild(visitor, this.select);
-            acceptChild(visitor, this.pivot);
-            acceptChild(visitor, this.flashback);
+            acceptChild(visitor, getHints());
+            acceptChild(visitor, getSelect());
+            acceptChild(visitor, pivot);
+            acceptChild(visitor, flashback);
         }
         visitor.endVisit(this);
     }

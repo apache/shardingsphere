@@ -15,9 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.visitor;
 
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -170,6 +167,9 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnlockTablesStatem
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateTableSource;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
+
+import java.util.List;
+import java.util.Map;
 
 public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTVisitor {
 
@@ -465,7 +465,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             print("TABLE ");
         }
 
-        if (x.isIfNotExiists()) {
+        if (x.isIfNotExists()) {
             print("IF NOT EXISTS ");
         }
 
@@ -2627,7 +2627,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             }
         }
         println();
-        print(x.getOperator().name);
+        print(x.getOperator().getText());
         println();
 
         boolean needParen = false;
@@ -2713,7 +2713,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             print(x.getAlias());
         }
 
-        for (int i = 0; i < x.getHintsSize(); ++i) {
+        for (int i = 0; i < x.getHints().size(); ++i) {
             print(' ');
             x.getHints().get(i).accept(this);
         }

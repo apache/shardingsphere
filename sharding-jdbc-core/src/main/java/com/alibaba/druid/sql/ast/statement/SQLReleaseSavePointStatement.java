@@ -18,25 +18,21 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLReleaseSavePointStatement extends SQLStatementImpl {
-
+    
     private SQLExpr name;
     
-    public SQLReleaseSavePointStatement(String dbType) {
+    public SQLReleaseSavePointStatement(final String dbType) {
         super (dbType);
     }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }

@@ -793,10 +793,7 @@ public class OracleExprParser extends SQLExprParser {
     
     @Override
     public OracleOrderByItem parseSelectOrderByItem() {
-        OracleOrderByItem item = new OracleOrderByItem();
-
-        item.setExpr(expr());
-
+        OracleOrderByItem item = new OracleOrderByItem(expr());
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
             item.setType(SQLOrderingSpecification.ASC);

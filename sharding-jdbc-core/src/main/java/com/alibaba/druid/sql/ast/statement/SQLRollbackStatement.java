@@ -18,33 +18,24 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLRollbackStatement extends SQLStatementImpl {
-
+    
     private SQLName to;
     
-    public SQLRollbackStatement() {
-        
-    }
-    
-    public SQLRollbackStatement(String dbType) {
+    public SQLRollbackStatement(final String dbType) {
         super (dbType);
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, to);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getTo() {
-        return to;
-    }
-
-    public void setTo(SQLName to) {
-        this.to = to;
-    }
-
 }

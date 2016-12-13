@@ -15,51 +15,32 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLName;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
+@Setter
 public class SQLForeignKeyImpl extends SQLConstraintImpl implements SQLForeignKeyConstraint {
-
-    private SQLName       referencedTableName;
-    private List<SQLName> referencingColumns = new ArrayList<SQLName>();
-    private List<SQLName> referencedColumns  = new ArrayList<SQLName>();
-
-    public SQLForeignKeyImpl(){
-
-    }
-
+    
+    private SQLName referencedTableName;
+    
+    private final List<SQLName> referencingColumns = new ArrayList<>();
+    
+    private final List<SQLName> referencedColumns = new ArrayList<>();
+    
     @Override
-    public List<SQLName> getReferencingColumns() {
-        return referencingColumns;
-    }
-
-    @Override
-    public SQLName getReferencedTableName() {
-        return referencedTableName;
-    }
-
-    @Override
-    public void setReferencedTableName(SQLName value) {
-        this.referencedTableName = value;
-    }
-
-    @Override
-    public List<SQLName> getReferencedColumns() {
-        return referencedColumns;
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getReferencedTableName());
-            acceptChild(visitor, this.getReferencingColumns());
-            acceptChild(visitor, this.getReferencedColumns());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, referencedTableName);
+            acceptChild(visitor, referencingColumns);
+            acceptChild(visitor, referencedColumns);
         }
-        visitor.endVisit(this);        
+        visitor.endVisit(this);
     }
-
 }

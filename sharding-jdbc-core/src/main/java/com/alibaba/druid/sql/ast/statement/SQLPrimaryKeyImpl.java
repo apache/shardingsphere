@@ -18,12 +18,12 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLPrimaryKeyImpl extends SQLUnique implements SQLPrimaryKey {
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getColumns());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getColumns());
         }
         visitor.endVisit(this);
     }

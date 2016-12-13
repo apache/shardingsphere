@@ -18,45 +18,32 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLDropTableSpaceStatement extends SQLStatementImpl implements SQLDDLStatement {
-
+    
     private SQLName name;
+    
     private boolean ifExists;
     
-    public SQLDropTableSpaceStatement() {
-        
-    }
-    
-    public SQLDropTableSpaceStatement(String dbType) {
+    public SQLDropTableSpaceStatement(final String dbType) {
         super (dbType);
     }
-
+    
+    public void setName(final SQLName name) {
+        if (null != name) {
+            name.setParent(this);
+        }
+        this.name = name;
+    }
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        if (name != null) {
-            name.setParent(this);
-        }
-        this.name = name;
-    }
-
-    public boolean isIfExists() {
-        return ifExists;
-    }
-
-    public void setIfExists(boolean ifExists) {
-        this.ifExists = ifExists;
-    }
-
 }

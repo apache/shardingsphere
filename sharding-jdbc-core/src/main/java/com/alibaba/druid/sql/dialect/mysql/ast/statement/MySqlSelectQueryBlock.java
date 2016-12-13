@@ -15,9 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -27,6 +24,9 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlObject {
 
@@ -253,15 +253,15 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
     @Override
     public void accept0(MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.selectList);
-            acceptChild(visitor, this.from);
-            acceptChild(visitor, this.where);
-            acceptChild(visitor, this.groupBy);
-            acceptChild(visitor, this.orderBy);
-            acceptChild(visitor, this.limit);
-            acceptChild(visitor, this.procedureName);
-            acceptChild(visitor, this.procedureArgumentList);
-            acceptChild(visitor, this.into);
+            acceptChild(visitor, getSelectList());
+            acceptChild(visitor, getFrom());
+            acceptChild(visitor, getWhere());
+            acceptChild(visitor, getGroupBy());
+            acceptChild(visitor, orderBy);
+            acceptChild(visitor, limit);
+            acceptChild(visitor, procedureName);
+            acceptChild(visitor, procedureArgumentList);
+            acceptChild(visitor, getInto());
         }
 
         visitor.endVisit(this);

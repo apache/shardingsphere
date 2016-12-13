@@ -19,64 +19,45 @@ import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SQLSetStatement extends SQLStatementImpl {
-
-    private List<SQLAssignItem> items = new ArrayList<SQLAssignItem>();
     
-    private List<SQLCommentHint> hints;
-
-    public SQLSetStatement(String dbType){
-        super (dbType);
+    private final List<SQLCommentHint> hints = new ArrayList<>();
+    
+    private final List<SQLAssignItem> items = new ArrayList<>();
+    
+    public SQLSetStatement(final String dbType){
+        super(dbType);
     }
     
-    public SQLSetStatement(SQLExpr target, SQLExpr value){
-        this(target, value, null);
+    public SQLSetStatement(final SQLExpr target, final SQLExpr value, final String dbType) {
+        super(dbType);
+        items.add(new SQLAssignItem(target, value));
     }
-
-    public SQLSetStatement(SQLExpr target, SQLExpr value, String dbType){
-        super (dbType);
-        this.items.add(new SQLAssignItem(target, value));
-    }
-
-    public List<SQLAssignItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SQLAssignItem> items) {
-        this.items = items;
-    }
-
-    public List<SQLCommentHint> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<SQLCommentHint> hints) {
-        this.hints = hints;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
-            acceptChild(visitor, this.hints);
+            acceptChild(visitor, items);
+            acceptChild(visitor, hints);
         }
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("SET ");
-
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("SET ");
         for (int i = 0; i < items.size(); ++i) {
             if (i != 0) {
-                buf.append(", ");
+                buffer.append(", ");
             }
-
             SQLAssignItem item = items.get(i);
-            item.output(buf);
+            item.output(buffer);
         }
     }
 }

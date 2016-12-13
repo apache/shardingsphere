@@ -15,22 +15,20 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
 public class SQLAlterTableEnableLifecycle extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private final List<SQLAssignItem> partition = new ArrayList<SQLAssignItem>(4);
-
-    public List<SQLAssignItem> getPartition() {
-        return partition;
-    }
-
+    
+    private final List<SQLAssignItem> partition = new ArrayList<>(4);
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, partition);
         }

@@ -19,43 +19,35 @@ import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLExplainStatement extends SQLStatementImpl {
-
-    protected SQLStatement       statement;
-
+    
+    private SQLStatement statement;
+    
     private List<SQLCommentHint> hints;
     
-    public SQLExplainStatement(String dbType) {
+    public SQLExplainStatement(final String dbType) {
         super (dbType);
     }
 
-    public SQLStatement getStatement() {
-        return statement;
-    }
-
-    public void setStatement(SQLStatement statement) {
-        if (statement != null) {
+    public void setStatement(final SQLStatement statement) {
+        if (null != statement) {
             statement.setParent(this);
         }
         this.statement = statement;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, statement);
         }
         visitor.endVisit(this);
-    }
-
-    public List<SQLCommentHint> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<SQLCommentHint> hints) {
-        this.hints = hints;
     }
 }

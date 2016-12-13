@@ -37,7 +37,7 @@ public class OracleExplainStatement extends SQLExplainStatement implements Oracl
         if (visitor.visit(this)) {
             acceptChild(visitor, statementId);
             acceptChild(visitor, into);
-            acceptChild(visitor, statement);
+            acceptChild(visitor, getStatement());
         }
         visitor.endVisit(this);
     }

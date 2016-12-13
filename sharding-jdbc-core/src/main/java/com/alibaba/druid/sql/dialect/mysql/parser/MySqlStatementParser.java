@@ -2119,7 +2119,8 @@ public class MySqlStatementParser extends SQLStatementParser {
             }
 
             if (getLexer().equalToken(Token.HINT)) {
-                stmt.setHints(this.exprParser.parseHints());
+                stmt.getHints().clear();
+                stmt.getHints().addAll(exprParser.parseHints());
             }
 
             return stmt;

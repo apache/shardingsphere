@@ -18,21 +18,17 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLDescribeStatement extends SQLStatementImpl {
-
-    protected SQLName object;
-
-    public SQLName getObject() {
-        return object;
-    }
-
-    public void setObject(SQLName object) {
-        this.object = object;
-    }
+    
+    private SQLName object;
     
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        throw new UnsupportedOperationException(this.getClass().getName());
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        throw new UnsupportedOperationException(getClass().getName());
     }
 }

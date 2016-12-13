@@ -15,124 +15,57 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLGrantStatement extends SQLStatementImpl {
-
-    private final List<SQLExpr> privileges = new ArrayList<SQLExpr>();
-
-    private SQLObject           on;
-    private SQLExpr             to;
-
-    public SQLGrantStatement(){
-
-    }
-
-    public SQLGrantStatement(String dbType){
-        super(dbType);
-    }
-
+    
+    private SQLObject on;
+    
+    private SQLExpr to;
+    
     // mysql
     private SQLObjectType objectType;
-    private SQLExpr       maxQueriesPerHour;
-    private SQLExpr       maxUpdatesPerHour;
-    private SQLExpr       maxConnectionsPerHour;
-    private SQLExpr       maxUserConnections;
-
-    private boolean       adminOption;
-
-    private SQLExpr       identifiedBy;
-
+    
+    private SQLExpr maxQueriesPerHour;
+    
+    private SQLExpr maxUpdatesPerHour;
+    
+    private SQLExpr maxConnectionsPerHour;
+    
+    private SQLExpr maxUserConnections;
+    
+    private boolean adminOption;
+    
+    private SQLExpr identifiedBy;
+    
+    private final List<SQLExpr> privileges = new ArrayList<>();
+    
+    public SQLGrantStatement(final String dbType){
+        super(dbType);
+    }
+    
+    public void setOn(final SQLObject on) {
+        on.setParent(this);
+        this.on = on;
+    }
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, on);
             acceptChild(visitor, to);
             acceptChild(visitor, identifiedBy);
         }
         visitor.endVisit(this);
-    }
-
-    public SQLObjectType getObjectType() {
-        return objectType;
-    }
-
-    public void setObjectType(SQLObjectType objectType) {
-        this.objectType = objectType;
-    }
-
-    public SQLObject getOn() {
-        return on;
-    }
-
-    public void setOn(SQLObject on) {
-        this.on = on;
-        on.setParent(this);
-    }
-
-    public SQLExpr getTo() {
-        return to;
-    }
-
-    public void setTo(SQLExpr to) {
-        this.to = to;
-    }
-
-    public List<SQLExpr> getPrivileges() {
-        return privileges;
-    }
-
-    public SQLExpr getMaxQueriesPerHour() {
-        return maxQueriesPerHour;
-    }
-
-    public void setMaxQueriesPerHour(SQLExpr maxQueriesPerHour) {
-        this.maxQueriesPerHour = maxQueriesPerHour;
-    }
-
-    public SQLExpr getMaxUpdatesPerHour() {
-        return maxUpdatesPerHour;
-    }
-
-    public void setMaxUpdatesPerHour(SQLExpr maxUpdatesPerHour) {
-        this.maxUpdatesPerHour = maxUpdatesPerHour;
-    }
-
-    public SQLExpr getMaxConnectionsPerHour() {
-        return maxConnectionsPerHour;
-    }
-
-    public void setMaxConnectionsPerHour(SQLExpr maxConnectionsPerHour) {
-        this.maxConnectionsPerHour = maxConnectionsPerHour;
-    }
-
-    public SQLExpr getMaxUserConnections() {
-        return maxUserConnections;
-    }
-
-    public void setMaxUserConnections(SQLExpr maxUserConnections) {
-        this.maxUserConnections = maxUserConnections;
-    }
-
-    public boolean isAdminOption() {
-        return adminOption;
-    }
-
-    public void setAdminOption(boolean adminOption) {
-        this.adminOption = adminOption;
-    }
-
-    public SQLExpr getIdentifiedBy() {
-        return identifiedBy;
-    }
-
-    public void setIdentifiedBy(SQLExpr identifiedBy) {
-        this.identifiedBy = identifiedBy;
     }
 }

@@ -18,61 +18,44 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLUnionQuery extends SQLObjectImpl implements SQLSelectQuery {
-
-    private SQLSelectQuery   left;
-    private SQLSelectQuery   right;
+    
+    private SQLSelectQuery left;
+    
+    private SQLSelectQuery right;
+    
     private SQLUnionOperator operator = SQLUnionOperator.UNION;
-    private SQLOrderBy       orderBy;
-
-    public SQLUnionOperator getOperator() {
-        return operator;
-    }
-
-    public void setOperator(SQLUnionOperator operator) {
-        this.operator = operator;
-    }
-
-    public SQLUnionQuery(){
-
-    }
-
-    public SQLSelectQuery getLeft() {
-        return left;
-    }
-
-    public void setLeft(SQLSelectQuery left) {
-        if (left != null) {
+    
+    private SQLOrderBy orderBy;
+    
+    public void setLeft(final SQLSelectQuery left) {
+        if (null != left) {
             left.setParent(this);
         }
         this.left = left;
     }
-
-    public SQLSelectQuery getRight() {
-        return right;
-    }
-
-    public void setRight(SQLSelectQuery right) {
-        if (right != null) {
+    
+    public void setRight(final SQLSelectQuery right) {
+        if (null != right) {
             right.setParent(this);
         }
         this.right = right;
     }
-
-    public SQLOrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(SQLOrderBy orderBy) {
-        if (orderBy != null) {
+    
+    public void setOrderBy(final SQLOrderBy orderBy) {
+        if (null != orderBy) {
             orderBy.setParent(this);
         }
         this.orderBy = orderBy;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, left);
             acceptChild(visitor, right);
@@ -80,5 +63,4 @@ public class SQLUnionQuery extends SQLObjectImpl implements SQLSelectQuery {
         }
         visitor.endVisit(this);
     }
-
 }

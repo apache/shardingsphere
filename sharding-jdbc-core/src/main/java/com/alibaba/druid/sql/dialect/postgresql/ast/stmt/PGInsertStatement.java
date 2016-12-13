@@ -15,21 +15,20 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
-public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatement {
+import java.util.ArrayList;
+import java.util.List;
 
-    private PGWithClause       with;
-    private List<ValuesClause> valuesList = new ArrayList<ValuesClause>();
-    private SQLExpr            returning;
-    private boolean			   defaultValues = false;
+public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatement {
+    
+    private PGWithClause with;
+    private List<ValuesClause> valuesList = new ArrayList<>();
+    private SQLExpr returning;
 
     public SQLExpr getReturning() {
         return returning;
@@ -61,39 +60,30 @@ public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatem
             valuesList.set(0, values);
         }
     }
-
+    
     public List<ValuesClause> getValuesList() {
         return valuesList;
     }
-
+    
     public void addValueCause(ValuesClause valueClause) {
         valueClause.setParent(this);
         valuesList.add(valueClause);
     }
-
-    public boolean isDefaultValues() {
-		return defaultValues;
-	}
-
-	public void setDefaultValues(boolean defaultValues) {
-		this.defaultValues = defaultValues;
-	}
-
-	protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    protected void acceptInternal(SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, with);
-            this.acceptChild(visitor, tableSource);
-            this.acceptChild(visitor, columns);
-            this.acceptChild(visitor, valuesList);
-            this.acceptChild(visitor, query);
-            this.acceptChild(visitor, returning);
+            acceptChild(visitor, with);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getColumns());
+            acceptChild(visitor, getQuery());
+            acceptChild(visitor, valuesList);
+            acceptChild(visitor, returning);
         }
-
         visitor.endVisit(this);
     }
 }

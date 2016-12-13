@@ -15,47 +15,36 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLSelectGroupByClause extends SQLObjectImpl {
-
-    private final List<SQLExpr> items = new ArrayList<SQLExpr>();
-    private SQLExpr             having;
-
-    public SQLSelectGroupByClause(){
-
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    private SQLExpr having;
+    
+    private final List<SQLExpr> items = new ArrayList<>();
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
-            acceptChild(visitor, this.having);
+            acceptChild(visitor, items);
+            acceptChild(visitor, having);
         }
-
         visitor.endVisit(this);
     }
-
-    public SQLExpr getHaving() {
-        return this.having;
-    }
-
-    public void setHaving(SQLExpr having) {
-        this.having = having;
-    }
-
-    public List<SQLExpr> getItems() {
-        return this.items;
-    }
-
-    public void addItem(SQLExpr sqlExpr) {
-        if (sqlExpr != null) {
+    
+    public void addItem(final SQLExpr sqlExpr) {
+        if (null != sqlExpr) {
             sqlExpr.setParent(this);
-            this.items.add(sqlExpr);
+            items.add(sqlExpr);
         }
     }
 }

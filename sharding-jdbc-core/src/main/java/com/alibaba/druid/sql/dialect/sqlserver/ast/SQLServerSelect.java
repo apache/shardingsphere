@@ -15,13 +15,13 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLServerSelect extends SQLSelect implements SQLServerObject {
 
@@ -78,13 +78,12 @@ public class SQLServerSelect extends SQLSelect implements SQLServerObject {
     @Override
     public void accept0(SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.query);
-            acceptChild(visitor, this.orderBy);
-            acceptChild(visitor, this.hints);
-            acceptChild(visitor, this.offset);
-            acceptChild(visitor, this.rowCount);
+            acceptChild(visitor, getQuery());
+            acceptChild(visitor, getOrderBy());
+            acceptChild(visitor, getHints());
+            acceptChild(visitor, offset);
+            acceptChild(visitor, rowCount);
         }
-
         visitor.endVisit(this);
     }
 

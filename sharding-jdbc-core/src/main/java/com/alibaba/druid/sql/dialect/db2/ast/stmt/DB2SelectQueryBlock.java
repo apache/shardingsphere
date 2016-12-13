@@ -51,11 +51,11 @@ public class DB2SelectQueryBlock extends SQLSelectQueryBlock implements DB2Objec
     @Override
     public void accept0(DB2ASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.selectList);
-            acceptChild(visitor, this.from);
-            acceptChild(visitor, this.where);
-            acceptChild(visitor, this.groupBy);
-            acceptChild(visitor, this.first);
+            acceptChild(visitor, getSelectList());
+            acceptChild(visitor, getFrom());
+            acceptChild(visitor, getWhere());
+            acceptChild(visitor, getGroupBy());
+            acceptChild(visitor, first);
         }
         visitor.endVisit(this);
     }

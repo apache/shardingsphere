@@ -41,11 +41,11 @@ public class SQLServerSelectQueryBlock extends SQLSelectQueryBlock {
 
     protected void accept0(SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.top);
-            acceptChild(visitor, this.selectList);
-            acceptChild(visitor, this.from);
-            acceptChild(visitor, this.where);
-            acceptChild(visitor, this.groupBy);
+            acceptChild(visitor, top);
+            acceptChild(visitor, getSelectList());
+            acceptChild(visitor, getFrom());
+            acceptChild(visitor, getWhere());
+            acceptChild(visitor, getGroupBy());
         }
         visitor.endVisit(this);
     }

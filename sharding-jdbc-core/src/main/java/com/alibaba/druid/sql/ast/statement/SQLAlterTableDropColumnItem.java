@@ -15,41 +15,28 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLAlterTableDropColumnItem extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private List<SQLName> columns = new ArrayList<SQLName>();
-
-    private boolean       cascade = false;
-
-    public SQLAlterTableDropColumnItem(){
-
-    }
-
+    
+    private boolean cascade = false;
+    
+    private final List<SQLName> columns = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, columns);
         }
         visitor.endVisit(this);
     }
-
-    public List<SQLName> getColumns() {
-        return columns;
-    }
-
-    public boolean isCascade() {
-        return cascade;
-    }
-
-    public void setCascade(boolean cascade) {
-        this.cascade = cascade;
-    }
-
 }

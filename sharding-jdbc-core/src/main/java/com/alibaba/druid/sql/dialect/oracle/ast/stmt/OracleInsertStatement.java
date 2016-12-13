@@ -15,9 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
@@ -25,11 +22,14 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OracleInsertStatement extends SQLInsertStatement implements OracleStatement {
 
     private OracleReturningClause    returning;
     private OracleErrorLoggingClause errorLogging;
-    private List<SQLHint>            hints = new ArrayList<SQLHint>();
+    private List<SQLHint>            hints = new ArrayList<>();
 
     public List<SQLHint> getHints() {
         return hints;
@@ -59,17 +59,17 @@ public class OracleInsertStatement extends SQLInsertStatement implements OracleS
     protected void acceptInternal(SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, tableSource);
-            this.acceptChild(visitor, columns);
-            this.acceptChild(visitor, values);
-            this.acceptChild(visitor, query);
-            this.acceptChild(visitor, returning);
-            this.acceptChild(visitor, errorLogging);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getColumns());
+            acceptChild(visitor, getValues());
+            acceptChild(visitor, getQuery());
+            acceptChild(visitor, returning);
+            acceptChild(visitor, errorLogging);
         }
-
         visitor.endVisit(this);
     }
 }

@@ -18,13 +18,12 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLColumnUniqueKey extends SQLConstraintImpl implements SQLColumnConstraint {
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
+            acceptChild(visitor, getName());
         }
         visitor.endVisit(this);
     }
-
 }

@@ -26,6 +26,10 @@ public class SQLServerRollbackStatement extends SQLRollbackStatement implements 
     private boolean work = false;
 
     private SQLExpr name;
+    
+    public SQLServerRollbackStatement() {
+        super(null);
+    }
 
     public boolean isWork() {
         return work;

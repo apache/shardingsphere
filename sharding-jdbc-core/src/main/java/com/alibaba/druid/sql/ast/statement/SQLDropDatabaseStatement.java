@@ -18,45 +18,33 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLDropDatabaseStatement extends SQLStatementImpl implements SQLDDLStatement {
-
+    
     private SQLExpr database;
+    
     private boolean ifExists;
     
-    public SQLDropDatabaseStatement() {
-        
-    }
-    
-    public SQLDropDatabaseStatement(String dbType) {
+    public SQLDropDatabaseStatement(final String dbType) {
         super (dbType);
     }
-
+    
+    public void setDatabase(SQLExpr database) {
+        if (null != database) {
+            database.setParent(this);
+        }
+        this.database = database;
+    }
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, database);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(SQLExpr database) {
-        if (database != null) {
-            database.setParent(this);
-        }
-        this.database = database;
-    }
-
-    public boolean isIfExists() {
-        return ifExists;
-    }
-
-    public void setIfExists(boolean ifExists) {
-        this.ifExists = ifExists;
-    }
-
 }

@@ -256,7 +256,7 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         printlnAndAccept(x.getTableSources(), ", ");
 
         if (x.getRestartIdentity() != null) {
-            if (x.getRestartIdentity().booleanValue()) {
+            if (x.getRestartIdentity()) {
                 print(" RESTART IDENTITY");
             } else {
                 print(" CONTINUE IDENTITY");
@@ -264,7 +264,7 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         }
 
         if (x.getCascade() != null) {
-            if (x.getCascade().booleanValue()) {
+            if (x.getCascade()) {
                 print(" CASCADE");
             } else {
                 print(" RESTRICT");

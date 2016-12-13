@@ -18,27 +18,22 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SQLDropUserStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    private List<SQLExpr> users = new ArrayList<SQLExpr>(2);
     
-    public SQLDropUserStatement(String dbType) {
+    private final List<SQLExpr> users = new ArrayList<>(2);
+    
+    public SQLDropUserStatement(final String dbType) {
         super (dbType);
     }
-
-    public List<SQLExpr> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<SQLExpr> users) {
-        this.users = users;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, users);
         }

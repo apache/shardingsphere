@@ -909,8 +909,7 @@ public class SQLExprParser extends SQLParser {
     }
     
     public SQLSelectOrderByItem parseSelectOrderByItem() {
-        SQLSelectOrderByItem item = new SQLSelectOrderByItem();
-        item.setExpr(expr());
+        SQLSelectOrderByItem item = new SQLSelectOrderByItem(expr());
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
             item.setType(SQLOrderingSpecification.ASC);
@@ -1592,7 +1591,7 @@ public class SQLExprParser extends SQLParser {
         accept(Token.CHECK);
         SQLCheck check = createCheck();
         accept(Token.LEFT_PAREN);
-        check.setExpr(this.expr());
+        check.setExpr(expr());
         accept(Token.RIGHT_PAREN);
         return check;
     }

@@ -19,39 +19,26 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLFetchStatement extends SQLStatementImpl {
-
-    private SQLName       cursorName;
-
-    private List<SQLExpr> into = new ArrayList<>();
-
+    
+    private SQLName cursorName;
+    
+    private final List<SQLExpr> into = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, cursorName);
             acceptChild(visitor, into);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getCursorName() {
-        return cursorName;
-    }
-
-    public void setCursorName(SQLName cursorName) {
-        this.cursorName = cursorName;
-    }
-
-    public List<SQLExpr> getInto() {
-        return into;
-    }
-
-    public void setInto(List<SQLExpr> into) {
-        this.into = into;
-    }
-
 }

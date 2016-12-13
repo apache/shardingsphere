@@ -16,50 +16,32 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLSubqueryTableSource extends SQLTableSourceImpl {
-
-    protected SQLSelect select;
-
-    public SQLSubqueryTableSource(){
-
-    }
-
-    public SQLSubqueryTableSource(String alias){
-        super(alias);
-    }
-
-    public SQLSubqueryTableSource(SQLSelect select, String alias){
-        super(alias);
-        this.setSelect(select);
-    }
-
-    public SQLSubqueryTableSource(SQLSelect select){
-        this.setSelect(select);
-    }
-
-    public SQLSelect getSelect() {
-        return this.select;
-    }
-
-    public void setSelect(SQLSelect select) {
-        if (select != null) {
+    
+    private final SQLSelect select;
+    
+    public SQLSubqueryTableSource(final SQLSelect select){
+        if (null != select) {
             select.setParent(this);
         }
         this.select = select;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, select);
         }
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("(");
-        this.select.output(buf);
-        buf.append(")");
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("(");
+        select.output(buffer);
+        buffer.append(")");
     }
 }

@@ -18,46 +18,30 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLUpdateSetItem extends SQLObjectImpl {
-
+    
     private SQLExpr column;
+    
     private SQLExpr value;
-
-    public SQLUpdateSetItem(){
-
-    }
-
-    public SQLExpr getColumn() {
-        return column;
-    }
-
-    public void setColumn(SQLExpr column) {
-        this.column = column;
-    }
-
-    public SQLExpr getValue() {
-        return value;
-    }
-
-    public void setValue(SQLExpr value) {
-        this.value = value;
-    }
-
-    public void output(StringBuffer buf) {
-        column.output(buf);
-        buf.append(" = ");
-        value.output(buf);
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, column);
             acceptChild(visitor, value);
         }
-
         visitor.endVisit(this);
     }
-
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        column.output(buffer);
+        buffer.append(" = ");
+        value.output(buffer);
+    }
 }

@@ -17,30 +17,14 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public abstract class SQLConstraintImpl extends SQLObjectImpl implements SQLConstraint {
-
+    
     private SQLName name;
+    
     private Boolean enable;
-
-    public SQLConstraintImpl(){
-
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
-
 }

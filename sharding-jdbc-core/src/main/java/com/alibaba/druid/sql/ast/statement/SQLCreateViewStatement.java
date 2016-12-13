@@ -22,150 +22,101 @@ import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCreateViewStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    private boolean     orReplace   = false;
-    protected SQLName   name;
-    protected SQLSelect subQuery;
-    protected boolean   ifNotExists = false;
-
-    protected final List<Column> columns = new ArrayList<Column>();
-
+    
+    private boolean orReplace;
+    
+    private SQLName name;
+    
+    private SQLSelect subQuery;
+    
+    private boolean ifNotExists;
+    
     private Level with;
-
+    
     private SQLLiteralExpr comment;
+    
+    private final List<Column> columns = new ArrayList<>();
 
-    public SQLCreateViewStatement(String dbType){
+    public SQLCreateViewStatement(final String dbType){
         super(dbType);
     }
-
-    public boolean isOrReplace() {
-        return orReplace;
-    }
-
-    public void setOrReplace(boolean orReplace) {
-        this.orReplace = orReplace;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public Level getWith() {
-        return with;
-    }
-
-    public void setWith(Level with) {
-        this.with = with;
-    }
-
-    public SQLSelect getSubQuery() {
-        return subQuery;
-    }
-
-    public void setSubQuery(SQLSelect subQuery) {
-        this.subQuery = subQuery;
-    }
-
-    public List<Column> getColumns() {
-        return columns;
-    }
-
-    public boolean isIfNotExists() {
-        return ifNotExists;
-    }
-
-    public void setIfNotExists(boolean ifNotExists) {
-        this.ifNotExists = ifNotExists;
-    }
-
-    public SQLLiteralExpr getComment() {
-        return comment;
-    }
-
-    public void setComment(SQLLiteralExpr comment) {
-        if (comment != null) {
+    
+    public void setComment(final SQLLiteralExpr comment) {
+        if (null != comment) {
             comment.setParent(this);
         }
         this.comment = comment;
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("CREATE VIEW ");
-        this.name.output(buf);
-
-        if (this.columns.size() > 0) {
-            buf.append(" (");
-            for (int i = 0, size = this.columns.size(); i < size; ++i) {
-                if (i != 0) {
-                    buf.append(", ");
-                }
-                this.columns.get(i).output(buf);
-            }
-            buf.append(")");
-        }
-
-        buf.append(" AS ");
-        this.subQuery.output(buf);
-
-        if (this.with != null) {
-            buf.append(" WITH ");
-            buf.append(this.with.name());
-        }
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.name);
-            acceptChild(visitor, this.columns);
-            acceptChild(visitor, this.comment);
-            acceptChild(visitor, this.subQuery);
+            acceptChild(visitor, name);
+            acceptChild(visitor, columns);
+            acceptChild(visitor, comment);
+            acceptChild(visitor, subQuery);
         }
         visitor.endVisit(this);
     }
-
-    public static enum Level {
-                              CASCADED, LOCAL
-    }
-
-    public static class Column extends SQLObjectImpl {
-
-        private SQLExpr     expr;
-        private SQLCharExpr comment;
-
-        public SQLExpr getExpr() {
-            return expr;
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("CREATE VIEW ");
+        name.output(buffer);
+        if (!columns.isEmpty()) {
+            buffer.append(" (");
+            for (int i = 0, size = columns.size(); i < size; ++i) {
+                if (i != 0) {
+                    buffer.append(", ");
+                }
+                columns.get(i).output(buffer);
+            }
+            buffer.append(")");
         }
-
-        public void setExpr(SQLExpr expr) {
-            if (expr != null) {
+        buffer.append(" AS ");
+        subQuery.output(buffer);
+        if (null != with) {
+            buffer.append(" WITH ");
+            buffer.append(with.name());
+        }
+    }
+    
+    public enum Level {
+        CASCADED, LOCAL
+    }
+    
+    @Getter
+    public static class Column extends SQLObjectImpl {
+        
+        private SQLExpr expr;
+        
+        private SQLCharExpr comment;
+        
+        public void setExpr(final SQLExpr expr) {
+            if (null != expr) {
                 expr.setParent(this);
             }
             this.expr = expr;
         }
-
-        public SQLCharExpr getComment() {
-            return comment;
-        }
-
-        public void setComment(SQLCharExpr comment) {
-            if (comment != null) {
+        
+        public void setComment(final SQLCharExpr comment) {
+            if (null != comment) {
                 comment.setParent(this);
             }
             this.comment = comment;
         }
-
+        
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, expr);
                 acceptChild(visitor, comment);

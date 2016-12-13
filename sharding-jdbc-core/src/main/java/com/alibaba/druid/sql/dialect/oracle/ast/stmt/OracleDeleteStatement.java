@@ -15,15 +15,15 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OracleDeleteStatement extends SQLDeleteStatement {
 
@@ -54,9 +54,9 @@ public class OracleDeleteStatement extends SQLDeleteStatement {
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.hints);
-            acceptChild(visitor, this.tableSource);
-            acceptChild(visitor, this.getWhere());
+            acceptChild(visitor, hints);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getWhere());
             acceptChild(visitor, returning);
         }
 

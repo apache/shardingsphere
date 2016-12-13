@@ -17,47 +17,35 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLSelectStatement extends SQLStatementImpl {
     
-    protected SQLSelect select;
+    private final SQLSelect select;
     
-    public SQLSelectStatement(){
-
+    public SQLSelectStatement(final SQLSelect select){
+        this(select, null);
     }
     
-    public SQLSelectStatement(String dbType){
-        super (dbType);
-    }
-
-    public SQLSelectStatement(SQLSelect select){
-        this.setSelect(select);
-    }
-
-    public SQLSelectStatement(SQLSelect select, String dbType){
-        this(dbType);
-        this.setSelect(select);
-    }
-
-    public SQLSelect getSelect() {
-        return this.select;
-    }
-
-    public void setSelect(SQLSelect select) {
-        if (select != null) {
+    public SQLSelectStatement(final SQLSelect select, final String dbType){
+        super(dbType);
+        if (null != select) {
             select.setParent(this);
         }
         this.select = select;
     }
-
-    public void output(StringBuffer buf) {
-        this.select.output(buf);
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.select);
+            acceptChild(visitor, select);
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        select.output(buffer);
     }
 }

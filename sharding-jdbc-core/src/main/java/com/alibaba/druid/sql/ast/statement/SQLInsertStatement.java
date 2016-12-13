@@ -15,84 +15,67 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
-    private String dbType;
-
-    public SQLInsertStatement(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    public String getDbType() {
+        return null;
+    }
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, tableSource);
-            this.acceptChild(visitor, columns);
-            this.acceptChild(visitor, values);
-            this.acceptChild(visitor, query);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getColumns());
+            acceptChild(visitor, getValues());
+            acceptChild(visitor, getQuery());
         }
-
         visitor.endVisit(this);
     }
-
+    
+    @Getter
     public static class ValuesClause extends SQLObjectImpl {
-
+        
         private final List<SQLExpr> values;
-
+        
         public ValuesClause(){
             this(new ArrayList<SQLExpr>());
         }
-
-        public ValuesClause(List<SQLExpr> values){
+        
+        public ValuesClause(final List<SQLExpr> values){
             this.values = values;
-            for (int i = 0; i < values.size(); ++i) {
-                values.get(i).setParent(this);
+            for (SQLExpr each : values) {
+                each.setParent(this);
             }
         }
-
-        public void addValue(SQLExpr value) {
-            value.setParent(this);
-            values.add(value);
-        }
-
-        public List<SQLExpr> getValues() {
-            return values;
-        }
-
-        public void output(StringBuffer buf) {
-            buf.append(" VALUES (");
-            for (int i = 0, size = values.size(); i < size; ++i) {
-                if (i != 0) {
-                    buf.append(", ");
-                }
-                values.get(i).output(buf);
-            }
-            buf.append(")");
-        }
-
+        
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
-                this.acceptChild(visitor, values);
+                acceptChild(visitor, values);
             }
-
             visitor.endVisit(this);
         }
-    }
-
-    @Override
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
+        
+        @Override
+        public void output(final StringBuffer buffer) {
+            buffer.append(" VALUES (");
+            for (int i = 0, size = values.size(); i < size; ++i) {
+                if (i != 0) {
+                    buffer.append(", ");
+                }
+                values.get(i).output(buffer);
+            }
+            buffer.append(")");
+        }
     }
 }

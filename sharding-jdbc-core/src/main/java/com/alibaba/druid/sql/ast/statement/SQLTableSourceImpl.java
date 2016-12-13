@@ -15,51 +15,26 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLHint;
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLHint;
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
-
+@Getter
+@Setter
 public abstract class SQLTableSourceImpl extends SQLObjectImpl implements SQLTableSource {
-
-    protected String        alias;
-
-    protected List<SQLHint> hints;
-
+    
+    private String alias;
+    
+    private final List<SQLHint> hints = new ArrayList<>(2);
+    
     public SQLTableSourceImpl(){
-
     }
-
-    public SQLTableSourceImpl(String alias){
-
+    
+    public SQLTableSourceImpl(final String alias){
         this.alias = alias;
-    }
-
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public int getHintsSize() {
-        if (hints == null) {
-            return 0;
-        }
-
-        return hints.size();
-    }
-
-    public List<SQLHint> getHints() {
-        if (hints == null) {
-            hints = new ArrayList<SQLHint>(2);
-        }
-        return hints;
-    }
-
-    public void setHints(List<SQLHint> hints) {
-        this.hints = hints;
     }
 }

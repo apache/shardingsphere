@@ -15,15 +15,15 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
 
@@ -68,18 +68,19 @@ public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
 
     protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.hints);
-            acceptChild(visitor, this.selectList);
-            acceptChild(visitor, this.into);
-            acceptChild(visitor, this.from);
-            acceptChild(visitor, this.where);
-            acceptChild(visitor, this.hierachicalQueryClause);
-            acceptChild(visitor, this.groupBy);
-            acceptChild(visitor, this.modelClause);
+            acceptChild(visitor, hints);
+            acceptChild(visitor, getSelectList());
+            acceptChild(visitor, getInto());
+            acceptChild(visitor, getFrom());
+            acceptChild(visitor, getWhere());
+            acceptChild(visitor, hierachicalQueryClause);
+            acceptChild(visitor, getGroupBy());
+            acceptChild(visitor, modelClause);
         }
         visitor.endVisit(this);
     }
     
+    @Override
     public String toString() {
         return SQLUtils.toOracleString(this);
     }

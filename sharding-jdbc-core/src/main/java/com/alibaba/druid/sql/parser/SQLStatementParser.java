@@ -904,9 +904,7 @@ public class SQLStatementParser extends SQLParser {
                     acceptIdentifier("ADD");
                     SQLConstraint check = this.exprParser.parseConstraint();
 
-                    SQLAlterTableAddConstraint addCheck = new SQLAlterTableAddConstraint();
-                    addCheck.setWithNoCheck(true);
-                    addCheck.setConstraint(check);
+                    SQLAlterTableAddConstraint addCheck = new SQLAlterTableAddConstraint(check, true);
                     stmt.getItems().add(addCheck);
                 } else if (getLexer().identifierEquals("RENAME")) {
                     stmt.getItems().add(parseAlterTableRename());
@@ -915,13 +913,11 @@ public class SQLStatementParser extends SQLParser {
                     
                     if (getLexer().equalToken(Token.COMMENT)) {
                         getLexer().nextToken();
-                        SQLAlterTableSetComment setComment = new SQLAlterTableSetComment();
-                        setComment.setComment(this.exprParser.primary());
+                        SQLAlterTableSetComment setComment = new SQLAlterTableSetComment(exprParser.primary());
                         stmt.getItems().add(setComment);
                     } else if (getLexer().identifierEquals("LIFECYCLE")) {
                         getLexer().nextToken();
-                        SQLAlterTableSetLifecycle setLifecycle = new SQLAlterTableSetLifecycle();
-                        setLifecycle.setLifecycle(this.exprParser.primary());
+                        SQLAlterTableSetLifecycle setLifecycle = new SQLAlterTableSetLifecycle(exprParser.primary());
                         stmt.getItems().add(setLifecycle);
                     } else {
                         throw new ParserUnsupportedException(getLexer().getToken());
@@ -1006,15 +1002,7 @@ public class SQLStatementParser extends SQLParser {
             if (getLexer().identifierEquals("RENAME")) {
                 getLexer().nextToken();
                 accept(Token.TO);
-
-                SQLAlterViewRenameStatement stmt = new SQLAlterViewRenameStatement();
-                stmt.setName(viewName);
-
-                SQLName newName = this.exprParser.name();
-
-                stmt.setTo(newName);
-
-                return stmt;
+                return new SQLAlterViewRenameStatement(viewName, exprParser.name());
             }
             throw new ParserUnsupportedException(getLexer().getToken());
         }
@@ -1035,9 +1023,7 @@ public class SQLStatementParser extends SQLParser {
 
         if (getLexer().equalToken(Token.TO)) {
             getLexer().nextToken();
-            SQLAlterTableRename item = new SQLAlterTableRename();
-            item.setTo(this.exprParser.name());
-            return item;
+            return new SQLAlterTableRename(exprParser.name());
         }
         throw new ParserUnsupportedException(getLexer().getToken());
     }
@@ -1471,11 +1457,11 @@ public class SQLStatementParser extends SQLParser {
     public SQLStatement parseDropIndex() {
         accept(Token.INDEX);
         SQLDropIndexStatement stmt = new SQLDropIndexStatement(getDbType());
-        stmt.setIndexName(this.exprParser.name());
+        stmt.setIndexName(exprParser.name());
 
         if (getLexer().equalToken(Token.ON)) {
             getLexer().nextToken();
-            stmt.setTableName(this.exprParser.name());
+            stmt.setTableName(exprParser.name());
         }
         return stmt;
     }

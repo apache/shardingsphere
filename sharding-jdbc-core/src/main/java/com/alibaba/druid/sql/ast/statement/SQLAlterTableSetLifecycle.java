@@ -18,28 +18,25 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLAlterTableSetLifecycle extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private SQLExpr lifecycle;
-
-    public SQLExpr getLifecycle() {
-        return lifecycle;
-    }
-
-    public void setLifecycle(SQLExpr comment) {
-        if (comment != null) {
-            comment.setParent(this);
+    
+    private final SQLExpr lifecycle;
+    
+    public SQLAlterTableSetLifecycle(final SQLExpr lifecycle) {
+        if (null != lifecycle) {
+            lifecycle.setParent(this);
         }
-        this.lifecycle = comment;
+        this.lifecycle = lifecycle;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, lifecycle);
         }
         visitor.endVisit(this);
     }
-
 }

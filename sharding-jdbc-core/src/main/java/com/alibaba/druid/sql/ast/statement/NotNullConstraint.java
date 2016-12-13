@@ -18,15 +18,10 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class NotNullConstraint extends SQLConstraintImpl implements SQLColumnConstraint {
-
-    public NotNullConstraint(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
 }

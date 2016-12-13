@@ -19,33 +19,24 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLUseStatement extends SQLStatementImpl implements SQLStatement {
-
+    
     private SQLName database;
     
-    public SQLUseStatement() {
-        
-    }
-    
-    public SQLUseStatement(String dbType) {
+    public SQLUseStatement(final String dbType) {
         super (dbType);
     }
-
-    public SQLName getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(SQLName database) {
-        this.database = database;
-    }
-
+    
     @Override
-    public void acceptInternal(SQLASTVisitor visitor) {
+    public void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, database);
         }
         visitor.endVisit(this);
     }
-
 }

@@ -15,31 +15,24 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
 public class SQLUnique extends SQLConstraintImpl implements SQLUniqueConstraint, SQLTableElement {
-
-    private final List<SQLExpr> columns = new ArrayList<SQLExpr>();
-
-    public SQLUnique(){
-
-    }
-
-    public List<SQLExpr> getColumns() {
-        return columns;
-    }
-
+    
+    private final List<SQLExpr> columns = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getColumns());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, columns);
         }
         visitor.endVisit(this);
     }
-
 }

@@ -15,32 +15,24 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
+@Setter
 public class SQLAlterTableAddPartition extends SQLObjectImpl implements SQLAlterTableItem {
-
-    private boolean ifNotExists = false;
-
-    private final List<SQLAssignItem> partition = new ArrayList<SQLAssignItem>(4);
-
-    public List<SQLAssignItem> getPartition() {
-        return partition;
-    }
-
-    public boolean isIfNotExists() {
-        return ifNotExists;
-    }
-
-    public void setIfNotExists(boolean ifNotExists) {
-        this.ifNotExists = ifNotExists;
-    }
-
+    
+    private boolean ifNotExists;
+    
+    private final List<SQLAssignItem> partition = new ArrayList<>(4);
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, partition);
         }

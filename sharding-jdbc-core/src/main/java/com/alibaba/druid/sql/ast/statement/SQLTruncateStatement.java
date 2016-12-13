@@ -18,75 +18,41 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLTruncateStatement extends SQLStatementImpl {
-
-    protected List<SQLExprTableSource> tableSources     = new ArrayList<SQLExprTableSource>(2);
-
-    private boolean                    purgeSnapshotLog = false;
-
-    private boolean                    only;
-    private Boolean                    restartIdentity;
-    private Boolean                    cascade;
     
-    public SQLTruncateStatement(String dbType) {
+    private final List<SQLExprTableSource> tableSources = new ArrayList<>(2);
+    
+    private boolean purgeSnapshotLog;
+    
+    private boolean only;
+    
+    private Boolean restartIdentity;
+    
+    private Boolean cascade;
+    
+    public SQLTruncateStatement(final String dbType) {
         super (dbType);
     }
-
-    public List<SQLExprTableSource> getTableSources() {
-        return tableSources;
-    }
-
-    public void setTableSources(List<SQLExprTableSource> tableSources) {
-        this.tableSources = tableSources;
-    }
-
-    public void addTableSource(SQLName name) {
+    
+    public void addTableSource(final SQLName name) {
         SQLExprTableSource tableSource = new SQLExprTableSource(name);
         tableSource.setParent(this);
-        this.tableSources.add(tableSource);
+        tableSources.add(tableSource);
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, tableSources);
         }
         visitor.endVisit(this);
-    }
-
-    public boolean isPurgeSnapshotLog() {
-        return purgeSnapshotLog;
-    }
-
-    public void setPurgeSnapshotLog(boolean purgeSnapshotLog) {
-        this.purgeSnapshotLog = purgeSnapshotLog;
-    }
-
-    public boolean isOnly() {
-        return only;
-    }
-
-    public void setOnly(boolean only) {
-        this.only = only;
-    }
-
-    public Boolean getRestartIdentity() {
-        return restartIdentity;
-    }
-
-    public void setRestartIdentity(Boolean restartIdentity) {
-        this.restartIdentity = restartIdentity;
-    }
-
-    public Boolean getCascade() {
-        return cascade;
-    }
-
-    public void setCascade(Boolean cascade) {
-        this.cascade = cascade;
     }
 }

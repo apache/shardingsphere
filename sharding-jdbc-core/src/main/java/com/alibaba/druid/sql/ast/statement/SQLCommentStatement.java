@@ -19,48 +19,29 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLCommentStatement extends SQLStatementImpl implements SQLStatement {
-
-    public static enum Type {
-        TABLE, COLUMN
-    }
-
+    
     private SQLExpr on;
-    private Type    type;
+    
+    private Type type;
+    
     private SQLExpr comment;
-
-    public SQLExpr getComment() {
-        return comment;
-    }
-
-    public void setComment(SQLExpr comment) {
-        this.comment = comment;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public SQLExpr getOn() {
-        return on;
-    }
-
-    public void setOn(SQLExpr on) {
-        this.on = on;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, on);
             acceptChild(visitor, comment);
         }
         visitor.endVisit(this);
     }
-
+    
+    public enum Type {
+        TABLE, COLUMN
+    }
 }

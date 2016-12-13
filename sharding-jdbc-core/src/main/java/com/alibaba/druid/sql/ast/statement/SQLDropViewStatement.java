@@ -15,87 +15,36 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.ast.SQLStatementImpl;
+import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.SQLStatementImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
+@Getter
+@Setter
 public class SQLDropViewStatement extends SQLStatementImpl implements SQLDDLStatement {
-
-    protected List<SQLExprTableSource> tableSources = new ArrayList<SQLExprTableSource>();
-
-    protected boolean                  cascade      = false;
-    protected boolean                  restrict     = false;
-    protected boolean                  ifExists     = false;
-
-    public SQLDropViewStatement(){
-
-    }
     
-    public SQLDropViewStatement(String dbType){
+    private final List<SQLExprTableSource> tableSources = new ArrayList<>();
+    
+    private boolean cascade;
+    
+    private boolean restrict;
+    
+    private boolean ifExists;
+    
+    public SQLDropViewStatement(final String dbType){
         super (dbType);
     }
-
-    public SQLDropViewStatement(SQLName name){
-        this(new SQLExprTableSource(name));
-    }
-
-    public SQLDropViewStatement(SQLExprTableSource tableSource){
-        this.tableSources.add(tableSource);
-    }
-
-    public List<SQLExprTableSource> getTableSources() {
-        return tableSources;
-    }
-
-    public void setTableSources(List<SQLExprTableSource> tableSources) {
-        this.tableSources = tableSources;
-    }
-
-    public void setName(SQLName name) {
-        this.addTableSource(new SQLExprTableSource(name));
-    }
-
-    public void addTableSource(SQLName name) {
-        this.addTableSource(new SQLExprTableSource(name));
-    }
-
-    public void addTableSource(SQLExprTableSource tableSource) {
-        tableSources.add(tableSource);
-    }
-
-    public boolean isCascade() {
-        return cascade;
-    }
-
-    public void setCascade(boolean cascade) {
-        this.cascade = cascade;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, tableSources);
+            acceptChild(visitor, tableSources);
         }
         visitor.endVisit(this);
-    }
-
-    public boolean isRestrict() {
-        return restrict;
-    }
-
-    public void setRestrict(boolean restrict) {
-        this.restrict = restrict;
-    }
-
-    public boolean isIfExists() {
-        return ifExists;
-    }
-
-    public void setIfExists(boolean ifExists) {
-        this.ifExists = ifExists;
     }
 
 }

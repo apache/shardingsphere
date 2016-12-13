@@ -19,60 +19,30 @@ import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class SQLCreateDatabaseStatement extends SQLStatementImpl {
-
-    private SQLName              name;
-
-    private String               characterSet;
-    private String               collate;
-
+    
+    private SQLName name;
+    
+    private String collate;
+    
     private List<SQLCommentHint> hints;
-
-    public SQLCreateDatabaseStatement(String dbType){
-        super (dbType);
+    
+    public SQLCreateDatabaseStatement(final String dbType){
+        super(dbType);
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public String getCharacterSet() {
-        return characterSet;
-    }
-
-    public void setCharacterSet(String characterSet) {
-        this.characterSet = characterSet;
-    }
-
-    public String getCollate() {
-        return collate;
-    }
-
-    public void setCollate(String collate) {
-        this.collate = collate;
-    }
-
-    public List<SQLCommentHint> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<SQLCommentHint> hints) {
-        this.hints = hints;
-    }
-
 }

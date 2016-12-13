@@ -15,15 +15,15 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OracleUpdateStatement extends SQLUpdateStatement implements OracleStatement {
 
@@ -68,8 +68,8 @@ public class OracleUpdateStatement extends SQLUpdateStatement implements OracleS
     public void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.hints);
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, items);
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getItems());
             acceptChild(visitor, where);
             acceptChild(visitor, returning);
             acceptChild(visitor, returningInto);
