@@ -122,7 +122,7 @@ body {
 
 <p>由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为<code>${}</code>,与Spring的Property占位符冲突。
 故需要在Spring的配置文件中增加
-<code>&lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; **ignore-unresolvable=&quot;true&quot;**/&gt;</code></p>
+<code>&lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot;/&gt;</code></p>
 
 <h2 id="inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e">inline表达式返回结果出现浮点数？</h2>
 

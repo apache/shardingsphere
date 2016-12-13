@@ -31,7 +31,7 @@
 
 &lt;p&gt;由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为&lt;code&gt;${}&lt;/code&gt;,与Spring的Property占位符冲突。
 故需要在Spring的配置文件中增加
-&lt;code&gt;&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; **ignore-unresolvable=&amp;quot;true&amp;quot;**/&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;code&gt;&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;&lt;/code&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e&#34;&gt;inline表达式返回结果出现浮点数？&lt;/h2&gt;
 
