@@ -17,7 +17,8 @@ Spring命名空间使用规范并未强制要求将xsd文件部署至公网地�
 ## 异常：Cloud not resolve placeholder ... in string value ...?
 
 由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为`${}`,与Spring的Property占位符冲突。
-故需要在Spring的配置文件中增加<context:property-placeholder location="classpath:conf/rdb/conf.properties" **ignore-unresolvable="true"**/>
+故需要在Spring的配置文件中增加
+`<context:property-placeholder location="classpath:conf/rdb/conf.properties" ignore-unresolvable="true"/>`
 
 ## inline表达式返回结果出现浮点数？
 
