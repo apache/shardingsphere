@@ -30,7 +30,8 @@
 &lt;h2 id=&#34;异常-cloud-not-resolve-placeholder-in-string-value:4a1318da06786ac52626178ca960109e&#34;&gt;异常：Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;?&lt;/h2&gt;
 
 &lt;p&gt;由于inline表达式内使用Groovy语法，Groovy语法的变量占位符为&lt;code&gt;${}&lt;/code&gt;,与Spring的Property占位符冲突。
-故需要在Spring的配置文件中增加&lt;context:property-placeholder location=&#34;classpath:conf/rdb/conf.properties&#34; **ignore-unresolvable=&#34;true&#34;**/&gt;&lt;/p&gt;
+故需要在Spring的配置文件中增加
+&lt;code&gt;&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; **ignore-unresolvable=&amp;quot;true&amp;quot;**/&amp;gt;&lt;/code&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;inline表达式返回结果出现浮点数:4a1318da06786ac52626178ca960109e&#34;&gt;inline表达式返回结果出现浮点数？&lt;/h2&gt;
 
@@ -56,6 +57,8 @@
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/194&#34;&gt;ISSUE #194&lt;/a&gt; jdbc接口中资源释放错误&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/199&#34;&gt;ISSUE #199&lt;/a&gt; 分表且复用PreparedStatement对象造成数据路由错误&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/201&#34;&gt;ISSUE #201&lt;/a&gt; 批量操作执行前事件发送缺失&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dangdangdotcom/sharding-jdbc/issues/201&#34;&gt;ISSUE #203&lt;/a&gt; 合并batch操作发送的事件&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&#34;1-4-0:0e7a0379e76a8b6dfd2072d5a9672bab&#34;&gt;1.4.0&lt;/h2&gt;
