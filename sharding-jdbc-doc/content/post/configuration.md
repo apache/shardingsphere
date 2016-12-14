@@ -59,12 +59,8 @@ bindingTables:
   - tableNames: ...
 
 defaultDatabaseStrategy:
-  shardingColumns: user_id
-  algorithmExpression: ds_${user_id.longValue() % 2}
-
-defaultTableStrategy:
-  shardingColumns: id, order_id
-  algorithmClassName: com.dangdang.ddframe.rdb.sharding.config.yaml.algorithm.MultiAlgorithm
+  shardingColumns: none
+  algorithmClassName: com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm
 
 props:
   metrics.enable: false
@@ -181,7 +177,7 @@ props: 属性配置(可选)
             <rdb:binding-table-rules>
                 <rdb:binding-table-rule logic-tables="t_order, t_order_item"/>
             </rdb:binding-table-rules>
-            <rdb:default-database-strategy sharding-columns="user_id" algorithm-expression="dbtbl_${id.longValue() % 2 + 1}"/>
+            <rdb:default-database-strategy sharding-columns="none" algorithm-class="com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm"/>
         </rdb:sharding-rule>
         <rdb:props>
             <prop key="metrics.enable">true</prop>
