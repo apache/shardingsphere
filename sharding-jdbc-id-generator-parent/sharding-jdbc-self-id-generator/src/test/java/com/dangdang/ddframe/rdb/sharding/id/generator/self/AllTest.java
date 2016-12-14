@@ -26,7 +26,8 @@ import org.junit.runners.Suite;
         SystemPropertyWorkerIdTest.class,
         SystemEnvWorkerIdTest.class,
         CommonSelfIdGeneratorTest.class,
-        HostNameIdGeneratorTest.class
+        HostNameIdGeneratorTest.class,
+        IPIdGeneratorTest.class
     })
 public class AllTest {
 }
