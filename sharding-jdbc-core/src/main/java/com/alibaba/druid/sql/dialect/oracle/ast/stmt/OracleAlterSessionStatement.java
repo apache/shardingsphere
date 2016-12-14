@@ -15,30 +15,23 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
+import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
+import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-
+@Getter
 public class OracleAlterSessionStatement extends OracleStatementImpl {
-
-    private List<SQLAssignItem> items = new ArrayList<SQLAssignItem>();
-
+    
+    private final List<SQLAssignItem> items = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, items);
         }
         visitor.endVisit(this);
     }
-
-    public List<SQLAssignItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SQLAssignItem> items) {
-        this.items = items;
-    }
-
 }

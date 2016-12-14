@@ -15,46 +15,31 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.clause;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class PartitionExtensionClause extends OracleSQLObjectImpl {
-
-    private boolean             subPartition;
-    private SQLName             partition;
-    private final List<SQLName> target = new ArrayList<SQLName>();
-
-    public boolean isSubPartition() {
-        return subPartition;
-    }
-
-    public void setSubPartition(boolean subPartition) {
-        this.subPartition = subPartition;
-    }
-
-    public SQLName getPartition() {
-        return partition;
-    }
-
-    public void setPartition(SQLName partition) {
-        this.partition = partition;
-    }
-
-    public List<SQLName> getFor() {
-        return target;
-    }
-
+    
+    private boolean subPartition;
+    
+    private SQLName partition;
+    
+    private final List<SQLName> target = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, partition);
             acceptChild(visitor, target);
         }
         visitor.endVisit(this);
     }
-
 }

@@ -84,7 +84,7 @@ public class DB2SelectQueryBlock extends SQLSelectQueryBlock implements DB2Objec
         this.optimizeFor = optimizeFor;
     }
 
-    public static enum Isolation {
+    public enum Isolation {
         RR, RS, CS, UR
     }
 }

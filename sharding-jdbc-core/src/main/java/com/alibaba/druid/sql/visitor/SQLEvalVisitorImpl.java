@@ -37,43 +37,43 @@ import java.util.List;
 import java.util.Map;
 
 public class SQLEvalVisitorImpl extends SQLASTVisitorAdapter implements SQLEvalVisitor {
-
-    private List<Object>        parameters       = new ArrayList<>();
-
-    private Map<String, Function> functions        = new HashMap<>();
-
+    
+    private List<Object> parameters = new ArrayList<>();
+    
+    private Map<String, Function> functions = new HashMap<>();
+    
     public SQLEvalVisitorImpl(){
         this(new ArrayList<>(1));
     }
-
+    
     public SQLEvalVisitorImpl(List<Object> parameters){
         this.parameters = parameters;
     }
-
+    
     public List<Object> getParameters() {
         return parameters;
     }
-
+    
     public void setParameters(List<Object> parameters) {
         this.parameters = parameters;
     }
-
+    
     public boolean visit(SQLCharExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
+    
     public boolean visit(SQLVariantRefExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     public boolean visit(SQLBinaryOpExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     public boolean visit(SQLIntegerExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
+    
     public boolean visit(SQLNumberExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
@@ -81,37 +81,37 @@ public class SQLEvalVisitorImpl extends SQLASTVisitorAdapter implements SQLEvalV
     public boolean visit(SQLHexExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
+    
     @Override
     public boolean visit(SQLCaseExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     @Override
     public boolean visit(SQLInListExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     @Override
     public boolean visit(SQLNullExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
+    
     @Override
     public boolean visit(SQLMethodInvokeExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     @Override
     public boolean visit(SQLQueryExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
+    
     @Override
     public Function getFunction(String funcName) {
         return functions.get(funcName);
     }
-
+    
     @Override
     public void registerFunction(String funcName, Function function) {
         functions.put(funcName, function);
@@ -120,13 +120,13 @@ public class SQLEvalVisitorImpl extends SQLASTVisitorAdapter implements SQLEvalV
     public boolean visit(SQLIdentifierExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
+    
     @Override
     public boolean visit(SQLBooleanExpr x) {
         x.getAttributes().put(EVAL_VALUE, x.isValue());
         return false;
     }
-
+    
     @Override
     public boolean visit(SQLBinaryExpr x) {
         return SQLEvalVisitorUtils.visit(x);

@@ -15,52 +15,31 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.clause;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SampleClause extends OracleSQLObjectImpl {
 
-    private boolean       block   = false;
+    private boolean block;
 
-    private List<SQLExpr> percent = new ArrayList<SQLExpr>();
-
-    private SQLExpr       seedValue;
-
-    public boolean isBlock() {
-        return block;
-    }
-
-    public void setBlock(boolean block) {
-        this.block = block;
-    }
-
-    public List<SQLExpr> getPercent() {
-        return percent;
-    }
-
-    public void setPercent(List<SQLExpr> percent) {
-        this.percent = percent;
-    }
-
-    public SQLExpr getSeedValue() {
-        return seedValue;
-    }
-
-    public void setSeedValue(SQLExpr seedValue) {
-        this.seedValue = seedValue;
-    }
-
+    private SQLExpr seedValue;
+    
+    private final List<SQLExpr> percent = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, seedValue);
             acceptChild(visitor, percent);
         }
         visitor.endVisit(this);
     }
-
 }

@@ -18,83 +18,50 @@ package com.alibaba.druid.sql.dialect.sqlserver.ast;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
 public class SQLServerColumnDefinition extends SQLColumnDefinition implements SQLServerObject {
-
+    
     private Identity identity;
-
-    public SQLServerColumnDefinition(){
-
-    }
-
-    public Identity getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(Identity identity) {
-        if (identity != null) {
+    
+    public void setIdentity(final Identity identity) {
+        if (null != identity) {
             identity.setParent(this);
         }
         this.identity = identity;
     }
-
+    
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((SQLServerASTVisitor) visitor);
+        accept0((SQLServerASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, getName());
-            this.acceptChild(visitor, getDataType());
-            this.acceptChild(visitor, getDefaultExpr());
-            this.acceptChild(visitor, getConstraints());
-            this.acceptChild(visitor, identity);
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getDataType());
+            acceptChild(visitor, getDefaultExpr());
+            acceptChild(visitor, getConstraints());
+            acceptChild(visitor, identity);
         }
         visitor.endVisit(this);
     }
-
+    
+    @Getter
+    @Setter
     public static class Identity extends SQLServerObjectImpl {
-
+        
         private Integer seed;
+        
         private Integer increment;
-
-        private boolean notForReplication;
-
-        public Identity(){
-
-        }
-
-        public Integer getSeed() {
-            return seed;
-        }
-
-        public void setSeed(Integer seed) {
-            this.seed = seed;
-        }
-
-        public Integer getIncrement() {
-            return increment;
-        }
-
-        public void setIncrement(Integer increment) {
-            this.increment = increment;
-        }
-
-        public boolean isNotForReplication() {
-            return notForReplication;
-        }
-
-        public void setNotForReplication(boolean notForReplication) {
-            this.notForReplication = notForReplication;
-        }
-
+        
         @Override
-        public void accept0(SQLServerASTVisitor visitor) {
+        public void accept0(final SQLServerASTVisitor visitor) {
             visitor.visit(this);
             visitor.endVisit(this);
         }
-
     }
 }

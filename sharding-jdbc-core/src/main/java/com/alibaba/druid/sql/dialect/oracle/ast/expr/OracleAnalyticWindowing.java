@@ -19,45 +19,31 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleAnalyticWindowing extends SQLObjectImpl implements OracleExpr {
-
-    private Type    type;
+    
+    private Type type;
+    
     private SQLExpr expr;
-
-    public OracleAnalyticWindowing(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.expr);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getExpr() {
-        return this.expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
-    public Type getType() {
-        return this.type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public static enum Type {
+    
+    public enum Type {
         ROWS, RANGE;
     }
 }

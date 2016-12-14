@@ -47,7 +47,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleOrderBy;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause.FlashCacheType;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleAnalytic;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleAnalyticWindowing;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleArgumentExpr;
@@ -283,14 +282,11 @@ public class OracleExprParser extends SQLExprParser {
 
                 return primaryRest(extract);
             case BINARY_FLOAT:
-                OracleBinaryFloatExpr floatExpr = new OracleBinaryFloatExpr();
-                floatExpr.setValue(Float.parseFloat(getLexer().getTerm().getValue()));
+                OracleBinaryFloatExpr floatExpr = new OracleBinaryFloatExpr(Float.parseFloat(getLexer().getTerm().getValue()));
                 getLexer().nextToken();
                 return primaryRest(floatExpr);
             case BINARY_DOUBLE:
-                OracleBinaryDoubleExpr doubleExpr = new OracleBinaryDoubleExpr();
-                doubleExpr.setValue(Double.parseDouble(getLexer().getTerm().getValue()));
-
+                OracleBinaryDoubleExpr doubleExpr = new OracleBinaryDoubleExpr(Double.parseDouble(getLexer().getTerm().getValue()));
                 getLexer().nextToken();
                 return primaryRest(doubleExpr);
             case TABLE:
@@ -471,12 +467,8 @@ public class OracleExprParser extends SQLExprParser {
             String ident = ((SQLIdentifierExpr)expr).getSimpleName();
             
             if ("DATE".equalsIgnoreCase(ident)) {
-                OracleDateExpr timestamp = new OracleDateExpr();
-
-                String literal = getLexer().getLiterals();
-                timestamp.setLiteral(literal);
+                OracleDateExpr timestamp = new OracleDateExpr(getLexer().getLiterals());
                 accept(Token.LITERAL_CHARS);
-                
                 return primaryRest(timestamp);     
             }
             
@@ -630,17 +622,16 @@ public class OracleExprParser extends SQLExprParser {
             if (methodInvoke.getParameters().size() == 1) {
                 SQLExpr paramExpr = methodInvoke.getParameters().get(0);
                 if (paramExpr instanceof SQLIdentifierExpr && "+".equals(((SQLIdentifierExpr) paramExpr).getSimpleName())) {
-                    OracleOuterExpr outerExpr = new OracleOuterExpr();
+                    OracleOuterExpr outerExpr;
                     if (methodInvoke.getOwner() == null) {
-                        outerExpr.setExpr(new SQLIdentifierExpr(methodInvoke.getMethodName()));
+                        outerExpr = new OracleOuterExpr(new SQLIdentifierExpr(methodInvoke.getMethodName()));
                     } else {
-                        outerExpr.setExpr(new SQLPropertyExpr(methodInvoke.getOwner(), methodInvoke.getMethodName()));
+                        outerExpr = new OracleOuterExpr(new SQLPropertyExpr(methodInvoke.getOwner(), methodInvoke.getMethodName()));
                     }
                     return outerExpr;
                 }
             }
         }
-        
         return restExpr;
     }
 
@@ -1158,33 +1149,23 @@ public class OracleExprParser extends SQLExprParser {
                 continue;
             } else if (getLexer().equalToken(Token.FLASH_CACHE)) {
                 getLexer().nextToken();
-                FlashCacheType flashCacheType;
                 if (getLexer().equalToken(Token.KEEP)) {
-                    flashCacheType = FlashCacheType.KEEP;
                     getLexer().nextToken();
                 } else if (getLexer().equalToken(Token.NONE)) {
-                    flashCacheType = FlashCacheType.NONE;
                     getLexer().nextToken();
                 } else {
                     accept(Token.DEFAULT);
-                    flashCacheType = FlashCacheType.DEFAULT;
                 }
-                storage.setFlashCache(flashCacheType);
                 continue;
             } else if (getLexer().equalToken(Token.CELL_FLASH_CACHE)) {
                 getLexer().nextToken();
-                FlashCacheType flashCacheType;
                 if (getLexer().equalToken(Token.KEEP)) {
-                    flashCacheType = FlashCacheType.KEEP;
                     getLexer().nextToken();
                 } else if (getLexer().equalToken(Token.NONE)) {
-                    flashCacheType = FlashCacheType.NONE;
                     getLexer().nextToken();
                 } else {
                     accept(Token.DEFAULT);
-                    flashCacheType = FlashCacheType.DEFAULT;
                 }
-                storage.setCellFlashCache(flashCacheType);
                 continue;
             }
 

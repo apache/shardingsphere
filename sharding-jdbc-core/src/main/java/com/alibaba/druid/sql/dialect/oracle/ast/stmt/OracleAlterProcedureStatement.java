@@ -17,44 +17,24 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleAlterProcedureStatement extends OracleStatementImpl {
-
+    
     private SQLExpr name;
-
-    private boolean compile       = false;
+    
+    private boolean compile = false;
+    
     private boolean reuseSettings = false;
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
-    public boolean isCompile() {
-        return compile;
-    }
-
-    public void setCompile(boolean compile) {
-        this.compile = compile;
-    }
-
-    public boolean isReuseSettings() {
-        return reuseSettings;
-    }
-
-    public void setReuseSettings(boolean reuseSettings) {
-        this.reuseSettings = reuseSettings;
-    }
-
 }

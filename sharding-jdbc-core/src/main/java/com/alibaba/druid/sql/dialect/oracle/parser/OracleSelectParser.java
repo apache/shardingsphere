@@ -381,7 +381,6 @@ public class OracleSelectParser extends SQLSelectParser {
 
     private void parseMainModelClause(ModelClause modelClause) {
         MainModelClause mainModel = new MainModelClause();
-
         if (getLexer().identifierEquals("MAIN")) {
             getLexer().nextToken();
             mainModel.setMainModelName(expr());
@@ -399,12 +398,8 @@ public class OracleSelectParser extends SQLSelectParser {
                 getLexer().nextToken();
                 break;
             }
-
-            ModelColumn column = new ModelColumn();
-            column.setExpr(expr());
-            column.setAlias(as());
+            ModelColumn column = new ModelColumn(expr(), as());
             modelColumnClause.getDimensionByColumns().add(column);
-
             if (getLexer().equalToken(Token.COMMA)) {
                 getLexer().nextToken();
             }
@@ -418,9 +413,7 @@ public class OracleSelectParser extends SQLSelectParser {
                 break;
             }
 
-            ModelColumn column = new ModelColumn();
-            column.setExpr(expr());
-            column.setAlias(as());
+            ModelColumn column = new ModelColumn(expr(), as());
             modelColumnClause.getMeasuresColumns().add(column);
 
             if (getLexer().equalToken(Token.COMMA)) {
@@ -776,7 +769,7 @@ public class OracleSelectParser extends SQLSelectParser {
             } else {
                 accept(Token.FOR);
                 accept(Token.LEFT_PAREN);
-                exprParser.names(partition.getFor());
+                exprParser.names(partition.getTarget());
                 accept(Token.RIGHT_PAREN);
             }
 
@@ -795,7 +788,7 @@ public class OracleSelectParser extends SQLSelectParser {
             } else {
                 accept(Token.FOR);
                 accept(Token.LEFT_PAREN);
-                exprParser.names(partition.getFor());
+                exprParser.names(partition.getTarget());
                 accept(Token.RIGHT_PAREN);
             }
 
@@ -851,8 +844,7 @@ public class OracleSelectParser extends SQLSelectParser {
             } else if (getLexer().identifierEquals("SNAPSHOT")) {
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-                AsOfSnapshotClause clause = new AsOfSnapshotClause();
-                clause.setExpr(this.expr());
+                AsOfSnapshotClause clause = new AsOfSnapshotClause(expr());
                 accept(Token.RIGHT_PAREN);
 
                 return clause;

@@ -21,57 +21,28 @@ import com.alibaba.druid.sql.ast.statement.SQLUnique;
 import com.alibaba.druid.sql.ast.statement.SQLUniqueConstraint;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class MySqlKey extends SQLUnique implements SQLUniqueConstraint, SQLTableConstraint {
-
+    
     private SQLName indexName;
-
+    
     private String  indexType;
-
-    private boolean hasConstaint;
-
-    public MySqlKey(){
-
-    }
-
+    
+    private boolean hasConstraint;
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
-            accept0((MySqlASTVisitor) visitor);
+            if (visitor.visit(this)) {
+                acceptChild(visitor, getName());
+                acceptChild(visitor, getColumns());
+                acceptChild(visitor, indexName);
+            }
+            visitor.endVisit(this);
         }
     }
-
-    protected void accept0(MySqlASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getColumns());
-            acceptChild(visitor, indexName);
-        }
-        visitor.endVisit(this);
-    }
-
-    public String getIndexType() {
-        return indexType;
-    }
-
-    public void setIndexType(String indexType) {
-        this.indexType = indexType;
-    }
-
-    public SQLName getIndexName() {
-        return indexName;
-    }
-
-    public void setIndexName(SQLName indexName) {
-        this.indexName = indexName;
-    }
-
-    public boolean isHasConstaint() {
-        return hasConstaint;
-    }
-
-    public void setHasConstaint(boolean hasConstaint) {
-        this.hasConstaint = hasConstaint;
-    }
-
 }

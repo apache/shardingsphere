@@ -18,46 +18,30 @@ package com.alibaba.druid.sql.dialect.oracle.ast.clause;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 public abstract class FlashbackQueryClause extends OracleSQLObjectImpl {
-
+    
     private Type type;
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public static enum Type {
+    
+    public enum Type {
         SCN, TIMESTAMP
     }
-
+    
+    @Getter
+    @Setter
     public static class VersionsFlashbackQueryClause extends FlashbackQueryClause {
-
+        
         private SQLExpr begin;
+        
         private SQLExpr end;
-
-        public SQLExpr getBegin() {
-            return begin;
-        }
-
-        public void setBegin(SQLExpr begin) {
-            this.begin = begin;
-        }
-
-        public SQLExpr getEnd() {
-            return end;
-        }
-
-        public void setEnd(SQLExpr end) {
-            this.end = end;
-        }
-
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, begin);
                 acceptChild(visitor, end);
@@ -65,19 +49,13 @@ public abstract class FlashbackQueryClause extends OracleSQLObjectImpl {
             visitor.endVisit(this);
         }
     }
-
+    
+    @Getter
+    @Setter
     public static class AsOfFlashbackQueryClause extends FlashbackQueryClause {
-
+        
         private SQLExpr expr;
-
-        public SQLExpr getExpr() {
-            return expr;
-        }
-
-        public void setExpr(SQLExpr expr) {
-            this.expr = expr;
-        }
-
+        
         @Override
         public void accept0(OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
@@ -86,19 +64,13 @@ public abstract class FlashbackQueryClause extends OracleSQLObjectImpl {
             visitor.endVisit(this);
         }
     }
-
+    
+    @RequiredArgsConstructor
+    @Getter
     public static class AsOfSnapshotClause extends FlashbackQueryClause {
-
-        private SQLExpr expr;
-
-        public SQLExpr getExpr() {
-            return expr;
-        }
-
-        public void setExpr(SQLExpr expr) {
-            this.expr = expr;
-        }
-
+        
+        private final SQLExpr expr;
+        
         @Override
         public void accept0(OracleASTVisitor visitor) {
             if (visitor.visit(this)) {

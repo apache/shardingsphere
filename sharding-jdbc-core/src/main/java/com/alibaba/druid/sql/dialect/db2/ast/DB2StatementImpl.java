@@ -27,7 +27,7 @@ public abstract class DB2StatementImpl extends SQLStatementImpl implements DB2Ob
     }
     
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof DB2ASTVisitor) {
             accept0((DB2ASTVisitor) visitor);
             return;
@@ -36,5 +36,5 @@ public abstract class DB2StatementImpl extends SQLStatementImpl implements DB2Ob
     }
     
     @Override
-    public abstract void accept0(DB2ASTVisitor visitor);
+    public abstract void accept0(final DB2ASTVisitor visitor);
 }

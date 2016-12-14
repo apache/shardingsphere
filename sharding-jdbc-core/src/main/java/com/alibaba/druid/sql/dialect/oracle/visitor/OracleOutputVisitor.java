@@ -944,7 +944,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             print(")");
         } else {
             print("FOR (");
-            printAndAccept(x.getFor(), ",");
+            printAndAccept(x.getTarget(), ",");
             print(")");
         }
         return false;
@@ -1153,7 +1153,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         incrementIndent();
         for (CellReferenceOption opt : x.getCellReferenceOptions()) {
             print(' ');
-            print(opt.name);
+            print(opt.getText());
         }
 
         if (x.getReturnRowsClause() != null) {
@@ -1189,7 +1189,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
         for (CellReferenceOption opt : x.getCellReferenceOptions()) {
             println();
-            print(opt.name);
+            print(opt.getText());
         }
 
         println();
@@ -1260,7 +1260,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             print("RULES");
             for (ModelRuleOption opt : x.getOptions()) {
                 print(" ");
-                print(opt.name);
+                print(opt.getText());
             }
         }
 
@@ -1291,7 +1291,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     @Override
     public boolean visit(CellAssignmentItem x) {
         if (x.getOption() != null) {
-            print(x.getOption().name);
+            print(x.getOption().getText());
             print(" ");
         }
 

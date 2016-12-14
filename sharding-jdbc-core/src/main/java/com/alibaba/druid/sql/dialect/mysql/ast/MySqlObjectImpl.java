@@ -20,15 +20,15 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public abstract class MySqlObjectImpl extends SQLObjectImpl implements MySqlObject {
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {
             throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
         }
     }
-
-    public abstract void accept0(MySqlASTVisitor visitor);
+    
+    public abstract void accept0(final MySqlASTVisitor visitor);
 }

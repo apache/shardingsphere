@@ -628,7 +628,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
             getLexer().nextToken();
 
             MySqlKey key = new MySqlKey();
-            key.setHasConstaint(hasConstaint);
+            key.setHasConstraint(hasConstaint);
 
 //            if (identifierEquals("USING")) {
 //                getLexer().nextToken();
@@ -676,14 +676,14 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
         if (getLexer().getToken() == Token.PRIMARY) {
             MySqlPrimaryKey pk = this.getExprParser().parsePrimaryKey();
             pk.setName(name);
-            pk.setHasConstaint(hasConstaint);
+            pk.setHasConstraint(hasConstaint);
             return pk;
         }
 
         if (getLexer().getToken() == Token.UNIQUE) {
             MySqlUnique uk = this.getExprParser().parseUnique();
             uk.setName(name);
-            uk.setHasConstaint(hasConstaint);
+            uk.setHasConstraint(hasConstaint);
             return uk;
         }
 

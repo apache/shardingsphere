@@ -19,76 +19,29 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class OracleExtractExpr extends SQLExprImpl implements OracleExpr {
-
+    
     private OracleDateTimeUnit unit;
-    private SQLExpr            from;
-
-    public OracleExtractExpr(){
-
+    
+    private SQLExpr from;
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
-
-    public OracleDateTimeUnit getUnit() {
-        return this.unit;
-    }
-
-    public void setUnit(OracleDateTimeUnit unit) {
-        this.unit = unit;
-    }
-
-    public SQLExpr getFrom() {
-        return this.from;
-    }
-
-    public void setFrom(SQLExpr from) {
-        this.from = from;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.from);
+            acceptChild(visitor, from);
         }
-
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((from == null) ? 0 : from.hashCode());
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        OracleExtractExpr other = (OracleExtractExpr) obj;
-        if (from == null) {
-            if (other.from != null) {
-                return false;
-            }
-        } else if (!from.equals(other.from)) {
-            return false;
-        }
-        if (unit != other.unit) {
-            return false;
-        }
-        return true;
-    }
-
 }

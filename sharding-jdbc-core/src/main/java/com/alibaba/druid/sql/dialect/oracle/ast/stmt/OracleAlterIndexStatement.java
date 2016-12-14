@@ -20,25 +20,27 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleAlterIndexStatement extends OracleStatementImpl {
-
+    
     private SQLName name;
-
+    
     private SQLName renameTo;
-
-    private boolean compile;
-
+    
     private Boolean enable;
-
+    
     private Boolean monitoringUsage;
-
+    
     private Rebuild rebuild;
-
+    
     private SQLExpr parallel;
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
             acceptChild(visitor, renameTo);
@@ -47,82 +49,19 @@ public class OracleAlterIndexStatement extends OracleStatementImpl {
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getRenameTo() {
-        return renameTo;
-    }
-
-    public void setRenameTo(SQLName renameTo) {
-        this.renameTo = renameTo;
-    }
-
-    public SQLExpr getParallel() {
-        return parallel;
-    }
-
-    public void setParallel(SQLExpr parallel) {
-        this.parallel = parallel;
-    }
-
-    public Boolean getMonitoringUsage() {
-        return monitoringUsage;
-    }
-
-    public void setMonitoringUsage(Boolean monitoringUsage) {
-        this.monitoringUsage = monitoringUsage;
-    }
-
-    public Rebuild getRebuild() {
-        return rebuild;
-    }
-
-    public void setRebuild(Rebuild rebuild) {
-        this.rebuild = rebuild;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
-    public boolean isCompile() {
-        return compile;
-    }
-
-    public void setCompile(boolean compile) {
-        this.compile = compile;
-    }
-
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
-
+    
+    @Getter
+    @Setter
     public static class Rebuild extends OracleSQLObjectImpl {
-
+        
         private SQLObject option;
-
-        public SQLObject getOption() {
-            return option;
-        }
-
-        public void setOption(SQLObject option) {
-            this.option = option;
-        }
-
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, option);
             }
             visitor.endVisit(this);
         }
-
     }
 }

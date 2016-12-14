@@ -15,50 +15,29 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.clause;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class CycleClause extends OracleSQLObjectImpl {
-
-    private final List<SQLExpr> aliases = new ArrayList<SQLExpr>();
-    private SQLExpr             mark;
-    private SQLExpr             value;
-    private SQLExpr             defaultValue;
-
-    public SQLExpr getMark() {
-        return mark;
-    }
-
-    public void setMark(SQLExpr mark) {
-        this.mark = mark;
-    }
-
-    public SQLExpr getValue() {
-        return value;
-    }
-
-    public void setValue(SQLExpr value) {
-        this.value = value;
-    }
-
-    public SQLExpr getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(SQLExpr defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public List<SQLExpr> getAliases() {
-        return aliases;
-    }
-
+    
+    private SQLExpr mark;
+    
+    private SQLExpr value;
+    
+    private SQLExpr defaultValue;
+    
+    private final List<SQLExpr> aliases = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, aliases);
             acceptChild(visitor, mark);
@@ -67,5 +46,4 @@ public class CycleClause extends OracleSQLObjectImpl {
         }
         visitor.endVisit(this);
     }
-
 }

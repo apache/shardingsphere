@@ -20,15 +20,11 @@ import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public abstract class OracleSQLObjectImpl extends SQLObjectImpl implements OracleSQLObject {
-
-    public OracleSQLObjectImpl(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
-
-    public abstract void accept0(OracleASTVisitor visitor);
+    
+    public abstract void accept0(final OracleASTVisitor visitor);
 }

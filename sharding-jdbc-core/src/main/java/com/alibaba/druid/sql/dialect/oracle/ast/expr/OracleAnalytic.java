@@ -18,34 +18,26 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 import com.alibaba.druid.sql.ast.SQLOver;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleAnalytic extends SQLOver implements OracleExpr {
-
+    
     private OracleAnalyticWindowing windowing;
-
-    public OracleAnalytic(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getPartitionBy());
             acceptChild(visitor, getOrderBy());
             acceptChild(visitor, windowing);
         }
         visitor.endVisit(this);
-    }
-
-    public OracleAnalyticWindowing getWindowing() {
-        return this.windowing;
-    }
-
-    public void setWindowing(OracleAnalyticWindowing windowing) {
-        this.windowing = windowing;
     }
 }

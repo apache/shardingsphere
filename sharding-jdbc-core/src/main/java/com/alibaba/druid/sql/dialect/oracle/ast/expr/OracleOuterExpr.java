@@ -19,73 +19,32 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class OracleOuterExpr extends SQLExprImpl implements OracleExpr {
-
-    private SQLExpr expr;
-
-    public OracleOuterExpr(){
-
-    }
-
-    public OracleOuterExpr(SQLExpr expr){
-
-        this.expr = expr;
-    }
-
-    public SQLExpr getExpr() {
-        return this.expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
-    public void output(StringBuffer buf) {
-        this.expr.output(buf);
-        buf.append("(+)");
-    }
-
+    
+    private final SQLExpr expr;
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
+            acceptChild(visitor, expr);
         }
-
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        OracleOuterExpr other = (OracleOuterExpr) obj;
-        if (expr == null) {
-            if (other.expr != null) {
-                return false;
-            }
-        } else if (!expr.equals(other.expr)) {
-            return false;
-        }
-        return true;
+    public void output(final StringBuffer buffer) {
+        expr.output(buffer);
+        buffer.append("(+)");
     }
 }

@@ -19,39 +19,21 @@ import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleParameter extends OracleSQLObjectImpl {
-
-    private SQLExpr     name;
+    
+    private SQLExpr name;
+    
     private SQLDataType dataType;
-    private SQLExpr     defaultValue;
-
-    public SQLExpr getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(SQLExpr deaultValue) {
-        this.defaultValue = deaultValue;
-    }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
-    public SQLDataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(SQLDataType dataType) {
-        this.dataType = dataType;
-    }
-
+    
+    private SQLExpr defaultValue;
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
             acceptChild(visitor, dataType);

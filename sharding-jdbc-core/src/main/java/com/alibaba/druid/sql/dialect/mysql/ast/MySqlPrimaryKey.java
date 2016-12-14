@@ -19,15 +19,11 @@ import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 
 public class MySqlPrimaryKey extends MySqlKey implements SQLPrimaryKey {
-
-    public MySqlPrimaryKey(){
-
-    }
-
-    protected void accept0(MySqlASTVisitor visitor) {
+    
+    protected void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getColumns());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getColumns());
         }
         visitor.endVisit(this);
     }

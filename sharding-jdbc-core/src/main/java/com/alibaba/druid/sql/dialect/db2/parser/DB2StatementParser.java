@@ -24,7 +24,7 @@ import java.util.List;
 
 public class DB2StatementParser extends SQLStatementParser {
     
-    public DB2StatementParser(String sql) {
+    public DB2StatementParser(final String sql) {
         super (new DB2ExprParser(sql));
     }
     

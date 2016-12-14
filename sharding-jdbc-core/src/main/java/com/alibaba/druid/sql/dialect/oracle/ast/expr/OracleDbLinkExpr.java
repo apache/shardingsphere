@@ -20,90 +20,41 @@ import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class OracleDbLinkExpr extends SQLExprImpl implements SQLName, OracleExpr {
-
+    
     private SQLExpr expr;
-    private String  dbLink;
-
-    public OracleDbLinkExpr(){
-
-    }
-
+    
+    private String dbLink;
+    
+    @Override
     public String getSimpleName() {
         return dbLink;
     }
-
-    public SQLExpr getExpr() {
-        return this.expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
-    public String getDbLink() {
-        return this.dbLink;
-    }
-
-    public void setDbLink(String dbLink) {
-        this.dbLink = dbLink;
-    }
-
-    public void output(StringBuffer buf) {
-        this.expr.output(buf);
-        buf.append("@");
-        buf.append(this.dbLink);
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    public void output(final StringBuffer buffer) {
+        expr.output(buffer);
+        buffer.append("@");
+        buffer.append(this.dbLink);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
+    }
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
+            acceptChild(visitor, expr);
         }
-
         visitor.endVisit(this);
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((dbLink == null) ? 0 : dbLink.hashCode());
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        OracleDbLinkExpr other = (OracleDbLinkExpr) obj;
-        if (dbLink == null) {
-            if (other.dbLink != null) {
-                return false;
-            }
-        } else if (!dbLink.equals(other.dbLink)) {
-            return false;
-        }
-        if (expr == null) {
-            if (other.expr != null) {
-                return false;
-            }
-        } else if (!expr.equals(other.expr)) {
-            return false;
-        }
-        return true;
     }
 }

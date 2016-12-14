@@ -177,8 +177,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
 
                     while (true) {
                         acceptIdentifier("PARTITION");
-                        OracleRangeValuesClause range = new OracleRangeValuesClause();
-                        range.setName(this.exprParser.name());
+                        OracleRangeValuesClause range = new OracleRangeValuesClause(exprParser.name());
 
                         accept(Token.VALUES);
                         acceptIdentifier("LESS");

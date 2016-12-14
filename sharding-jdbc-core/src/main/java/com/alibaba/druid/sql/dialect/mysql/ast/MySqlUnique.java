@@ -19,16 +19,12 @@ import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 
 public class MySqlUnique extends MySqlKey implements SQLPrimaryKey {
-
-    public MySqlUnique(){
-
-    }
-
-    protected void accept0(MySqlASTVisitor visitor) {
+    
+    protected void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getColumns());
-            acceptChild(visitor, this.getIndexName());
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getColumns());
+            acceptChild(visitor, getIndexName());
         }
         visitor.endVisit(this);
     }

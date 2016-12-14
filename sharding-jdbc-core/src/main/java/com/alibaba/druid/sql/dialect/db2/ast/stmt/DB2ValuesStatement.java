@@ -18,25 +18,23 @@ package com.alibaba.druid.sql.dialect.db2.ast.stmt;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.db2.ast.DB2StatementImpl;
 import com.alibaba.druid.sql.dialect.db2.visitor.DB2ASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class DB2ValuesStatement extends DB2StatementImpl {
-
+    
     private SQLExpr expr;
-
+    
     @Override
-    public void accept0(DB2ASTVisitor visitor) {
+    public void accept0(final DB2ASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, expr);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        if (expr != null) {
+    
+    public void setExpr(final SQLExpr expr) {
+        if (null != expr) {
             expr.setParent(this);
         }
         this.expr = expr;

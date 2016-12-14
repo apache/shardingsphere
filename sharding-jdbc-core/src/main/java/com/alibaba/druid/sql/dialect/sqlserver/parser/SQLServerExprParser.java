@@ -214,7 +214,6 @@ public class SQLServerExprParser extends SQLExprParser {
                 } else {
                     accept(Token.FOR);
                     getLexer().identifierEquals("REPLICATION ");
-                    identity.setNotForReplication(true);
                 }
             }
 

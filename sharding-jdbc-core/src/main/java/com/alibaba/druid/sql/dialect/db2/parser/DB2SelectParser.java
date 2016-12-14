@@ -35,21 +35,15 @@ public class DB2SelectParser extends SQLSelectParser {
     public SQLSelectQuery query() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-
             SQLSelectQuery select = query();
             accept(Token.RIGHT_PAREN);
-
             return queryRest(select);
         }
-
         accept(Token.SELECT);
-
         if (getLexer().equalToken(Token.COMMENT)) {
             getLexer().nextToken();
         }
-
         DB2SelectQueryBlock queryBlock = new DB2SelectQueryBlock();
-
         if (getLexer().equalToken(Token.DISTINCT)) {
             queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
             getLexer().nextToken();
@@ -60,16 +54,10 @@ public class DB2SelectParser extends SQLSelectParser {
             queryBlock.setDistionOption(SQLSetQuantifier.ALL);
             getLexer().nextToken();
         }
-
         parseSelectList(queryBlock);
-
         parseFrom(queryBlock);
-
         parseWhere(queryBlock);
-
         parseGroupBy(queryBlock);
-
-
         while (true) {
             if (getLexer().equalToken(Token.FETCH)) {
                 getLexer().nextToken();

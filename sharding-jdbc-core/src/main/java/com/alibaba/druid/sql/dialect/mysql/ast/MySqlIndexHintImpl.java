@@ -15,35 +15,22 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast;
 
+import com.alibaba.druid.sql.ast.SQLName;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
-
+@Getter
+@Setter
 public abstract class MySqlIndexHintImpl extends MySqlObjectImpl implements MySqlIndexHint {
-
+    
     private MySqlIndexHint.Option option;
-
-    private List<SQLName>         indexList = new ArrayList<SQLName>();
-
+    
+    private final List<SQLName> indexList = new ArrayList<>();
+    
     @Override
     public abstract void accept0(MySqlASTVisitor visitor);
-
-    public MySqlIndexHint.Option getOption() {
-        return option;
-    }
-
-    public void setOption(MySqlIndexHint.Option option) {
-        this.option = option;
-    }
-
-    public List<SQLName> getIndexList() {
-        return indexList;
-    }
-
-    public void setIndexList(List<SQLName> indexList) {
-        this.indexList = indexList;
-    }
-
 }

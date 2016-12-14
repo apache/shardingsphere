@@ -18,43 +18,22 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class OracleArgumentExpr extends OracleSQLObjectImpl implements SQLExpr {
-
-    private String  argumentName;
-    private SQLExpr value;
-
-    public OracleArgumentExpr(){
-
-    }
-
-    public OracleArgumentExpr(String argumentName, SQLExpr value){
-        this.argumentName = argumentName;
-        this.value = value;
-    }
-
-    public String getArgumentName() {
-        return argumentName;
-    }
-
-    public void setArgumentName(String argumentName) {
-        this.argumentName = argumentName;
-    }
-
-    public SQLExpr getValue() {
-        return value;
-    }
-
-    public void setValue(SQLExpr value) {
-        this.value = value;
-    }
-
+    
+    private final String argumentName;
+    
+    private final SQLExpr value;
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, value);
         }
         visitor.endVisit(this);
     }
-
 }

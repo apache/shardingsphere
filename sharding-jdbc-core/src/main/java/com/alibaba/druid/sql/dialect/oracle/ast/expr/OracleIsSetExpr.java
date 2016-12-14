@@ -19,67 +19,27 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class OracleIsSetExpr extends SQLExprImpl implements OracleExpr {
-
-    private SQLExpr nestedTable;
-
-    public OracleIsSetExpr(){
-    }
-
-    public OracleIsSetExpr(SQLExpr nestedTable){
-        this.nestedTable = nestedTable;
-    }
-
-    public SQLExpr getNestedTable() {
-        return nestedTable;
-    }
-
-    public void setNestedTable(SQLExpr nestedTable) {
-        this.nestedTable = nestedTable;
-    }
-
+    
+    private final SQLExpr nestedTable;
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, nestedTable);
         }
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((nestedTable == null) ? 0 : nestedTable.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        OracleIsSetExpr other = (OracleIsSetExpr) obj;
-        if (nestedTable == null) {
-            if (other.nestedTable != null) {
-                return false;
-            }
-        } else if (!nestedTable.equals(other.nestedTable)) {
-            return false;
-        }
-        return true;
-    }
-
 }

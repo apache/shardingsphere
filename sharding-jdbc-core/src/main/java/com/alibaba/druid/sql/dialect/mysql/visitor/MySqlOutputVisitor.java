@@ -551,7 +551,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     @Override
     public boolean visit(MySqlKey x) {
-        if (x.isHasConstaint()) {
+        if (x.isHasConstraint()) {
             print("CONSTRAINT ");
             if (x.getName() != null) {
                 x.getName().accept(this);
@@ -2879,7 +2879,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     @Override
     public boolean visit(MySqlUnique x) {
-        if (x.isHasConstaint()) {
+        if (x.isHasConstraint()) {
             print("CONSTRAINT ");
             if (x.getName() != null) {
                 x.getName().accept(this);
