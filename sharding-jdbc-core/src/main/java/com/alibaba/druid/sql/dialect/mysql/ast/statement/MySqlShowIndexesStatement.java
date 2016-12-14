@@ -15,13 +15,13 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
+
+import java.util.List;
 
 public class MySqlShowIndexesStatement extends MySqlStatementImpl implements MySqlShowStatement {
 
@@ -37,7 +37,7 @@ public class MySqlShowIndexesStatement extends MySqlStatementImpl implements MyS
         if (table instanceof SQLPropertyExpr) {
             SQLPropertyExpr propExpr = (SQLPropertyExpr) table;
             this.setDatabase((SQLName) propExpr.getOwner());
-            this.table = new SQLIdentifierExpr(propExpr.getName());
+            this.table = new SQLIdentifierExpr(propExpr.getSimpleName());
             return;
         }
         this.table = table;

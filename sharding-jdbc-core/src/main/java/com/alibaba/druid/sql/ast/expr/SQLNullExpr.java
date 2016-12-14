@@ -21,31 +21,30 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import static com.alibaba.druid.sql.visitor.SQLEvalVisitor.EVAL_VALUE_NULL;
 
 public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr, SQLValuableExpr {
-
-    public SQLNullExpr(){
-
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append("NULL");
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
-
         visitor.endVisit(this);
     }
-
-    public int hashCode() {
-        return 0;
-    }
-
-    public boolean equals(Object o) {
-        return o instanceof SQLNullExpr;
-    }
-
+    
     @Override
     public Object getValue() {
         return EVAL_VALUE_NULL;
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("NULL");
+    }
+    
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        return o instanceof SQLNullExpr;
     }
 }

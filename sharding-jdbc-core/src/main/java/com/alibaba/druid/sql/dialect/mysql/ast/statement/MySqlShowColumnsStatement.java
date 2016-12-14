@@ -46,7 +46,7 @@ public class MySqlShowColumnsStatement extends MySqlStatementImpl implements MyS
         if (table instanceof SQLPropertyExpr) {
             SQLPropertyExpr propExpr = (SQLPropertyExpr) table;
             this.setDatabase((SQLName) propExpr.getOwner());
-            this.table = new SQLIdentifierExpr(propExpr.getName());
+            this.table = new SQLIdentifierExpr(propExpr.getSimpleName());
             return;
         }
         this.table = table;

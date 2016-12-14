@@ -17,68 +17,30 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
+@EqualsAndHashCode
 public class SQLBinaryExpr extends SQLExprImpl implements SQLLiteralExpr {
-
-    private String value;
-
-    public SQLBinaryExpr(){
-
-    }
-
-    public SQLBinaryExpr(String value){
+    
+    private final String value;
+    
+    public SQLBinaryExpr(final String value){
         super();
         this.value = value;
     }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    public void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
-
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("b'");
-        buf.append(value);
-        buf.append('\'');
-    }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        buffer.append("b'");
+        buffer.append(value);
+        buffer.append('\'');
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLBinaryExpr other = (SQLBinaryExpr) obj;
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
-            return false;
-        }
-        return true;
-    }
-
 }

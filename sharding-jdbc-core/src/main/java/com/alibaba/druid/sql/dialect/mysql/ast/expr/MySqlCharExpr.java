@@ -16,70 +16,45 @@
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class MySqlCharExpr extends SQLCharExpr implements MySqlExpr {
-
+    
     private String charset;
+    
     private String collate;
-
-    public MySqlCharExpr(){
-
-    }
-
-    public MySqlCharExpr(String text){
+    
+    public MySqlCharExpr(final String text){
         super(text);
     }
-
-    public String getCharset() {
-        return charset;
-    }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
-
-    public String getCollate() {
-        return collate;
-    }
-
-    public void setCollate(String collate) {
-        this.collate = collate;
-    }
-
-    public void output(StringBuffer buf) {
-        if (charset != null) {
-            buf.append(charset);
-            buf.append(' ');
-        }
-
-        super.output(buf);
-
-        if (collate != null) {
-            buf.append(" COLLATE ");
-            buf.append(collate);
-        }
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        if (visitor instanceof MySqlASTVisitor) {
-            accept0((MySqlASTVisitor) visitor);
-        } else {
-            visitor.visit(this);
-            visitor.endVisit(this);
-        }
-    }
-
-    public void accept0(MySqlASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
     
+    @Override
+    public void output(final StringBuffer buffer) {
+        if (null != charset) {
+            buffer.append(charset);
+            buffer.append(' ');
+        }
+        super.output(buffer);
+        if (null != collate) {
+            buffer.append(" COLLATE ");
+            buffer.append(collate);
+        }
+    }
+    
+    @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        output(buf);
-        return buf.toString();
+        StringBuffer buffer = new StringBuffer();
+        output(buffer);
+        return buffer.toString();
     }
 }

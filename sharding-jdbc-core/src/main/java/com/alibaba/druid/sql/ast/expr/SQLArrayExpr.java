@@ -15,68 +15,31 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 public class SQLArrayExpr extends SQLExprImpl {
-
-    private SQLExpr       expr;
-
-    private List<SQLExpr> values = new ArrayList<SQLExpr>();
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
-    public List<SQLExpr> getValues() {
-        return values;
-    }
-
-    public void setValues(List<SQLExpr> values) {
-        this.values = values;
-    }
-
+    
+    private SQLExpr expr;
+    
+    private final List<SQLExpr> values = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, expr);
             acceptChild(visitor, values);
         }
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        result = prime * result + ((values == null) ? 0 : values.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        SQLArrayExpr other = (SQLArrayExpr) obj;
-        if (expr == null) {
-            if (other.expr != null) return false;
-        } else if (!expr.equals(other.expr)) return false;
-        if (values == null) {
-            if (other.values != null) return false;
-        } else if (!values.equals(other.values)) return false;
-        return true;
-    }
-
-
-
 }

@@ -17,38 +17,37 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.google.common.base.Strings;
 
 public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr{
-
-    public SQLCharExpr(){
-
-    }
-
-    public SQLCharExpr(String text){
+    
+    public SQLCharExpr(final String text){
         super(text);
     }
-
+    
     @Override
-    public void output(StringBuffer buf) {
-        if ((this.text == null) || (this.text.length() == 0)) {
-            buf.append("NULL");
-        } else {
-            buf.append("'");
-            buf.append(this.text.replaceAll("'", "''"));
-            buf.append("'");
-        }
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public Object getValue() {
-        return this.text;
+    public void output(final StringBuffer buffer) {
+        if (Strings.isNullOrEmpty(getText())) {
+            buffer.append("NULL");
+        } else {
+            buffer.append("'");
+            buffer.append(getText().replaceAll("'", "''"));
+            buffer.append("'");
+        }
     }
     
+    @Override
+    public Object getValue() {
+        return getText();
+    }
+    
+    @Override
     public String toString() {
         return SQLUtils.toSQLString(this);
     }

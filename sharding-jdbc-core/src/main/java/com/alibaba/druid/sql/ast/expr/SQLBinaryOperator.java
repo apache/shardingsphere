@@ -15,13 +15,13 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-/**
- * 
- * 二元操作符
- * @author wenshao 2011-5-20 下午12:32:02
- * @formatter:off
- */
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum SQLBinaryOperator {
+    
     Union("UNION", 0), 
     COLLATE("COLLATE", 20),
     BitwiseXor("^", 50), 
@@ -37,14 +37,14 @@ public enum SQLBinaryOperator {
     RightShift(">>", 80), 
 
     BitwiseAnd("&", 90), 
-    BitwiseOr("|", 100),
+    BitwiseOr("|", 100), 
     
     GreaterThan(">", 110), 
     GreaterThanOrEqual(">=", 110), 
     Is("IS", 110), 
     LessThan("<", 110), 
     LessThanOrEqual("<=", 110), 
-    LessThanOrEqualOrGreaterThan("<=>",110),
+    LessThanOrEqualOrGreaterThan("<=>",110), 
     LessThanOrGreater("<>", 110), 
     
     Like("LIKE", 110),
@@ -58,9 +58,9 @@ public enum SQLBinaryOperator {
     NotGreaterThan("!>", 110), 
     IsNot("IS NOT", 110), 
     Escape("ESCAPE", 110), 
-    RegExp("REGEXP", 110),
+    RegExp("REGEXP", 110), 
     NotRegExp("NOT REGEXP", 110), 
-    Equality("=", 110),
+    Equality("=", 110), 
     
     BitwiseNot("!", 130), 
     Concat("||", 140), 
@@ -68,55 +68,11 @@ public enum SQLBinaryOperator {
     BooleanAnd("AND", 140), 
     BooleanXor("XOR", 150), 
     BooleanOr("OR", 160), 
-    Assignment(":=", 169)    
-    ;
-
-    public static int getPriority(SQLBinaryOperator operator) {
-        return 0;
-    }
-
-    public final String name;
-    public final int    priority;
-
-    SQLBinaryOperator(){
-        this(null, 0);
-    }
-
-    SQLBinaryOperator(String name, int priority){
-        this.name = name;
-        this.priority = priority;
-    }
+    Assignment(":=", 169);
     
-    public String getName() {
-        return this.name;
-    }
+    private final String name;
     
-    public int getPriority() {
-        return this.priority;
-    }
-    
-    public boolean isRelational() {
-        switch (this) {
-            case Equality:
-            case Like:
-            case NotEqual:
-            case GreaterThan:
-            case GreaterThanOrEqual:
-            case LessThan:
-            case LessThanOrEqual:
-            case LessThanOrGreater:
-            case NotLike:
-            case NotLessThan:
-            case NotGreaterThan:
-            case RLike:
-            case NotRLike:
-            case RegExp:
-            case NotRegExp:
-                return true;
-            default:
-                return false;
-        }
-    }
+    private final int priority;
     
     public boolean isLogical() {
         return this == BooleanAnd || this == BooleanOr || this == BooleanXor;

@@ -153,7 +153,7 @@ public class PGExprParser extends SQLExprParser {
         }
         
         if (expr.getClass() == SQLIdentifierExpr.class) {
-            String ident = ((SQLIdentifierExpr)expr).getName();
+            String ident = ((SQLIdentifierExpr)expr).getSimpleName();
             
             if ("TIMESTAMP".equalsIgnoreCase(ident)) {
                 if (!getLexer().equalToken(Token.LITERAL_ALIAS)

@@ -16,64 +16,25 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class SQLNumberExpr extends SQLNumericLiteralExpr {
-
-    private Number number;
-
-    public SQLNumberExpr(){
-
-    }
-
-    public SQLNumberExpr(Number number){
-
-        this.number = number;
-    }
-
-    public Number getNumber() {
-        return this.number;
-    }
-
-    public void setNumber(Number number) {
-        this.number = number;
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append(this.number.toString());
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    private final Number number;
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((number == null) ? 0 : number.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLNumberExpr other = (SQLNumberExpr) obj;
-        if (number == null) {
-            if (other.number != null) {
-                return false;
-            }
-        } else if (!number.equals(other.number)) {
-            return false;
-        }
-        return true;
+    public void output(final StringBuffer buf) {
+        buf.append(number.toString());
     }
 }

@@ -19,94 +19,42 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@EqualsAndHashCode
 public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
-
-    private SQLExpr owner;
-    private String  name;
-
-    public SQLPropertyExpr(SQLExpr owner, String name){
-        setOwner(owner);
-        this.name = name;
-    }
-
-    public SQLPropertyExpr(){
-
-    }
-
-    public String getSimpleName() {
-        return name;
-    }
-
-    public SQLExpr getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(SQLExpr owner) {
-        if (owner != null) {
+    
+    @Getter
+    private final SQLExpr owner;
+    
+    private final String name;
+    
+    public SQLPropertyExpr(final SQLExpr owner, final String name){
+        if (null != owner) {
             owner.setParent(this);
         }
         this.owner = owner;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
-
-    public void output(StringBuffer buf) {
-        this.owner.output(buf);
-        buf.append(".");
-        buf.append(this.name);
+    
+    @Override
+    public String getSimpleName() {
+        return name;
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.owner);
+            acceptChild(visitor, owner);
         }
-
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        owner.output(buffer);
+        buffer.append(".");
+        buffer.append(name);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SQLPropertyExpr)) {
-            return false;
-        }
-        SQLPropertyExpr other = (SQLPropertyExpr) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (owner == null) {
-            if (other.owner != null) {
-                return false;
-            }
-        } else if (!owner.equals(other.owner)) {
-            return false;
-        }
-        return true;
-    }
-
 }

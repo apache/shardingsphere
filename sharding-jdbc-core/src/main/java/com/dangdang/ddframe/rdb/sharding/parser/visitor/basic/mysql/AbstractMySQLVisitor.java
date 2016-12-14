@@ -163,7 +163,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         }
         printToken(tableOrAliasName);
         print(".");
-        print(x.getName());
+        print(x.getSimpleName());
         return false;
     }
     

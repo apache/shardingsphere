@@ -20,20 +20,23 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLAllColumnExpr extends SQLExprImpl {
     
-    public void output(StringBuffer buf) {
-        buf.append("*");
-    }
-    
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
     
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("*");
+    }
+    
+    @Override
     public int hashCode() {
         return 0;
     }
     
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(final Object o) {
         return o instanceof SQLAllColumnExpr;
     }
 }

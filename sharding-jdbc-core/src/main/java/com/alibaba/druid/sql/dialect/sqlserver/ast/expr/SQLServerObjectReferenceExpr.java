@@ -28,18 +28,14 @@ public class SQLServerObjectReferenceExpr extends SQLServerObjectImpl implements
     private String database;
     private String schema;
 
-    public SQLServerObjectReferenceExpr(){
-
-    }
-
     public SQLServerObjectReferenceExpr(SQLExpr owner){
         if (owner instanceof SQLIdentifierExpr) {
-            this.database = ((SQLIdentifierExpr) owner).getName();
+            this.database = ((SQLIdentifierExpr) owner).getSimpleName();
         } else if (owner instanceof SQLPropertyExpr) {
             SQLPropertyExpr propExpr = (SQLPropertyExpr) owner;
 
-            this.server = ((SQLIdentifierExpr) propExpr.getOwner()).getName();
-            this.database = propExpr.getName();
+            this.server = ((SQLIdentifierExpr) propExpr.getOwner()).getSimpleName();
+            this.database = propExpr.getSimpleName();
         } else {
             throw new IllegalArgumentException(owner.toString());
         }

@@ -25,8 +25,8 @@ public class PGTypeCastExpr extends SQLCastExpr implements PGExpr {
     @Override
     public void accept0(PGASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
-            acceptChild(visitor, this.dataType);
+            acceptChild(visitor, getExpr());
+            acceptChild(visitor, getDataType());
         }
         visitor.endVisit(this);
     }

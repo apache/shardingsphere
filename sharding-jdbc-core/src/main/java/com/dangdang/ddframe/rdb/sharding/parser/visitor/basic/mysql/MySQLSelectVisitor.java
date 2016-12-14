@@ -82,7 +82,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             if (expr instanceof SQLIdentifierExpr) {
                 getParseContext().registerSelectItem(((SQLIdentifierExpr) expr).getSimpleName());
             } else if (expr instanceof SQLPropertyExpr) {
-                getParseContext().registerSelectItem(((SQLPropertyExpr) expr).getName());
+                getParseContext().registerSelectItem(((SQLPropertyExpr) expr).getSimpleName());
             } else if (expr instanceof SQLAllColumnExpr) {
                 getParseContext().registerSelectItem("*");
             }
@@ -126,7 +126,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
                 getParseContext().addOrderByColumn(Optional.<String>absent(), ((SQLIdentifierExpr) expr).getSimpleName(), orderByType);
             } else if (expr instanceof SQLPropertyExpr) {
                 SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-                getParseContext().addOrderByColumn(Optional.of(sqlPropertyExpr.getOwner().toString()), sqlPropertyExpr.getName(), orderByType);
+                getParseContext().addOrderByColumn(Optional.of(sqlPropertyExpr.getOwner().toString()), sqlPropertyExpr.getSimpleName(), orderByType);
                 
             }
         }
@@ -145,7 +145,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         OrderByType orderByType = null == x.getType() ? OrderByType.ASC : OrderByType.valueOf(x.getType());
         if (x.getExpr() instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) x.getExpr();
-            getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getName(), orderByType);
+            getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getSimpleName(), orderByType);
         } else if (x.getExpr() instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
             getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getSimpleName(), orderByType);

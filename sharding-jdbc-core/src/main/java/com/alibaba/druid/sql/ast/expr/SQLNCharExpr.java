@@ -16,30 +16,28 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.google.common.base.Strings;
 
 public class SQLNCharExpr extends SQLTextLiteralExpr {
-
-    public SQLNCharExpr(){
-
-    }
-
-    public SQLNCharExpr(String text){
+    
+    public SQLNCharExpr(final String text) {
         super(text);
     }
-
-    public void output(StringBuffer buf) {
-        if ((this.text == null) || (this.text.length() == 0)) {
-            buf.append("NULL");
-            return;
-        }
-
-        buf.append("N'");
-        buf.append(this.text.replaceAll("'", "''"));
-        buf.append("'");
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        if (Strings.isNullOrEmpty(getText())) {
+            buffer.append("NULL");
+            return;
+        }
+        buffer.append("N'");
+        buffer.append(getText().replaceAll("'", "''"));
+        buffer.append("'");
     }
 }

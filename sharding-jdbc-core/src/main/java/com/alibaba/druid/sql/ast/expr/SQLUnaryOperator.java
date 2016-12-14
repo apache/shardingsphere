@@ -15,7 +15,13 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum SQLUnaryOperator {
+    
     Plus("+"), //
     Negative("-"), //
     Not("!"), //
@@ -27,10 +33,6 @@ public enum SQLUnaryOperator {
     NOT("NOT"),
     Pound("#") // Number of points in path or polygon
     ;
-
-    public final String name;
-
-    SQLUnaryOperator(String name){
-        this.name = name;
-    }
+    
+    private final String text;
 }

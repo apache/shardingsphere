@@ -20,137 +20,53 @@ import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLOver;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"methodName", "option", "over", "arguments"})
 public class SQLAggregateExpr extends SQLExprImpl implements Serializable {
-
-    private static final long     serialVersionUID = 1L;
-    protected String              methodName;
-    protected SQLAggregateOption  option;
-    protected final List<SQLExpr> arguments        = new ArrayList<SQLExpr>();
-    protected SQLOver             over;
-    protected SQLOrderBy          withinGroup;
-    protected boolean             ignoreNulls      = false;
-
-    public SQLAggregateExpr(String methodName){
+    
+    private static final long serialVersionUID = 6875909644887993393L;
+    
+    private String methodName;
+    
+    private SQLAggregateOption option;
+    
+    private SQLOver over;
+    
+    private SQLOrderBy withinGroup;
+    
+    private final List<SQLExpr> arguments = new ArrayList<>();
+    
+    public SQLAggregateExpr(final String methodName){
         this.methodName = methodName;
-    }
-
-    public SQLAggregateExpr(String methodName, SQLAggregateOption option){
-        this.methodName = methodName;
-        this.option = option;
-    }
-
-    public String getMethodName() {
-        return this.methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
-
-    public SQLOrderBy getWithinGroup() {
-        return withinGroup;
-    }
-
-    public void setWithinGroup(SQLOrderBy withinGroup) {
-        if (withinGroup != null) {
-            withinGroup.setParent(this);
-        }
-
-        this.withinGroup = withinGroup;
-    }
-
-    public SQLAggregateOption getOption() {
-        return this.option;
-    }
-
-    public void setOption(SQLAggregateOption option) {
-        this.option = option;
-    }
-
-    public List<SQLExpr> getArguments() {
-        return this.arguments;
-    }
-
-    public SQLOver getOver() {
-        return over;
-    }
-
-    public void setOver(SQLOver over) {
-        this.over = over;
     }
     
-    public boolean isIgnoreNulls() {
-        return this.ignoreNulls;
+    public SQLAggregateExpr(final String methodName, final SQLAggregateOption option){
+        this.methodName = methodName;
+        this.option = option;
     }
-
-    public void setIgnoreNulls(boolean ignoreNulls) {
-        this.ignoreNulls = ignoreNulls;
-    }
-
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, this.arguments);
-            acceptChild(visitor, this.over);
+    
+    public void setWithinGroup(final SQLOrderBy withinGroup) {
+        if (null != withinGroup) {
+            withinGroup.setParent(this);
         }
-
+        this.withinGroup = withinGroup;
+    }
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        if (visitor.visit(this)) {
+            acceptChild(visitor, arguments);
+            acceptChild(visitor, over);
+        }
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((arguments == null) ? 0 : arguments.hashCode());
-        result = prime * result + ((methodName == null) ? 0 : methodName.hashCode());
-        result = prime * result + ((option == null) ? 0 : option.hashCode());
-        result = prime * result + ((over == null) ? 0 : over.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLAggregateExpr other = (SQLAggregateExpr) obj;
-        if (arguments == null) {
-            if (other.arguments != null) {
-                return false;
-            }
-        } else if (!arguments.equals(other.arguments)) {
-            return false;
-        }
-        if (methodName == null) {
-            if (other.methodName != null) {
-                return false;
-            }
-        } else if (!methodName.equals(other.methodName)) {
-            return false;
-        }
-        if (over == null) {
-            if (other.over != null) {
-                return false;
-            }
-        } else if (!over.equals(other.over)) {
-            return false;
-        }
-        if (option != other.option) {
-            return false;
-        }
-        return true;
-    }
-
 }

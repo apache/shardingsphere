@@ -15,111 +15,47 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import java.io.Serializable;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serializable;
+
+@Getter
+@Setter
+@EqualsAndHashCode
 public class SQLInSubQueryExpr extends SQLExprImpl implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    private boolean           not              = false;
-    private SQLExpr           expr;
-
-    public SQLSelect          subQuery;
-
-    public SQLInSubQueryExpr(){
-
-    }
-
-    public boolean isNot() {
-        return not;
-    }
-
-    public void setNot(boolean not) {
-        this.not = not;
-    }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
-    public SQLInSubQueryExpr(SQLSelect select){
-
-        this.subQuery = select;
-    }
-
-    public SQLSelect getSubQuery() {
-        return this.subQuery;
-    }
-
-    public void setSubQuery(SQLSelect subQuery) {
-        if (subQuery != null) {
+    
+    private static final long serialVersionUID = 1307332712437199415L;
+    
+    private boolean not;
+    
+    private SQLExpr expr;
+    
+    private SQLSelect subQuery;
+    
+    public void setSubQuery(final SQLSelect subQuery) {
+        if (null != subQuery) {
             subQuery.setParent(this);
         }
         this.subQuery = subQuery;
     }
-
-    public void output(StringBuffer buf) {
-        this.subQuery.output(buf);
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor,this.expr);
-            acceptChild(visitor, this.subQuery);
+            acceptChild(visitor,expr);
+            acceptChild(visitor, subQuery);
         }
-
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        result = prime * result + (not ? 1231 : 1237);
-        result = prime * result + ((subQuery == null) ? 0 : subQuery.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        this.subQuery.output(buffer);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLInSubQueryExpr other = (SQLInSubQueryExpr) obj;
-        if (expr == null) {
-            if (other.expr != null) {
-                return false;
-            }
-        } else if (!expr.equals(other.expr)) {
-            return false;
-        }
-        if (not != other.not) {
-            return false;
-        }
-        if (subQuery == null) {
-            if (other.subQuery != null) {
-                return false;
-            }
-        } else if (!subQuery.equals(other.subQuery)) {
-            return false;
-        }
-        return true;
-    }
-
 }

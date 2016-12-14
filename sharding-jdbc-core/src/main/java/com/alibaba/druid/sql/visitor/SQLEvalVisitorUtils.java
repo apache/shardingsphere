@@ -755,7 +755,7 @@ public class SQLEvalVisitorUtils {
             } else if (queryBlock.getFrom() instanceof SQLExprTableSource) {
                 SQLExpr expr = ((SQLExprTableSource) queryBlock.getFrom()).getExpr();
                 if (expr instanceof SQLIdentifierExpr) {
-                    if ("dual".equalsIgnoreCase(((SQLIdentifierExpr) expr).getName())) {
+                    if ("dual".equalsIgnoreCase(((SQLIdentifierExpr) expr).getSimpleName())) {
                         nullFrom = true;
                     }
                 }

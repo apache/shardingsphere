@@ -267,7 +267,7 @@ public final class ParseContext {
     
     private Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
         Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getSimpleName());
-        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
+        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getSimpleName(), table.get().getName()) : null;
     }
     
     private Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {

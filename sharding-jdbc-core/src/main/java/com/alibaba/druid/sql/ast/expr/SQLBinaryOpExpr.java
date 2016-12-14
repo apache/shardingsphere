@@ -15,137 +15,53 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import java.io.Serializable;
-
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+import java.io.Serializable;
+
+@Getter
+@EqualsAndHashCode(of = {"left", "right", "operator"})
 public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    private SQLExpr           left;
-    private SQLExpr           right;
-    private SQLBinaryOperator operator;
-    private String            dbType;
-
-    public SQLBinaryOpExpr(){
-
-    }
-
-    public SQLBinaryOpExpr(String dbType){
-        this.dbType = dbType;
-    }
-
-    public SQLBinaryOpExpr(SQLExpr left, SQLBinaryOperator operator, SQLExpr right){
-        this(left, operator, right, null);
-    }
     
-    public SQLBinaryOpExpr(SQLExpr left, SQLBinaryOperator operator, SQLExpr right, String dbType){
-        setLeft(left);
-        setRight(right);
-        this.operator = operator;
-        this.dbType = dbType;
-    }
-
-    public SQLBinaryOpExpr(SQLExpr left, SQLExpr right, SQLBinaryOperator operator){
-
-        setLeft(left);
-        setRight(right);
-        this.operator = operator;
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-
-    public SQLExpr getLeft() {
-        return this.left;
-    }
-
-    public void setLeft(SQLExpr left) {
-        if (left != null) {
+    private static final long serialVersionUID = 4108953668433055176L;
+    
+    private SQLExpr left;
+    
+    private SQLExpr right;
+    
+    private SQLBinaryOperator operator;
+    
+    private String dbType;
+    
+    public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right, final String dbType){
+        if (null != left) {
             left.setParent(this);
         }
         this.left = left;
-    }
-
-    public SQLExpr getRight() {
-        return this.right;
-    }
-
-    public void setRight(SQLExpr right) {
-        if (right != null) {
+        if (null != right) {
             right.setParent(this);
         }
         this.right = right;
-    }
-
-    public SQLBinaryOperator getOperator() {
-        return this.operator;
-    }
-
-    public void setOperator(SQLBinaryOperator operator) {
         this.operator = operator;
+        this.dbType = dbType;
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.left);
-            acceptChild(visitor, this.right);
+            acceptChild(visitor, left);
+            acceptChild(visitor, right);
         }
-
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((left == null) ? 0 : left.hashCode());
-        result = prime * result + ((operator == null) ? 0 : operator.hashCode());
-        result = prime * result + ((right == null) ? 0 : right.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SQLBinaryOpExpr)) {
-            return false;
-        }
-        SQLBinaryOpExpr other = (SQLBinaryOpExpr) obj;
-        if (left == null) {
-            if (other.left != null) {
-                return false;
-            }
-        } else if (!left.equals(other.left)) {
-            return false;
-        }
-        if (operator != other.operator) {
-            return false;
-        }
-        if (right == null) {
-            if (other.right != null) {
-                return false;
-            }
-        } else if (!right.equals(other.right)) {
-            return false;
-        }
-        return true;
-    }
-
     public String toString() {
-        return SQLUtils.toSQLString(this, getDbType());
+        return SQLUtils.toSQLString(this, dbType);
     }
 }

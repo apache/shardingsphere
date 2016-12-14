@@ -59,7 +59,7 @@ public final class WallVisitorUtils {
             return getBinaryOpValue((SQLBinaryOpExpr) sqlExpr);
         }
         if (sqlExpr instanceof SQLBooleanExpr) {
-            return ((SQLBooleanExpr) sqlExpr).getValue();
+            return ((SQLBooleanExpr) sqlExpr).isValue();
         }
         if (sqlExpr instanceof SQLNumericLiteralExpr) {
             return ((SQLNumericLiteralExpr) sqlExpr).getNumber();

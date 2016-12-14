@@ -18,69 +18,28 @@ package com.alibaba.druid.sql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class SQLCurrentOfCursorExpr extends SQLExprImpl {
-
-    private SQLName cursorName;
-
-    public SQLCurrentOfCursorExpr(){
-
-    }
-
-    public SQLCurrentOfCursorExpr(SQLName cursorName){
-        this.cursorName = cursorName;
-    }
-
-    public SQLName getCursorName() {
-        return cursorName;
-    }
-
-    public void setCursorName(SQLName cursorName) {
-        this.cursorName = cursorName;
-    }
-
+    
+    private final SQLName cursorName;
+    
     @Override
-    public void output(StringBuffer buf) {
-        buf.append("CURRENT OF ");
-        cursorName.output(buf);
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.cursorName);
+            acceptChild(visitor, cursorName);
         }
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((cursorName == null) ? 0 : cursorName.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        buffer.append("CURRENT OF ");
+        cursorName.output(buffer);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLCurrentOfCursorExpr other = (SQLCurrentOfCursorExpr) obj;
-        if (cursorName == null) {
-            if (other.cursorName != null) {
-                return false;
-            }
-        } else if (!cursorName.equals(other.cursorName)) {
-            return false;
-        }
-        return true;
-    }
-
 }

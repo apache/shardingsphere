@@ -196,7 +196,7 @@ public class MySqlSelectIntoParser extends SQLSelectParser {
                 SQLExpr var = exprParser.primary();
                 if (var instanceof SQLIdentifierExpr) {
                     var = new SQLVariantRefExpr(
-                            ((SQLIdentifierExpr) var).getName());
+                            ((SQLIdentifierExpr) var).getSimpleName());
                 }
                 args.add(var);
                 if (getLexer().equalToken(Token.COMMA)) {

@@ -354,7 +354,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             } else {
                 print(" ");
             }
-            print(x.getOperator().name);
+            print(x.getOperator().getName());
             print(" ");
         }
 
@@ -373,7 +373,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             boolean rightRational = right.getOperator() == SQLBinaryOperator.BooleanAnd
                                     || right.getOperator() == SQLBinaryOperator.BooleanOr;
 
-            if (right.getOperator().priority >= x.getOperator().priority) {
+            if (right.getOperator().getPriority() >= x.getOperator().getPriority()) {
                 if (rightRational) {
                     incrementIndent();
                 }
@@ -399,7 +399,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             boolean leftRational = binaryLeft.getOperator() == SQLBinaryOperator.BooleanAnd
                                    || binaryLeft.getOperator() == SQLBinaryOperator.BooleanOr;
 
-            if (binaryLeft.getOperator().priority > op.priority) {
+            if (binaryLeft.getOperator().getPriority() > op.getPriority()) {
                 if (leftRational) {
                     incrementIndent();
                 }
@@ -496,7 +496,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     public boolean visit(SQLIdentifierExpr x) {
-        print(x.getName());
+        print(x.getSimpleName());
         return false;
     }
 
@@ -641,7 +641,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     public boolean visit(SQLPropertyExpr x) {
         x.getOwner().accept(this);
         print(".");
-        print(x.getName());
+        print(x.getSimpleName());
         return false;
     }
 
@@ -1158,10 +1158,8 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
     @Override
     public boolean visit(SQLUnaryExpr x) {
-        print(x.getOperator().name);
-
+        print(x.getOperator().getText());
         SQLExpr expr = x.getExpr();
-
         switch (x.getOperator()) {
             case BINARY:
             case Prior:
@@ -2111,7 +2109,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     public boolean visit(SQLBooleanExpr x) {
-        print(x.getValue() ? "true" : "false");
+        print(Boolean.toString(x.isValue()).toLowerCase());
 
         return false;
     }

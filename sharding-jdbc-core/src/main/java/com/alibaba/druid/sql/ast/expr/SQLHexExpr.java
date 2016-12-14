@@ -17,67 +17,31 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-import com.alibaba.druid.util.HexBin;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class SQLHexExpr extends SQLExprImpl implements SQLLiteralExpr {
-
+    
     private final String hex;
-
-    public SQLHexExpr(String hex){
-        this.hex = hex;
-    }
-
-    public String getHex() {
-        return hex;
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append("0x");
-        buf.append(this.hex);
-
-        String charset = (String) getAttribute("USING");
-        if (charset != null) {
-            buf.append(" USING ");
-            buf.append(charset);
-        }
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((hex == null) ? 0 : hex.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+    public void output(final StringBuffer buffer) {
+        buffer.append("0x");
+        buffer.append(hex);
+        String charset = (String) getAttribute("USING");
+        if (null != charset) {
+            buffer.append(" USING ");
+            buffer.append(charset);
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLHexExpr other = (SQLHexExpr) obj;
-        if (hex == null) {
-            if (other.hex != null) {
-                return false;
-            }
-        } else if (!hex.equals(other.hex)) {
-            return false;
-        }
-        return true;
-    }
-
-    public byte[] toBytes() {
-        return HexBin.decode(this.hex);
     }
 }

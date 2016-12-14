@@ -15,184 +15,88 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@EqualsAndHashCode
 public class SQLCaseExpr extends SQLExprImpl implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    private final List<Item>  items            = new ArrayList<Item>();
-    private SQLExpr           valueExpr;
-    private SQLExpr           elseExpr;
-
-    public SQLCaseExpr(){
-
-    }
-
-    public SQLExpr getValueExpr() {
-        return this.valueExpr;
-    }
-
-    public void setValueExpr(SQLExpr valueExpr) {
-        if (valueExpr != null) {
+    
+    private static final long serialVersionUID = 8764874646914339226L;
+    
+    private SQLExpr valueExpr;
+    
+    private SQLExpr elseExpr;
+    
+    private final List<Item> items = new ArrayList<>();
+    
+    public void setValueExpr(final SQLExpr valueExpr) {
+        if (null != valueExpr) {
             valueExpr.setParent(this);
         }
         this.valueExpr = valueExpr;
     }
-
-    public SQLExpr getElseExpr() {
-        return this.elseExpr;
-    }
-
-    public void setElseExpr(SQLExpr elseExpr) {
-        if (elseExpr != null) {
+    
+    public void setElseExpr(final SQLExpr elseExpr) {
+        if (null != elseExpr) {
             elseExpr.setParent(this);
         }
         this.elseExpr = elseExpr;
     }
-
-    public List<Item> getItems() {
-        return this.items;
-    }
-
-    public void addItem(Item item) {
-        if (item != null) {
+    
+    public void addItem(final Item item) {
+        if (null != item) {
             item.setParent(this);
-            this.items.add(item);
+            items.add(item);
         }
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.valueExpr);
-            acceptChild(visitor, this.items);
-            acceptChild(visitor, this.elseExpr);
+            acceptChild(visitor, valueExpr);
+            acceptChild(visitor, items);
+            acceptChild(visitor, elseExpr);
         }
         visitor.endVisit(this);
     }
-
+    
+    @Getter
+    @EqualsAndHashCode
     public static class Item extends SQLObjectImpl implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-        private SQLExpr           conditionExpr;
-        private SQLExpr           valueExpr;
-
-        public Item(){
-
-        }
-
-        public Item(SQLExpr conditionExpr, SQLExpr valueExpr){
-
-            setConditionExpr(conditionExpr);
-            setValueExpr(valueExpr);
-        }
-
-        public SQLExpr getConditionExpr() {
-            return this.conditionExpr;
-        }
-
-        public void setConditionExpr(SQLExpr conditionExpr) {
-            if (conditionExpr != null) {
+        
+        private static final long serialVersionUID = 6037220586116903111L;
+        
+        private final SQLExpr conditionExpr;
+        
+        private final SQLExpr valueExpr;
+        
+        public Item(final SQLExpr conditionExpr, final SQLExpr valueExpr){
+            if (null != conditionExpr) {
                 conditionExpr.setParent(this);
             }
             this.conditionExpr = conditionExpr;
-        }
-
-        public SQLExpr getValueExpr() {
-            return this.valueExpr;
-        }
-
-        public void setValueExpr(SQLExpr valueExpr) {
-            if (valueExpr != null) {
+            if (null != valueExpr) {
                 valueExpr.setParent(this);
             }
             this.valueExpr = valueExpr;
         }
-
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        
+        @Override
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             if (visitor.visit(this)) {
-                acceptChild(visitor, this.conditionExpr);
-                acceptChild(visitor, this.valueExpr);
+                acceptChild(visitor, conditionExpr);
+                acceptChild(visitor, valueExpr);
             }
             visitor.endVisit(this);
         }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((conditionExpr == null) ? 0 : conditionExpr.hashCode());
-            result = prime * result + ((valueExpr == null) ? 0 : valueExpr.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
-            Item other = (Item) obj;
-            if (conditionExpr == null) {
-                if (other.conditionExpr != null) return false;
-            } else if (!conditionExpr.equals(other.conditionExpr)) return false;
-            if (valueExpr == null) {
-                if (other.valueExpr != null) return false;
-            } else if (!valueExpr.equals(other.valueExpr)) return false;
-            return true;
-        }
-
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((elseExpr == null) ? 0 : elseExpr.hashCode());
-        result = prime * result + ((items == null) ? 0 : items.hashCode());
-        result = prime * result + ((valueExpr == null) ? 0 : valueExpr.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLCaseExpr other = (SQLCaseExpr) obj;
-        if (elseExpr == null) {
-            if (other.elseExpr != null) {
-                return false;
-            }
-        } else if (!elseExpr.equals(other.elseExpr)) {
-            return false;
-        }
-        if (items == null) {
-            if (other.items != null) {
-                return false;
-            }
-        } else if (!items.equals(other.items)) {
-            return false;
-        }
-        if (valueExpr == null) {
-            if (other.valueExpr != null) {
-                return false;
-            }
-        } else if (!valueExpr.equals(other.valueExpr)) {
-            return false;
-        }
-        return true;
-    }
-
 }

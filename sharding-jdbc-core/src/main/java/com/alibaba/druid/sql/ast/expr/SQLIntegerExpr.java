@@ -16,70 +16,30 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuableExpr{
-
-    private Number number;
-
-    public SQLIntegerExpr(Number number){
-
-        this.number = number;
-    }
-
-    public SQLIntegerExpr(){
-
-    }
-
-    public Number getNumber() {
-        return this.number;
-    }
-
-    public void setNumber(Number number) {
-        this.number = number;
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append(this.number);
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        visitor.visit(this);
-
-        visitor.endVisit(this);
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((number == null) ? 0 : number.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLIntegerExpr other = (SQLIntegerExpr) obj;
-        if (number == null) {
-            if (other.number != null) {
-                return false;
-            }
-        } else if (!number.equals(other.number)) {
-            return false;
-        }
-        return true;
-    }
-
+    
+    private final Number number;
+    
     @Override
     public Object getValue() {
-        return this.number;
+        return number;
+    }
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        visitor.visit(this);
+        visitor.endVisit(this);
+    }
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append(this.number);
     }
 }

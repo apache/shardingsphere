@@ -17,91 +17,38 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode(of = "name")
 public class SQLVariantRefExpr extends SQLExprImpl {
-
-    private String  name;
-
-    private boolean global = false;
-
-    private int     index  = -1;
-
-    public SQLVariantRefExpr(String name){
+    
+    private String name;
+    
+    private boolean global;
+    
+    private int index  = -1;
+    
+    public SQLVariantRefExpr(final String name){
         this.name = name;
     }
-
-    public SQLVariantRefExpr(String name, boolean global){
+    
+    public SQLVariantRefExpr(final String name, final boolean global){
         this.name = name;
         this.global = global;
     }
-
-    public SQLVariantRefExpr(){
-
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append(this.name);
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         visitor.visit(this);
-
         visitor.endVisit(this);
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public void output(final StringBuffer buffer) {
+        buffer.append(this.name);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof SQLVariantRefExpr)) {
-            return false;
-        }
-        SQLVariantRefExpr other = (SQLVariantRefExpr) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isGlobal() {
-        return global;
-    }
-
-    public void setGlobal(boolean global) {
-        this.global = global;
-    }
-
 }

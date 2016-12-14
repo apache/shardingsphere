@@ -171,7 +171,7 @@ public class MySqlExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.LITERAL_CHARS)) {
             if (expr instanceof SQLIdentifierExpr) {
                 SQLIdentifierExpr identExpr = (SQLIdentifierExpr) expr;
-                String ident = identExpr.getName();
+                String ident = identExpr.getSimpleName();
 
                 if (ident.equalsIgnoreCase("x")) {
                     String charValue = getLexer().getLiterals();
@@ -190,7 +190,7 @@ public class MySqlExprParser extends SQLExprParser {
                     getLexer().nextToken();
 
                     MySqlCharExpr mysqlCharExpr = new MySqlCharExpr(charValue);
-                    mysqlCharExpr.setCharset(identExpr.getName());
+                    mysqlCharExpr.setCharset(identExpr.getSimpleName());
                     if (getLexer().identifierEquals("COLLATE")) {
                         getLexer().nextToken();
 
@@ -269,7 +269,7 @@ public class MySqlExprParser extends SQLExprParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN) && expr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr identExpr = (SQLIdentifierExpr) expr;
-            String ident = identExpr.getName();
+            String ident = identExpr.getSimpleName();
 
             if ("EXTRACT".equalsIgnoreCase(ident)) {
                 getLexer().nextToken();
@@ -448,7 +448,7 @@ public class MySqlExprParser extends SQLExprParser {
             if (expr instanceof SQLCharExpr) {
                 userName.setUserName(expr.toString());
             } else {
-                userName.setUserName(((SQLIdentifierExpr) expr).getName());
+                userName.setUserName(((SQLIdentifierExpr) expr).getSimpleName());
             }
 
             if (getLexer().equalToken(Token.LITERAL_CHARS)) {
@@ -610,7 +610,7 @@ public class MySqlExprParser extends SQLExprParser {
 
         String ident = null;
         if (var instanceof SQLIdentifierExpr) {
-            ident = ((SQLIdentifierExpr) var).getName();
+            ident = ((SQLIdentifierExpr) var).getSimpleName();
 
             if ("GLOBAL".equalsIgnoreCase(ident)) {
                 ident = getLexer().getLiterals();
@@ -647,7 +647,7 @@ public class MySqlExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.VARIANT) && "@".equals(getLexer().getLiterals())) {
             getLexer().nextToken();
             MySqlUserName userName = new MySqlUserName();
-            userName.setUserName(((SQLIdentifierExpr) name).getName());
+            userName.setUserName((name).getSimpleName());
 
             if (getLexer().equalToken(Token.LITERAL_CHARS)) {
                 userName.setHost("'" + getLexer().getLiterals() + "'");

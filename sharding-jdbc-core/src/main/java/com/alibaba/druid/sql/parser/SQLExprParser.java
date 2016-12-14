@@ -346,7 +346,7 @@ public class SQLExprParser extends SQLParser {
             case EXISTS:
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-                sqlExpr = new SQLExistsExpr(createSelectParser().select());
+                sqlExpr = new SQLExistsExpr(createSelectParser().select(), false);
                 accept(Token.RIGHT_PAREN);
                 break;
             case NOT:
@@ -610,7 +610,7 @@ public class SQLExprParser extends SQLParser {
         }
         if (getLexer().equalToken(Token.OF)) {
             if (expr instanceof SQLIdentifierExpr) {
-                String name = ((SQLIdentifierExpr) expr).getName();
+                String name = ((SQLIdentifierExpr) expr).getSimpleName();
                 if ("CURRENT".equalsIgnoreCase(name)) {
                     getLexer().nextToken();
                     SQLName cursorName = this.name();
@@ -642,9 +642,8 @@ public class SQLExprParser extends SQLParser {
             String methodName;
             SQLMethodInvokeExpr methodInvokeExpr;
             if (expr instanceof SQLPropertyExpr) {
-                methodName = ((SQLPropertyExpr) expr).getName();
-                methodInvokeExpr = new SQLMethodInvokeExpr(methodName);
-                methodInvokeExpr.setOwner(((SQLPropertyExpr) expr).getOwner());
+                methodName = ((SQLPropertyExpr) expr).getSimpleName();
+                methodInvokeExpr = new SQLMethodInvokeExpr(methodName, ((SQLPropertyExpr) expr).getOwner());
             } else {
                 methodName = expr.toString();
                 methodInvokeExpr = new SQLMethodInvokeExpr(methodName);
@@ -686,8 +685,7 @@ public class SQLExprParser extends SQLParser {
             }
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
-                SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr(name);
-                methodInvokeExpr.setOwner(expr);
+                SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr(name, expr);
                 if (getLexer().equalToken(Token.RIGHT_PAREN)) {
                     getLexer().nextToken();
                 } else {
@@ -999,7 +997,7 @@ public class SQLExprParser extends SQLParser {
     public final SQLExpr inRest(SQLExpr expr) {
         if (getLexer().equalToken(Token.IN)) {
             getLexer().nextToken();
-            SQLInListExpr inListExpr = new SQLInListExpr(expr);
+            SQLInListExpr inListExpr = new SQLInListExpr(expr, false);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 exprList(inListExpr.getTargetList(), inListExpr);
@@ -1526,7 +1524,7 @@ public class SQLExprParser extends SQLParser {
         SQLExpr var = primary();
 
         if (var instanceof SQLIdentifierExpr) {
-            var = new SQLVariantRefExpr(((SQLIdentifierExpr) var).getName());
+            var = new SQLVariantRefExpr(((SQLIdentifierExpr) var).getSimpleName());
         }
         item.setTarget(var);
         if (getLexer().equalToken(Token.COLON_EQ)) {

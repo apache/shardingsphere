@@ -439,7 +439,7 @@ public class OracleExprParser extends SQLExprParser {
         }
         
         if (expr instanceof SQLIdentifierExpr) {
-            String methodName = ((SQLIdentifierExpr) expr).getName();
+            String methodName = ((SQLIdentifierExpr) expr).getSimpleName();
             SQLMethodInvokeExpr methodExpr = new SQLMethodInvokeExpr(methodName);
             if ("trim".equalsIgnoreCase(methodName)) {
                 if (getLexer().identifierEquals("LEADING") //
@@ -468,7 +468,7 @@ public class OracleExprParser extends SQLExprParser {
 
     public SQLExpr primaryRest(SQLExpr expr) {
         if (expr.getClass() == SQLIdentifierExpr.class) {
-            String ident = ((SQLIdentifierExpr)expr).getName();
+            String ident = ((SQLIdentifierExpr)expr).getSimpleName();
             
             if ("DATE".equalsIgnoreCase(ident)) {
                 OracleDateExpr timestamp = new OracleDateExpr();
@@ -629,7 +629,7 @@ public class OracleExprParser extends SQLExprParser {
             SQLMethodInvokeExpr methodInvoke = (SQLMethodInvokeExpr) restExpr;
             if (methodInvoke.getParameters().size() == 1) {
                 SQLExpr paramExpr = methodInvoke.getParameters().get(0);
-                if (paramExpr instanceof SQLIdentifierExpr && "+".equals(((SQLIdentifierExpr) paramExpr).getName())) {
+                if (paramExpr instanceof SQLIdentifierExpr && "+".equals(((SQLIdentifierExpr) paramExpr).getSimpleName())) {
                     OracleOuterExpr outerExpr = new OracleOuterExpr();
                     if (methodInvoke.getOwner() == null) {
                         outerExpr.setExpr(new SQLIdentifierExpr(methodInvoke.getMethodName()));
@@ -709,7 +709,6 @@ public class OracleExprParser extends SQLExprParser {
         if (getLexer().getLiterals().equalsIgnoreCase("IGNORE")) {
             getLexer().nextToken();
             getLexer().identifierEquals("NULLS");
-            aggregateExpr.setIgnoreNulls(true);
         }
 
         accept(Token.RIGHT_PAREN);
@@ -924,7 +923,7 @@ public class OracleExprParser extends SQLExprParser {
             if (getLexer().equalToken(Token.GT)) {
                 getLexer().nextToken();
                 rightExp = expr();
-                String argumentName = ((SQLIdentifierExpr) expr).getName();
+                String argumentName = ((SQLIdentifierExpr) expr).getSimpleName();
                 return new OracleArgumentExpr(argumentName, rightExp);
             }
             

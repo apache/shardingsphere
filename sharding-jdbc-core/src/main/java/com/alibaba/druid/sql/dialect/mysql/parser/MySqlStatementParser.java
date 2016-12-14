@@ -3055,7 +3055,7 @@ public class MySqlStatementParser extends SQLStatementParser {
         while(true) {
             SQLExpr var = exprParser.primary();
             if (var instanceof SQLIdentifierExpr) {
-                var = new SQLVariantRefExpr(((SQLIdentifierExpr) var).getName());
+                var = new SQLVariantRefExpr(((SQLIdentifierExpr) var).getSimpleName());
             }
             stmt.addVar(var);
             if(getLexer().equalToken(Token.COMMA)) {

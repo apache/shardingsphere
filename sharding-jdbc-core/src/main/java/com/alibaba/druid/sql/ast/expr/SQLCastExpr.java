@@ -19,79 +19,31 @@ import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class SQLCastExpr extends SQLExprImpl {
-
-    protected SQLExpr     expr;
-    protected SQLDataType dataType;
-
-    public SQLCastExpr(){
-
-    }
-
-    public SQLExpr getExpr() {
-        return this.expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        if (expr != null) {
+    
+    private SQLExpr expr;
+    
+    private SQLDataType dataType;
+    
+    public void setExpr(final SQLExpr expr) {
+        if (null != expr) {
             expr.setParent(this);
         }
         this.expr = expr;
     }
-
-    public SQLDataType getDataType() {
-        return this.dataType;
-    }
-
-    public void setDataType(SQLDataType dataType) {
-        this.dataType = dataType;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
-            acceptChild(visitor, this.dataType);
+            acceptChild(visitor, expr);
+            acceptChild(visitor, dataType);
         }
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SQLCastExpr other = (SQLCastExpr) obj;
-        if (dataType == null) {
-            if (other.dataType != null) {
-                return false;
-            }
-        } else if (!dataType.equals(other.dataType)) {
-            return false;
-        }
-        if (expr == null) {
-            if (other.expr != null) {
-                return false;
-            }
-        } else if (!expr.equals(other.expr)) {
-            return false;
-        }
-        return true;
-    }
-
 }

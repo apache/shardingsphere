@@ -84,15 +84,4 @@ public class OracleBinaryDoubleExpr extends SQLNumericLiteralExpr implements Ora
         }
         return true;
     }
-
-    @Override
-    public void setNumber(Number number) {
-        if (number == null) {
-            this.setValue(null);
-            return;
-        }
-
-        this.setValue(number.doubleValue());
-    }
-
 }

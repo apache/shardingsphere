@@ -1753,7 +1753,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         SQLExpr timeZone = x.getTimeZone();
 
         if (timeZone instanceof SQLIdentifierExpr) {
-            if (((SQLIdentifierExpr) timeZone).getName().equalsIgnoreCase("LOCAL")) {
+            if (((SQLIdentifierExpr) timeZone).getSimpleName().equalsIgnoreCase("LOCAL")) {
                 print(" AT LOCAL");
                 return false;
             }
