@@ -321,7 +321,7 @@ try (
                 &lt;rdb:table-rule logic-table=&quot;t_order&quot; actual-tables=&quot;t_order_${0..3}&quot; table-strategy=&quot;orderTableStrategy&quot;/&gt;
                 &lt;rdb:table-rule logic-table=&quot;t_order_item&quot; actual-tables=&quot;t_order_item_${0..3}&quot; table-strategy=&quot;orderItemTableStrategy&quot;/&gt;
             &lt;/rdb:table-rules&gt;
-            &lt;rdb:default-database-strategy sharding-columns=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${user_id.longValue() % 2 + 1}&quot;/&gt;
+            &lt;rdb:default-database-strategy sharding-columns=&quot;none&quot; algorithm-class=&quot;com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm&quot;/&gt;
         &lt;/rdb:sharding-rule&gt;
     &lt;/rdb:data-source&gt;
 &lt;/beans&gt;

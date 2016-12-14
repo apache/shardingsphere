@@ -229,7 +229,7 @@ try (
                 &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order&amp;quot; actual-tables=&amp;quot;t_order_${0..3}&amp;quot; table-strategy=&amp;quot;orderTableStrategy&amp;quot;/&amp;gt;
                 &amp;lt;rdb:table-rule logic-table=&amp;quot;t_order_item&amp;quot; actual-tables=&amp;quot;t_order_item_${0..3}&amp;quot; table-strategy=&amp;quot;orderItemTableStrategy&amp;quot;/&amp;gt;
             &amp;lt;/rdb:table-rules&amp;gt;
-            &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;user_id&amp;quot; algorithm-expression=&amp;quot;dbtbl_${user_id.longValue() % 2 + 1}&amp;quot;/&amp;gt;
+            &amp;lt;rdb:default-database-strategy sharding-columns=&amp;quot;none&amp;quot; algorithm-class=&amp;quot;com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm&amp;quot;/&amp;gt;
         &amp;lt;/rdb:sharding-rule&amp;gt;
     &amp;lt;/rdb:data-source&amp;gt;
 &amp;lt;/beans&amp;gt;
