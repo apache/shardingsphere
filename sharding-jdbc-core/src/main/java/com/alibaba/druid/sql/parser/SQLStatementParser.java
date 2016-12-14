@@ -173,98 +173,78 @@ public class SQLStatementParser extends SQLParser {
             if (getLexer().equalToken(Token.DROP)) {
                 getLexer().nextToken();
                 if (getLexer().equalToken(Token.TABLE) || getLexer().identifierEquals("TEMPORARY")) {
-                    SQLDropTableStatement stmt = parseDropTable(false);
-                    result.add(stmt);
+                    result.add(parseDropTable(false));
                     continue;
                 } else if (getLexer().equalToken(Token.USER)) {
-                    SQLStatement stmt = parseDropUser();
-                    result.add(stmt);
+                    result.add(parseDropUser());
                     continue;
                 } else if (getLexer().equalToken(Token.INDEX)) {
-                    SQLStatement stmt = parseDropIndex();
-                    result.add(stmt);
+                    result.add(parseDropIndex());
                     continue;
                 } else if (getLexer().equalToken(Token.VIEW)) {
-                    SQLStatement stmt = parseDropView(false);
-                    result.add(stmt);
+                    result.add(parseDropView(false));
                     continue;
                 } else if (getLexer().equalToken(Token.TRIGGER)) {
-                    SQLStatement stmt = parseDropTrigger(false);
-                    result.add(stmt);
+                    result.add(parseDropTrigger(false));
                     continue;
                 } else if (getLexer().equalToken(Token.DATABASE)) {
-                    SQLStatement stmt = parseDropDatabase(false);
-                    result.add(stmt);
+                    result.add(parseDropDatabase(false));
                     continue;
                 } else if (getLexer().equalToken(Token.FUNCTION)) {
-                    SQLStatement stmt = parseDropFunction(false);
-                    result.add(stmt);
+                    result.add(parseDropFunction(false));
                     continue;
                 } else if (getLexer().equalToken(Token.TABLESPACE)) {
-                    SQLStatement stmt = parseDropTablespace(false);
-                    result.add(stmt);
+                    result.add(parseDropTablespace(false));
                     continue;
                 } else if (getLexer().equalToken(Token.PROCEDURE)) {
-                    SQLStatement stmt = parseDropProcedure(false);
-                    result.add(stmt);
+                    result.add(parseDropProcedure(false));
                     continue;
                 } else {
                     throw new ParserUnsupportedException(getLexer().getToken());
                 }
             }
             if (getLexer().equalToken(Token.TRUNCATE)) {
-                SQLStatement stmt = parseTruncate();
-                result.add(stmt);
+                result.add(parseTruncate());
                 continue;
             }
             if (getLexer().equalToken(Token.USE)) {
-                SQLStatement stmt = parseUse();
-                result.add(stmt);
+                result.add(parseUse());
                 continue;
             }
             if (getLexer().equalToken(Token.GRANT)) {
-                SQLStatement stmt = parseGrant();
-                result.add(stmt);
+                result.add(parseGrant());
                 continue;
             }
             if (getLexer().equalToken(Token.REVOKE)) {
-                SQLStatement stmt = parseRevoke();
-                result.add(stmt);
+                result.add(parseRevoke());
                 continue;
             }
             if (getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL")) {
-                SQLCallStatement stmt = parseCall();
-                result.add(stmt);
+                result.add(parseCall());
                 continue;
             }
             if (getLexer().identifierEquals("RENAME")) {
-                SQLStatement stmt = parseRename();
-                result.add(stmt);
+                result.add(parseRename());
                 continue;
             }
             if (getLexer().identifierEquals("RELEASE")) {
-                SQLStatement stmt = parseReleaseSavePoint();
-                result.add(stmt);
+                result.add(parseReleaseSavePoint());
                 continue;
             }
             if (getLexer().identifierEquals("SAVEPOINT")) {
-                SQLStatement stmt = parseSavePoint();
-                result.add(stmt);
+                result.add(parseSavePoint());
                 continue;
             }
             if (getLexer().identifierEquals("ROLLBACK")) {
-                SQLRollbackStatement stmt = parseRollback();
-                result.add(stmt);
+                result.add(parseRollback());
                 continue;
             }
             if (getLexer().identifierEquals("COMMIT")) {
-                SQLStatement stmt = parseCommit();
-                result.add(stmt);
+                result.add(parseCommit());
                 continue;
             }
             if (getLexer().equalToken(Token.SHOW)) {
-                SQLStatement stmt = parseShow();
-                result.add(stmt);
+                result.add(parseShow());
                 continue;
             }
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
@@ -273,8 +253,7 @@ public class SQLStatementParser extends SQLParser {
                 if (getLexer().equalToken(Token.SELECT)) {
                     getLexer().setCurrentPosition(currentPosition);
                     getLexer().setToken(Token.LEFT_PAREN);
-                    SQLStatement stmt = parseSelect();
-                    result.add(stmt);
+                    result.add(parseSelect());
                     continue;
                 }
             }
