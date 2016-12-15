@@ -113,6 +113,15 @@ public class CommonSelfIdGenerator implements IdGenerator {
     }
     
     /**
+     * 获取工作Id的二进制长度.
+     * 
+     * @return 工作Id的二进制长度
+     */
+    public static long getWorkerIdLength() {
+        return WORKER_ID_BITS;
+    }
+    
+    /**
      * 生成Id.
      * 
      * @return 返回@{@link Long}类型的Id

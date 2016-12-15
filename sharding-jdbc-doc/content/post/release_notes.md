@@ -8,6 +8,11 @@ weight = 1
 
 ## 1.4.1-SNAPSHOT
 
+### 功能提升
+
+1. [ISSUE #191](https://github.com/dangdangdotcom/sharding-jdbc/issues/191) 根据主机的IP生成workerId的IdGenerator实现
+1. [ISSUE #192](https://github.com/dangdangdotcom/sharding-jdbc/issues/192) 根据HOSTNAME的数字尾缀获取workerId的IdGenerator
+
 ### 缺陷修正
 
 1. [ISSUE #194](https://github.com/dangdangdotcom/sharding-jdbc/issues/194) jdbc接口中资源释放错误
