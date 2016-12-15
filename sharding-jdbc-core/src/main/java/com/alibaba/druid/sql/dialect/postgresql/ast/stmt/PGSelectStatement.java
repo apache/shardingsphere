@@ -21,28 +21,26 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class PGSelectStatement extends SQLSelectStatement implements PGSQLStatement {
-
+    
     private PGWithClause with;
-
+    
     public PGSelectStatement(SQLSelect select){
         super(select, JdbcConstants.POSTGRESQL);
     }
-
-    public PGWithClause getWith() {
-        return with;
-    }
-
-    public void setWith(PGWithClause with) {
-        this.with = with;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
-
-    public void accept0(PGASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
             acceptChild(visitor, getSelect());

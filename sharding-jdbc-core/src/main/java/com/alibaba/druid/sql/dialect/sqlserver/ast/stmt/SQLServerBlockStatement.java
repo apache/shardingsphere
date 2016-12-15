@@ -15,41 +15,29 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
-public class SQLServerBlockStatement  extends SQLServerObjectImpl implements SQLServerStatement  {
+import java.util.ArrayList;
+import java.util.List;
 
-    private List<SQLStatement>    statementList = new ArrayList<SQLStatement>();
+@Getter
+@Setter
+public class SQLServerBlockStatement extends SQLServerObjectImpl implements SQLServerStatement  {
     
     private String dbType;
-
-    public List<SQLStatement> getStatementList() {
-        return statementList;
-    }
-
-    public void setStatementList(List<SQLStatement> statementList) {
-        this.statementList = statementList;
-    }
-
+    
+    private final List<SQLStatement> statementList = new ArrayList<>();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, statementList);
         }
         visitor.endVisit(this);
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
 }

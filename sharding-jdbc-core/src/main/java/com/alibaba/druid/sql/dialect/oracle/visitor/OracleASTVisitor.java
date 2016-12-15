@@ -56,7 +56,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterIndexStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterProcedureStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSessionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSynonymStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableAddConstaint;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableAddConstraint;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableDropPartition;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableModify;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableMoveTablespace;
@@ -103,7 +103,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePrimaryKey;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSavePointStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierachicalQueryClause;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
@@ -141,7 +141,7 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleSelectForUpdate x);
 
-    void endVisit(OracleSelectHierachicalQueryClause x);
+    void endVisit(OracleSelectHierarchicalQueryClause x);
 
     void endVisit(OracleSelectJoin x);
 
@@ -183,7 +183,7 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     boolean visit(OracleSelectForUpdate x);
 
-    boolean visit(OracleSelectHierachicalQueryClause x);
+    boolean visit(OracleSelectHierarchicalQueryClause x);
 
     boolean visit(OracleSelectJoin x);
 
@@ -447,9 +447,9 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleAlterIndexStatement x);
 
-    boolean visit(OracleAlterTableAddConstaint x);
+    boolean visit(OracleAlterTableAddConstraint x);
 
-    void endVisit(OracleAlterTableAddConstaint x);
+    void endVisit(OracleAlterTableAddConstraint x);
 
     boolean visit(OraclePrimaryKey x);
 

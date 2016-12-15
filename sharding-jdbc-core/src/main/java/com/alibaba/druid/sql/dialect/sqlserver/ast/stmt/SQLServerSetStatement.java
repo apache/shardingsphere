@@ -15,50 +15,32 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerSetStatement extends SQLServerObjectImpl implements SQLServerStatement {
-
-    private SQLAssignItem item = new SQLAssignItem();
+    
     private String dbType;
-
-    public SQLServerSetStatement(){
-    }
-
-    public SQLServerSetStatement(SQLExpr target, SQLExpr value){
-        this.item = new SQLAssignItem(target, value);
-    }
-
-    public SQLAssignItem getItem() {
-        return item;
-    }
-
-    public void setItem(SQLAssignItem item) {
-        this.item = item;
-    }
-
-    public void output(StringBuffer buf) {
-        buf.append("SET ");
-        item.output(buf);
-    }
-
+    
+    private final SQLAssignItem item = new SQLAssignItem();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.item);
         }
         visitor.endVisit(this);
     }
     
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("SET ");
+        item.output(buffer);
     }
 }

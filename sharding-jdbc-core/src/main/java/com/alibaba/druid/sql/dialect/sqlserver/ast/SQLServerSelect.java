@@ -19,64 +19,47 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class SQLServerSelect extends SQLSelect implements SQLServerObject {
-
-    private boolean      forBrowse;
-    private List<String> forXmlOptions = new ArrayList<String>(4);
-
-    private SQLExpr      rowCount;
-    private SQLExpr      offset;
-
-    public boolean isForBrowse() {
-        return forBrowse;
-    }
-
-    public void setForBrowse(boolean forBrowse) {
-        this.forBrowse = forBrowse;
-    }
-
-    public List<String> getForXmlOptions() {
-        return forXmlOptions;
-    }
-
-    public void setForXmlOptions(List<String> forXmlOptions) {
-        this.forXmlOptions = forXmlOptions;
-    }
-
-    public SQLExpr getRowCount() {
-        return rowCount;
-    }
-
-    public void setRowCount(SQLExpr rowCount) {
-        if (rowCount != null) {
+    
+    private boolean forBrowse;
+    
+    private SQLExpr rowCount;
+    
+    private SQLExpr offset;
+    
+    private final List<String> forXmlOptions = new ArrayList<>(4);
+    
+    public void setRowCount(final SQLExpr rowCount) {
+        if (null != rowCount) {
             rowCount.setParent(this);
         }
-        
         this.rowCount = rowCount;
     }
-
-    public SQLExpr getOffset() {
-        return offset;
-    }
-
-    public void setOffset(SQLExpr offset) {
-        if (offset != null) {
+    
+    public void setOffset(final SQLExpr offset) {
+        if (null != offset) {
             offset.setParent(this);
         }
         this.offset = offset;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((SQLServerASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((SQLServerASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getQuery());
             acceptChild(visitor, getOrderBy());
@@ -86,35 +69,4 @@ public class SQLServerSelect extends SQLSelect implements SQLServerObject {
         }
         visitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (forBrowse ? 1231 : 1237);
-        result = prime * result + ((forXmlOptions == null) ? 0 : forXmlOptions.hashCode());
-        result = prime * result + ((offset == null) ? 0 : offset.hashCode());
-        result = prime * result + ((rowCount == null) ? 0 : rowCount.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!super.equals(obj)) return false;
-        if (getClass() != obj.getClass()) return false;
-        SQLServerSelect other = (SQLServerSelect) obj;
-        if (forBrowse != other.forBrowse) return false;
-        if (forXmlOptions == null) {
-            if (other.forXmlOptions != null) return false;
-        } else if (!forXmlOptions.equals(other.forXmlOptions)) return false;
-        if (offset == null) {
-            if (other.offset != null) return false;
-        } else if (!offset.equals(other.offset)) return false;
-        if (rowCount == null) {
-            if (other.rowCount != null) return false;
-        } else if (!rowCount.equals(other.rowCount)) return false;
-        return true;
-    }
-
 }

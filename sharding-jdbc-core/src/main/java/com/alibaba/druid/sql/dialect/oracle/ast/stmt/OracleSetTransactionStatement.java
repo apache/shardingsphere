@@ -18,44 +18,24 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleSetTransactionStatement extends OracleSQLObjectImpl implements OracleStatement {
-
-    private boolean readOnly = false;
-    private String  dbType;
-
+    
+    private boolean readOnly;
+    
+    private String dbType;
+    
     private SQLExpr name;
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-    
 }

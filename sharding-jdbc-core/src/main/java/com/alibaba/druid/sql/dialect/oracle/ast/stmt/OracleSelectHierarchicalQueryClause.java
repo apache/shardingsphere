@@ -13,29 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
+package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLStatementImpl;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
+import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor
 @Getter
-public class PGShowStatement extends SQLStatementImpl implements PGSQLStatement {
+@Setter
+public class OracleSelectHierarchicalQueryClause extends OracleSQLObjectImpl {
     
-    private final SQLExpr expr;
+    private SQLExpr startWith;
     
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
+    private SQLExpr connectBy;
+    
+    private boolean prior;
+    
+    private boolean noCycle;
     
     @Override
-    public void accept0(final PGASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
+            acceptChild(visitor, startWith);
+            acceptChild(visitor, connectBy);
         }
         visitor.endVisit(this);
     }

@@ -20,57 +20,41 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatement {
     
     private PGWithClause with;
-    private List<ValuesClause> valuesList = new ArrayList<>();
+    
     private SQLExpr returning;
-
-    public SQLExpr getReturning() {
-        return returning;
-    }
-
-    public void setReturning(SQLExpr returning) {
-        this.returning = returning;
-    }
-
-    public PGWithClause getWith() {
-        return with;
-    }
-
-    public void setWith(PGWithClause with) {
-        this.with = with;
-    }
-
+    
+    private final List<ValuesClause> valuesList = new ArrayList<>();
+    
     public ValuesClause getValues() {
-        if (valuesList.size() == 0) {
-            return null;
-        }
-        return valuesList.get(0);
+        return valuesList.isEmpty() ? null : valuesList.get(0);
     }
-
-    public void setValues(ValuesClause values) {
-        if (valuesList.size() == 0) {
+    
+    public void setValues(final ValuesClause values) {
+        if (valuesList.isEmpty()) {
             valuesList.add(values);
         } else {
             valuesList.set(0, values);
         }
     }
     
-    public List<ValuesClause> getValuesList() {
-        return valuesList;
-    }
-    
-    public void addValueCause(ValuesClause valueClause) {
+    public void addValueCause(final ValuesClause valueClause) {
         valueClause.setParent(this);
         valuesList.add(valueClause);
     }
     
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
     

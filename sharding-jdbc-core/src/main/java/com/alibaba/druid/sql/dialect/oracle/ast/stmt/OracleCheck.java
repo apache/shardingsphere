@@ -20,68 +20,45 @@ import com.alibaba.druid.sql.ast.statement.SQLCheck;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObject;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleCheck extends SQLCheck implements OracleConstraint, OracleSQLObject {
-
+    
     private OracleUsingIndexClause using;
-    private SQLName                exceptionsInto;
-    private Initially              initially;
-    private Boolean                deferrable;
-
+    
+    private SQLName exceptionsInto;
+    
+    private Initially initially;
+    
+    private Boolean deferrable;
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
             accept0((OracleASTVisitor) visitor);
             return;
         }
-
         super.accept(visitor);
     }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.getName());
-            acceptChild(visitor, this.getExpr());
-
+            acceptChild(visitor, getName());
+            acceptChild(visitor, getExpr());
             acceptChild(visitor, using);
             acceptChild(visitor, exceptionsInto);
         }
         visitor.endVisit(this);
     }
-
-    public Boolean getDeferrable() {
-        return deferrable;
-    }
-
-    public void setDeferrable(Boolean deferrable) {
-        this.deferrable = deferrable;
-    }
-
-    public Initially getInitially() {
-        return initially;
-    }
-
-    public void setInitially(Initially initially) {
-        this.initially = initially;
-    }
-
-    public SQLName getExceptionsInto() {
-        return exceptionsInto;
-    }
-
-    public void setExceptionsInto(SQLName exceptionsInto) {
-        this.exceptionsInto = exceptionsInto;
-    }
-
-    public OracleUsingIndexClause getUsing() {
-        return using;
-    }
-
-    public void setUsing(OracleUsingIndexClause using) {
-        if (using != null) {
+    
+    public void setUsing(final OracleUsingIndexClause using) {
+        if (null != using) {
             using.setParent(this);
         }
         this.using = using;
     }
-
 }

@@ -15,41 +15,27 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class PGWithQuery extends PGSQLObjectImpl {
-
-    private SQLExpr             name;
-    private final List<SQLExpr> columns = new ArrayList<SQLExpr>();
-    private SQLStatement        query;
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
-    public SQLStatement getQuery() {
-        return query;
-    }
-
-    public void setQuery(SQLStatement query) {
-        this.query = query;
-    }
-
-    public List<SQLExpr> getColumns() {
-        return columns;
-    }
-
+    
+    private SQLExpr name;
+    
+    private SQLStatement query;
+    
+    private final List<SQLExpr> columns = new ArrayList<>();
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
             acceptChild(visitor, columns);

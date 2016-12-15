@@ -18,28 +18,26 @@ package com.alibaba.druid.sql.dialect.sqlserver.ast;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class SQLServerSelectQueryBlock extends SQLSelectQueryBlock {
-
+    
     private SQLServerTop top;
-
-    public SQLServerTop getTop() {
-        return top;
-    }
-
-    public void setTop(SQLServerTop top) {
-        if (top != null) {
+    
+    public void setTop(final SQLServerTop top) {
+        if (null != top) {
             top.setParent(this);
         }
         this.top = top;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((SQLServerASTVisitor) visitor);
     }
-
-    protected void accept0(SQLServerASTVisitor visitor) {
+    
+    protected void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, top);
             acceptChild(visitor, getSelectList());

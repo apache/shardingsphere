@@ -15,59 +15,33 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class OracleSelectForUpdate extends OracleSQLObjectImpl {
-
-    private final List<SQLExpr> of         = new ArrayList<SQLExpr>();
-
-    private boolean             notWait    = false;
-    private SQLExpr             wait;
-    private boolean             skipLocked = false;
-
-    public OracleSelectForUpdate(){
-
-    }
-
-    public boolean isNotWait() {
-        return notWait;
-    }
-
-    public void setNotWait(boolean notWait) {
-        this.notWait = notWait;
-    }
-
-    public SQLExpr getWait() {
-        return wait;
-    }
-
-    public void setWait(SQLExpr wait) {
-        this.wait = wait;
-    }
-
-    public boolean isSkipLocked() {
-        return skipLocked;
-    }
-
-    public void setSkipLocked(boolean skipLocked) {
-        this.skipLocked = skipLocked;
-    }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    private boolean notWait;
+    
+    private SQLExpr wait;
+    
+    private boolean skipLocked;
+    
+    private final List<SQLExpr> of = new ArrayList<>();
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.of);
-            acceptChild(visitor, this.wait);
+            acceptChild(visitor, of);
+            acceptChild(visitor, wait);
         }
-
         visitor.endVisit(this);
-    }
-
-    public List<SQLExpr> getOf() {
-        return this.of;
     }
 }

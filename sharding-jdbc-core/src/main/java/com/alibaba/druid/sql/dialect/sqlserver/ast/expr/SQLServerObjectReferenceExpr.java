@@ -21,90 +21,67 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerObjectReferenceExpr extends SQLServerObjectImpl implements SQLServerExpr, SQLName {
-
+    
     private String server;
+    
     private String database;
+    
     private String schema;
-
-    public SQLServerObjectReferenceExpr(SQLExpr owner){
+    
+    public SQLServerObjectReferenceExpr(final SQLExpr owner){
         if (owner instanceof SQLIdentifierExpr) {
-            this.database = ((SQLIdentifierExpr) owner).getSimpleName();
+            database = ((SQLIdentifierExpr) owner).getSimpleName();
         } else if (owner instanceof SQLPropertyExpr) {
             SQLPropertyExpr propExpr = (SQLPropertyExpr) owner;
-
-            this.server = ((SQLIdentifierExpr) propExpr.getOwner()).getSimpleName();
-            this.database = propExpr.getSimpleName();
+            server = ((SQLIdentifierExpr) propExpr.getOwner()).getSimpleName();
+            database = propExpr.getSimpleName();
         } else {
             throw new IllegalArgumentException(owner.toString());
         }
     }
-
+    
+    @Override
     public String getSimpleName() {
-        if (schema != null) {
+        if (null != schema) {
             return schema;
         }
-
-        if (database != null) {
+        if (null != database) {
             return database;
         }
         return server;
     }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
+    
+    @Override
+    public void output(final StringBuffer buffer) {
         boolean flag = false;
-        if (server != null) {
-            buf.append(server);
+        if (null != server) {
+            buffer.append(server);
             flag = true;
         }
-
         if (flag) {
-            buf.append('.');
+            buffer.append('.');
         }
-        if (database != null) {
-            buf.append(database);
+        if (null != database) {
+            buffer.append(database);
             flag = true;
         }
-
         if (flag) {
-            buf.append('.');
+            buffer.append('.');
         }
-
-        if (schema != null) {
-            buf.append(schema);
-            flag = true;
+        if (null != schema) {
+            buffer.append(schema);
         }
     }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
 }

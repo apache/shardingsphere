@@ -26,35 +26,31 @@ public class OracleOrderByItem extends SQLSelectOrderByItem {
     public OracleOrderByItem(final SQLExpr expr){
         super(expr);
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
-            accept0((OracleASTVisitor) visitor);
+            if (visitor.visit(this)) {
+                acceptChild(visitor, getExpr());
+            }
+            visitor.endVisit(this);
         } else {
             super.acceptInternal(visitor);
         }
     }
-
-    protected void accept0(OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getExpr());
-        }
-
-        visitor.endVisit(this);
-    }
-
-    public void output(StringBuffer buf) {
-        getExpr().output(buf);
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        getExpr().output(buffer);
         if (SQLOrderingSpecification.ASC.equals(getType())) {
-            buf.append(" ASC");
+            buffer.append(" ASC");
         } else if (SQLOrderingSpecification.DESC.equals(getType())) {
-            buf.append(" DESC");
+            buffer.append(" DESC");
         }
         if (NullsOrderType.NullsFirst.equals(getNullsOrderType())) {
-            buf.append(" NULLS FIRST");
+            buffer.append(" NULLS FIRST");
         } else if (NullsOrderType.NullsLast.equals(getNullsOrderType())) {
-            buf.append(" NULLS LAST");
+            buffer.append(" NULLS LAST");
         }
     }
-
 }

@@ -15,34 +15,23 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast;
 
+import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-
+@Getter
+@Setter
 public class PGWithClause extends PGSQLObjectImpl {
-
-    private boolean           recursive = false;
-    private List<PGWithQuery> withQuery = new ArrayList<PGWithQuery>(2);
-
-    public boolean isRecursive() {
-        return recursive;
-    }
-
-    public void setRecursive(boolean recursive) {
-        this.recursive = recursive;
-    }
-
-    public List<PGWithQuery> getWithQuery() {
-        return withQuery;
-    }
-
-    public void setWithQuery(List<PGWithQuery> withQuery) {
-        this.withQuery = withQuery;
-    }
-
+    
+    private boolean recursive;
+    
+    private final List<PGWithQuery> withQuery = new ArrayList<>(2);
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, withQuery);
         }

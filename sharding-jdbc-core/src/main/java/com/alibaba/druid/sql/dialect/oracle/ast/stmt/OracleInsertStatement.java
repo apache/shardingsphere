@@ -21,43 +21,25 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class OracleInsertStatement extends SQLInsertStatement implements OracleStatement {
-
-    private OracleReturningClause    returning;
+    
+    private OracleReturningClause returning;
+    
     private OracleErrorLoggingClause errorLogging;
-    private List<SQLHint>            hints = new ArrayList<>();
-
-    public List<SQLHint> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<SQLHint> hints) {
-        this.hints = hints;
-    }
-
-    public OracleReturningClause getReturning() {
-        return returning;
-    }
-
-    public void setReturning(OracleReturningClause returning) {
-        this.returning = returning;
-    }
-
-    public OracleErrorLoggingClause getErrorLogging() {
-        return errorLogging;
-    }
-
-    public void setErrorLogging(OracleErrorLoggingClause errorLogging) {
-        this.errorLogging = errorLogging;
-    }
-
+    
+    private final List<SQLHint> hints = new ArrayList<>();
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
     }
     
     @Override

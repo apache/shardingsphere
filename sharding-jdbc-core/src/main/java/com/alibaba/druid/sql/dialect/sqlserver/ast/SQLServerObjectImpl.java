@@ -20,15 +20,11 @@ import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public abstract class SQLServerObjectImpl extends SQLObjectImpl implements SQLServerObject {
-
-    public SQLServerObjectImpl(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((SQLServerASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((SQLServerASTVisitor) visitor);
     }
-
-    public abstract void accept0(SQLServerASTVisitor visitor);
+    
+    public abstract void accept0(final SQLServerASTVisitor visitor);
 }

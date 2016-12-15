@@ -19,7 +19,7 @@ import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 
 public class SQLServerLexer extends Lexer {
-
+    
     public SQLServerLexer(final String input) {
         super(input, Token.getSqlserverKeywords());
     }

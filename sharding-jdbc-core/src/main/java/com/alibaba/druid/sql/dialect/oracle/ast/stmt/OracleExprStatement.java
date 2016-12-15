@@ -17,34 +17,20 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class OracleExprStatement extends OracleStatementImpl {
-
-    private SQLExpr expr;
-
-    public OracleExprStatement(){
-
-    }
-
-    public OracleExprStatement(SQLExpr expr){
-        this.expr = expr;
-    }
-
+    
+    private final SQLExpr expr;
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, expr);
         }
         visitor.endVisit(this);
-
     }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        this.expr = expr;
-    }
-
 }

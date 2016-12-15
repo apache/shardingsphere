@@ -351,8 +351,6 @@ public class PGSQLStatementParser extends SQLStatementParser {
     
     public SQLStatement parseShow() {
         accept(Token.SHOW);
-        PGShowStatement stmt = new PGShowStatement();
-        stmt.setExpr(this.exprParser.expr());
-        return stmt;
+        return new PGShowStatement(exprParser.expr());
     }
 }

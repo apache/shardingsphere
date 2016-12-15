@@ -20,31 +20,16 @@ import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class PGOrderBy extends SQLOrderBy {
-
-    private boolean sibings;
-
-    public boolean isSibings() {
-        return this.sibings;
-    }
-
-    public void setSibings(boolean sibings) {
-        this.sibings = sibings;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof PGASTVisitor) {
-            accept0((PGASTVisitor) visitor);
+            if (visitor.visit(this)) {
+                acceptChild(visitor, getItems());
+            }
+            visitor.endVisit(this);
         } else {
             super.acceptInternal(visitor);
         }
     }
-
-    protected void accept0(PGASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getItems());
-        }
-
-        visitor.endVisit(this);
-    }
-
 }

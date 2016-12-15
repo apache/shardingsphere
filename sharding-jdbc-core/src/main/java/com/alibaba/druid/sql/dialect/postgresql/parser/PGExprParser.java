@@ -72,7 +72,6 @@ public class PGExprParser extends SQLExprParser {
 
             if (getLexer().identifierEquals("SIBLINGS")) {
                 getLexer().nextToken();
-                orderBy.setSibings(true);
             }
 
             accept(Token.BY);
@@ -207,44 +206,29 @@ public class PGExprParser extends SQLExprParser {
                 
                 return primaryRest(extract);     
             } else if ("POINT".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGPointExpr point = new PGPointExpr();
-                point.setValue(value);
+                PGPointExpr point = new PGPointExpr(primary());
                 return primaryRest(point);
             } else if ("BOX".equalsIgnoreCase(ident)) {
                 SQLExpr value = this.primary();
-                PGBoxExpr box = new PGBoxExpr();
-                box.setValue(value);
+                PGBoxExpr box = new PGBoxExpr(value);
                 return primaryRest(box);
             } else if ("macaddr".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGMacAddrExpr macaddr = new PGMacAddrExpr();
-                macaddr.setValue(value);
+                PGMacAddrExpr macaddr = new PGMacAddrExpr(primary());
                 return primaryRest(macaddr);
             } else if ("inet".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGInetExpr inet = new PGInetExpr();
-                inet.setValue(value);
+                PGInetExpr inet = new PGInetExpr(primary());
                 return primaryRest(inet);
             } else if ("cidr".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGCidrExpr cidr = new PGCidrExpr();
-                cidr.setValue(value);
+                PGCidrExpr cidr = new PGCidrExpr(primary());
                 return primaryRest(cidr);
             } else if ("polygon".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGPolygonExpr polygon = new PGPolygonExpr();
-                polygon.setValue(value);
+                PGPolygonExpr polygon = new PGPolygonExpr(primary());
                 return primaryRest(polygon);
             } else if ("circle".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGCircleExpr circle = new PGCircleExpr();
-                circle.setValue(value);
+                PGCircleExpr circle = new PGCircleExpr(primary());
                 return primaryRest(circle);
             } else if ("lseg".equalsIgnoreCase(ident)) {
-                SQLExpr value = this.primary();
-                PGLineSegmentsExpr lseg = new PGLineSegmentsExpr();
-                lseg.setValue(value);
+                PGLineSegmentsExpr lseg = new PGLineSegmentsExpr(primary());
                 return primaryRest(lseg);
             } else if (ident.equalsIgnoreCase("b") && getLexer().equalToken(Token.LITERAL_CHARS)) {
                 String charValue = getLexer().getLiterals();

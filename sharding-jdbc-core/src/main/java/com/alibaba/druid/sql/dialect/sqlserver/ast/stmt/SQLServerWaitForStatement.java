@@ -20,21 +20,25 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerWaitForStatement extends SQLServerObjectImpl implements SQLServerStatement {
-
-    private SQLExpr      delay;
-
-    private SQLExpr      time;
-
-    private SQLStatement statement;
-
-    private SQLExpr      timeout;
     
-    private String       dbType;
-
+    private SQLExpr delay;
+    
+    private SQLExpr time;
+    
+    private SQLStatement statement;
+    
+    private SQLExpr timeout;
+    
+    private String dbType;
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, delay);
             acceptChild(visitor, time);
@@ -42,45 +46,5 @@ public class SQLServerWaitForStatement extends SQLServerObjectImpl implements SQ
             acceptChild(visitor, timeout);
         }
         visitor.endVisit(this);
-    }
-
-    public SQLExpr getDelay() {
-        return delay;
-    }
-
-    public void setDelay(SQLExpr delay) {
-        this.delay = delay;
-    }
-
-    public SQLExpr getTime() {
-        return time;
-    }
-
-    public void setTime(SQLExpr time) {
-        this.time = time;
-    }
-
-    public SQLStatement getStatement() {
-        return statement;
-    }
-
-    public void setStatement(SQLStatement statement) {
-        this.statement = statement;
-    }
-
-    public SQLExpr getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(SQLExpr timeout) {
-        this.timeout = timeout;
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
 }

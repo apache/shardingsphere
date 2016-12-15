@@ -18,12 +18,8 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 
 public class OraclePLSQLCommitStatement extends OracleStatementImpl {
-
-    public OraclePLSQLCommitStatement(){
-
-    }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    public void accept0(final OracleASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }

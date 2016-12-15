@@ -15,41 +15,29 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerDeclareItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerDeclareStatement extends SQLServerObjectImpl implements SQLServerStatement {
-
-    protected List<SQLServerDeclareItem> items = new ArrayList<SQLServerDeclareItem>();
     
     private String dbType;
-
+    
+    private final List<SQLServerDeclareItem> items = new ArrayList<>();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, items);
         }
         visitor.endVisit(this);
-    }
-
-    public List<SQLServerDeclareItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SQLServerDeclareItem> items) {
-        this.items = items;
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
 }

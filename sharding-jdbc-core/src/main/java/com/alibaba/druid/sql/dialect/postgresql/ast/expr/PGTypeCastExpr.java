@@ -21,21 +21,22 @@ import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class PGTypeCastExpr extends SQLCastExpr implements PGExpr {
-
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((PGASTVisitor) visitor);
+    }
+    
+    @Override
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getExpr());
             acceptChild(visitor, getDataType());
         }
         visitor.endVisit(this);
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
-
     public String toString() {
         return SQLUtils.toPGString(this);
     }

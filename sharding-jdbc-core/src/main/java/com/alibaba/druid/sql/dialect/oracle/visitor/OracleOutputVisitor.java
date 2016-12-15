@@ -92,7 +92,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterIndexStatement.R
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterProcedureStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSessionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSynonymStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableAddConstaint;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableAddConstraint;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableDropPartition;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableModify;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableMoveTablespace;
@@ -145,7 +145,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePrimaryKey;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSavePointStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierachicalQueryClause;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot.Item;
@@ -433,7 +433,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         return false;
     }
 
-    public boolean visit(OracleSelectHierachicalQueryClause x) {
+    public boolean visit(OracleSelectHierarchicalQueryClause x) {
         if (x.getStartWith() != null) {
             print("START WITH ");
             x.getStartWith().accept(this);
@@ -600,9 +600,9 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             x.getWhere().accept(this);
         }
 
-        if (x.getHierachicalQueryClause() != null) {
+        if (x.getHierarchicalQueryClause() != null) {
             println();
-            x.getHierachicalQueryClause().accept(this);
+            x.getHierarchicalQueryClause().accept(this);
         }
 
         if (x.getGroupBy() != null) {
@@ -707,22 +707,22 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         print("UNPIVOT");
         if (x.getNullsIncludeType() != null) {
             print(" ");
-            print(OracleSelectUnPivot.NullsIncludeType.toString(x.getNullsIncludeType()));
+            print(x.getNullsIncludeType().getText());
         }
 
         print(" (");
         if (x.getItems().size() == 1) {
-            ((SQLExpr) x.getItems().get(0)).accept(this);
+            x.getItems().get(0).accept(this);
         } else {
             print(" (");
             printAndAccept(x.getItems(), ", ");
             print(")");
         }
 
-        if (x.getPivotFor().size() > 0) {
+        if (!x.getPivotFor().isEmpty()) {
             print(" FOR ");
             if (x.getPivotFor().size() == 1) {
-                ((SQLExpr) x.getPivotFor().get(0)).accept(this);
+                x.getPivotFor().get(0).accept(this);
             } else {
                 print("(");
                 printAndAccept(x.getPivotFor(), ", ");
@@ -849,7 +849,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public void endVisit(OracleSelectHierachicalQueryClause x) {
+    public void endVisit(OracleSelectHierarchicalQueryClause x) {
 
     }
 
@@ -2311,14 +2311,14 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleAlterTableAddConstaint x) {
+    public boolean visit(OracleAlterTableAddConstraint x) {
         print("ADD ");
         x.getConstraint().accept(this);
         return false;
     }
 
     @Override
-    public void endVisit(OracleAlterTableAddConstaint x) {
+    public void endVisit(OracleAlterTableAddConstraint x) {
 
     }
 
@@ -3041,7 +3041,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             print("SHARE ");
         }
 
-        if (x.isPublic()) {
+        if (x.is_public()) {
             print("PUBLIC ");
         }
 
@@ -3062,10 +3062,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         if (x.getAuthenticatedUser() != null) {
             print(" AUTHENTICATED BY ");
             x.getAuthenticatedUser().accept(this);
-            if (x.getAuthenticatedPassword() != null) {
-                print(" IDENTIFIED BY ");
-                print(x.getAuthenticatedPassword());
-            }
         }
 
         if (x.getUsing() != null) {

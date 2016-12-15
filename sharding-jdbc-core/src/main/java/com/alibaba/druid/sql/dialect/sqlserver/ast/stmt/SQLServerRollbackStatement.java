@@ -20,46 +20,33 @@ import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerRollbackStatement extends SQLRollbackStatement implements SQLServerStatement {
-
-    private boolean work = false;
-
+    
+    private boolean work;
+    
     private SQLExpr name;
     
     public SQLServerRollbackStatement() {
         super(null);
     }
-
-    public boolean isWork() {
-        return work;
-    }
-
-    public void setWork(boolean work) {
-        this.work = work;
-    }
-
+    
     @Override
-    public void acceptInternal(SQLASTVisitor visitor) {
+    public void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof SQLServerASTVisitor) {
             accept0((SQLServerASTVisitor) visitor);
         } else {
             throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
         }
     }
-
-    public void accept0(SQLServerASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final SQLServerASTVisitor visitor) {
         visitor.visit(this);
-
         visitor.endVisit(this);
     }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
 }

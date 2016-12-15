@@ -53,7 +53,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.SearchClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierachicalQueryClause;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
@@ -623,10 +623,10 @@ public class OracleSelectParser extends SQLSelectParser {
     }
 
     private void parseHierachical(OracleSelectQueryBlock queryBlock) {
-        OracleSelectHierachicalQueryClause hierachical = null;
+        OracleSelectHierarchicalQueryClause hierachical = null;
 
         if (getLexer().equalToken(Token.CONNECT)) {
-            hierachical = new OracleSelectHierachicalQueryClause();
+            hierachical = new OracleSelectHierarchicalQueryClause();
             getLexer().nextToken();
             accept(Token.BY);
 
@@ -650,7 +650,7 @@ public class OracleSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.START)) {
             getLexer().nextToken();
             if (hierachical == null) {
-                hierachical = new OracleSelectHierachicalQueryClause();
+                hierachical = new OracleSelectHierarchicalQueryClause();
             }
             accept(Token.WITH);
 
@@ -659,7 +659,7 @@ public class OracleSelectParser extends SQLSelectParser {
 
         if (getLexer().equalToken(Token.CONNECT)) {
             if (hierachical == null) {
-                hierachical = new OracleSelectHierachicalQueryClause();
+                hierachical = new OracleSelectHierarchicalQueryClause();
             }
 
             getLexer().nextToken();
@@ -683,7 +683,7 @@ public class OracleSelectParser extends SQLSelectParser {
         }
 
         if (hierachical != null) {
-            queryBlock.setHierachicalQueryClause(hierachical);
+            queryBlock.setHierarchicalQueryClause(hierachical);
         }
     }
 

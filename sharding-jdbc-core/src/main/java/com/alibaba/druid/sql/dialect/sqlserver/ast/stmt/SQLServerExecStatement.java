@@ -15,35 +15,31 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerExecStatement extends SQLServerObjectImpl implements SQLServerStatement {
-
-    private SQLName       returnStatus;
-    private SQLName       moduleName;
-    private List<SQLServerParameter> parameters = new ArrayList<SQLServerParameter>();
-    private String        dbType;
-
-    public SQLName getModuleName() {
-        return moduleName;
-    }
-
-    public void setModuleName(SQLName moduleName) {
-        this.moduleName = moduleName;
-    }
-
-    public List<SQLServerParameter> getParameters() {
-        return parameters;
-    }
-
-    public void accept0(SQLServerASTVisitor visitor) {
+    
+    private SQLName returnStatus;
+    
+    private SQLName moduleName;
+    
+    private final List<SQLServerParameter> parameters = new ArrayList<>();
+    
+    private String dbType;
+    
+    @Override
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.returnStatus);
             acceptChild(visitor, this.moduleName);
@@ -51,53 +47,21 @@ public class SQLServerExecStatement extends SQLServerObjectImpl implements SQLSe
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getReturnStatus() {
-        return returnStatus;
-    }
-
-    public void setReturnStatus(SQLName returnStatus) {
-        this.returnStatus = returnStatus;
-    }
     
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
-    }
-    
-    /**
-     * 
-     * @Description: SQLServer execute Parameter statement
-     * @author zz email:455910092@qq.com
-     * @date 2015-9-20
-     * @version V1.0
-     */
-    public static class SQLServerParameter extends SQLServerObjectImpl
-    {
-    	private SQLExpr expr;
-    	private boolean type;//sql server 支持参数只有input 和 output 两种
-		public SQLExpr getExpr() {
-			return expr;
-		}
-		public void setExpr(SQLExpr expr) {
-			this.expr = expr;
-		}
-		public boolean getType() {
-			return type;
-		}
-		public void setType(boolean type) {
-			this.type = type;
-		}
-		@Override
-		public void accept0(SQLServerASTVisitor visitor) {
-			if (visitor.visit(this)) {
-	            acceptChild(visitor, expr);
-	        }
-	        visitor.endVisit(this);
-			
-		}
+    @Getter
+    @Setter
+    public static class SQLServerParameter extends SQLServerObjectImpl {
+        
+        private SQLExpr expr;
+        
+        private boolean type;//sql server 支持参数只有input 和 output 两种
+        
+        @Override
+        public void accept0(final SQLServerASTVisitor visitor) {
+            if (visitor.visit(this)) {
+                acceptChild(visitor, expr);
+            }
+            visitor.endVisit(this);
+        }
     }
 }

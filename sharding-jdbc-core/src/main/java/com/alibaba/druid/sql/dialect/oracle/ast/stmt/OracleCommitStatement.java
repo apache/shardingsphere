@@ -16,41 +16,22 @@
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleCommitStatement extends OracleStatementImpl {
-
+    
     private boolean write;
+    
     private Boolean wait;
+    
     private Boolean immediate;
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
-    public boolean isWrite() {
-        return write;
-    }
-
-    public void setWrite(boolean write) {
-        this.write = write;
-    }
-
-    public Boolean getWait() {
-        return wait;
-    }
-
-    public void setWait(Boolean wait) {
-        this.wait = wait;
-    }
-
-    public Boolean getImmediate() {
-        return immediate;
-    }
-
-    public void setImmediate(Boolean immediate) {
-        this.immediate = immediate;
-    }
-
 }

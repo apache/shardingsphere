@@ -692,20 +692,20 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
         
     }
 
-	@Override
-	public boolean visit(SQLServerParameter x) {
-		// TODO Auto-generated method stub
-		x.getExpr().accept(this);
-		if(x.getType())
-		{
-			print(" OUT");
-		}
-		return false;
-	}
+     @Override
+     public boolean visit(SQLServerParameter x) {
+          // TODO Auto-generated method stub
+          x.getExpr().accept(this);
+          if(x.isType())
+          {
+               print(" OUT");
+          }
+          return false;
+     }
 
-	@Override
-	public void endVisit(SQLServerParameter x) {
-		// TODO Auto-generated method stub
-		
-	}
+     @Override
+     public void endVisit(SQLServerParameter x) {
+          // TODO Auto-generated method stub
+         
+     }
 }

@@ -24,40 +24,38 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class PGSelectQueryBlock extends SQLSelectQueryBlock {
+    
+    private PGWithClause with;
+    
+    private PGLimit limit;
+    
+    private WindowClause window;
+    
+    private SQLOrderBy orderBy;
+    
+    private FetchClause fetch;
+    
+    private ForClause forClause;
+    
+    private IntoOption intoOption;
+    
+    private final List<SQLExpr> distinctOn = new ArrayList<>(2);
 
-    private PGWithClause  with;
-    private List<SQLExpr> distinctOn = new ArrayList<SQLExpr>(2);
-    private PGLimit       limit;
-    private WindowClause  window;
-
-    private SQLOrderBy    orderBy;
-    private FetchClause   fetch;
-    private ForClause     forClause;
-    private IntoOption    intoOption;
-
-    public static enum IntoOption {
+    public enum IntoOption {
         TEMPORARY, TEMP, UNLOGGED
     }
-
-    public IntoOption getIntoOption() {
-        return intoOption;
-    }
-
-    public void setIntoOption(IntoOption intoOption) {
-        this.intoOption = intoOption;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
-
-    protected void accept0(PGASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
             acceptChild(visitor, distinctOn);
@@ -74,101 +72,29 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
         }
         visitor.endVisit(this);
     }
-
-    public FetchClause getFetch() {
-        return fetch;
-    }
-
-    public void setFetch(FetchClause fetch) {
-        this.fetch = fetch;
-    }
-
-    public ForClause getForClause() {
-        return forClause;
-    }
-
-    public void setForClause(ForClause forClause) {
-        this.forClause = forClause;
-    }
-
-    public WindowClause getWindow() {
-        return window;
-    }
-
-    public void setWindow(WindowClause window) {
-        this.window = window;
-    }
-
-    public PGWithClause getWith() {
-        return with;
-    }
-
-    public void setWith(PGWithClause with) {
-        this.with = with;
-    }
-
-    public PGLimit getLimit() {
-        return limit;
-    }
-
-    public void setLimit(PGLimit limit) {
-        this.limit = limit;
-    }
-
-    public SQLOrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(SQLOrderBy orderBy) {
-        this.orderBy = orderBy;
-    }
-
+    
     public SQLExpr getOffset() {
-        if (limit != null) {
-            return limit.offset;
-        }
-        return null;
+        return null == limit ? null : limit.offset;
     }
-
-    public void setOffset(SQLExpr offset) {
-        if (limit == null) {
+    
+    public void setOffset(final SQLExpr offset) {
+        if (null == limit) {
             limit = new PGLimit();
             limit.setParent(this);
         }
         limit.setOffset(offset);
     }
-
-    public List<SQLExpr> getDistinctOn() {
-        return distinctOn;
-    }
-
-    public void setDistinctOn(List<SQLExpr> distinctOn) {
-        this.distinctOn = distinctOn;
-    }
-
+    
+    @Getter
+    @Setter
     public static class WindowClause extends PGSQLObjectImpl {
-
-        private SQLExpr       name;
-        private List<SQLExpr> definition = new ArrayList<SQLExpr>(2);
-
-        public SQLExpr getName() {
-            return name;
-        }
-
-        public void setName(SQLExpr name) {
-            this.name = name;
-        }
-
-        public List<SQLExpr> getDefinition() {
-            return definition;
-        }
-
-        public void setDefinition(List<SQLExpr> definition) {
-            this.definition = definition;
-        }
-
+        
+        private SQLExpr name;
+        
+        private List<SQLExpr> definition = new ArrayList<>(2);
+        
         @Override
-        public void accept0(PGASTVisitor visitor) {
+        public void accept0(final PGASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, name);
                 acceptChild(visitor, definition);
@@ -176,130 +102,84 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
             visitor.endVisit(this);
         }
     }
-
+    
+    @Getter
+    @Setter
     public static class FetchClause extends PGSQLObjectImpl {
-
-        public static enum Option {
-            FIRST, NEXT
-        }
-
+        
         private Option  option;
+        
         private SQLExpr count;
 
-        public Option getOption() {
-            return option;
-        }
-
-        public void setOption(Option option) {
-            this.option = option;
-        }
-
-        public SQLExpr getCount() {
-            return count;
-        }
-
-        public void setCount(SQLExpr count) {
-            this.count = count;
-        }
-
         @Override
-        public void accept0(PGASTVisitor visitor) {
+        public void accept0(final PGASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, count);
             }
             visitor.endVisit(this);
         }
-
+        
+        public enum Option {
+            FIRST, NEXT
+        }
     }
-
+    
+    @Getter
+    @Setter
     public static class ForClause extends PGSQLObjectImpl {
-
-        public static enum Option {
-            UPDATE, SHARE
-        }
-
-        private List<SQLExpr> of = new ArrayList<SQLExpr>(2);
-        private boolean       noWait;
-        private Option        option;
-
-        public Option getOption() {
-            return option;
-        }
-
-        public void setOption(Option option) {
-            this.option = option;
-        }
-
-        public List<SQLExpr> getOf() {
-            return of;
-        }
-
-        public void setOf(List<SQLExpr> of) {
-            this.of = of;
-        }
-
-        public boolean isNoWait() {
-            return noWait;
-        }
-
-        public void setNoWait(boolean noWait) {
-            this.noWait = noWait;
-        }
-
+        
+        private List<SQLExpr> of = new ArrayList<>(2);
+        
+        private boolean noWait;
+        
+        private Option option;
+        
         @Override
-        public void accept0(PGASTVisitor visitor) {
+        public void accept0(final PGASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, of);
             }
             visitor.endVisit(this);
         }
+        
+        public enum Option {
+            UPDATE, SHARE
+        }
     }
-
+    
+    @Getter
     public static class PGLimit extends SQLObjectImpl implements SQLExpr, PGSQLObject {
-
-        public PGLimit(){
-
-        }
-
+        
         private SQLExpr rowCount;
+        
         private SQLExpr offset;
-
-        public SQLExpr getRowCount() {
-            return rowCount;
-        }
-
-        public void setRowCount(SQLExpr rowCount) {
-            if (rowCount != null) {
+        
+        public void setRowCount(final SQLExpr rowCount) {
+            if (null != rowCount) {
                 rowCount.setParent(this);
             }
             this.rowCount = rowCount;
         }
-
-        public SQLExpr getOffset() {
-            return offset;
-        }
-
-        public void setOffset(SQLExpr offset) {
-            if (offset != null) {
+        
+        public void setOffset(final SQLExpr offset) {
+            if (null != offset) {
                 offset.setParent(this);
             }
             this.offset = offset;
         }
         
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             accept0((PGASTVisitor) visitor);
         }
-
+        
         @Override
-        public void accept0(PGASTVisitor visitor) {
+        public void accept0(final PGASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, offset);
                 acceptChild(visitor, rowCount);
             }
             visitor.endVisit(this);
         }
-
     }
-
 }

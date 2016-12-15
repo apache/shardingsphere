@@ -38,12 +38,9 @@ public class SQLServerSelectParser extends SQLSelectParser {
     
     public SQLSelect select() {
         SQLServerSelect select = new SQLServerSelect();
-
         withSubquery(select);
-
         select.setQuery(query());
         select.setOrderBy(parseOrderBy());
-
         if (select.getOrderBy() == null) {
             select.setOrderBy(parseOrderBy());
         }

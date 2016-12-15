@@ -15,23 +15,30 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class OracleIfStatement extends OracleStatementImpl {
-
-    private SQLExpr            condition;
-    private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-    private List<ElseIf>       elseIfList = new ArrayList<ElseIf>();
-    private Else               elseItem;
-
+    
+    private SQLExpr condition;
+    
+    private Else elseItem;
+    
+    private final List<SQLStatement> statements = new ArrayList<>();
+    
+    private final List<ElseIf> elseIfList = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, condition);
             acceptChild(visitor, statements);
@@ -40,90 +47,36 @@ public class OracleIfStatement extends OracleStatementImpl {
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getCondition() {
-        return condition;
-    }
-
-    public void setCondition(SQLExpr condition) {
-        this.condition = condition;
-    }
-
-    public List<SQLStatement> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<SQLStatement> statements) {
-        this.statements = statements;
-    }
-
-    public List<ElseIf> getElseIfList() {
-        return elseIfList;
-    }
-
-    public void setElseIfList(List<ElseIf> elseIfList) {
-        this.elseIfList = elseIfList;
-    }
-
-    public Else getElseItem() {
-        return elseItem;
-    }
-
-    public void setElseItem(Else elseItem) {
-        this.elseItem = elseItem;
-    }
-
+    
+    @Getter
+    @Setter
     public static class ElseIf extends OracleSQLObjectImpl {
-
-        private SQLExpr            condition;
-        private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-
+        
+        private SQLExpr condition;
+        
+        private List<SQLStatement> statements = new ArrayList<>();
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, condition);
                 acceptChild(visitor, statements);
             }
             visitor.endVisit(this);
         }
-
-        public SQLExpr getCondition() {
-            return condition;
-        }
-
-        public void setCondition(SQLExpr condition) {
-            this.condition = condition;
-        }
-
-        public List<SQLStatement> getStatements() {
-            return statements;
-        }
-
-        public void setStatements(List<SQLStatement> statements) {
-            this.statements = statements;
-        }
-
     }
-
+    
+    @Getter
     public static class Else extends OracleSQLObjectImpl {
-
-        private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-
+        
+        private final List<SQLStatement> statements = new ArrayList<>();
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, statements);
             }
             visitor.endVisit(this);
         }
-
-        public List<SQLStatement> getStatements() {
-            return statements;
-        }
-
-        public void setStatements(List<SQLStatement> statements) {
-            this.statements = statements;
-        }
-
     }
 }

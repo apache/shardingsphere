@@ -18,37 +18,20 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleSelectJoin extends SQLJoinTableSource implements OracleSelectTableSource {
     
-    protected OracleSelectPivotBase pivot;
+    private OracleSelectPivotBase pivot;
     
-    protected FlashbackQueryClause  flashback;
+    private FlashbackQueryClause  flashback;
     
-    public FlashbackQueryClause getFlashback() {
-        return flashback;
-    }
-
-    public void setFlashback(FlashbackQueryClause flashback) {
-        this.flashback = flashback;
-    }
-
-    public OracleSelectPivotBase getPivot() {
-        return pivot;
-    }
-
-    public void setPivot(OracleSelectPivotBase pivot) {
-        this.pivot = pivot;
-    }
-
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-    
-    protected void accept0(final OracleASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getLeft());
             acceptChild(visitor, getRight());
@@ -56,29 +39,29 @@ public class OracleSelectJoin extends SQLJoinTableSource implements OracleSelect
             acceptChild(visitor, getUsing());
             acceptChild(visitor, flashback);
         }
-
+    
         visitor.endVisit(this);
     }
     
     @Override
-    public void output(StringBuffer buf) {
-        getLeft().output(buf);
-        buf.append(getJoinType().getName());
-        getRight().output(buf);
+    public void output(final StringBuffer buffer) {
+        getLeft().output(buffer);
+        buffer.append(getJoinType().getName());
+        getRight().output(buffer);
         if (null != getCondition()) {
-            buf.append(" ON ");
-            getCondition().output(buf);
+            buffer.append(" ON ");
+            getCondition().output(buffer);
         }
-        if (getUsing().size() > 0) {
-            buf.append(" USING (");
+        if (!getUsing().isEmpty()) {
+            buffer.append(" USING (");
             int i = 0;
-            for (int size = getUsing().size(); i < size; ++i) {
+            for (int size = getUsing().size(); i < size; i++) {
                 if (i != 0) {
-                    buf.append(", ");
+                    buffer.append(", ");
                 }
-                getUsing().get(i).output(buf);
+                getUsing().get(i).output(buffer);
             }
-            buf.append(")");
+            buffer.append(")");
         }
     }
     

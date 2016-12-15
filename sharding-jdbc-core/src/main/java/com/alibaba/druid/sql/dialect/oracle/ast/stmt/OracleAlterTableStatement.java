@@ -19,42 +19,30 @@ import com.alibaba.druid.sql.ast.statement.SQLAlterTableStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleAlterTableStatement extends SQLAlterTableStatement implements OracleDDLStatement {
-
-    private boolean updateGlobalIndexes     = false;
-    private boolean invalidateGlobalIndexes = false;
+    
+    private boolean updateGlobalIndexes;
     
     public OracleAlterTableStatement() {
         super (JdbcConstants.ORACLE);
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getItems());
         }
         visitor.endVisit(this);
-    }
-
-    public boolean isUpdateGlobalIndexes() {
-        return updateGlobalIndexes;
-    }
-
-    public void setUpdateGlobalIndexes(boolean updateGlobalIndexes) {
-        this.updateGlobalIndexes = updateGlobalIndexes;
-    }
-
-    public boolean isInvalidateGlobalIndexes() {
-        return invalidateGlobalIndexes;
-    }
-
-    public void setInvalidateGlobalIndexes(boolean invalidateGlobalIndexes) {
-        this.invalidateGlobalIndexes = invalidateGlobalIndexes;
     }
 }

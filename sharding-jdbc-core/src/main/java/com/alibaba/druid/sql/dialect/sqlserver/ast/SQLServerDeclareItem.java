@@ -15,79 +15,42 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerDeclareItem extends SQLServerObjectImpl {
-
-    protected Type                  type;
-
-    protected SQLExpr               name;
-
-    protected SQLDataType           dataType;
-
-    protected SQLExpr               value;
-
-    protected List<SQLTableElement> tableElementList = new ArrayList<SQLTableElement>();
-
+    
+    private Type type;
+    
+    private SQLExpr name;
+    
+    private SQLDataType dataType;
+    
+    private SQLExpr value;
+    
+    private final List<SQLTableElement> tableElementList = new ArrayList<>();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.name);
-            acceptChild(visitor, this.dataType);
-            acceptChild(visitor, this.value);
-            acceptChild(visitor, this.tableElementList);
+            acceptChild(visitor, name);
+            acceptChild(visitor, dataType);
+            acceptChild(visitor, value);
+            acceptChild(visitor, tableElementList);
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getName() {
-        return name;
-    }
-
-    public void setName(SQLExpr name) {
-        this.name = name;
-    }
-
-    public SQLDataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(SQLDataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public SQLExpr getValue() {
-        return value;
-    }
-
-    public void setValue(SQLExpr value) {
-        this.value = value;
-    }
-
-    public List<SQLTableElement> getTableElementList() {
-        return tableElementList;
-    }
-
-    public void setTableElementList(List<SQLTableElement> tableElementList) {
-        this.tableElementList = tableElementList;
-    }
-
+    
     public enum Type {
         TABLE, LOCAL, CURSOR;
     }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
 }

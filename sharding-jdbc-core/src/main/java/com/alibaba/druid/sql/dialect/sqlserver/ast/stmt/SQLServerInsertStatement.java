@@ -15,86 +15,57 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObject;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerInsertStatement extends SQLInsertStatement implements SQLServerObject {
-
-    private List<ValuesClause> valuesList = new ArrayList<ValuesClause>();
-
-    private boolean            defaultValues;
-
-    private SQLServerTop       top;
-
-    private SQLServerOutput    output;
-
+    
+    private boolean defaultValues;
+    
+    private SQLServerTop top;
+    
+    private SQLServerOutput output;
+    
+    private final List<ValuesClause> valuesList = new ArrayList<>();
+    
     public ValuesClause getValues() {
-        if (valuesList.size() == 0) {
-            return null;
-        }
-        return valuesList.get(0);
+        return valuesList.isEmpty() ? null : valuesList.get(0);
     }
-
-    public void setValues(ValuesClause values) {
-        if (valuesList.size() == 0) {
+    
+    public void setValues(final ValuesClause values) {
+        if (valuesList.isEmpty()) {
             valuesList.add(values);
         } else {
             valuesList.set(0, values);
         }
     }
-
-    public List<ValuesClause> getValuesList() {
-        return valuesList;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         this.accept0((SQLServerASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            this.acceptChild(visitor, getTop());
-            this.acceptChild(visitor, getTableSource());
-            this.acceptChild(visitor, getColumns());
-            this.acceptChild(visitor, getOutput());
-            this.acceptChild(visitor, getValuesList());
-            this.acceptChild(visitor, getQuery());
+            acceptChild(visitor, getTop());
+            acceptChild(visitor, getTableSource());
+            acceptChild(visitor, getColumns());
+            acceptChild(visitor, getOutput());
+            acceptChild(visitor, getValuesList());
+            acceptChild(visitor, getQuery());
         }
-
         visitor.endVisit(this);
     }
-
-    public boolean isDefaultValues() {
-        return defaultValues;
-    }
-
-    public void setDefaultValues(boolean defaultValues) {
-        this.defaultValues = defaultValues;
-    }
-
-    public SQLServerOutput getOutput() {
-        return output;
-    }
-
-    public void setOutput(SQLServerOutput output) {
-        this.output = output;
-    }
-
-    public SQLServerTop getTop() {
-        return top;
-    }
-
-    public void setTop(SQLServerTop top) {
-        this.top = top;
-    }
-
 }

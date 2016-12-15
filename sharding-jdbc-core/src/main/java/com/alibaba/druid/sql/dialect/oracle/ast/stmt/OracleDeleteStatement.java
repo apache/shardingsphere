@@ -21,54 +21,38 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class OracleDeleteStatement extends SQLDeleteStatement {
-
-    private boolean               only      = false;
-
-    private final List<SQLHint>   hints     = new ArrayList<SQLHint>();
-    private OracleReturningClause returning = null;
-
+    
+    private boolean only;
+    
+    private final List<SQLHint> hints = new ArrayList<>();
+    
+    private OracleReturningClause returning;
+    
     public OracleDeleteStatement(){
-        super (JdbcConstants.ORACLE);
+        super(JdbcConstants.ORACLE);
     }
-
-    public OracleReturningClause getReturning() {
-        return returning;
-    }
-
-    public void setReturning(OracleReturningClause returning) {
-        this.returning = returning;
-    }
-
-    public List<SQLHint> getHints() {
-        return this.hints;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
 
-    protected void accept0(OracleASTVisitor visitor) {
+    protected void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, hints);
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getWhere());
             acceptChild(visitor, returning);
         }
-
         visitor.endVisit(this);
     }
-
-    public boolean isOnly() {
-        return this.only;
-    }
-
-    public void setOnly(boolean only) {
-        this.only = only;
-    }
-
 }

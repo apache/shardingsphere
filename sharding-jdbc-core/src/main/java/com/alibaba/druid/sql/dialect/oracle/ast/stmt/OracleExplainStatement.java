@@ -22,18 +22,28 @@ import com.alibaba.druid.sql.ast.statement.SQLExplainStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleExplainStatement extends SQLExplainStatement implements OracleStatement {
-
+    
     private SQLCharExpr statementId;
-    private SQLExpr     into;
+    
+    private SQLExpr into;
     
     public OracleExplainStatement() {
         super (JdbcConstants.ORACLE);
     }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((OracleASTVisitor) visitor);
+    }
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, statementId);
             acceptChild(visitor, into);
@@ -41,29 +51,9 @@ public class OracleExplainStatement extends SQLExplainStatement implements Oracl
         }
         visitor.endVisit(this);
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-
+    
+    @Override
     public String toString() {
         return SQLUtils.toOracleString(this);
     }
-
-    public SQLCharExpr getStatementId() {
-        return statementId;
-    }
-
-    public void setStatementId(SQLCharExpr statementId) {
-        this.statementId = statementId;
-    }
-
-    public SQLExpr getInto() {
-        return into;
-    }
-
-    public void setInto(SQLExpr into) {
-        this.into = into;
-    }
-
 }

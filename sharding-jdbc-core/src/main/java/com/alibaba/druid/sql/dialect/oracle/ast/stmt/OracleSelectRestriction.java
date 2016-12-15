@@ -17,47 +17,31 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class OracleSelectRestriction extends OracleSQLObjectImpl {
-
-    public OracleSelectRestriction(){
-
-    }
-
+    
+    @Getter
+    @Setter
     public static class CheckOption extends OracleSelectRestriction {
-
+        
         private OracleConstraint constraint;
-
-        public CheckOption(){
-
-        }
-
-        public OracleConstraint getConstraint() {
-            return this.constraint;
-        }
-
-        public void setConstraint(OracleConstraint constraint) {
-            this.constraint = constraint;
-        }
-
-        public void accept0(OracleASTVisitor visitor) {
+        
+        @Override
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, this.constraint);
             }
-
             visitor.endVisit(this);
         }
     }
-
+    
     public static class ReadOnly extends OracleSelectRestriction {
-
-        public ReadOnly(){
-
-        }
-
-        public void accept0(OracleASTVisitor visitor) {
+        
+        @Override
+        public void accept0(final OracleASTVisitor visitor) {
             visitor.visit(this);
-
             visitor.endVisit(this);
         }
     }

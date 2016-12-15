@@ -15,47 +15,33 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerOutput extends SQLServerObjectImpl {
-
-    protected SQLExprTableSource        into;
-
-    protected final List<SQLExpr>       columns    = new ArrayList<SQLExpr>();
-
-    protected final List<SQLSelectItem> selectList = new ArrayList<SQLSelectItem>();
-
+    
+    private SQLExprTableSource into;
+    
+    private final List<SQLExpr> columns = new ArrayList<>();
+    
+    private final List<SQLSelectItem> selectList = new ArrayList<>();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             this.acceptChild(visitor, selectList);
             this.acceptChild(visitor, into);
             this.acceptChild(visitor, columns);
         }
-
         visitor.endVisit(this);
     }
-
-    public SQLExprTableSource getInto() {
-        return into;
-    }
-
-    public void setInto(SQLExprTableSource into) {
-        this.into = into;
-    }
-
-    public List<SQLExpr> getColumns() {
-        return columns;
-    }
-
-    public List<SQLSelectItem> getSelectList() {
-        return selectList;
-    }
-
 }

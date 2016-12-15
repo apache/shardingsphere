@@ -22,62 +22,35 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatement {
-
-    private boolean        only      = false;
-
-    private PGWithClause   with;
-
-    private List<SQLExpr>  returning = new ArrayList<SQLExpr>(2);
-
+    
+    private boolean only;
+    
+    private PGWithClause with;
+    
     private SQLTableSource from;
+    
+    private final List<SQLExpr> returning = new ArrayList<>(2);
     
     public PGUpdateStatement(){
         super (JdbcConstants.POSTGRESQL);
     }
-
-    public SQLTableSource getFrom() {
-        return from;
-    }
-
-    public void setFrom(SQLTableSource from) {
-        this.from = from;
-    }
-
-    public boolean isOnly() {
-        return only;
-    }
-
-    public void setOnly(boolean only) {
-        this.only = only;
-    }
-
-    public List<SQLExpr> getReturning() {
-        return returning;
-    }
-
-    public void setReturning(List<SQLExpr> returning) {
-        this.returning = returning;
-    }
-
-    public PGWithClause getWith() {
-        return with;
-    }
-
-    public void setWith(PGWithClause with) {
-        this.with = with;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
             acceptChild(visitor, getTableSource());
@@ -86,5 +59,4 @@ public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatem
         }
         visitor.endVisit(this);
     }
-
 }

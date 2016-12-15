@@ -18,56 +18,31 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleLockTableStatement extends OracleStatementImpl {
-
-    private SQLName  table;
+    
+    private SQLName table;
+    
     private LockMode lockMode;
-    private boolean  noWait = false;
-    private SQLExpr  wait;
-
-    public boolean isNoWait() {
-        return noWait;
-    }
-
-    public void setNoWait(boolean noWait) {
-        this.noWait = noWait;
-    }
-
-    public SQLExpr getWait() {
-        return wait;
-    }
-
-    public void setWait(SQLExpr wait) {
-        this.wait = wait;
-    }
-
-    public SQLName getTable() {
-        return table;
-    }
-
-    public void setTable(SQLName table) {
-        this.table = table;
-    }
-
-    public LockMode getLockMode() {
-        return lockMode;
-    }
-
-    public void setLockMode(LockMode lockMode) {
-        this.lockMode = lockMode;
-    }
-
+    
+    private boolean noWait;
+    
+    private SQLExpr wait;
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, table);
             acceptChild(visitor, wait);
         }
         visitor.endVisit(this);
     }
-
-    public static enum LockMode {
+    
+    public enum LockMode {
         EXCLUSIVE, SHARE
     }
 }

@@ -19,41 +19,24 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource implements OracleSelectTableSource {
-
-    protected OracleSelectPivotBase pivot;
-
-    protected FlashbackQueryClause  flashback;
-
-    public FlashbackQueryClause getFlashback() {
-        return flashback;
-    }
-
-    public void setFlashback(FlashbackQueryClause flashback) {
-        this.flashback = flashback;
-    }
-
-    public OracleSelectSubqueryTableSource(SQLSelect select){
+    
+    private OracleSelectPivotBase pivot;
+    
+    private FlashbackQueryClause  flashback;
+    
+    public OracleSelectSubqueryTableSource(final SQLSelect select){
         super(select);
-    }
-
-    public OracleSelectPivotBase getPivot() {
-        return pivot;
-    }
-
-    public void setPivot(OracleSelectPivotBase pivot) {
-        this.pivot = pivot;
     }
     
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-
-    protected void accept0(OracleASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getHints());
             acceptChild(visitor, getSelect());
@@ -62,7 +45,8 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
         }
         visitor.endVisit(this);
     }
-
+    
+    @Override
     public String toString () {
         return SQLUtils.toOracleString(this);
     }

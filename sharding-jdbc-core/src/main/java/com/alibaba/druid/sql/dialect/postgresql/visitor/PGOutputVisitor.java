@@ -48,18 +48,17 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor {
-
+    
     public PGOutputVisitor(Appendable appender){
         super(appender);
     }
-
+    
     @Override
-    public void endVisit(WindowClause x) {
-
+    public void endVisit(final WindowClause x) {
     }
-
+    
     @Override
-    public boolean visit(WindowClause x) {
+    public boolean visit(final WindowClause x) {
         print("WINDOW ");
         x.getName().accept(this);
         print(" AS ");

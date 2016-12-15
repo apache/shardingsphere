@@ -15,84 +15,50 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class OracleSelectPivot extends OracleSelectPivotBase {
-
-    private boolean             xml;
-    private final List<Item>    items    = new ArrayList<Item>();
-    private final List<SQLExpr> pivotFor = new ArrayList<SQLExpr>();
-    private final List<Item>    pivotIn  = new ArrayList<Item>();
-
-    public OracleSelectPivot(){
-
-    }
-
-    public void accept0(OracleASTVisitor visitor) {
+    
+    private boolean xml;
+    
+    private final List<Item> items = new ArrayList<>();
+    
+    private final List<SQLExpr> pivotFor = new ArrayList<>();
+    
+    private final List<Item> pivotIn = new ArrayList<>();
+    
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.items);
-            acceptChild(visitor, this.pivotFor);
-            acceptChild(visitor, this.pivotIn);
+            acceptChild(visitor, items);
+            acceptChild(visitor, pivotFor);
+            acceptChild(visitor, pivotIn);
         }
-
         visitor.endVisit(this);
     }
-
-    public List<Item> getPivotIn() {
-        return this.pivotIn;
-    }
-
-    public List<SQLExpr> getPivotFor() {
-        return this.pivotFor;
-    }
-
-    public boolean isXml() {
-        return this.xml;
-    }
-
-    public List<Item> getItems() {
-        return this.items;
-    }
-
-    public void setXml(boolean xml) {
-        this.xml = xml;
-    }
-
+    
+    @Getter
+    @Setter
     public static class Item extends OracleSQLObjectImpl {
-
-        private String  alias;
+        
+        private String alias;
+        
         private SQLExpr expr;
-
-        public Item(){
-
-        }
-
-        public String getAlias() {
-            return this.alias;
-        }
-
-        public void setAlias(String alias) {
-            this.alias = alias;
-        }
-
-        public SQLExpr getExpr() {
-            return this.expr;
-        }
-
-        public void setExpr(SQLExpr expr) {
-            this.expr = expr;
-        }
-
-        public void accept0(OracleASTVisitor visitor) {
+        
+        @Override
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
-                acceptChild(visitor, this.expr);
+                acceptChild(visitor, expr);
             }
-
             visitor.endVisit(this);
         }
     }

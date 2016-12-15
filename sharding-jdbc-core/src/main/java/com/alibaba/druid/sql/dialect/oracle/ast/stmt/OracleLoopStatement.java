@@ -15,30 +15,23 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-
+@Getter
 public class OracleLoopStatement extends OracleStatementImpl {
-
-    private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-
+    
+    private List<SQLStatement> statements = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, statements);
         }
         visitor.endVisit(this);
     }
-
-    public List<SQLStatement> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<SQLStatement> statements) {
-        this.statements = statements;
-    }
-
 }

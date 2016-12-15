@@ -15,30 +15,23 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
+import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
+import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-
+@Getter
 public class OracleAlterTablespaceAddDataFile extends OracleSQLObjectImpl implements OracleAlterTablespaceItem {
-
-    private List<OracleFileSpecification> files = new ArrayList<OracleFileSpecification>();
-
+    
+    private final List<OracleFileSpecification> files = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, files);
         }
         visitor.endVisit(this);
     }
-
-    public List<OracleFileSpecification> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<OracleFileSpecification> files) {
-        this.files = files;
-    }
-
 }

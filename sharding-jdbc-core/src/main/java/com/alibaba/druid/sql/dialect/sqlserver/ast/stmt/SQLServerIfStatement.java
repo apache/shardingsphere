@@ -15,24 +15,31 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class SQLServerIfStatement extends SQLServerObjectImpl implements SQLServerStatement {
-
-    private SQLExpr            condition;
-    private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-    private Else               elseItem;
-    private String             dbType;
-
+    
+    private SQLExpr condition;
+    
+    private Else elseItem;
+    
+    private String dbType;
+    
+    private final List<SQLStatement> statements = new ArrayList<>();
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, condition);
             acceptChild(visitor, statements);
@@ -40,58 +47,19 @@ public class SQLServerIfStatement extends SQLServerObjectImpl implements SQLServ
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getCondition() {
-        return condition;
-    }
-
-    public void setCondition(SQLExpr condition) {
-        this.condition = condition;
-    }
-
-    public List<SQLStatement> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<SQLStatement> statements) {
-        this.statements = statements;
-    }
-
-    public Else getElseItem() {
-        return elseItem;
-    }
-
-    public void setElseItem(Else elseItem) {
-        this.elseItem = elseItem;
-    }
-
+    
+    @Getter
+    @Setter
     public static class Else extends SQLServerObjectImpl {
-
-        private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-
+        
+        private final List<SQLStatement> statements = new ArrayList<>();
+        
         @Override
-        public void accept0(SQLServerASTVisitor visitor) {
+        public void accept0(final SQLServerASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, statements);
             }
             visitor.endVisit(this);
         }
-
-        public List<SQLStatement> getStatements() {
-            return statements;
-        }
-
-        public void setStatements(List<SQLStatement> statements) {
-            this.statements = statements;
-        }
-
-    }
-
-    public String getDbType() {
-        return dbType;
-    }
-    
-    public void setDbType(String dbType) {
-        this.dbType = dbType;
     }
 }

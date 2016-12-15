@@ -16,6 +16,7 @@
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
 public enum PGDateField {
+    
     CENTURY,
     DAY,
     DECADE,

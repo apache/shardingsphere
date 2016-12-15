@@ -21,76 +21,43 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class PGDeleteStatement extends SQLDeleteStatement implements PGSQLStatement {
-
-    private PGWithClause  with;
-    private boolean       only  = false;
-    private List<SQLName> using = new ArrayList<SQLName>(2);
-    private boolean       returning;
-    private String        alias;
+    
+    private PGWithClause with;
+    
+    private boolean only;
+    
+    private boolean returning;
+    
+    private String alias;
+    
+    private final List<SQLName> using = new ArrayList<>(2);
     
     public PGDeleteStatement() {
         super (JdbcConstants.POSTGRESQL);
     }
-
-    public boolean isReturning() {
-        return returning;
-    }
-
-    public void setReturning(boolean returning) {
-        this.returning = returning;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public List<SQLName> getUsing() {
-        return using;
-    }
-
-    public void setUsing(List<SQLName> using) {
-        this.using = using;
-    }
-
-    public boolean isOnly() {
-        return only;
-    }
-
-    public void setOnly(boolean only) {
-        this.only = only;
-    }
-
-    public PGWithClause getWith() {
-        return with;
-    }
-
-    public void setWith(PGWithClause with) {
-        this.with = with;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(PGASTVisitor visitor) {
+    public void accept0(final PGASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, with);
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, using);
             acceptChild(visitor, getWhere());
         }
-
         visitor.endVisit(this);
     }
-
 }

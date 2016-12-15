@@ -26,13 +26,16 @@ public abstract class OracleStatementImpl extends SQLStatementImpl implements Or
     public OracleStatementImpl() {
         super(JdbcConstants.ORACLE);
     }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((OracleASTVisitor) visitor);
     }
-
-    public abstract void accept0(OracleASTVisitor visitor);
-
+    
+    @Override
+    public abstract void accept0(final OracleASTVisitor visitor);
+    
+    @Override
     public String toString() {
         return SQLUtils.toOracleString(this);
     }

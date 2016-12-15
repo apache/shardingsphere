@@ -19,5 +19,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.dialect.transact.ast.TransactSQLObject;
 
 public interface SQLServerObject extends TransactSQLObject {
-    public void accept0(SQLServerASTVisitor visitor);
+    
+    void accept0(SQLServerASTVisitor visitor);
 }

@@ -23,48 +23,30 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerUpdateStatement extends SQLUpdateStatement implements SQLServerStatement {
-
-    private SQLServerTop    top;
-    private SQLTableSource  from;
+    
+    private SQLServerTop top;
+    
+    private SQLTableSource from;
+    
     private SQLServerOutput output;
     
     public SQLServerUpdateStatement(){
         super (JdbcConstants.SQL_SERVER);
     }
-
-    public SQLServerTop getTop() {
-        return top;
-    }
-
-    public void setTop(SQLServerTop top) {
-        this.top = top;
-    }
-
-    public SQLTableSource getFrom() {
-        return from;
-    }
-
-    public void setFrom(SQLTableSource from) {
-        this.from = from;
-    }
-
-    public SQLServerOutput getOutput() {
-        return output;
-    }
-
-    public void setOutput(SQLServerOutput output) {
-        this.output = output;
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((SQLServerASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((SQLServerASTVisitor) visitor);
     }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, top);
             acceptChild(visitor, getTableSource());

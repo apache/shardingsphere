@@ -17,52 +17,27 @@ package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SQLServerTop extends SQLServerObjectImpl {
-
+    
     private SQLExpr expr;
+    
     private boolean percent;
-    private boolean withTies;
-
-    public SQLServerTop(){
-
-    }
-
-    public SQLServerTop(SQLExpr expr){
-        this.setExpr(expr);
-    }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        if (expr != null) {
+    
+    public void setExpr(final SQLExpr expr) {
+        if (null != expr) {
             expr.setParent(this);
         }
         this.expr = expr;
     }
-
-    public boolean isPercent() {
-        return percent;
-    }
-
-    public void setPercent(boolean percent) {
-        this.percent = percent;
-    }
-
-    public boolean isWithTies() {
-        return withTies;
-    }
-
-    public void setWithTies(boolean withTies) {
-        this.withTies = withTies;
-    }
-
+    
     @Override
-    public void accept0(SQLServerASTVisitor visitor) {
+    public void accept0(final SQLServerASTVisitor visitor) {
         visitor.visit(this);
         visitor.endVisit(this);
     }
-
 }

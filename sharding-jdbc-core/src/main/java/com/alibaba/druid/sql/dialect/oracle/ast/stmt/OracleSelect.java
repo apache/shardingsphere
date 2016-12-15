@@ -17,47 +17,20 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleSelect extends SQLSelect {
-
-    private OracleSelectForUpdate   forUpdate;
+    
+    private OracleSelectForUpdate forUpdate;
+    
     private OracleSelectRestriction restriction;
-
-    public OracleSelect(){
-
-    }
-
-    public OracleSelectRestriction getRestriction() {
-        return this.restriction;
-    }
-
-    public void setRestriction(OracleSelectRestriction restriction) {
-        this.restriction = restriction;
-    }
-
-    public OracleSelectForUpdate getForUpdate() {
-        return this.forUpdate;
-    }
-
-    public void setForUpdate(OracleSelectForUpdate forUpdate) {
-        this.forUpdate = forUpdate;
-    }
-
-    public void output(StringBuffer buffer) {
-        getQuery().output(buffer);
-        buffer.append(" ");
-        if (null != getOrderBy()) {
-            getOrderBy().output(buffer);
-        }
-    }
-
+        
+    @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-
-    protected void accept0(OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getWithSubQuery());
             acceptChild(visitor, getQuery());
@@ -68,6 +41,16 @@ public class OracleSelect extends SQLSelect {
         visitor.endVisit(this);
     }
     
+    @Override
+    public void output(final StringBuffer buffer) {
+        getQuery().output(buffer);
+        buffer.append(" ");
+        if (null != getOrderBy()) {
+            getOrderBy().output(buffer);
+        }
+    }
+    
+    @Override
     public String toString() {
         return SQLUtils.toOracleString(this);
     }

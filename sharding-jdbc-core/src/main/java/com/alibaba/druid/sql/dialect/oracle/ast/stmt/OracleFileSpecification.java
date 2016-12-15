@@ -15,25 +15,29 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class OracleFileSpecification extends OracleSQLObjectImpl {
-
-    private List<SQLExpr> fileNames     = new ArrayList<SQLExpr>();
-
-    private SQLExpr       size;
-
-    private boolean       autoExtendOff = false;
-
-    private SQLExpr       autoExtendOn;
-
+    
+    private SQLExpr size;
+    
+    private boolean autoExtendOff;
+    
+    private SQLExpr autoExtendOn;
+    
+    private final List<SQLExpr> fileNames = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, fileNames);
             acceptChild(visitor, size);
@@ -41,37 +45,4 @@ public class OracleFileSpecification extends OracleSQLObjectImpl {
         }
         visitor.endVisit(this);
     }
-
-    public SQLExpr getAutoExtendOn() {
-        return autoExtendOn;
-    }
-
-    public void setAutoExtendOn(SQLExpr autoExtendOn) {
-        this.autoExtendOn = autoExtendOn;
-    }
-
-    public SQLExpr getSize() {
-        return size;
-    }
-
-    public void setSize(SQLExpr size) {
-        this.size = size;
-    }
-
-    public boolean isAutoExtendOff() {
-        return autoExtendOff;
-    }
-
-    public void setAutoExtendOff(boolean autoExtendOff) {
-        this.autoExtendOff = autoExtendOff;
-    }
-
-    public List<SQLExpr> getFileNames() {
-        return fileNames;
-    }
-
-    public void setFileNames(List<SQLExpr> fileNames) {
-        this.fileNames = fileNames;
-    }
-
 }

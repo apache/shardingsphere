@@ -31,98 +31,108 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.sql.visitor.functions.Function;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class PGEvalVisitor extends PGASTVisitorAdapter implements SQLEvalVisitor {
-
-    private Map<String, Function> functions        = new HashMap<>();
-    private List<Object>          parameters       = new ArrayList<>();
-
+    
+    private Map<String, Function> functions = new HashMap<>();
+    
+    private List<Object> parameters = new ArrayList<>();
+    
     public PGEvalVisitor(){
         this(new ArrayList<>(1));
     }
-
-    public PGEvalVisitor(List<Object> parameters){
+    
+    public PGEvalVisitor(final List<Object> parameters){
         this.parameters = parameters;
     }
-
+    
     public List<Object> getParameters() {
         return parameters;
     }
-
-    public void setParameters(List<Object> parameters) {
+    
+    @Override
+    public void setParameters(final List<Object> parameters) {
         this.parameters = parameters;
     }
-
-    public boolean visit(SQLCharExpr x) {
+    
+    @Override
+    public boolean visit(final SQLCharExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
-    public boolean visit(SQLVariantRefExpr x) {
+    
+    @Override
+    public boolean visit(final SQLVariantRefExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
-    public boolean visit(SQLBinaryOpExpr x) {
+    
+    @Override
+    public boolean visit(final SQLBinaryOpExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
-    public boolean visit(SQLUnaryExpr x) {
+    
+    @Override
+    public boolean visit(final SQLUnaryExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
-
-    public boolean visit(SQLIntegerExpr x) {
+    
+    @Override
+    public boolean visit(final SQLIntegerExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
-
-    public boolean visit(SQLNumberExpr x) {
-        return SQLEvalVisitorUtils.visit(x);
-    }
-
+    
     @Override
-    public boolean visit(SQLCaseExpr x) {
-        return SQLEvalVisitorUtils.visit(this, x);
-    }
-
-    @Override
-    public boolean visit(SQLInListExpr x) {
-        return SQLEvalVisitorUtils.visit(this, x);
-    }
-
-    @Override
-    public boolean visit(SQLNullExpr x) {
+    public boolean visit(final SQLNumberExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
 
     @Override
-    public boolean visit(SQLMethodInvokeExpr x) {
+    public boolean visit(final SQLCaseExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
 
     @Override
-    public boolean visit(SQLQueryExpr x) {
+    public boolean visit(final SQLInListExpr x) {
         return SQLEvalVisitorUtils.visit(this, x);
     }
 
     @Override
-    public Function getFunction(String funcName) {
+    public boolean visit(final SQLNullExpr x) {
+        return SQLEvalVisitorUtils.visit(x);
+    }
+
+    @Override
+    public boolean visit(final SQLMethodInvokeExpr x) {
+        return SQLEvalVisitorUtils.visit(this, x);
+    }
+
+    @Override
+    public boolean visit(final SQLQueryExpr x) {
+        return SQLEvalVisitorUtils.visit(this, x);
+    }
+
+    @Override
+    public Function getFunction(final String funcName) {
         return functions.get(funcName);
     }
 
     @Override
-    public void registerFunction(String funcName, Function function) {
+    public void registerFunction(final String funcName, final Function function) {
         functions.put(funcName, function);
     }
     
-    public boolean visit(SQLIdentifierExpr x) {
+    public boolean visit(final SQLIdentifierExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
     
     @Override
-    public boolean visit(SQLBinaryExpr x) {
+    public boolean visit(final SQLBinaryExpr x) {
         return SQLEvalVisitorUtils.visit(x);
     }
 }

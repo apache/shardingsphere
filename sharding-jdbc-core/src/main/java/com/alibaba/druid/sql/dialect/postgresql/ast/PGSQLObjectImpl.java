@@ -20,15 +20,11 @@ import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public abstract class PGSQLObjectImpl extends SQLObjectImpl implements PGSQLObject {
-
-    public PGSQLObjectImpl(){
-
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((PGASTVisitor) visitor);
+    protected void acceptInternal(final SQLASTVisitor visitor) {
+        accept0((PGASTVisitor) visitor);
     }
-
-    public abstract void accept0(PGASTVisitor visitor);
+    
+    public abstract void accept0(final PGASTVisitor visitor);
 }

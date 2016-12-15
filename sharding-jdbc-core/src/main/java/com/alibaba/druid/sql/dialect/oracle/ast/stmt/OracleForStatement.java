@@ -15,24 +15,28 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class OracleForStatement extends OracleStatementImpl {
-
-    private SQLName            index;
-
-    private SQLExpr            range;
-
-    private List<SQLStatement> statements = new ArrayList<SQLStatement>();
-
+    
+    private SQLName index;
+    
+    private SQLExpr range;
+    
+    private final List<SQLStatement> statements = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, index);
             acceptChild(visitor, range);
@@ -40,29 +44,4 @@ public class OracleForStatement extends OracleStatementImpl {
         }
         visitor.endVisit(this);
     }
-
-    public SQLName getIndex() {
-        return index;
-    }
-
-    public void setIndex(SQLName index) {
-        this.index = index;
-    }
-
-    public SQLExpr getRange() {
-        return range;
-    }
-
-    public void setRange(SQLExpr range) {
-        this.range = range;
-    }
-
-    public List<SQLStatement> getStatements() {
-        return statements;
-    }
-
-    public void setStatements(List<SQLStatement> statements) {
-        this.statements = statements;
-    }
-
 }

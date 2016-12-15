@@ -15,30 +15,23 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
+import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
+import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-
+@Getter
 public class OracleAlterTableModify extends OracleAlterTableItem {
-
-    private List<SQLColumnDefinition> columns = new ArrayList<SQLColumnDefinition>();
-
+    
+    private final List<SQLColumnDefinition> columns = new ArrayList<>();
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, columns);
         }
         visitor.endVisit(this);
     }
-
-    public List<SQLColumnDefinition> getColumns() {
-        return columns;
-    }
-
-    public void setColumns(List<SQLColumnDefinition> columns) {
-        this.columns = columns;
-    }
-
 }

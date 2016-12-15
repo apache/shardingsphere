@@ -20,70 +20,27 @@ import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.PartitionExtensionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SampleClause;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleSelectTableReference extends SQLExprTableSource implements OracleSelectTableSource {
-
-    private boolean                    only = false;
-    protected OracleSelectPivotBase    pivot;
-
-    protected PartitionExtensionClause partition;
-    protected SampleClause             sampleClause;
-
-    protected FlashbackQueryClause     flashback;
-
-    public OracleSelectTableReference(){
-
-    }
-
-    public FlashbackQueryClause getFlashback() {
-        return flashback;
-    }
-
-    public void setFlashback(FlashbackQueryClause flashback) {
-        this.flashback = flashback;
-    }
-
-    public PartitionExtensionClause getPartition() {
-        return partition;
-    }
-
-    public void setPartition(PartitionExtensionClause partition) {
-        this.partition = partition;
-    }
-
-    public boolean isOnly() {
-        return this.only;
-    }
-
-    public void setOnly(boolean only) {
-        this.only = only;
-    }
-
-    public SampleClause getSampleClause() {
-        return sampleClause;
-    }
-
-    public void setSampleClause(SampleClause sampleClause) {
-        this.sampleClause = sampleClause;
-    }
-
-    public OracleSelectPivotBase getPivot() {
-        return pivot;
-    }
-
-    public void setPivot(OracleSelectPivotBase pivot) {
-        this.pivot = pivot;
-    }
-
+    
+    private boolean only = false;
+    
+    private OracleSelectPivotBase pivot;
+    
+    private PartitionExtensionClause partition;
+    
+    private SampleClause sampleClause;
+    
+    private FlashbackQueryClause flashback;
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-
-    protected void accept0(OracleASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getExpr());
             acceptChild(visitor, this.partition);
@@ -92,7 +49,8 @@ public class OracleSelectTableReference extends SQLExprTableSource implements Or
         }
         visitor.endVisit(this);
     }
-
+    
+    @Override
     public void output(StringBuffer buf) {
         if (this.only) {
             buf.append("ONLY (");

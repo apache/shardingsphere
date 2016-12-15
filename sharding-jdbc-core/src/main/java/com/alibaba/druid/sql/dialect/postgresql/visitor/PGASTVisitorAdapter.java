@@ -1,7 +1,7 @@
 /*
  * Copyright 1999-2101 Alibaba Group Holding Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (final the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,269 +44,238 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
 
 public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVisitor {
-
+    
     @Override
-    public void endVisit(WindowClause x) {
+    public void endVisit(final WindowClause x) {
     }
-
+    
     @Override
-    public boolean visit(WindowClause x) {
-
-        return true;
-    }
-
-    @Override
-    public void endVisit(FetchClause x) {
-
-    }
-
-    @Override
-    public boolean visit(FetchClause x) {
-
-        return true;
-    }
-
-    @Override
-    public void endVisit(ForClause x) {
-
-    }
-
-    @Override
-    public boolean visit(ForClause x) {
-
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGWithQuery x) {
-
-    }
-
-    @Override
-    public boolean visit(PGWithQuery x) {
-
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGWithClause x) {
-
-    }
-
-    @Override
-    public boolean visit(PGWithClause x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGDeleteStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGDeleteStatement x) {
-
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGInsertStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGInsertStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGSelectStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGSelectStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGUpdateStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGUpdateStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGSelectQueryBlock x) {
-
-    }
-
-    @Override
-    public boolean visit(PGSelectQueryBlock x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGParameter x) {
-
-    }
-
-    @Override
-    public boolean visit(PGParameter x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(PGFunctionTableSource x) {
-
-    }
-
-    @Override
-    public boolean visit(PGFunctionTableSource x) {
-        return true;
-    }
-
-	@Override
-	public boolean visit(PGLimit x) {
-		return true;
-	}
-
-	@Override
-	public void endVisit(PGLimit x) {
-		
-	}
-	
-	@Override
-	public boolean visit(PGTypeCastExpr x) {
-	    return true;
-	}
-	
-	@Override
-	public void endVisit(PGTypeCastExpr x) {
-	    
-	}
-
-    @Override
-    public void endVisit(PGValuesQuery x) {
-        
-    }
-
-    @Override
-    public boolean visit(PGValuesQuery x) {
+    public boolean visit(final WindowClause x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGExtractExpr x) {
-        
+    public void endVisit(final FetchClause x) {
     }
     
     @Override
-    public boolean visit(PGExtractExpr x) {
+    public boolean visit(final FetchClause x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGBoxExpr x) {
-        
+    public void endVisit(final ForClause x) {
     }
     
     @Override
-    public boolean visit(PGBoxExpr x) {
+    public boolean visit(final ForClause x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGPointExpr x) {
-        
+    public void endVisit(final PGWithQuery x) {
     }
     
     @Override
-    public boolean visit(PGPointExpr x) {
+    public boolean visit(final PGWithQuery x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGMacAddrExpr x) {
-        
+    public void endVisit(final PGWithClause x) {
     }
     
     @Override
-    public boolean visit(PGMacAddrExpr x) {
+    public boolean visit(final PGWithClause x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGInetExpr x) {
-        
+    public void endVisit(final PGDeleteStatement x) {
     }
     
     @Override
-    public boolean visit(PGInetExpr x) {
+    public boolean visit(final PGDeleteStatement x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGCidrExpr x) {
-        
+    public void endVisit(final PGInsertStatement x) {
     }
     
     @Override
-    public boolean visit(PGCidrExpr x) {
+    public boolean visit(final PGInsertStatement x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGPolygonExpr x) {
-        
+    public void endVisit(final PGSelectStatement x) {
     }
     
     @Override
-    public boolean visit(PGPolygonExpr x) {
+    public boolean visit(final PGSelectStatement x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGCircleExpr x) {
-        
+    public void endVisit(final PGUpdateStatement x) {
     }
     
     @Override
-    public boolean visit(PGCircleExpr x) {
+    public boolean visit(final PGUpdateStatement x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGLineSegmentsExpr x) {
-        
+    public void endVisit(final PGSelectQueryBlock x) {
     }
     
     @Override
-    public boolean visit(PGLineSegmentsExpr x) {
+    public boolean visit(final PGSelectQueryBlock x) {
         return true;
+    }
+    
+    @Override
+    public void endVisit(final PGParameter x) {
+    }
+    
+    @Override
+    public boolean visit(final PGParameter x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGFunctionTableSource x) {
+    }
+    
+    @Override
+    public boolean visit(final PGFunctionTableSource x) {
+        return true;
+    }
+    
+    @Override 
+    public boolean visit(final PGLimit x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGLimit x) {
+    }
+    
+    @Override
+    public boolean visit(final PGTypeCastExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGTypeCastExpr x) {
+    }
+    
+    @Override
+    public void endVisit(final PGValuesQuery x) {
+    }
+    
+    @Override
+    public boolean visit(final PGValuesQuery x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGExtractExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGExtractExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGBoxExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGBoxExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGPointExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGPointExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGMacAddrExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGMacAddrExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGInetExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGInetExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGCidrExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGCidrExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGPolygonExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGPolygonExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGCircleExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGCircleExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGLineSegmentsExpr x) {
+    }
+    
+    @Override
+    public boolean visit(final PGLineSegmentsExpr x) {
+        return true;
+    }
+    
+    @Override
+    public void endVisit(final PGIntervalExpr x) {
     }
 
     @Override
-    public void endVisit(PGIntervalExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(PGIntervalExpr x) {
+    public boolean visit(final PGIntervalExpr x) {
         return true;
     }
     
     @Override
-    public void endVisit(PGShowStatement x) {
-        
+    public void endVisit(final PGShowStatement x) {
     }
     
     @Override
-    public boolean visit(PGShowStatement x) {
+    public boolean visit(final PGShowStatement x) {
         return true;
     }
-
 }

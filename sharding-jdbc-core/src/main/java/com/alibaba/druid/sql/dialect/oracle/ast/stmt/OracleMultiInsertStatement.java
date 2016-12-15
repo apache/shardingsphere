@@ -25,153 +25,86 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class OracleMultiInsertStatement extends OracleStatementImpl {
-
-    public static enum Option {
-        ALL, FIRST
-    }
-
-    private SQLSelect     subQuery;
-    private Option        option;
-    private List<Entry>   entries = new ArrayList<Entry>();
-    private List<SQLHint> hints   = new ArrayList<SQLHint>(1);
-
-    public List<SQLHint> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<SQLHint> hints) {
-        this.hints = hints;
-    }
-
-    public List<Entry> getEntries() {
-        return entries;
-    }
-
-    public void setEntries(List<Entry> entries) {
-        this.entries = entries;
-    }
-
-    public Option getOption() {
-        return option;
-    }
-
-    public void setOption(Option option) {
-        this.option = option;
-    }
-
-    public SQLSelect getSubQuery() {
-        return subQuery;
-    }
-
-    public void setSubQuery(SQLSelect subQuery) {
-        this.subQuery = subQuery;
-    }
-
+    
+    private SQLSelect subQuery;
+    
+    private Option option;
+    
+    private final List<Entry> entries = new ArrayList<>();
+    
+    private final List<SQLHint> hints = new ArrayList<>(1);
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.entries);
-            acceptChild(visitor, this.subQuery);
+            acceptChild(visitor, entries);
+            acceptChild(visitor, subQuery);
         }
         visitor.endVisit(this);
     }
-
-    public static interface Entry extends OracleSQLObject {
-
+    
+    public enum Option {
+        ALL, FIRST
     }
-
+    
+    public interface Entry extends OracleSQLObject {
+    }
+    
+    @Getter
+    @Setter
     public static class ConditionalInsertClause extends OracleSQLObjectImpl implements Entry {
-
-        private List<ConditionalInsertClauseItem> items = new ArrayList<ConditionalInsertClauseItem>();
-        private InsertIntoClause                  elseItem;
-
-        public InsertIntoClause getElseItem() {
-            return elseItem;
-        }
-
-        public void setElseItem(InsertIntoClause elseItem) {
-            this.elseItem = elseItem;
-        }
-
-        public List<ConditionalInsertClauseItem> getItems() {
-            return items;
-        }
-
-        public void setItems(List<ConditionalInsertClauseItem> items) {
-            this.items = items;
-        }
-
+        
+        private List<ConditionalInsertClauseItem> items = new ArrayList<>();
+        
+        private InsertIntoClause elseItem;
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, items);
                 acceptChild(visitor, elseItem);
             }
             visitor.endVisit(this);
         }
-
     }
-
+    
+    @Getter
+    @Setter
     public static class ConditionalInsertClauseItem extends OracleSQLObjectImpl {
-
-        private SQLExpr          when;
+        
+        private SQLExpr when;
+        
         private InsertIntoClause then;
-
-        public SQLExpr getWhen() {
-            return when;
-        }
-
-        public void setWhen(SQLExpr when) {
-            this.when = when;
-        }
-
-        public InsertIntoClause getThen() {
-            return then;
-        }
-
-        public void setThen(InsertIntoClause then) {
-            this.then = then;
-        }
-
+        
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, when);
                 acceptChild(visitor, then);
             }
             visitor.endVisit(this);
         }
-
     }
-
+    
+    @Getter
+    @Setter
     public static class InsertIntoClause extends SQLInsertInto implements OracleSQLObject, Entry {
-
-        private OracleReturningClause    returning;
+        
+        private OracleReturningClause returning;
+        
         private OracleErrorLoggingClause errorLogging;
-
-        public InsertIntoClause(){
-
-        }
-
-        public OracleReturningClause getReturning() {
-            return returning;
-        }
-
-        public void setReturning(OracleReturningClause returning) {
-            this.returning = returning;
-        }
-
-        public void setErrorLogging(OracleErrorLoggingClause errorLogging) {
-            this.errorLogging = errorLogging;
-        }
-
+        
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             this.accept0((OracleASTVisitor) visitor);
         }
         

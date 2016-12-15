@@ -53,7 +53,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import java.util.Collection;
 import java.util.List;
 
-
 public class SQLServerStatementParser extends SQLStatementParser {
     
     public SQLServerStatementParser(String sql){

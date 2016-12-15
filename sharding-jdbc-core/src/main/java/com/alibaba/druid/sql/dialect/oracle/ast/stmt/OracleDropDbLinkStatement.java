@@ -17,35 +17,22 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleDropDbLinkStatement extends OracleStatementImpl {
-
+    
     private boolean isPublic;
-
+    
     private SQLName name;
-
-    public boolean isPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(boolean value) {
-        this.isPublic = value;
-    }
-
-    public SQLName getName() {
-        return name;
-    }
-
-    public void setName(SQLName name) {
-        this.name = name;
-    }
-
+    
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, name);
         }
         visitor.endVisit(this);
     }
-
 }

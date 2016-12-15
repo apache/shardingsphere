@@ -21,63 +21,39 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
-
-    private final List<SQLCommentHint>         hints = new ArrayList<SQLCommentHint>(1);
-
-    private OracleSelectHierachicalQueryClause hierachicalQueryClause;
-    private ModelClause                        modelClause;
-
-    public OracleSelectQueryBlock(){
-
-    }
-
-    public ModelClause getModelClause() {
-        return modelClause;
-    }
-
-    public void setModelClause(ModelClause modelClause) {
-        this.modelClause = modelClause;
-    }
-
-    public OracleSelectHierachicalQueryClause getHierachicalQueryClause() {
-        return this.hierachicalQueryClause;
-    }
-
-    public void setHierachicalQueryClause(OracleSelectHierachicalQueryClause hierachicalQueryClause) {
-        this.hierachicalQueryClause = hierachicalQueryClause;
-    }
-
-    public List<SQLCommentHint> getHints() {
-        return this.hints;
-    }
-
+    
+    private OracleSelectHierarchicalQueryClause hierarchicalQueryClause;
+    
+    private ModelClause modelClause;
+    
+    private final List<SQLCommentHint> hints = new ArrayList<>(1);
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
-            accept0((OracleASTVisitor) visitor);
+            if (visitor.visit(this)) {
+                acceptChild(visitor, hints);
+                acceptChild(visitor, getSelectList());
+                acceptChild(visitor, getInto());
+                acceptChild(visitor, getFrom());
+                acceptChild(visitor, getWhere());
+                acceptChild(visitor, hierarchicalQueryClause);
+                acceptChild(visitor, getGroupBy());
+                acceptChild(visitor, modelClause);
+            }
+            visitor.endVisit(this);
             return;
         }
-
         super.acceptInternal(visitor);
-    }
-
-    protected void accept0(OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, hints);
-            acceptChild(visitor, getSelectList());
-            acceptChild(visitor, getInto());
-            acceptChild(visitor, getFrom());
-            acceptChild(visitor, getWhere());
-            acceptChild(visitor, hierachicalQueryClause);
-            acceptChild(visitor, getGroupBy());
-            acceptChild(visitor, modelClause);
-        }
-        visitor.endVisit(this);
     }
     
     @Override

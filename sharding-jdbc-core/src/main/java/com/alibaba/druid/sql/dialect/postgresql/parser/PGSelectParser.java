@@ -35,7 +35,7 @@ import com.alibaba.druid.sql.parser.SQLSelectParser;
 import java.util.List;
 
 public class PGSelectParser extends SQLSelectParser {
-
+    
     public PGSelectParser(SQLExprParser exprParser){
         super(exprParser);
     }
