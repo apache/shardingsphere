@@ -34,7 +34,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -55,9 +54,6 @@ public final class SQLRouteEngine {
     
     private final DatabaseType databaseType;
     
-    @Setter
-    private List<Object> parameters;
-    
     /**
      * SQL路由.
      *
@@ -70,7 +66,7 @@ public final class SQLRouteEngine {
     }
     
     SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParserException {
-        return routeSQL(parseSQL(logicSql, parameters));
+        return routeSQL(parseSQL(logicSql, parameters), parameters);
     }
     
     /**
@@ -84,14 +80,13 @@ public final class SQLRouteEngine {
     }
     
     SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
-        this.parameters = parameters;
         Context context = MetricsContext.start("Parse SQL");
         SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule).parse();
         MetricsContext.stop(context);
         return result;
     }
     
-    SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
+    SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {

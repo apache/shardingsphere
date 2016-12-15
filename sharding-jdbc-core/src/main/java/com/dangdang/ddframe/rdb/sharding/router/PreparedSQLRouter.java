@@ -58,12 +58,11 @@ public class PreparedSQLRouter {
             tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
         } else {
             generateId(parameters);
-            engine.setParameters(parameters);
             for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
                 each.setNewConditionValue(parameters);
             }
         }
-        return engine.routeSQL(sqlParsedResult);
+        return engine.routeSQL(sqlParsedResult, parameters);
     }
     
     private void generateId(final List<Object> parameters) {
