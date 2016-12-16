@@ -728,7 +728,7 @@ public class SQLExprParser extends SQLParser {
         }
     }
     
-    public final void exprList(Collection<SQLExpr> exprCol, SQLObject parent) {
+    public final void exprList(final Collection<SQLExpr> exprCol, final SQLObject parent) {
         if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET)) {
             return;
         }

@@ -72,7 +72,6 @@ import com.alibaba.druid.sql.ast.statement.SQLExplainStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLFetchStatement;
 import com.alibaba.druid.sql.ast.statement.SQLGrantStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertInto;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLObjectType;
 import com.alibaba.druid.sql.ast.statement.SQLOpenStatement;
@@ -150,8 +149,7 @@ public class SQLStatementParser extends SQLParser {
                 continue;
             }
             if (getLexer().equalToken(Token.INSERT)) {
-                SQLStatement insertStatement = parseInsert();
-                result.add(insertStatement);
+                result.add(parseInsert());
                 continue;
             }
             if (getLexer().equalToken(Token.DELETE)) {
@@ -275,101 +273,6 @@ public class SQLStatementParser extends SQLParser {
     protected SQLSelectParser createSQLSelectParser() {
         return new SQLSelectParser(exprParser);
     }
-    
-    // TODO 整合parseStatementList
-//    private SQLStatement parseStatement0() {
-//        if (getLexer().equalToken(Token.SELECT)) {
-//            return parseSelect();
-//        }
-//        if (getLexer().equalToken(Token.UPDATE)) {
-//            return parseUpdateStatement();
-//        }
-//        if (getLexer().equalToken(Token.CREATE)) {
-//            return parseCreate();
-//        }
-//        if (getLexer().equalToken(Token.INSERT)) {
-//            return  parseInsert();
-//        }
-//        if (getLexer().equalToken(Token.DELETE)) {
-//            return parseDeleteStatement();
-//        }
-//        if (getLexer().equalToken(Token.EXPLAIN)) {
-//            return parseExplain();
-//        }
-//        if (getLexer().equalToken(Token.SET)) {
-//            return parseSet();
-//        }
-//        if (getLexer().equalToken(Token.ALTER)) {
-//            return parseAlter();
-//        }
-//        if (getLexer().equalToken(Token.DROP)) {
-//            getLexer().nextToken();
-//            if (getLexer().equalToken(Token.TABLE) || getLexer().identifierEquals("TEMPORARY")) {
-//                return parseDropTable(false);
-//            } else if (getLexer().equalToken(Token.USER)) {
-//                return parseDropUser();
-//            } else if (getLexer().equalToken(Token.INDEX)) {
-//                return parseDropIndex();
-//            } else if (getLexer().equalToken(Token.VIEW)) {
-//                return parseDropView(false);
-//            } else if (getLexer().equalToken(Token.TRIGGER)) {
-//                return parseDropTrigger(false);
-//            } else if (getLexer().equalToken(Token.DATABASE)) {
-//                return parseDropDatabase(false);
-//            } else if (getLexer().equalToken(Token.FUNCTION)) {
-//                return parseDropFunction(false);
-//            } else if (getLexer().equalToken(Token.TABLESPACE)) {
-//                return parseDropTablespace(false);
-//            } else if (getLexer().equalToken(Token.PROCEDURE)) {
-//                return parseDropProcedure(false);
-//            } else {
-//                throw new ParserException("TODO " + getLexer().getToken());
-//            }
-//        }
-//        if (getLexer().equalToken(Token.TRUNCATE)) {
-//            return parseTruncate();
-//        }
-//        if (getLexer().equalToken(Token.USE)) {
-//            return parseUse();
-//        }
-//        if (getLexer().equalToken(Token.GRANT)) {
-//            return parseGrant();
-//        }
-//        if (getLexer().equalToken(Token.REVOKE)) {
-//            return parseRevoke();
-//        }
-//        if (getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL")) {
-//            return parseCall();
-//        }
-//        if (getLexer().identifierEquals("RENAME")) {
-//            return parseRename();
-//        }
-//        if (getLexer().identifierEquals("RELEASE")) {
-//            return parseReleaseSavePoint();
-//        }
-//        if (getLexer().identifierEquals("SAVEPOINT")) {
-//            return parseSavePoint();
-//        }
-//        if (getLexer().identifierEquals("ROLLBACK")) {
-//            return parseRollback();
-//        }
-//        if (getLexer().identifierEquals("COMMIT")) {
-//            return parseCommit();
-//        }
-//        if (getLexer().equalToken(Token.SHOW)) {
-//            return parseShow();
-//        }
-//        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-//            int currentPosition = getLexer().getCurrentPosition();
-//            getLexer().nextToken();
-//            if (getLexer().equalToken(Token.SELECT)) {
-//                getLexer().setCurrentPosition(currentPosition);
-//                getLexer().setToken(Token.LEFT_PAREN);
-//                return parseSelect();
-//            }
-//        }
-//        return null;
-//    }
     
     public SQLRollbackStatement parseRollback() {
         getLexer().nextToken();
@@ -1351,67 +1254,41 @@ public class SQLStatementParser extends SQLParser {
 
             break;
         }
-
         return stmt;
     }
-
-    public SQLStatement parseInsert() {
-        SQLInsertStatement insertStatement = new SQLInsertStatement();
-
-        if (getLexer().equalToken(Token.INSERT)) {
-            accept(Token.INSERT);
-        }
-
-        parseInsert0(insertStatement);
-        return insertStatement;
-    }
-
-    protected void parseInsert0(SQLInsertInto insertStatement) {
-        parseInsert0(insertStatement, true);
-    }
-
-    protected void parseInsert0_hinits(SQLInsertInto insertStatement) {
-
-    }
-
-    protected void parseInsert0(SQLInsertInto insertStatement, boolean acceptSubQuery) {
+    
+    protected SQLStatement parseInsert() {
+        getLexer().nextToken();
+        SQLInsertStatement result = new SQLInsertStatement();
         if (getLexer().equalToken(Token.INTO)) {
             getLexer().nextToken();
-
-            SQLName tableName = this.exprParser.name();
-            insertStatement.setTableName(tableName);
-
+            result.setTableName(exprParser.name());
             if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-                insertStatement.setAlias(as());
+                result.setAlias(as());
             }
-
-            parseInsert0_hinits(insertStatement);
-
             if (getLexer().equalToken(Token.IDENTIFIER)) {
-                insertStatement.setAlias(getLexer().getLiterals());
+                result.setAlias(getLexer().getLiterals());
                 getLexer().nextToken();
             }
         }
-
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
+            exprParser.exprList(result.getColumns(), result);
             accept(Token.RIGHT_PAREN);
         }
-
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            this.exprParser.exprList(values.getValues(), values);
-            insertStatement.setValues(values);
+            exprParser.exprList(values.getValues(), values);
+            result.setValues(values);
             accept(Token.RIGHT_PAREN);
-        } else if (acceptSubQuery && (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN))) {
-            SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
-            insertStatement.setQuery(queryExpr.getSubQuery());
+        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
+            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
         }
+        return result;
     }
-
+    
     public boolean parseStatementListDialect(List<SQLStatement> statementList) {
         return false;
     }

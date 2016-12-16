@@ -37,6 +37,7 @@ import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropTriggerStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropUserStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertInto;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
@@ -126,16 +127,6 @@ public class OracleStatementParser extends SQLStatementParser {
         return new OracleCreateTableParser(getLexer());
     }
 
-    protected void parseInsert0_hinits(SQLInsertInto insertStatement) {
-        if (insertStatement instanceof OracleInsertStatement) {
-            OracleInsertStatement stmt = (OracleInsertStatement) insertStatement;
-            this.getExprParser().parseHints(stmt.getHints());
-        } else {
-            List<SQLHint> hints = new ArrayList<>(1);
-            this.getExprParser().parseHints(hints);
-        }
-    }
-    
     @Override
     protected List<SQLStatement> parseStatementList(int max) {
         List<SQLStatement> result = new ArrayList<>(-1 == max ? 16 : max);
@@ -1169,40 +1160,31 @@ public class OracleStatementParser extends SQLStatementParser {
 
         return stmt;
     }
-
-    public OracleStatement parseInsert() {
+    
+    @Override
+    protected OracleStatement parseInsert() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            OracleInsertStatement stmt = new OracleInsertStatement();
-            parseInsert0(stmt, false);
-
-            stmt.setReturning(parseReturningClause());
-            stmt.setErrorLogging(parseErrorLoggingClause());
-
-            return stmt;
+            OracleInsertStatement result = new OracleInsertStatement();
+            parseInsert0(result, false);
+            result.setReturning(parseReturningClause());
+            result.setErrorLogging(parseErrorLoggingClause());
+            return result;
         }
-
         accept(Token.INSERT);
-
         List<SQLHint> hints = new ArrayList<>();
-
         parseHints(hints);
-
         if (getLexer().equalToken(Token.INTO)) {
-            OracleInsertStatement stmt = new OracleInsertStatement();
-            stmt.getHints().clear();
-            stmt.getHints().addAll(hints);
-            parseInsert0(stmt);
-
-            stmt.setReturning(parseReturningClause());
-            stmt.setErrorLogging(parseErrorLoggingClause());
-
-            return stmt;
+            OracleInsertStatement result = new OracleInsertStatement();
+            result.getHints().clear();
+            result.getHints().addAll(hints);
+            parseInsert0(result, true);
+            result.setReturning(parseReturningClause());
+            result.setErrorLogging(parseErrorLoggingClause());
+            return result;
         }
-
-        OracleMultiInsertStatement stmt = parseMultiInsert();
-        stmt.getHints().clear();
-        stmt.getHints().addAll(hints);
-        return stmt;
+        OracleMultiInsertStatement result = parseMultiInsert();
+        result.getHints().addAll(hints);
+        return result;
     }
 
     public OracleMultiInsertStatement parseMultiInsert() {
@@ -1219,7 +1201,7 @@ public class OracleStatementParser extends SQLStatementParser {
         while (getLexer().equalToken(Token.INTO)) {
             OracleMultiInsertStatement.InsertIntoClause clause = new OracleMultiInsertStatement.InsertIntoClause();
 
-            parseInsert0(clause);
+            parseInsert0(clause, true);
 
             clause.setReturning(parseReturningClause());
             clause.setErrorLogging(parseErrorLoggingClause());
@@ -1238,7 +1220,7 @@ public class OracleStatementParser extends SQLStatementParser {
                 item.setWhen(this.exprParser.expr());
                 accept(Token.THEN);
                 OracleMultiInsertStatement.InsertIntoClause insertInto = new OracleMultiInsertStatement.InsertIntoClause();
-                parseInsert0(insertInto);
+                parseInsert0(insertInto, true);
                 item.setThen(insertInto);
 
                 clause.getItems().add(item);
@@ -1258,6 +1240,54 @@ public class OracleStatementParser extends SQLStatementParser {
         stmt.setSubQuery(subQuery);
 
         return stmt;
+    }
+    
+    private void parseInsert0(final SQLInsertInto insertStatement, final boolean acceptSubQuery) {
+        if (getLexer().equalToken(Token.INTO)) {
+            getLexer().nextToken();
+
+            SQLName tableName = this.exprParser.name();
+            insertStatement.setTableName(tableName);
+
+            if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
+                insertStatement.setAlias(as());
+            }
+
+            parseInsertHints(insertStatement);
+
+            if (getLexer().equalToken(Token.IDENTIFIER)) {
+                insertStatement.setAlias(getLexer().getLiterals());
+                getLexer().nextToken();
+            }
+        }
+
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            getLexer().nextToken();
+            this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
+            accept(Token.RIGHT_PAREN);
+        }
+
+        if (getLexer().equalToken(Token.VALUES)) {
+            getLexer().nextToken();
+            accept(Token.LEFT_PAREN);
+            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+            this.exprParser.exprList(values.getValues(), values);
+            insertStatement.setValues(values);
+            accept(Token.RIGHT_PAREN);
+        } else if (acceptSubQuery && (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN))) {
+            SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
+            insertStatement.setQuery(queryExpr.getSubQuery());
+        }
+    }
+    
+    private void parseInsertHints(final SQLInsertInto insertStatement) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            OracleInsertStatement stmt = (OracleInsertStatement) insertStatement;
+            getExprParser().parseHints(stmt.getHints());
+        } else {
+            List<SQLHint> hints = new ArrayList<>(1);
+            getExprParser().parseHints(hints);
+        }
     }
 
     private OracleExceptionStatement parseException() {

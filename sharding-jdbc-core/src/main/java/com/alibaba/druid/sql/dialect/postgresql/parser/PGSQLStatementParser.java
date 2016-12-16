@@ -80,44 +80,35 @@ public class PGSQLStatementParser extends SQLStatementParser {
 
         return udpateStatement;
     }
-
-    public PGInsertStatement parseInsert() {
-        PGInsertStatement stmt = new PGInsertStatement();
-
+    
+    @Override
+    protected PGInsertStatement parseInsert() {
+        PGInsertStatement result = new PGInsertStatement();
         if (getLexer().equalToken(Token.INSERT)) {
             getLexer().nextToken();
             accept(Token.INTO);
-
-            SQLName tableName = this.exprParser.name();
-            stmt.setTableName(tableName);
-
+            result.setTableName(exprParser.name());
             if (getLexer().equalToken(Token.IDENTIFIER)) {
-                stmt.setAlias(getLexer().getLiterals());
+                result.setAlias(getLexer().getLiterals());
                 getLexer().nextToken();
             }
-
         }
-        
         if (getLexer().equalToken(Token.DEFAULT)) {
             getLexer().nextToken();
             accept(Token.VALUES);
         }
-
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            this.exprParser.exprList(stmt.getColumns(), stmt);
+            exprParser.exprList(result.getColumns(), result);
             accept(Token.RIGHT_PAREN);
         }
-
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();
-    
             while (true) {
                 accept(Token.LEFT_PAREN);
                 SQLInsertStatement.ValuesClause valuesCaluse = new SQLInsertStatement.ValuesClause();
-                this.exprParser.exprList(valuesCaluse.getValues(), valuesCaluse);
-                stmt.addValueCause(valuesCaluse);
-
+                exprParser.exprList(valuesCaluse.getValues(), valuesCaluse);
+                result.addValueCause(valuesCaluse);
                 accept(Token.RIGHT_PAREN);
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
@@ -126,18 +117,15 @@ public class PGSQLStatementParser extends SQLStatementParser {
                 break;
             }
         } else if (getLexer().equalToken(Token.SELECT)) {
-            SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
-            stmt.setQuery(queryExpr.getSubQuery());
+            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
         }
-
         if (getLexer().equalToken(Token.RETURNING)) {
             getLexer().nextToken();
-            SQLExpr returning = this.exprParser.expr();
-            stmt.setReturning(returning);
+            result.setReturning(exprParser.expr());
         }
-        return stmt;
+        return result;
     }
-
+    
     public PGDeleteStatement parseDeleteStatement() {
         getLexer().nextToken();
         PGDeleteStatement deleteStatement = new PGDeleteStatement();
@@ -265,15 +253,15 @@ public class PGSQLStatementParser extends SQLStatementParser {
 
             SQLStatement query;
             if (getLexer().equalToken(Token.SELECT)) {
-                query = this.parseSelect();
+                query = parseSelect();
             } else if (getLexer().equalToken(Token.INSERT)) {
-                query = this.parseInsert();
+                query = parseInsert();
             } else if (getLexer().equalToken(Token.UPDATE)) {
-                query = this.parseUpdateStatement();
+                query = parseUpdateStatement();
             } else if (getLexer().equalToken(Token.DELETE)) {
-                query = this.parseDeleteStatement();
+                query = parseDeleteStatement();
             } else if (getLexer().equalToken(Token.VALUES)) {
-                query = this.parseSelect();
+                query = parseSelect();
             } else {
                 throw new ParserUnsupportedException(getLexer().getToken());
             }
@@ -291,21 +279,21 @@ public class PGSQLStatementParser extends SQLStatementParser {
     }
 
     public SQLStatement parseWith() {
-        PGWithClause with = this.parseWithClause();
+        PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = this.parseInsert();
+            PGInsertStatement stmt = parseInsert();
             stmt.setWith(with);
             return stmt;
         }
 
         if (getLexer().equalToken(Token.SELECT)) {
-            PGSelectStatement stmt = this.parseSelect();
+            PGSelectStatement stmt = parseSelect();
             stmt.setWith(with);
             return stmt;
         }
 
         if (getLexer().equalToken(Token.DELETE)) {
-            PGDeleteStatement stmt = this.parseDeleteStatement();
+            PGDeleteStatement stmt = parseDeleteStatement();
             stmt.setWith(with);
             return stmt;
         }

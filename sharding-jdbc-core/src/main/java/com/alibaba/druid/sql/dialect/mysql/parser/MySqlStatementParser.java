@@ -1812,41 +1812,34 @@ public class MySqlStatementParser extends SQLStatementParser {
 
         return stmt;
     }
-
-    public SQLInsertStatement parseInsert() {
-        MySqlInsertStatement insertStatement = new MySqlInsertStatement();
-
+    
+    @Override
+    protected SQLInsertStatement parseInsert() {
+        MySqlInsertStatement result = new MySqlInsertStatement();
         if (getLexer().equalToken(Token.INSERT)) {
             getLexer().nextToken();
-
-            if (getLexer().identifierEquals(MySqlKeyword.LOW_PRIORITY)) {
-                insertStatement.setLowPriority(true);
-                getLexer().nextToken();
-            }
-
-            if (getLexer().identifierEquals(MySqlKeyword.DELAYED)) {
-                insertStatement.setDelayed(true);
-                getLexer().nextToken();
-            }
-
             if (getLexer().identifierEquals("HIGH_PRIORITY")) {
-                insertStatement.setHighPriority(true);
+                result.setHighPriority(true);
                 getLexer().nextToken();
             }
-
+            if (getLexer().identifierEquals(MySqlKeyword.LOW_PRIORITY)) {
+                result.setLowPriority(true);
+                getLexer().nextToken();
+            }
+            if (getLexer().identifierEquals(MySqlKeyword.DELAYED)) {
+                result.setDelayed(true);
+                getLexer().nextToken();
+            }
             if (getLexer().identifierEquals(MySqlKeyword.IGNORE)) {
-                insertStatement.setIgnore(true);
+                result.setIgnore(true);
                 getLexer().nextToken();
             }
-
             if (getLexer().equalToken(Token.INTO)) {
                 getLexer().nextToken();
             }
-
-            SQLName tableName = this.exprParser.name();
-            insertStatement.setTableName(tableName);
+            result.setTableName(exprParser.name());
             if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().identifierEquals("VALUE")) {
-                insertStatement.setAlias(getLexer().getLiterals());
+                result.setAlias(getLexer().getLiterals());
                 getLexer().nextToken();
             }
         }
@@ -1854,65 +1847,56 @@ public class MySqlStatementParser extends SQLStatementParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.SELECT)) {
-                SQLSelect select = this.exprParser.createSelectParser().select();
-                select.setParent(insertStatement);
-                insertStatement.setQuery(select);
+                SQLSelect select = exprParser.createSelectParser().select();
+                select.setParent(result);
+                result.setQuery(select);
             } else {
-                this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
-                columnSize = insertStatement.getColumns().size();
+                exprParser.exprList(result.getColumns(), result);
+                columnSize = result.getColumns().size();
             }
             accept(Token.RIGHT_PAREN);
         }
-
         if (getLexer().equalToken(Token.VALUES) || getLexer().identifierEquals("VALUE")) {
             getLexer().nextTokenLeftParen();
-            parseValueClause(insertStatement.getValuesList(), columnSize);
+            parseValueClause(result.getValuesList(), columnSize);
         } else if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
-
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            insertStatement.getValuesList().add(values);
-
+            result.getValuesList().add(values);
             while (true) {
-                SQLName name = this.exprParser.name();
-                insertStatement.getColumns().add(name);
+                result.getColumns().add(exprParser.name());
                 if (getLexer().equalToken(Token.EQ)) {
                     getLexer().nextToken();
                 } else {
                     accept(Token.COLON_EQ);
                 }
-                values.getValues().add(this.exprParser.expr());
-
+                values.getValues().add(exprParser.expr());
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
                     continue;
                 }
-
                 break;
             }
 
         } else if (getLexer().equalToken(Token.SELECT)) {
-            SQLSelect select = this.exprParser.createSelectParser().select();
-            select.setParent(insertStatement);
-            insertStatement.setQuery(select);
+            SQLSelect select = exprParser.createSelectParser().select();
+            select.setParent(result);
+            result.setQuery(select);
         } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelect select = this.exprParser.createSelectParser().select();
-            select.setParent(insertStatement);
-            insertStatement.setQuery(select);
+            SQLSelect select = exprParser.createSelectParser().select();
+            select.setParent(result);
+            result.setQuery(select);
             accept(Token.RIGHT_PAREN);
         }
-
         if (getLexer().equalToken(Token.ON)) {
             getLexer().nextToken();
             acceptIdentifier("DUPLICATE");
             accept(Token.KEY);
             accept(Token.UPDATE);
-
-            exprParser.exprList(insertStatement.getDuplicateKeyUpdate(), insertStatement);
+            exprParser.exprList(result.getDuplicateKeyUpdate(), result);
         }
-
-        return insertStatement;
+        return result;
     }
 
     private void parseValueClause(List<ValuesClause> valueClauseList, int columnSize) {

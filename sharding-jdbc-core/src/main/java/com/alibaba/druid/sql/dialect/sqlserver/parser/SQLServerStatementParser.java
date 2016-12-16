@@ -23,7 +23,6 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLInsertInto;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
@@ -233,63 +232,42 @@ public class SQLServerStatementParser extends SQLStatementParser {
         }
         return declareStatement;
     }
-
-    public SQLStatement parseInsert() {
-        SQLServerInsertStatement insertStatement = new SQLServerInsertStatement();
-
-        if (getLexer().equalToken(Token.INSERT)) {
-            accept(Token.INSERT);
+    
+    @Override
+    protected SQLStatement parseInsert() {
+        getLexer().nextToken();
+        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        SQLServerTop top = getExprParser().parseTop();
+        if (null != top) {
+            result.setTop(top);
         }
-
-        parseInsert0(insertStatement);
-        return insertStatement;
-    }
-
-    protected void parseInsert0(SQLInsertInto insert, boolean acceptSubQuery) {
-        SQLServerInsertStatement insertStatement = (SQLServerInsertStatement) insert;
-        
-        SQLServerTop top = this.getExprParser().parseTop();
-        if (top != null) {
-            insertStatement.setTop(top);
-        }
-
         if (getLexer().equalToken(Token.INTO)) {
             getLexer().nextToken();
         }
-        
-        SQLName tableName = this.exprParser.name();
-        insertStatement.setTableName(tableName);
-
+        result.setTableName(exprParser.name());
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            insertStatement.setAlias(as());
+            result.setAlias(as());
         }
-
-        parseInsert0_hinits(insertStatement);
-
         if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().getLiterals().equalsIgnoreCase("OUTPUT")) {
-            insertStatement.setAlias(getLexer().getLiterals());
+            result.setAlias(getLexer().getLiterals());
             getLexer().nextToken();
         }
-
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
+            exprParser.exprList(result.getColumns(), result);
             accept(Token.RIGHT_PAREN);
         }
-        
-        SQLServerOutput output = this.getExprParser().parserOutput();
-        if (output != null) {
-            insertStatement.setOutput(output);
+        SQLServerOutput output = getExprParser().parserOutput();
+        if (null != output) {
+            result.setOutput(output);
         }
-
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();
-
             while (true) {
                 accept(Token.LEFT_PAREN);
                 SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-                this.exprParser.exprList(values.getValues(), values);
-                insertStatement.getValuesList().add(values);
+                exprParser.exprList(values.getValues(), values);
+                result.getValuesList().add(values);
                 accept(Token.RIGHT_PAREN);
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
@@ -297,16 +275,16 @@ public class SQLServerStatementParser extends SQLStatementParser {
                     break;
                 }
             }
-        } else if (acceptSubQuery && (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN))) {
-            SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
-            insertStatement.setQuery(queryExpr.getSubQuery());
+        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
+            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
         } else if (getLexer().equalToken(Token.DEFAULT)) {
             getLexer().nextToken();
             accept(Token.VALUES);
-            insertStatement.setDefaultValues(true);
+            result.setDefaultValues(true);
         }
+        return result;
     }
-
+    
     protected SQLServerUpdateStatement createUpdateStatement() {
         return new SQLServerUpdateStatement();
     }
