@@ -73,7 +73,9 @@ public final class MySqlKeyword {
     
     static final String FULLTEXT       = "FULLTEXT";
     
+    static final String LOW_PRIORITY   = "LOW_PRIORITY";
+    
     static final String DELAYED        = "DELAYED";
     
-    static final String LOW_PRIORITY   = "LOW_PRIORITY";
+    static final String HIGH_PRIORITY   = "HIGH_PRIORITY";
 }

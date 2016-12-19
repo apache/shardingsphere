@@ -1816,33 +1816,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     @Override
     protected SQLInsertStatement parseInsert() {
         MySqlInsertStatement result = new MySqlInsertStatement();
-        if (getLexer().equalToken(Token.INSERT)) {
-            getLexer().nextToken();
-            if (getLexer().identifierEquals("HIGH_PRIORITY")) {
-                result.setHighPriority(true);
-                getLexer().nextToken();
-            }
-            if (getLexer().identifierEquals(MySqlKeyword.LOW_PRIORITY)) {
-                result.setLowPriority(true);
-                getLexer().nextToken();
-            }
-            if (getLexer().identifierEquals(MySqlKeyword.DELAYED)) {
-                result.setDelayed(true);
-                getLexer().nextToken();
-            }
-            if (getLexer().identifierEquals(MySqlKeyword.IGNORE)) {
-                result.setIgnore(true);
-                getLexer().nextToken();
-            }
-            if (getLexer().equalToken(Token.INTO)) {
-                getLexer().nextToken();
-            }
-            result.setTableName(exprParser.name());
-            if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().identifierEquals("VALUE")) {
-                result.setAlias(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
+        parseInsertInto(result);
         int columnSize = 0;
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
@@ -1877,7 +1851,6 @@ public class MySqlStatementParser extends SQLStatementParser {
                 }
                 break;
             }
-
         } else if (getLexer().equalToken(Token.SELECT)) {
             SQLSelect select = exprParser.createSelectParser().select();
             select.setParent(result);
@@ -1898,8 +1871,28 @@ public class MySqlStatementParser extends SQLStatementParser {
         }
         return result;
     }
-
-    private void parseValueClause(List<ValuesClause> valueClauseList, int columnSize) {
+    
+    private void parseInsertInto(final MySqlInsertStatement mySqlInsertStatement) {
+        getLexer().nextToken();
+        int maxIdentities = 2;
+        int count = 0;
+        while (!getLexer().equalToken(Token.INTO) && count < maxIdentities) {
+            mySqlInsertStatement.getIdentitiesBetweenInsertAndInto().add(getLexer().getLiterals());
+            getLexer().nextToken();
+            count++;
+        }
+        if (!getLexer().equalToken(Token.INTO)) {
+            throw new ParserException(getLexer(), Token.INTO);
+        }
+        getLexer().nextToken();
+        mySqlInsertStatement.setTableName(exprParser.name());
+        if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().identifierEquals("VALUE")) {
+            mySqlInsertStatement.setAlias(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
+    }
+    
+    private void parseValueClause(final List<ValuesClause> valueClauseList, final int columnSize) {
         while (true) {
             if (!getLexer().equalToken(Token.LEFT_PAREN)) {
                 throw new ParserException(getLexer(), Token.LEFT_PAREN);

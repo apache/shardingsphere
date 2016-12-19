@@ -1260,17 +1260,7 @@ public class SQLStatementParser extends SQLParser {
     protected SQLStatement parseInsert() {
         getLexer().nextToken();
         SQLInsertStatement result = new SQLInsertStatement();
-        if (getLexer().equalToken(Token.INTO)) {
-            getLexer().nextToken();
-            result.setTableName(exprParser.name());
-            if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-                result.setAlias(as());
-            }
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                result.setAlias(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
+        parseInsertInto(result);
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             exprParser.exprList(result.getColumns(), result);
@@ -1289,7 +1279,21 @@ public class SQLStatementParser extends SQLParser {
         return result;
     }
     
-    public boolean parseStatementListDialect(List<SQLStatement> statementList) {
+    private void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
+        if (getLexer().equalToken(Token.INTO)) {
+            getLexer().nextToken();
+            sqlInsertStatement.setTableName(exprParser.name());
+            if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
+                sqlInsertStatement.setAlias(as());
+            }
+            if (getLexer().equalToken(Token.IDENTIFIER)) {
+                sqlInsertStatement.setAlias(getLexer().getLiterals());
+                getLexer().nextToken();
+            }
+        }
+    }
+    
+    public boolean parseStatementListDialect(final List<SQLStatement> statementList) {
         return false;
     }
 

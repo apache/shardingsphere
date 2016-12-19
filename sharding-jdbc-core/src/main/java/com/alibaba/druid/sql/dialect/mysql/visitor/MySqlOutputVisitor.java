@@ -894,27 +894,13 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(MySqlInsertStatement x) {
+    public boolean visit(final MySqlInsertStatement x) {
         print("INSERT ");
-
-        if (x.isLowPriority()) {
-            print("LOW_PRIORITY ");
+        for (String each : x.getIdentitiesBetweenInsertAndInto()) {
+            print(each);
+            print(" ");
         }
-
-        if (x.isDelayed()) {
-            print("DELAYED ");
-        }
-
-        if (x.isHighPriority()) {
-            print("HIGH_PRIORITY ");
-        }
-
-        if (x.isIgnore()) {
-            print("IGNORE ");
-        }
-
         print("INTO ");
-
         x.getTableSource().accept(this);
 
         if (x.getColumns().size() > 0) {

@@ -149,7 +149,7 @@ public class SQLParser {
             if (null != result) {
                 while (lexer.equalToken(Token.DOT)) {
                     lexer.nextToken();
-                    result += (Token.DOT.getName() + lexer.getToken().name());
+                    result += Token.DOT.getName() + lexer.getToken().name();
                     lexer.nextToken();
                 }
                 return result;

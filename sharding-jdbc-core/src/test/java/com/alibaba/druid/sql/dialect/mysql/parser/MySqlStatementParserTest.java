@@ -7,7 +7,7 @@ public final class MySqlStatementParserTest {
     
     @Test
     public void parseStatementWithInsert() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUES (1, 'value_char')");
+        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX VALUES (1, 'value_char')");
         SQLStatement sqlStatement = statementParser.parseStatement();
         System.out.println(sqlStatement);
     }
