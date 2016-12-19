@@ -506,19 +506,16 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                             if (getLexer().getToken() == Token.IN) {
                                 getLexer().nextToken();
                                 MySqlPartitioningDef.InValues values = new MySqlPartitioningDef.InValues();
-
                                 accept(Token.LEFT_PAREN);
-                                this.exprParser.exprList(values.getItems(), values);
+                                values.getItems().addAll(exprParser.exprList(values));
                                 accept(Token.RIGHT_PAREN);
                                 partitionDef.setValues(values);
                             } else {
                                 acceptIdentifier("LESS");
                                 acceptIdentifier("THAN");
-
                                 MySqlPartitioningDef.LessThanValues values = new MySqlPartitioningDef.LessThanValues();
-
                                 accept(Token.LEFT_PAREN);
-                                this.exprParser.exprList(values.getItems(), values);
+                                values.getItems().addAll(exprParser.exprList(values));
                                 accept(Token.RIGHT_PAREN);
                                 partitionDef.setValues(values);
                             }

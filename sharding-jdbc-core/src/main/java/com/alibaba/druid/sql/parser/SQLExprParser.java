@@ -82,6 +82,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -652,7 +653,7 @@ public class SQLExprParser extends SQLParser {
                 return parseAggregateExpr(methodName);
             }
             if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
-                exprList(methodInvokeExpr.getParameters(), methodInvokeExpr);
+                methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
             }
             accept(Token.RIGHT_PAREN);
             if (getLexer().equalToken(Token.OVER)) {
@@ -693,7 +694,7 @@ public class SQLExprParser extends SQLParser {
                         methodInvokeExpr.addParameter(new SQLIdentifierExpr("+"));
                         getLexer().nextToken();
                     } else {
-                        exprList(methodInvokeExpr.getParameters(), methodInvokeExpr);
+                        methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
                     }
                     accept(Token.RIGHT_PAREN);
                 }
@@ -728,22 +729,24 @@ public class SQLExprParser extends SQLParser {
         }
     }
     
-    public final void exprList(final Collection<SQLExpr> exprCol, final SQLObject parent) {
+    public final Collection<SQLExpr> exprList(final SQLObject parent) {
+        Collection<SQLExpr> result = new LinkedList<>();
         if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET)) {
-            return;
+            return result;
         }
         if (getLexer().equalToken(Token.EOF)) {
-            return;
+            return result;
         }
         SQLExpr expr = expr();
         expr.setParent(parent);
-        exprCol.add(expr);
+        result.add(expr);
         while (getLexer().equalToken(Token.COMMA)) {
             getLexer().nextToken();
             expr = expr();
             expr.setParent(parent);
-            exprCol.add(expr);
+            result.add(expr);
         }
+        return result;
     }
     
     public SQLName name() {
@@ -858,7 +861,7 @@ public class SQLExprParser extends SQLParser {
         } else {
             aggregateExpr = new SQLAggregateExpr(methodName);
         }
-        exprList(aggregateExpr.getArguments(), aggregateExpr);
+        aggregateExpr.getArguments().addAll(exprList(aggregateExpr));
         parseAggregateExprRest(aggregateExpr);
         accept(Token.RIGHT_PAREN);
         if (getLexer().equalToken(Token.OVER)) {
@@ -876,10 +879,10 @@ public class SQLExprParser extends SQLParser {
             accept(Token.BY);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
-                exprList(over.getPartitionBy(), over);
+                over.getPartitionBy().addAll(exprList(over));
                 accept(Token.RIGHT_PAREN);
             } else {
-                exprList(over.getPartitionBy(), over);
+                over.getPartitionBy().addAll(exprList(over));
             }
         }
         over.setOrderBy(parseOrderBy());
@@ -924,7 +927,7 @@ public class SQLExprParser extends SQLParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLListExpr list = new SQLListExpr();
-            this.exprList(list.getItems(), list);
+            list.getItems().addAll(exprList(list));
             accept(Token.RIGHT_PAREN);
             item.setColumn(list);
         } else {
@@ -1000,7 +1003,7 @@ public class SQLExprParser extends SQLParser {
             SQLInListExpr inListExpr = new SQLInListExpr(expr, false);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
-                exprList(inListExpr.getTargetList(), inListExpr);
+                inListExpr.getTargetList().addAll(exprList(inListExpr));
                 accept(Token.RIGHT_PAREN);
             } else {
                 SQLExpr itemExpr = primary();
@@ -1216,7 +1219,7 @@ public class SQLExprParser extends SQLParser {
             accept(Token.LEFT_PAREN);
 
             SQLInListExpr inListExpr = new SQLInListExpr(expr, true);
-            exprList(inListExpr.getTargetList(), inListExpr);
+            inListExpr.getTargetList().addAll(exprList(inListExpr));
             expr = inListExpr;
 
             accept(Token.RIGHT_PAREN);
@@ -1291,7 +1294,7 @@ public class SQLExprParser extends SQLParser {
     protected SQLDataType parseDataTypeRest(SQLDataType dataType) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            exprList(dataType.getArguments(), dataType);
+            dataType.getArguments().addAll(exprList(dataType));
             accept(Token.RIGHT_PAREN);
         }
 
@@ -1501,7 +1504,7 @@ public class SQLExprParser extends SQLParser {
 
         SQLPrimaryKeyImpl pk = new SQLPrimaryKeyImpl();
         accept(Token.LEFT_PAREN);
-        exprList(pk.getColumns(), pk);
+        pk.getColumns().addAll(exprList(pk));
         accept(Token.RIGHT_PAREN);
 
         return pk;
@@ -1512,7 +1515,7 @@ public class SQLExprParser extends SQLParser {
 
         SQLUnique unique = new SQLUnique();
         accept(Token.LEFT_PAREN);
-        exprList(unique.getColumns(), unique);
+        unique.getColumns().addAll(exprList(unique));
         accept(Token.RIGHT_PAREN);
 
         return unique;

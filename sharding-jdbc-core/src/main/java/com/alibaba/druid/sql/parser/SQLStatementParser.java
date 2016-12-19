@@ -1266,14 +1266,14 @@ public class SQLStatementParser extends SQLParser {
         parseInsertInto(result);
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            exprParser.exprList(result.getColumns(), result);
+            result.getColumns().addAll(exprParser.exprList(result));
             accept(Token.RIGHT_PAREN);
         }
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            exprParser.exprList(values.getValues(), values);
+            values.getValues().addAll(exprParser.exprList(values));
             result.setValues(values);
             accept(Token.RIGHT_PAREN);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
@@ -1366,7 +1366,7 @@ public class SQLStatementParser extends SQLParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            exprParser.exprList(stmt.getParameters(), stmt);
+            stmt.getParameters().addAll(exprParser.exprList(stmt));
             accept(Token.RIGHT_PAREN);
         }
 

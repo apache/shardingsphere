@@ -359,11 +359,10 @@ public class MySqlExprParser extends SQLExprParser {
             } else if ("MATCH".equalsIgnoreCase(ident)) {
                 getLexer().nextToken();
                 MySqlMatchAgainstExpr matchAgainstExpr = new MySqlMatchAgainstExpr();
-
                 if (getLexer().equalToken(Token.RIGHT_PAREN)) {
                     getLexer().nextToken();
                 } else {
-                    exprList(matchAgainstExpr.getColumns(), matchAgainstExpr);
+                    matchAgainstExpr.getColumns().addAll(exprList(matchAgainstExpr));
                     accept(Token.RIGHT_PAREN);
                 }
 
@@ -406,11 +405,9 @@ public class MySqlExprParser extends SQLExprParser {
             } else if (("CONVERT".equalsIgnoreCase(ident))||("CHAR".equalsIgnoreCase(ident))) {
                 getLexer().nextToken();
                 SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr(ident);
-
                 if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
-                    exprList(methodInvokeExpr.getParameters(), methodInvokeExpr);
+                    methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
                 }
-
                 if (getLexer().identifierEquals("USING")) {
                     getLexer().nextToken();
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
@@ -476,14 +473,11 @@ public class MySqlExprParser extends SQLExprParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-
             SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr("INTERVAL");
             if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
-                exprList(methodInvokeExpr.getParameters(), methodInvokeExpr);
+                methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
             }
-
             accept(Token.RIGHT_PAREN);
-
             return primaryRest(methodInvokeExpr);
         } else {
             SQLExpr value = expr();

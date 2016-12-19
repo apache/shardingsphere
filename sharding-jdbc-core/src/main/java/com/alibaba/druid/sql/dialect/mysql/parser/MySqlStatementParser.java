@@ -1545,7 +1545,7 @@ public class MySqlStatementParser extends SQLStatementParser {
                 SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
                 stmt.setQuery(queryExpr);
             } else {
-                this.exprParser.exprList(stmt.getColumns(), stmt);
+                stmt.getColumns().addAll(exprParser.exprList(stmt));
             }
             accept(Token.RIGHT_PAREN);
         }
@@ -1776,15 +1776,14 @@ public class MySqlStatementParser extends SQLStatementParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            this.exprParser.exprList(stmt.getColumns(), stmt);
+            stmt.getColumns().addAll(exprParser.exprList(stmt));
             accept(Token.RIGHT_PAREN);
         }
 
         if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
-            this.exprParser.exprList(stmt.getSetList(), stmt);
+            stmt.getSetList().addAll(exprParser.exprList(stmt));
         }
-
         return stmt;
 
     }
@@ -1809,7 +1808,7 @@ public class MySqlStatementParser extends SQLStatementParser {
 
         if (getLexer().identifierEquals("USING")) {
             getLexer().nextToken();
-            exprParser.exprList(stmt.getParameters(), stmt);
+            stmt.getParameters().addAll(exprParser.exprList(stmt));
         }
 
         return stmt;
@@ -1828,7 +1827,7 @@ public class MySqlStatementParser extends SQLStatementParser {
                 select.setParent(result);
                 result.setQuery(select);
             } else {
-                exprParser.exprList(result.getColumns(), result);
+                result.getColumns().addAll(exprParser.exprList(result));
                 columnSize = result.getColumns().size();
             }
             accept(Token.RIGHT_PAREN);
@@ -1870,7 +1869,7 @@ public class MySqlStatementParser extends SQLStatementParser {
             acceptIdentifier("DUPLICATE");
             accept(Token.KEY);
             accept(Token.UPDATE);
-            exprParser.exprList(result.getDuplicateKeyUpdate(), result);
+            result.getDuplicateKeyUpdate().addAll(exprParser.exprList(result));
         }
         return result;
     }

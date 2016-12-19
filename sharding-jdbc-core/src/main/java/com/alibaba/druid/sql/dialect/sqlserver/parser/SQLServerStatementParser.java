@@ -242,7 +242,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
         parseInsertInto(result);
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            exprParser.exprList(result.getColumns(), result);
+            result.getColumns().addAll(exprParser.exprList(result));
             accept(Token.RIGHT_PAREN);
         }
         if (getLexer().equalToken(Token.VALUES)) {
@@ -250,7 +250,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
             while (true) {
                 accept(Token.LEFT_PAREN);
                 SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-                exprParser.exprList(values.getValues(), values);
+                values.getValues().addAll(exprParser.exprList(values));
                 result.getValuesList().add(values);
                 accept(Token.RIGHT_PAREN);
                 if (getLexer().equalToken(Token.COMMA)) {

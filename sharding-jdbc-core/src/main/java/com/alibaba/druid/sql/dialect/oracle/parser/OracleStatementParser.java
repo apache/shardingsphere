@@ -914,7 +914,7 @@ public class OracleStatementParser extends SQLStatementParser {
             if (getLexer().identifierEquals("AT")) {
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-                this.exprParser.exprList(item.getAt(), item);
+                item.getAt().addAll(exprParser.exprList(item));
                 accept(Token.RIGHT_PAREN);
             } else {
                 throw new ParserUnsupportedException(getLexer().getToken());
@@ -1139,12 +1139,12 @@ public class OracleStatementParser extends SQLStatementParser {
 
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 accept(Token.LEFT_PAREN);
-                exprParser.exprList(insertClause.getColumns(), insertClause);
+                insertClause.getColumns().addAll(exprParser.exprList(insertClause));
                 accept(Token.RIGHT_PAREN);
             }
             accept(Token.VALUES);
             accept(Token.LEFT_PAREN);
-            exprParser.exprList(insertClause.getValues(), insertClause);
+            insertClause.getValues().addAll(exprParser.exprList(insertClause));
             accept(Token.RIGHT_PAREN);
 
             if (getLexer().equalToken(Token.WHERE)) {
@@ -1262,7 +1262,7 @@ public class OracleStatementParser extends SQLStatementParser {
 
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
+            insertStatement.getColumns().addAll(exprParser.exprList(insertStatement));
             accept(Token.RIGHT_PAREN);
         }
 
@@ -1270,7 +1270,7 @@ public class OracleStatementParser extends SQLStatementParser {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            this.exprParser.exprList(values.getValues(), values);
+            values.getValues().addAll(exprParser.exprList(values));
             insertStatement.setValues(values);
             accept(Token.RIGHT_PAREN);
         } else if (acceptSubQuery && (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN))) {

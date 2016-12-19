@@ -161,7 +161,7 @@ public class SQLServerExprParser extends SQLExprParser {
                 output.setInto(new SQLExprTableSource(this.name()));
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
-                    this.exprList(output.getColumns(), output);
+                    output.getColumns().addAll(exprList(output));
                     accept(Token.RIGHT_PAREN);
                 }
             }

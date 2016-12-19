@@ -92,7 +92,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
         }
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            exprParser.exprList(result.getColumns(), result);
+            result.getColumns().addAll(exprParser.exprList(result));
             accept(Token.RIGHT_PAREN);
         }
         if (getLexer().equalToken(Token.VALUES)) {
@@ -100,7 +100,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             while (true) {
                 accept(Token.LEFT_PAREN);
                 SQLInsertStatement.ValuesClause valuesCaluse = new SQLInsertStatement.ValuesClause();
-                exprParser.exprList(valuesCaluse.getValues(), valuesCaluse);
+                valuesCaluse.getValues().addAll(exprParser.exprList(valuesCaluse));
                 result.addValueCause(valuesCaluse);
                 accept(Token.RIGHT_PAREN);
                 if (getLexer().equalToken(Token.COMMA)) {

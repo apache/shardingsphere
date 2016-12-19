@@ -50,7 +50,7 @@ public class PGSelectParser extends SQLSelectParser {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             PGValuesQuery valuesQuery = new PGValuesQuery();
-            this.exprParser.exprList(valuesQuery.getValues(), valuesQuery);
+            valuesQuery.getValues().addAll(exprParser.exprList(valuesQuery));
             accept(Token.RIGHT_PAREN);
             return queryRest(valuesQuery);
         }

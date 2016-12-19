@@ -695,7 +695,7 @@ public class OracleExprParser extends SQLExprParser {
         } else {
             aggregateExpr = new SQLAggregateExpr(methodName);
         }
-        exprList(aggregateExpr.getArguments(), aggregateExpr);
+        aggregateExpr.getArguments().addAll(exprList(aggregateExpr));
 
         if (getLexer().getLiterals().equalsIgnoreCase("IGNORE")) {
             getLexer().nextToken();
@@ -725,10 +725,10 @@ public class OracleExprParser extends SQLExprParser {
 
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
-                    exprList(over.getPartitionBy(), over);
+                    over.getPartitionBy().addAll(exprList(over));
                     accept(Token.RIGHT_PAREN);
                 } else {
-                    exprList(over.getPartitionBy(), over);
+                    over.getPartitionBy().addAll(exprList(over));
                 }
             }
 
@@ -938,20 +938,17 @@ public class OracleExprParser extends SQLExprParser {
     public OraclePrimaryKey parsePrimaryKey() {
         getLexer().nextToken();
         accept(Token.KEY);
-
         OraclePrimaryKey primaryKey = new OraclePrimaryKey();
         accept(Token.LEFT_PAREN);
-        exprList(primaryKey.getColumns(), primaryKey);
+        primaryKey.getColumns().addAll(exprList(primaryKey));
         accept(Token.RIGHT_PAREN);
-
-        
         if (getLexer().equalToken(Token.USING)) {
             OracleUsingIndexClause using = parseUsingIndex();
             primaryKey.setUsing(using);
         }
         return primaryKey;
     }
-
+    
     private OracleUsingIndexClause parseUsingIndex() {
         accept(Token.USING);
         accept(Token.INDEX);
@@ -1180,7 +1177,7 @@ public class OracleExprParser extends SQLExprParser {
 
         OracleUnique unique = new OracleUnique();
         accept(Token.LEFT_PAREN);
-        exprList(unique.getColumns(), unique);
+        unique.getColumns().addAll(exprList(unique));
         accept(Token.RIGHT_PAREN);
         
         if (getLexer().equalToken(Token.USING)) {

@@ -95,7 +95,7 @@ public class PGExprParser extends SQLExprParser {
             array.setExpr(new SQLIdentifierExpr(getLexer().getLiterals()));
             getLexer().nextToken();
             accept(Token.LEFT_BRACKET);
-            this.exprList(array.getValues(), array);
+            array.getValues().addAll(exprList(array));
             accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         } else if (getLexer().equalToken(Token.POUND)) {
@@ -146,7 +146,7 @@ public class PGExprParser extends SQLExprParser {
             SQLArrayExpr array = new SQLArrayExpr();
             array.setExpr(expr);
             getLexer().nextToken();
-            this.exprList(array.getValues(), array);
+            array.getValues().addAll(exprList(array));
             accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         }
