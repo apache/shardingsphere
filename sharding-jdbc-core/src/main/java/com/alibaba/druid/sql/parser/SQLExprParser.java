@@ -89,24 +89,29 @@ import java.util.TreeSet;
 
 public class SQLExprParser extends SQLParser {
     
-    private final Set<String> aggregateFunctions;
+    private final Set<String> aggregateFunctions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
-    public SQLExprParser(Lexer lexer, String dbType, final String... aggregateFunctions){
+    public SQLExprParser(final Lexer lexer, final String dbType, final String... aggregateFunctions) {
         super(lexer, dbType);
-        this.aggregateFunctions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.aggregateFunctions.addAll(Arrays.asList(aggregateFunctions));
+    }
+    
+    public final SQLExpr expr(final SQLObject parent) {
+        SQLExpr result = expr();
+        result.setParent(parent);
+        return result;
     }
     
     public SQLExpr expr() {
         if (getLexer().equalToken(Token.STAR)) {
             getLexer().nextToken();
-            SQLExpr expr = new SQLAllColumnExpr();
+            SQLExpr sqlExpr = new SQLAllColumnExpr();
             if (getLexer().equalToken(Token.DOT)) {
                 getLexer().nextToken();
                 accept(Token.STAR);
-                return new SQLPropertyExpr(expr, "*");
+                return new SQLPropertyExpr(sqlExpr, "*");
             }
-            return expr;
+            return sqlExpr;
         }
         SQLExpr expr = primary();
         if (getLexer().equalToken(Token.COMMA)) {
@@ -115,65 +120,10 @@ public class SQLExprParser extends SQLParser {
         return exprRest(expr);
     }
     
-    public SQLExpr exprRest(SQLExpr expr) {
-        expr = bitXorRest(expr);
-        expr = multiplicativeRest(expr);
-        expr = additiveRest(expr);
-        expr = shiftRest(expr);
-        expr = bitAndRest(expr);
-        expr = bitOrRest(expr);
-        expr = inRest(expr);
-        expr = relationalRest(expr);
-        expr = equalityRest(expr);
-        expr = andRest(expr);
-        expr = orRest(expr);
-        return expr;
-    }
-    
-    public final SQLExpr bitXor() {
-        SQLExpr expr = primary();
-        return bitXorRest(expr);
-    }
-    
-    public SQLExpr bitXorRest(SQLExpr expr) {
-        if (getLexer().equalToken(Token.CARET)) {
-            getLexer().nextToken();
-            SQLExpr rightExp = primary();
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BitwiseXor, rightExp, getDbType());
-            expr = bitXorRest(expr);
-        }
-        return expr;
-    }
-    
-    public final SQLExpr multiplicative() {
-        SQLExpr expr = bitXor();
-        return multiplicativeRest(expr);
-    }
-    
-    public SQLExpr multiplicativeRest(SQLExpr expr) {
-        if (getLexer().equalToken(Token.STAR)) {
-            getLexer().nextToken();
-            SQLExpr rightExp = bitXor();
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Multiply, rightExp, getDbType());
-            expr = multiplicativeRest(expr);
-        } else if (getLexer().equalToken(Token.SLASH)) {
-            getLexer().nextToken();
-            SQLExpr rightExp = bitXor();
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Divide, rightExp, getDbType());
-            expr = multiplicativeRest(expr);
-        } else if (getLexer().equalToken(Token.PERCENT)) {
-            getLexer().nextToken();
-            SQLExpr rightExp = bitXor();
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Modulus, rightExp, getDbType());
-            expr = multiplicativeRest(expr);
-        }
-        return expr;
-    }
-    
     public SQLExpr primary() {
         SQLExpr sqlExpr = null;
-        final Token tok = getLexer().getToken();
-        switch (tok) {
+        Token token = getLexer().getToken();
+        switch (token) {
             case LEFT_PAREN:
                 getLexer().nextToken();
                 sqlExpr = expr();
@@ -184,7 +134,7 @@ public class SQLExprParser extends SQLParser {
                         getLexer().nextToken();
                         listExpr.getItems().add(expr());
                     } while (getLexer().equalToken(Token.COMMA));
-
+                    
                     sqlExpr = listExpr;
                 }
                 accept(Token.RIGHT_PAREN);
@@ -318,14 +268,14 @@ public class SQLExprParser extends SQLParser {
                 if (!getLexer().equalToken(Token.WHEN)) {
                     caseExpr.setValueExpr(expr());
                 }
-
+                
                 accept(Token.WHEN);
                 SQLExpr testExpr = expr();
                 accept(Token.THEN);
                 SQLExpr valueExpr = expr();
                 SQLCaseExpr.Item caseItem = new SQLCaseExpr.Item(testExpr, valueExpr);
                 caseExpr.addItem(caseItem);
-
+                
                 while (getLexer().equalToken(Token.WHEN)) {
                     getLexer().nextToken();
                     testExpr = expr();
@@ -334,14 +284,14 @@ public class SQLExprParser extends SQLParser {
                     caseItem = new SQLCaseExpr.Item(testExpr, valueExpr);
                     caseExpr.getItems().add(caseItem);
                 }
-
+                
                 if (getLexer().equalToken(Token.ELSE)) {
                     getLexer().nextToken();
                     caseExpr.setElseExpr(expr());
                 }
-
+                
                 accept(Token.END);
-
+                
                 sqlExpr = caseExpr;
                 break;
             case EXISTS:
@@ -359,14 +309,14 @@ public class SQLExprParser extends SQLParser {
                     accept(Token.RIGHT_PAREN);
                 } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
-
+                    
                     SQLExpr notTarget = expr();
-
+                    
                     accept(Token.RIGHT_PAREN);
                     notTarget = exprRest(notTarget);
-
+                    
                     sqlExpr = new SQLNotExpr(notTarget);
-
+                    
                     return primaryRest(sqlExpr);
                 } else {
                     SQLExpr restExpr = relational();
@@ -538,9 +488,64 @@ public class SQLExprParser extends SQLParser {
                 sqlExpr = new SQLBooleanExpr(false);
                 break;
             default:
-                throw new ParserException(getLexer(), tok);
+                throw new ParserException(getLexer(), token);
         }
         return primaryRest(sqlExpr);
+    }
+    
+    public SQLExpr exprRest(SQLExpr expr) {
+        expr = bitXorRest(expr);
+        expr = multiplicativeRest(expr);
+        expr = additiveRest(expr);
+        expr = shiftRest(expr);
+        expr = bitAndRest(expr);
+        expr = bitOrRest(expr);
+        expr = inRest(expr);
+        expr = relationalRest(expr);
+        expr = equalityRest(expr);
+        expr = andRest(expr);
+        expr = orRest(expr);
+        return expr;
+    }
+    
+    public final SQLExpr bitXor() {
+        SQLExpr expr = primary();
+        return bitXorRest(expr);
+    }
+    
+    public SQLExpr bitXorRest(SQLExpr expr) {
+        if (getLexer().equalToken(Token.CARET)) {
+            getLexer().nextToken();
+            SQLExpr rightExp = primary();
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BitwiseXor, rightExp, getDbType());
+            expr = bitXorRest(expr);
+        }
+        return expr;
+    }
+    
+    public final SQLExpr multiplicative() {
+        SQLExpr expr = bitXor();
+        return multiplicativeRest(expr);
+    }
+    
+    public SQLExpr multiplicativeRest(SQLExpr expr) {
+        if (getLexer().equalToken(Token.STAR)) {
+            getLexer().nextToken();
+            SQLExpr rightExp = bitXor();
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Multiply, rightExp, getDbType());
+            expr = multiplicativeRest(expr);
+        } else if (getLexer().equalToken(Token.SLASH)) {
+            getLexer().nextToken();
+            SQLExpr rightExp = bitXor();
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Divide, rightExp, getDbType());
+            expr = multiplicativeRest(expr);
+        } else if (getLexer().equalToken(Token.PERCENT)) {
+            getLexer().nextToken();
+            SQLExpr rightExp = bitXor();
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Modulus, rightExp, getDbType());
+            expr = multiplicativeRest(expr);
+        }
+        return expr;
     }
     
     protected SQLExpr parseAll() {
@@ -731,20 +736,13 @@ public class SQLExprParser extends SQLParser {
     
     public final Collection<SQLExpr> exprList(final SQLObject parent) {
         Collection<SQLExpr> result = new LinkedList<>();
-        if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET)) {
+        if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET) || getLexer().equalToken(Token.EOF)) {
             return result;
         }
-        if (getLexer().equalToken(Token.EOF)) {
-            return result;
-        }
-        SQLExpr expr = expr();
-        expr.setParent(parent);
-        result.add(expr);
+        result.add(expr(parent));
         while (getLexer().equalToken(Token.COMMA)) {
             getLexer().nextToken();
-            expr = expr();
-            expr.setParent(parent);
-            result.add(expr);
+            result.add(expr(parent));
         }
         return result;
     }

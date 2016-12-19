@@ -86,14 +86,10 @@ public class PGSQLStatementParser extends SQLStatementParser {
         getLexer().nextToken();
         PGInsertStatement result = new PGInsertStatement();
         parseInsertInto(result);
+        parseColumns(result);
         if (getLexer().equalToken(Token.DEFAULT)) {
             getLexer().nextToken();
             accept(Token.VALUES);
-        }
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            result.getColumns().addAll(exprParser.exprList(result));
-            accept(Token.RIGHT_PAREN);
         }
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();

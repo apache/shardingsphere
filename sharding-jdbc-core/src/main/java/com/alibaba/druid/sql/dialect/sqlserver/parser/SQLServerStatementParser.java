@@ -240,11 +240,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
         getLexer().nextToken();
         SQLServerInsertStatement result = new SQLServerInsertStatement();
         parseInsertInto(result);
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            result.getColumns().addAll(exprParser.exprList(result));
-            accept(Token.RIGHT_PAREN);
-        }
+        parseColumns(result);
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();
             while (true) {

@@ -1819,19 +1819,8 @@ public class MySqlStatementParser extends SQLStatementParser {
         getLexer().nextToken();
         MySqlInsertStatement result = new MySqlInsertStatement();
         parseInsertInto(result);
+        parseColumns(result);
         int columnSize = 0;
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.SELECT)) {
-                SQLSelect select = exprParser.createSelectParser().select();
-                select.setParent(result);
-                result.setQuery(select);
-            } else {
-                result.getColumns().addAll(exprParser.exprList(result));
-                columnSize = result.getColumns().size();
-            }
-            accept(Token.RIGHT_PAREN);
-        }
         if (getLexer().equalToken(Token.VALUES) || getLexer().identifierEquals("VALUE")) {
             getLexer().nextTokenLeftParen();
             parseValueClause(result.getValuesList(), columnSize);

@@ -1264,11 +1264,7 @@ public class SQLStatementParser extends SQLParser {
         getLexer().nextToken();
         SQLInsertStatement result = new SQLInsertStatement();
         parseInsertInto(result);
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            result.getColumns().addAll(exprParser.exprList(result));
-            accept(Token.RIGHT_PAREN);
-        }
+        parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
@@ -1293,12 +1289,24 @@ public class SQLStatementParser extends SQLParser {
             getLexer().nextToken();
         }
         sqlInsertStatement.setTableName(exprParser.name());
+        
+        // TODO PARTITION
+        
+        
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
             sqlInsertStatement.setAlias(as());
         }
         if (getLexer().equalToken(Token.IDENTIFIER) && !getValuesIdentifiers().contains(getLexer().getLiterals())) {
             sqlInsertStatement.setAlias(getLexer().getLiterals());
             getLexer().nextToken();
+        }
+    }
+    
+    protected void parseColumns(final SQLInsertStatement sqlInsertStatement) {
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            getLexer().nextToken();
+            sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
+            accept(Token.RIGHT_PAREN);
         }
     }
     
