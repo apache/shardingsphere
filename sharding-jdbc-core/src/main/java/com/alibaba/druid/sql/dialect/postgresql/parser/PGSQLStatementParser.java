@@ -83,16 +83,9 @@ public class PGSQLStatementParser extends SQLStatementParser {
     
     @Override
     protected PGInsertStatement parseInsert() {
+        getLexer().nextToken();
         PGInsertStatement result = new PGInsertStatement();
-        if (getLexer().equalToken(Token.INSERT)) {
-            getLexer().nextToken();
-            accept(Token.INTO);
-            result.setTableName(exprParser.name());
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                result.setAlias(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
+        parseInsertInto(result);
         if (getLexer().equalToken(Token.DEFAULT)) {
             getLexer().nextToken();
             accept(Token.VALUES);

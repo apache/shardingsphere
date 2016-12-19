@@ -145,15 +145,15 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     @Override
     public boolean visit(SQLServerInsertStatement x) {
         print("INSERT ");
-
-        if (x.getTop() != null) {
-            x.getTop().setParent(x);
-            x.getTop().accept(this);
+        for (String each : x.getIdentifiersBetweenInsertAndInto()) {
+            print(each);
             print(' ');
         }
-        
         print("INTO ");
-        
+        for (String each : x.getIdentifiersBetweenIntoAndTable()) {
+            print(each);
+            print(' ');
+        }
         x.getTableSource().accept(this);
 
         if (x.getColumns().size() > 0) {
@@ -172,12 +172,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
             }
             print(")");
             decrementIndent();
-        }
-        
-        if (x.getOutput() != null) {
-            println();
-            x.getOutput().setParent(x);
-            x.getOutput().accept(this);
         }
 
         if (x.getValuesList().size() != 0) {

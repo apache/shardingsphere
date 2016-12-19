@@ -747,19 +747,19 @@ public class SQLExprParser extends SQLParser {
     }
     
     public SQLName name() {
-        String identName;
+        String identifierName;
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            identName = '"' + getLexer().getLiterals() + '"';
+            identifierName = '"' + getLexer().getLiterals() + '"';
             getLexer().nextToken();
         } else if (getLexer().equalToken(Token.IDENTIFIER)) {
-            identName = getLexer().getLiterals();
+            identifierName = getLexer().getLiterals();
 
             getLexer().nextToken();
         } else if (getLexer().equalToken(Token.LITERAL_CHARS)) {
-            identName = '\'' + getLexer().getLiterals() + '\'';
+            identifierName = '\'' + getLexer().getLiterals() + '\'';
             getLexer().nextToken();
         } else if (getLexer().equalToken(Token.VARIANT)) {
-            identName = getLexer().getLiterals();
+            identifierName = getLexer().getLiterals();
             getLexer().nextToken();
         } else {
             switch (getLexer().getToken()) {
@@ -805,14 +805,14 @@ public class SQLExprParser extends SQLParser {
                 case REVOKE:
                 //binary有很多含义，getLexer()识别了这个token，实际上应该当做普通IDENTIFIER
                 case BINARY:
-                    identName = getLexer().getLiterals();
+                    identifierName = getLexer().getLiterals();
                     getLexer().nextToken();
                     break;
                 default:
                     throw new ParserException(getLexer());
             }
         }
-        SQLName name = new SQLIdentifierExpr(identName);
+        SQLName name = new SQLIdentifierExpr(identifierName);
         name = nameRest(name);
         return name;
     }

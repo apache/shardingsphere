@@ -119,8 +119,8 @@ public class OracleStatementParser extends SQLStatementParser {
         return (OracleExprParser) exprParser;
     }
     
-    public void parseHints(List<SQLHint> hints) {
-        this.getExprParser().parseHints(hints);
+    public void parseHints(final List<SQLHint> hints) {
+        getExprParser().parseHints(hints);
     }
 
     public OracleCreateTableParser getSQLCreateTableParser() {
@@ -1175,7 +1175,6 @@ public class OracleStatementParser extends SQLStatementParser {
         parseHints(hints);
         if (getLexer().equalToken(Token.INTO)) {
             OracleInsertStatement result = new OracleInsertStatement();
-            result.getHints().clear();
             result.getHints().addAll(hints);
             parseInsert0(result, true);
             result.setReturning(parseReturningClause());

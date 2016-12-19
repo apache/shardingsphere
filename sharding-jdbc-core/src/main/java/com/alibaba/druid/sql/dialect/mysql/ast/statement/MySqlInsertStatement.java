@@ -29,8 +29,6 @@ import java.util.List;
 @Getter
 public class MySqlInsertStatement extends SQLInsertStatement {
     
-    private final List<String> identitiesBetweenInsertAndInto = new ArrayList<>(2);
-    
     private final List<ValuesClause> valuesList = new ArrayList<>();
     
     private final List<SQLExpr> duplicateKeyUpdate = new ArrayList<>();

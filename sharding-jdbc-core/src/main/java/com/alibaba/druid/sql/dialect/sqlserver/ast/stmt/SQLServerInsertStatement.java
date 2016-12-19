@@ -15,12 +15,12 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
+import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObject;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,10 +32,6 @@ import java.util.List;
 public class SQLServerInsertStatement extends SQLInsertStatement implements SQLServerObject {
     
     private boolean defaultValues;
-    
-    private SQLServerTop top;
-    
-    private SQLServerOutput output;
     
     private final List<ValuesClause> valuesList = new ArrayList<>();
     
@@ -59,13 +55,16 @@ public class SQLServerInsertStatement extends SQLInsertStatement implements SQLS
     @Override
     public void accept0(final SQLServerASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getTop());
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getColumns());
-            acceptChild(visitor, getOutput());
             acceptChild(visitor, getValuesList());
             acceptChild(visitor, getQuery());
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String toString() {
+        return SQLUtils.toSQLString(this, JdbcConstants.SQL_SERVER);
     }
 }

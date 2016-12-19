@@ -896,7 +896,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     @Override
     public boolean visit(final MySqlInsertStatement x) {
         print("INSERT ");
-        for (String each : x.getIdentitiesBetweenInsertAndInto()) {
+        for (String each : x.getIdentifiersBetweenInsertAndInto()) {
             print(each);
             print(" ");
         }

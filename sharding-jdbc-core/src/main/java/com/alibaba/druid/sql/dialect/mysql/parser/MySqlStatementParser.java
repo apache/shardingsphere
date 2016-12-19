@@ -167,6 +167,8 @@ import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MySqlStatementParser extends SQLStatementParser {
     
@@ -1815,6 +1817,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     
     @Override
     protected SQLInsertStatement parseInsert() {
+        getLexer().nextToken();
         MySqlInsertStatement result = new MySqlInsertStatement();
         parseInsertInto(result);
         int columnSize = 0;
@@ -1872,24 +1875,12 @@ public class MySqlStatementParser extends SQLStatementParser {
         return result;
     }
     
-    private void parseInsertInto(final MySqlInsertStatement mySqlInsertStatement) {
-        getLexer().nextToken();
-        int maxIdentities = 2;
-        int count = 0;
-        while (!getLexer().equalToken(Token.INTO) && count < maxIdentities) {
-            mySqlInsertStatement.getIdentitiesBetweenInsertAndInto().add(getLexer().getLiterals());
-            getLexer().nextToken();
-            count++;
-        }
-        if (!getLexer().equalToken(Token.INTO)) {
-            throw new ParserException(getLexer(), Token.INTO);
-        }
-        getLexer().nextToken();
-        mySqlInsertStatement.setTableName(exprParser.name());
-        if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().identifierEquals("VALUE")) {
-            mySqlInsertStatement.setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
+    @Override
+    protected Set<String> getValuesIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.VALUES.getName());
+        result.add("VALUE");
+        return result;
     }
     
     private void parseValueClause(final List<ValuesClause> valueClauseList, final int columnSize) {

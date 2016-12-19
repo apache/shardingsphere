@@ -24,7 +24,12 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
+    
+    private final List<String> identifiersBetweenInsertAndInto = new ArrayList<>();
+    
+    private final List<String> identifiersBetweenIntoAndTable = new ArrayList<>();
     
     @Override
     public String getDbType() {
@@ -51,7 +56,7 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
             this(new ArrayList<SQLExpr>());
         }
         
-        public ValuesClause(final List<SQLExpr> values){
+        public ValuesClause(final List<SQLExpr> values) {
             this.values = values;
             for (SQLExpr each : values) {
                 each.setParent(this);

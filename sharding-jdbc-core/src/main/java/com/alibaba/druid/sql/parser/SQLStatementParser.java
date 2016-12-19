@@ -93,7 +93,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * SQL解析器.
@@ -1266,7 +1269,7 @@ public class SQLStatementParser extends SQLParser {
             exprParser.exprList(result.getColumns(), result);
             accept(Token.RIGHT_PAREN);
         }
-        if (getLexer().equalToken(Token.VALUES)) {
+        if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
@@ -1279,18 +1282,34 @@ public class SQLStatementParser extends SQLParser {
         return result;
     }
     
-    private void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
-        if (getLexer().equalToken(Token.INTO)) {
+    protected final void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
+        while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
+            sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
             getLexer().nextToken();
-            sqlInsertStatement.setTableName(exprParser.name());
-            if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-                sqlInsertStatement.setAlias(as());
-            }
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                sqlInsertStatement.setAlias(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
         }
+        accept(Token.INTO);
+        while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
+            sqlInsertStatement.getIdentifiersBetweenIntoAndTable().add(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
+        sqlInsertStatement.setTableName(exprParser.name());
+        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
+            sqlInsertStatement.setAlias(as());
+        }
+        if (getLexer().equalToken(Token.IDENTIFIER) && !getValuesIdentifiers().contains(getLexer().getLiterals())) {
+            sqlInsertStatement.setAlias(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
+    }
+    
+    protected Set<String> getIdentifiersBetweenIntoAndTable() {
+        return new HashSet<>();
+    }
+    
+    protected Set<String> getValuesIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.VALUES.getName());
+        return result;
     }
     
     public boolean parseStatementListDialect(final List<SQLStatement> statementList) {
@@ -1299,7 +1318,6 @@ public class SQLStatementParser extends SQLParser {
 
     public SQLDropUserStatement parseDropUser() {
         accept(Token.USER);
-
         SQLDropUserStatement stmt = new SQLDropUserStatement(getDbType());
         while (true) {
             SQLExpr expr = this.exprParser.expr();

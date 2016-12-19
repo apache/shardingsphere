@@ -51,6 +51,8 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SQLServerStatementParser extends SQLStatementParser {
     
@@ -237,29 +239,11 @@ public class SQLServerStatementParser extends SQLStatementParser {
     protected SQLStatement parseInsert() {
         getLexer().nextToken();
         SQLServerInsertStatement result = new SQLServerInsertStatement();
-        SQLServerTop top = getExprParser().parseTop();
-        if (null != top) {
-            result.setTop(top);
-        }
-        if (getLexer().equalToken(Token.INTO)) {
-            getLexer().nextToken();
-        }
-        result.setTableName(exprParser.name());
-        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            result.setAlias(as());
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER) && !getLexer().getLiterals().equalsIgnoreCase("OUTPUT")) {
-            result.setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
+        parseInsertInto(result);
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             exprParser.exprList(result.getColumns(), result);
             accept(Token.RIGHT_PAREN);
-        }
-        SQLServerOutput output = getExprParser().parserOutput();
-        if (null != output) {
-            result.setOutput(output);
         }
         if (getLexer().equalToken(Token.VALUES)) {
             getLexer().nextToken();
@@ -282,6 +266,12 @@ public class SQLServerStatementParser extends SQLStatementParser {
             accept(Token.VALUES);
             result.setDefaultValues(true);
         }
+        return result;
+    }
+    
+    protected Set<String> getIdentifiersBetweenIntoAndTable() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add("OUTPUT");
         return result;
     }
     
