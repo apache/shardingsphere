@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
@@ -93,13 +94,8 @@ public final class SQLRouteEngine {
             RoutingResult routingResult = routeSQL(each, parsedResult);
             result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getRouteContext().getSqlBuilder()));
         }
+        amendSQLAccordingToRouteResult(parsedResult, parameters, result);
         MetricsContext.stop(context);
-        Limit limit = result.getMergeContext().getLimit();
-        if (null != limit) {
-            limit.replaceSQL(parsedResult.getRouteContext().getSqlBuilder(), result.getExecutionUnits().size() > 1);
-            limit.replaceParameters(parameters, result.getExecutionUnits().size() > 1);
-        }
-        parsedResult.getRouteContext().getSqlBuilder().amendSQL(result.getExecutionUnits().size() == 1);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
@@ -124,5 +120,18 @@ public final class SQLRouteEngine {
         } 
         // TODO 可配置是否执行笛卡尔积
         return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
+    }
+    
+    private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult result) {
+        boolean isVarious = result.getExecutionUnits().size() > 1;
+        Limit limit = result.getMergeContext().getLimit();
+        SQLBuilder sqlBuilder = parsedResult.getRouteContext().getSqlBuilder();
+        if (null != limit) {
+            limit.replaceSQL(sqlBuilder, isVarious);
+            limit.replaceParameters(parameters, isVarious);
+        }
+        if (!isVarious) {
+            sqlBuilder.removeDerivedSQL();
+        }
     }
 }

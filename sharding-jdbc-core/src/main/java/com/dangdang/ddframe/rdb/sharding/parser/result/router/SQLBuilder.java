@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
 import com.google.common.base.Joiner;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public class SQLBuilder implements Appendable {
     
+    private final List<SQLBuilder> derivedSQLBuilders = new ArrayList<>();
+    
     private final List<Object> segments;
     
     private final Map<String, StringToken> tokenMap;
@@ -45,6 +47,11 @@ public class SQLBuilder implements Appendable {
     
     @Getter
     private boolean changed;
+    
+    @Getter(AccessLevel.PRIVATE)
+    private boolean removeDerivedSQLToken;
+    
+    private boolean hasExistedDerivedSQLToken;
     
     public SQLBuilder() {
         segments = new LinkedList<>();
@@ -83,7 +90,6 @@ public class SQLBuilder implements Appendable {
             stringToken.label = label;
             stringToken.value = token;
             tokenMap.put(label, stringToken);
-            stringToken.listeners.add(this);
         }
         stringToken.indices.add(segments.size());
         segments.add(stringToken);
@@ -93,27 +99,32 @@ public class SQLBuilder implements Appendable {
 
     /**
      * 用实际的值替代占位符.
-     *
-     * @param label 占位符
-     * @param token 实际的值
-     * @param needAmend 是否需要根据路由结果修正此值
-     */
-    public void buildSQL(final String label, final String token, boolean needAmend) {
-        if (tokenMap.containsKey(label)) {
-            StringToken labelSQL = tokenMap.get(label);
-            labelSQL.setNeedAmend(needAmend);
-            labelSQL.setValue(token);
-        }
-    }
-    
-    /**
-     * 用实际的值替代占位符.
      * 
      * @param label 占位符
      * @param token 实际的值
      */
     public void buildSQL(final String label, final String token) {
         buildSQL(label, token, false);
+    }
+    
+    /**
+     * 用实际的值替代占位符,并可以标记该SQL是否为派生SQL.
+     * 
+     * @param label 占位符
+     * @param token 实际的值
+     * @param isDerived 是否是派生的SQL
+     */
+    public void buildSQL(final String label, final String token, final boolean isDerived) {
+        if (!tokenMap.containsKey(label)) {
+            return;
+        }
+        if (isDerived) {
+            hasExistedDerivedSQLToken = true;
+        }
+        StringToken labelSQL = tokenMap.get(label);
+        labelSQL.isDerived = isDerived;
+        labelSQL.value = token;
+        changeState();
     }
     
     /**
@@ -147,9 +158,7 @@ public class SQLBuilder implements Appendable {
                 result.segments.set(index, each);
             }
         }
-        for (StringToken each : result.tokenMap.values()) {
-            each.listeners.add(result);
-        }
+        derivedSQLBuilders.add(result);
         newTokenList.clear();
         return result;
     }
@@ -187,28 +196,25 @@ public class SQLBuilder implements Appendable {
         return this;
     }
 
-    /**
-     * 根据路由结果判断是否添加额外字段
-     *
-     * @param singleRouteResult 路由接口是否为单库单表
-     */
-    public void amendSQL(boolean singleRouteResult) {
-        if (singleRouteResult) {
-            for (Map.Entry<String, StringToken> tokenEntry : tokenMap.entrySet()) {
-                StringToken labelSQL = tokenEntry.getValue();
-                if (labelSQL.isNeedAmend()) {
-                    labelSQL.setValue("");
-                }
-            }
-        }
-    }
-    
     private void changeState() {
         changed = true;
+        for (SQLBuilder each : derivedSQLBuilders) {
+            each.changeState();
+        }
     }
     
     private void clearState() {
         changed = false;
+    }
+    
+    /**
+     * 移除衍生的SQL片段.
+     */
+    public void removeDerivedSQL() {
+        if (hasExistedDerivedSQLToken) {
+            removeDerivedSQLToken = true;
+            changeState();
+        }
     }
     
     @Override
@@ -230,38 +236,25 @@ public class SQLBuilder implements Appendable {
         
         private String value;
 
-        private boolean needAmend;
+        private boolean isDerived;
         
         private final List<Integer> indices = new LinkedList<>();
         
-        private final Collection<SQLBuilder> listeners = new HashSet<>();
-        
-        public void setValue(final String value) {
-            this.value = value;
-            for (SQLBuilder each : listeners) {
-                each.changeState();
-            }
-        }
-
-        public void setNeedAmend(boolean needAmend) {
-            this.needAmend = needAmend;
-        }
-
-        public boolean isNeedAmend() {
-            return needAmend;
-        }
-
         String toToken() {
-            if (null == value) {
+            if (isEmptyValueOutput()) {
                 return "";
             }
             Joiner joiner = Joiner.on("");
             return label.equals(value) ? joiner.join("[Token(", value, ")]") : joiner.join("[", label, "(", value, ")]");
         }
         
+        private boolean isEmptyValueOutput() {
+            return null == value || isDerived && isRemoveDerivedSQLToken();
+        }
+    
         @Override
         public String toString() {
-            return null == value ? "" : value;
+            return isEmptyValueOutput() ? "" : value;
         }
     }
 }
