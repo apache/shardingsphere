@@ -54,7 +54,7 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
         
         private final List<SQLExpr> values;
         
-        public ValuesClause(){
+        public ValuesClause() {
             this(new ArrayList<SQLExpr>());
         }
         

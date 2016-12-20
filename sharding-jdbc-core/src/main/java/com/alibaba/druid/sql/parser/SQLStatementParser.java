@@ -1266,12 +1266,7 @@ public class SQLStatementParser extends SQLParser {
         parseInsertInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            values.getValues().addAll(exprParser.exprList(values));
-            result.setValues(values);
-            accept(Token.RIGHT_PAREN);
+            parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
         }
@@ -1311,12 +1306,21 @@ public class SQLStatementParser extends SQLParser {
         }
     }
     
-    protected void parseColumns(final SQLInsertStatement sqlInsertStatement) {
+    protected final void parseColumns(final SQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
             accept(Token.RIGHT_PAREN);
         }
+    }
+    
+    protected final void parseValues(final SQLInsertStatement sqlInsertStatement) {
+        getLexer().nextToken();
+        accept(Token.LEFT_PAREN);
+        SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+        values.getValues().addAll(exprParser.exprList(values));
+        sqlInsertStatement.setValues(values);
+        accept(Token.RIGHT_PAREN);
     }
     
     protected Set<String> getIdentifiersBetweenIntoAndTable() {

@@ -1820,10 +1820,8 @@ public class MySqlStatementParser extends SQLStatementParser {
         MySqlInsertStatement result = new MySqlInsertStatement();
         parseInsertInto(result);
         parseColumns(result);
-        int columnSize = 0;
-        if (getLexer().equalToken(Token.VALUES) || getLexer().identifierEquals("VALUE")) {
-            getLexer().nextTokenLeftParen();
-            parseValueClause(result.getValuesList(), columnSize);
+        if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
+            parseValues(result);
         } else if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();

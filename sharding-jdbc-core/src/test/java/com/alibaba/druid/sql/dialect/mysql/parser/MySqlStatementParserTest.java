@@ -1,5 +1,7 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
@@ -19,8 +21,9 @@ public final class MySqlStatementParserTest {
         assertNull(sqlInsertStatement.getTableSource().getAlias());
         assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
-        assertThat(sqlInsertStatement.getValues().getValues().get(0).toString(), is("1"));
+        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValues().getValues().get(0)).getNumber().intValue(), is(1));
         assertThat(sqlInsertStatement.getValues().getValues().get(1).toString(), is("'value_char'"));
+        assertThat(((SQLCharExpr) sqlInsertStatement.getValues().getValues().get(1)).getText(), is("value_char"));
         assertThat(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().size(), is(2));
         assertThat(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().get(0), is("LOW_PRIORITY"));
         assertThat(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().get(1), is("IGNORE"));
