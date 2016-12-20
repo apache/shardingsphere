@@ -29,6 +29,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
+
+    @Test
+    public void assertGroupBy() throws SQLParserException {
+        assertSingleTarget("select sum(qty) from order where order_id = 1 group by tenant_id", "ds_1",
+                "SELECT SUM(qty) FROM order_1 WHERE order_id = 1 GROUP BY tenant_id");
+        assertMultipleTargets("select sum(qty) from order group by tenant_id", 4, Arrays.asList("ds_0", "ds_1"),
+                Arrays.asList("SELECT SUM(qty), tenant_id AS sharding_gen_1 FROM order_0 GROUP BY tenant_id"));
+    }
     
     @Test
     public void assertSingleSelect() throws SQLParserException {
