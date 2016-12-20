@@ -99,6 +99,7 @@ public final class SQLRouteEngine {
             limit.replaceSQL(parsedResult.getRouteContext().getSqlBuilder(), result.getExecutionUnits().size() > 1);
             limit.replaceParameters(parameters, result.getExecutionUnits().size() > 1);
         }
+        parsedResult.getRouteContext().getSqlBuilder().amendSQL(result.getExecutionUnits().size() == 1);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);

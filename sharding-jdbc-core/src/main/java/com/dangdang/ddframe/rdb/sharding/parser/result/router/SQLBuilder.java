@@ -90,6 +90,21 @@ public class SQLBuilder implements Appendable {
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
+
+    /**
+     * 用实际的值替代占位符.
+     *
+     * @param label 占位符
+     * @param token 实际的值
+     * @param needAmend 是否需要根据路由结果修正此值
+     */
+    public void buildSQL(final String label, final String token, boolean needAmend) {
+        if (tokenMap.containsKey(label)) {
+            StringToken labelSQL = tokenMap.get(label);
+            labelSQL.setNeedAmend(needAmend);
+            labelSQL.setValue(token);
+        }
+    }
     
     /**
      * 用实际的值替代占位符.
@@ -98,9 +113,7 @@ public class SQLBuilder implements Appendable {
      * @param token 实际的值
      */
     public void buildSQL(final String label, final String token) {
-        if (tokenMap.containsKey(label)) {
-            tokenMap.get(label).setValue(token);
-        }
+        buildSQL(label, token, false);
     }
     
     /**
@@ -173,6 +186,22 @@ public class SQLBuilder implements Appendable {
         changeState();
         return this;
     }
+
+    /**
+     * 根据路由结果判断是否添加额外字段
+     *
+     * @param singleRouteResult 路由接口是否为单库单表
+     */
+    public void amendSQL(boolean singleRouteResult) {
+        if (singleRouteResult) {
+            for (Map.Entry<String, StringToken> tokenEntry : tokenMap.entrySet()) {
+                StringToken labelSQL = tokenEntry.getValue();
+                if (labelSQL.isNeedAmend()) {
+                    labelSQL.setValue("");
+                }
+            }
+        }
+    }
     
     private void changeState() {
         changed = true;
@@ -200,6 +229,8 @@ public class SQLBuilder implements Appendable {
         private String label;
         
         private String value;
+
+        private boolean needAmend;
         
         private final List<Integer> indices = new LinkedList<>();
         
@@ -211,7 +242,15 @@ public class SQLBuilder implements Appendable {
                 each.changeState();
             }
         }
-        
+
+        public void setNeedAmend(boolean needAmend) {
+            this.needAmend = needAmend;
+        }
+
+        public boolean isNeedAmend() {
+            return needAmend;
+        }
+
         String toToken() {
             if (null == value) {
                 return "";
