@@ -21,6 +21,7 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -33,10 +34,6 @@ public class MySqlInsertStatement extends SQLInsertStatement {
     
     private final List<SQLExpr> duplicateKeyUpdate = new ArrayList<>();
     
-    public List<SQLExpr> getDuplicateKeyUpdate() {
-        return duplicateKeyUpdate;
-    }
-    
     public ValuesClause getValues() {
         return valuesList.isEmpty() ? null : valuesList.get(0);
     }
@@ -47,6 +44,11 @@ public class MySqlInsertStatement extends SQLInsertStatement {
         } else {
             valuesList.set(0, values);
         }
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.MYSQL;
     }
     
     @Override

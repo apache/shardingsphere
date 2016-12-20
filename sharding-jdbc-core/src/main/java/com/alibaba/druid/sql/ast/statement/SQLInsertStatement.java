@@ -31,6 +31,8 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
     
     private final List<String> identifiersBetweenIntoAndTable = new ArrayList<>();
     
+    private final List<String> identifiersBetweenTableAndValues = new ArrayList<>();
+    
     @Override
     public String getDbType() {
         return null;

@@ -1289,10 +1289,19 @@ public class SQLStatementParser extends SQLParser {
             getLexer().nextToken();
         }
         sqlInsertStatement.setTableName(exprParser.name());
-        
-        // TODO PARTITION
-        
-        
+        while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
+            sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.LEFT_PAREN)) {
+                do {
+                    sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
+                    getLexer().nextToken();
+                }
+                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
+                sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
+                accept(Token.RIGHT_PAREN);
+            }
+        }
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
             sqlInsertStatement.setAlias(as());
         }
@@ -1311,6 +1320,10 @@ public class SQLStatementParser extends SQLParser {
     }
     
     protected Set<String> getIdentifiersBetweenIntoAndTable() {
+        return new HashSet<>();
+    }
+    
+    protected Set<String> getIdentifiersBetweenTableAndValues() {
         return new HashSet<>();
     }
     

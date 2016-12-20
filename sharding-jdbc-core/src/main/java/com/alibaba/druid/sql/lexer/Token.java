@@ -214,11 +214,12 @@ public enum Token {
     KEEP_DUPLICATES("KEEP_DUPLICATES", false, false, false, true, false, false),
     EXCEPTIONS("EXCEPTIONS", false, false, false, true, false, false),
     PURGE("PURGE", false, false, false, true, false, false),
-    COMPUTE("COMPUTE", true, false, false, false, false, false), 
+    COMPUTE("COMPUTE", true, false, false, false, false, false),
     ANALYZE("ANALYZE", false, true, false, false, false, false),
     OPTIMIZE("OPTIMIZE", false, true, false, false, false, true),
     TOP("TOP", false, false, false, false, true, false),
     ARRAY("ARRAY", false, false, true, false, false, false),
+    PARTITION("PARTITION", false, true, false, false, false, false),
     
     EOF, 
     ERROR,
@@ -238,9 +239,6 @@ public enum Token {
     // Oracle
     BINARY_FLOAT,
     BINARY_DOUBLE,
-    
-    // odps,hive
-    PARTITION,
     
     LEFT_PAREN("(", true, false, false, false, false, false), 
     RIGHT_PAREN(")", true, false, false, false, false, false), 

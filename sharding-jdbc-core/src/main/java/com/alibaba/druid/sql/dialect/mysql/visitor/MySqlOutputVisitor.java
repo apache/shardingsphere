@@ -902,7 +902,10 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         }
         print("INTO ");
         x.getTableSource().accept(this);
-
+        for (String each : x.getIdentifiersBetweenTableAndValues()) {
+            print(" ");
+            print(each);
+        }
         if (x.getColumns().size() > 0) {
             incrementIndent();
             print(" (");

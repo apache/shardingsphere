@@ -1863,6 +1863,12 @@ public class MySqlStatementParser extends SQLStatementParser {
         return result;
     }
     
+    protected Set<String> getIdentifiersBetweenTableAndValues() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.PARTITION.getName());
+        return result;
+    }
+    
     @Override
     protected Set<String> getValuesIdentifiers() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
