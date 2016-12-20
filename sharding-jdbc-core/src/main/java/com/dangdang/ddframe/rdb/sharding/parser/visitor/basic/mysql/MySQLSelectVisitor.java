@@ -213,7 +213,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         appendSortableColumn(derivedSelectItems, getParseContext().getParsedResult().getMergeContext().getGroupByColumns());
         appendSortableColumn(derivedSelectItems, getParseContext().getParsedResult().getMergeContext().getOrderByColumns());
         if (0 != derivedSelectItems.length()) {
-            getSQLBuilder().buildSQL(getParseContext().getAutoGenTokenKey(), derivedSelectItems.toString());
+            getSQLBuilder().buildSQL(getParseContext().getAutoGenTokenKey(), derivedSelectItems.toString(), true);
         }
         super.endVisit(x);
         stepOutQuery();
