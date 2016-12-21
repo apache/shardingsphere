@@ -20,10 +20,8 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
@@ -92,21 +90,9 @@ public class PGSQLStatementParser extends SQLStatementParser {
             accept(Token.VALUES);
         }
         if (getLexer().equalToken(Token.VALUES)) {
-            getLexer().nextToken();
-            while (true) {
-                accept(Token.LEFT_PAREN);
-                SQLInsertStatement.ValuesClause valuesCaluse = new SQLInsertStatement.ValuesClause();
-                valuesCaluse.getValues().addAll(exprParser.exprList(valuesCaluse));
-                result.addValueCause(valuesCaluse);
-                accept(Token.RIGHT_PAREN);
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
+            parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT)) {
-            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
+            parseInsertSelect(result);
         }
         if (getLexer().equalToken(Token.RETURNING)) {
             getLexer().nextToken();

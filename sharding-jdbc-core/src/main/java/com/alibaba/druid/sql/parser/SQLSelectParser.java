@@ -40,7 +40,7 @@ public class SQLSelectParser extends SQLParser {
     
     protected SQLExprParser exprParser;
     
-    public SQLSelectParser(SQLExprParser exprParser){
+    public SQLSelectParser(final SQLExprParser exprParser) {
         super(exprParser.getLexer());
         this.exprParser = exprParser;
     }

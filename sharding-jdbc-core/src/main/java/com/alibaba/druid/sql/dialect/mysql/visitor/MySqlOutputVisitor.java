@@ -173,12 +173,12 @@ import java.util.Map;
 
 public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTVisitor {
 
-    public MySqlOutputVisitor(Appendable appender){
+    public MySqlOutputVisitor(final Appendable appender) {
         super(appender);
     }
 
     @Override
-    public boolean visit(SQLSelectQueryBlock select) {
+    public boolean visit(final SQLSelectQueryBlock select) {
         if (select instanceof MySqlSelectQueryBlock) {
             return visit((MySqlSelectQueryBlock) select);
         }

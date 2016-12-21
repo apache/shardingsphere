@@ -1822,6 +1822,8 @@ public class MySqlStatementParser extends SQLStatementParser {
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(result);
+        } else if (getLexer().equalToken(Token.SELECT)) {
+            parseInsertSelect(result);
         } else if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
             SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
@@ -1840,10 +1842,6 @@ public class MySqlStatementParser extends SQLStatementParser {
                 }
                 break;
             }
-        } else if (getLexer().equalToken(Token.SELECT)) {
-            SQLSelect select = exprParser.createSelectParser().select();
-            select.setParent(result);
-            result.setQuery(select);
         } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelect select = exprParser.createSelectParser().select();

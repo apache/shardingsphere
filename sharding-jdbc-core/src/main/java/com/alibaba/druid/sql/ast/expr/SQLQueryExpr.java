@@ -31,7 +31,7 @@ public class SQLQueryExpr extends SQLExprImpl implements Serializable {
     
     private final SQLSelect subQuery;
     
-    public SQLQueryExpr(final SQLSelect subQuery){
+    public SQLQueryExpr(final SQLSelect subQuery) {
         if (null != subQuery) {
             subQuery.setParent(this);
         }

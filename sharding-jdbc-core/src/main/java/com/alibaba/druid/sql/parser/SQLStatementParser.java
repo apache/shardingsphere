@@ -21,7 +21,6 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAddColumn;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAddConstraint;
@@ -80,6 +79,7 @@ import com.alibaba.druid.sql.ast.statement.SQLReleaseSavePointStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRevokeStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSavePointStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
@@ -1268,7 +1268,7 @@ public class SQLStatementParser extends SQLParser {
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
+            parseInsertSelect(result);
         }
         return result;
     }
@@ -1321,6 +1321,12 @@ public class SQLStatementParser extends SQLParser {
         values.getValues().addAll(exprParser.exprList(values));
         sqlInsertStatement.setValues(values);
         accept(Token.RIGHT_PAREN);
+    }
+    
+    protected final void parseInsertSelect(final SQLInsertStatement sqlInsertStatement) {
+        SQLSelect select = exprParser.createSelectParser().select();
+        select.setParent(sqlInsertStatement);
+        sqlInsertStatement.setQuery(select);
     }
     
     protected Set<String> getIdentifiersBetweenIntoAndTable() {

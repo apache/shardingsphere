@@ -20,10 +20,8 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
@@ -242,21 +240,9 @@ public class SQLServerStatementParser extends SQLStatementParser {
         parseInsertInto(result);
         parseColumns(result);
         if (getLexer().equalToken(Token.VALUES)) {
-            getLexer().nextToken();
-            while (true) {
-                accept(Token.LEFT_PAREN);
-                SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-                values.getValues().addAll(exprParser.exprList(values));
-                result.getValuesList().add(values);
-                accept(Token.RIGHT_PAREN);
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                } else {
-                    break;
-                }
-            }
+            parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            result.setQuery(((SQLQueryExpr) exprParser.expr()).getSubQuery());
+            parseInsertSelect(result);
         } else if (getLexer().equalToken(Token.DEFAULT)) {
             getLexer().nextToken();
             accept(Token.VALUES);
