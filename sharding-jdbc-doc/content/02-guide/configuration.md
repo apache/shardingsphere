@@ -1,10 +1,14 @@
 +++
-date = "2016-03-25T16:14:21+08:00"
-title = "Spring命名空间和Yaml配置"
-weight = 2
+toc = true
+date = "2016-12-06T22:38:50+08:00"
+title = "配置文件"
+weight = 4
+prev = "/02-guide/hint-sharding-value"
+next = "/02-guide/id-generator"
+
 +++
 
-# Yaml配置
+## Yaml配置
 
 ## 引入maven依赖
 
@@ -16,13 +20,13 @@ weight = 2
 </dependency>
 ```
 
-## Java示例
+### Java示例
 
 ```java
     DataSource dataSource = new YamlShardingDataSource(yamlFile);
 ```
 
-## 配置示例
+### 配置示例
 
 ```yaml
 dataSource:
@@ -64,9 +68,10 @@ defaultDatabaseStrategy:
 
 props:
   metrics.enable: false
+  
 ```
 
-## 配置项说明
+### 配置项说明
 
 ```yaml
 dataSource: 数据源配置
@@ -114,7 +119,7 @@ props: 属性配置(可选)
     executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
 ```
 
-### Yaml格式特别说明
+#### Yaml格式特别说明
 `!!` 表示实现类
 
 `&` 表示变量定义
@@ -123,9 +128,9 @@ props: 属性配置(可选)
 
 `-` 表示多个
 
-# Spring命名空间配置
+## Spring命名空间配置
 
-## 引入maven依赖
+### 引入maven依赖
 
 ```xml
 <dependency>
@@ -135,7 +140,7 @@ props: 属性配置(可选)
 </dependency>
 ```
 
-## 配置示例
+### 配置示例
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -185,9 +190,9 @@ props: 属性配置(可选)
     </rdb:data-source>
 </beans>
 ```
-## 标签说明
+### 标签说明
 
-### \<rdb:data-source/\>
+#### \<rdb:data-source/\>
 
 定义sharding-jdbc数据源
 
@@ -200,7 +205,7 @@ props: 属性配置(可选)
 | default-table-strategy`?`     | 标签         |   -         |   是   | 默认分表策略     |
 | props`?`                      | 标签         |   -         |   是   | 相关属性配置     |
 
-### \<rdb:sharding-rule/>
+#### \<rdb:sharding-rule/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                                                    |
 | ----------------------------- | ------------ | ---------- | ------ | -------------------------------------------------------- |
@@ -208,13 +213,13 @@ props: 属性配置(可选)
 | default-data-source           | 属性         | String      |   否   | 默认数据源名称，未配置分片规则的表将通过默认数据源定位           |
 | table-rules                   | 标签         |   -         |   是   | 分片规则列表                                               |
 
-### \<rdb:table-rules/>
+#### \<rdb:table-rules/>
 
 | *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ----------- | ---------- | ------ | ------- |
 | table-rule`+`                 | 标签         |   -         |   是  | 分片规则 |
 
-### \<rdb:table-rule/>
+#### \<rdb:table-rule/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | --------------------          | ------------ | ---------- | ------ | ------- |
@@ -225,19 +230,19 @@ props: 属性配置(可选)
 | database-strategy             | 属性         |  String     |   否   | 分库策略，对应`<rdb:strategy>`中分库策略id, 如果不填需配置`<rdb:default-database-strategy/>` |
 | table-strategy                | 属性         |  String     |   否   | 分表策略，对应`<rdb:strategy>`中分表策略id, 如果不填需配置`<rdb:default-table-strategy/>`    |
 
-### \<rdb:binding-table-rules/>
+#### \<rdb:binding-table-rules/>
 
 | *名称*                         | *类型*      | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ----------- |  --------- | ------ | ------- |
 | binding-table-rule            | 标签         |   -         |   是  | 绑定规则 |
 
-### \<rdb:binding-table-rule/>
+#### \<rdb:binding-table-rule/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*                   |
 | ----------------------------- | ------------ | ---------- | ------ | ------------------------ |
 | logic-tables                  | 属性         |  String     |   是   | 逻辑表名，多个表名以逗号分隔 |
 
-### \<rdb:default-database-strategy/>
+#### \<rdb:default-database-strategy/>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ------------ | ---------- | ------ | ------- |
@@ -245,7 +250,7 @@ props: 属性配置(可选)
 | algorithm-class               | 属性         |  Class      |   否  | 默认分库算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否  | 默认分库算法表达式，与`algorithm-class`有且仅有一个出现 |
 
-### \<rdb:default-table-strategy/\>
+#### \<rdb:default-table-strategy/\>
 
 | *名称*                         | *类型*       | *数据类型*  |  *必填* | *说明*  |
 | ----------------------------- | ------------ |  --------- | ------ | ------- |
@@ -253,7 +258,7 @@ props: 属性配置(可选)
 | algorithm-class               | 属性         |  Class      |   否   | 默认分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否   | 默认分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
-### \<rdb:strategy/\>`*`
+#### \<rdb:strategy/\>`*`
 
 定义数据分库或分表策略
 
@@ -264,7 +269,7 @@ props: 属性配置(可选)
 | algorithm-class               | 属性         |  Class      |   否   | 分库或分表算法全类名，该类需使用默认的构造器或者提供无参数的构造器，与`algorithm-expression`有且仅有一个出现 |
 | algorithm-expression          | 属性         |  String     |   否   | 分库或分表算法表达式，与`algorithm-class`有且仅有一个出现 |
 
-### \<rdb:props/\>
+#### \<rdb:props/\>
 
 | *名称*                                | *类型*       | *数据类型*  | *必填* | *说明*                              |
 | ------------------------------------ | ------------ | ---------- | ----- | ----------------------------------- |
@@ -275,13 +280,13 @@ props: 属性配置(可选)
 | executor.max.size                    | 属性         |  int       |   否   | 最大工作线程数量                      |
 | executor.max.idle.timeout.millisecond| 属性         |  int       |   否   | 工作线程空闲时超时时间，默认以毫秒为单位 |
 
-### Spring格式特别说明
+#### Spring格式特别说明
 如需使用inline表达式，需配置`ignore-unresolvable`为`true`，否则placeholder会把inline表达式当成属性key值导致出错. 
 
 
-# 分片算法表达式语法说明
+## 分片算法表达式语法说明
 
-## inline表达式特别说明
+### inline表达式特别说明
 `${begin..end}` 表示范围区间
 
 `${[unit1, unit2, unitX]}` 表示枚举值
@@ -292,7 +297,7 @@ dbtbl_${[online, offline]}_${1..3}
 ```
 最终会解析为`dbtbl_online_1`，`dbtbl_online_2`，`dbtbl_online_3`，`dbtbl_offline_1`，`dbtbl_offline_2`和`dbtbl_ offline_3`这6张表。
 
-## 字符串内嵌groovy代码
+### 字符串内嵌groovy代码
 表达式本质上是一段字符串，字符串中使用`${}`来嵌入`groovy`代码。
 
 ```groovy 
@@ -301,7 +306,7 @@ data_source_${id.longValue() % 2 + 1}
 
 上面的表达式中`data_source_`是字符串前缀，`id.longValue() % 2 + 1`是`groovy`代码。
 
-## 分区键值获取
+### 分区键值获取
 `groovy`代码中可以使用分区键的名字直接获取表达式的值对象。
 
 该对象是`com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ShardingValueWrapper`类型的对象。

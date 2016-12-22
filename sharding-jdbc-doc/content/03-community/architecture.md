@@ -1,9 +1,12 @@
 +++
-date = "2016-01-08T16:14:21+08:00"
+toc = true
+date = "2016-12-06T22:38:50+08:00"
 title = "架构图"
-weight = 5
+weight = 1
+prev = "/03-community"
+next = "/03-community/release-notes"
+
 +++
-# 架构图
 
 ![整体架构图1](../../img/architecture.png)
 

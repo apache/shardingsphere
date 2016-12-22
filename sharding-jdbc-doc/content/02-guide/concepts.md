@@ -1,7 +1,11 @@
 +++
-date = "2016-03-03T16:14:21+08:00"
+toc = true
+date = "2016-12-06T22:38:50+08:00"
 title = "核心概念"
-weight = 4
+weight = 1
+prev = "/02-guide"
+next = "/02-guide/sharding"
+
 +++
 
 本文介绍`Sharding-JDBC`包含的一些核心概念。

@@ -1,10 +1,13 @@
 +++
-date = "2016-01-08T16:14:21+08:00"
-title = "压力测试报告"
-weight = 10
-chart = true
+toc = true
+date = "2016-12-06T22:38:50+08:00"
+title = "性能测试报告"
+weight = 6
+prev = "/01-start/sql-supported"
+next = "/02-guide"
+
 +++
-# 压力测试报告
+
 ## 测试目的
 对`Sharding-JDBC`进行性能测试，客观、公正评估系统的性能，目的有三:
 
@@ -25,7 +28,7 @@ chart = true
 | 数据表行数   | 1000万                   | 1000万                   |
 ## 网络拓扑
 
-![网络拓扑图](../../img/stress_test_arch.png)
+![网络拓扑图](/img/stress_test_arch.png)
 ## 单库情况下Sharding-JDBC与JDBC性能对比
 测试结论：
 
@@ -87,3 +90,18 @@ chart = true
 经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生Full GC。
 <canvas id="fatigueTest" width="400" height="150"></canvas>
 
+<script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
+<script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
+<script src="/data/chart.js"></script>
+<script>
+    $("canvas").each(function(){
+        var data =  chartData[$(this).attr("id")];
+        $(data.datasets).each(function(index, obj){
+            $.extend(obj, charStyle[index])
+        });
+        new Chart(this.getContext("2d"),{
+            type: 'line',
+            data: data
+        });
+    })
+</script>

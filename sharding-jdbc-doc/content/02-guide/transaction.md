@@ -1,9 +1,12 @@
 +++
-date = "2016-01-29T16:14:21+08:00"
+toc = true
+date = "2016-12-06T22:38:50+08:00"
 title = "事务支持说明"
-weight = 12
+weight = 7
+prev = "/02-guide/master-slave"
+next = "/02-guide/soft-transaction"
+
 +++
-# 事务支持说明
 
 `Sharding-JDBC`由于性能方面的考量，决定不支持`强一致性`分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。
 

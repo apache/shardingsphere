@@ -1,10 +1,12 @@
 +++
-date = "2016-02-05T17:03:18+08:00"
-title = "Release Notes"
-weight = 1
-+++
+toc = true
+date = "2016-12-06T22:38:50+08:00"
+title = "Release Note"
+weight = 2
+prev = "/03-community/architecture"
+next = "/03-community/directory-structure"
 
-# Release Notes
++++
 
 ## 1.4.1
 

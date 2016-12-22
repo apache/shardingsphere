@@ -1,10 +1,12 @@
 +++
-date = "2016-01-28T16:14:21+08:00"
+toc = true
+date = "2016-12-06T22:38:50+08:00"
 title = "目录结构说明"
-weight = 7
-+++
+weight = 3
+prev = "/03-community/release-notes"
+next = "/03-community/roadmap"
 
-# 目录结构说明
++++
 
 ```
 sharding-jdbc

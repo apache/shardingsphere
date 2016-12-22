@@ -1,10 +1,13 @@
 +++
-date = "2016-01-08T16:14:21+08:00"
-title = "使用指南"
+toc = true
+date = "2016-12-06T22:38:50+08:00"
+title = "分库分表"
 weight = 2
+prev = "/02-guide/concepts"
+next = "/02-guide/hint-sharding-value"
+
 +++
 
-# 使用指南
 阅读本指南前，请先阅读快速起步。本文档使用更复杂的场景进一步介绍`Sharding-JDBC`的分库分表能力。
 ## 数据库模式
 本文档中提供了两个数据源`db0`和`db1`，每个数据源之中包含了两组表`t_order_0`和`t_order_1`，`t_order_item_0`和`t_order_item_1 `。这两组表的建表语句为：
