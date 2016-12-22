@@ -1822,7 +1822,7 @@ public class MySqlStatementParser extends SQLStatementParser {
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(result);
-        } else if (getLexer().equalToken(Token.SELECT)) {
+        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
         } else if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
@@ -1842,12 +1842,6 @@ public class MySqlStatementParser extends SQLStatementParser {
                 }
                 break;
             }
-        } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            SQLSelect select = exprParser.createSelectParser().select();
-            select.setParent(result);
-            result.setQuery(select);
-            accept(Token.RIGHT_PAREN);
         }
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             parseAppendices(result);

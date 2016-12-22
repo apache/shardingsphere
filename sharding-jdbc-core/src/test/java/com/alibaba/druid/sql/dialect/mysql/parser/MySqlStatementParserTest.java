@@ -84,7 +84,13 @@ public final class MySqlStatementParserTest {
     
     @Test
     public void parseStatementWithInsertSelect() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX (field1, field2) SELECT field1, field2 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
+        parseStatementWithInsertSelect("INSERT INTO TABLE_XXX (field1, field2) SELECT field1, field2 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
+        parseStatementWithInsertSelect("INSERT INTO TABLE_XXX (field1, field2) (SELECT field1, field2 FROM TABLE_XXX2) ON DUPLICATE KEY UPDATE field1=field1+1");
+        parseStatementWithInsertSelect("INSERT INTO TABLE_XXX (field1, field2) (((SELECT field1, field2 FROM TABLE_XXX2))) ON DUPLICATE KEY UPDATE field1=field1+1");
+    }
+    
+    public void parseStatementWithInsertSelect(final String sql) {
+        MySqlStatementParser statementParser = new MySqlStatementParser(sql);
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
