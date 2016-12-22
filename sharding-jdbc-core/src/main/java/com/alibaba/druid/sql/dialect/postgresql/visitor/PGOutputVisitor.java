@@ -363,13 +363,10 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
                 x.getQuery().accept(this);
             }
         }
-
-        if (x.getReturning() != null) {
-            println();
-            print("RETURNING ");
-            x.getReturning().accept(this);
+        for (String each : x.getAppendices()) {
+            print(" ");
+            print(each);
         }
-
         return false;
     }
 

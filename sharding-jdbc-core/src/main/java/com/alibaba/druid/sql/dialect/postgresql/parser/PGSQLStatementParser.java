@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
@@ -36,10 +37,12 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PGSQLStatementParser extends SQLStatementParser {
     
-    public PGSQLStatementParser(String sql){
+    public PGSQLStatementParser(String sql) {
         super(new PGExprParser(sql));
     }
     
@@ -75,29 +78,19 @@ public class PGSQLStatementParser extends SQLStatementParser {
                 break;
             }
         }
-
         return udpateStatement;
     }
     
     @Override
-    protected PGInsertStatement parseInsert() {
-        getLexer().nextToken();
-        PGInsertStatement result = new PGInsertStatement();
-        parseInsertInto(result);
-        parseColumns(result);
-        if (getLexer().equalToken(Token.DEFAULT)) {
-            getLexer().nextToken();
-            accept(Token.VALUES);
-        }
-        if (getLexer().equalToken(Token.VALUES)) {
-            parseValues(result);
-        } else if (getLexer().equalToken(Token.SELECT)) {
-            parseInsertSelect(result);
-        }
-        if (getLexer().equalToken(Token.RETURNING)) {
-            getLexer().nextToken();
-            result.setReturning(exprParser.expr());
-        }
+    protected SQLInsertStatement createSQLInsertStatement() {
+        return new PGInsertStatement();
+    }
+    
+    @Override
+    protected Set<String> getAppendixIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.DEFAULT.getName());
+        result.add(Token.RETURNING.getName());
         return result;
     }
     
@@ -256,7 +249,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = parseInsert();
+            PGInsertStatement stmt = (PGInsertStatement) parseInsert();
             stmt.setWith(with);
             return stmt;
         }

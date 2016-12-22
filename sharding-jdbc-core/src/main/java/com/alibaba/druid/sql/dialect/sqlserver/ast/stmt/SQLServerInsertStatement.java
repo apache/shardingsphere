@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObject;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
@@ -65,10 +64,5 @@ public class SQLServerInsertStatement extends SQLInsertStatement implements SQLS
             acceptChild(visitor, getQuery());
         }
         visitor.endVisit(this);
-    }
-    
-    @Override
-    public String toString() {
-        return SQLUtils.toSQLString(this, getDbType());
     }
 }

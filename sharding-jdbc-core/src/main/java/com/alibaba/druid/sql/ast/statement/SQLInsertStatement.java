@@ -15,6 +15,7 @@
  */
 package com.alibaba.druid.sql.ast.statement;
 
+import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLStatement;
@@ -49,6 +50,11 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
             acceptChild(visitor, getQuery());
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String toString() {
+        return SQLUtils.toSQLString(this, getDbType());
     }
     
     @Getter

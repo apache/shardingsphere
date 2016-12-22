@@ -1262,7 +1262,7 @@ public class SQLStatementParser extends SQLParser {
     
     protected SQLStatement parseInsert() {
         getLexer().nextToken();
-        SQLInsertStatement result = new SQLInsertStatement();
+        SQLInsertStatement result = createSQLInsertStatement();
         parseInsertInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
@@ -1272,6 +1272,10 @@ public class SQLStatementParser extends SQLParser {
         }
         parseAppendices(result);
         return result;
+    }
+    
+    protected SQLInsertStatement createSQLInsertStatement() {
+        return new SQLInsertStatement();
     }
     
     protected final void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {

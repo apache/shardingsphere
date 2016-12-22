@@ -15,11 +15,11 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,9 +32,12 @@ public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatem
     
     private PGWithClause with;
     
-    private SQLExpr returning;
-    
     private final List<ValuesClause> valuesList = new ArrayList<>();
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.POSTGRESQL;
+    }
     
     public ValuesClause getValues() {
         return valuesList.isEmpty() ? null : valuesList.get(0);
@@ -61,7 +64,6 @@ public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatem
             acceptChild(visitor, getColumns());
             acceptChild(visitor, getQuery());
             acceptChild(visitor, valuesList);
-            acceptChild(visitor, returning);
         }
         visitor.endVisit(this);
     }
