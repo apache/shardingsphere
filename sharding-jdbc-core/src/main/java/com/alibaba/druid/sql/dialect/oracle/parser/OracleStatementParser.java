@@ -1185,7 +1185,7 @@ public class OracleStatementParser extends SQLStatementParser {
         result.getHints().addAll(hints);
         return result;
     }
-
+    
     public OracleMultiInsertStatement parseMultiInsert() {
         OracleMultiInsertStatement stmt = new OracleMultiInsertStatement();
 

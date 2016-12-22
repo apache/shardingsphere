@@ -1817,7 +1817,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     @Override
     protected SQLInsertStatement parseInsert() {
         getLexer().nextToken();
-        MySqlInsertStatement result = new MySqlInsertStatement();
+        MySqlInsertStatement result = (MySqlInsertStatement) createSQLInsertStatement();
         parseInsertInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
@@ -1849,14 +1849,15 @@ public class MySqlStatementParser extends SQLStatementParser {
             result.setQuery(select);
             accept(Token.RIGHT_PAREN);
         }
-        if (getLexer().equalToken(Token.ON)) {
-            getLexer().nextToken();
-            acceptIdentifier("DUPLICATE");
-            accept(Token.KEY);
-            accept(Token.UPDATE);
-            result.getDuplicateKeyUpdate().addAll(exprParser.exprList(result));
+        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
+            parseAppendices(result);
         }
         return result;
+    }
+    
+    @Override
+    protected SQLInsertStatement createSQLInsertStatement() {
+        return new MySqlInsertStatement();
     }
     
     @Override
@@ -1873,6 +1874,7 @@ public class MySqlStatementParser extends SQLStatementParser {
         while (getLexer().equalToken(Token.COMMA));
     }
     
+    @Override
     protected Set<String> getIdentifiersBetweenTableAndValues() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.PARTITION.getName());
@@ -1884,6 +1886,13 @@ public class MySqlStatementParser extends SQLStatementParser {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.VALUES.getName());
         result.add("VALUE");
+        return result;
+    }
+    
+    @Override
+    protected Set<String> getAppendixIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.ON.getName());
         return result;
     }
     

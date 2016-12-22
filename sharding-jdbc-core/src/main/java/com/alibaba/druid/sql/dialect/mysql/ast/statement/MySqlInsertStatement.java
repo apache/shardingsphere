@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
@@ -31,8 +30,6 @@ import java.util.List;
 public class MySqlInsertStatement extends SQLInsertStatement {
     
     private final List<ValuesClause> valuesList = new ArrayList<>();
-    
-    private final List<SQLExpr> duplicateKeyUpdate = new ArrayList<>();
     
     public ValuesClause getValues() {
         return valuesList.isEmpty() ? null : valuesList.get(0);
@@ -62,7 +59,6 @@ public class MySqlInsertStatement extends SQLInsertStatement {
             acceptChild(mySqlASTVisitor, getColumns());
             acceptChild(mySqlASTVisitor, getValuesList());
             acceptChild(mySqlASTVisitor, getQuery());
-            acceptChild(mySqlASTVisitor, duplicateKeyUpdate);
         }
         mySqlASTVisitor.endVisit(this);
     }

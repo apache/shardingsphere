@@ -19,7 +19,7 @@ public final class MySqlStatementParserTest {
     
     @Test
     public void parseStatementWithInsertValue() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'value_char')");
+        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'value_char') ");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
@@ -84,7 +84,7 @@ public final class MySqlStatementParserTest {
     
     @Test
     public void parseStatementWithInsertSelect() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX (field1, field2) SELECT field1, field2 FROM TABLE_XXX2");
+        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX (field1, field2) SELECT field1, field2 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
@@ -98,6 +98,16 @@ public final class MySqlStatementParserTest {
         assertThat(((SQLSelectQueryBlock) sqlInsertStatement.getQuery().getQuery()).getSelectList().get(1).toString(), is("field2"));
         assertThat(((SQLSelectQueryBlock) sqlInsertStatement.getQuery().getQuery()).getFrom().toString(), is("TABLE_XXX2"));
         assertThat(sqlInsertStatement.getQuery().getParent(), is((SQLObject) sqlInsertStatement));
-        assertThat(sqlInsertStatement.toString(), is("INSERT INTO TABLE_XXX (field1, field2)\nSELECT field1, field2\nFROM TABLE_XXX2"));
+        assertThat(sqlInsertStatement.getAppendices().size(), is(9));
+        assertThat(sqlInsertStatement.getAppendices().get(0), is("ON"));
+        assertThat(sqlInsertStatement.getAppendices().get(1), is("DUPLICATE"));
+        assertThat(sqlInsertStatement.getAppendices().get(2), is("KEY"));
+        assertThat(sqlInsertStatement.getAppendices().get(3), is("UPDATE"));
+        assertThat(sqlInsertStatement.getAppendices().get(4), is("field1"));
+        assertThat(sqlInsertStatement.getAppendices().get(5), is("="));
+        assertThat(sqlInsertStatement.getAppendices().get(6), is("field1"));
+        assertThat(sqlInsertStatement.getAppendices().get(7), is("+"));
+        assertThat(sqlInsertStatement.getAppendices().get(8), is("1"));
+        assertThat(sqlInsertStatement.toString(), is("INSERT INTO TABLE_XXX (field1, field2)\nSELECT field1, field2\nFROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1 = field1 + 1"));
     }
 }

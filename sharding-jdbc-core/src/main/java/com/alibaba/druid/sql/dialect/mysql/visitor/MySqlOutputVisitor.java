@@ -932,21 +932,10 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             println();
             x.getQuery().accept(this);
         }
-
-        if (x.getDuplicateKeyUpdate().size() != 0) {
-            println();
-            print("ON DUPLICATE KEY UPDATE ");
-            for (int i = 0, size = x.getDuplicateKeyUpdate().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-                x.getDuplicateKeyUpdate().get(i).accept(this);
-            }
+        for (String each : x.getAppendices()) {
+            print(" ");
+            print(each);
         }
-
         return false;
     }
 
