@@ -6,12 +6,13 @@ weight = 1
 
 # Release Notes
 
-## 1.4.1-SNAPSHOT
+## 1.4.1
 
 ### 功能提升
 
 1. [ISSUE #191](https://github.com/dangdangdotcom/sharding-jdbc/issues/191) 根据主机的IP生成workerId的IdGenerator实现
 1. [ISSUE #192](https://github.com/dangdangdotcom/sharding-jdbc/issues/192) 根据HOSTNAME的数字尾缀获取workerId的IdGenerator
+1. [ISSUE #210](https://github.com/dangdangdotcom/sharding-jdbc/issues/210) 路由到单库单表移除补充的SQL语句片段
 
 ### 缺陷修正
 
