@@ -1859,6 +1859,20 @@ public class MySqlStatementParser extends SQLStatementParser {
         return result;
     }
     
+    @Override
+    protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
+        MySqlInsertStatement mySqlInsertStatement = (MySqlInsertStatement) sqlInsertStatement;
+        do {
+            getLexer().nextToken();
+            accept(Token.LEFT_PAREN);
+            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+            values.getValues().addAll(exprParser.exprList(values));
+            mySqlInsertStatement.getValuesList().add(values);
+            accept(Token.RIGHT_PAREN);
+        }
+        while (getLexer().equalToken(Token.COMMA));
+    }
+    
     protected Set<String> getIdentifiersBetweenTableAndValues() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.PARTITION.getName());

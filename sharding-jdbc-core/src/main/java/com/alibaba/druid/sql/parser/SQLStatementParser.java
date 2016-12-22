@@ -1314,7 +1314,7 @@ public class SQLStatementParser extends SQLParser {
         }
     }
     
-    protected final void parseValues(final SQLInsertStatement sqlInsertStatement) {
+    protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
         getLexer().nextToken();
         accept(Token.LEFT_PAREN);
         SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();

@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
@@ -60,6 +61,25 @@ public final class MySqlStatementParserTest {
         assertThat(sqlInsertStatement.getIdentifiersBetweenTableAndValues().get(4), is("partition2"));
         assertThat(sqlInsertStatement.getIdentifiersBetweenTableAndValues().get(5), is(")"));
         assertThat(sqlInsertStatement.toString(), is("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION ( partition1 , partition2 ) (`field1`, `field2`)\nVALUES (1, 'value_char')"));
+    }
+    
+    @Test
+    public void parseStatementWithInsertBatchValues() {
+        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'char1'), (2, 'char2')");
+        MySqlInsertStatement sqlInsertStatement = (MySqlInsertStatement) statementParser.parseStatement();
+        assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
+        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertNull(sqlInsertStatement.getTableSource().getAlias());
+        assertNull(sqlInsertStatement.getAlias());
+        assertTrue(sqlInsertStatement.getColumns().isEmpty());
+        assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
+        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(0)).getNumber().intValue(), is(1));
+        assertThat(((SQLCharExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(1)).getText(), is("char1"));
+        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValuesList().get(1).getValues().get(0)).getNumber().intValue(), is(2));
+        assertThat(((SQLCharExpr) sqlInsertStatement.getValuesList().get(1).getValues().get(1)).getText(), is("char2"));
+        assertTrue(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().isEmpty());
+        assertTrue(sqlInsertStatement.getIdentifiersBetweenTableAndValues().isEmpty());
+        assertThat(sqlInsertStatement.toString(), is("INSERT INTO TABLE_XXX\nVALUES (1, 'char1'),\n\t(2, 'char2')"));
     }
     
     @Test
