@@ -62,7 +62,7 @@ public class MySqlInsertStatement extends SQLInsertStatement {
             acceptChild(mySqlASTVisitor, getColumns());
             acceptChild(mySqlASTVisitor, getValuesList());
             acceptChild(mySqlASTVisitor, getQuery());
-            acceptChild(mySqlASTVisitor, getDuplicateKeyUpdate());
+            acceptChild(mySqlASTVisitor, duplicateKeyUpdate);
         }
         mySqlASTVisitor.endVisit(this);
     }

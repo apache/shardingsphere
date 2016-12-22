@@ -48,11 +48,6 @@ public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatem
         }
     }
     
-    public void addValueCause(final ValuesClause valueClause) {
-        valueClause.setParent(this);
-        valuesList.add(valueClause);
-    }
-    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         accept0((PGASTVisitor) visitor);

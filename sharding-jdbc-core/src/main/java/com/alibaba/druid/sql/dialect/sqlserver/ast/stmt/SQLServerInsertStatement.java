@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
 import com.alibaba.druid.sql.SQLUtils;
@@ -31,8 +32,6 @@ import java.util.List;
 @Setter
 public class SQLServerInsertStatement extends SQLInsertStatement implements SQLServerObject {
     
-    private boolean defaultValues;
-    
     private final List<ValuesClause> valuesList = new ArrayList<>();
     
     public ValuesClause getValues() {
@@ -45,6 +44,11 @@ public class SQLServerInsertStatement extends SQLInsertStatement implements SQLS
         } else {
             valuesList.set(0, values);
         }
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.SQL_SERVER;
     }
     
     @Override
@@ -65,6 +69,6 @@ public class SQLServerInsertStatement extends SQLInsertStatement implements SQLS
     
     @Override
     public String toString() {
-        return SQLUtils.toSQLString(this, JdbcConstants.SQL_SERVER);
+        return SQLUtils.toSQLString(this, getDbType());
     }
 }

@@ -191,9 +191,10 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
             println();
             x.getQuery().accept(this);
         }
-
-        if (x.isDefaultValues()) {
-            print(" DEFAULT VALUES");
+        for (String each : x.getAppendices()) {
+            print(' ');
+            print(each);
+            
         }
         return false;
     }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -54,7 +55,7 @@ import java.util.TreeSet;
 
 public class SQLServerStatementParser extends SQLStatementParser {
     
-    public SQLServerStatementParser(String sql){
+    public SQLServerStatementParser(final String sql) {
         super(new SQLServerExprParser(sql));
     }
     
@@ -243,17 +244,20 @@ public class SQLServerStatementParser extends SQLStatementParser {
             parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
-        } else if (getLexer().equalToken(Token.DEFAULT)) {
-            getLexer().nextToken();
-            accept(Token.VALUES);
-            result.setDefaultValues(true);
         }
+        parseAppendices(result);
         return result;
     }
     
     protected Set<String> getIdentifiersBetweenIntoAndTable() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add("OUTPUT");
+        return result;
+    }
+    
+    protected Set<String> getAppendixIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.DEFAULT.getName());
         return result;
     }
     

@@ -93,7 +93,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -1270,6 +1270,7 @@ public class SQLStatementParser extends SQLParser {
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
         }
+        parseAppendices(result);
         return result;
     }
     
@@ -1329,18 +1330,31 @@ public class SQLStatementParser extends SQLParser {
         sqlInsertStatement.setQuery(select);
     }
     
+    protected final void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
+        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
+            while (!getLexer().equalToken(Token.EOF)) {
+                sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
+                getLexer().nextToken();
+            }
+        }
+    }
+    
     protected Set<String> getIdentifiersBetweenIntoAndTable() {
-        return new HashSet<>();
+        return Collections.emptySet();
     }
     
     protected Set<String> getIdentifiersBetweenTableAndValues() {
-        return new HashSet<>();
+        return Collections.emptySet();
     }
     
     protected Set<String> getValuesIdentifiers() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.VALUES.getName());
         return result;
+    }
+    
+    protected Set<String> getAppendixIdentifiers() {
+        return Collections.emptySet();
     }
     
     public boolean parseStatementListDialect(final List<SQLStatement> statementList) {
