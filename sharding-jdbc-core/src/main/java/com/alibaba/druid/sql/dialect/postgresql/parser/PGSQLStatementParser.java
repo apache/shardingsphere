@@ -22,7 +22,6 @@ import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
@@ -82,7 +81,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected SQLInsertStatement createSQLInsertStatement() {
+    protected PGInsertStatement createSQLInsertStatement() {
         return new PGInsertStatement();
     }
     

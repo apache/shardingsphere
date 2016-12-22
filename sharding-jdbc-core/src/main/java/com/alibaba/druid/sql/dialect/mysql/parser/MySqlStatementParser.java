@@ -1817,7 +1817,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     @Override
     protected SQLInsertStatement parseInsert() {
         getLexer().nextToken();
-        MySqlInsertStatement result = (MySqlInsertStatement) createSQLInsertStatement();
+        MySqlInsertStatement result = createSQLInsertStatement();
         parseInsertInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
@@ -1856,7 +1856,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected SQLInsertStatement createSQLInsertStatement() {
+    protected MySqlInsertStatement createSQLInsertStatement() {
         return new MySqlInsertStatement();
     }
     

@@ -23,7 +23,6 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
@@ -236,7 +235,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected SQLInsertStatement createSQLInsertStatement() {
+    protected SQLServerInsertStatement createSQLInsertStatement() {
         return new SQLServerInsertStatement();
     }
     
