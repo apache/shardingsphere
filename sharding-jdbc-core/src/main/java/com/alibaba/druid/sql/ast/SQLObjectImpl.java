@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast;
 
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -56,7 +57,7 @@ public abstract class SQLObjectImpl implements SQLObject {
     }
     
     @Override
-    public void setParent(SQLObject parent) {
+    public void setParent(final SQLObject parent) {
         this.parent = parent;
     }
     
@@ -67,9 +68,9 @@ public abstract class SQLObjectImpl implements SQLObject {
     
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        output(buf);
-        return buf.toString();
+        StringBuffer buffer = new StringBuffer();
+        output(buffer);
+        return buffer.toString();
     }
     
     protected final void acceptChild(final SQLASTVisitor visitor, final List<? extends SQLObject> children) {
@@ -81,7 +82,7 @@ public abstract class SQLObjectImpl implements SQLObject {
         }
     }
     
-    protected final void acceptChild(final SQLASTVisitor visitor, SQLObject child) {
+    protected final void acceptChild(final SQLASTVisitor visitor, final SQLObject child) {
         if (null == child) {
             return;
         }

@@ -33,6 +33,7 @@ import java.util.List;
 
 @Getter
 @Setter
+// TODO 删除
 public class OracleMultiInsertStatement extends OracleStatementImpl {
     
     private SQLSelect subQuery;

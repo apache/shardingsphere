@@ -90,12 +90,12 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLockTableStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLockTableStatement.LockMode;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLoopStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMultiInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSavePointStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleStatement;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
@@ -1154,25 +1154,19 @@ public class OracleStatementParser extends SQLStatementParser {
 
             stmt.setInsertClause(insertClause);
         }
-
         OracleErrorLoggingClause errorClause = parseErrorLoggingClause();
         stmt.setErrorLoggingClause(errorClause);
-
         return stmt;
     }
     
     @Override
     protected OracleStatement parseInsert() {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            OracleInsertStatement result = new OracleInsertStatement();
-            parseInsert0(result, false);
-            result.setReturning(parseReturningClause());
-            result.setErrorLogging(parseErrorLoggingClause());
-            return result;
-        }
         accept(Token.INSERT);
         List<SQLHint> hints = new ArrayList<>();
         parseHints(hints);
+        if (getLexer().equalToken(Token.ALL) || Token.FIRST.getName().equalsIgnoreCase(getLexer().getLiterals())) {
+            throw new UnsupportedOperationException("Cannot support multi_table_insert for oracle");
+        }
         if (getLexer().equalToken(Token.INTO)) {
             OracleInsertStatement result = new OracleInsertStatement();
             result.getHints().addAll(hints);
@@ -1181,73 +1175,15 @@ public class OracleStatementParser extends SQLStatementParser {
             result.setErrorLogging(parseErrorLoggingClause());
             return result;
         }
-        OracleMultiInsertStatement result = parseMultiInsert();
-        result.getHints().addAll(hints);
-        return result;
-    }
-    
-    public OracleMultiInsertStatement parseMultiInsert() {
-        OracleMultiInsertStatement stmt = new OracleMultiInsertStatement();
-
-        if (getLexer().equalToken(Token.ALL)) {
-            getLexer().nextToken();
-            stmt.setOption(OracleMultiInsertStatement.Option.ALL);
-        } else if (getLexer().equalToken(Token.FIRST)) {
-            getLexer().nextToken();
-            stmt.setOption(OracleMultiInsertStatement.Option.FIRST);
-        }
-
-        while (getLexer().equalToken(Token.INTO)) {
-            OracleMultiInsertStatement.InsertIntoClause clause = new OracleMultiInsertStatement.InsertIntoClause();
-
-            parseInsert0(clause, true);
-
-            clause.setReturning(parseReturningClause());
-            clause.setErrorLogging(parseErrorLoggingClause());
-
-            stmt.getEntries().add(clause);
-        }
-
-        if (getLexer().equalToken(Token.WHEN)) {
-            OracleMultiInsertStatement.ConditionalInsertClause clause = new OracleMultiInsertStatement.ConditionalInsertClause();
-
-            while (getLexer().equalToken(Token.WHEN)) {
-                getLexer().nextToken();
-
-                OracleMultiInsertStatement.ConditionalInsertClauseItem item = new OracleMultiInsertStatement.ConditionalInsertClauseItem();
-
-                item.setWhen(this.exprParser.expr());
-                accept(Token.THEN);
-                OracleMultiInsertStatement.InsertIntoClause insertInto = new OracleMultiInsertStatement.InsertIntoClause();
-                parseInsert0(insertInto, true);
-                item.setThen(insertInto);
-
-                clause.getItems().add(item);
-            }
-
-            if (getLexer().equalToken(Token.ELSE)) {
-                getLexer().nextToken();
-
-                OracleMultiInsertStatement.InsertIntoClause insertInto = new OracleMultiInsertStatement.InsertIntoClause();
-                parseInsert0(insertInto, false);
-                clause.setElseItem(insertInto);
-            }
-            stmt.getEntries().add(clause);
-        }
-
-        SQLSelect subQuery = this.createSQLSelectParser().select();
-        stmt.setSubQuery(subQuery);
-
-        return stmt;
+        // TODO 不会发生
+        throw new ParserException("");
     }
     
     private void parseInsert0(final SQLInsertInto insertStatement, final boolean acceptSubQuery) {
         if (getLexer().equalToken(Token.INTO)) {
             getLexer().nextToken();
-
-            SQLName tableName = this.exprParser.name();
+            SQLName tableName = exprParser.name();
             insertStatement.setTableName(tableName);
-
             if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
                 insertStatement.setAlias(as());
             }

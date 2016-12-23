@@ -19,6 +19,7 @@ package com.alibaba.druid.sql;
 
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParserTest;
+import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParserTest;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLStatementParserTest;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParserTest;
 import com.alibaba.druid.sql.parser.LexerTest;
@@ -32,6 +33,7 @@ import org.junit.runners.Suite.SuiteClasses;
         MySqlLexerTest.class,
         MySqlStatementParserTest.class,
         PGSQLStatementParserTest.class,
+        OracleStatementParserTest.class, 
         SQLServerStatementParserTest.class
     })
 public class AllParserTests {
