@@ -116,4 +116,23 @@ public final class MySqlStatementParserTest {
         assertThat(sqlInsertStatement.getAppendices().get(8), is("1"));
         assertThat(sqlInsertStatement.toString(), is("INSERT INTO TABLE_XXX (field1, field2)\nSELECT field1, field2\nFROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1 = field1 + 1"));
     }
+    
+    @Test
+    public void parseStatementWithInsertSet() {
+        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX SET field1=1, field2='char'");
+        MySqlInsertStatement sqlInsertStatement = (MySqlInsertStatement) statementParser.parseStatement();
+        assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
+        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertNull(sqlInsertStatement.getTableSource().getAlias());
+        assertNull(sqlInsertStatement.getAlias());
+        assertThat(sqlInsertStatement.getColumns().size(), is(2));
+        assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
+        assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));
+        assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
+        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(0)).getNumber().intValue(), is(1));
+        assertThat(((SQLCharExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(1)).getText(), is("char"));
+        assertTrue(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().isEmpty());
+        assertTrue(sqlInsertStatement.getIdentifiersBetweenTableAndValues().isEmpty());
+        assertThat(sqlInsertStatement.toString(), is("INSERT INTO TABLE_XXX (field1, field2)\nVALUES (1, 'char')"));
+    }
 }

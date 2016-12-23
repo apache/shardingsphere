@@ -1825,28 +1825,27 @@ public class MySqlStatementParser extends SQLStatementParser {
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
         } else if (getLexer().equalToken(Token.SET)) {
-            getLexer().nextToken();
-            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            result.getValuesList().add(values);
-            while (true) {
-                result.getColumns().add(exprParser.name());
-                if (getLexer().equalToken(Token.EQ)) {
-                    getLexer().nextToken();
-                } else {
-                    accept(Token.COLON_EQ);
-                }
-                values.getValues().add(exprParser.expr());
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
+            parseInsertSet(result);
         }
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             parseAppendices(result);
         }
         return result;
+    }
+    
+    private void parseInsertSet(final MySqlInsertStatement mySqlInsertStatement) {
+        ValuesClause values = new ValuesClause();
+        mySqlInsertStatement.getValuesList().add(values);
+        do {
+            getLexer().nextToken();
+            mySqlInsertStatement.getColumns().add(exprParser.name());
+            if (getLexer().equalToken(Token.EQ)) {
+                getLexer().nextToken();
+            } else {
+                accept(Token.COLON_EQ);
+            }
+            values.getValues().add(exprParser.expr());
+        } while (getLexer().equalToken(Token.COMMA));
     }
     
     @Override
