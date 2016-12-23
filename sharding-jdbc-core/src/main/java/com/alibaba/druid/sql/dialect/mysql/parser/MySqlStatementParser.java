@@ -73,7 +73,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlParameter.ParameterTy
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlRepeatStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlSelectIntoStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlWhileStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.CobarShowStatus;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableAddColumn;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableChangeColumn;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableCharacter;
@@ -800,12 +799,6 @@ public class MySqlStatementParser extends SQLStatementParser {
                 return stmt;
             }
         }
-
-        if (getLexer().identifierEquals("COBAR_STATUS")) {
-            getLexer().nextToken();
-            return new CobarShowStatus();
-        }
-
         if (getLexer().identifierEquals("AUTHORS")) {
             getLexer().nextToken();
             return new MySqlShowAuthorsStatement();

@@ -44,7 +44,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.CobarShowStatus;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableAddColumn;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableChangeColumn;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableCharacter;
@@ -244,10 +243,6 @@ public interface MySqlASTVisitor extends SQLASTVisitor {
     void endVisit(MySqlShowAuthorsStatement x);
     
     boolean visit(MySqlShowAuthorsStatement x);
-    
-    void endVisit(CobarShowStatus x);
-    
-    boolean visit(CobarShowStatus x);
     
     void endVisit(MySqlKillStatement x);
     
