@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import com.alibaba.druid.sql.parser.Lexer;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -67,6 +70,28 @@ public class SQLUtil {
         }
         if (null != current) {
             throw current;
+        }
+    }
+    
+    /**
+     * 根据SQL第一个单词判断SQL类型.
+     * 
+     * @param sql SQL语句
+     * @return SQL类型
+     */
+    public static SQLStatementType getTypeByStart(final String sql) {
+        //TODO: Use new Lexer Util.
+        Lexer lexer = new Lexer(sql);
+        lexer.nextToken();
+        while (true) {
+            switch (lexer.token()) {
+                case SELECT: return SQLStatementType.SELECT;
+                case INSERT: return SQLStatementType.INSERT;
+                case UPDATE: return SQLStatementType.UPDATE;
+                case DELETE: return SQLStatementType.DELETE;
+                case EOF: throw new SQLParserException("Unsupported SQL statement: [%s]", sql);
+                default: lexer.nextToken();
+            }
         }
     }
 }
