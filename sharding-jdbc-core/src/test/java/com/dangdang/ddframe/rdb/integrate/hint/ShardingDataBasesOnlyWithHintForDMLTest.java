@@ -30,7 +30,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingDataBasesOnlyForHintWithDMLTest extends AbstractShardingDataBasesOnlyHintDBUnitTest {
+public final class ShardingDataBasesOnlyWithHintForDMLTest extends AbstractShardingDataBasesOnlyHintDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

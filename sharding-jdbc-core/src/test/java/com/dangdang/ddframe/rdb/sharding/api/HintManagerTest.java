@@ -101,4 +101,14 @@ public final class HintManagerTest {
             assertThat(hintManager.getTableShardingValue(shardingKey).getValueRange().upperEndpoint(), is((Comparable) 10));
         }
     }
+    
+    @Test
+    public void assertAddDatabaseShardingOnly() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDatabaseShardingValue("1");
+            assertTrue(hintManager.isDatabaseShardingOnly());
+            assertTrue(hintManager.isShardingHint());
+            assertThat((String) hintManager.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME)).getValue(), is("1"));
+        }
+    }
 }

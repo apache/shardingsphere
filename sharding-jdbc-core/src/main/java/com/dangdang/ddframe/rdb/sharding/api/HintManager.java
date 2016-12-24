@@ -50,6 +50,9 @@ public final class HintManager implements AutoCloseable {
     @Getter
     private boolean masterRouteOnly;
     
+    @Getter
+    private boolean databaseShardingOnly;
+    
     /**
      * 获取线索分片管理器实例.
      * 
@@ -59,6 +62,18 @@ public final class HintManager implements AutoCloseable {
         HintManager result = new HintManager();
         HintManagerHolder.setHintManager(result);
         return result;
+    }
+    
+    /**
+     * 设置分库分片值.
+     * 
+     * <p>分片操作符为等号.该方法适用于只分库的场景</p>
+     * 
+     * @param value 分片值
+     */
+    public void setDatabaseShardingValue(final Comparable<?> value) {
+        databaseShardingOnly = true;
+        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME, value);
     }
     
     /**

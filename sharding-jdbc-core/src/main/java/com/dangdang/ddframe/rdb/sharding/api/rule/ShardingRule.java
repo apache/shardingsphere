@@ -67,9 +67,8 @@ public final class ShardingRule {
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
             final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
         Preconditions.checkNotNull(dataSourceRule);
-        Preconditions.checkNotNull(tableRules);
         this.dataSourceRule = dataSourceRule;
-        this.tableRules = tableRules;
+        this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
         this.bindingTableRules = null == bindingTableRules ? Collections.<BindingTableRule>emptyList() : bindingTableRules;
         this.databaseShardingStrategy = null == databaseShardingStrategy ? new DatabaseShardingStrategy(
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;

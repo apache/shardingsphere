@@ -36,7 +36,9 @@ import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.pstatement.StaticShar
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithAggregateTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.hint.ShardingDataBasesOnlyForHintWithDMLTest;
+import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForDMLTest;
+import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForSelectTest;
+import com.dangdang.ddframe.rdb.integrate.hint.ShardingDataBasesOnlyWithHintForDMLTest;
 import com.dangdang.ddframe.rdb.integrate.hint.ShardingDataBasesOnlyWithHintForSelectTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterSlaveForPStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterSlaveForPStatementWithSelectTest;
@@ -82,13 +84,15 @@ import org.junit.runners.Suite.SuiteClasses;
     ShardingTablesOnlyForStatementWithSelectTest.class, 
     ShardingTablesOnlyForStatementWithAggregateTest.class, 
     ShardingTablesOnlyForStatementWithDMLTest.class, 
-    ShardingDataBasesOnlyForHintWithDMLTest.class, 
+    ShardingDataBasesOnlyWithHintForDMLTest.class, 
     ShardingDataBasesOnlyWithHintForSelectTest.class, 
     ShardingForNullableWithAggregateTest.class, 
     ShardingMasterSlaveForPStatementWithDMLTest.class,
     ShardingMasterSlaveForPStatementWithSelectTest.class,
     ShardingMasterSlaveForStatementWithDMLTest.class, 
-    ShardingMasterSlaveForStatementWithSelectTest.class
+    ShardingMasterSlaveForStatementWithSelectTest.class,
+    RoutingDatabaseOnlyWithHintForDMLTest.class,
+    RoutingDatabaseOnlyWithHintForSelectTest.class
     })
 public class AllIntegrateTests {
 }

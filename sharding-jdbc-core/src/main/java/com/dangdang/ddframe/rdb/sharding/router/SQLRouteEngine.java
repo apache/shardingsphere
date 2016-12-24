@@ -21,22 +21,27 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
+import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -81,9 +86,27 @@ public final class SQLRouteEngine {
     }
     
     SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
+        if (HintManagerHolder.isDatabaseShardingOnly()) {
+            return buildHintParsedResult(logicSql);
+        }
         Context context = MetricsContext.start("Parse SQL");
         SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule).parse();
         MetricsContext.stop(context);
+        return result;
+    }
+    
+    private SQLParsedResult buildHintParsedResult(final String logicSql) {
+        SQLParsedResult result = new SQLParsedResult();
+        RouteContext routeContext = result.getRouteContext();
+        routeContext.setSqlStatementType(SQLUtil.getTypeByStart(logicSql));
+        log.trace("Get {} SQL Statement", routeContext.getSqlStatementType());
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        try {
+            sqlBuilder.append(logicSql);
+        } catch (final IOException ignored) {
+        }
+        routeContext.setSqlBuilder(sqlBuilder);
+        result.getConditionContexts().add(new ConditionContext());
         return result;
     }
     
@@ -105,8 +128,11 @@ public final class SQLRouteEngine {
     }
     
     private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLParsedResult parsedResult) {
+        if (HintManagerHolder.isDatabaseShardingOnly()) {
+            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getRouteContext().getSqlStatementType()).route();
+        }
         Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<Table, String>() {
-        
+            
             @Override
             public String apply(final Table input) {
                 return input.getName();
