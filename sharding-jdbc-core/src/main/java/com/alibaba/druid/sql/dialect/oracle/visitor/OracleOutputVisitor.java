@@ -135,10 +135,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLoopStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement.MergeInsertClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement.MergeUpdateClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMultiInsertStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMultiInsertStatement.ConditionalInsertClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMultiInsertStatement.ConditionalInsertClauseItem;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMultiInsertStatement.InsertIntoClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePrimaryKey;
@@ -1535,126 +1531,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     @Override
     public void endVisit(OracleInsertStatement x) {
         endVisit((SQLInsertStatement) x);
-    }
-
-    @Override
-    public boolean visit(InsertIntoClause x) {
-        print("INTO ");
-
-        x.getTableSource().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            println();
-            print("(");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (x.getValues() != null) {
-            println();
-            print("VALUES ");
-            x.getValues().accept(this);
-        } else {
-            if (x.getQuery() != null) {
-                println();
-                x.getQuery().setParent(x);
-                x.getQuery().accept(this);
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(InsertIntoClause x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleMultiInsertStatement x) {
-        print("INSERT ");
-
-        if (x.getHints().size() > 0) {
-            this.printHints(x.getHints());
-        }
-
-        if (x.getOption() != null) {
-            print(x.getOption().name());
-            print(" ");
-        }
-
-        for (int i = 0, size = x.getEntries().size(); i < size; ++i) {
-            incrementIndent();
-            println();
-            x.getEntries().get(i).accept(this);
-            decrementIndent();
-        }
-
-        println();
-        x.getSubQuery().accept(this);
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleMultiInsertStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(ConditionalInsertClause x) {
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                println();
-            }
-
-            ConditionalInsertClauseItem item = x.getItems().get(i);
-
-            item.accept(this);
-        }
-
-        if (x.getElseItem() != null) {
-            println();
-            print("ELSE");
-            incrementIndent();
-            println();
-            x.getElseItem().accept(this);
-            decrementIndent();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(ConditionalInsertClause x) {
-
-    }
-
-    @Override
-    public boolean visit(ConditionalInsertClauseItem x) {
-        print("WHEN ");
-        x.getWhen().accept(this);
-        print(" THEN");
-        incrementIndent();
-        println();
-        x.getThen().accept(this);
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(ConditionalInsertClauseItem x) {
-
     }
 
     @Override
