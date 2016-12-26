@@ -207,7 +207,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.SELECT)) {
                 query = parseSelect();
             } else if (getLexer().equalToken(Token.INSERT)) {
-                query = new PostgreSQLInsertParser(exprParser).parseInsert();
+                query = new PostgreSQLInsertParser(exprParser).parse();
             } else if (getLexer().equalToken(Token.UPDATE)) {
                 query = parseUpdateStatement();
             } else if (getLexer().equalToken(Token.DELETE)) {
@@ -233,7 +233,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(exprParser).parseInsert();
+            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(exprParser).parse();
             stmt.setWith(with);
             return stmt;
         }

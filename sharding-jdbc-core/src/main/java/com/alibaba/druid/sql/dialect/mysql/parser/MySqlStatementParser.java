@@ -2628,7 +2628,7 @@ public class MySqlStatementParser extends SQLStatementParser {
             
             // insert
             if (getLexer().equalToken(Token.INSERT)) {
-                statementList.add(new MySQLInsertParser(exprParser).parseInsert());
+                statementList.add(new MySQLInsertParser(exprParser).parse());
                 continue;
             }
             

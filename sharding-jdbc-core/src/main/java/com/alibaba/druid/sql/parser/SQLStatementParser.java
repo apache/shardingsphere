@@ -147,7 +147,7 @@ public class SQLStatementParser extends SQLParser {
                 continue;
             }
             if (getLexer().equalToken(Token.INSERT)) {
-                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parseInsert());
+                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse());
                 continue;
             }
             if (getLexer().equalToken(Token.DELETE)) {

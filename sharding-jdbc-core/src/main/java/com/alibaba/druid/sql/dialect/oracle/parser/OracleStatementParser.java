@@ -152,7 +152,7 @@ public class OracleStatementParser extends SQLStatementParser {
             }
 
             if (getLexer().equalToken(Token.INSERT)) {
-                result.add(new OracleInsertParser(exprParser).parseInsert());
+                result.add(new OracleInsertParser(exprParser).parse());
                 continue;
             }
 

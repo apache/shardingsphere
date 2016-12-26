@@ -30,18 +30,18 @@ public abstract class AbstractInsertParser extends SQLParser {
      * 
      * @return 解析结果
      */
-    public final SQLStatement parseInsert() {
+    public final SQLStatement parse() {
         getLexer().nextToken();
         SQLInsertStatement result = createSQLInsertStatement();
         if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
             throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
         }
-        parseInsertInto(result);
+        parseInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseInsertSelect(result);
+            parseSelect(result);
         } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
             parseCustomizedInsert(result);
         }
@@ -51,7 +51,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     
     protected abstract SQLInsertStatement createSQLInsertStatement();
     
-    private void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
+    private void parseInto(final SQLInsertStatement sqlInsertStatement) {
         while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
             sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
             getLexer().nextToken();
@@ -106,7 +106,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         accept(Token.RIGHT_PAREN);
     }
     
-    private void parseInsertSelect(final SQLInsertStatement sqlInsertStatement) {
+    private void parseSelect(final SQLInsertStatement sqlInsertStatement) {
         SQLSelect select = exprParser.createSelectParser().select();
         select.setParent(sqlInsertStatement);
         sqlInsertStatement.setQuery(select);
