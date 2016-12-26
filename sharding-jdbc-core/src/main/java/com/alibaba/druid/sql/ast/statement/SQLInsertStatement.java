@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
+public abstract class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
     
     private final List<String> identifiersBetweenInsertAndInto = new ArrayList<>();
     
@@ -36,11 +36,6 @@ public class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
     private final List<String> identifiersBetweenTableAndValues = new ArrayList<>();
     
     private final List<String> appendices = new ArrayList<>();
-    
-    @Override
-    public String getDbType() {
-        return null;
-    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
