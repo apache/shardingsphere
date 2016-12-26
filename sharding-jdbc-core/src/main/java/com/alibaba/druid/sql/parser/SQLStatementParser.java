@@ -71,7 +71,6 @@ import com.alibaba.druid.sql.ast.statement.SQLExplainStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLFetchStatement;
 import com.alibaba.druid.sql.ast.statement.SQLGrantStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLObjectType;
 import com.alibaba.druid.sql.ast.statement.SQLOpenStatement;
 import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
@@ -79,7 +78,6 @@ import com.alibaba.druid.sql.ast.statement.SQLReleaseSavePointStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRevokeStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSavePointStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
@@ -93,10 +91,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * SQL解析器.
@@ -152,7 +147,7 @@ public class SQLStatementParser extends SQLParser {
                 continue;
             }
             if (getLexer().equalToken(Token.INSERT)) {
-                result.add(parseInsert());
+                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parseInsert());
                 continue;
             }
             if (getLexer().equalToken(Token.DELETE)) {
@@ -1258,123 +1253,6 @@ public class SQLStatementParser extends SQLParser {
             break;
         }
         return stmt;
-    }
-    
-    protected final SQLStatement parseInsert() {
-        getLexer().nextToken();
-        SQLInsertStatement result = createSQLInsertStatement();
-        if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
-            throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
-        }
-        parseInsertInto(result);
-        parseColumns(result);
-        if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            parseValues(result);
-        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseInsertSelect(result);
-        } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
-            parseCustomizedInsert(result);
-        }
-        parseAppendices(result);
-        return result;
-    }
-    
-    protected SQLInsertStatement createSQLInsertStatement() {
-        return new SQLInsertStatement();
-    }
-    
-    protected final void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
-        while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
-            sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        accept(Token.INTO);
-        while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.getIdentifiersBetweenIntoAndTable().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        sqlInsertStatement.setTableName(exprParser.name());
-        while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                do {
-                    sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-                    getLexer().nextToken();
-                }
-                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
-                sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-                accept(Token.RIGHT_PAREN);
-            }
-        }
-        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            sqlInsertStatement.setAlias(as());
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER) && !getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-    }
-    
-    protected final void parseColumns(final SQLInsertStatement sqlInsertStatement) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
-            accept(Token.RIGHT_PAREN);
-        }
-    }
-    
-    protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
-        getLexer().nextToken();
-        accept(Token.LEFT_PAREN);
-        SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-        values.getValues().addAll(exprParser.exprList(values));
-        sqlInsertStatement.setValues(values);
-        accept(Token.RIGHT_PAREN);
-    }
-    
-    protected final void parseInsertSelect(final SQLInsertStatement sqlInsertStatement) {
-        SQLSelect select = exprParser.createSelectParser().select();
-        select.setParent(sqlInsertStatement);
-        sqlInsertStatement.setQuery(select);
-    }
-    
-    protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
-    }
-    
-    protected final void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
-        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
-            while (!getLexer().equalToken(Token.EOF)) {
-                sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
-    }
-    
-    protected Set<String> getUnsupportedIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getIdentifiersBetweenIntoAndTable() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getIdentifiersBetweenTableAndValues() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getValuesIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.VALUES.getName());
-        return result;
-    }
-    
-    protected Set<String> getCustomizedInsertIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getAppendixIdentifiers() {
-        return Collections.emptySet();
     }
     
     public boolean parseStatementListDialect(final List<SQLStatement> statementList) {

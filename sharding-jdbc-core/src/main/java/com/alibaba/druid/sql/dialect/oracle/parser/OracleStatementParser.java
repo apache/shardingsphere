@@ -81,7 +81,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleForStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleGotoStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleIfStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLockTableStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLockTableStatement.LockMode;
@@ -98,8 +97,6 @@ import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class OracleStatementParser extends SQLStatementParser {
     
@@ -155,7 +152,7 @@ public class OracleStatementParser extends SQLStatementParser {
             }
 
             if (getLexer().equalToken(Token.INSERT)) {
-                result.add(parseInsert());
+                result.add(new OracleInsertParser(exprParser).parseInsert());
                 continue;
             }
 
@@ -1149,28 +1146,6 @@ public class OracleStatementParser extends SQLStatementParser {
         OracleErrorLoggingClause errorClause = parseErrorLoggingClause();
         stmt.setErrorLoggingClause(errorClause);
         return stmt;
-    }
-    
-    @Override
-    protected OracleInsertStatement createSQLInsertStatement() {
-        OracleInsertStatement result = new OracleInsertStatement();
-        result.getHints().addAll(getExprParser().parseHints());
-        return result;
-    }
-    
-    protected Set<String> getUnsupportedIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.ALL.getName());
-        result.add(Token.FIRST.getName());
-        return result;
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.RETURNING.getName());
-        result.add("LOG");
-        return result;
     }
     
     private OracleExceptionStatement parseException() {

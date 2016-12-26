@@ -36,8 +36,6 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class PGSQLStatementParser extends SQLStatementParser {
     
@@ -78,19 +76,6 @@ public class PGSQLStatementParser extends SQLStatementParser {
             }
         }
         return udpateStatement;
-    }
-    
-    @Override
-    protected PGInsertStatement createSQLInsertStatement() {
-        return new PGInsertStatement();
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.DEFAULT.getName());
-        result.add(Token.RETURNING.getName());
-        return result;
     }
     
     public PGDeleteStatement parseDeleteStatement() {
@@ -222,7 +207,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.SELECT)) {
                 query = parseSelect();
             } else if (getLexer().equalToken(Token.INSERT)) {
-                query = parseInsert();
+                query = new PostgreSQLInsertParser(exprParser).parseInsert();
             } else if (getLexer().equalToken(Token.UPDATE)) {
                 query = parseUpdateStatement();
             } else if (getLexer().equalToken(Token.DELETE)) {
@@ -248,7 +233,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = (PGInsertStatement) parseInsert();
+            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(exprParser).parseInsert();
             stmt.setWith(with);
             return stmt;
         }

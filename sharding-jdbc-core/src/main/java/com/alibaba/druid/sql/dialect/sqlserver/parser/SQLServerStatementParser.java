@@ -36,7 +36,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerDeclareStatemen
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerExecStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerExecStatement.SQLServerParameter;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerRollbackStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetTransactionIsolationLevelStatement;
@@ -50,8 +49,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class SQLServerStatementParser extends SQLStatementParser {
     
@@ -235,24 +232,6 @@ public class SQLServerStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected SQLServerInsertStatement createSQLInsertStatement() {
-        return new SQLServerInsertStatement();
-    }
-    
-    @Override
-    protected Set<String> getIdentifiersBetweenIntoAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add("OUTPUT");
-        return result;
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.DEFAULT.getName());
-        return result;
-    }
-    
     protected SQLServerUpdateStatement createUpdateStatement() {
         return new SQLServerUpdateStatement();
     }
