@@ -242,9 +242,7 @@ public class OracleSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-
-            parseHints(queryBlock);
-
+            queryBlock.getHints().addAll(exprParser.parseHints());
             if (getLexer().equalToken(Token.DISTINCT)) {
                 queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
                 getLexer().nextToken();
@@ -255,9 +253,7 @@ public class OracleSelectParser extends SQLSelectParser {
                 queryBlock.setDistionOption(SQLSetQuantifier.ALL);
                 getLexer().nextToken();
             }
-
-            this.exprParser.parseHints(queryBlock.getHints());
-
+            queryBlock.getHints().addAll(exprParser.parseHints());
             parseSelectList(queryBlock);
         }
 
@@ -876,7 +872,7 @@ public class OracleSelectParser extends SQLSelectParser {
         }
 
         if (getLexer().equalToken(Token.HINT)) {
-            this.exprParser.parseHints(tableSource.getHints());
+            tableSource.getHints().addAll(exprParser.parseHints());
         }
 
         OracleSelectJoin.JoinType joinType = null;
@@ -1113,9 +1109,5 @@ public class OracleSelectParser extends SQLSelectParser {
             }
             x.setInto(list);
         }
-    }
-
-    private void parseHints(OracleSelectQueryBlock queryBlock) {
-        this.exprParser.parseHints(queryBlock.getHints());
     }
 }

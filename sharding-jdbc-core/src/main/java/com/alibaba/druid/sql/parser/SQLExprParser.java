@@ -1549,19 +1549,14 @@ public class SQLExprParser extends SQLParser {
     }
     
     public List<SQLCommentHint> parseHints() {
-        List<SQLCommentHint> hints = new ArrayList<>();
-        parseHints(hints);
-        return hints;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void parseHints(List hints) {
+        List<SQLCommentHint> result = new ArrayList<>();
         if (getLexer().equalToken(Token.HINT)) {
-            hints.add(new SQLCommentHint(getLexer().getLiterals()));
+            result.add(new SQLCommentHint(getLexer().getLiterals()));
             getLexer().nextToken();
         }
+        return result;
     }
-
+    
     public SQLConstraint parseConstraint() {
         SQLName name = null;
 

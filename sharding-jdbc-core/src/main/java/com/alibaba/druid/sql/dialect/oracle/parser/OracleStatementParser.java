@@ -15,9 +15,9 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
+import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -36,8 +36,6 @@ import com.alibaba.druid.sql.ast.statement.SQLDropSequenceStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropTriggerStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropUserStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertInto;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
@@ -95,17 +93,18 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSavePointStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleStatement;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class OracleStatementParser extends SQLStatementParser {
     
-    public OracleStatementParser(String sql){
+    public OracleStatementParser(final String sql) {
         super(new OracleExprParser(sql));
     }
     
@@ -119,16 +118,12 @@ public class OracleStatementParser extends SQLStatementParser {
         return (OracleExprParser) exprParser;
     }
     
-    public void parseHints(final List<SQLHint> hints) {
-        getExprParser().parseHints(hints);
-    }
-
     public OracleCreateTableParser getSQLCreateTableParser() {
         return new OracleCreateTableParser(getLexer());
     }
-
+    
     @Override
-    protected List<SQLStatement> parseStatementList(int max) {
+    protected List<SQLStatement> parseStatementList(final int max) {
         List<SQLStatement> result = new ArrayList<>(-1 == max ? 16 : max);
         while (true) {
             if (-1 != max && result.size() >= max) {
@@ -1061,9 +1056,7 @@ public class OracleStatementParser extends SQLStatementParser {
         accept(Token.MERGE);
 
         OracleMergeStatement stmt = new OracleMergeStatement();
-
-        parseHints(stmt.getHints());
-
+        stmt.getHints().addAll(getExprParser().parseHints());
         accept(Token.INTO);
         stmt.setInto(exprParser.name());
 
@@ -1161,70 +1154,47 @@ public class OracleStatementParser extends SQLStatementParser {
     
     @Override
     protected OracleStatement parseInsert() {
-        accept(Token.INSERT);
-        List<SQLHint> hints = new ArrayList<>();
-        parseHints(hints);
+        getLexer().nextToken();
+        List<SQLCommentHint> hints = getExprParser().parseHints();
         if (getLexer().equalToken(Token.ALL) || Token.FIRST.getName().equalsIgnoreCase(getLexer().getLiterals())) {
             throw new UnsupportedOperationException("Cannot support multi_table_insert for oracle");
         }
-        if (getLexer().equalToken(Token.INTO)) {
-            OracleInsertStatement result = new OracleInsertStatement();
-            result.getHints().addAll(hints);
-            parseInsert0(result, true);
-            result.setReturning(parseReturningClause());
-            result.setErrorLogging(parseErrorLoggingClause());
-            return result;
-        }
-        // TODO 不会发生
-        throw new ParserException("");
-    }
+        accept(Token.INTO);
+        OracleInsertStatement result = new OracleInsertStatement();
+        result.getHints().addAll(hints);
     
-    private void parseInsert0(final SQLInsertInto insertStatement, final boolean acceptSubQuery) {
-        if (getLexer().equalToken(Token.INTO)) {
-            getLexer().nextToken();
-            SQLName tableName = exprParser.name();
-            insertStatement.setTableName(tableName);
-            if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-                insertStatement.setAlias(as());
-            }
-
-            parseInsertHints(insertStatement);
-
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                insertStatement.setAlias(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
+    
+        result.setTableName(exprParser.name());
+        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
+            result.setAlias(as());
         }
-
+        if (getLexer().equalToken(Token.IDENTIFIER)) {
+            result.setAlias(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            insertStatement.getColumns().addAll(exprParser.exprList(insertStatement));
-            accept(Token.RIGHT_PAREN);
+            parseColumns(result);
         }
-
         if (getLexer().equalToken(Token.VALUES)) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
-            values.getValues().addAll(exprParser.exprList(values));
-            insertStatement.setValues(values);
-            accept(Token.RIGHT_PAREN);
-        } else if (acceptSubQuery && (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN))) {
-            SQLQueryExpr queryExpr = (SQLQueryExpr) this.exprParser.expr();
-            insertStatement.setQuery(queryExpr.getSubQuery());
+            parseValues(result);
+        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
+            parseInsertSelect(result);
         }
+        
+        
+        
+        parseAppendices(result);
+        return result;
     }
     
-    private void parseInsertHints(final SQLInsertInto insertStatement) {
-        if (insertStatement instanceof OracleInsertStatement) {
-            OracleInsertStatement stmt = (OracleInsertStatement) insertStatement;
-            getExprParser().parseHints(stmt.getHints());
-        } else {
-            List<SQLHint> hints = new ArrayList<>(1);
-            getExprParser().parseHints(hints);
-        }
+    @Override
+    protected Set<String> getAppendixIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.RETURNING.getName());
+        result.add("LOG");
+        return result;
     }
-
+    
     private OracleExceptionStatement parseException() {
         accept(Token.EXCEPTION);
         OracleExceptionStatement stmt = new OracleExceptionStatement();
@@ -1271,7 +1241,7 @@ public class OracleStatementParser extends SQLStatementParser {
         return null;
     }
 
-    public OracleReturningClause parseReturningClause() {
+    private OracleReturningClause parseReturningClause() {
         OracleReturningClause clause = null;
 
         if (getLexer().equalToken(Token.RETURNING)) {
@@ -1333,9 +1303,7 @@ public class OracleStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-
-            parseHints(deleteStatement.getHints());
-
+            deleteStatement.getHints().addAll(getExprParser().parseHints());
             if (getLexer().equalToken(Token.FROM)) {
                 getLexer().nextToken();
             }

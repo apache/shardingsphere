@@ -69,7 +69,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             getLexer().nextToken();
 
             if (getLexer().equalToken(Token.HINT)) {
-                this.exprParser.parseHints(queryBlock.getHints());
+                queryBlock.getHints().addAll(exprParser.parseHints());
             }
 
             if (getLexer().equalToken(Token.COMMENT)) {

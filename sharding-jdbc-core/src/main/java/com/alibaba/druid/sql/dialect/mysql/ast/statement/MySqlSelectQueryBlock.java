@@ -51,10 +51,6 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
 
     private List<SQLCommentHint> hints;
 
-    public MySqlSelectQueryBlock(){
-
-    }
-
     public int getHintsSize() {
         if (hints == null) {
             return 0;
@@ -65,7 +61,7 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
 
     public List<SQLCommentHint> getHints() {
         if (hints == null) {
-            hints = new ArrayList<SQLCommentHint>(2);
+            hints = new ArrayList<>(2);
         }
         return hints;
     }
@@ -94,19 +90,11 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
         return procedureName;
     }
 
-    public void setProcedureName(SQLName procedureName) {
-        this.procedureName = procedureName;
-    }
-
     public List<SQLExpr> getProcedureArgumentList() {
         if (procedureArgumentList == null) {
-            procedureArgumentList = new ArrayList<SQLExpr>(2);
+            procedureArgumentList = new ArrayList<>(2);
         }
         return procedureArgumentList;
-    }
-
-    public void setProcedureArgumentList(List<SQLExpr> procedureArgumentList) {
-        this.procedureArgumentList = procedureArgumentList;
     }
 
     public boolean isHignPriority() {

@@ -572,7 +572,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
         }
         
         while (getLexer().getToken() == (Token.HINT)) {
-            this.exprParser.parseHints(stmt.getOptionHints());
+            stmt.getOptionHints().addAll(exprParser.parseHints());
         }
         return stmt;
     }

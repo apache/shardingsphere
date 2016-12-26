@@ -54,7 +54,7 @@ public class SQLSelectParser extends SQLParser {
             select.setOrderBy(parseOrderBy());
         }
         while (getLexer().equalToken(Token.HINT)) {
-            exprParser.parseHints(select.getHints());
+            select.getHints().addAll(exprParser.parseHints());
         }
         return select;
     }

@@ -15,11 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -33,34 +28,39 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MySqlCreateTableStatement extends SQLCreateTableStatement implements MySqlStatement {
-
-    private Map<String, SQLObject> tableOptions = new LinkedHashMap<String, SQLObject>();
-
-    protected SQLSelect            query;
-
-    private SQLPartitioningClause  partitioning;
-
-    private List<SQLCommentHint>   hints        = new ArrayList<SQLCommentHint>();
-
-    private List<SQLCommentHint>   optionHints  = new ArrayList<SQLCommentHint>();
-
-    private SQLExprTableSource     like;
-
+    
+    private Map<String, SQLObject> tableOptions = new LinkedHashMap<>();
+    
+    protected SQLSelect query;
+    
+    private SQLPartitioningClause partitioning;
+    
+    private List<SQLCommentHint> hints = new ArrayList<>();
+    
+    private List<SQLCommentHint> optionHints = new ArrayList<>();
+    
+    private SQLExprTableSource like;
+    
     public MySqlCreateTableStatement(){
         super (JdbcConstants.MYSQL);
     }
-
+    
     public SQLExprTableSource getLike() {
         return like;
     }
-
+    
     public void setLike(SQLName like) {
         this.setLike(new SQLExprTableSource(like));
     }
-
-    public void setLike(SQLExprTableSource like) {
-        if (like != null) {
+    
+    public void setLike(final SQLExprTableSource like) {
+        if (null != like) {
             like.setParent(this);
         }
         this.like = like;
@@ -72,10 +72,6 @@ public class MySqlCreateTableStatement extends SQLCreateTableStatement implement
 
     public void setHints(List<SQLCommentHint> hints) {
         this.hints = hints;
-    }
-
-    public void setTableOptions(Map<String, SQLObject> tableOptions) {
-        this.tableOptions = tableOptions;
     }
 
     public SQLPartitioningClause getPartitioning() {
@@ -152,9 +148,5 @@ public class MySqlCreateTableStatement extends SQLCreateTableStatement implement
 
     public List<SQLCommentHint> getOptionHints() {
         return optionHints;
-    }
-
-    public void setOptionHints(List<SQLCommentHint> optionHints) {
-        this.optionHints = optionHints;
     }
 }

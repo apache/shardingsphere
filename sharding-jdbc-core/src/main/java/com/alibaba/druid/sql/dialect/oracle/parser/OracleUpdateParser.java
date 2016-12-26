@@ -94,7 +94,7 @@ public class OracleUpdateParser extends SQLStatementParser {
     }
 
     private void parseHints(OracleUpdateStatement update) {
-        this.exprParser.parseHints(update.getHints());
+        update.getHints().addAll(exprParser.parseHints());
     }
 
     private void parseWhere(OracleUpdateStatement update) {

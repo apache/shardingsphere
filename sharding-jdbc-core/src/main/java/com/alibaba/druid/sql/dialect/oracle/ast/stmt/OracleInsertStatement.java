@@ -21,6 +21,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,6 +37,11 @@ public class OracleInsertStatement extends SQLInsertStatement implements OracleS
     private OracleErrorLoggingClause errorLogging;
     
     private final List<SQLHint> hints = new ArrayList<>();
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.ORACLE;
+    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {

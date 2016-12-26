@@ -15,6 +15,7 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
+import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLObject;
@@ -1471,16 +1472,13 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleInsertStatement x) {
-        //visit((SQLInsertStatement) x);
-        
+    public boolean visit(final OracleInsertStatement x) {
         print("INSERT ");
-        
-        if (x.getHints().size() > 0) {
-            printAndAccept(x.getHints(), ", ");
-            print(' ');
+        for (SQLHint each : x.getHints()) {
+            print("/*+");
+            print(((SQLCommentHint) each).getText());
+            print("*/ ");
         }
-
         print("INTO ");
         
         x.getTableSource().accept(this);
@@ -1514,17 +1512,10 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
                 x.getQuery().accept(this);
             }
         }
-
-        if (x.getReturning() != null) {
-            println();
-            x.getReturning().accept(this);
+        for (String each : x.getAppendices()) {
+            print(" ");
+            print(each);
         }
-
-        if (x.getErrorLogging() != null) {
-            println();
-            x.getErrorLogging().accept(this);
-        }
-
         return false;
     }
 
