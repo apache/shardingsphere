@@ -3,7 +3,7 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.SQLInsertParser;
+import com.alibaba.druid.sql.parser.AbstractInsertParser;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -13,7 +13,7 @@ import java.util.TreeSet;
  *
  * @author zhangliang
  */
-public final class OracleInsertParser extends SQLInsertParser {
+public final class OracleInsertParser extends AbstractInsertParser {
     
     public OracleInsertParser(final SQLExprParser exprParser) {
         super(exprParser);

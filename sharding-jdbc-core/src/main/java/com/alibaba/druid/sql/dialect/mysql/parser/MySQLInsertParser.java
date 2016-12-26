@@ -4,7 +4,7 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.SQLInsertParser;
+import com.alibaba.druid.sql.parser.AbstractInsertParser;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,7 +14,7 @@ import java.util.TreeSet;
  *
  * @author zhangliang
  */
-public final class MySQLInsertParser extends SQLInsertParser {
+public final class MySQLInsertParser extends AbstractInsertParser {
     
     public MySQLInsertParser(final SQLExprParser exprParser) {
         super(exprParser);

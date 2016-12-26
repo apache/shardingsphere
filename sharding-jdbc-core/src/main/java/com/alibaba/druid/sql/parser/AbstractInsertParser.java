@@ -15,12 +15,12 @@ import java.util.TreeSet;
  *
  * @author zhangliang
  */
-public class SQLInsertParser extends SQLParser {
+public abstract class AbstractInsertParser extends SQLParser {
     
     @Getter
     private final SQLExprParser exprParser;
     
-    public SQLInsertParser(final SQLExprParser exprParser) {
+    public AbstractInsertParser(final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
         this.exprParser = exprParser;
     }
@@ -49,11 +49,9 @@ public class SQLInsertParser extends SQLParser {
         return result;
     }
     
-    protected SQLInsertStatement createSQLInsertStatement() {
-        return new SQLInsertStatement();
-    }
+    protected abstract SQLInsertStatement createSQLInsertStatement();
     
-    protected final void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
+    private void parseInsertInto(final SQLInsertStatement sqlInsertStatement) {
         while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
             sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
             getLexer().nextToken();
@@ -77,6 +75,10 @@ public class SQLInsertParser extends SQLParser {
                 accept(Token.RIGHT_PAREN);
             }
         }
+        parseAlias(sqlInsertStatement);
+    }
+    
+    private void parseAlias(final SQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
             sqlInsertStatement.setAlias(as());
         }
@@ -86,7 +88,7 @@ public class SQLInsertParser extends SQLParser {
         }
     }
     
-    protected final void parseColumns(final SQLInsertStatement sqlInsertStatement) {
+    private void parseColumns(final SQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
@@ -94,6 +96,7 @@ public class SQLInsertParser extends SQLParser {
         }
     }
     
+    // TODO 提炼MySQL
     protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
         getLexer().nextToken();
         accept(Token.LEFT_PAREN);
@@ -103,7 +106,7 @@ public class SQLInsertParser extends SQLParser {
         accept(Token.RIGHT_PAREN);
     }
     
-    protected final void parseInsertSelect(final SQLInsertStatement sqlInsertStatement) {
+    private void parseInsertSelect(final SQLInsertStatement sqlInsertStatement) {
         SQLSelect select = exprParser.createSelectParser().select();
         select.setParent(sqlInsertStatement);
         sqlInsertStatement.setQuery(select);
@@ -112,7 +115,7 @@ public class SQLInsertParser extends SQLParser {
     protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
     }
     
-    protected final void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
+    private void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             while (!getLexer().equalToken(Token.EOF)) {
                 sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
@@ -146,5 +149,4 @@ public class SQLInsertParser extends SQLParser {
     protected Set<String> getAppendixIdentifiers() {
         return Collections.emptySet();
     }
-    
 }

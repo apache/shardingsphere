@@ -20,7 +20,7 @@ public class SQLInsertParserFactory {
      * @param dbType 数据库类型
      * @return Insert语句解析器
      */
-    public static SQLInsertParser newInstance(final SQLExprParser exprParser, final String dbType) {
+    public static AbstractInsertParser newInstance(final SQLExprParser exprParser, final String dbType) {
         switch (dbType) {
             case JdbcConstants.MYSQL :
             case JdbcConstants.MARIADB :
