@@ -1803,27 +1803,12 @@ public class MySqlStatementParser extends SQLStatementParser {
             getLexer().nextToken();
             stmt.getParameters().addAll(exprParser.exprList(stmt));
         }
-
         return stmt;
     }
     
     @Override
-    protected SQLInsertStatement parseInsert() {
-        getLexer().nextToken();
-        MySqlInsertStatement result = createSQLInsertStatement();
-        parseInsertInto(result);
-        parseColumns(result);
-        if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            parseValues(result);
-        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseInsertSelect(result);
-        } else if (getLexer().equalToken(Token.SET)) {
-            parseInsertSet(result);
-        }
-        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
-            parseAppendices(result);
-        }
-        return result;
+    protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
+        parseInsertSet((MySqlInsertStatement) sqlInsertStatement);
     }
     
     private void parseInsertSet(final MySqlInsertStatement mySqlInsertStatement) {
@@ -1872,6 +1857,13 @@ public class MySqlStatementParser extends SQLStatementParser {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.VALUES.getName());
         result.add("VALUE");
+        return result;
+    }
+    
+    @Override
+    protected Set<String> getCustomizedInsertIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.SET.getName());
         return result;
     }
     

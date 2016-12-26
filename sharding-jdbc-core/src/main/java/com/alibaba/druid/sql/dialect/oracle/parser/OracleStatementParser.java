@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -1153,28 +1152,17 @@ public class OracleStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected OracleStatement parseInsert() {
-        getLexer().nextToken();
-        List<SQLCommentHint> hints = getExprParser().parseHints();
-        if (getLexer().equalToken(Token.ALL) || Token.FIRST.getName().equalsIgnoreCase(getLexer().getLiterals())) {
-            throw new UnsupportedOperationException("Cannot support multi_table_insert for oracle");
-        }
-        OracleInsertStatement result = createSQLInsertStatement();
-        result.getHints().addAll(hints);
-        parseInsertInto(result);
-        parseColumns(result);
-        if (getLexer().equalToken(Token.VALUES)) {
-            parseValues(result);
-        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseInsertSelect(result);
-        }
-        parseAppendices(result);
+    protected OracleInsertStatement createSQLInsertStatement() {
+        OracleInsertStatement result = new OracleInsertStatement();
+        result.getHints().addAll(getExprParser().parseHints());
         return result;
     }
     
-    @Override
-    protected OracleInsertStatement createSQLInsertStatement() {
-        return new OracleInsertStatement();
+    protected Set<String> getUnsupportedIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.ALL.getName());
+        result.add(Token.FIRST.getName());
+        return result;
     }
     
     @Override

@@ -1260,15 +1260,20 @@ public class SQLStatementParser extends SQLParser {
         return stmt;
     }
     
-    protected SQLStatement parseInsert() {
+    protected final SQLStatement parseInsert() {
         getLexer().nextToken();
         SQLInsertStatement result = createSQLInsertStatement();
+        if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
+            throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
+        }
         parseInsertInto(result);
         parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
+        } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
+            parseCustomizedInsert(result);
         }
         parseAppendices(result);
         return result;
@@ -1334,6 +1339,9 @@ public class SQLStatementParser extends SQLParser {
         sqlInsertStatement.setQuery(select);
     }
     
+    protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
+    }
+    
     protected final void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             while (!getLexer().equalToken(Token.EOF)) {
@@ -1341,6 +1349,10 @@ public class SQLStatementParser extends SQLParser {
                 getLexer().nextToken();
             }
         }
+    }
+    
+    protected Set<String> getUnsupportedIdentifiers() {
+        return Collections.emptySet();
     }
     
     protected Set<String> getIdentifiersBetweenIntoAndTable() {
@@ -1355,6 +1367,10 @@ public class SQLStatementParser extends SQLParser {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.VALUES.getName());
         return result;
+    }
+    
+    protected Set<String> getCustomizedInsertIdentifiers() {
+        return Collections.emptySet();
     }
     
     protected Set<String> getAppendixIdentifiers() {
