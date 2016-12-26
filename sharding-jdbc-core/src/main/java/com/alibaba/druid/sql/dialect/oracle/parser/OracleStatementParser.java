@@ -1159,32 +1159,22 @@ public class OracleStatementParser extends SQLStatementParser {
         if (getLexer().equalToken(Token.ALL) || Token.FIRST.getName().equalsIgnoreCase(getLexer().getLiterals())) {
             throw new UnsupportedOperationException("Cannot support multi_table_insert for oracle");
         }
-        accept(Token.INTO);
-        OracleInsertStatement result = new OracleInsertStatement();
+        OracleInsertStatement result = createSQLInsertStatement();
         result.getHints().addAll(hints);
-    
-    
-        result.setTableName(exprParser.name());
-        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            result.setAlias(as());
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER)) {
-            result.setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseColumns(result);
-        }
+        parseInsertInto(result);
+        parseColumns(result);
         if (getLexer().equalToken(Token.VALUES)) {
             parseValues(result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
             parseInsertSelect(result);
         }
-        
-        
-        
         parseAppendices(result);
         return result;
+    }
+    
+    @Override
+    protected OracleInsertStatement createSQLInsertStatement() {
+        return new OracleInsertStatement();
     }
     
     @Override
