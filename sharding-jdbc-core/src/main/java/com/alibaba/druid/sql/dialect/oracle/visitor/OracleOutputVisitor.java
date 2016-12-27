@@ -1500,11 +1500,11 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             decrementIndent();
         }
 
-        if (x.getValues() != null) {
+        if (!x.getValuesList().isEmpty()) {
             println();
             print("VALUES");
             println();
-            x.getValues().accept(this);
+            x.getValuesList().get(0).accept(this);
         } else {
             if (x.getQuery() != null) {
                 println();

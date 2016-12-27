@@ -1,8 +1,8 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.Getter;
@@ -97,14 +97,16 @@ public abstract class AbstractInsertParser extends SQLParser {
         }
     }
     
-    // TODO 提炼MySQL
-    protected void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
-        getLexer().nextToken();
-        accept(Token.LEFT_PAREN);
-        AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
-        values.getValues().addAll(exprParser.exprList(values));
-        sqlInsertStatement.setValues(values);
-        accept(Token.RIGHT_PAREN);
+    private void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
+        do {
+            getLexer().nextToken();
+            accept(Token.LEFT_PAREN);
+            AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
+            values.getValues().addAll(getExprParser().exprList(values));
+            sqlInsertStatement.getValuesList().add(values);
+            accept(Token.RIGHT_PAREN);
+        }
+        while (getLexer().equalToken(Token.COMMA));
     }
     
     private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {

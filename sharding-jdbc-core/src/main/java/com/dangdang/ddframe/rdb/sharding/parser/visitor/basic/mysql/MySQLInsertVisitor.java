@@ -44,12 +44,12 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
     public boolean visit(final MySqlInsertStatement x) {
         final String tableName = SQLUtil.getExactlyValue(x.getTableSource().getExpr().toString());
         getParseContext().setCurrentTable(tableName, Optional.fromNullable(x.getTableSource().getAlias()));
-        if (null == x.getValues()) {
+        if (x.getValuesList().isEmpty()) {
             return super.visit(x);
         }
         Collection<String> autoIncrementColumns = getParseContext().getShardingRule().getAutoIncrementColumns(tableName);
         List<SQLExpr> columns = x.getColumns();
-        List<SQLExpr> values = x.getValues().getValues();
+        List<SQLExpr> values = x.getValuesList().get(0).getValues();
         for (int i = 0; i < x.getColumns().size(); i++) {
             String columnName = SQLUtil.getExactlyValue(columns.get(i).toString());
             getParseContext().addCondition(columnName, tableName, BinaryOperator.EQUAL, values.get(i), getDatabaseType(), getParameters());

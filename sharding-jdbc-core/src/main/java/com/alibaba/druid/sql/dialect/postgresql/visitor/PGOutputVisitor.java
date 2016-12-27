@@ -353,7 +353,7 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             decrementIndent();
         }
 
-        if (x.getValues() != null) {
+        if (!x.getValuesList().isEmpty()) {
             println();
             print("VALUES ");
             printlnAndAccept(x.getValuesList(), ", ");

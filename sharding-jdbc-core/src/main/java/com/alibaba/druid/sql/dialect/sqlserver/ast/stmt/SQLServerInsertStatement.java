@@ -24,26 +24,9 @@ import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 public class SQLServerInsertStatement extends AbstractSQLInsertStatement implements SQLServerObject {
-    
-    private final List<ValuesClause> valuesList = new ArrayList<>();
-    
-    public ValuesClause getValues() {
-        return valuesList.isEmpty() ? null : valuesList.get(0);
-    }
-    
-    public void setValues(final ValuesClause values) {
-        if (valuesList.isEmpty()) {
-            valuesList.add(values);
-        } else {
-            valuesList.set(0, values);
-        }
-    }
     
     @Override
     public String getDbType() {

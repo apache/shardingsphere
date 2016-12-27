@@ -45,7 +45,7 @@ public class OracleInsertStatement extends AbstractSQLInsertStatement implements
         if (visitor.visit(this)) {
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getColumns());
-            acceptChild(visitor, getValues());
+            acceptChild(visitor, getValuesList());
             acceptChild(visitor, getQuery());
         }
         visitor.endVisit(this);

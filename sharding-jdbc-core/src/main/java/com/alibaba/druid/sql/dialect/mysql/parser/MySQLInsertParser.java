@@ -46,20 +46,6 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
-        MySqlInsertStatement mySqlInsertStatement = (MySqlInsertStatement) sqlInsertStatement;
-        do {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-            AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
-            values.getValues().addAll(getExprParser().exprList(values));
-            mySqlInsertStatement.getValuesList().add(values);
-            accept(Token.RIGHT_PAREN);
-        }
-        while (getLexer().equalToken(Token.COMMA));
-    }
-    
-    @Override
     protected Set<String> getIdentifiersBetweenTableAndValues() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.PARTITION.getName());

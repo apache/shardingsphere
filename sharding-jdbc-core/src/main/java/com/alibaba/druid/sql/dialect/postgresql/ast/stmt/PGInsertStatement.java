@@ -23,32 +23,15 @@ import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 public class PGInsertStatement extends AbstractSQLInsertStatement implements PGSQLStatement {
     
     private PGWithClause with;
     
-    private final List<ValuesClause> valuesList = new ArrayList<>();
-    
     @Override
     public String getDbType() {
         return JdbcConstants.POSTGRESQL;
-    }
-    
-    public ValuesClause getValues() {
-        return valuesList.isEmpty() ? null : valuesList.get(0);
-    }
-    
-    public void setValues(final ValuesClause values) {
-        if (valuesList.isEmpty()) {
-            valuesList.add(values);
-        } else {
-            valuesList.set(0, values);
-        }
     }
     
     @Override
@@ -63,7 +46,7 @@ public class PGInsertStatement extends AbstractSQLInsertStatement implements PGS
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getColumns());
             acceptChild(visitor, getQuery());
-            acceptChild(visitor, valuesList);
+            acceptChild(visitor, getValuesList());
         }
         visitor.endVisit(this);
     }

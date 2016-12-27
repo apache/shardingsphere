@@ -35,7 +35,7 @@ public abstract class AbstractSQLInsertStatement extends SQLObjectImpl implement
     
     private final List<SQLExpr> columns = new ArrayList<>();
     
-    private ValuesClause values;
+    private final List<ValuesClause> valuesList = new ArrayList<>();
     
     private SQLSelect query;
     
@@ -57,7 +57,7 @@ public abstract class AbstractSQLInsertStatement extends SQLObjectImpl implement
         if (visitor.visit(this)) {
             acceptChild(visitor, tableSource);
             acceptChild(visitor, columns);
-            acceptChild(visitor, values);
+            acceptChild(visitor, valuesList);
             acceptChild(visitor, query);
         }
         visitor.endVisit(this);

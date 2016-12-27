@@ -23,25 +23,8 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 public class MySqlInsertStatement extends AbstractSQLInsertStatement {
-    
-    private final List<ValuesClause> valuesList = new ArrayList<>();
-    
-    public ValuesClause getValues() {
-        return valuesList.isEmpty() ? null : valuesList.get(0);
-    }
-    
-    public void setValues(final ValuesClause values) {
-        if (valuesList.isEmpty()) {
-            valuesList.add(values);
-        } else {
-            valuesList.set(0, values);
-        }
-    }
     
     @Override
     public String getDbType() {
@@ -50,9 +33,6 @@ public class MySqlInsertStatement extends AbstractSQLInsertStatement {
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (!(visitor instanceof MySqlASTVisitor)) {
-            throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
-        }
         MySqlASTVisitor mySqlASTVisitor = (MySqlASTVisitor) visitor;
         if (mySqlASTVisitor.visit(this)) {
             acceptChild(mySqlASTVisitor, getTableSource());

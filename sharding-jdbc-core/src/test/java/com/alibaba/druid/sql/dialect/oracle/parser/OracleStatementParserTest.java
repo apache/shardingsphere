@@ -39,10 +39,11 @@ public class OracleStatementParserTest {
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("`field1`"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("`field2`"));
-        assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
-        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValues().getValues().get(0)).getNumber().intValue(), is(1));
-        assertThat(sqlInsertStatement.getValues().getValues().get(1).toString(), is("'value_char'"));
-        assertThat(((SQLCharExpr) sqlInsertStatement.getValues().getValues().get(1)).getText(), is("value_char"));
+        assertThat(sqlInsertStatement.getValuesList().size(), is(1));
+        assertThat(sqlInsertStatement.getValuesList().get(0).getValues().size(), is(2));
+        assertThat(((SQLIntegerExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(0)).getNumber().intValue(), is(1));
+        assertThat(sqlInsertStatement.getValuesList().get(0).getValues().get(1).toString(), is("'value_char'"));
+        assertThat(((SQLCharExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(1)).getText(), is("value_char"));
         assertTrue(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().isEmpty());
         assertTrue(sqlInsertStatement.getIdentifiersBetweenTableAndValues().isEmpty());
         assertThat(sqlInsertStatement.getAppendices().size(), is(8));
