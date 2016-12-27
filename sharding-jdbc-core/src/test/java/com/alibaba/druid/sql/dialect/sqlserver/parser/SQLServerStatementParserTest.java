@@ -19,9 +19,8 @@ public class SQLServerStatementParserTest {
         SQLServerStatementParser statementParser = new SQLServerStatementParser("INSERT TOP(10) INTO OUTPUT TABLE_XXX VALUES (1, 'char')");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.SQL_SERVER));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertTrue(sqlInsertStatement.getColumns().isEmpty());
         assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
         assertThat(((SQLIntegerExpr) sqlInsertStatement.getValues().getValues().get(0)).getNumber().intValue(), is(1));
@@ -43,9 +42,8 @@ public class SQLServerStatementParserTest {
         SQLServerStatementParser statementParser = new SQLServerStatementParser("INSERT INTO TABLE_XXX (field1, field2) DEFAULT VALUES");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.SQL_SERVER));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));

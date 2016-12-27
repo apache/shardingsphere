@@ -34,9 +34,8 @@ public class OracleStatementParserTest {
                 "INSERT /*+ index(field1) */ INTO TABLE_XXX XXX (`field1`, `field2`) VALUES (1, 'value_char') RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.ORACLE));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertThat(sqlInsertStatement.getTableSource().getAlias(), is("XXX"));
-        assertThat(sqlInsertStatement.getAlias(), is("XXX"));
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("`field1`"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("`field2`"));
@@ -70,9 +69,8 @@ public class OracleStatementParserTest {
         OracleStatementParser statementParser = new OracleStatementParser(sql);
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.ORACLE));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));

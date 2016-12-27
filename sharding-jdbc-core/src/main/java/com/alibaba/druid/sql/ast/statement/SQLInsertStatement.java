@@ -22,12 +22,22 @@ import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class SQLInsertStatement extends SQLInsertInto implements SQLStatement {
+@Setter
+public abstract class SQLInsertStatement extends SQLObjectImpl implements SQLStatement {
+    
+    private SQLExprTableSource  tableSource;
+    
+    private ValuesClause values;
+    
+    private SQLSelect query;
+    
+    private final List<SQLExpr> columns = new ArrayList<>();
     
     private final List<String> identifiersBetweenInsertAndInto = new ArrayList<>();
     
@@ -36,6 +46,11 @@ public abstract class SQLInsertStatement extends SQLInsertInto implements SQLSta
     private final List<String> identifiersBetweenTableAndValues = new ArrayList<>();
     
     private final List<String> appendices = new ArrayList<>();
+    
+    public void setTableSource(final SQLExprTableSource tableSource) {
+        tableSource.setParent(this);
+        this.tableSource = tableSource;
+    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {

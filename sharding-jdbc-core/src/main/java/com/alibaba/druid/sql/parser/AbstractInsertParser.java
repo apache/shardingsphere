@@ -1,6 +1,7 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.lexer.Token;
@@ -61,7 +62,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             sqlInsertStatement.getIdentifiersBetweenIntoAndTable().add(getLexer().getLiterals());
             getLexer().nextToken();
         }
-        sqlInsertStatement.setTableName(exprParser.name());
+        sqlInsertStatement.setTableSource(new SQLExprTableSource(exprParser.name()));
         while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
             sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
             getLexer().nextToken();
@@ -80,10 +81,10 @@ public abstract class AbstractInsertParser extends SQLParser {
     
     private void parseAlias(final SQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            sqlInsertStatement.setAlias(as());
+            sqlInsertStatement.getTableSource().setAlias(as());
         }
         if (getLexer().equalToken(Token.IDENTIFIER) && !getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.setAlias(getLexer().getLiterals());
+            sqlInsertStatement.getTableSource().setAlias(getLexer().getLiterals());
             getLexer().nextToken();
         }
     }

@@ -19,9 +19,8 @@ public class PGSQLStatementParserTest {
         PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX (field1, field2) VALUES (1, 'char') RETURNING id");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));
@@ -42,9 +41,8 @@ public class PGSQLStatementParserTest {
         PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX DEFAULT VALUES RETURNING *");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertTrue(sqlInsertStatement.getColumns().isEmpty());
         assertNull(sqlInsertStatement.getValues());
         assertTrue(sqlInsertStatement.getIdentifiersBetweenInsertAndInto().isEmpty());

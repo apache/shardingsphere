@@ -22,9 +22,8 @@ public final class MySqlStatementParserTest {
         MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'value_char') ");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertTrue(sqlInsertStatement.getColumns().isEmpty());
         assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
         assertThat(((SQLIntegerExpr) sqlInsertStatement.getValues().getValues().get(0)).getNumber().intValue(), is(1));
@@ -40,9 +39,8 @@ public final class MySqlStatementParserTest {
         MySqlStatementParser statementParser = new MySqlStatementParser("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION (partition1,partition2) (`field1`, `field2`) VALUES (1, 'value_char')");
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("`field1`"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("`field2`"));
@@ -68,9 +66,8 @@ public final class MySqlStatementParserTest {
         MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'char1'), (2, 'char2')");
         MySqlInsertStatement sqlInsertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertTrue(sqlInsertStatement.getColumns().isEmpty());
         assertThat(sqlInsertStatement.getValues().getValues().size(), is(2));
         assertThat(((SQLIntegerExpr) sqlInsertStatement.getValuesList().get(0).getValues().get(0)).getNumber().intValue(), is(1));
@@ -93,9 +90,8 @@ public final class MySqlStatementParserTest {
         MySqlStatementParser statementParser = new MySqlStatementParser(sql);
         SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));
@@ -122,9 +118,8 @@ public final class MySqlStatementParserTest {
         MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX SET field1=1, field2='char'");
         MySqlInsertStatement sqlInsertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
-        assertThat(sqlInsertStatement.getTableName().getSimpleName(), is("TABLE_XXX"));
+        assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
-        assertNull(sqlInsertStatement.getAlias());
         assertThat(sqlInsertStatement.getColumns().size(), is(2));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(0)).getSimpleName(), is("field1"));
         assertThat(((SQLIdentifierExpr) sqlInsertStatement.getColumns().get(1)).getSimpleName(), is("field2"));
