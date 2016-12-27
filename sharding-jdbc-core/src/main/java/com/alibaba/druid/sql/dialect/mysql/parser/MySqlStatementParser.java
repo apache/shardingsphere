@@ -46,8 +46,8 @@ import com.alibaba.druid.sql.ast.statement.SQLAlterTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLCreateDatabaseStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement.ValuesClause;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
@@ -1550,7 +1550,7 @@ public class MySqlStatementParser extends SQLStatementParser {
         } else if (getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
 
-            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+            AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
             stmt.getValuesList().add(values);
             while (true) {
                 stmt.getColumns().add(this.exprParser.name());
@@ -1853,10 +1853,10 @@ public class MySqlStatementParser extends SQLStatementParser {
                     }
                 }
 
-                SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause(valueExprList);
+                AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause(valueExprList);
                 valueClauseList.add(values);
             } else {
-                SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause(new ArrayList<SQLExpr>(0));
+                AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause(new ArrayList<SQLExpr>(0));
                 valueClauseList.add(values);
             }
 

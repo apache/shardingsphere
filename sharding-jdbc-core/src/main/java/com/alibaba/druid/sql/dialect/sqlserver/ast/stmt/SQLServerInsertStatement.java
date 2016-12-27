@@ -16,7 +16,7 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObject;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SQLServerInsertStatement extends SQLInsertStatement implements SQLServerObject {
+public class SQLServerInsertStatement extends AbstractSQLInsertStatement implements SQLServerObject {
     
     private final List<ValuesClause> valuesList = new ArrayList<>();
     

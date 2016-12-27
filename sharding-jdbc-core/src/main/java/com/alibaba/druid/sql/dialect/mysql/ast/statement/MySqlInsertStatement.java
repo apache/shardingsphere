@@ -16,7 +16,7 @@
 
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class MySqlInsertStatement extends SQLInsertStatement {
+public class MySqlInsertStatement extends AbstractSQLInsertStatement {
     
     private final List<ValuesClause> valuesList = new ArrayList<>();
     

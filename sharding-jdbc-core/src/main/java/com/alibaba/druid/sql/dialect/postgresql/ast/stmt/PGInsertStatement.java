@@ -15,7 +15,7 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -28,7 +28,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PGInsertStatement extends SQLInsertStatement implements PGSQLStatement {
+public class PGInsertStatement extends AbstractSQLInsertStatement implements PGSQLStatement {
     
     private PGWithClause with;
     

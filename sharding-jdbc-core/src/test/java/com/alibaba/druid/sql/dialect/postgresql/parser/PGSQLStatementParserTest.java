@@ -3,7 +3,7 @@ package com.alibaba.druid.sql.dialect.postgresql.parser;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class PGSQLStatementParserTest {
     @Test
     public void parseStatementWithInsert() {
         PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX (field1, field2) VALUES (1, 'char') RETURNING id");
-        SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
+        AbstractSQLInsertStatement sqlInsertStatement = (AbstractSQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
         assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());
@@ -39,7 +39,7 @@ public class PGSQLStatementParserTest {
     @Test
     public void parseStatementWithInsertDefaultValue() {
         PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX DEFAULT VALUES RETURNING *");
-        SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
+        AbstractSQLInsertStatement sqlInsertStatement = (AbstractSQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
         assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());

@@ -2,7 +2,7 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public abstract class AbstractInsertParser extends SQLParser {
      */
     public final SQLStatement parse() {
         getLexer().nextToken();
-        SQLInsertStatement result = createSQLInsertStatement();
+        AbstractSQLInsertStatement result = createSQLInsertStatement();
         if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
             throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
         }
@@ -50,9 +50,9 @@ public abstract class AbstractInsertParser extends SQLParser {
         return result;
     }
     
-    protected abstract SQLInsertStatement createSQLInsertStatement();
+    protected abstract AbstractSQLInsertStatement createSQLInsertStatement();
     
-    private void parseInto(final SQLInsertStatement sqlInsertStatement) {
+    private void parseInto(final AbstractSQLInsertStatement sqlInsertStatement) {
         while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
             sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
             getLexer().nextToken();
@@ -79,7 +79,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         parseAlias(sqlInsertStatement);
     }
     
-    private void parseAlias(final SQLInsertStatement sqlInsertStatement) {
+    private void parseAlias(final AbstractSQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
             sqlInsertStatement.getTableSource().setAlias(as());
         }
@@ -89,7 +89,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         }
     }
     
-    private void parseColumns(final SQLInsertStatement sqlInsertStatement) {
+    private void parseColumns(final AbstractSQLInsertStatement sqlInsertStatement) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
@@ -98,25 +98,25 @@ public abstract class AbstractInsertParser extends SQLParser {
     }
     
     // TODO 提炼MySQL
-    protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
+    protected void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
         getLexer().nextToken();
         accept(Token.LEFT_PAREN);
-        SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+        AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
         values.getValues().addAll(exprParser.exprList(values));
         sqlInsertStatement.setValues(values);
         accept(Token.RIGHT_PAREN);
     }
     
-    private void parseSelect(final SQLInsertStatement sqlInsertStatement) {
+    private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {
         SQLSelect select = exprParser.createSelectParser().select();
         select.setParent(sqlInsertStatement);
         sqlInsertStatement.setQuery(select);
     }
     
-    protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
+    protected void parseCustomizedInsert(final AbstractSQLInsertStatement sqlInsertStatement) {
     }
     
-    private void parseAppendices(final SQLInsertStatement sqlInsertStatement) {
+    private void parseAppendices(final AbstractSQLInsertStatement sqlInsertStatement) {
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             while (!getLexer().equalToken(Token.EOF)) {
                 sqlInsertStatement.getAppendices().add(getLexer().getLiterals());

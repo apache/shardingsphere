@@ -4,7 +4,7 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class OracleStatementParserTest {
     public void parseStatementWithInsertValues() {
         OracleStatementParser statementParser = new OracleStatementParser(
                 "INSERT /*+ index(field1) */ INTO TABLE_XXX XXX (`field1`, `field2`) VALUES (1, 'value_char') RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
-        SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
+        AbstractSQLInsertStatement sqlInsertStatement = (AbstractSQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.ORACLE));
         assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertThat(sqlInsertStatement.getTableSource().getAlias(), is("XXX"));
@@ -67,7 +67,7 @@ public class OracleStatementParserTest {
     
     public void parseStatementWithInsertSelect(final String sql) {
         OracleStatementParser statementParser = new OracleStatementParser(sql);
-        SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) statementParser.parseStatement();
+        AbstractSQLInsertStatement sqlInsertStatement = (AbstractSQLInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.ORACLE));
         assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertNull(sqlInsertStatement.getTableSource().getAlias());

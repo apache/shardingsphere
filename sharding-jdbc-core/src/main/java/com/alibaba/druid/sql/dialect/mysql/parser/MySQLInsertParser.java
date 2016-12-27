@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -21,12 +21,12 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected void parseCustomizedInsert(final SQLInsertStatement sqlInsertStatement) {
+    protected void parseCustomizedInsert(final AbstractSQLInsertStatement sqlInsertStatement) {
         parseInsertSet((MySqlInsertStatement) sqlInsertStatement);
     }
     
     private void parseInsertSet(final MySqlInsertStatement mySqlInsertStatement) {
-        SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+        AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
         mySqlInsertStatement.getValuesList().add(values);
         do {
             getLexer().nextToken();
@@ -46,12 +46,12 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected void parseValues(final SQLInsertStatement sqlInsertStatement) {
+    protected void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
         MySqlInsertStatement mySqlInsertStatement = (MySqlInsertStatement) sqlInsertStatement;
         do {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
-            SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
+            AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
             values.getValues().addAll(getExprParser().exprList(values));
             mySqlInsertStatement.getValuesList().add(values);
             accept(Token.RIGHT_PAREN);

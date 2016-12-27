@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.db2.parser.DB2StatementParser;
@@ -85,7 +85,7 @@ public final class SQLParserFactory {
         if (sqlStatement instanceof SQLSelectStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getSelectVistor(databaseType));
         }
-        if (sqlStatement instanceof SQLInsertStatement) {
+        if (sqlStatement instanceof AbstractSQLInsertStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getInsertVistor(databaseType));
         }
         if (sqlStatement instanceof SQLUpdateStatement) {
