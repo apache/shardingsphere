@@ -21,11 +21,7 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObject;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class SQLServerInsertStatement extends AbstractSQLInsertStatement implements SQLServerObject {
     
     @Override
