@@ -17,24 +17,16 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 public class OracleInsertStatement extends SQLInsertStatement implements OracleStatement {
-    
-    private OracleReturningClause returning;
-    
-    private OracleErrorLoggingClause errorLogging;
     
     private final List<SQLHint> hints = new ArrayList<>();
     
@@ -55,8 +47,6 @@ public class OracleInsertStatement extends SQLInsertStatement implements OracleS
             acceptChild(visitor, getColumns());
             acceptChild(visitor, getValues());
             acceptChild(visitor, getQuery());
-            acceptChild(visitor, returning);
-            acceptChild(visitor, errorLogging);
         }
         visitor.endVisit(this);
     }
