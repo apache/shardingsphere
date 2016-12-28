@@ -35,8 +35,10 @@ public class SQLUpdateStatement extends SQLStatementImpl {
     
     private final List<SQLUpdateSetItem> items = new ArrayList<>();
     
-    public SQLUpdateStatement(final String dbType){
-        super (dbType);
+    private final List<String> identifiersBetweenUpdateAndTable = new ArrayList<>();
+    
+    public SQLUpdateStatement(final String dbType) {
+        super(dbType);
     }
     
     public SQLName getTableName() {

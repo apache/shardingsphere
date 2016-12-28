@@ -81,9 +81,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSavePointStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUseStatement;
 import com.alibaba.druid.sql.lexer.Token;
@@ -91,7 +89,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * SQL解析器.
@@ -138,16 +138,16 @@ public class SQLStatementParser extends SQLParser {
                 result.add(parseSelect());
                 continue;
             }
+            if (getLexer().equalToken(Token.INSERT)) {
+                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse());
+                continue;
+            }
             if (getLexer().equalToken(Token.UPDATE)) {
                 result.add(parseUpdateStatement());
                 continue;
             }
             if (getLexer().equalToken(Token.CREATE)) {
                 result.add(parseCreate());
-                continue;
-            }
-            if (getLexer().equalToken(Token.INSERT)) {
-                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse());
                 continue;
             }
             if (getLexer().equalToken(Token.DELETE)) {
@@ -263,6 +263,50 @@ public class SQLStatementParser extends SQLParser {
             throw new ParserException(getLexer());
         }
     }
+    
+    
+    
+    protected SQLUpdateStatement parseUpdateStatement() {
+        getLexer().nextToken();
+        SQLUpdateStatement updateStatement = createUpdateStatement();
+        while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
+            updateStatement.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
+        updateStatement.setTableSource(exprParser.createSelectParser().parseTableSource());
+        parseUpdateSet(updateStatement);
+        if (getLexer().equalToken(Token.WHERE)) {
+            getLexer().nextToken();
+            updateStatement.setWhere(exprParser.expr());
+        }
+        parseCustomizedParser(updateStatement);
+        return updateStatement;
+    }
+    
+    protected SQLUpdateStatement createUpdateStatement() {
+        return new SQLUpdateStatement(getDbType());
+    }
+    
+    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
+        return Collections.emptySet();
+    }
+    
+    protected final void parseUpdateSet(final SQLUpdateStatement updateStatement) {
+        accept(Token.SET);
+        while (true) {
+            updateStatement.addItem(exprParser.parseUpdateSetItem());
+            if (!getLexer().equalToken(Token.COMMA)) {
+                break;
+            }
+            getLexer().nextToken();
+        }
+    }
+    
+    protected void parseCustomizedParser(final SQLUpdateStatement updateStatement) {
+    }
+    
+    
+    
     
     protected SQLSelectStatement parseSelect() {
         return new SQLSelectStatement(createSQLSelectParser().select());
@@ -1524,45 +1568,6 @@ public class SQLStatementParser extends SQLParser {
     
     public SQLCreateTableParser getSQLCreateTableParser() {
         return new SQLCreateTableParser(this.exprParser);
-    }
-
-    public SQLUpdateStatement parseUpdateStatement() {
-        SQLUpdateStatement udpateStatement = createUpdateStatement();
-
-        if (getLexer().equalToken(Token.UPDATE)) {
-            getLexer().nextToken();
-
-            SQLTableSource tableSource = this.exprParser.createSelectParser().parseTableSource();
-            udpateStatement.setTableSource(tableSource);
-        }
-
-        parseUpdateSet(udpateStatement);
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            udpateStatement.setWhere(this.exprParser.expr());
-        }
-
-        return udpateStatement;
-    }
-
-    protected void parseUpdateSet(SQLUpdateStatement update) {
-        accept(Token.SET);
-
-        while (true) {
-            SQLUpdateSetItem item = this.exprParser.parseUpdateSetItem();
-            update.addItem(item);
-
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            }
-
-            getLexer().nextToken();
-        }
-    }
-
-    protected SQLUpdateStatement createUpdateStatement() {
-        return new SQLUpdateStatement(getDbType());
     }
 
     public SQLDeleteStatement parseDeleteStatement() {

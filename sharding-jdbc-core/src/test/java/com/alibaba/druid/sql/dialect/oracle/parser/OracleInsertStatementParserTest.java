@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class OracleStatementParserTest {
+public class OracleInsertStatementParserTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithInsertAllValue() {

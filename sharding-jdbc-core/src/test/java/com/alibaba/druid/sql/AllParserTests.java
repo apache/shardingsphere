@@ -17,11 +17,12 @@
 
 package com.alibaba.druid.sql;
 
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlInsertStatementParserTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParserTest;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParserTest;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLStatementParserTest;
-import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParserTest;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlUpdateStatementParserTest;
+import com.alibaba.druid.sql.dialect.oracle.parser.OracleInsertStatementParserTest;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLInsertStatementParserTest;
+import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerInsertStatementParserTest;
 import com.alibaba.druid.sql.parser.LexerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -29,12 +30,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        LexerTest.class,
-        MySqlLexerTest.class,
-        MySqlStatementParserTest.class,
-        PGSQLStatementParserTest.class,
-        OracleStatementParserTest.class, 
-        SQLServerStatementParserTest.class
+        LexerTest.class, 
+        MySqlLexerTest.class, 
+        MySqlInsertStatementParserTest.class, 
+        MySqlUpdateStatementParserTest.class, 
+        PGSQLInsertStatementParserTest.class, 
+        OracleInsertStatementParserTest.class, 
+        SQLServerInsertStatementParserTest.class
     })
 public class AllParserTests {
 }

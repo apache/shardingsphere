@@ -1694,19 +1694,13 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(MySqlUpdateStatement x) {
+    public boolean visit(final MySqlUpdateStatement x) {
         print("UPDATE ");
-
-        if (x.isLowPriority()) {
-            print("LOW_PRIORITY ");
+        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
+            print(each);
+            print(" ");
         }
-
-        if (x.isIgnore()) {
-            print("IGNORE ");
-        }
-
         x.getTableSource().accept(this);
-
         println();
         print("SET ");
         for (int i = 0, size = x.getItems().size(); i < size; ++i) {
