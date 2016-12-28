@@ -22,24 +22,22 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.L
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlStatement {
-
-    private SQLOrderBy orderBy;
-    private Limit      limit;
-
-    private boolean    lowPriority = false;
-    private boolean    ignore      = false;
     
+    private Limit limit;
+    
+    private SQLOrderBy orderBy;
+
     public MySqlUpdateStatement() {
-        super (JdbcConstants.MYSQL);
+        super(JdbcConstants.MYSQL);
     }
-
-    public Limit getLimit() {
-        return limit;
-    }
-
-    public void setLimit(Limit limit) {
+    
+    public void setLimit(final Limit limit) {
         if (limit != null) {
             limit.setParent(this);
         }
@@ -47,15 +45,16 @@ public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlSta
     }
 
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {
             throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
         }
     }
-
-    public void accept0(MySqlASTVisitor visitor) {
+    
+    @Override
+    public void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getItems());
@@ -65,29 +64,4 @@ public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlSta
         }
         visitor.endVisit(this);
     }
-
-    public boolean isLowPriority() {
-        return lowPriority;
-    }
-
-    public void setLowPriority(boolean lowPriority) {
-        this.lowPriority = lowPriority;
-    }
-
-    public boolean isIgnore() {
-        return ignore;
-    }
-
-    public void setIgnore(boolean ignore) {
-        this.ignore = ignore;
-    }
-
-    public SQLOrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(SQLOrderBy orderBy) {
-        this.orderBy = orderBy;
-    }
-
 }

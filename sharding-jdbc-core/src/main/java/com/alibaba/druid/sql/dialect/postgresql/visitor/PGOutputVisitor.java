@@ -398,11 +398,10 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         }
 
         print("UPDATE ");
-
-        if (x.isOnly()) {
-            print("ONLY ");
+        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
+            print(each);
+            print(" ");
         }
-
         x.getTableSource().accept(this);
 
         println();
@@ -413,13 +412,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             }
             x.getItems().get(i).accept(this);
         }
-
-        if (x.getFrom() != null) {
-            println();
-            print("FROM ");
-            x.getFrom().accept(this);
-        }
-
         if (x.getWhere() != null) {
             println();
             print("WHERE ");
@@ -428,13 +420,10 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             x.getWhere().accept(this);
             decrementIndent();
         }
-
-        if (x.getReturning().size() > 0) {
-            println();
-            print("RETURNING ");
-            printAndAccept(x.getReturning(), ", ");
+        for (String each : x.getAppendices()) {
+            print(" ");
+            print(each);
         }
-
         return false;
     }
 

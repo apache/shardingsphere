@@ -22,8 +22,6 @@ import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
@@ -36,10 +34,12 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PGSQLStatementParser extends SQLStatementParser {
     
-    public PGSQLStatementParser(String sql) {
+    public PGSQLStatementParser(final String sql) {
         super(new PGExprParser(sql));
     }
     
@@ -48,35 +48,30 @@ public class PGSQLStatementParser extends SQLStatementParser {
         return new PGSelectParser(exprParser);
     }
     
-    public SQLUpdateStatement parseUpdateStatement() {
-        accept(Token.UPDATE);
-
-        PGUpdateStatement udpateStatement = new PGUpdateStatement();
-
-        SQLTableSource tableSource = this.exprParser.createSelectParser().parseTableSource();
-        udpateStatement.setTableSource(tableSource);
-
-        parseUpdateSet(udpateStatement);
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            udpateStatement.setWhere(this.exprParser.expr());
-        }
-
-        if (getLexer().equalToken(Token.RETURNING)) {
-            getLexer().nextToken();
     
-            while (true) {
-                udpateStatement.getReturning().add(this.exprParser.expr());
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-        }
-        return udpateStatement;
+    
+    
+    @Override
+    protected PGUpdateStatement createUpdateStatement() {
+        return new PGUpdateStatement();
     }
+    
+    @Override
+    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.ONLY.getName());
+        return result;
+    }
+    
+    @Override
+    protected Set<String> getAppendixIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.RETURNING.getName());
+        return result;
+    }
+    
+    
+    
     
     public PGDeleteStatement parseDeleteStatement() {
         getLexer().nextToken();

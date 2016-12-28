@@ -213,17 +213,14 @@ public class MySqlSelectParser extends SQLSelectParser {
         MySqlUpdateStatement update = new MySqlUpdateStatement();
 
         getLexer().nextToken();
-
         if (getLexer().identifierEquals("LOW_PRIORITY")) {
             getLexer().nextToken();
-            update.setLowPriority(true);
+            update.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
         }
-
         if (getLexer().identifierEquals("IGNORE")) {
             getLexer().nextToken();
-            update.setIgnore(true);
+            update.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
         }
-
         SQLTableSource updateTableSource = this.exprParser.createSelectParser().parseTableSource();
         update.setTableSource(updateTableSource);
 

@@ -268,19 +268,24 @@ public class SQLStatementParser extends SQLParser {
     
     protected SQLUpdateStatement parseUpdateStatement() {
         getLexer().nextToken();
-        SQLUpdateStatement updateStatement = createUpdateStatement();
+        SQLUpdateStatement result = createUpdateStatement();
         while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
-            updateStatement.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
+            result.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
             getLexer().nextToken();
         }
-        updateStatement.setTableSource(exprParser.createSelectParser().parseTableSource());
-        parseUpdateSet(updateStatement);
+        result.setTableSource(exprParser.createSelectParser().parseTableSource());
+        parseUpdateSet(result);
+        if (getLexer().equalToken(Token.FROM)) {
+            // TODO PG
+            throw new UnsupportedOperationException("Cannot support FROM for update");
+        }
         if (getLexer().equalToken(Token.WHERE)) {
             getLexer().nextToken();
-            updateStatement.setWhere(exprParser.expr());
+            result.setWhere(exprParser.expr());
         }
-        parseCustomizedParser(updateStatement);
-        return updateStatement;
+        parseCustomizedParser(result);
+        parseAppendices(result);
+        return result;
     }
     
     protected SQLUpdateStatement createUpdateStatement() {
@@ -305,6 +310,18 @@ public class SQLStatementParser extends SQLParser {
     protected void parseCustomizedParser(final SQLUpdateStatement updateStatement) {
     }
     
+    private void parseAppendices(final SQLUpdateStatement sqlInsertStatement) {
+        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
+            while (!getLexer().equalToken(Token.EOF)) {
+                sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
+                getLexer().nextToken();
+            }
+        }
+    }
+    
+    protected Set<String> getAppendixIdentifiers() {
+        return Collections.emptySet();
+    }
     
     
     

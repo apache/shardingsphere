@@ -20,13 +20,11 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 public class SQLUpdateStatement extends SQLStatementImpl {
     
     private SQLExpr where;
@@ -37,16 +35,14 @@ public class SQLUpdateStatement extends SQLStatementImpl {
     
     private final List<String> identifiersBetweenUpdateAndTable = new ArrayList<>();
     
+    private final List<String> appendices = new ArrayList<>();
+    
     public SQLUpdateStatement(final String dbType) {
         super(dbType);
     }
     
     public SQLName getTableName() {
         return tableSource instanceof SQLExprTableSource ? (SQLName) ((SQLExprTableSource) tableSource).getExpr() : null;
-    }
-    
-    public void setTableSource(final SQLExpr expr) {
-        setTableSource(new SQLExprTableSource(expr));
     }
     
     public void setTableSource(final SQLTableSource tableSource) {
@@ -83,7 +79,7 @@ public class SQLUpdateStatement extends SQLStatementImpl {
         buffer.append("UPDATE ");
         tableSource.output(buffer);
         buffer.append(" SET ");
-        for (int i = 0, size = items.size(); i < size; ++i) {
+        for (int i = 0; i < items.size(); i++) {
             if (i != 0) {
                 buffer.append(", ");
             }

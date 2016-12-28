@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlUpdateStatementParserTest;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleInsertStatementParserTest;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLInsertStatementParserTest;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLUpdateStatementParserTest;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerInsertStatementParserTest;
 import com.alibaba.druid.sql.parser.LexerTest;
 import org.junit.runner.RunWith;
@@ -34,7 +35,8 @@ import org.junit.runners.Suite.SuiteClasses;
         MySqlLexerTest.class, 
         MySqlInsertStatementParserTest.class, 
         MySqlUpdateStatementParserTest.class, 
-        PGSQLInsertStatementParserTest.class, 
+        PGSQLInsertStatementParserTest.class,
+        PGSQLUpdateStatementParserTest.class, 
         OracleInsertStatementParserTest.class, 
         SQLServerInsertStatementParserTest.class
     })
