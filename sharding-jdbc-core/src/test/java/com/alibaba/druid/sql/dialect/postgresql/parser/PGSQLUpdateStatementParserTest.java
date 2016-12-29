@@ -18,35 +18,35 @@ public final class PGSQLUpdateStatementParserTest {
     
     private void parseStatementWithUpdate(final String sql) {
         PGSQLStatementParser statementParser = new PGSQLStatementParser(sql);
-        PGUpdateStatement sqlInsertStatement = (PGUpdateStatement) statementParser.parseStatement();
-        assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
-        assertThat(sqlInsertStatement.getTableSource().toString(), is("TABLE_XXX"));
-        assertThat(sqlInsertStatement.getTableSource().getAlias(), is("xxx"));
-        assertThat(sqlInsertStatement.getItems().size(), is(1));
-        assertThat(sqlInsertStatement.getItems().get(0).getColumn().toString(), is("field1"));
-        assertThat(sqlInsertStatement.getItems().get(0).getValue().toString(), is("1"));
-        assertThat(((SQLBinaryOpExpr) sqlInsertStatement.getWhere()).getLeft().toString(), is("field1"));
-        assertThat(((SQLBinaryOpExpr) sqlInsertStatement.getWhere()).getRight().toString(), is("1"));
-        assertThat(((SQLBinaryOpExpr) sqlInsertStatement.getWhere()).getOperator().getName(), is("<"));
-        assertThat(sqlInsertStatement.getIdentifiersBetweenUpdateAndTable().size(), is(1));
-        assertThat(sqlInsertStatement.getIdentifiersBetweenUpdateAndTable().get(0), is("ONLY"));
-        assertThat(sqlInsertStatement.getAppendices().size(), is(2));
-        assertThat(sqlInsertStatement.getAppendices().get(0), is("RETURNING"));
-        assertThat(sqlInsertStatement.getAppendices().get(1), is("*"));
-        assertThat(sqlInsertStatement.toString(), is("UPDATE ONLY TABLE_XXX xxx\nSET field1 = 1\nWHERE field1 < 1 RETURNING *"));
+        PGUpdateStatement updateStatement = (PGUpdateStatement) statementParser.parseStatement();
+        assertThat(updateStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
+        assertThat(updateStatement.getTableSource().toString(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTableSource().getAlias(), is("xxx"));
+        assertThat(updateStatement.getItems().size(), is(1));
+        assertThat(updateStatement.getItems().get(0).getColumn().toString(), is("field1"));
+        assertThat(updateStatement.getItems().get(0).getValue().toString(), is("1"));
+        assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getLeft().toString(), is("field1"));
+        assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getRight().toString(), is("1"));
+        assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getOperator().getName(), is("<"));
+        assertThat(updateStatement.getIdentifiersBetweenUpdateAndTable().size(), is(1));
+        assertThat(updateStatement.getIdentifiersBetweenUpdateAndTable().get(0), is("ONLY"));
+        assertThat(updateStatement.getAppendices().size(), is(2));
+        assertThat(updateStatement.getAppendices().get(0), is("RETURNING"));
+        assertThat(updateStatement.getAppendices().get(1), is("*"));
+        assertThat(updateStatement.toString(), is("UPDATE ONLY TABLE_XXX xxx\nSET field1 = 1\nWHERE field1 < 1 RETURNING *"));
     }
     
     @Test
     public void parseStatementWithUpdateFrom() {
         PGSQLStatementParser statementParser = new PGSQLStatementParser("UPDATE ONLY TABLE_XXX xxx SET field1=1 FROM TABLE_XXX");
-        PGUpdateStatement sqlInsertStatement = (PGUpdateStatement) statementParser.parseStatement();
-        assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
-        assertThat(sqlInsertStatement.getTableSource().toString(), is("TABLE_XXX"));
-        assertThat(sqlInsertStatement.getTableSource().getAlias(), is("xxx"));
-        assertThat(sqlInsertStatement.getItems().size(), is(1));
-        assertThat(sqlInsertStatement.getItems().get(0).getColumn().toString(), is("field1"));
-        assertThat(sqlInsertStatement.getItems().get(0).getValue().toString(), is("1"));
-        assertThat((sqlInsertStatement.getFrom()).toString(), is("TABLE_XXX"));
-        assertThat(sqlInsertStatement.toString(), is("UPDATE ONLY TABLE_XXX xxx\nSET field1 = 1\nFROM TABLE_XXX"));
+        PGUpdateStatement updateStatement = (PGUpdateStatement) statementParser.parseStatement();
+        assertThat(updateStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
+        assertThat(updateStatement.getTableSource().toString(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTableSource().getAlias(), is("xxx"));
+        assertThat(updateStatement.getItems().size(), is(1));
+        assertThat(updateStatement.getItems().get(0).getColumn().toString(), is("field1"));
+        assertThat(updateStatement.getItems().get(0).getValue().toString(), is("1"));
+        assertThat((updateStatement.getFrom()).toString(), is("TABLE_XXX"));
+        assertThat(updateStatement.toString(), is("UPDATE ONLY TABLE_XXX xxx\nSET field1 = 1\nFROM TABLE_XXX"));
     }
 }
