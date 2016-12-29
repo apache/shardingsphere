@@ -1,7 +1,7 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public final class MySqlUpdateStatementParserTest {
     @Test
     public void parseStatementWithUpdateSingleTable() {
         MySqlStatementParser statementParser = new MySqlStatementParser("UPDATE LOW_PRIORITY IGNORE TABLE_XXX xxx SET field1=1 WHERE field1<1 ORDER BY field1 LIMIT 10");
-        SQLUpdateStatement sqlInsertStatement = (SQLUpdateStatement) statementParser.parseStatement();
+        AbstractSQLUpdateStatement sqlInsertStatement = (AbstractSQLUpdateStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(sqlInsertStatement.getTableSource().toString(), is("TABLE_XXX"));
         assertThat(sqlInsertStatement.getTableSource().getAlias(), is("xxx"));

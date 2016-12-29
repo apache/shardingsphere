@@ -135,7 +135,7 @@ import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnique;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUseStatement;
 import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 
@@ -392,11 +392,11 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     public void endVisit(final SQLUpdateSetItem x) {
     }
 
-    public boolean visit(final SQLUpdateStatement x) {
+    public boolean visit(final AbstractSQLUpdateStatement x) {
         return true;
     }
 
-    public void endVisit(final SQLUpdateStatement x) {
+    public void endVisit(final AbstractSQLUpdateStatement x) {
     }
 
     public boolean visit(final SQLCreateViewStatement x) {

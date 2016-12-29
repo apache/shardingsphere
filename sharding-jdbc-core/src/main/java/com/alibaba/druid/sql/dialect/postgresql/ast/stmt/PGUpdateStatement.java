@@ -16,7 +16,7 @@
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -26,15 +26,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatement {
+public class PGUpdateStatement extends AbstractSQLUpdateStatement implements PGSQLStatement {
     
     private PGWithClause with;
     
     private SQLTableSource from;
-    
-    public PGUpdateStatement() {
-        super(JdbcConstants.POSTGRESQL);
-    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
@@ -50,5 +46,10 @@ public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatem
             acceptChild(visitor, getWhere());
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.POSTGRESQL;
     }
 }

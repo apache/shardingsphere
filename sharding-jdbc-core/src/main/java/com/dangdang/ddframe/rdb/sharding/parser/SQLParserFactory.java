@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.db2.parser.DB2StatementParser;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
@@ -88,7 +88,7 @@ public final class SQLParserFactory {
         if (sqlStatement instanceof AbstractSQLInsertStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getInsertVistor(databaseType));
         }
-        if (sqlStatement instanceof SQLUpdateStatement) {
+        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getUpdateVistor(databaseType));
         }
         if (sqlStatement instanceof SQLDeleteStatement) {

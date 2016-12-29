@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.Getter;
 
@@ -27,9 +27,9 @@ public abstract class AbstractUpdateParser extends SQLParser {
      *
      * @return 解析结果
      */
-    public SQLUpdateStatement parse() {
+    public AbstractSQLUpdateStatement parse() {
         getLexer().nextToken();
-        SQLUpdateStatement result = createUpdateStatement();
+        AbstractSQLUpdateStatement result = createUpdateStatement();
         parseCustomizedParserBetweenUpdateAndTable(result);
         parseIdentifiersBetweenUpdateAndTable(result);
         result.setTableSource(exprParser.createSelectParser().parseTableSource());
@@ -42,36 +42,36 @@ public abstract class AbstractUpdateParser extends SQLParser {
         return result;
     }
     
-    protected abstract SQLUpdateStatement createUpdateStatement();
+    protected abstract AbstractSQLUpdateStatement createUpdateStatement();
     
-    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserBetweenUpdateAndTable(final AbstractSQLUpdateStatement updateStatement) {
     }
     
-    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserBetweenSetAndWhere(final AbstractSQLUpdateStatement updateStatement) {
     }
     
     protected Set<String> getIdentifiersBetweenUpdateAndTable() {
         return Collections.emptySet();
     }
     
-    protected void parseAlias(final SQLUpdateStatement updateStatement) {
+    protected void parseAlias(final AbstractSQLUpdateStatement updateStatement) {
     }
     
-    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserAfterWhere(final AbstractSQLUpdateStatement updateStatement) {
     }
     
     protected Set<String> getAppendixIdentifiers() {
         return Collections.emptySet();
     }
     
-    private void parseIdentifiersBetweenUpdateAndTable(final SQLUpdateStatement sqlUpdateStatement) {
+    private void parseIdentifiersBetweenUpdateAndTable(final AbstractSQLUpdateStatement sqlUpdateStatement) {
         while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
             sqlUpdateStatement.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
             getLexer().nextToken();
         }
     }
     
-    private void parseUpdateSet(final SQLUpdateStatement updateStatement) {
+    private void parseUpdateSet(final AbstractSQLUpdateStatement updateStatement) {
         accept(Token.SET);
         while (true) {
             updateStatement.addItem(exprParser.parseUpdateSetItem());
@@ -82,14 +82,14 @@ public abstract class AbstractUpdateParser extends SQLParser {
         }
     }
     
-    private void parseWhere(final SQLUpdateStatement sqlUpdateStatement) {
+    private void parseWhere(final AbstractSQLUpdateStatement sqlUpdateStatement) {
         if (getLexer().equalToken(Token.WHERE)) {
             getLexer().nextToken();
             sqlUpdateStatement.setWhere(exprParser.expr());
         }
     }
     
-    private void parseAppendices(final SQLUpdateStatement sqlInsertStatement) {
+    private void parseAppendices(final AbstractSQLUpdateStatement sqlInsertStatement) {
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             while (!getLexer().equalToken(Token.EOF)) {
                 sqlInsertStatement.getAppendices().add(getLexer().getLiterals());

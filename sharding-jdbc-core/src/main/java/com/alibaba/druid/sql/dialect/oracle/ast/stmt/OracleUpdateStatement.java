@@ -15,9 +15,8 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
@@ -29,23 +28,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class OracleUpdateStatement extends SQLUpdateStatement implements OracleStatement {
-    
-    private boolean only;
+public class OracleUpdateStatement extends AbstractSQLUpdateStatement implements OracleStatement {
     
     private String alias;
     
-    private SQLExpr where;
-    
-    private List<SQLExpr> returning = new ArrayList<>();
-    
-    private List<SQLExpr> returningInto = new ArrayList<>();
-    
     private final List<SQLHint> hints = new ArrayList<>(1);
-    
-    public OracleUpdateStatement() {
-        super(JdbcConstants.ORACLE);
-    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
@@ -59,13 +46,16 @@ public class OracleUpdateStatement extends SQLUpdateStatement implements OracleS
     @Override
     public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, this.hints);
+            acceptChild(visitor, hints);
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getItems());
-            acceptChild(visitor, where);
-            acceptChild(visitor, returning);
-            acceptChild(visitor, returningInto);
+            acceptChild(visitor, getWhere());
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.ORACLE;
     }
 }

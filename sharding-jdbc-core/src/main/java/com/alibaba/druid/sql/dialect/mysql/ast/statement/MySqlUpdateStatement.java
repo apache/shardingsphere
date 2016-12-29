@@ -17,7 +17,7 @@
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -27,16 +27,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlStatement {
+public class MySqlUpdateStatement extends AbstractSQLUpdateStatement implements MySqlStatement {
     
     private Limit limit;
     
     private SQLOrderBy orderBy;
 
-    public MySqlUpdateStatement() {
-        super(JdbcConstants.MYSQL);
-    }
-    
     public void setLimit(final Limit limit) {
         if (limit != null) {
             limit.setParent(this);
@@ -63,5 +59,10 @@ public class MySqlUpdateStatement extends SQLUpdateStatement implements MySqlSta
             acceptChild(visitor, limit);
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.MYSQL;
     }
 }

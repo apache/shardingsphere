@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
@@ -24,7 +24,7 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
         return new SQLServerUpdateStatement();
     }
     
-    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserBetweenUpdateAndTable(final AbstractSQLUpdateStatement updateStatement) {
         SQLServerTop top = ((SQLServerExprParser) getExprParser()).parseTop();
         if (null != top) {
             ((SQLServerUpdateStatement) updateStatement).setTop(top);
@@ -32,7 +32,7 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserBetweenSetAndWhere(final AbstractSQLUpdateStatement updateStatement) {
         SQLServerOutput output = ((SQLServerExprParser) getExprParser()).parserOutput();
         if (null != output) {
             ((SQLServerUpdateStatement) updateStatement).setOutput(output);

@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -33,7 +33,7 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserAfterWhere(final AbstractSQLUpdateStatement updateStatement) {
         ((MySqlUpdateStatement) updateStatement).setOrderBy(getExprParser().parseOrderBy());
         ((MySqlUpdateStatement) updateStatement).setLimit(((MySqlExprParser) getExprParser()).parseLimit());
     }

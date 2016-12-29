@@ -15,7 +15,7 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
@@ -36,7 +36,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserBetweenUpdateAndTable(final AbstractSQLUpdateStatement updateStatement) {
         ((OracleUpdateStatement) updateStatement).getHints().addAll(getExprParser().parseHints());
     }
     
@@ -48,7 +48,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseAlias(final SQLUpdateStatement updateStatement) {
+    protected void parseAlias(final AbstractSQLUpdateStatement updateStatement) {
         OracleUpdateStatement oracleUpdateStatement = (OracleUpdateStatement) updateStatement; 
         if ((oracleUpdateStatement.getAlias() == null) || (oracleUpdateStatement.getAlias().length() == 0)) {
             oracleUpdateStatement.setAlias(as());

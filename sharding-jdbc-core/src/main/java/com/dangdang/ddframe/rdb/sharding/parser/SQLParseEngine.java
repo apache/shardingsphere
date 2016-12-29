@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -83,7 +83,7 @@ public final class SQLParseEngine {
         if (sqlStatement instanceof AbstractSQLInsertStatement) {
             return SQLStatementType.INSERT;
         }
-        if (sqlStatement instanceof SQLUpdateStatement) {
+        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
             return SQLStatementType.UPDATE;
         }
         if (sqlStatement instanceof SQLDeleteStatement) {

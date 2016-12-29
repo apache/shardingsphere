@@ -16,7 +16,7 @@
 package com.alibaba.druid.sql.dialect.sqlserver.ast.stmt;
 
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
@@ -28,17 +28,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerUpdateStatement extends SQLUpdateStatement implements SQLServerStatement {
+public class SQLServerUpdateStatement extends AbstractSQLUpdateStatement implements SQLServerStatement {
     
     private SQLServerTop top;
     
     private SQLServerOutput output;
     
     private SQLTableSource from;
-    
-    public SQLServerUpdateStatement(){
-        super (JdbcConstants.SQL_SERVER);
-    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
@@ -56,5 +52,10 @@ public class SQLServerUpdateStatement extends SQLUpdateStatement implements SQLS
             acceptChild(visitor, getWhere());
         }
         visitor.endVisit(this);
+    }
+    
+    @Override
+    public String getDbType() {
+        return JdbcConstants.SQL_SERVER;
     }
 }
