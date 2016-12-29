@@ -197,7 +197,7 @@ public class MySqlStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected void parseCustomizedParser(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
         ((MySqlUpdateStatement) updateStatement).setOrderBy(getExprParser().parseOrderBy());
         ((MySqlUpdateStatement) updateStatement).setLimit(parseLimit());
     }

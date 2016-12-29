@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
@@ -61,6 +62,14 @@ public class PGSQLStatementParser extends SQLStatementParser {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.ONLY.getName());
         return result;
+    }
+    
+    @Override
+    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
+        if (getLexer().equalToken(Token.FROM)) {
+            getLexer().nextToken();
+            ((PGUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
+        }
     }
     
     @Override

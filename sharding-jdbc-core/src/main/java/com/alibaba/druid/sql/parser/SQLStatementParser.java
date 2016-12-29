@@ -269,27 +269,31 @@ public class SQLStatementParser extends SQLParser {
     protected SQLUpdateStatement parseUpdateStatement() {
         getLexer().nextToken();
         SQLUpdateStatement result = createUpdateStatement();
+        parseCustomizedParserBetweenUpdateAndTable(result);
         while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
             result.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
             getLexer().nextToken();
         }
         result.setTableSource(exprParser.createSelectParser().parseTableSource());
         parseUpdateSet(result);
-        if (getLexer().equalToken(Token.FROM)) {
-            // TODO PG
-            throw new UnsupportedOperationException("Cannot support FROM for update");
-        }
+        parseCustomizedParserBetweenSetAndWhere(result);
         if (getLexer().equalToken(Token.WHERE)) {
             getLexer().nextToken();
             result.setWhere(exprParser.expr());
         }
-        parseCustomizedParser(result);
+        parseCustomizedParserAfterWhere(result);
         parseAppendices(result);
         return result;
     }
     
     protected SQLUpdateStatement createUpdateStatement() {
         return new SQLUpdateStatement(getDbType());
+    }
+    
+    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
+    }
+    
+    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
     }
     
     protected Set<String> getIdentifiersBetweenUpdateAndTable() {
@@ -307,7 +311,7 @@ public class SQLStatementParser extends SQLParser {
         }
     }
     
-    protected void parseCustomizedParser(final SQLUpdateStatement updateStatement) {
+    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
     }
     
     private void parseAppendices(final SQLUpdateStatement sqlInsertStatement) {

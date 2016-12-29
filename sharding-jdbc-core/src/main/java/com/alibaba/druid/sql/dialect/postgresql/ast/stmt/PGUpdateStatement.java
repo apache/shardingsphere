@@ -15,6 +15,7 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.stmt;
 
+import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
@@ -28,6 +29,8 @@ import lombok.Setter;
 public class PGUpdateStatement extends SQLUpdateStatement implements PGSQLStatement {
     
     private PGWithClause with;
+    
+    private SQLTableSource from;
     
     public PGUpdateStatement() {
         super(JdbcConstants.POSTGRESQL);

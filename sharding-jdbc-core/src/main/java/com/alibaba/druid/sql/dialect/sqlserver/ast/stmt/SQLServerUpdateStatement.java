@@ -32,9 +32,9 @@ public class SQLServerUpdateStatement extends SQLUpdateStatement implements SQLS
     
     private SQLServerTop top;
     
-    private SQLTableSource from;
-    
     private SQLServerOutput output;
+    
+    private SQLTableSource from;
     
     public SQLServerUpdateStatement(){
         super (JdbcConstants.SQL_SERVER);

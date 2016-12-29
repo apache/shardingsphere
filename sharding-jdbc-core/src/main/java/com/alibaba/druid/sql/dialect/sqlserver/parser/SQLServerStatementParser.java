@@ -25,7 +25,6 @@ import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLConstraint;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerDeclareItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
@@ -236,38 +235,23 @@ public class SQLServerStatementParser extends SQLStatementParser {
         return new SQLServerUpdateStatement();
     }
     
-    public SQLUpdateStatement parseUpdateStatement() {
-        SQLServerUpdateStatement udpateStatement = createUpdateStatement();
-
-        accept(Token.UPDATE);
-
-        SQLServerTop top = this.getExprParser().parseTop();
-        if (top != null) {
-            udpateStatement.setTop(top);
+    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
+        SQLServerTop top = getExprParser().parseTop();
+        if (null != top) {
+            ((SQLServerUpdateStatement) updateStatement).setTop(top);
         }
-
-        SQLTableSource tableSource = this.exprParser.createSelectParser().parseTableSource();
-        udpateStatement.setTableSource(tableSource);
-
-        parseUpdateSet(udpateStatement);
-        
-        SQLServerOutput output = this.getExprParser().parserOutput();
-        if (output != null) {
-            udpateStatement.setOutput(output);
+    }
+    
+    @Override
+    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
+        SQLServerOutput output = getExprParser().parserOutput();
+        if (null != output) {
+            ((SQLServerUpdateStatement) updateStatement).setOutput(output);
         }
-
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            SQLTableSource from = this.exprParser.createSelectParser().parseTableSource();
-            udpateStatement.setFrom(from);
+            ((SQLServerUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
         }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            udpateStatement.setWhere(this.exprParser.expr());
-        }
-
-        return udpateStatement;
     }
     
     public SQLServerExprParser getExprParser() {

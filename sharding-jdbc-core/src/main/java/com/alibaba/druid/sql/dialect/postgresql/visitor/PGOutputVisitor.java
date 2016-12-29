@@ -412,6 +412,12 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             }
             x.getItems().get(i).accept(this);
         }
+        if (x.getFrom() != null) {
+            println();
+            print("FROM ");
+            x.getFrom().setParent(x);
+            x.getFrom().accept(this);
+        }
         if (x.getWhere() != null) {
             println();
             print("WHERE ");
