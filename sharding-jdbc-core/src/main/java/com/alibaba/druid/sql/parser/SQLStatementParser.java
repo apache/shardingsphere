@@ -82,16 +82,13 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUseStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * SQL解析器.
@@ -143,7 +140,7 @@ public class SQLStatementParser extends SQLParser {
                 continue;
             }
             if (getLexer().equalToken(Token.UPDATE)) {
-                result.add(parseUpdateStatement());
+                result.add(SQLUpdateParserFactory.newInstance(exprParser, getDbType()).parse());
                 continue;
             }
             if (getLexer().equalToken(Token.CREATE)) {
@@ -263,75 +260,6 @@ public class SQLStatementParser extends SQLParser {
             throw new ParserException(getLexer());
         }
     }
-    
-    
-    
-    public SQLUpdateStatement parseUpdateStatement() {
-        getLexer().nextToken();
-        SQLUpdateStatement result = createUpdateStatement();
-        parseCustomizedParserBetweenUpdateAndTable(result);
-        while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
-            result.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        result.setTableSource(exprParser.createSelectParser().parseTableSource());
-        parseAlias(result);
-        parseUpdateSet(result);
-        parseCustomizedParserBetweenSetAndWhere(result);
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            result.setWhere(exprParser.expr());
-        }
-        parseCustomizedParserAfterWhere(result);
-        parseAppendices(result);
-        return result;
-    }
-    
-    protected SQLUpdateStatement createUpdateStatement() {
-        return new SQLUpdateStatement(getDbType());
-    }
-    
-    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
-    }
-    
-    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
-    }
-    
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        return Collections.emptySet();
-    }
-    
-    protected void parseAlias(final SQLUpdateStatement updateStatement) {
-    }
-    
-    protected final void parseUpdateSet(final SQLUpdateStatement updateStatement) {
-        accept(Token.SET);
-        while (true) {
-            updateStatement.addItem(exprParser.parseUpdateSetItem());
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            }
-            getLexer().nextToken();
-        }
-    }
-    
-    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
-    }
-    
-    private void parseAppendices(final SQLUpdateStatement sqlInsertStatement) {
-        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
-            while (!getLexer().equalToken(Token.EOF)) {
-                sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
-    }
-    
-    protected Set<String> getAppendixIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    
     
     protected SQLSelectStatement parseSelect() {
         return new SQLSelectStatement(createSQLSelectParser().select());

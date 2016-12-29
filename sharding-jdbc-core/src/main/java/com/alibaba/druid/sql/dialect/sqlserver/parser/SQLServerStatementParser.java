@@ -25,10 +25,7 @@ import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLConstraint;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerDeclareItem;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerBlockStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerCommitStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerDeclareStatement;
@@ -38,7 +35,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerRollbackStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetTransactionIsolationLevelStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerWaitForStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
@@ -228,30 +224,6 @@ public class SQLServerStatementParser extends SQLStatementParser {
             }
         }
         return declareStatement;
-    }
-    
-    @Override
-    protected SQLServerUpdateStatement createUpdateStatement() {
-        return new SQLServerUpdateStatement();
-    }
-    
-    protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
-        SQLServerTop top = getExprParser().parseTop();
-        if (null != top) {
-            ((SQLServerUpdateStatement) updateStatement).setTop(top);
-        }
-    }
-    
-    @Override
-    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
-        SQLServerOutput output = getExprParser().parserOutput();
-        if (null != output) {
-            ((SQLServerUpdateStatement) updateStatement).setOutput(output);
-        }
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-            ((SQLServerUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
-        }
     }
     
     public SQLServerExprParser getExprParser() {

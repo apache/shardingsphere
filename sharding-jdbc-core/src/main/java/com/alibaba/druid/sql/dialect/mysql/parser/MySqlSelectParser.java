@@ -28,7 +28,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIndexHint;
@@ -45,6 +44,8 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
+import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
+import com.alibaba.druid.util.JdbcConstants;
 
 public class MySqlSelectParser extends SQLSelectParser {
 
@@ -194,7 +195,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         }
         
         if(getLexer().equalToken(Token.UPDATE)) {
-            SQLTableSource tableSource = new MySqlUpdateTableSource(parseUpdateStatment());
+            SQLTableSource tableSource = new MySqlUpdateTableSource((MySqlUpdateStatement) SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.MYSQL).parse());
             return parseTableSourceRest(tableSource);
         }
 
@@ -207,45 +208,6 @@ public class MySqlSelectParser extends SQLSelectParser {
         parseTableSourceQueryTableExpr(tableReference);
 
         return parseTableSourceRest(tableReference);
-    }
-    
-    private MySqlUpdateStatement parseUpdateStatment() {
-        MySqlUpdateStatement update = new MySqlUpdateStatement();
-
-        getLexer().nextToken();
-        if (getLexer().identifierEquals("LOW_PRIORITY")) {
-            getLexer().nextToken();
-            update.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
-        }
-        if (getLexer().identifierEquals("IGNORE")) {
-            getLexer().nextToken();
-            update.getIdentifiersBetweenUpdateAndTable().add(getLexer().getLiterals());
-        }
-        SQLTableSource updateTableSource = this.exprParser.createSelectParser().parseTableSource();
-        update.setTableSource(updateTableSource);
-
-        accept(Token.SET);
-
-        while (true) {
-            SQLUpdateSetItem item = this.exprParser.parseUpdateSetItem();
-            update.addItem(item);
-
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            }
-
-            getLexer().nextToken();
-        }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            update.setWhere(this.exprParser.expr());
-        }
-
-        update.setOrderBy(this.exprParser.parseOrderBy());
-        update.setLimit(parseLimit());
-        
-        return update;
     }
     
     protected void parseInto(SQLSelectQueryBlock queryBlock) {

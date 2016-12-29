@@ -62,8 +62,8 @@ public class SQLUpdateStatement extends SQLStatementImpl {
     }
     
     public void addItem(final SQLUpdateSetItem item) {
-        items.add(item);
         item.setParent(this);
+        items.add(item);
     }
     
     @Override
@@ -74,22 +74,5 @@ public class SQLUpdateStatement extends SQLStatementImpl {
             acceptChild(visitor, where);
         }
         visitor.endVisit(this);
-    }
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        buffer.append("UPDATE ");
-        tableSource.output(buffer);
-        buffer.append(" SET ");
-        for (int i = 0; i < items.size(); i++) {
-            if (i != 0) {
-                buffer.append(", ");
-            }
-            items.get(i).output(buffer);
-        }
-        if (null != where) {
-            buffer.append(" WHERE ");
-            where.output(buffer);
-        }
     }
 }

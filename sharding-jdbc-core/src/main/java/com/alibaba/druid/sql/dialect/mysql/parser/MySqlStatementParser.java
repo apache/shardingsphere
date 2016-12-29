@@ -54,7 +54,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement.MySqlWhenStatement;
@@ -154,18 +153,16 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlShowVariantsStatem
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlShowWarningsStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlStartTransactionStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnlockTablesStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class MySqlStatementParser extends SQLStatementParser {
     
@@ -182,27 +179,6 @@ public class MySqlStatementParser extends SQLStatementParser {
     protected SQLSelectParser createSQLSelectParser() {
         return new MySqlSelectParser(exprParser);
     }
-    
-    @Override
-    protected MySqlUpdateStatement createUpdateStatement() {
-        return new MySqlUpdateStatement();
-    }
-    
-    @Override
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(MySqlKeyword.LOW_PRIORITY);
-        result.add(MySqlKeyword.IGNORE);
-        return result;
-    }
-    
-    @Override
-    protected void parseCustomizedParserAfterWhere(final SQLUpdateStatement updateStatement) {
-        ((MySqlUpdateStatement) updateStatement).setOrderBy(getExprParser().parseOrderBy());
-        ((MySqlUpdateStatement) updateStatement).setLimit(parseLimit());
-    }
-    
-    
     
     public MySqlDeleteStatement parseDeleteStatement() {
         MySqlDeleteStatement deleteStatement = new MySqlDeleteStatement();
@@ -2581,7 +2557,7 @@ public class MySqlStatementParser extends SQLStatementParser {
             
             // update
             if (getLexer().equalToken(Token.UPDATE)) {
-                statementList.add(parseUpdateStatement());
+                statementList.add(SQLUpdateParserFactory.newInstance(getExprParser(), JdbcConstants.MYSQL).parse());
                 continue;
             }
             

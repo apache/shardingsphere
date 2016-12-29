@@ -17,17 +17,17 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
-import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.sql.parser.AbstractUpdateParser;
+import com.alibaba.druid.sql.parser.SQLExprParser;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-public class OracleUpdateParser extends SQLStatementParser {
+public class OracleUpdateParser extends AbstractUpdateParser {
     
-    public OracleUpdateParser(final Lexer lexer) {
-        super(new OracleExprParser(lexer));
+    public OracleUpdateParser(final SQLExprParser exprParser) {
+        super(exprParser);
     }
     
     @Override
@@ -37,7 +37,7 @@ public class OracleUpdateParser extends SQLStatementParser {
     
     @Override
     protected void parseCustomizedParserBetweenUpdateAndTable(final SQLUpdateStatement updateStatement) {
-        ((OracleUpdateStatement) updateStatement).getHints().addAll(exprParser.parseHints());
+        ((OracleUpdateStatement) updateStatement).getHints().addAll(getExprParser().parseHints());
     }
     
     @Override

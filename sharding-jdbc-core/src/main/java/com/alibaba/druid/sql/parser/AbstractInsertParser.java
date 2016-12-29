@@ -52,6 +52,35 @@ public abstract class AbstractInsertParser extends SQLParser {
     
     protected abstract AbstractSQLInsertStatement createSQLInsertStatement();
     
+    protected void parseCustomizedInsert(final AbstractSQLInsertStatement sqlInsertStatement) {
+    }
+    
+    protected Set<String> getUnsupportedIdentifiers() {
+        return Collections.emptySet();
+    }
+    
+    protected Set<String> getIdentifiersBetweenIntoAndTable() {
+        return Collections.emptySet();
+    }
+    
+    protected Set<String> getIdentifiersBetweenTableAndValues() {
+        return Collections.emptySet();
+    }
+    
+    protected Set<String> getValuesIdentifiers() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(Token.VALUES.getName());
+        return result;
+    }
+    
+    protected Set<String> getCustomizedInsertIdentifiers() {
+        return Collections.emptySet();
+    }
+    
+    protected Set<String> getAppendixIdentifiers() {
+        return Collections.emptySet();
+    }
+    
     private void parseInto(final AbstractSQLInsertStatement sqlInsertStatement) {
         while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
             sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
@@ -115,9 +144,6 @@ public abstract class AbstractInsertParser extends SQLParser {
         sqlInsertStatement.setQuery(select);
     }
     
-    protected void parseCustomizedInsert(final AbstractSQLInsertStatement sqlInsertStatement) {
-    }
-    
     private void parseAppendices(final AbstractSQLInsertStatement sqlInsertStatement) {
         if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
             while (!getLexer().equalToken(Token.EOF)) {
@@ -125,31 +151,5 @@ public abstract class AbstractInsertParser extends SQLParser {
                 getLexer().nextToken();
             }
         }
-    }
-    
-    protected Set<String> getUnsupportedIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getIdentifiersBetweenIntoAndTable() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getIdentifiersBetweenTableAndValues() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getValuesIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.VALUES.getName());
-        return result;
-    }
-    
-    protected Set<String> getCustomizedInsertIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getAppendixIdentifiers() {
-        return Collections.emptySet();
     }
 }

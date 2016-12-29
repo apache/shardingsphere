@@ -42,7 +42,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleParameter;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
@@ -93,6 +92,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public class OracleStatementParser extends SQLStatementParser {
             }
 
             if (getLexer().equalToken(Token.UPDATE)) {
-                result.add(parseUpdateStatement());
+                result.add(SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.ORACLE).parse());
                 continue;
             }
 
@@ -1514,9 +1514,5 @@ public class OracleStatementParser extends SQLStatementParser {
         stmt.setBlock(block);
 
         return stmt;
-    }
-
-    public SQLUpdateStatement parseUpdateStatement() {
-        return new OracleUpdateParser(getLexer()).parseUpdateStatement();
     }
 }

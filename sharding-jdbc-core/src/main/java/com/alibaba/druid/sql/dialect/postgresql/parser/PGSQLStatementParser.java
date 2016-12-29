@@ -22,21 +22,19 @@ import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
+import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class PGSQLStatementParser extends SQLStatementParser {
     
@@ -48,39 +46,6 @@ public class PGSQLStatementParser extends SQLStatementParser {
     protected PGSelectParser createSQLSelectParser() {
         return new PGSelectParser(exprParser);
     }
-    
-    
-    
-    
-    @Override
-    protected PGUpdateStatement createUpdateStatement() {
-        return new PGUpdateStatement();
-    }
-    
-    @Override
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.ONLY.getName());
-        return result;
-    }
-    
-    @Override
-    protected void parseCustomizedParserBetweenSetAndWhere(final SQLUpdateStatement updateStatement) {
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-            ((PGUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
-        }
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.RETURNING.getName());
-        return result;
-    }
-    
-    
-    
     
     public PGDeleteStatement parseDeleteStatement() {
         getLexer().nextToken();
@@ -213,7 +178,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             } else if (getLexer().equalToken(Token.INSERT)) {
                 query = new PostgreSQLInsertParser(exprParser).parse();
             } else if (getLexer().equalToken(Token.UPDATE)) {
-                query = parseUpdateStatement();
+                query = SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.DELETE)) {
                 query = parseDeleteStatement();
             } else if (getLexer().equalToken(Token.VALUES)) {
