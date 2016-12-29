@@ -266,7 +266,7 @@ public class SQLStatementParser extends SQLParser {
     
     
     
-    protected SQLUpdateStatement parseUpdateStatement() {
+    public SQLUpdateStatement parseUpdateStatement() {
         getLexer().nextToken();
         SQLUpdateStatement result = createUpdateStatement();
         parseCustomizedParserBetweenUpdateAndTable(result);
@@ -275,6 +275,7 @@ public class SQLStatementParser extends SQLParser {
             getLexer().nextToken();
         }
         result.setTableSource(exprParser.createSelectParser().parseTableSource());
+        parseAlias(result);
         parseUpdateSet(result);
         parseCustomizedParserBetweenSetAndWhere(result);
         if (getLexer().equalToken(Token.WHERE)) {
@@ -298,6 +299,9 @@ public class SQLStatementParser extends SQLParser {
     
     protected Set<String> getIdentifiersBetweenUpdateAndTable() {
         return Collections.emptySet();
+    }
+    
+    protected void parseAlias(final SQLUpdateStatement updateStatement) {
     }
     
     protected final void parseUpdateSet(final SQLUpdateStatement updateStatement) {

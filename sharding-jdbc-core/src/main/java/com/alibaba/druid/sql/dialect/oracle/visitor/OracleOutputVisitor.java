@@ -739,19 +739,16 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     public boolean visit(OracleUpdateStatement x) {
         print("UPDATE ");
-        
-        if (x.getHints().size() > 0) {
-            printAndAccept(x.getHints(), ", ");
-            print(' ');
+        for (SQLHint each : x.getHints()) {
+            print("/*+");
+            print(((SQLCommentHint) each).getText());
+            print("*/ ");
         }
-
-        if (x.isOnly()) {
-            print("ONLY (");
-            x.getTableSource().accept(this);
-            print(")");
-        } else {
-            x.getTableSource().accept(this);
+        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
+            print(each);
+            print(" ");
         }
+        x.getTableSource().accept(this);
 
         printAlias(x.getAlias());
 
@@ -773,15 +770,10 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             x.getWhere().accept(this);
             decrementIndent();
         }
-
-        if (x.getReturning().size() > 0) {
-            println();
-            print("RETURNING ");
-            printAndAccept(x.getReturning(), ", ");
-            print(" INTO ");
-            printAndAccept(x.getReturningInto(), ", ");
+        for (String each : x.getAppendices()) {
+            print(" ");
+            print(each);
         }
-
         return false;
     }
 

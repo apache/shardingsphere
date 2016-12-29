@@ -43,8 +43,8 @@ public class OracleUpdateStatement extends SQLUpdateStatement implements OracleS
     
     private final List<SQLHint> hints = new ArrayList<>(1);
     
-    public OracleUpdateStatement(){
-        super (JdbcConstants.ORACLE);
+    public OracleUpdateStatement() {
+        super(JdbcConstants.ORACLE);
     }
     
     @Override

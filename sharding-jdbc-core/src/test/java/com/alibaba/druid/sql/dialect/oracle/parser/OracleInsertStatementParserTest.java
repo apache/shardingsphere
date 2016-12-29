@@ -1,11 +1,13 @@
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
+import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
@@ -32,8 +34,10 @@ public class OracleInsertStatementParserTest {
     public void parseStatementWithInsertValues() {
         OracleStatementParser statementParser = new OracleStatementParser(
                 "INSERT /*+ index(field1) */ INTO TABLE_XXX XXX (`field1`, `field2`) VALUES (1, 'value_char') RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
-        AbstractSQLInsertStatement sqlInsertStatement = (AbstractSQLInsertStatement) statementParser.parseStatement();
+        OracleInsertStatement sqlInsertStatement = (OracleInsertStatement) statementParser.parseStatement();
         assertThat(sqlInsertStatement.getDbType(), is(JdbcConstants.ORACLE));
+        assertThat(sqlInsertStatement.getHints().size(), is(1));
+        assertThat(((SQLCommentHint) sqlInsertStatement.getHints().get(0)).getText(), is(" index(field1) "));
         assertThat(sqlInsertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
         assertThat(sqlInsertStatement.getTableSource().getAlias(), is("XXX"));
         assertThat(sqlInsertStatement.getColumns().size(), is(2));

@@ -1517,6 +1517,6 @@ public class OracleStatementParser extends SQLStatementParser {
     }
 
     public SQLUpdateStatement parseUpdateStatement() {
-        return new OracleUpdateParser(this.getLexer()).parseUpdateStatement();
+        return new OracleUpdateParser(getLexer()).parseUpdateStatement();
     }
 }
