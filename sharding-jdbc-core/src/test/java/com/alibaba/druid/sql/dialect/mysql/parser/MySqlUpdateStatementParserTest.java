@@ -1,6 +1,7 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
@@ -23,6 +24,9 @@ public final class MySqlUpdateStatementParserTest {
         assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getLeft().toString(), is("field1"));
         assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getRight().toString(), is("1"));
         assertThat(((SQLBinaryOpExpr) updateStatement.getWhere()).getOperator().getName(), is("<"));
+        assertThat(updateStatement.getOrderBy().getItems().size(), is(1));
+        assertThat(updateStatement.getOrderBy().getItems().get(0).getExpr().toString(), is("field1"));
+        assertThat(((SQLIntegerExpr) updateStatement.getLimit().getRowCount()).getNumber().intValue(), is(10));
         assertThat(updateStatement.getIdentifiersBetweenUpdateAndTable().size(), is(2));
         assertThat(updateStatement.getIdentifiersBetweenUpdateAndTable().get(0), is("LOW_PRIORITY"));
         assertThat(updateStatement.getIdentifiersBetweenUpdateAndTable().get(1), is("IGNORE"));

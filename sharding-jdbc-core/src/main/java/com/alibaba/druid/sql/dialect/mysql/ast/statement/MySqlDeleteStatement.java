@@ -17,110 +17,54 @@ package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class MySqlDeleteStatement extends SQLDeleteStatement {
-
-    private boolean        lowPriority = false;
-    private boolean        quick       = false;
-    private boolean        ignore      = false;
-
-    private SQLTableSource from;
-    private SQLTableSource using;
-    private SQLOrderBy     orderBy;
-    private Limit          limit;
+    
+    private SQLOrderBy orderBy;
+    
+    private Limit limit;
     
     public MySqlDeleteStatement() {
-        super (JdbcConstants.MYSQL);
+        super(JdbcConstants.MYSQL);
     }
-
-    public boolean isLowPriority() {
-        return lowPriority;
-    }
-
-    public void setLowPriority(boolean lowPriority) {
-        this.lowPriority = lowPriority;
-    }
-
-    public boolean isQuick() {
-        return quick;
-    }
-
-    public void setQuick(boolean quick) {
-        this.quick = quick;
-    }
-
-    public boolean isIgnore() {
-        return ignore;
-    }
-
-    public void setIgnore(boolean ignore) {
-        this.ignore = ignore;
-    }
-
-    public SQLTableSource getFrom() {
-        return from;
-    }
-
-    public SQLTableSource getUsing() {
-        return using;
-    }
-
-    public void setUsing(SQLTableSource using) {
-        this.using = using;
-    }
-
-    public void setFrom(SQLTableSource from) {
-        this.from = from;
-    }
-
-    public SQLOrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(SQLOrderBy orderBy) {
-        this.orderBy = orderBy;
-    }
-
-    public Limit getLimit() {
-        return limit;
-    }
-
-    public void setLimit(Limit limit) {
-        if (limit != null) {
+    
+    public void setLimit(final Limit limit) {
+        if (null != limit) {
             limit.setParent(this);
         }
         this.limit = limit;
     }
 
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {
             throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
         }
     }
-
-    public void output(StringBuffer buf) {
-        new MySqlOutputVisitor(buf).visit(this);
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        new MySqlOutputVisitor(buffer).visit(this);
     }
-
-    protected void accept0(MySqlASTVisitor visitor) {
+    
+    protected void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getTableSource());
             acceptChild(visitor, getWhere());
-            acceptChild(visitor, getFrom());
-            acceptChild(visitor, getUsing());
             acceptChild(visitor, orderBy);
             acceptChild(visitor, limit);
         }
-
         visitor.endVisit(this);
     }
 }

@@ -21,12 +21,17 @@ import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class SQLDeleteStatement extends SQLStatementImpl {
     
     private SQLTableSource tableSource;
     
     private SQLExpr where;
+    
+    private final List<String> identifiersBetweenDeleteAndFrom = new ArrayList<>();
     
     public SQLDeleteStatement(final String dbType){
         super (dbType);

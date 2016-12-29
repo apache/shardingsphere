@@ -47,13 +47,13 @@ import com.alibaba.druid.sql.ast.statement.SQLAlterTableEnableKeys;
 import com.alibaba.druid.sql.ast.statement.SQLAlterTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLCreateDatabaseStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement.MySqlWhenStatement;
@@ -163,6 +163,8 @@ import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MySqlStatementParser extends SQLStatementParser {
     
@@ -180,68 +182,40 @@ public class MySqlStatementParser extends SQLStatementParser {
         return new MySqlSelectParser(exprParser);
     }
     
-    public MySqlDeleteStatement parseDeleteStatement() {
-        MySqlDeleteStatement deleteStatement = new MySqlDeleteStatement();
-        if (getLexer().equalToken(Token.DELETE)) {
-            getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
-            }
-
-            if (getLexer().identifierEquals(MySqlKeyword.LOW_PRIORITY)) {
-                deleteStatement.setLowPriority(true);
-                getLexer().nextToken();
-            }
-
-            if (getLexer().identifierEquals("QUICK")) {
-                deleteStatement.setQuick(true);
-                getLexer().nextToken();
-            }
-
-            if (getLexer().identifierEquals(MySqlKeyword.IGNORE)) {
-                deleteStatement.setIgnore(true);
-                getLexer().nextToken();
-            }
-
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                deleteStatement.setTableSource(createSQLSelectParser().parseTableSource());
-
-                if (getLexer().equalToken(Token.FROM)) {
-                    getLexer().nextToken();
-                    SQLTableSource tableSource = createSQLSelectParser().parseTableSource();
-                    deleteStatement.setFrom(tableSource);
-                }
-            } else if (getLexer().equalToken(Token.FROM)) {
-                getLexer().nextToken();
-                deleteStatement.setTableSource(createSQLSelectParser().parseTableSource());
-            } else {
-                throw new ParserException(getLexer());
-            }
-
-            if (getLexer().identifierEquals("USING")) {
-                getLexer().nextToken();
-
-                SQLTableSource tableSource = createSQLSelectParser().parseTableSource();
-                deleteStatement.setUsing(tableSource);
-            }
-        }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            SQLExpr where = this.exprParser.expr();
-            deleteStatement.setWhere(where);
-        }
-
+    
+    
+    
+    
+    @Override
+    protected MySqlDeleteStatement createSQLDeleteStatement() {
+        return new MySqlDeleteStatement();
+    }
+    
+    @Override
+    protected Set<String> getIdentifiersBetweenDeleteAndFrom() {
+        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.add(MySqlKeyword.LOW_PRIORITY);
+        result.add("QUICK");
+        result.add(MySqlKeyword.IGNORE);
+        return result;
+    }
+    
+    // TODO 解析 PARTITION
+    @Override
+    protected void parseCustomizedParserBetweenTableAndNextIdentifier(final SQLDeleteStatement deleteStatement) {
+    }
+    
+    @Override
+    protected void parseCustomizedParserAfterWhere(final SQLDeleteStatement deleteStatement) {
         if (getLexer().equalToken(Token.ORDER)) {
             SQLOrderBy orderBy = exprParser.parseOrderBy();
-            deleteStatement.setOrderBy(orderBy);
+            ((MySqlDeleteStatement) deleteStatement).setOrderBy(orderBy);
         }
-
-        deleteStatement.setLimit(parseLimit());
-
-        return deleteStatement;
+        ((MySqlDeleteStatement) deleteStatement).setLimit(parseLimit());
     }
+    
+    
+    
     
     public SQLStatement parseCreate() {
         int currentPosition = getLexer().getCurrentPosition();

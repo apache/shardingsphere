@@ -71,6 +71,7 @@ import com.alibaba.druid.sql.ast.statement.SQLExplainStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLFetchStatement;
 import com.alibaba.druid.sql.ast.statement.SQLGrantStatement;
+import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLObjectType;
 import com.alibaba.druid.sql.ast.statement.SQLOpenStatement;
 import com.alibaba.druid.sql.ast.statement.SQLPrimaryKey;
@@ -81,6 +82,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSavePointStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
+import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUseStatement;
 import com.alibaba.druid.sql.lexer.Token;
@@ -88,7 +90,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * SQL解析器.
@@ -103,6 +107,49 @@ public class SQLStatementParser extends SQLParser {
     public SQLStatementParser(final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
         this.exprParser = exprParser;
+    }
+    
+    
+    
+    public SQLDeleteStatement parseDeleteStatement() {
+        getLexer().nextToken();
+        SQLDeleteStatement result = createSQLDeleteStatement();
+        while (getIdentifiersBetweenDeleteAndFrom().contains(getLexer().getLiterals())) {
+            result.getIdentifiersBetweenDeleteAndFrom().add(getLexer().getLiterals());
+            getLexer().nextToken();
+        }
+        if (getLexer().equalToken(Token.FROM)) {
+            getLexer().nextToken();
+        }
+        if (getLexer().equalToken(Token.COMMENT)) {
+            getLexer().nextToken();
+        }
+        SQLTableSource tableSource = createSQLSelectParser().parseTableSource();
+        if (tableSource instanceof SQLJoinTableSource) {
+            throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
+        }
+        result.setTableSource(tableSource);
+        parseCustomizedParserBetweenTableAndNextIdentifier(result);
+        if (getLexer().equalToken(Token.WHERE)) {
+            getLexer().nextToken();
+            result.setWhere(exprParser.expr());
+        }
+        parseCustomizedParserAfterWhere(result);
+        return result;
+    }
+    
+    protected SQLDeleteStatement createSQLDeleteStatement() {
+        return new SQLDeleteStatement(getDbType());
+    }
+    
+    protected Set<String> getIdentifiersBetweenDeleteAndFrom() {
+        return Collections.emptySet();
+    }
+    
+    protected void parseCustomizedParserBetweenTableAndNextIdentifier(final SQLDeleteStatement deleteStatement) {
+    }
+    
+    protected void parseCustomizedParserAfterWhere(final SQLDeleteStatement deleteStatement) {
     }
     
     /**
@@ -143,12 +190,17 @@ public class SQLStatementParser extends SQLParser {
                 result.add(SQLUpdateParserFactory.newInstance(exprParser, getDbType()).parse());
                 continue;
             }
-            if (getLexer().equalToken(Token.CREATE)) {
-                result.add(parseCreate());
-                continue;
-            }
             if (getLexer().equalToken(Token.DELETE)) {
                 result.add(parseDeleteStatement());
+                continue;
+            }
+            
+            
+            
+            
+            
+            if (getLexer().equalToken(Token.CREATE)) {
+                result.add(parseCreate());
                 continue;
             }
             if (getLexer().equalToken(Token.EXPLAIN)) {
@@ -1521,33 +1573,6 @@ public class SQLStatementParser extends SQLParser {
     
     public SQLCreateTableParser getSQLCreateTableParser() {
         return new SQLCreateTableParser(this.exprParser);
-    }
-
-    public SQLDeleteStatement parseDeleteStatement() {
-        SQLDeleteStatement deleteStatement = new SQLDeleteStatement(getDbType());
-
-        if (getLexer().equalToken(Token.DELETE)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.FROM)) {
-                getLexer().nextToken();
-            }
-
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
-            }
-
-            SQLName tableName = exprParser.name();
-
-            deleteStatement.setTableName(tableName);
-        }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            SQLExpr where = this.exprParser.expr();
-            deleteStatement.setWhere(where);
-        }
-
-        return deleteStatement;
     }
 
     public SQLCreateViewStatement parseCreateView() {

@@ -17,6 +17,7 @@
 
 package com.alibaba.druid.sql;
 
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlDeleteStatementParserTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlInsertStatementParserTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlUpdateStatementParserTest;
@@ -36,7 +37,8 @@ import org.junit.runners.Suite.SuiteClasses;
         LexerTest.class, 
         MySqlLexerTest.class, 
         MySqlInsertStatementParserTest.class, 
-        MySqlUpdateStatementParserTest.class, 
+        MySqlUpdateStatementParserTest.class,
+        MySqlDeleteStatementParserTest.class, 
         PGSQLInsertStatementParserTest.class,
         PGSQLUpdateStatementParserTest.class, 
         OracleInsertStatementParserTest.class,
