@@ -432,7 +432,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         x.getAgainst().accept(this);
         if (x.getSearchModifier() != null) {
             print(' ');
-            print(x.getSearchModifier().name);
+            print(x.getSearchModifier().getName());
         }
         print(')');
 
@@ -568,12 +568,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     public boolean visit(MySqlOutFileExpr x) {
         print("OUTFILE ");
         x.getFile().accept(this);
-
-        if (x.getCharset() != null) {
-            print(" CHARACTER SET ");
-            print(x.getCharset());
-        }
-
         if (x.getColumnsTerminatedBy() != null || x.getColumnsEnclosedBy() != null || x.getColumnsEscaped() != null) {
             print(" COLUMNS");
             if (x.getColumnsTerminatedBy() != null) {

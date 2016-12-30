@@ -20,72 +20,25 @@ import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class MySqlSelectGroupByExpr extends SQLExprImpl implements MySqlExpr {
     
-    protected SQLExpr expr;
+    private SQLExpr expr;
     
-    protected SQLOrderingSpecification type;
+    private SQLOrderingSpecification type;
 
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         if (mysqlVisitor.visit(this)) {
             acceptChild(visitor, this.expr);
         }
-
         mysqlVisitor.endVisit(this);
     }
-
-    public SQLExpr getExpr() {
-        return expr;
-    }
-
-    public void setExpr(SQLExpr expr) {
-        expr.setParent(this);
-        this.expr = expr;
-    }
-
-    public SQLOrderingSpecification getType() {
-        return type;
-    }
-
-    public void setType(SQLOrderingSpecification type) {
-        this.type = type;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        MySqlSelectGroupByExpr other = (MySqlSelectGroupByExpr) obj;
-        if (expr != other.expr) {
-            return false;
-        }
-        if (type == null) {
-            if (other.type != null) {
-                return false;
-            }
-        } else if (!type.equals(other.type)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        return result;
-    }
-
 }

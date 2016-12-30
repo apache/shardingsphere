@@ -212,11 +212,8 @@ public class MySqlSelectParser extends SQLSelectParser {
             if (getLexer().identifierEquals("OUTFILE")) {
                 getLexer().nextToken();
 
-                MySqlOutFileExpr outFile = new MySqlOutFileExpr();
-                outFile.setFile(expr());
-
+                MySqlOutFileExpr outFile = new MySqlOutFileExpr(expr());
                 queryBlock.setInto(outFile);
-
                 if (getLexer().identifierEquals("FIELDS") || getLexer().identifierEquals("COLUMNS")) {
                     getLexer().nextToken();
 

@@ -19,104 +19,44 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
+    
+    private final List<SQLExpr> columns = new ArrayList<>();
 
-    private List<SQLExpr>  columns = new ArrayList<SQLExpr>();
-
-    private SQLExpr        against;
+    private SQLExpr against;
 
     private SearchModifier searchModifier;
-
-    public List<SQLExpr> getColumns() {
-        return columns;
-    }
-
-    public void setColumns(List<SQLExpr> columns) {
-        this.columns = columns;
-    }
-
-    public SQLExpr getAgainst() {
-        return against;
-    }
-
-    public void setAgainst(SQLExpr against) {
-        this.against = against;
-    }
-
-    public SearchModifier getSearchModifier() {
-        return searchModifier;
-    }
-
-    public void setSearchModifier(SearchModifier searchModifier) {
-        this.searchModifier = searchModifier;
-    }
-
-    public enum SearchModifier {
-        IN_BOOLEAN_MODE("IN BOOLEAN MODE"), IN_NATURAL_LANGUAGE_MODE("IN NATURAL LANGUAGE MODE"),
-        IN_NATURAL_LANGUAGE_MODE_WITH_QUERY_EXPANSION("IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION"),
-        WITH_QUERY_EXPANSION("WITH QUERY EXPANSION"), ;
-
-        public final String name;
-
-        SearchModifier(String name) {
-            this.name = name;
-        }
-    }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         if (mysqlVisitor.visit(this)) {
-            acceptChild(visitor, this.columns);
-            acceptChild(visitor, this.against);
+            acceptChild(visitor, columns);
+            acceptChild(visitor, against);
         }
         mysqlVisitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((against == null) ? 0 : against.hashCode());
-        result = prime * result + ((columns == null) ? 0 : columns.hashCode());
-        result = prime * result + ((searchModifier == null) ? 0 : searchModifier.hashCode());
-        return result;
+    
+    @RequiredArgsConstructor
+    @Getter
+    public enum SearchModifier {
+        
+        IN_BOOLEAN_MODE("IN BOOLEAN MODE"), 
+        IN_NATURAL_LANGUAGE_MODE("IN NATURAL LANGUAGE MODE"),
+        IN_NATURAL_LANGUAGE_MODE_WITH_QUERY_EXPANSION("IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION"),
+        WITH_QUERY_EXPANSION("WITH QUERY EXPANSION"), ;
+        
+        private final String name;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        MySqlMatchAgainstExpr other = (MySqlMatchAgainstExpr) obj;
-        if (against == null) {
-            if (other.against != null) {
-                return false;
-            }
-        } else if (!against.equals(other.against)) {
-            return false;
-        }
-        if (columns == null) {
-            if (other.columns != null) {
-                return false;
-            }
-        } else if (!columns.equals(other.columns)) {
-            return false;
-        }
-        if (searchModifier != other.searchModifier) {
-            return false;
-        }
-        return true;
-    }
-
 }
