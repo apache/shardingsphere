@@ -38,14 +38,10 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateTableSource;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
-import com.alibaba.druid.util.JdbcConstants;
 
 public class MySqlSelectParser extends SQLSelectParser {
 
@@ -195,8 +191,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         }
         
         if(getLexer().equalToken(Token.UPDATE)) {
-            SQLTableSource tableSource = new MySqlUpdateTableSource((MySqlUpdateStatement) SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.MYSQL).parse());
-            return parseTableSourceRest(tableSource);
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
 
         if (getLexer().equalToken(Token.SELECT)) {

@@ -21,33 +21,17 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
-import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlCaseStatement.MySqlWhenStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlElseStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlIfStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlIfStatement.MySqlElseIfStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlIterateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlLeaveStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlLoopStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlParameter;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlParameter.ParameterType;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlRepeatStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlSelectIntoStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.clause.MySqlWhileStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
@@ -56,28 +40,13 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlExecuteStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlHintStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPartitioningDef;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPartitioningDef.InValues;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPartitioningDef.LessThanValues;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlPrepareStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSetCharSetStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSetNamesStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSetPasswordStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSetTransactionStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlTableIndex;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnlockTablesStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateTableSource;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-
-import java.util.List;
 
 public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTVisitor {
 
@@ -282,35 +251,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public void endVisit(MySqlTableIndex x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlTableIndex x) {
-        print("INDEX");
-        if (x.getName() != null) {
-            print(" ");
-            x.getName().accept(this);
-        }
-
-        if (x.getIndexType() != null) {
-            print(" USING ");
-            print(x.getIndexType());
-        }
-
-        print("(");
-        for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getColumns().get(i).accept(this);
-        }
-        print(")");
-        return false;
-    }
-
-    @Override
     public boolean visit(SQLCharExpr x) {
         print('\'');
 
@@ -498,36 +438,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
         return false;
     }
-
-    @Override
-    public void endVisit(MySqlPrepareStatement x) {
-    }
-
-    @Override
-    public boolean visit(MySqlPrepareStatement x) {
-        print("PREPARE ");
-        x.getName().accept(this);
-        print(" FROM ");
-        x.getFrom().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlExecuteStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlExecuteStatement x) {
-        print("EXECUTE ");
-        x.getStatementName().accept(this);
-        if (x.getParameters().size() > 0) {
-            print(" USING ");
-            printAndAccept(x.getParameters(), ", ");
-        }
-        return false;
-    }
-
+    
     @Override
     public void endVisit(MySqlDeleteStatement x) {
 
@@ -749,74 +660,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(MySqlSetTransactionStatement x) {
-        if (x.getGlobal() == null) {
-            print("SET TRANSACTION ");
-        } else if (x.getGlobal().booleanValue()) {
-            print("SET GLOBAL TRANSACTION ");
-        } else {
-            print("SET SESSION TRANSACTION ");
-        }
-
-        if (x.getIsolationLevel() != null) {
-            print("ISOLATION LEVEL ");
-            print(x.getIsolationLevel());
-        }
-
-        if (x.getAccessModel() != null) {
-            print("READ ");
-            print(x.getAccessModel());
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlSetTransactionStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlSetNamesStatement x) {
-        print("SET NAMES ");
-        if (x.isDefault()) {
-            print("DEFAULT");
-        } else {
-            print(x.getCharSet());
-            if (x.getCollate() != null) {
-                print(" COLLATE ");
-                print(x.getCollate());
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlSetNamesStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlSetCharSetStatement x) {
-        print("SET CHARACTER SET ");
-        if (x.isDefault()) {
-            print("DEFAULT");
-        } else {
-            print(x.getCharSet());
-            if (x.getCollate() != null) {
-                print(" COLLATE ");
-                print(x.getCollate());
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlSetCharSetStatement x) {
-
-    }
-
-    @Override
     public boolean visit(MySqlUserName x) {
         print(x.getUserName());
         if (x.getHost() != null) {
@@ -945,17 +788,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(MySqlUnlockTablesStatement x) {
-        print("UNLOCK TABLES");
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlUnlockTablesStatement x) {
-
-    }
-
-    @Override
     public boolean visit(MySqlForceIndexHint x) {
         print("FORCE INDEX ");
         if (x.getOption() != null) {
@@ -995,64 +827,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         return false;
     }
 
-    @Override
-    public boolean visit(MySqlPartitioningDef x) {
-        print("PARTITION ");
-        x.getName().accept(this);
-        if (x.getValues() != null) {
-            print(' ');
-            x.getValues().accept(this);
-        }
-
-        if (x.getDataDirectory() != null) {
-            incrementIndent();
-            println();
-            print("DATA DIRECTORY ");
-            x.getDataDirectory().accept(this);
-            decrementIndent();
-        }
-        if (x.getIndexDirectory() != null) {
-            incrementIndent();
-            println();
-            print("INDEX DIRECTORY ");
-            x.getIndexDirectory().accept(this);
-            decrementIndent();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlPartitioningDef x) {
-
-    }
-
-    @Override
-    public boolean visit(LessThanValues x) {
-        print("VALUES LESS THAN (");
-        printAndAccept(x.getItems(), ", ");
-        print(')');
-        return false;
-    }
-
-    @Override
-    public void endVisit(LessThanValues x) {
-
-    }
-
-    @Override
-    public boolean visit(InValues x) {
-        print("VALUES IN (");
-        printAndAccept(x.getItems(), ", ");
-        print(')');
-        return false;
-    }
-
-    @Override
-    public void endVisit(InValues x) {
-
-    }
-
     protected void visitAggreateRest(SQLAggregateExpr aggregateExpr) {
         {
             SQLOrderBy value = (SQLOrderBy) aggregateExpr.getAttribute("ORDER BY");
@@ -1069,44 +843,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             }
         }
     }
-
-    @Override
-    public boolean visit(MySqlSetPasswordStatement x) {
-        print("SET PASSWORD ");
-
-        if (x.getUser() != null) {
-            print("FOR ");
-            x.getUser().accept(this);
-            print(' ');
-        }
-
-        print("= ");
-
-        if (x.getPassword() != null) {
-            x.getPassword().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlSetPasswordStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlHintStatement x) {
-        List<SQLCommentHint> hints = x.getHints();
-
-        for (SQLCommentHint hint : hints) {
-            hint.accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlHintStatement x) {
-        
-    }
     
     @Override
     public boolean visit(MySqlSelectGroupByExpr x) {
@@ -1121,301 +857,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     @Override
     public void endVisit(MySqlSelectGroupByExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlParameter x) {
-        if (x.getDataType().getName().equalsIgnoreCase("CURSOR")) {
-            print("CURSOR ");
-            x.getName().accept(this);
-            print(" IS");
-            incrementIndent();
-            println();
-            SQLSelect select = ((SQLQueryExpr) x.getDefaultValue()).getSubQuery();
-            select.accept(this);
-            decrementIndent();
-
-        } else {
-            
-            if(x.getParamType() == ParameterType.IN) {
-                print("IN ");
-            } else if(x.getParamType() == ParameterType.OUT) {
-                print("OUT ");
-            } else if(x.getParamType() == ParameterType.INOUT) {
-                print("INOUT ");
-            }
-            x.getName().accept(this);
-            print(" ");
-
-            x.getDataType().accept(this);
-
-            if (x.getDefaultValue() != null) {
-                print(" := ");
-                x.getDefaultValue().accept(this);
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlParameter x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlWhileStatement x) {
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(x.getLabelName()+": ");
-        print("WHILE ");
-        x.getCondition().accept(this);
-        print(" DO");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        print("END WHILE");
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(" "+x.getLabelName());
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlWhileStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlIfStatement x) {
-        print("IF ");
-        x.getCondition().accept(this);
-        print(" THEN");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        for (MySqlElseIfStatement iterable_element : x.getElseIfList()) {
-            iterable_element.accept(this);
-        }
-        
-        if(x.getElseItem()!=null)
-            x.getElseItem().accept(this);
-        
-        print("END IF");
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlIfStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlElseIfStatement x) {
-        print("ELSE IF ");
-        x.getCondition().accept(this);
-        print(" THEN");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlElseIfStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlElseStatement x) {
-        print("ELSE ");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlElseStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlCaseStatement x) {
-        
-        print("CASE ");
-        x.getCondition().accept(this);
-        println();
-        for (int i = 0; i < x.getWhenList().size(); i++) {
-            x.getWhenList().get(i).accept(this);
-        }
-        if(x.getElseItem()!=null)
-            x.getElseItem().accept(this);
-        print("END CASE");
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlCaseStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlSelectIntoStatement x) {
-        x.getSelect().accept(this);
-        print(" INTO ");
-        for (int i = 0; i < x.getVarList().size(); i++) {
-            x.getVarList().get(i).accept(this);
-            if(i!=x.getVarList().size()-1)
-                print(",");
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlSelectIntoStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlWhenStatement x) {
-        print("WHEN ");
-        x.getCondition().accept(this);
-        println(" THEN");
-        for (int i = 0; i < x.getStatements().size(); i++) {
-            x.getStatements().get(i).accept(this);
-            if (i != x.getStatements().size() - 1) {
-                println();
-            }
-        }
-        println();
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlWhenStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlLoopStatement x) {
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(x.getLabelName()+": ");
-        print("LOOP ");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        print("END LOOP");
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(" "+x.getLabelName());
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlLoopStatement x) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean visit(MySqlLeaveStatement x) {
-        print("LEAVE "+x.getLabelName());
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlLeaveStatement x) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean visit(MySqlIterateStatement x) {
-        print("ITERATE "+x.getLabelName());
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlIterateStatement x) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean visit(MySqlRepeatStatement x) {
-        // TODO Auto-generated method stub
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(x.getLabelName()+": ");
-        print("REPEAT ");
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        println();
-        print("UNTIL ");
-        x.getCondition().accept(this);
-        println();
-        print("END REPEAT");
-        if(x.getLabelName()!=null&&!x.getLabelName().equals(""))
-            print(" "+x.getLabelName());
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlRepeatStatement x) {
-        
-    }
-
-    @Override
-    public boolean visit(MySqlUpdateTableSource x) {
-        MySqlUpdateStatement update = x.getUpdate();
-        if (update != null) {
-            update.accept0(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlUpdateTableSource x) {
 
     }
 }

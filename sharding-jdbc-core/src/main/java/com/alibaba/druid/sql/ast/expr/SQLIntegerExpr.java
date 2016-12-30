@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuableExpr{
+public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuableExpr {
     
     private final Number number;
     

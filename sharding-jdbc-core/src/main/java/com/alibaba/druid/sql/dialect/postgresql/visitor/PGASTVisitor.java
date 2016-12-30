@@ -34,7 +34,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -140,8 +139,4 @@ public interface PGASTVisitor extends SQLASTVisitor {
     void endVisit(PGIntervalExpr x);
 
     boolean visit(PGIntervalExpr x);
-    
-    void endVisit(PGShowStatement x);
-    
-    boolean visit(PGShowStatement x);
 }

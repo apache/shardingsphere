@@ -55,7 +55,7 @@ public class SQLSelectItem extends SQLObjectImpl {
     
     @Override
     public void output(final StringBuffer buffer) {
-        if(this.connectByRoot) {
+        if (connectByRoot) {
             buffer.append(" CONNECT_BY_ROOT ");
         }
         expr.output(buffer);

@@ -38,7 +38,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.ForC
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.WindowClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
@@ -267,15 +266,6 @@ public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVi
 
     @Override
     public boolean visit(final PGIntervalExpr x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final PGShowStatement x) {
-    }
-    
-    @Override
-    public boolean visit(final PGShowStatement x) {
         return true;
     }
 }

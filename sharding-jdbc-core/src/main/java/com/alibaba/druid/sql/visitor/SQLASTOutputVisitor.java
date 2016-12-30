@@ -754,8 +754,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             return;
         }
 
-        if (param instanceof Number //
-            || param instanceof Boolean) {
+        if (param instanceof Number || param instanceof Boolean) {
             print(param.toString());
             return;
         }

@@ -19,17 +19,14 @@ import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 public class SQLBinaryExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     private final String value;
-    
-    public SQLBinaryExpr(final String value){
-        super();
-        this.value = value;
-    }
     
     @Override
     public void acceptInternal(final SQLASTVisitor visitor) {

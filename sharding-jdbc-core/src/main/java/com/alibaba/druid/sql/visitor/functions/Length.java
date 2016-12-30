@@ -21,8 +21,8 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 
 import static com.alibaba.druid.sql.visitor.SQLEvalVisitor.EVAL_VALUE;
 
-
 public class Length implements Function {
+    
     public final static Length instance = new Length();
     
     public Object eval(SQLEvalVisitor visitor, SQLMethodInvokeExpr x) {

@@ -41,7 +41,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.ForC
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.WindowClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
@@ -618,18 +617,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         print(x.getValue());
         print('\'');
 
-        return false;
-    }
-    
-    @Override
-    public void endVisit(PGShowStatement x) {
-        
-    }
-    
-    @Override
-    public boolean visit(PGShowStatement x) {
-        print("SHOW ");
-        x.getExpr().accept(this);
         return false;
     }
 }

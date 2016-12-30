@@ -55,8 +55,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReturnRowsCla
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleParameter;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OraclePartitionByRangeClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleRangeValuesClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleWithSubqueryEntry;
@@ -1615,59 +1613,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleFileSpecification x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleRangeValuesClause x) {
-        print("PARTITION ");
-        x.getName().accept(this);
-        print(" VALUES LESS THAN (");
-        printAndAccept(x.getValues(), ", ");
-        print(")");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleRangeValuesClause x) {
-
-    }
-
-    @Override
-    public boolean visit(OraclePartitionByRangeClause x) {
-        print("PARTITION BY RANGE (");
-        printAndAccept(x.getColumns(), ", ");
-        print(")");
-
-        if (x.getInterval() != null) {
-            print(" INTERVAL ");
-            x.getInterval().accept(this);
-        }
-
-        if (x.getStoreIn().size() > 0) {
-            print(" STORE IN (");
-            printAndAccept(x.getStoreIn(), ", ");
-            print(")");
-        }
-
-        println();
-        print("(");
-        incrementIndent();
-        for (int i = 0, size = x.getRanges().size(); i < size; ++i) {
-            if (i != 0) {
-                print(",");
-            }
-            println();
-            x.getRanges().get(i).accept(this);
-        }
-        decrementIndent();
-        println();
-        print(")");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OraclePartitionByRangeClause x) {
 
     }
 

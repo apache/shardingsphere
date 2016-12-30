@@ -28,8 +28,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleErrorLoggingClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleParameter;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OraclePartitionByRangeClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleRangeValuesClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleWithSubqueryEntry;
@@ -321,14 +319,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleFileSpecification x);
 
     void endVisit(OracleFileSpecification x);
-
-    boolean visit(OracleRangeValuesClause x);
-
-    void endVisit(OracleRangeValuesClause x);
-
-    boolean visit(OraclePartitionByRangeClause x);
-
-    void endVisit(OraclePartitionByRangeClause x);
 
     boolean visit(OracleExitStatement x);
 

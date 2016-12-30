@@ -48,7 +48,7 @@ public class SQLInSubQueryExpr extends SQLExprImpl implements Serializable {
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor,expr);
+            acceptChild(visitor, expr);
             acceptChild(visitor, subQuery);
         }
         visitor.endVisit(this);

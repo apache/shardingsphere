@@ -33,7 +33,7 @@ public class SQLExistsExpr extends SQLExprImpl implements Serializable {
     
     private final SQLSelect subQuery;
     
-    public SQLExistsExpr(final SQLSelect subQuery, final boolean not){
+    public SQLExistsExpr(final SQLSelect subQuery, final boolean not) {
         if (null != subQuery) {
             subQuery.setParent(this);
         }

@@ -35,7 +35,7 @@ public class MySqlOutFileExpr extends MySqlObjectImpl implements SQLExpr {
 
     private SQLExpr        ignoreLinesNumber;
 
-    public MySqlOutFileExpr(){
+    public MySqlOutFileExpr() {
     }
 
     public MySqlOutFileExpr(SQLExpr file){

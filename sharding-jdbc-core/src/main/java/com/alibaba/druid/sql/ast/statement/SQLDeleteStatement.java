@@ -37,10 +37,6 @@ public class SQLDeleteStatement extends SQLStatementImpl {
         super(dbType);
     }
     
-    public void setTableSource(final SQLExpr expr) {
-        setTableSource(new SQLExprTableSource(expr));
-    }
-    
     public void setTableSource(final SQLTableSource tableSource) {
         if (null != tableSource) {
             tableSource.setParent(this);

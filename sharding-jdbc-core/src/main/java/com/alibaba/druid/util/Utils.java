@@ -32,7 +32,7 @@ public class Utils {
     }
     
     public static void putLong(final byte[] b, final int off, final long val) {
-        b[off + 7] = (byte) (val);
+        b[off + 7] = (byte) val;
         b[off + 6] = (byte) (val >>> 8);
         b[off + 5] = (byte) (val >>> 16);
         b[off + 4] = (byte) (val >>> 24);

@@ -36,7 +36,7 @@ public class SQLVariantRefExpr extends SQLExprImpl {
         this.name = name;
     }
     
-    public SQLVariantRefExpr(final String name, final boolean global){
+    public SQLVariantRefExpr(final String name, final boolean global) {
         this.name = name;
         this.global = global;
     }

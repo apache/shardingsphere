@@ -79,7 +79,7 @@ public class SQLCaseExpr extends SQLExprImpl implements Serializable {
         
         private final SQLExpr valueExpr;
         
-        public Item(final SQLExpr conditionExpr, final SQLExpr valueExpr){
+        public Item(final SQLExpr conditionExpr, final SQLExpr valueExpr) {
             if (null != conditionExpr) {
                 conditionExpr.setParent(this);
             }

@@ -306,41 +306,6 @@ public class Lexer {
         nextToken();
     }
     
-    public final void nextTokenLeftParen() {
-        if (' ' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-        }
-        if ('(' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-            token = Token.LEFT_PAREN;
-            return;
-        }
-        nextToken();
-    }
-    
-    public final void nextTokenValue() {
-        if (' ' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-        }
-        if (isString()) {
-            scanString();
-            return;
-        }
-        if (isDigital(charAt(currentPosition))) {
-            scanNumber();
-            return;
-        }
-        if (charAt(currentPosition) == '?') {
-            scanSymbol(1);
-            return;
-        }
-        if (isFirstIdentifierChar(charAt(currentPosition)) && charAt(currentPosition) != 'N') {
-            scanIdentifier();
-            return;
-        }
-        nextToken();
-    }
-    
     private static final long  MULTMIN_RADIX_TEN   = Long.MIN_VALUE / 10;
     private static final long  N_MULTMAX_RADIX_TEN = -Long.MAX_VALUE / 10;
 

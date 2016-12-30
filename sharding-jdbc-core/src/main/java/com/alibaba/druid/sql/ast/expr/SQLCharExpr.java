@@ -19,7 +19,7 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
 
-public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr{
+public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr {
     
     public SQLCharExpr(final String text){
         super(text);

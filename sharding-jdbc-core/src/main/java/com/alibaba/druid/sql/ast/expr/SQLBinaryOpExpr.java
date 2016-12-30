@@ -38,7 +38,7 @@ public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
     
     private String dbType;
     
-    public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right, final String dbType){
+    public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right, final String dbType) {
         if (null != left) {
             left.setParent(this);
         }

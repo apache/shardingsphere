@@ -15,13 +15,13 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
 
@@ -55,18 +55,14 @@ public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
         this.searchModifier = searchModifier;
     }
 
-    public static enum SearchModifier {
+    public enum SearchModifier {
         IN_BOOLEAN_MODE("IN BOOLEAN MODE"), IN_NATURAL_LANGUAGE_MODE("IN NATURAL LANGUAGE MODE"),
         IN_NATURAL_LANGUAGE_MODE_WITH_QUERY_EXPANSION("IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION"),
         WITH_QUERY_EXPANSION("WITH QUERY EXPANSION"), ;
 
         public final String name;
 
-        SearchModifier(){
-            this(null);
-        }
-
-        SearchModifier(String name){
+        SearchModifier(String name) {
             this.name = name;
         }
     }
