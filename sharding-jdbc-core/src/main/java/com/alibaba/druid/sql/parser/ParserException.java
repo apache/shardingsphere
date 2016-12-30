@@ -22,9 +22,9 @@ public class ParserException extends RuntimeException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     
-    private static String UNMATCH_MESSAGE = "SQL syntax error, expected token is '%s', actual token is '%s', literals is '%s'.";
+    private static final String UNMATCH_MESSAGE = "SQL syntax error, expected token is '%s', actual token is '%s', literals is '%s'.";
     
-    private static String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
+    private static final String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
     
     public ParserException(final Lexer lexer, final Token expectedToken) {
         super(String.format(UNMATCH_MESSAGE, expectedToken, lexer.getToken(), lexer.getLiterals()));

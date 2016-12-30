@@ -57,7 +57,6 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.NotNullConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLCheck;
 import com.alibaba.druid.sql.ast.statement.SQLColumnCheck;
@@ -1519,35 +1518,6 @@ public class SQLExprParser extends SQLParser {
         return unique;
     }
 
-    public SQLAssignItem parseAssignItem() {
-        SQLAssignItem item = new SQLAssignItem();
-
-        SQLExpr var = primary();
-
-        if (var instanceof SQLIdentifierExpr) {
-            var = new SQLVariantRefExpr(((SQLIdentifierExpr) var).getSimpleName());
-        }
-        item.setTarget(var);
-        if (getLexer().equalToken(Token.COLON_EQ)) {
-            getLexer().nextToken();
-        } else {
-            accept(Token.EQ);
-        }
-        
-        if(getLexer().equalToken(Token.ON)) {
-            item.setValue(new SQLIdentifierExpr(getLexer().getLiterals()));
-            getLexer().nextToken();
-        } else {
-            if (getLexer().equalToken(Token.ALL)) {
-                item.setValue(new SQLIdentifierExpr(getLexer().getLiterals()));
-                getLexer().nextToken();
-            } else {
-                item.setValue(expr());
-            }
-        }
-        return item;
-    }
-    
     public List<SQLCommentHint> parseHints() {
         List<SQLCommentHint> result = new ArrayList<>();
         if (getLexer().equalToken(Token.HINT)) {

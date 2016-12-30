@@ -21,7 +21,7 @@ public class ParserUnsupportedException extends RuntimeException {
     
     private static final long serialVersionUID = -4968036951399076811L;
     
-    private static String MESSAGE = "TODO: Token is '%s'.";
+    private static final String MESSAGE = "Not supported token '%s'.";
     
     public ParserUnsupportedException(final Token token) {
         super(String.format(MESSAGE, token.getName()));

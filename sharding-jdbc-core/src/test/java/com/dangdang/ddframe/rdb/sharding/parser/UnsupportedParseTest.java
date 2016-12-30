@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -26,22 +27,22 @@ import java.util.Collections;
 
 public final class UnsupportedParseTest {
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void assertCreate() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", Collections.emptyList(), new ShardingRuleMockBuilder().build());
     }
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void assertDrop() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "DROP TABLE `order`", Collections.emptyList(), new ShardingRuleMockBuilder().build());
     }
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void assertTruncate() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "TRUNCATE `order`", Collections.emptyList(), new ShardingRuleMockBuilder().build());
     }
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void assertAlter() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", Collections.emptyList(), new ShardingRuleMockBuilder().build());
     }

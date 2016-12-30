@@ -20,14 +20,11 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAlterTableAlterColumn;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGShowStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
@@ -219,47 +216,5 @@ public class PGSQLStatementParser extends SQLStatementParser {
             return stmt;
         }
         throw new ParserUnsupportedException(getLexer().getToken());
-    }
-
-    protected SQLAlterTableAlterColumn parseAlterColumn() {
-        if (getLexer().equalToken(Token.COLUMN)) {
-            getLexer().nextToken();
-        }
-
-        SQLColumnDefinition column = this.exprParser.parseColumn();
-
-        SQLAlterTableAlterColumn alterColumn = new SQLAlterTableAlterColumn();
-        alterColumn.setColumn(column);
-
-        if (column.getDataType() == null && column.getConstraints().size() == 0) {
-            if (getLexer().equalToken(Token.SET)) {
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.NOT)) {
-                    getLexer().nextToken();
-                    accept(Token.NULL);
-                    alterColumn.setSetNotNull(true);
-                } else {
-                    accept(Token.DEFAULT);
-                    SQLExpr defaultValue = this.exprParser.expr();
-                    alterColumn.setSetDefault(defaultValue);
-                }
-            } else if (getLexer().equalToken(Token.DROP)) {
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.NOT)) {
-                    getLexer().nextToken();
-                    accept(Token.NULL);
-                    alterColumn.setDropNotNull(true);
-                } else {
-                    accept(Token.DEFAULT);
-                    alterColumn.setDropDefault(true);
-                }
-            }
-        }
-        return alterColumn;
-    }
-    
-    public SQLStatement parseShow() {
-        accept(Token.SHOW);
-        return new PGShowStatement(exprParser.expr());
     }
 }
