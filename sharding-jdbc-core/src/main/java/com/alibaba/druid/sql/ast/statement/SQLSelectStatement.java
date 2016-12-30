@@ -28,7 +28,7 @@ public class SQLSelectStatement extends SQLStatementImpl {
         this(select, null);
     }
     
-    public SQLSelectStatement(final SQLSelect select, final String dbType){
+    public SQLSelectStatement(final SQLSelect select, final String dbType) {
         super(dbType);
         if (null != select) {
             select.setParent(this);

@@ -37,16 +37,10 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLCheck;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLForeignKeyConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLUnique;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleOrderBy;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleAnalytic;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleAnalyticWindowing;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleArgumentExpr;
@@ -65,16 +59,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCheck;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleConstraint;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleConstraint.Initially;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleForeignKey;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePrimaryKey;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUnique;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
-import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -93,10 +79,6 @@ public class OracleExprParser extends SQLExprParser {
     public OracleExprParser(final String sql){
         super(new OracleLexer(sql), JdbcConstants.ORACLE, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
-    }
-    
-    public OracleExprParser(Lexer lexer){
-        super(lexer, JdbcConstants.ORACLE, AGGREGATE_FUNCTIONS);
     }
     
     protected boolean isCharType(String dataTypeName) {
@@ -935,72 +917,6 @@ public class OracleExprParser extends SQLExprParser {
         return expr;
     }
     
-    public OraclePrimaryKey parsePrimaryKey() {
-        getLexer().nextToken();
-        accept(Token.KEY);
-        OraclePrimaryKey primaryKey = new OraclePrimaryKey();
-        accept(Token.LEFT_PAREN);
-        primaryKey.getColumns().addAll(exprList(primaryKey));
-        accept(Token.RIGHT_PAREN);
-        if (getLexer().equalToken(Token.USING)) {
-            OracleUsingIndexClause using = parseUsingIndex();
-            primaryKey.setUsing(using);
-        }
-        return primaryKey;
-    }
-    
-    private OracleUsingIndexClause parseUsingIndex() {
-        accept(Token.USING);
-        accept(Token.INDEX);
-        
-        OracleUsingIndexClause using = new OracleUsingIndexClause();
-        
-        while (true) {
-            if (getLexer().equalToken(Token.TABLESPACE)) {
-                getLexer().nextToken();
-                using.setTablespace(this.name());
-            } else if (getLexer().equalToken(Token.PCTFREE)) {
-                getLexer().nextToken();
-                using.setPtcfree(this.expr());
-            } else if (getLexer().equalToken(Token.INITRANS)) {
-                getLexer().nextToken();
-                using.setInitrans(this.expr());
-            } else if (getLexer().equalToken(Token.MAXTRANS)) {
-                getLexer().nextToken();
-                using.setMaxtrans(this.expr());
-            } else if (getLexer().equalToken(Token.COMPUTE)) {
-                getLexer().nextToken();
-                acceptIdentifier("STATISTICS");
-                using.setComputeStatistics(true);
-            } else if (getLexer().equalToken(Token.ENABLE)) {
-                getLexer().nextToken();
-                using.setEnable(true);
-            } else if (getLexer().equalToken(Token.DISABLE)) {
-                getLexer().nextToken();
-                using.setEnable(false);
-            } else if (getLexer().equalToken(Token.STORAGE)) {
-                OracleStorageClause storage = parseStorage();
-                using.setStorage(storage);
-            } else if (getLexer().equalToken(Token.IDENTIFIER)) {
-                using.setTablespace(this.name());
-                break;
-            } else {
-                break;
-            }
-        }
-        return using;
-    }
-    
-    public SQLColumnDefinition parseColumnRest(SQLColumnDefinition column) {
-        column = super.parseColumnRest(column);
-        
-        if (getLexer().equalToken(Token.ENABLE)) {
-            getLexer().nextToken();
-            column.setEnable(Boolean.TRUE);
-        }
-        
-        return column;
-    }
     
     public SQLExpr exprRest(SQLExpr expr) {
         expr = super.exprRest(expr);
@@ -1012,245 +928,5 @@ public class OracleExprParser extends SQLExprParser {
         }
         
         return expr;
-    }
-    
-    public OracleLobStorageClause parseLobStorage() {
-        getLexer().nextToken();
-        
-        OracleLobStorageClause clause = new OracleLobStorageClause();
-        
-        accept(Token.LEFT_PAREN);
-        this.names(clause.getItems());
-        accept(Token.RIGHT_PAREN);
-        
-        accept(Token.STORE);
-        accept(Token.AS);
-        
-        while (true) {
-            if (getLexer().identifierEquals("SECUREFILE")) {
-                getLexer().nextToken();
-                clause.setSecureFile(true);
-                continue;
-            }
-            
-            if (getLexer().identifierEquals("BASICFILE")) {
-                getLexer().nextToken();
-                clause.setBasicFile(true);
-                continue;
-            }
-            
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                getLexer().nextToken();
-                
-                while (true) {
-                    if (getLexer().equalToken(Token.TABLESPACE)) {
-                        getLexer().nextToken();
-                        clause.setTableSpace(this.name());
-                        continue;
-                    }
-                    
-                    if (getLexer().equalToken(Token.ENABLE)) {
-                        getLexer().nextToken();
-                        accept(Token.STORAGE);
-                        accept(Token.IN);
-                        accept(Token.ROW);
-                        clause.setEnable(true);
-                        continue;
-                    }
-                    
-                    if (getLexer().equalToken(Token.CHUNK)) {
-                        getLexer().nextToken();
-                        clause.setChunk(this.primary());
-                        continue;
-                    }
-                    
-                    if (getLexer().equalToken(Token.NOCACHE)) {
-                        getLexer().nextToken();
-                        clause.setCache(false);
-                        if (getLexer().equalToken(Token.LOGGING)) {
-                            getLexer().nextToken();
-                            clause.setLogging(true);
-                        }
-                        continue;
-                    }
-                    
-                    if (getLexer().equalToken(Token.NOCOMPRESS)) {
-                        getLexer().nextToken();
-                        clause.setCompress(false);
-                        continue;
-                    }
-                    
-                    if (getLexer().equalToken(Token.KEEP_DUPLICATES)) {
-                        getLexer().nextToken();
-                        clause.setKeepDuplicate(true);
-                        continue;
-                    }
-                    
-                    break;
-                }
-                
-                accept(Token.RIGHT_PAREN);
-            }
-            
-            break;
-        }
-        return clause;
-    }
-    
-    public OracleStorageClause parseStorage() {
-        getLexer().nextToken();
-        accept(Token.LEFT_PAREN);
-
-        OracleStorageClause storage = new OracleStorageClause();
-        while (true) {
-            if (getLexer().identifierEquals("INITIAL")) {
-                getLexer().nextToken();
-                storage.setInitial(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.NEXT)) {
-                getLexer().nextToken();
-                storage.setNext(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.MINEXTENTS)) {
-                getLexer().nextToken();
-                storage.setMinExtents(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.MAXEXTENTS)) {
-                getLexer().nextToken();
-                storage.setMaxExtents(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.MAXSIZE)) {
-                getLexer().nextToken();
-                storage.setMaxSize(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.PCTINCREASE)) {
-                getLexer().nextToken();
-                storage.setPctIncrease(this.expr());
-                continue;
-            } else if (getLexer().identifierEquals("FREELISTS")) {
-                getLexer().nextToken();
-                storage.setFreeLists(this.expr());
-                continue;
-            } else if (getLexer().identifierEquals("FREELIST")) {
-                getLexer().nextToken();
-                acceptIdentifier("GROUPS");
-                storage.setFreeListGroups(this.expr());
-                continue;
-            } else if (getLexer().identifierEquals("BUFFER_POOL")) {
-                getLexer().nextToken();
-                storage.setBufferPool(this.expr());
-                continue;
-            } else if (getLexer().identifierEquals("OBJNO")) {
-                getLexer().nextToken();
-                storage.setObjno(this.expr());
-                continue;
-            } else if (getLexer().equalToken(Token.FLASH_CACHE)) {
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.KEEP)) {
-                    getLexer().nextToken();
-                } else if (getLexer().equalToken(Token.NONE)) {
-                    getLexer().nextToken();
-                } else {
-                    accept(Token.DEFAULT);
-                }
-                continue;
-            } else if (getLexer().equalToken(Token.CELL_FLASH_CACHE)) {
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.KEEP)) {
-                    getLexer().nextToken();
-                } else if (getLexer().equalToken(Token.NONE)) {
-                    getLexer().nextToken();
-                } else {
-                    accept(Token.DEFAULT);
-                }
-                continue;
-            }
-
-            break;
-        }
-        accept(Token.RIGHT_PAREN);
-        return storage;
-    }
-    
-    public SQLUnique parseUnique() {
-        accept(Token.UNIQUE);
-
-        OracleUnique unique = new OracleUnique();
-        accept(Token.LEFT_PAREN);
-        unique.getColumns().addAll(exprList(unique));
-        accept(Token.RIGHT_PAREN);
-        
-        if (getLexer().equalToken(Token.USING)) {
-            OracleUsingIndexClause using = parseUsingIndex();
-            unique.setUsing(using);
-        }
-
-        return unique;
-    }
-    
-    public OracleConstraint parseConstraint() {
-        OracleConstraint constraint = (OracleConstraint) super.parseConstraint();
-        
-        while (true) {
-            if (getLexer().equalToken(Token.EXCEPTIONS)) {
-                getLexer().nextToken();
-                accept(Token.INTO);
-                SQLName exceptionsInto = this.name();
-                constraint.setExceptionsInto(exceptionsInto);
-                continue;
-            }
-            
-            if (getLexer().equalToken(Token.DISABLE)) {
-                getLexer().nextToken();
-                constraint.setEnable(false);
-                continue;
-            }
-            
-            if (getLexer().equalToken(Token.ENABLE)) {
-                getLexer().nextToken();
-                constraint.setEnable(true);
-                continue;
-            }
-            
-            if (getLexer().equalToken(Token.INITIALLY)) {
-                getLexer().nextToken();
-                
-                if (getLexer().equalToken(Token.IMMEDIATE)) {
-                    getLexer().nextToken();
-                    constraint.setInitially(Initially.IMMEDIATE);
-                } else {
-                    accept(Token.DEFERRED);
-                    constraint.setInitially(Initially.DEFERRED);
-                }
-                
-                continue;
-            }
-            
-            if (getLexer().equalToken(Token.NOT)) {
-                getLexer().nextToken();
-                if (getLexer().identifierEquals("DEFERRABLE")) {
-                    getLexer().nextToken();
-                    constraint.setDeferrable(false);
-                    continue;
-                }
-                throw new ParserUnsupportedException(getLexer().getToken());
-            }
-            
-            if (getLexer().identifierEquals("DEFERRABLE")) {
-                getLexer().nextToken();
-                constraint.setDeferrable(true);
-                continue;
-            }
-            break;
-        }
-        return constraint;
-    }
-    
-    protected SQLForeignKeyConstraint createForeignKey() {
-        return new OracleForeignKey();
-    }
-    
-    protected SQLCheck createCheck() {
-        return new OracleCheck();
     }
 }

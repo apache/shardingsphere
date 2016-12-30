@@ -24,9 +24,9 @@ import lombok.Setter;
 @Setter
 public class SQLCharacterDataType extends SQLDataTypeImpl {
     
-    public final static String CHAR_TYPE_BYTE = "BYTE";
+    public static final String CHAR_TYPE_BYTE = "BYTE";
     
-    public final static String CHAR_TYPE_CHAR = "CHAR";
+    public static final String CHAR_TYPE_CHAR = "CHAR";
     
     private String charSetName;
     
@@ -36,7 +36,7 @@ public class SQLCharacterDataType extends SQLDataTypeImpl {
     
     private boolean hasBinary;
     
-    public SQLCharacterDataType(final String name){
+    public SQLCharacterDataType(final String name) {
         super(name);
     }
     

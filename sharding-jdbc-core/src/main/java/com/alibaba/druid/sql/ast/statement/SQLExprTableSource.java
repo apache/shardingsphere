@@ -26,14 +26,14 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     
     private SQLExpr expr;
     
-    public SQLExprTableSource(){
+    public SQLExprTableSource() {
     }
 
-    public SQLExprTableSource(SQLExpr expr){
+    public SQLExprTableSource(final SQLExpr expr){
         this(expr, null);
     }
     
-    public SQLExprTableSource(SQLExpr expr, String alias){
+    public SQLExprTableSource(final SQLExpr expr, final String alias) {
         setExpr(expr);
         setAlias(alias);
     }

@@ -26,7 +26,7 @@ public class SQLExprHint extends SQLObjectImpl implements SQLHint {
     
     private final SQLExpr expr;
     
-    public SQLExprHint(final SQLExpr expr){
+    public SQLExprHint(final SQLExpr expr) {
         if (null != expr) {
             expr.setParent(this);
         }

@@ -30,11 +30,4 @@ public abstract class SQLTableSourceImpl extends SQLObjectImpl implements SQLTab
     private String alias;
     
     private final List<SQLHint> hints = new ArrayList<>(2);
-    
-    public SQLTableSourceImpl(){
-    }
-    
-    public SQLTableSourceImpl(final String alias){
-        this.alias = alias;
-    }
 }

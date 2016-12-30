@@ -18,13 +18,9 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerColumnDefinition;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
@@ -39,12 +35,12 @@ public class SQLServerExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER"};
     
-    public SQLServerExprParser(String sql){
+    public SQLServerExprParser(final String sql) {
         super(new SQLServerLexer(sql), JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
-    public SQLServerExprParser(Lexer lexer){
+    public SQLServerExprParser(final Lexer lexer){
         super(lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
     }
     
@@ -185,42 +181,5 @@ public class SQLServerExprParser extends SQLExprParser {
         }
         final String alias = as();
         return new SQLSelectItem(expr, alias);
-    }
-
-    protected SQLColumnDefinition createColumnDefinition() {
-        return new SQLServerColumnDefinition();
-    }
-
-    public SQLColumnDefinition parseColumnRest(SQLColumnDefinition column) {
-        if (getLexer().equalToken(Token.IDENTITY)) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-
-            SQLIntegerExpr seed = (SQLIntegerExpr) this.primary();
-            accept(Token.COMMA);
-            SQLIntegerExpr increment = (SQLIntegerExpr) this.primary();
-            accept(Token.RIGHT_PAREN);
-
-            SQLServerColumnDefinition.Identity identity = new SQLServerColumnDefinition.Identity();
-            identity.setSeed((Integer) seed.getNumber());
-            identity.setIncrement((Integer) increment.getNumber());
-
-            if (getLexer().equalToken(Token.NOT)) {
-                getLexer().nextToken();
-
-                if (getLexer().equalToken(Token.NULL)) {
-                    getLexer().nextToken();
-                    column.setDefaultExpr(new SQLNullExpr());
-                } else {
-                    accept(Token.FOR);
-                    getLexer().identifierEquals("REPLICATION ");
-                }
-            }
-
-            SQLServerColumnDefinition sqlSreverColumn = (SQLServerColumnDefinition) column;
-            sqlSreverColumn.setIdentity(identity);
-        }
-
-        return super.parseColumnRest(column);
     }
 }

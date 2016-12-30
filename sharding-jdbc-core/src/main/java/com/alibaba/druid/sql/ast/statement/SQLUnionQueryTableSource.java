@@ -23,7 +23,7 @@ public class SQLUnionQueryTableSource extends SQLTableSourceImpl {
     
     private final SQLUnionQuery union;
     
-    public SQLUnionQueryTableSource(final SQLUnionQuery union){
+    public SQLUnionQueryTableSource(final SQLUnionQuery union) {
         if (null != union) {
             union.setParent(this);
         }

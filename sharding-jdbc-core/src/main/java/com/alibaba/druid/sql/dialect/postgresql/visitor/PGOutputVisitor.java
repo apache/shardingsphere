@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.postgresql.visitor;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGBoxExpr;
@@ -242,33 +241,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             x.getForClause().accept(this);
         }
 
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLTruncateStatement x) {
-        print("TRUNCATE TABLE ");
-        if (x.isOnly()) {
-            print("ONLY ");
-        }
-
-        printlnAndAccept(x.getTableSources(), ", ");
-
-        if (x.getRestartIdentity() != null) {
-            if (x.getRestartIdentity()) {
-                print(" RESTART IDENTITY");
-            } else {
-                print(" CONTINUE IDENTITY");
-            }
-        }
-
-        if (x.getCascade() != null) {
-            if (x.getCascade()) {
-                print(" CASCADE");
-            } else {
-                print(" RESTRICT");
-            }
-        }
         return false;
     }
 

@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
@@ -30,15 +29,6 @@ public class SQLSetStatement extends SQLStatementImpl {
     private final List<SQLCommentHint> hints = new ArrayList<>();
     
     private final List<SQLAssignItem> items = new ArrayList<>();
-    
-    public SQLSetStatement(final String dbType){
-        super(dbType);
-    }
-    
-    public SQLSetStatement(final SQLExpr target, final SQLExpr value, final String dbType) {
-        super(dbType);
-        items.add(new SQLAssignItem(target, value));
-    }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {

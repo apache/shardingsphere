@@ -61,7 +61,7 @@ public final class SQLUtils {
     
     public static String toOracleString(final SQLObject sqlObject) {
         StringBuilder out = new StringBuilder();
-        sqlObject.accept(new OracleOutputVisitor(out, false));
+        sqlObject.accept(new OracleOutputVisitor(out));
         return out.toString();
     }
     

@@ -32,14 +32,6 @@ import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlPrimaryKey;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUnique;
-import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey;
-import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey.Match;
-import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey.On;
-import com.alibaba.druid.sql.dialect.mysql.ast.MysqlForeignKey.Option;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
@@ -49,7 +41,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr.Search
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSQLColumnDefinition;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.lexer.Token;
@@ -497,51 +488,6 @@ public class MySqlExprParser extends SQLExprParser {
         }
     }
 
-    public SQLColumnDefinition parseColumn() {
-        MySqlSQLColumnDefinition column = new MySqlSQLColumnDefinition();
-        column.setName(name());
-        column.setDataType(parseDataType());
-
-        return parseColumnRest(column);
-    }
-
-    public SQLColumnDefinition parseColumnRest(SQLColumnDefinition column) {
-        if (getLexer().equalToken(Token.ON)) {
-            getLexer().nextToken();
-            accept(Token.UPDATE);
-            SQLExpr expr = this.expr();
-            ((MySqlSQLColumnDefinition) column).setOnUpdate(expr);
-        }
-
-        if (getLexer().identifierEquals("AUTO_INCREMENT")) {
-            getLexer().nextToken();
-            if (column instanceof MySqlSQLColumnDefinition) {
-                ((MySqlSQLColumnDefinition) column).setAutoIncrement(true);
-            }
-            return parseColumnRest(column);
-        }
-
-        if (getLexer().identifierEquals("precision") && column.getDataType().getName().equalsIgnoreCase("double")) {
-            getLexer().nextToken();
-        }
-
-        if (getLexer().identifierEquals("PARTITION")) {
-            throw new ParserException(getLexer());
-        }
-
-        if (getLexer().identifierEquals("STORAGE")) {
-            getLexer().nextToken();
-            SQLExpr expr = expr();
-            if (column instanceof MySqlSQLColumnDefinition) {
-                ((MySqlSQLColumnDefinition) column).setStorage(expr);
-            }
-        }
-
-        super.parseColumnRest(column);
-
-        return column;
-    }
-
     protected SQLDataType parseDataTypeRest(SQLDataType dataType) {
         super.parseDataTypeRest(dataType);
 
@@ -597,46 +543,6 @@ public class MySqlExprParser extends SQLExprParser {
         return expr;
     }
 
-    public SQLAssignItem parseAssignItem() {
-        SQLAssignItem item = new SQLAssignItem();
-
-        SQLExpr var = primary();
-
-        String ident = null;
-        if (var instanceof SQLIdentifierExpr) {
-            ident = ((SQLIdentifierExpr) var).getSimpleName();
-
-            if ("GLOBAL".equalsIgnoreCase(ident)) {
-                ident = getLexer().getLiterals();
-                getLexer().nextToken();
-                var = new SQLVariantRefExpr(ident, true);
-            } else if ("SESSION".equalsIgnoreCase(ident)) {
-                ident = getLexer().getLiterals();
-                getLexer().nextToken();
-                var = new SQLVariantRefExpr(ident, false);
-            } else {
-                var = new SQLVariantRefExpr(ident);
-            }
-        }
-        if ("NAMES".equalsIgnoreCase(ident)) {
-        } else if ("CHARACTER".equalsIgnoreCase(ident)) {
-            var = new SQLIdentifierExpr("CHARACTER SET");
-            accept(Token.SET);
-            if (getLexer().equalToken(Token.EQ)) {
-                getLexer().nextToken();
-            }
-        } else {
-            if (getLexer().equalToken(Token.COLON_EQ)) {
-                getLexer().nextToken();
-            } else {
-                accept(Token.EQ);
-            }
-        }
-        item.setValue(this.expr());
-        item.setTarget(var);
-        return item;
-    }
-    
     public SQLName nameRest(SQLName name) {
         if (getLexer().equalToken(Token.VARIANT) && "@".equals(getLexer().getLiterals())) {
             getLexer().nextToken();
@@ -677,136 +583,7 @@ public class MySqlExprParser extends SQLExprParser {
 
         return null;
     }
-
-    @Override
-    public MySqlPrimaryKey parsePrimaryKey() {
-        accept(Token.PRIMARY);
-        accept(Token.KEY);
-
-        MySqlPrimaryKey primaryKey = new MySqlPrimaryKey();
-
-        if (getLexer().identifierEquals("USING")) {
-            getLexer().nextToken();
-            primaryKey.setIndexType(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-
-        accept(Token.LEFT_PAREN);
-        while (true) {
-            primaryKey.getColumns().add(this.expr());
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            } else {
-                getLexer().nextToken();
-            }
-        }
-        accept(Token.RIGHT_PAREN);
-
-        return primaryKey;
-    }
-
-    public MySqlUnique parseUnique() {
-        accept(Token.UNIQUE);
-
-        if (getLexer().equalToken(Token.KEY)) {
-            getLexer().nextToken();
-        }
-
-        if (getLexer().equalToken(Token.INDEX)) {
-            getLexer().nextToken();
-        }
-
-        MySqlUnique unique = new MySqlUnique();
-
-        if (!getLexer().equalToken(Token.LEFT_PAREN)) {
-            SQLName indexName = name();
-            unique.setIndexName(indexName);
-        }
-
-        accept(Token.LEFT_PAREN);
-        while (true) {
-            unique.getColumns().add(this.expr());
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            } else {
-                getLexer().nextToken();
-            }
-        }
-        accept(Token.RIGHT_PAREN);
-
-        if (getLexer().identifierEquals("USING")) {
-            getLexer().nextToken();
-            unique.setIndexType(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-
-        return unique;
-    }
-
-    public MysqlForeignKey parseForeignKey() {
-        accept(Token.FOREIGN);
-        accept(Token.KEY);
-
-        MysqlForeignKey fk = new MysqlForeignKey();
-
-        if (!getLexer().equalToken(Token.LEFT_PAREN)) {
-            SQLName indexName = name();
-            fk.setIndexName(indexName);
-        }
-        
-        accept(Token.LEFT_PAREN);
-        this.names(fk.getReferencingColumns());
-        accept(Token.RIGHT_PAREN);
-
-        accept(Token.REFERENCES);
-
-        fk.setReferencedTableName(this.name());
-
-        accept(Token.LEFT_PAREN);
-        this.names(fk.getReferencedColumns());
-        accept(Token.RIGHT_PAREN);
-
-        if (getLexer().identifierEquals("MATCH")) {
-            if (getLexer().identifierEquals("FULL")) {
-                fk.setReferenceMatch(Match.FULL);
-            } else if (getLexer().identifierEquals("PARTIAL")) {
-                fk.setReferenceMatch(Match.PARTIAL);
-            } else if (getLexer().identifierEquals("SIMPLE")) {
-                fk.setReferenceMatch(Match.SIMPLE);
-            }
-        }
-
-        if (getLexer().equalToken(Token.ON)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.DELETE)) {
-                fk.setReferenceOn(On.DELETE);
-            } else if (getLexer().equalToken(Token.UPDATE)) {
-                fk.setReferenceOn(On.UPDATE);
-            } else {
-                throw new ParserException("syntax error, expect DELETE or UPDATE, actual " + getLexer().getToken() + " " + getLexer().getLiterals());
-            }
-            getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.RESTRICT)) {
-                fk.setReferenceOption(Option.RESTRICT);
-            } else if (getLexer().identifierEquals("CASCADE")) {
-                fk.setReferenceOption(Option.CASCADE);
-            } else if (getLexer().equalToken(Token.SET)) {
-                accept(Token.NULL);
-                fk.setReferenceOption(Option.SET_NULL);
-            } else if (getLexer().identifierEquals("ON")) {
-                getLexer().nextToken();
-                if (getLexer().identifierEquals("ACTION")) {
-                    fk.setReferenceOption(Option.NO_ACTION);
-                } else {
-                    throw new ParserException("syntax error, expect ACTION, actual " + getLexer().getToken() + " " + getLexer().getLiterals());
-                }
-            }
-            getLexer().nextToken();
-        }
-        return fk;
-    }
-
+    
     protected SQLAggregateExpr parseAggregateExprRest(SQLAggregateExpr aggregateExpr) {
         if (getLexer().equalToken(Token.ORDER)) {
             SQLOrderBy orderBy = this.parseOrderBy();

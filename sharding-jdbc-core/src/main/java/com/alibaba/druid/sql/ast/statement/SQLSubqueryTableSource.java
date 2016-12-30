@@ -23,7 +23,7 @@ public class SQLSubqueryTableSource extends SQLTableSourceImpl {
     
     private final SQLSelect select;
     
-    public SQLSubqueryTableSource(final SQLSelect select){
+    public SQLSubqueryTableSource(final SQLSelect select) {
         if (null != select) {
             select.setParent(this);
         }

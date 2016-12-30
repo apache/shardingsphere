@@ -31,10 +31,7 @@ public class SQLCurrentOfCursorExpr extends SQLExprImpl {
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, cursorName);
-        }
-        visitor.endVisit(this);
+        // TODO
     }
     
     @Override

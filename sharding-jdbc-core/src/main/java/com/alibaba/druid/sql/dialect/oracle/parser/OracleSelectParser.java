@@ -57,7 +57,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQue
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectRestriction;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableSource;
@@ -123,7 +122,6 @@ public class OracleSelectParser extends SQLSelectParser {
                     throw new ParserException(getLexer());
                 }
 
-                select.setRestriction(new OracleSelectRestriction.ReadOnly());
             } else if (getLexer().equalToken(Token.CHECK)) {
                 getLexer().nextToken();
 
@@ -133,14 +131,10 @@ public class OracleSelectParser extends SQLSelectParser {
                     throw new ParserException(getLexer());
                 }
 
-                OracleSelectRestriction.CheckOption checkOption = new OracleSelectRestriction.CheckOption();
-
                 if (getLexer().equalToken(Token.CONSTRAINT)) {
                     getLexer().nextToken();
                     throw new ParserUnsupportedException(getLexer().getToken());
                 }
-
-                select.setRestriction(checkOption);
             } else {
                 throw new ParserException(getLexer());
             }

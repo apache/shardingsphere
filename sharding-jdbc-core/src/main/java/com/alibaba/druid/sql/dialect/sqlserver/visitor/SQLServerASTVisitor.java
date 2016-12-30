@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerColumnDefinition;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerDeclareItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
@@ -30,7 +29,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerExecStatement.S
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement.Else;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerRollbackStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetTransactionIsolationLevelStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
@@ -58,14 +56,6 @@ public interface SQLServerASTVisitor extends SQLASTVisitor {
     boolean visit(SQLServerUpdateStatement x);
     
     void endVisit(SQLServerUpdateStatement x);
-    
-    boolean visit(SQLServerColumnDefinition x);
-    
-    void endVisit(SQLServerColumnDefinition x);
-    
-    boolean visit(SQLServerColumnDefinition.Identity x);
-    
-    void endVisit(SQLServerColumnDefinition.Identity x);
     
     boolean visit(SQLServerExecStatement x);
     
@@ -110,10 +100,6 @@ public interface SQLServerASTVisitor extends SQLASTVisitor {
     boolean visit(SQLServerCommitStatement x);
 
     void endVisit(SQLServerCommitStatement x);
-    
-    boolean visit(SQLServerRollbackStatement x);
-
-    void endVisit(SQLServerRollbackStatement x);
     
     boolean visit(SQLServerWaitForStatement x);
 

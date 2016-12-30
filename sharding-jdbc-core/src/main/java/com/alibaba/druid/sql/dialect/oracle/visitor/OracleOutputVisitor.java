@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.oracle.visitor;
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
-import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
@@ -27,19 +26,11 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAlterTableItem;
-import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLCheck;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
-import com.alibaba.druid.sql.ast.statement.SQLCreateTableStatement;
-import com.alibaba.druid.sql.ast.statement.SQLForeignKeyImpl;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource.JoinType;
-import com.alibaba.druid.sql.ast.statement.SQLRollbackStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUnique;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
@@ -88,58 +79,16 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterIndexStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterIndexStatement.Rebuild;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterProcedureStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSessionStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterSynonymStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableAddConstraint;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableDropPartition;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableModify;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableMoveTablespace;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableSplitPartition;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableSplitPartition.NestedTablePartitionSpec;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableSplitPartition.TableSpaceItem;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableSplitPartition.UpdateIndexesClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTableTruncatePartition;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTablespaceAddDataFile;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTablespaceStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterTriggerStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleAlterViewStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleBlockStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCheck;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCommitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleConstraint;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateDatabaseDbLinkStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateIndexStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateProcedureStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateSequenceStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreateTableStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDropDbLinkStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExplainStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleForStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleForeignKey;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleGotoStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleIfStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleIfStatement.Else;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleIfStatement.ElseIf;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLockTableStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLoopStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement.MergeInsertClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleMergeStatement.MergeUpdateClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePrimaryKey;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSavePointStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
@@ -147,14 +96,10 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot.Item;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectRestriction;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectRestriction.CheckOption;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectRestriction.ReadOnly;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUnique;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
@@ -163,45 +108,8 @@ import java.util.List;
 
 public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleASTVisitor {
 
-    private final boolean printPostSemi;
-
-    public OracleOutputVisitor(Appendable appender){
-        this(appender, true);
-    }
-
-    public OracleOutputVisitor(Appendable appender, boolean printPostSemi){
+    public OracleOutputVisitor(Appendable appender) {
         super(appender);
-        this.printPostSemi = printPostSemi;
-    }
-
-    public boolean isPrintPostSemi() {
-        return printPostSemi;
-    }
-
-    public void postVisit(SQLObject x) {
-        if (!(x instanceof SQLStatement)) {
-            return;
-        }
-
-        if ((!isPrintPostSemi()) //
-            && (!(x.getParent() instanceof OracleBlockStatement))) {
-            return;
-        }
-
-        if (x instanceof OraclePLSQLCommitStatement) {
-            return;
-        }
-        if (x.getParent() instanceof OracleCreateProcedureStatement) {
-            return;
-        }
-
-        if (isPrettyFormat()) {
-            if (x.getParent() != null) {
-                print(";");
-            } else {
-                println(";");
-            }
-        }
     }
 
     private void printHints(List<SQLHint> hints) {
@@ -392,11 +300,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         }
 
         x.getQuery().accept(this);
-
-        if (x.getRestriction() != null) {
-            print(" ");
-            x.getRestriction().accept(this);
-        }
 
         if (x.getForUpdate() != null) {
             println();
@@ -612,20 +515,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
             x.getModelClause().accept(this);
         }
 
-        return false;
-    }
-
-    public boolean visit(OracleSelectRestriction.CheckOption x) {
-        print("CHECK OPTION");
-        if (x.getConstraint() != null) {
-            print(" ");
-            x.getConstraint().accept(this);
-        }
-        return false;
-    }
-
-    public boolean visit(OracleSelectRestriction.ReadOnly x) {
-        print("READ ONLY");
         return false;
     }
 
@@ -859,16 +748,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(Item x) {
-
-    }
-
-    @Override
-    public void endVisit(CheckOption x) {
-
-    }
-
-    @Override
-    public void endVisit(ReadOnly x) {
 
     }
 
@@ -1317,110 +1196,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleMergeStatement x) {
-        print("MERGE ");
-        if (x.getHints().size() > 0) {
-            printAndAccept(x.getHints(), ", ");
-            print(" ");
-        }
-
-        print("INTO ");
-        x.getInto().accept(this);
-
-        if (x.getAlias() != null) {
-            print(" ");
-            print(x.getAlias());
-        }
-
-        println();
-        print("USING ");
-        x.getUsing().accept(this);
-
-        print(" ON (");
-        x.getOn().accept(this);
-        print(") ");
-
-        if (x.getUpdateClause() != null) {
-            println();
-            x.getUpdateClause().accept(this);
-        }
-
-        if (x.getInsertClause() != null) {
-            println();
-            x.getInsertClause().accept(this);
-        }
-
-        if (x.getErrorLoggingClause() != null) {
-            println();
-            x.getErrorLoggingClause().accept(this);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleMergeStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(MergeUpdateClause x) {
-        print("WHEN MATCHED THEN UPDATE SET ");
-        printAndAccept(x.getItems(), ", ");
-        if (x.getWhere() != null) {
-            incrementIndent();
-            println();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        if (x.getDeleteWhere() != null) {
-            incrementIndent();
-            println();
-            print("DELETE WHERE ");
-            x.getDeleteWhere().setParent(x);
-            x.getDeleteWhere().accept(this);
-            decrementIndent();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MergeUpdateClause x) {
-
-    }
-
-    @Override
-    public boolean visit(MergeInsertClause x) {
-        print("WHEN NOT MATCHED THEN INSERT");
-        if (x.getColumns().size() > 0) {
-            print(" ");
-            printAndAccept(x.getColumns(), ", ");
-        }
-        print(" VALUES (");
-        printAndAccept(x.getValues(), ", ");
-        print(")");
-        if (x.getWhere() != null) {
-            incrementIndent();
-            println();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MergeInsertClause x) {
-
-    }
-
-    @Override
     public boolean visit(OracleErrorLoggingClause x) {
         print("LOG ERRORS ");
         if (x.getInto() != null) {
@@ -1518,80 +1293,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleSelectQueryBlock x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleBlockStatement x) {
-        if (x.getParameters().size() != 0) {
-            print("DECLARE");
-            incrementIndent();
-            println();
-
-            for (int i = 0, size = x.getParameters().size(); i < size; ++i) {
-                if (i != 0) {
-                    println();
-                }
-                OracleParameter param = x.getParameters().get(i);
-                param.accept(this);
-                print(";");
-            }
-
-            decrementIndent();
-            println();
-        }
-        print("BEGIN");
-        incrementIndent();
-        println();
-        for (int i = 0, size = x.getStatementList().size(); i < size; ++i) {
-            if (i != 0) {
-                println();
-            }
-            SQLStatement stmt = x.getStatementList().get(i);
-            stmt.setParent(x);
-            stmt.accept(this);
-        }
-        decrementIndent();
-        println();
-        print("END");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleBlockStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleLockTableStatement x) {
-        print("LOCK TABLE ");
-        x.getTable().accept(this);
-        print(" IN ");
-        print(x.getLockMode().name());
-        print(" MODE ");
-        if (x.isNoWait()) {
-            print("NOWAIT");
-        } else if (x.getWait() != null) {
-            print("WAIT ");
-            x.getWait().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleLockTableStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterSessionStatement x) {
-        print("ALTER SESSION SET ");
-        printAndAccept(x.getItems(), ", ");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterSessionStatement x) {
 
     }
 
@@ -1712,442 +1413,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleExplainStatement x) {
-        print("EXPLAIN PLAN");
-        incrementIndent();
-        println();
-        if (x.getStatementId() != null) {
-            print("SET STATEMENT_ID = ");
-            x.getStatementId().accept(this);
-            println();
-        }
-
-        if (x.getInto() != null) {
-            print("INTO ");
-            x.getInto().accept(this);
-            println();
-        }
-
-        print("FRO");
-        println();
-        x.getStatement().accept(this);
-
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleExplainStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterProcedureStatement x) {
-        print("ALTER PROCEDURE ");
-        x.getName().accept(this);
-        if (x.isCompile()) {
-            print(" COMPILE");
-        }
-        if (x.isReuseSettings()) {
-            print(" REUSE SETTINGS");
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterProcedureStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableDropPartition x) {
-        print("DROP PARTITION ");
-        x.getName().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableDropPartition x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableStatement x) {
-        print("ALTER TABLE ");
-        x.getName().accept(this);
-        incrementIndent();
-        for (SQLAlterTableItem item : x.getItems()) {
-            println();
-            item.accept(this);
-        }
-        if (x.isUpdateGlobalIndexes()) {
-            println();
-            print("UPDATE GLOABL INDEXES");
-        }
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableTruncatePartition x) {
-        print("TRUNCATE PARTITION ");
-        x.getName().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableTruncatePartition x) {
-
-    }
-
-    @Override
-    public boolean visit(TableSpaceItem x) {
-        print("TABLESPACE ");
-        x.getTablespace().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(TableSpaceItem x) {
-
-    }
-
-    @Override
-    public boolean visit(UpdateIndexesClause x) {
-        print("UPDATE INDEXES");
-        if (x.getItems().size() > 0) {
-            print("(");
-            printAndAccept(x.getItems(), ", ");
-            print(")");
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(UpdateIndexesClause x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableSplitPartition x) {
-        print("SPLIT PARTITION ");
-        x.getName().accept(this);
-
-        if (x.getAt().size() > 0) {
-            incrementIndent();
-            println();
-            print("AT (");
-            printAndAccept(x.getAt(), ", ");
-            print(")");
-            decrementIndent();
-        }
-
-        if (x.getInto().size() > 0) {
-            println();
-            incrementIndent();
-            print("INTO (");
-            printAndAccept(x.getInto(), ", ");
-            print(")");
-            decrementIndent();
-        }
-
-        if (x.getUpdateIndexes() != null) {
-            println();
-            incrementIndent();
-            x.getUpdateIndexes().accept(this);
-            decrementIndent();
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableSplitPartition x) {
-
-    }
-
-    @Override
-    public boolean visit(NestedTablePartitionSpec x) {
-        print("PARTITION ");
-        x.getPartition().accept(this);
-        for (SQLObject item : x.getSegmentAttributeItems()) {
-            print(" ");
-            item.accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(NestedTablePartitionSpec x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableModify x) {
-        print("MODIFY (");
-        incrementIndent();
-        for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-            println();
-            SQLColumnDefinition column = x.getColumns().get(i);
-            column.accept(this);
-            if (i != size - 1) {
-                print(", ");
-            }
-        }
-        decrementIndent();
-        println();
-        print(")");
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableModify x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleCreateIndexStatement x) {
-        print("CREATE ");
-        if (x.getType() != null) {
-            print(x.getType());
-            print(" ");
-        }
-
-        print("INDEX ");
-
-        x.getName().accept(this);
-        print(" ON ");
-        x.getTable().accept(this);
-        print("(");
-        printAndAccept(x.getItems(), ", ");
-        print(")");
-
-        if (x.isIndexOnlyTopLevel()) {
-            println();
-            print("INDEX ONLY TOPLEVEL");
-        }
-
-        if (x.getPtcfree() != null) {
-            println();
-            print("PCTFREE ");
-            x.getPtcfree().accept(this);
-        }
-
-        if (x.getInitrans() != null) {
-            println();
-            print("INITRANS ");
-            x.getInitrans().accept(this);
-        }
-
-        if (x.getMaxtrans() != null) {
-            println();
-            print("MAXTRANS ");
-            x.getMaxtrans().accept(this);
-        }
-
-        if (x.isComputeStatistics()) {
-            println();
-            print("COMPUTE STATISTICS");
-        }
-
-        if (x.getTablespace() != null) {
-            println();
-            print("TABLESPACE ");
-            x.getTablespace().accept(this);
-        }
-
-        if (x.isOnline()) {
-            print(" ONLINE");
-        }
-
-        if (x.isNoParallel()) {
-            print(" NOPARALLEL");
-        } else if (x.getParallel() != null) {
-            print(" PARALLEL ");
-            x.getParallel().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCreateIndexStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterIndexStatement x) {
-        print("ALTER INDEX ");
-        x.getName().accept(this);
-
-        if (x.getRenameTo() != null) {
-            print(" RENAME TO ");
-            x.getRenameTo().accept(this);
-        }
-
-        if (x.getMonitoringUsage() != null) {
-            print(" MONITORING USAGE");
-        }
-
-        if (x.getRebuild() != null) {
-            print(" ");
-            x.getRebuild().accept(this);
-        }
-
-        if (x.getParallel() != null) {
-            print(" PARALLEL");
-            x.getParallel().accept(this);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterIndexStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(Rebuild x) {
-        print("REBUILD");
-
-        if (x.getOption() != null) {
-            print(" ");
-            x.getOption().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(Rebuild x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleForStatement x) {
-        print("FOR ");
-        x.getIndex().accept(this);
-        print(" IN ");
-        x.getRange().accept(this);
-        println();
-        print("LOOP");
-        incrementIndent();
-        println();
-
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-
-        decrementIndent();
-        println();
-        print("END LOOP");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleForStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(Else x) {
-        print("ELSE");
-        incrementIndent();
-        println();
-
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            if (i != 0) {
-                println();
-            }
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-        }
-        print(";");
-
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public boolean visit(ElseIf x) {
-        print("ELSE IF ");
-        x.getCondition().accept(this);
-        print(" THEN");
-        incrementIndent();
-        println();
-
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            if (i != 0) {
-                println();
-            }
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-        }
-        print(";");
-
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(ElseIf x) {
-
-    }
-
-    @Override
-    public void endVisit(Else x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleIfStatement x) {
-        print("IF ");
-        x.getCondition().accept(this);
-        print(" THEN");
-        incrementIndent();
-        println();
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-        print(";");
-        decrementIndent();
-
-        for (ElseIf elseIf : x.getElseIfList()) {
-            println();
-            elseIf.accept(this);
-        }
-
-        if (x.getElseItem() != null) {
-            println();
-            x.getElseItem().accept(this);
-        }
-        println();
-        print("END IF");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleIfStatement x) {
-
-    }
-
-    @Override
     public boolean visit(OracleRangeExpr x) {
         x.getLowBound().accept(this);
         print("..");
@@ -2157,196 +1422,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleRangeExpr x) {
-
-    }
-
-    protected void visitColumnDefault(SQLColumnDefinition x) {
-        if (x.getParent() instanceof OracleBlockStatement) {
-            print(" := ");
-        } else {
-            print(" DEFAULT ");
-        }
-        x.getDefaultExpr().accept(this);
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableAddConstraint x) {
-        print("ADD ");
-        x.getConstraint().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableAddConstraint x) {
-
-    }
-
-    @Override
-    public boolean visit(OraclePrimaryKey x) {
-        if (x.getName() != null) {
-            print("CONSTRAINT ");
-            x.getName().accept(this);
-            print(" ");
-        }
-        print("PRIMARY KEY (");
-        printAndAccept(x.getColumns(), ", ");
-        print(")");
-
-        printConstraintState(x);
-
-        return false;
-    }
-
-    protected void printConstraintState(OracleConstraint x) {
-        if (x.getUsing() != null) {
-            println();
-            x.getUsing().accept(this);
-        }
-
-        if (x.getExceptionsInto() != null) {
-            println();
-            print("EXCEPTIONS INTO ");
-            x.getExceptionsInto().accept(this);
-        }
-
-        if (x.getEnable() != null) {
-            if (x.getEnable().booleanValue()) {
-                print(" ENABLE");
-            } else {
-                print(" DIABLE");
-            }
-        }
-
-        if (x.getInitially() != null) {
-            print(" INITIALLY ");
-            print(x.getInitially().name());
-        }
-
-        if (x.getDeferrable() != null) {
-            if (x.getDeferrable().booleanValue()) {
-                print(" DEFERRABLE");
-            } else {
-                print(" NOT DEFERRABLE");
-            }
-        }
-    }
-
-    @Override
-    public void endVisit(OraclePrimaryKey x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleCreateTableStatement x) {
-        this.visit((SQLCreateTableStatement) x);
-
-        if (x.isOrganizationIndex()) {
-            println();
-            print("ORGANIZATION INDEX");
-        }
-
-        if (x.getPtcfree() != null) {
-            println();
-            print("PCTFREE ");
-            x.getPtcfree().accept(this);
-        }
-
-        if (x.getInitrans() != null) {
-            println();
-            print("INITRANS ");
-            x.getInitrans().accept(this);
-        }
-
-        if (x.getMaxtrans() != null) {
-            println();
-            print("MAXTRANS ");
-            x.getMaxtrans().accept(this);
-        }
-
-        if (x.isInMemoryMetadata()) {
-            println();
-            print("IN_MEMORY_METADATA");
-        }
-
-        if (x.isCursorSpecificSegment()) {
-            println();
-            print("CURSOR_SPECIFIC_SEGMENT");
-        }
-
-        if (x.getParallel() == Boolean.TRUE) {
-            println();
-            print("PARALLEL");
-        } else if (x.getParallel() == Boolean.FALSE) {
-            println();
-            print("NOPARALLEL");
-        }
-
-        if (x.getCache() == Boolean.TRUE) {
-            println();
-            print("CACHE");
-        } else if (x.getCache() == Boolean.FALSE) {
-            println();
-            print("NOCACHE");
-        }
-
-        if (x.getCompress() == Boolean.TRUE) {
-            println();
-            print("COMPRESS");
-        } else if (x.getCompress() == Boolean.FALSE) {
-            println();
-            print("NOCOMPRESS");
-        }
-
-        if (x.getLogging() == Boolean.TRUE) {
-            println();
-            print("LOGGING");
-        } else if (x.getLogging() == Boolean.FALSE) {
-            println();
-            print("NOLOGGING");
-        }
-
-        if (x.getTablespace() != null) {
-            println();
-            print("TABLESPACE ");
-            x.getTablespace().accept(this);
-        }
-
-        if (x.getStorage() != null) {
-            println();
-            x.getStorage().accept(this);
-        }
-
-        if (x.getLobStorage() != null) {
-            println();
-            x.getLobStorage().accept(this);
-        }
-
-        if (x.isOnCommit()) {
-            println();
-            print("ON COMMIT");
-        }
-
-        if (x.isPreserveRows()) {
-            println();
-            print("PRESERVE ROWS");
-        }
-
-        if (x.getPartitioning() != null) {
-            println();
-            x.getPartitioning().accept(this);
-        }
-
-        if (x.getSelect() != null) {
-            println();
-            print("AS");
-            println();
-            x.getSelect().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCreateTableStatement x) {
 
     }
 
@@ -2416,18 +1491,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleStorageClause x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleGotoStatement x) {
-        print("GOTO ");
-        x.getLabel().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleGotoStatement x) {
 
     }
 
@@ -2508,54 +1571,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleAlterTriggerStatement x) {
-        print("ALTER TRIGGER ");
-        x.getName().accept(this);
-
-        if (x.isCompile()) {
-            print(" COMPILE");
-        }
-
-        if (x.getEnable() != null) {
-            if (x.getEnable().booleanValue()) {
-                print("ENABLE");
-            } else {
-                print("DISABLE");
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTriggerStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterSynonymStatement x) {
-        print("ALTER SYNONYM ");
-        x.getName().accept(this);
-
-        if (x.isCompile()) {
-            print(" COMPILE");
-        }
-
-        if (x.getEnable() != null) {
-            if (x.getEnable().booleanValue()) {
-                print("ENABLE");
-            } else {
-                print("DISABLE");
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterSynonymStatement x) {
-
-    }
-
-    @Override
     public boolean visit(AsOfSnapshotClause x) {
         print("AS OF SNAPSHOT(");
         x.getExpr().accept(this);
@@ -2565,42 +1580,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(AsOfSnapshotClause x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterViewStatement x) {
-        print("ALTER VIEW ");
-        x.getName().accept(this);
-
-        if (x.isCompile()) {
-            print(" COMPILE");
-        }
-
-        if (x.getEnable() != null) {
-            if (x.getEnable().booleanValue()) {
-                print("ENABLE");
-            } else {
-                print("DISABLE");
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterViewStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTableMoveTablespace x) {
-        print(" MOVE TABLESPACE ");
-        x.getName().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTableMoveTablespace x) {
 
     }
 
@@ -2636,105 +1615,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleFileSpecification x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTablespaceAddDataFile x) {
-        print("ADD DATAFILE");
-        incrementIndent();
-        for (OracleFileSpecification file : x.getFiles()) {
-            println();
-            file.accept(this);
-        }
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTablespaceAddDataFile x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleAlterTablespaceStatement x) {
-        print("ALTER TABLESPACE ");
-        x.getName().accept(this);
-        println();
-        x.getItem().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleAlterTablespaceStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLTruncateStatement x) {
-        print("TRUNCATE TABLE ");
-        printAndAccept(x.getTableSources(), ", ");
-
-        if (x.isPurgeSnapshotLog()) {
-            print(" PURGE SNAPSHOT LOG");
-        }
-        return false;
-    }
-
-    @Override
-    public boolean visit(OracleCreateSequenceStatement x) {
-        print("CREATE SEQUENCE ");
-        x.getName().accept(this);
-
-        if (x.getStartWith() != null) {
-            print(" START WITH ");
-            x.getStartWith().accept(this);
-        }
-
-        if (x.getIncrementBy() != null) {
-            print(" INCREMENT BY ");
-            x.getIncrementBy().accept(this);
-        }
-
-        if (x.getMaxValue() != null) {
-            print(" MAXVALUE ");
-            x.getMaxValue().accept(this);
-        }
-
-        if (x.isNoMaxValue()) {
-            print(" NOMAXVALUE");
-        }
-
-        if (x.getMinValue() != null) {
-            print(" MINVALUE ");
-            x.getMinValue().accept(this);
-        }
-
-        if (x.isNoMinValue()) {
-            print(" NOMINVALUE");
-        }
-
-        if (x.getCycle() != null) {
-            if (x.getCycle().booleanValue()) {
-                print(" CYCLE");
-            } else {
-                print(" NOCYCLE");
-            }
-        }
-
-        if (x.getCache() != null) {
-            if (x.getCache().booleanValue()) {
-                print(" CACHE");
-            } else {
-                print(" NOCACHE");
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCreateSequenceStatement x) {
 
     }
 
@@ -2792,32 +1672,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public boolean visit(OracleLoopStatement x) {
-        print("LOOP");
-        incrementIndent();
-        println();
-
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            SQLStatement item = x.getStatements().get(i);
-            item.setParent(x);
-            item.accept(this);
-            if (i != size - 1) {
-                println();
-            }
-        }
-
-        decrementIndent();
-        println();
-        print("END LOOP");
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleLoopStatement x) {
-
-    }
-
-    @Override
     public boolean visit(OracleExitStatement x) {
         print("EXIT");
         if (x.getWhen() != null) {
@@ -2829,127 +1683,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleExitStatement x) {
-
-    }
-
-    @Override
-    public void endVisit(SQLRollbackStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleSavePointStatement x) {
-        print("ROLLBACK");
-        if (x.getTo() != null) {
-            print(" TO ");
-            x.getTo().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleSavePointStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleCreateProcedureStatement x) {
-        if (x.isOrReplace()) {
-            print("CREATE OR REPLACE PROCEDURE ");
-        } else {
-            print("CREATE PROCEDURE ");
-        }
-        x.getName().accept(this);
-
-        int paramSize = x.getParameters().size();
-
-        if (paramSize > 0) {
-            print(" (");
-            incrementIndent();
-            println();
-
-            for (int i = 0; i < paramSize; ++i) {
-                if (i != 0) {
-                    print(", ");
-                    println();
-                }
-                OracleParameter param = x.getParameters().get(i);
-                param.accept(this);
-            }
-
-            decrementIndent();
-            println();
-            print(")");
-        }
-
-        println();
-        x.getBlock().setParent(x);
-        x.getBlock().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCreateProcedureStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleCreateDatabaseDbLinkStatement x) {
-        print("CREATE ");
-        if (x.isShared()) {
-            print("SHARE ");
-        }
-
-        if (x.is_public()) {
-            print("PUBLIC ");
-        }
-
-        print("DATABASE LINK ");
-
-        x.getName().accept(this);
-
-        if (x.getUser() != null) {
-            print(" CONNECT TO ");
-            x.getUser().accept(this);
-
-            if (x.getPassword() != null) {
-                print(" IDENTIFIED BY ");
-                print(x.getPassword());
-            }
-        }
-
-        if (x.getAuthenticatedUser() != null) {
-            print(" AUTHENTICATED BY ");
-            x.getAuthenticatedUser().accept(this);
-        }
-
-        if (x.getUsing() != null) {
-            print(" USING ");
-            x.getUsing().accept(this);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCreateDatabaseDbLinkStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleDropDbLinkStatement x) {
-        print("DROP ");
-        if (x.isPublic()) {
-            print("PUBLIC ");
-        }
-        print("DATABASE LINK ");
-        x.getName().accept(this);
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleDropDbLinkStatement x) {
 
     }
 
@@ -3179,50 +1912,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     @Override
     public void endVisit(OracleLobStorageClause x) {
 
-    }
-
-    @Override
-    public boolean visit(OracleUnique x) {
-        visit((SQLUnique) x);
-
-        printConstraintState(x);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleUnique x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleForeignKey x) {
-        visit((SQLForeignKeyImpl) x);
-
-        printConstraintState(x);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleForeignKey x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleCheck x) {
-        visit((SQLCheck) x);
-
-        printConstraintState(x);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCheck x) {
-
-    }
-
-    @Override
-    protected void printCascade() {
-        print(" CASCADE CONSTRAINTS");
     }
 
     @Override

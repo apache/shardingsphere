@@ -34,7 +34,7 @@ public class SQLDeleteStatement extends SQLStatementImpl {
     private final List<String> identifiersBetweenDeleteAndFrom = new ArrayList<>();
     
     public SQLDeleteStatement(final String dbType){
-        super (dbType);
+        super(dbType);
     }
     
     public void setTableSource(final SQLExpr expr) {

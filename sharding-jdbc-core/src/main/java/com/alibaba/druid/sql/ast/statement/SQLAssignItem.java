@@ -29,11 +29,6 @@ public class SQLAssignItem extends SQLObjectImpl {
     
     private SQLExpr value;
     
-    public SQLAssignItem(SQLExpr target, SQLExpr value){
-        setTarget(target);
-        setValue(value);
-    }
-    
     public void setTarget(final SQLExpr target) {
         if (null != target) {
             target.setParent(this);

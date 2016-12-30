@@ -27,14 +27,11 @@ public class OracleSelect extends SQLSelect {
     
     private OracleSelectForUpdate forUpdate;
     
-    private OracleSelectRestriction restriction;
-        
     @Override
     protected void acceptInternal(SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getWithSubQuery());
             acceptChild(visitor, getQuery());
-            acceptChild(visitor, getRestriction());
             acceptChild(visitor, getOrderBy());
             acceptChild(visitor, forUpdate);
         }

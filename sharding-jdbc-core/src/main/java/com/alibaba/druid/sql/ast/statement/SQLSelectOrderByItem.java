@@ -37,7 +37,7 @@ public class SQLSelectOrderByItem extends SQLObjectImpl {
     
     private NullsOrderType nullsOrderType;
 
-    public SQLSelectOrderByItem(final SQLExpr expr){
+    public SQLSelectOrderByItem(final SQLExpr expr) {
         if (null != expr) {
             expr.setParent(this);
         }

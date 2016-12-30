@@ -19,12 +19,7 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
-import com.alibaba.druid.sql.ast.statement.SQLColumnConstraint;
-import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLGrantStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerColumnDefinition;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerColumnDefinition.Identity;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerDeclareItem;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
@@ -39,7 +34,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerExecStatement.S
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerIfStatement.Else;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerRollbackStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerSetTransactionIsolationLevelStatement;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
@@ -273,65 +267,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     }
 
     @Override
-    public boolean visit(Identity x) {
-        print("IDENTITY (");
-        print(x.getSeed());
-        print(", ");
-        print(x.getIncrement());
-        print(")");
-        return false;
-    }
-
-    @Override
-    public void endVisit(Identity x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLServerColumnDefinition x) {
-        x.getName().accept(this);
-
-        if (x.getDataType() != null) {
-            print(' ');
-            x.getDataType().accept(this);
-        }
-
-        if (x.getDefaultExpr() != null) {
-            visitColumnDefault(x);
-        }
-
-        for (SQLColumnConstraint item : x.getConstraints()) {
-            print(' ');
-            item.accept(this);
-        }
-
-        if (x.getIdentity() != null) {
-            print(' ');
-            x.getIdentity().accept(this);
-        }
-
-        if (x.getEnable() != null) {
-            if (x.getEnable().booleanValue()) {
-                print(" ENABLE");
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerColumnDefinition x) {
-
-    }
-
-    public boolean visit(SQLColumnDefinition x) {
-        if (x instanceof SQLServerColumnDefinition) {
-            return visit((SQLServerColumnDefinition) x);
-        }
-        return super.visit(x);
-    }
-
-    @Override
     public boolean visit(SQLServerExecStatement x) {
         print("EXEC ");
         
@@ -558,20 +493,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     }
     
     @Override
-    protected void printGrantOn(SQLGrantStatement x) {
-        if (x.getOn() != null) {
-            print(" ON ");
-
-            if (x.getObjectType() != null) {
-                print(x.getObjectType().name());
-                print("::");
-            }
-
-            x.getOn().accept(this);
-        }
-    }
-    
-    @Override
     public void endVisit(SQLServerSelect x) {
         
     }
@@ -638,28 +559,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     }
 
     @Override
-    public boolean visit(SQLServerRollbackStatement x) {
-        print("ROLLBACK");
-
-        if (x.isWork()) {
-            print(" WORK");
-        } else {
-            print(" TRANSACTION");
-            if (x.getName() != null) {
-                print(" ");
-                x.getName().accept(this);
-            }
-        }
-        
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerRollbackStatement x) {
-        
-    }
-
-    @Override
     public boolean visit(SQLServerWaitForStatement x) {
         print("WAITFOR");
 
@@ -686,21 +585,19 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     public void endVisit(SQLServerWaitForStatement x) {
         
     }
-
-     @Override
-     public boolean visit(SQLServerParameter x) {
-          // TODO Auto-generated method stub
-          x.getExpr().accept(this);
-          if(x.isType())
-          {
-               print(" OUT");
-          }
-          return false;
-     }
-
-     @Override
-     public void endVisit(SQLServerParameter x) {
-          // TODO Auto-generated method stub
+    
+    @Override
+    public boolean visit(SQLServerParameter x) {
+      x.getExpr().accept(this);
+      if(x.isType())
+      {
+           print(" OUT");
+      }
+      return false;
+    }
+    
+    @Override
+    public void endVisit(SQLServerParameter x) {
          
-     }
+    }
 }
