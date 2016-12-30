@@ -94,9 +94,12 @@ import java.util.List;
 public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements PrintableVisitor {
     
     protected final Appendable appender;
-    private int                indentCount            = 0;
-    private boolean            prettyFormat           = true;
-    protected int              selectListNumberOfLine = 5;
+    
+    private int indentCount;
+    
+    private boolean prettyFormat = true;
+    
+    protected int selectListNumberOfLine = 5;
 
     private List<Object> parameters;
 

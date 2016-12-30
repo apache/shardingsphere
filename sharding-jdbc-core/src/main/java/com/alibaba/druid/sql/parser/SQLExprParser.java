@@ -699,10 +699,6 @@ public class SQLExprParser extends SQLParser {
     }
     
     public final void names(final Collection<SQLName> exprCol) {
-        names(exprCol, null);
-    }
-    
-    public final void names(final Collection<SQLName> exprCol, final SQLObject parent) {
         if (getLexer().equalToken(Token.RIGHT_BRACE)) {
             return;
         }
@@ -710,12 +706,10 @@ public class SQLExprParser extends SQLParser {
             return;
         }
         SQLName name = name();
-        name.setParent(parent);
         exprCol.add(name);
         while (getLexer().equalToken(Token.COMMA)) {
             getLexer().nextToken();
             name = name();
-            name.setParent(parent);
             exprCol.add(name);
         }
     }
@@ -1128,7 +1122,6 @@ public class SQLExprParser extends SQLParser {
         } else if (getLexer().equalToken(Token.GT_EQ)) {
             getLexer().nextToken();
             rightExp = bitOr();
-            // rightExp = relationalRest(rightExp);
             expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.GreaterThanOrEqual, rightExp, getDbType());
         } else if (getLexer().equalToken(Token.BANG_LT)) {
             getLexer().nextToken();
