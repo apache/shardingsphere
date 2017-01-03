@@ -50,7 +50,7 @@ public class PGSelectParser extends SQLSelectParser {
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
             PGValuesQuery valuesQuery = new PGValuesQuery();
-            valuesQuery.getValues().addAll(exprParser.exprList(valuesQuery));
+            valuesQuery.getValues().addAll(getExprParser().exprList(valuesQuery));
             accept(Token.RIGHT_PAREN);
             return queryRest(valuesQuery);
         }
@@ -128,7 +128,7 @@ public class PGSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.WINDOW)) {
             getLexer().nextToken();
             PGSelectQueryBlock.WindowClause window = new PGSelectQueryBlock.WindowClause();
-            window.setName(this.expr());
+            window.setName(getExprParser().expr());
             accept(Token.AS);
 
             while (true) {
@@ -154,7 +154,7 @@ public class PGSelectParser extends SQLSelectParser {
                     limit.setRowCount(new SQLIdentifierExpr("ALL"));
                     getLexer().nextToken();
                 } else {
-                    limit.setRowCount(expr());
+                    limit.setRowCount(getExprParser().expr());
                 }
 
                 queryBlock.setLimit(limit);
@@ -165,8 +165,7 @@ public class PGSelectParser extends SQLSelectParser {
                     queryBlock.setLimit(limit);
                 }
                 getLexer().nextToken();
-                SQLExpr offset = expr();
-                limit.setOffset(offset);
+                limit.setOffset(getExprParser().expr());
 
                 if (getLexer().equalToken(Token.ROW) || getLexer().equalToken(Token.ROWS)) {
                     getLexer().nextToken();
@@ -188,8 +187,7 @@ public class PGSelectParser extends SQLSelectParser {
                 throw new ParserException("expect 'FIRST' or 'NEXT'");
             }
 
-            SQLExpr count = expr();
-            fetch.setCount(count);
+            fetch.setCount(getExprParser().expr());
 
             if (getLexer().equalToken(Token.ROW) || getLexer().equalToken(Token.ROWS)) {
                 getLexer().nextToken();
@@ -277,8 +275,8 @@ public class PGSelectParser extends SQLSelectParser {
         while (true) {
             PGParameter parameter = new PGParameter();
 
-            parameter.setName(this.exprParser.name());
-            parameter.setDataType(this.exprParser.parseDataType());
+            parameter.setName(getExprParser().name());
+            parameter.setDataType(getExprParser().parseDataType());
 
             parameters.add(parameter);
             if (getLexer().equalToken(Token.COMMA) || getLexer().equalToken(Token.SEMI)) {

@@ -86,8 +86,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
         
         if (getLexer().identifierEquals("OFFSET")) {
             getLexer().nextToken();
-            SQLExpr offset = this.expr();
-            
+            SQLExpr offset = getExprParser().expr();
             acceptIdentifier("ROWS");
             select.setOffset(offset);
             
@@ -95,7 +94,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
                 getLexer().nextToken();
                 acceptIdentifier("NEXT");
                 
-                SQLExpr rowCount = expr();
+                SQLExpr rowCount = getExprParser().expr();
                 acceptIdentifier("ROWS");
                 acceptIdentifier("ONLY");
                 select.setRowCount(rowCount);
@@ -160,8 +159,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
             accept(Token.LEFT_PAREN);
 
             while (true) {
-                SQLExpr expr = this.expr();
-                SQLExprHint hint = new SQLExprHint(expr);
+                SQLExprHint hint = new SQLExprHint(getExprParser().expr());
                 hint.setParent(tableSource);
                 tableSource.getHints().add(hint);
                 if (getLexer().equalToken(Token.COMMA)) {

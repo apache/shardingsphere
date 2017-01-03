@@ -62,7 +62,7 @@ public class DB2SelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.FETCH)) {
                 getLexer().nextToken();
                 accept(Token.FIRST);
-                SQLExpr first = this.exprParser.primary();
+                SQLExpr first = getExprParser().primary();
                 queryBlock.setFirst(first);
                 if (getLexer().identifierEquals("ROW") || getLexer().identifierEquals("ROWS")) {
                     getLexer().nextToken();
@@ -99,7 +99,7 @@ public class DB2SelectParser extends SQLSelectParser {
                 getLexer().nextToken();
                 accept(Token.FOR);
                 
-                queryBlock.setOptimizeFor(this.expr());
+                queryBlock.setOptimizeFor(getExprParser().expr());
                 if (getLexer().identifierEquals("ROW")) {
                     getLexer().nextToken();
                 } else {
