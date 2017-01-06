@@ -25,9 +25,7 @@ import com.alibaba.druid.sql.lexer.Token;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,64 +92,49 @@ public class SQLStatementParser extends SQLParser {
      * @return SQL解析对象
      */
     public SQLStatement parseStatement() {
-        return parseStatementList(1).get(0);
+        if (getLexer().equalToken(Token.SEMI)) {
+            getLexer().nextToken();
+        }
+        if (getLexer().equalToken(Token.WITH)) {
+            // TODO 目前丢弃With的SQL
+            parseWith();
+        }
+        if (getLexer().equalToken(Token.SELECT)) {
+            return parseSelect();
+        }
+        if (getLexer().equalToken(Token.INSERT)) {
+            return SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse();
+        }
+        if (getLexer().equalToken(Token.UPDATE)) {
+            return SQLUpdateParserFactory.newInstance(exprParser, getDbType()).parse();
+        }
+        if (getLexer().equalToken(Token.DELETE)) {
+            return parseDeleteStatement();
+        }
+        if (getLexer().equalToken(Token.CREATE) || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.SET) || getLexer().equalToken(Token.ALTER)
+                || getLexer().equalToken(Token.DROP) || getLexer().equalToken(Token.TRUNCATE) || getLexer().equalToken(Token.USE) || getLexer().equalToken(Token.GRANT)
+                || getLexer().equalToken(Token.REVOKE) || getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL") || getLexer().identifierEquals("RENAME")
+                || getLexer().identifierEquals("RELEASE") || getLexer().identifierEquals("SAVEPOINT") || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("COMMIT")
+                || getLexer().equalToken(Token.SHOW)) {
+            throw new ParserUnsupportedException(getLexer().getToken());
+        }
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            int currentPosition = getLexer().getCurrentPosition();
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.SELECT)) {
+                getLexer().setCurrentPosition(currentPosition);
+                getLexer().setToken(Token.LEFT_PAREN);
+                return parseSelect();
+            }
+        }
+        if (getLexer().equalToken(Token.COMMENT)) {
+            return parseComment();
+        }
+        throw new ParserException(getLexer());
     }
     
-    protected List<SQLStatement> parseStatementList(final int max) {
-        List<SQLStatement> result = new ArrayList<>(-1 == max ? 16 : max);
-        while (true) {
-            if (-1 != max && result.size() >= max) {
-                return result;
-            }
-            if (getLexer().isEndToken()) {
-                return result;
-            }
-            if (getLexer().equalToken(Token.SEMI)) {
-                getLexer().nextToken();
-                continue;
-            }
-            if (getLexer().equalToken(Token.SELECT)) {
-                result.add(parseSelect());
-                continue;
-            }
-            if (getLexer().equalToken(Token.INSERT)) {
-                result.add(SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse());
-                continue;
-            }
-            if (getLexer().equalToken(Token.UPDATE)) {
-                result.add(SQLUpdateParserFactory.newInstance(exprParser, getDbType()).parse());
-                continue;
-            }
-            if (getLexer().equalToken(Token.DELETE)) {
-                result.add(parseDeleteStatement());
-                continue;
-            }
-            if (getLexer().equalToken(Token.CREATE) || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.SET) || getLexer().equalToken(Token.ALTER) 
-                    || getLexer().equalToken(Token.DROP) || getLexer().equalToken(Token.TRUNCATE) || getLexer().equalToken(Token.USE) || getLexer().equalToken(Token.GRANT)
-                    || getLexer().equalToken(Token.REVOKE) || getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL") || getLexer().identifierEquals("RENAME")
-                    || getLexer().identifierEquals("RELEASE") || getLexer().identifierEquals("SAVEPOINT") || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("COMMIT") 
-                    || getLexer().equalToken(Token.SHOW)) {
-                throw new ParserUnsupportedException(getLexer().getToken());
-            }
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                int currentPosition = getLexer().getCurrentPosition();
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.SELECT)) {
-                    getLexer().setCurrentPosition(currentPosition);
-                    getLexer().setToken(Token.LEFT_PAREN);
-                    result.add(parseSelect());
-                    continue;
-                }
-            }
-            if (parseStatementListDialect(result)) {
-                continue;
-            }
-            if (getLexer().equalToken(Token.COMMENT)) {
-                result.add(this.parseComment());
-                continue;
-            }
-            throw new ParserException(getLexer());
-        }
+    protected SQLStatement parseWith() {
+        return null;
     }
     
     protected SQLSelectStatement parseSelect() {
@@ -160,11 +143,6 @@ public class SQLStatementParser extends SQLParser {
     
     protected SQLSelectParser createSQLSelectParser() {
         return new SQLSelectParser(exprParser);
-    }
-    
-
-    public boolean parseStatementListDialect(final List<SQLStatement> statementList) {
-        return false;
     }
     
     public SQLCommentStatement parseComment() {

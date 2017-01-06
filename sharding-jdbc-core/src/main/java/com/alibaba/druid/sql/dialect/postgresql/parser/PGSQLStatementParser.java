@@ -31,8 +31,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
 
-import java.util.List;
-
 public class PGSQLStatementParser extends SQLStatementParser {
     
     public PGSQLStatementParser(final String sql) {
@@ -103,16 +101,6 @@ public class PGSQLStatementParser extends SQLStatementParser {
         }
 
         return deleteStatement;
-    }
-
-    public boolean parseStatementListDialect(List<SQLStatement> statementList) {
-        if (getLexer().equalToken(Token.WITH)) {
-            SQLStatement stmt = parseWith();
-            statementList.add(stmt);
-            return true;
-        }
-
-        return false;
     }
 
     public PGWithClause parseWithClause() {
@@ -195,7 +183,8 @@ public class PGSQLStatementParser extends SQLStatementParser {
     protected PGSelectStatement parseSelect() {
         return new PGSelectStatement(createSQLSelectParser().select());
     }
-
+    
+    @Override
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {

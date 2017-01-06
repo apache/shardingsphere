@@ -17,11 +17,8 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
-
-import java.util.List;
 
 public class SQLServerStatementParser extends SQLStatementParser {
     
@@ -34,18 +31,12 @@ public class SQLServerStatementParser extends SQLStatementParser {
         return new SQLServerSelectParser(exprParser);
     }
     
-    public boolean parseStatementListDialect(List<SQLStatement> statementList) {
-        if (getLexer().equalToken(Token.WITH)) {
-            SQLStatement stmt = parseSelect();
-            statementList.add(stmt);
-            return true;
-        }
-        return false;
-    }
-    
     public SQLServerExprParser getExprParser() {
         return (SQLServerExprParser) exprParser;
     }
     
-
+    @Override
+    public SQLStatement parseWith() {
+        return parseSelect();
+    }
 }

@@ -30,9 +30,6 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OracleStatementParser extends SQLStatementParser {
     
     public OracleStatementParser(final String sql) {
@@ -50,92 +47,62 @@ public class OracleStatementParser extends SQLStatementParser {
     }
     
     @Override
-    protected List<SQLStatement> parseStatementList(final int max) {
-        List<SQLStatement> result = new ArrayList<>(-1 == max ? 16 : max);
-        while (true) {
-            if (-1 != max && result.size() >= max) {
-                return result;
-            }
-            if (getLexer().isEndToken()) {
-                return result;
-            }
-            if (getLexer().equalToken(Token.ELSE)) {
-                return result;
-            }
-            if (getLexer().equalToken(Token.SEMI)) {
-                getLexer().nextToken();
-                continue;
-            }
+    public SQLStatement parseStatement() {
+        if (getLexer().equalToken(Token.SEMI)) {
+            getLexer().nextToken();
+        }
+        if (getLexer().equalToken(Token.SELECT)) {
+            return new SQLSelectStatement(new OracleSelectParser(exprParser).select(), JdbcConstants.ORACLE);
+        }
+        if (getLexer().equalToken(Token.INSERT)) {
+            return new OracleInsertParser(exprParser).parse();
+        }
+        if (getLexer().equalToken(Token.UPDATE)) {
+            return SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.ORACLE).parse();
+        }
+        if (getLexer().equalToken(Token.DELETE)) {
+            return parseDeleteStatement();
+        }
+        if (getLexer().equalToken(Token.SLASH)) {
+            getLexer().nextToken();
+            return new OraclePLSQLCommitStatement();
+        }
+        if (getLexer().equalToken(Token.WITH)) {
+            return new SQLSelectStatement(new OracleSelectParser(exprParser).select());
+        }
+        if (getLexer().equalToken(Token.IDENTIFIER)) {
+            return new OracleExprStatement(exprParser.expr());
+        }
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            int currentPosition = getLexer().getCurrentPosition();
+            getLexer().nextToken();
             if (getLexer().equalToken(Token.SELECT)) {
-                SQLSelectStatement stmt = new SQLSelectStatement(new OracleSelectParser(this.exprParser).select(), JdbcConstants.ORACLE);
-                result.add(stmt);
-                continue;
-            }
-            if (getLexer().equalToken(Token.INSERT)) {
-                result.add(new OracleInsertParser(exprParser).parse());
-                continue;
-            }
-            if (getLexer().equalToken(Token.UPDATE)) {
-                result.add(SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.ORACLE).parse());
-                continue;
-            }
-            if (getLexer().equalToken(Token.DELETE)) {
-                result.add(parseDeleteStatement());
-                continue;
-            }
-            if (getLexer().equalToken(Token.SLASH)) {
-                getLexer().nextToken();
-                result.add(new OraclePLSQLCommitStatement());
-                continue;
-            }
-            if (getLexer().equalToken(Token.WITH)) {
-                result.add(new SQLSelectStatement(new OracleSelectParser(this.exprParser).select()));
-                continue;
-            }
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                SQLExpr expr = exprParser.expr();
-                OracleExprStatement stmt = new OracleExprStatement(expr);
-                result.add(stmt);
-                continue;
-            }
-    
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                int currentPosition = getLexer().getCurrentPosition();
-                getLexer().nextToken();
-        
-                if (getLexer().equalToken(Token.SELECT)) {
-                    getLexer().setCurrentPosition(currentPosition);
-                    getLexer().setToken(Token.LEFT_PAREN);
-                    result.add(this.parseSelect());
-                    continue;
-                }
-                throw new ParserUnsupportedException(getLexer().getToken());
-            }
-            if (getLexer().equalToken(Token.COMMENT)) {
-                result.add(this.parseComment());
-                continue;
-            }
-            if (getLexer().equalToken(Token.DOUBLE_LT)) {
-                getLexer().nextToken();
-                SQLName label = this.exprParser.name();
-                OracleLabelStatement stmt = new OracleLabelStatement(label);
-                accept(Token.DOUBLE_GT);
-                result.add(stmt);
-                continue;
-            }
-    
-            if (getLexer().equalToken(Token.CREATE) || getLexer().equalToken(Token.ALTER) || getLexer().equalToken(Token.MERGE) || getLexer().equalToken(Token.BEGIN)
-                    || getLexer().equalToken(Token.DECLARE) || getLexer().equalToken(Token.LOCK) || getLexer().equalToken(Token.EXCEPTION) || getLexer().identifierEquals("EXIT")
-                    || getLexer().equalToken(Token.VARIANT) || getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL")
-                    || getLexer().equalToken(Token.FETCH) || getLexer().identifierEquals("FETCH") || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.SET)
-                    || getLexer().equalToken(Token.GRANT) || getLexer().equalToken(Token.REVOKE) || getLexer().equalToken(Token.FOR) || getLexer().equalToken(Token.LOOP)
-                    || getLexer().equalToken(Token.IF) || getLexer().equalToken(Token.GOTO) || getLexer().equalToken(Token.COMMIT) || getLexer().equalToken(Token.SAVEPOINT)
-                    || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("SAVEPOINT") || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("COMMIT")
-                    || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.DROP) || getLexer().equalToken(Token.NULL) || getLexer().equalToken(Token.OPEN)) {
-                throw new ParserUnsupportedException(getLexer().getToken());
+                getLexer().setCurrentPosition(currentPosition);
+                getLexer().setToken(Token.LEFT_PAREN);
+                return parseSelect();
             }
             throw new ParserUnsupportedException(getLexer().getToken());
         }
+        if (getLexer().equalToken(Token.COMMENT)) {
+            return parseComment();
+        }
+        if (getLexer().equalToken(Token.DOUBLE_LT)) {
+            getLexer().nextToken();
+            OracleLabelStatement result = new OracleLabelStatement(exprParser.name());
+            accept(Token.DOUBLE_GT);
+            return result;
+        }
+        if (getLexer().equalToken(Token.CREATE) || getLexer().equalToken(Token.ALTER) || getLexer().equalToken(Token.MERGE) || getLexer().equalToken(Token.BEGIN)
+                || getLexer().equalToken(Token.DECLARE) || getLexer().equalToken(Token.LOCK) || getLexer().equalToken(Token.EXCEPTION) || getLexer().identifierEquals("EXIT")
+                || getLexer().equalToken(Token.VARIANT) || getLexer().equalToken(Token.LEFT_BRACE) || getLexer().identifierEquals("CALL")
+                || getLexer().equalToken(Token.FETCH) || getLexer().identifierEquals("FETCH") || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.SET)
+                || getLexer().equalToken(Token.GRANT) || getLexer().equalToken(Token.REVOKE) || getLexer().equalToken(Token.FOR) || getLexer().equalToken(Token.LOOP)
+                || getLexer().equalToken(Token.IF) || getLexer().equalToken(Token.GOTO) || getLexer().equalToken(Token.COMMIT) || getLexer().equalToken(Token.SAVEPOINT)
+                || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("SAVEPOINT") || getLexer().identifierEquals("ROLLBACK") || getLexer().identifierEquals("COMMIT")
+                || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.DROP) || getLexer().equalToken(Token.NULL) || getLexer().equalToken(Token.OPEN)) {
+            throw new ParserUnsupportedException(getLexer().getToken());
+        }
+        throw new ParserUnsupportedException(getLexer().getToken());
     }
 
     private OracleReturningClause parseReturningClause() {
