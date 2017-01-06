@@ -44,6 +44,40 @@ public class SQLServerExprParser extends SQLExprParser {
         super(lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
     }
     
+    public SQLServerTop parseTop() {
+        if (getLexer().equalToken(Token.TOP)) {
+            SQLServerTop top = new SQLServerTop();
+            getLexer().nextToken();
+            
+            boolean paren = false;
+            if (getLexer().equalToken(Token.LEFT_PAREN)) {
+                paren = true;
+                getLexer().nextToken();
+            }
+            
+            top.setExpr(primary());
+            
+            if (paren) {
+                accept(Token.RIGHT_PAREN);
+            }
+            
+            if (getLexer().equalToken(Token.PERCENT)) {
+                getLexer().nextToken();
+                top.setPercent(true);
+            }
+            
+            return top;
+        }
+        
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
     public SQLExpr primary() {
         if (getLexer().equalToken(Token.LEFT_BRACKET)) {
             getLexer().nextToken();
@@ -107,34 +141,6 @@ public class SQLServerExprParser extends SQLExprParser {
         return super.nameRest(expr);
     }
 
-    public SQLServerTop parseTop() {
-        if (getLexer().equalToken(Token.TOP)) {
-            SQLServerTop top = new SQLServerTop();
-            getLexer().nextToken();
-
-            boolean paren = false;
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                paren = true;
-                getLexer().nextToken();
-            }
-
-            top.setExpr(primary());
-
-            if (paren) {
-                accept(Token.RIGHT_PAREN);
-            }
-
-            if (getLexer().equalToken(Token.PERCENT)) {
-                getLexer().nextToken();
-                top.setPercent(true);
-            }
-
-            return top;
-        }
-
-        return null;
-    }
-    
     protected SQLServerOutput parserOutput() {
         if (getLexer().identifierEquals("OUTPUT")) {
             getLexer().nextToken();
