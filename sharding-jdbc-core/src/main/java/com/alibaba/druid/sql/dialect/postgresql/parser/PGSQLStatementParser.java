@@ -15,8 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -39,7 +37,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     
     @Override
     protected PGSelectParser createSQLSelectParser() {
-        return new PGSelectParser(exprParser);
+        return new PGSelectParser(getExprParser());
     }
     
     public PGDeleteStatement parseDeleteStatement() {
@@ -54,9 +52,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             deleteStatement.setOnly(true);
         }
 
-        SQLName tableName = exprParser.name();
-
-        deleteStatement.setTableName(tableName);
+        deleteStatement.setTableName(getExprParser().name());
         
         if (getLexer().equalToken(Token.AS)) {
             accept(Token.AS);
@@ -69,8 +65,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
         if (getLexer().equalToken(Token.USING)) {
             getLexer().nextToken();
             while (true) {
-                SQLName name = this.exprParser.name();
-                deleteStatement.getUsing().add(name);
+                deleteStatement.getUsing().add(getExprParser().name());
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
                     continue;
@@ -85,12 +80,9 @@ public class PGSQLStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.CURRENT)) {
                 getLexer().nextToken();
                 accept(Token.OF);
-                SQLName cursorName = this.exprParser.name();
-                SQLExpr where = new SQLCurrentOfCursorExpr(cursorName);
-                deleteStatement.setWhere(where);
+                deleteStatement.setWhere(new SQLCurrentOfCursorExpr(getExprParser().name()));
             } else {
-                SQLExpr where = this.exprParser.expr();
-                deleteStatement.setWhere(where);
+                deleteStatement.setWhere(getExprParser().expr());
             }
         }
 
@@ -140,8 +132,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             getLexer().nextToken();
 
             while (true) {
-                SQLExpr expr = this.exprParser.expr();
-                withQuery.getColumns().add(expr);
+                withQuery.getColumns().add(getExprParser().expr());
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
                 } else {
@@ -161,9 +152,9 @@ public class PGSQLStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.SELECT)) {
                 query = parseSelect();
             } else if (getLexer().equalToken(Token.INSERT)) {
-                query = new PostgreSQLInsertParser(exprParser).parse();
+                query = new PostgreSQLInsertParser(getExprParser()).parse();
             } else if (getLexer().equalToken(Token.UPDATE)) {
-                query = SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.POSTGRESQL).parse();
+                query = SQLUpdateParserFactory.newInstance(getExprParser(), JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.DELETE)) {
                 query = parseDeleteStatement();
             } else if (getLexer().equalToken(Token.VALUES)) {
@@ -188,7 +179,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(exprParser).parse();
+            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(getExprParser()).parse();
             stmt.setWith(with);
             return stmt;
         }

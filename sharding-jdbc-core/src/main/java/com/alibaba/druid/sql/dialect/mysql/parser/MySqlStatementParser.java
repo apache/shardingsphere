@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
@@ -36,12 +35,12 @@ public class MySqlStatementParser extends SQLStatementParser {
     
     @Override
     protected SQLSelectStatement parseSelect() {
-        return new SQLSelectStatement(new MySqlSelectParser(exprParser).select(), JdbcConstants.MYSQL);
+        return new SQLSelectStatement(new MySqlSelectParser(getExprParser()).select(), JdbcConstants.MYSQL);
     }
     
     @Override
     protected SQLSelectParser createSQLSelectParser() {
-        return new MySqlSelectParser(exprParser);
+        return new MySqlSelectParser(getExprParser());
     }
     
     @Override
@@ -66,14 +65,13 @@ public class MySqlStatementParser extends SQLStatementParser {
     @Override
     protected void parseCustomizedParserAfterWhere(final SQLDeleteStatement deleteStatement) {
         if (getLexer().equalToken(Token.ORDER)) {
-            SQLOrderBy orderBy = exprParser.parseOrderBy();
-            ((MySqlDeleteStatement) deleteStatement).setOrderBy(orderBy);
+            ((MySqlDeleteStatement) deleteStatement).setOrderBy(getExprParser().parseOrderBy());
         }
         ((MySqlDeleteStatement) deleteStatement).setLimit(parseLimit());
     }
     
     public Limit parseLimit() {
-        return ((MySqlExprParser) this.exprParser).parseLimit();
+        return ((MySqlExprParser) getExprParser()).parseLimit();
     }
 
 }

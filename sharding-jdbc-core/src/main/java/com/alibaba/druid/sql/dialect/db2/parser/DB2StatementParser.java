@@ -20,11 +20,11 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 public class DB2StatementParser extends SQLStatementParser {
     
     public DB2StatementParser(final String sql) {
-        super (new DB2ExprParser(sql));
+        super(new DB2ExprParser(sql));
     }
     
     @Override
     protected DB2SelectParser createSQLSelectParser() {
-        return new DB2SelectParser(exprParser);
+        return new DB2SelectParser(getExprParser());
     }
 }

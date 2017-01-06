@@ -28,11 +28,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
     
     @Override
     protected SQLSelectParser createSQLSelectParser() {
-        return new SQLServerSelectParser(exprParser);
-    }
-    
-    public SQLServerExprParser getExprParser() {
-        return (SQLServerExprParser) exprParser;
+        return new SQLServerSelectParser(getExprParser());
     }
     
     @Override

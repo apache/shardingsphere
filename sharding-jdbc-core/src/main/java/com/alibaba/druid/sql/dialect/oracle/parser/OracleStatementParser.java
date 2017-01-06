@@ -15,8 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
@@ -38,12 +36,7 @@ public class OracleStatementParser extends SQLStatementParser {
     
     @Override
     protected OracleSelectParser createSQLSelectParser() {
-        return new OracleSelectParser(exprParser);
-    }
-    
-    @Override
-    public OracleExprParser getExprParser() {
-        return (OracleExprParser) exprParser;
+        return new OracleSelectParser(getExprParser());
     }
     
     @Override
@@ -52,13 +45,13 @@ public class OracleStatementParser extends SQLStatementParser {
             getLexer().nextToken();
         }
         if (getLexer().equalToken(Token.SELECT)) {
-            return new SQLSelectStatement(new OracleSelectParser(exprParser).select(), JdbcConstants.ORACLE);
+            return new SQLSelectStatement(new OracleSelectParser(getExprParser()).select(), JdbcConstants.ORACLE);
         }
         if (getLexer().equalToken(Token.INSERT)) {
-            return new OracleInsertParser(exprParser).parse();
+            return new OracleInsertParser(getExprParser()).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(exprParser, JdbcConstants.ORACLE).parse();
+            return SQLUpdateParserFactory.newInstance(getExprParser(), JdbcConstants.ORACLE).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
             return parseDeleteStatement();
@@ -68,10 +61,10 @@ public class OracleStatementParser extends SQLStatementParser {
             return new OraclePLSQLCommitStatement();
         }
         if (getLexer().equalToken(Token.WITH)) {
-            return new SQLSelectStatement(new OracleSelectParser(exprParser).select());
+            return new SQLSelectStatement(new OracleSelectParser(getExprParser()).select());
         }
         if (getLexer().equalToken(Token.IDENTIFIER)) {
-            return new OracleExprStatement(exprParser.expr());
+            return new OracleExprStatement(getExprParser().expr());
         }
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             int currentPosition = getLexer().getCurrentPosition();
@@ -88,7 +81,7 @@ public class OracleStatementParser extends SQLStatementParser {
         }
         if (getLexer().equalToken(Token.DOUBLE_LT)) {
             getLexer().nextToken();
-            OracleLabelStatement result = new OracleLabelStatement(exprParser.name());
+            OracleLabelStatement result = new OracleLabelStatement(getExprParser().name());
             accept(Token.DOUBLE_GT);
             return result;
         }
@@ -113,8 +106,7 @@ public class OracleStatementParser extends SQLStatementParser {
             clause = new OracleReturningClause();
 
             while (true) {
-                SQLExpr item = exprParser.expr();
-                clause.getItems().add(item);
+                clause.getItems().add(getExprParser().expr());
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
                     continue;
@@ -123,8 +115,7 @@ public class OracleStatementParser extends SQLStatementParser {
             }
             accept(Token.INTO);
             while (true) {
-                SQLExpr item = exprParser.expr();
-                clause.getValues().add(item);
+                clause.getValues().add(getExprParser().expr());
                 if (getLexer().equalToken(Token.COMMA)) {
                     getLexer().nextToken();
                     continue;
@@ -152,14 +143,10 @@ public class OracleStatementParser extends SQLStatementParser {
             if (getLexer().identifierEquals("ONLY")) {
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-
-                SQLName tableName = exprParser.name();
-                deleteStatement.setTableName(tableName);
-
+                deleteStatement.setTableName(getExprParser().name());
                 accept(Token.RIGHT_PAREN);
             } else {
-                SQLName tableName = exprParser.name();
-                deleteStatement.setTableName(tableName);
+                deleteStatement.setTableName(getExprParser().name());
             }
 
             deleteStatement.setAlias(as());
@@ -167,7 +154,7 @@ public class OracleStatementParser extends SQLStatementParser {
 
         if (getLexer().equalToken(Token.WHERE)) {
             getLexer().nextToken();
-            deleteStatement.setWhere(this.exprParser.expr());
+            deleteStatement.setWhere(getExprParser().expr());
         }
 
         if (getLexer().equalToken(Token.RETURNING)) {

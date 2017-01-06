@@ -36,7 +36,7 @@ import java.util.Set;
 @Getter(AccessLevel.PROTECTED)
 public class SQLStatementParser extends SQLParser {
     
-    protected final SQLExprParser exprParser;
+    private final SQLExprParser exprParser;
     
     public SQLStatementParser(final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
@@ -147,23 +147,18 @@ public class SQLStatementParser extends SQLParser {
     
     public SQLCommentStatement parseComment() {
         accept(Token.COMMENT);
-        SQLCommentStatement stmt = new SQLCommentStatement();
-
+        SQLCommentStatement result = new SQLCommentStatement();
         accept(Token.ON);
-
         if (getLexer().equalToken(Token.TABLE)) {
-            stmt.setType(SQLCommentStatement.Type.TABLE);
+            result.setType(SQLCommentStatement.Type.TABLE);
             getLexer().nextToken();
         } else if (getLexer().equalToken(Token.COLUMN)) {
-            stmt.setType(SQLCommentStatement.Type.COLUMN);
+            result.setType(SQLCommentStatement.Type.COLUMN);
             getLexer().nextToken();
         }
-
-        stmt.setOn(this.exprParser.name());
-
+        result.setOn(exprParser.name());
         accept(Token.IS);
-        stmt.setComment(this.exprParser.expr());
-
-        return stmt;
+        result.setComment(this.exprParser.expr());
+        return result;
     }
 }
