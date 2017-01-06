@@ -79,6 +79,11 @@ import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
+import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,77 +94,47 @@ import java.sql.NClob;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
+@RequiredArgsConstructor
+@Getter
+@Setter
 public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements PrintableVisitor {
     
-    protected final Appendable appender;
+    private final int selectListNumberOfLine = 5;
     
+    private final Appendable appender;
+    
+    private final List<Object> parameters = new LinkedList<>();
+    
+    @Getter(value = AccessLevel.NONE)
+    @Setter(value = AccessLevel.NONE)
     private int indentCount;
     
     private boolean prettyFormat = true;
     
-    protected int selectListNumberOfLine = 5;
-
-    private List<Object> parameters;
-
-    public SQLASTOutputVisitor(Appendable appender){
-        this.appender = appender;
-    }
-
-    public int getParametersSize() {
-        if (parameters == null) {
-            return 0;
-        }
-
-        return this.parameters.size();
-    }
-
-    public List<Object> getParameters() {
-        if (parameters == null) {
-            parameters = new ArrayList<>();
-        }
-
-        return parameters;
-    }
-
-    public void setParameters(List<Object> parameters) {
-        this.parameters = parameters;
-    }
-
-    public Appendable getAppender() {
-        return appender;
-    }
-
-    public boolean isPrettyFormat() {
-        return prettyFormat;
-    }
-
-    public void setPrettyFormat(boolean prettyFormat) {
-        this.prettyFormat = prettyFormat;
-    }
-
     public void decrementIndent() {
-        this.indentCount -= 1;
+        indentCount -= 1;
     }
-
+    
     public void incrementIndent() {
-        this.indentCount += 1;
+        indentCount += 1;
     }
-
-    public void print(char value) {
+    
+    public void print(final char value) {
         try {
-            this.appender.append(value);
-        } catch (IOException e) {
-            throw new RuntimeException("println error", e);
+            appender.append(value);
+        } catch (final IOException ex) {
+            throw new RuntimeException("println error", ex);
         }
     }
-
-    public void print(int value) {
+    
+    public void print(final int value) {
         print(Integer.toString(value));
     }
-
-    public void print(Date date) {
+    
+    public void print(final Date date) {
         SimpleDateFormat dateFormat;
         if (date instanceof java.sql.Timestamp) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -169,102 +144,99 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         print("'" + dateFormat.format(date) + "'");
     }
     
-    public void print(String text) {
+    public void print(final String text) {
         try {
             this.appender.append(text);
-        } catch (IOException e) {
-            throw new RuntimeException("println error", e);
+        } catch (final IOException ex) {
+            throw new RuntimeException("println error", ex);
         }
     }
 
-    protected void printAlias(String alias) {
-        if ((alias != null) && (alias.length() > 0)) {
+    protected void printAlias(final String alias) {
+        if (!Strings.isNullOrEmpty(alias)) {
             print(" ");
             print(alias);
         }
     }
-
-    protected void printAndAccept(List<? extends SQLObject> nodes, String seperator) {
-        for (int i = 0, size = nodes.size(); i < size; ++i) {
-            if (i != 0) {
+    
+    protected void printAndAccept(final List<? extends SQLObject> nodes, final String seperator) {
+        int count = 0;
+        for (SQLObject each : nodes) {
+            if (0 != count) {
                 print(seperator);
             }
-            nodes.get(i).accept(this);
+            each.accept(this);
+            count++;
         }
     }
-
-    protected void printSelectList(List<SQLSelectItem> selectList) {
+    
+    protected void printSelectList(final List<SQLSelectItem> selectList) {
         incrementIndent();
-        for (int i = 0, size = selectList.size(); i < size; ++i) {
-            if (i != 0) {
-                if (i % selectListNumberOfLine == 0) {
+        int count = 0;
+        for (SQLSelectItem each : selectList) {
+            if (0 != count) {
+                if (0 == count % selectListNumberOfLine) {
                     println();
                 }
-
                 print(", ");
             }
-
-            selectList.get(i).accept(this);
+            each.accept(this);
+            count++;
         }
         decrementIndent();
     }
     
-    protected void printlnAndAccept(List<? extends SQLObject> nodes, String seperator) {
-        for (int i = 0, size = nodes.size(); i < size; ++i) {
-            if (i != 0) {
+    protected void printlnAndAccept(final List<? extends SQLObject> nodes, final String seperator) {
+        int count = 0;
+        for (SQLObject each : nodes) {
+            if (0 != count) {
                 println(seperator);
             }
-            nodes.get(i).accept(this);
+            each.accept(this);
+            count++;
         }
     }
     
     public void printIndent() {
-        for (int i = 0; i < this.indentCount; ++i) {
+        for (int i = 0; i < indentCount; i++) {
             print("\t");
         }
     }
-
+    
     public void println() {
-        if (!isPrettyFormat()) {
+        if (!prettyFormat) {
             print(' ');
             return;
         }
-
         print("\n");
         printIndent();
     }
-
-    public void println(String text) {
+    
+    public void println(final String text) {
         print(text);
         println();
     }
-
-    public boolean visit(SQLBetweenExpr x) {
+    
+    public boolean visit(final SQLBetweenExpr x) {
         x.getTestExpr().accept(this);
-
         if (x.isNot()) {
             print(" NOT BETWEEN ");
         } else {
             print(" BETWEEN ");
         }
-
         x.getBeginExpr().accept(this);
         print(" AND ");
         x.getEndExpr().accept(this);
-
         return false;
     }
-
-    public boolean visit(SQLBinaryOpExpr x) {
+    
+    public boolean visit(final SQLBinaryOpExpr x) {
         SQLObject parent = x.getParent();
         boolean isRoot = parent instanceof SQLSelectQueryBlock;
-        boolean relational = x.getOperator() == SQLBinaryOperator.BooleanAnd
-                             || x.getOperator() == SQLBinaryOperator.BooleanOr;
-
+        boolean relational = x.getOperator() == SQLBinaryOperator.BooleanAnd || x.getOperator() == SQLBinaryOperator.BooleanOr;
         if (isRoot && relational) {
             incrementIndent();
         }
-
         List<SQLExpr> groupList = new ArrayList<>();
         SQLExpr left = x.getLeft();
         while (true) {
@@ -277,7 +249,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
                 break;
             }
         }
-
         for (int i = groupList.size() - 1; i >= 0; --i) {
             SQLExpr item = groupList.get(i);
             visitBinaryLeft(item, x.getOperator());
@@ -289,31 +260,24 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             print(x.getOperator().getName());
             print(" ");
         }
-
         visitorBinaryRight(x);
-
         if (isRoot && relational) {
             decrementIndent();
         }
-
         return false;
     }
-
-    private void visitorBinaryRight(SQLBinaryOpExpr x) {
+    
+    private void visitorBinaryRight(final SQLBinaryOpExpr x) {
         if (x.getRight() instanceof SQLBinaryOpExpr) {
             SQLBinaryOpExpr right = (SQLBinaryOpExpr) x.getRight();
-            boolean rightRational = right.getOperator() == SQLBinaryOperator.BooleanAnd
-                                    || right.getOperator() == SQLBinaryOperator.BooleanOr;
-
+            boolean rightRational = right.getOperator() == SQLBinaryOperator.BooleanAnd || right.getOperator() == SQLBinaryOperator.BooleanOr;
             if (right.getOperator().getPriority() >= x.getOperator().getPriority()) {
                 if (rightRational) {
                     incrementIndent();
                 }
-
                 print('(');
                 right.accept(this);
                 print(')');
-
                 if (rightRational) {
                     decrementIndent();
                 }
@@ -324,13 +288,11 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getRight().accept(this);
         }
     }
-
-    private void visitBinaryLeft(SQLExpr left, SQLBinaryOperator op) {
+    
+    private void visitBinaryLeft(final SQLExpr left, final SQLBinaryOperator op) {
         if (left instanceof SQLBinaryOpExpr) {
             SQLBinaryOpExpr binaryLeft = (SQLBinaryOpExpr) left;
-            boolean leftRational = binaryLeft.getOperator() == SQLBinaryOperator.BooleanAnd
-                                   || binaryLeft.getOperator() == SQLBinaryOperator.BooleanOr;
-
+            boolean leftRational = binaryLeft.getOperator() == SQLBinaryOperator.BooleanAnd || binaryLeft.getOperator() == SQLBinaryOperator.BooleanOr;
             if (binaryLeft.getOperator().getPriority() > op.getPriority()) {
                 if (leftRational) {
                     incrementIndent();
@@ -338,7 +300,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
                 print('(');
                 left.accept(this);
                 print(')');
-
                 if (leftRational) {
                     decrementIndent();
                 }
@@ -349,44 +310,40 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             left.accept(this);
         }
     }
-
-    public boolean visit(SQLCaseExpr x) {
+    
+    public boolean visit(final SQLCaseExpr x) {
         print("CASE ");
         if (x.getValueExpr() != null) {
             x.getValueExpr().accept(this);
             print(" ");
         }
-
         printAndAccept(x.getItems(), " ");
-
         if (x.getElseExpr() != null) {
             print(" ELSE ");
             x.getElseExpr().accept(this);
         }
-
         print(" END");
         return false;
     }
-
-    public boolean visit(SQLCaseExpr.Item x) {
+    
+    public boolean visit(final SQLCaseExpr.Item x) {
         print("WHEN ");
         x.getConditionExpr().accept(this);
         print(" THEN ");
         x.getValueExpr().accept(this);
         return false;
     }
-
-    public boolean visit(SQLCastExpr x) {
+    
+    public boolean visit(final SQLCastExpr x) {
         print("CAST(");
         x.getExpr().accept(this);
         print(" AS ");
         x.getDataType().accept(this);
         print(")");
-
         return false;
     }
-
-    public boolean visit(SQLCharExpr x) {
+    
+    public boolean visit(final SQLCharExpr x) {
         if (x.getText() == null) {
             print("NULL");
         } else {
@@ -394,7 +351,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             print(x.getText().replaceAll("'", "''"));
             print("'");
         }
-
         return false;
     }
 

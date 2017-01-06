@@ -18,52 +18,45 @@ package com.alibaba.druid.sql.dialect.oracle.ast;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleOrderBy extends SQLOrderBy {
-
+    
     private boolean sibings;
-
-    public OracleOrderBy(){
-
-    }
-
-    public boolean isSibings() {
-        return this.sibings;
-    }
-
-    public void setSibings(boolean sibings) {
-        this.sibings = sibings;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
             accept0((OracleASTVisitor) visitor);
         } else {
             super.acceptInternal(visitor);
         }
     }
-
-    protected void accept0(OracleASTVisitor visitor) {
+    
+    protected void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getItems());
         }
 
         visitor.endVisit(this);
     }
-
-    public void output(StringBuffer buf) {
-        buf.append("ORDER ");
+    
+    @Override
+    public void output(final StringBuffer buffer) {
+        buffer.append("ORDER ");
         if (this.sibings) {
-            buf.append("SIBLINGS ");
+            buffer.append("SIBLINGS ");
         }
-        buf.append("BY ");
-
+        buffer.append("BY ");
         int i = 0;
         for (int size = getItems().size(); i < size; ++i) {
             if (i != 0) {
-                buf.append(", ");
+                buffer.append(", ");
             }
-            getItems().get(i).output(buf);
+            getItems().get(i).output(buffer);
         }
     }
 }

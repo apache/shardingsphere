@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 public class OracleSelectTableReference extends SQLExprTableSource implements OracleSelectTableSource {
     
-    private boolean only = false;
+    private boolean only;
     
     private OracleSelectPivotBase pivot;
     
@@ -51,21 +51,20 @@ public class OracleSelectTableReference extends SQLExprTableSource implements Or
     }
     
     @Override
-    public void output(StringBuffer buf) {
-        if (this.only) {
-            buf.append("ONLY (");
-            getExpr().output(buf);
-            buf.append(")");
+    public void output(final StringBuffer buffer) {
+        if (only) {
+            buffer.append("ONLY (");
+            getExpr().output(buffer);
+            buffer.append(")");
         } else {
-            getExpr().output(buf);
+            getExpr().output(buffer);
         }
-
-        if (this.pivot != null) {
-            buf.append(" ");
-            this.pivot.output(buf);
+        if (null != pivot) {
+            buffer.append(" ");
+            pivot.output(buffer);
         }
         if (!Strings.isNullOrEmpty(getAlias())) {
-            buf.append(getAlias());
+            buffer.append(getAlias());
         }
     }
     

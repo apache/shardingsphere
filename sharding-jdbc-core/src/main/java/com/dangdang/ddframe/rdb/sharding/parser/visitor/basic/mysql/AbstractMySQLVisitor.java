@@ -86,7 +86,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     
     @Override
     public final SQLBuilder getSQLBuilder() {
-        return (SQLBuilder) appender;
+        return (SQLBuilder) getAppender();
     }
     
     @Override

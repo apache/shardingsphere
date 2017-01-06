@@ -27,9 +27,9 @@ import java.util.List;
 @Getter
 @Setter
 public class SampleClause extends OracleSQLObjectImpl {
-
+    
     private boolean block;
-
+    
     private SQLExpr seedValue;
     
     private final List<SQLExpr> percent = new ArrayList<>();

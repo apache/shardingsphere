@@ -19,69 +19,23 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class MySqlExtractExpr extends SQLExprImpl implements MySqlExpr {
-
-    private SQLExpr           value;
+    
+    private SQLExpr value;
+    
     private MySqlIntervalUnit unit;
-
-    public MySqlExtractExpr(){
-    }
-
-    public SQLExpr getValue() {
-        return value;
-    }
-
-    public void setValue(SQLExpr value) {
-        this.value = value;
-    }
-
-    public MySqlIntervalUnit getUnit() {
-        return unit;
-    }
-
-    public void setUnit(MySqlIntervalUnit unit) {
-        this.unit = unit;
-    }
-
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    
+    @Override
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
         mysqlVisitor.visit(this);
         mysqlVisitor.endVisit(this);
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof MySqlExtractExpr)) {
-            return false;
-        }
-        MySqlExtractExpr other = (MySqlExtractExpr) obj;
-        if (unit != other.unit) {
-            return false;
-        }
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
-            return false;
-        }
-        return true;
-    }
-
 }

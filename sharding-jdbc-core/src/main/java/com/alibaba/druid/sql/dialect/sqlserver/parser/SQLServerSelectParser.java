@@ -40,9 +40,9 @@ public class SQLServerSelectParser extends SQLSelectParser {
         SQLServerSelect select = new SQLServerSelect();
         withSubquery(select);
         select.setQuery(query());
-        select.setOrderBy(parseOrderBy());
+        select.setOrderBy(getExprParser().parseOrderBy());
         if (select.getOrderBy() == null) {
-            select.setOrderBy(parseOrderBy());
+            select.setOrderBy(getExprParser().parseOrderBy());
         }
 
         if (getLexer().equalToken(Token.FOR)) {
@@ -55,9 +55,9 @@ public class SQLServerSelectParser extends SQLSelectParser {
                 getLexer().nextToken();
 
                 while (true) {
-                    if (getLexer().identifierEquals("AUTO") //
-                        || getLexer().identifierEquals("TYPE") //
-                        || getLexer().identifierEquals("XMLSCHEMA") //
+                    if (getLexer().identifierEquals("AUTO")
+                        || getLexer().identifierEquals("TYPE")
+                        || getLexer().identifierEquals("XMLSCHEMA")
                     ) {
                         select.getForXmlOptions().add(getLexer().getLiterals());
                         getLexer().nextToken();

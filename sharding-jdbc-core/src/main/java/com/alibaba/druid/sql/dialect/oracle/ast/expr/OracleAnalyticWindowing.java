@@ -44,6 +44,6 @@ public class OracleAnalyticWindowing extends SQLObjectImpl implements OracleExpr
     }
     
     public enum Type {
-        ROWS, RANGE;
+        ROWS, RANGE
     }
 }

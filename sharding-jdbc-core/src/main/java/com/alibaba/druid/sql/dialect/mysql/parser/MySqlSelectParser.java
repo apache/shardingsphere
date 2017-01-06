@@ -83,7 +83,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             }
 
             if (getLexer().identifierEquals("HIGH_PRIORITY")) {
-                queryBlock.setHignPriority(true);
+                queryBlock.setHighPriority(true);
                 getLexer().nextToken();
             }
 

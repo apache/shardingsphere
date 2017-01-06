@@ -29,7 +29,7 @@ public class OracleDataTypeIntervalDay extends SQLDataTypeImpl implements Oracle
     @Getter
     private final List<SQLExpr> fractionalSeconds;
     
-    public OracleDataTypeIntervalDay(){
+    public OracleDataTypeIntervalDay() {
         super("INTERVAL DAY");
         fractionalSeconds = new ArrayList<>();
     }

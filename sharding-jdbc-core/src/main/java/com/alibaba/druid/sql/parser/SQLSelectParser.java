@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -48,17 +47,17 @@ public class SQLSelectParser extends SQLParser {
     }
     
     public SQLSelect select() {
-        SQLSelect select = new SQLSelect();
-        withSubquery(select);
-        select.setQuery(query());
-        select.setOrderBy(parseOrderBy());
-        if (null == select.getOrderBy()) {
-            select.setOrderBy(parseOrderBy());
+        SQLSelect result = new SQLSelect();
+        withSubquery(result);
+        result.setQuery(query());
+        result.setOrderBy(exprParser.parseOrderBy());
+        if (null == result.getOrderBy()) {
+            result.setOrderBy(exprParser.parseOrderBy());
         }
         while (getLexer().equalToken(Token.HINT)) {
-            select.getHints().addAll(exprParser.parseHints());
+            result.getHints().addAll(exprParser.parseHints());
         }
-        return select;
+        return result;
     }
     
     protected void withSubquery(final SQLSelect select) {
@@ -123,13 +122,11 @@ public class SQLSelectParser extends SQLParser {
         return queryRest(queryBlock);
     }
     
-    public SQLSelectQuery queryRest(SQLSelectQuery selectQuery) {
+    public SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {
         if (getLexer().equalToken(Token.UNION)) {
             getLexer().nextToken();
-            
             SQLUnionQuery union = createSQLUnionQuery();
             union.setLeft(selectQuery);
-            
             if (getLexer().equalToken(Token.ALL)) {
                 union.setOperator(SQLUnionOperator.UNION_ALL);
                 getLexer().nextToken();
@@ -137,66 +134,41 @@ public class SQLSelectParser extends SQLParser {
                 union.setOperator(SQLUnionOperator.DISTINCT);
                 getLexer().nextToken();
             }
-            SQLSelectQuery right = this.query();
-            union.setRight(right);
-            
+            union.setRight(query());
             return unionRest(union);
         }
-        
         if (getLexer().equalToken(Token.EXCEPT)) {
             getLexer().nextToken();
-            
             SQLUnionQuery union = new SQLUnionQuery();
             union.setLeft(selectQuery);
-            
             union.setOperator(SQLUnionOperator.EXCEPT);
-            
-            SQLSelectQuery right = this.query();
-            union.setRight(right);
-            
+            union.setRight(query());
             return union;
         }
-        
         if (getLexer().equalToken(Token.INTERSECT)) {
             getLexer().nextToken();
-            
             SQLUnionQuery union = new SQLUnionQuery();
             union.setLeft(selectQuery);
-            
             union.setOperator(SQLUnionOperator.INTERSECT);
-            
-            SQLSelectQuery right = this.query();
-            union.setRight(right);
-            
+            union.setRight(query());
             return union;
         }
-        
         if (getLexer().equalToken(Token.MINUS)) {
             getLexer().nextToken();
-            
             SQLUnionQuery union = new SQLUnionQuery();
             union.setLeft(selectQuery);
-            
             union.setOperator(SQLUnionOperator.MINUS);
-            
-            SQLSelectQuery right = this.query();
-            union.setRight(right);
-            
+            union.setRight(query());
             return union;
         }
-        
         return selectQuery;
-    }
-    
-    protected final SQLOrderBy parseOrderBy() {
-        return exprParser.parseOrderBy();
     }
     
     protected SQLUnionQuery createSQLUnionQuery() {
         return new SQLUnionQuery();
     }
-
-    public SQLUnionQuery unionRest(SQLUnionQuery union) {
+    
+    public SQLUnionQuery unionRest(final SQLUnionQuery union) {
         if (getLexer().equalToken(Token.ORDER)) {
             SQLOrderBy orderBy = this.exprParser.parseOrderBy();
             union.setOrderBy(orderBy);
@@ -205,70 +177,58 @@ public class SQLSelectParser extends SQLParser {
         return union;
     }
     
-    protected void parseWhere(SQLSelectQueryBlock queryBlock) {
+    protected void parseWhere(final SQLSelectQueryBlock queryBlock) {
         if (getLexer().equalToken(Token.WHERE)) {
             getLexer().nextToken();
-            SQLExpr where = getExprParser().expr();
-            queryBlock.setWhere(where);
+            queryBlock.setWhere(exprParser.expr());
         }
     }
-
-    protected void parseGroupBy(SQLSelectQueryBlock queryBlock) {
+    
+    protected void parseGroupBy(final SQLSelectQueryBlock queryBlock) {
         if (getLexer().equalToken(Token.GROUP)) {
             getLexer().nextToken();
             accept(Token.BY);
-
             SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
             while (true) {
-                groupBy.addItem(getExprParser().expr());
+                groupBy.addItem(exprParser.expr());
                 if (!getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
-    
                 getLexer().nextToken();
             }
-
             if (getLexer().equalToken(Token.HAVING)) {
                 getLexer().nextToken();
-
-                groupBy.setHaving(getExprParser().expr());
+                groupBy.setHaving(exprParser.expr());
             }
-
             queryBlock.setGroupBy(groupBy);
         } else if (getLexer().equalToken(Token.HAVING)) {
             getLexer().nextToken();
-
             SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
-            groupBy.setHaving(getExprParser().expr());
+            groupBy.setHaving(exprParser.expr());
             queryBlock.setGroupBy(groupBy);
         }
     }
-
-    protected void parseSelectList(SQLSelectQueryBlock queryBlock) {
-        final List<SQLSelectItem> selectList = queryBlock.getSelectList();
+    
+    protected void parseSelectList(final SQLSelectQueryBlock queryBlock) {
+        List<SQLSelectItem> selectList = queryBlock.getSelectList();
         while (true) {
-            final SQLSelectItem selectItem = this.exprParser.parseSelectItem();
+            SQLSelectItem selectItem = exprParser.parseSelectItem();
             selectList.add(selectItem);
             selectItem.setParent(queryBlock);
-
             if (!getLexer().equalToken(Token.COMMA)) {
                 break;
             }
-    
             getLexer().nextToken();
         }
     }
-
-    public void parseFrom(SQLSelectQueryBlock queryBlock) {
-        if (!getLexer().equalToken(Token.FROM)) {
-            return;
-        }
     
-        getLexer().nextToken();
-
-        queryBlock.setFrom(parseTableSource());
+    public void parseFrom(final SQLSelectQueryBlock queryBlock) {
+        if (getLexer().equalToken(Token.FROM)) {
+            getLexer().nextToken();
+            queryBlock.setFrom(parseTableSource());
+        }
     }
-
+    
     public SQLTableSource parseTableSource() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
@@ -289,7 +249,6 @@ public class SQLSelectParser extends SQLParser {
                 tableSource = parseTableSource();
                 accept(Token.RIGHT_PAREN);
             }
-
             return parseTableSourceRest(tableSource);
         }
         if (getLexer().equalToken(Token.SELECT)) {
@@ -299,36 +258,32 @@ public class SQLSelectParser extends SQLParser {
         parseTableSourceQueryTableExpr(tableReference);
         return parseTableSourceRest(tableReference);
     }
-
-    protected void parseTableSourceQueryTableExpr(SQLExprTableSource tableReference) {
-        if (getLexer().equalToken(Token.LITERAL_ALIAS) || getLexer().equalToken(Token.IDENTIFIED)
-            || getLexer().equalToken(Token.LITERAL_CHARS)) {
-            tableReference.setExpr(this.exprParser.name());
-            return;
+    
+    protected void parseTableSourceQueryTableExpr(final SQLExprTableSource tableReference) {
+        if (getLexer().equalToken(Token.LITERAL_ALIAS) || getLexer().equalToken(Token.IDENTIFIED) || getLexer().equalToken(Token.LITERAL_CHARS)) {
+            tableReference.setExpr(exprParser.name());
+        } else {
+            tableReference.setExpr(exprParser.expr());
         }
-        tableReference.setExpr(getExprParser().expr());
     }
-
-    protected SQLTableSource parseTableSourceRest(SQLTableSource tableSource) {
-        if ((tableSource.getAlias() == null) || (tableSource.getAlias().length() == 0)) {
+    
+    protected SQLTableSource parseTableSourceRest(final SQLTableSource tableSource) {
+        if (null == tableSource.getAlias() || tableSource.getAlias().isEmpty()) {
             if (!getLexer().equalToken(Token.LEFT) && !getLexer().equalToken(Token.RIGHT) && !getLexer().equalToken(Token.FULL)
                 && !getLexer().identifierEquals("STRAIGHT_JOIN") && !getLexer().identifierEquals("CROSS") && !getLexer().equalToken(Token.OUTER)) {
                 String alias = as();
-                if (alias != null) {
+                if (null != alias) {
                     tableSource.setAlias(alias);
                     return parseTableSourceRest(tableSource);
                 }
             }
         }
-
         SQLJoinTableSource.JoinType joinType = null;
-
         if (getLexer().equalToken(Token.LEFT)) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.OUTER)) {
                 getLexer().nextToken();
             }
-
             accept(Token.JOIN);
             joinType = SQLJoinTableSource.JoinType.LEFT_OUTER_JOIN;
         } else if (getLexer().equalToken(Token.RIGHT)) {
@@ -374,16 +329,14 @@ public class SQLSelectParser extends SQLParser {
                 joinType = SQLJoinTableSource.JoinType.OUTER_APPLY;
             }
         }
-
-        if (joinType != null) {
+        if (null != joinType) {
             SQLJoinTableSource join = new SQLJoinTableSource();
             join.setLeft(tableSource);
             join.setJoinType(joinType);
             join.setRight(parseTableSource());
-
             if (getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();
-                join.setCondition(getExprParser().expr());
+                join.setCondition(exprParser.expr());
             } else if (getLexer().identifierEquals("USING")) {
                 getLexer().nextToken();
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
@@ -391,13 +344,11 @@ public class SQLSelectParser extends SQLParser {
                     join.getUsing().addAll(exprParser.exprList(join));
                     accept(Token.RIGHT_PAREN);
                 } else {
-                    join.getUsing().add(getExprParser().expr());
+                    join.getUsing().add(exprParser.expr());
                 }
             }
-
             return parseTableSourceRest(join);
         }
-
         return tableSource;
     }
 }

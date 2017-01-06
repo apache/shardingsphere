@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
@@ -67,11 +66,6 @@ public class MySqlStatementParser extends SQLStatementParser {
         if (getLexer().equalToken(Token.ORDER)) {
             ((MySqlDeleteStatement) deleteStatement).setOrderBy(getExprParser().parseOrderBy());
         }
-        ((MySqlDeleteStatement) deleteStatement).setLimit(parseLimit());
+        ((MySqlDeleteStatement) deleteStatement).setLimit(((MySqlExprParser) getExprParser()).parseLimit());
     }
-    
-    public Limit parseLimit() {
-        return ((MySqlExprParser) getExprParser()).parseLimit();
-    }
-
 }

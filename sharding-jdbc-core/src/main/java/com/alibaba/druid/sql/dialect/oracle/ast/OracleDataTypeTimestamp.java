@@ -18,44 +18,31 @@ package com.alibaba.druid.sql.dialect.oracle.ast;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class OracleDataTypeTimestamp extends SQLDataTypeImpl implements OracleSQLObject {
     
-    private boolean withTimeZone = false;
+    private boolean withTimeZone;
     
-    private boolean withLocalTimeZone = false;
+    private boolean withLocalTimeZone;
     
     public OracleDataTypeTimestamp(){
         super("TIMESTAMP");
     }
     
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         this.accept0((OracleASTVisitor) visitor);
     }
     
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getArguments());
         }
         visitor.endVisit(this);
     }
-
-    public boolean isWithTimeZone() {
-        return withTimeZone;
-    }
-
-    public void setWithTimeZone(boolean withTimeZone) {
-        this.withTimeZone = withTimeZone;
-    }
-
-    public boolean isWithLocalTimeZone() {
-        return withLocalTimeZone;
-    }
-
-    public void setWithLocalTimeZone(boolean withLocalTimeZone) {
-        this.withLocalTimeZone = withLocalTimeZone;
-    }
-
 }

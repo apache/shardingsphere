@@ -39,13 +39,13 @@ public class SQLBetweenExpr extends SQLExprImpl implements Serializable {
     
     private SQLExpr endExpr;
     
-    public SQLBetweenExpr(final SQLExpr testExpr, final SQLExpr beginExpr, final SQLExpr endExpr){
+    public SQLBetweenExpr(final SQLExpr testExpr, final SQLExpr beginExpr, final SQLExpr endExpr) {
         setTestExpr(testExpr);
         setBeginExpr(beginExpr);
         setEndExpr(endExpr);
     }
     
-    public SQLBetweenExpr(final SQLExpr testExpr, final boolean not, final SQLExpr beginExpr, final SQLExpr endExpr){
+    public SQLBetweenExpr(final SQLExpr testExpr, final boolean not, final SQLExpr beginExpr, final SQLExpr endExpr) {
         this(testExpr, beginExpr, endExpr);
         this.not = not;
     }

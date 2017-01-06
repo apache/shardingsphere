@@ -39,7 +39,6 @@ public class OracleSelectJoin extends SQLJoinTableSource implements OracleSelect
             acceptChild(visitor, getUsing());
             acceptChild(visitor, flashback);
         }
-    
         visitor.endVisit(this);
     }
     

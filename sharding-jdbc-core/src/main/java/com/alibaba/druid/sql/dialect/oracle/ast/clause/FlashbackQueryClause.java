@@ -57,7 +57,7 @@ public abstract class FlashbackQueryClause extends OracleSQLObjectImpl {
         private SQLExpr expr;
         
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, expr);
             }
@@ -72,7 +72,7 @@ public abstract class FlashbackQueryClause extends OracleSQLObjectImpl {
         private final SQLExpr expr;
         
         @Override
-        public void accept0(OracleASTVisitor visitor) {
+        public void accept0(final OracleASTVisitor visitor) {
             if (visitor.visit(this)) {
                 acceptChild(visitor, expr);
             }

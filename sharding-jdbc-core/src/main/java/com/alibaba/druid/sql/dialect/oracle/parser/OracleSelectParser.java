@@ -79,7 +79,7 @@ public class OracleSelectParser extends SQLSelectParser {
         OracleSelect select = new OracleSelect();
         withSubquery(select);
         select.setQuery(query());
-        select.setOrderBy(this.parseOrderBy());
+        select.setOrderBy(getExprParser().parseOrderBy());
 
         if (getLexer().equalToken(Token.FOR)) {
             getLexer().nextToken();
@@ -469,7 +469,7 @@ public class OracleSelectParser extends SQLSelectParser {
             }
 
             item.setCellAssignment(parseCellAssignment());
-            item.setOrderBy(this.parseOrderBy());
+            item.setOrderBy(getExprParser().parseOrderBy());
             accept(Token.EQ);
             item.setExpr(getExprParser().expr());
 

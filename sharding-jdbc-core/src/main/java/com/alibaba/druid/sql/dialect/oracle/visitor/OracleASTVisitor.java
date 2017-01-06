@@ -50,10 +50,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCommitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
@@ -304,10 +302,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleParameter x);
 
-    boolean visit(OracleCommitStatement x);
-
-    void endVisit(OracleCommitStatement x);
-
     boolean visit(AsOfSnapshotClause x);
 
     void endVisit(AsOfSnapshotClause x);
@@ -319,10 +313,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleFileSpecification x);
 
     void endVisit(OracleFileSpecification x);
-
-    boolean visit(OracleExitStatement x);
-
-    void endVisit(OracleExitStatement x);
 
     boolean visit(OracleDataTypeTimestamp x);
 

@@ -24,222 +24,65 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@EqualsAndHashCode
 public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlObject {
-
-    private boolean              hignPriority;
-    private boolean              straightJoin;
-
-    private boolean              smallResult;
-    private boolean              bigResult;
-    private boolean              bufferResult;
-    private Boolean              cache;
-    private boolean              calcFoundRows;
-
-    private SQLOrderBy           orderBy;
-
-    private Limit                limit;
-
-    private SQLName              procedureName;
-    private List<SQLExpr>        procedureArgumentList;
-
-    private boolean              forUpdate       = false;
-    private boolean              lockInShareMode = false;
-
-    private List<SQLCommentHint> hints;
-
-    public int getHintsSize() {
-        if (hints == null) {
-            return 0;
-        }
-
-        return hints.size();
-    }
-
-    public List<SQLCommentHint> getHints() {
-        if (hints == null) {
-            hints = new ArrayList<>(2);
-        }
-        return hints;
-    }
-
-    public void setHints(List<SQLCommentHint> hints) {
-        this.hints = hints;
-    }
-
-    public boolean isForUpdate() {
-        return forUpdate;
-    }
-
-    public void setForUpdate(boolean forUpdate) {
-        this.forUpdate = forUpdate;
-    }
-
-    public boolean isLockInShareMode() {
-        return lockInShareMode;
-    }
-
-    public void setLockInShareMode(boolean lockInShareMode) {
-        this.lockInShareMode = lockInShareMode;
-    }
-
-    public SQLName getProcedureName() {
-        return procedureName;
-    }
-
-    public List<SQLExpr> getProcedureArgumentList() {
-        if (procedureArgumentList == null) {
-            procedureArgumentList = new ArrayList<>(2);
-        }
-        return procedureArgumentList;
-    }
-
-    public boolean isHignPriority() {
-        return hignPriority;
-    }
-
-    public void setHignPriority(boolean hignPriority) {
-        this.hignPriority = hignPriority;
-    }
-
-    public boolean isStraightJoin() {
-        return straightJoin;
-    }
-
-    public void setStraightJoin(boolean straightJoin) {
-        this.straightJoin = straightJoin;
-    }
-
-    public boolean isSmallResult() {
-        return smallResult;
-    }
-
-    public void setSmallResult(boolean smallResult) {
-        this.smallResult = smallResult;
-    }
-
-    public boolean isBigResult() {
-        return bigResult;
-    }
-
-    public void setBigResult(boolean bigResult) {
-        this.bigResult = bigResult;
-    }
-
-    public boolean isBufferResult() {
-        return bufferResult;
-    }
-
-    public void setBufferResult(boolean bufferResult) {
-        this.bufferResult = bufferResult;
-    }
-
-    public Boolean getCache() {
-        return cache;
-    }
-
-    public void setCache(Boolean cache) {
-        this.cache = cache;
-    }
-
-    public boolean isCalcFoundRows() {
-        return calcFoundRows;
-    }
-
-    public void setCalcFoundRows(boolean calcFoundRows) {
-        this.calcFoundRows = calcFoundRows;
-    }
-
-    public SQLOrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public void setOrderBy(SQLOrderBy orderBy) {
-        this.orderBy = orderBy;
-    }
-
-    public Limit getLimit() {
-        return limit;
-    }
-
-    public void setLimit(Limit limit) {
-        if (limit != null) {
+    
+    private boolean highPriority;
+    
+    private boolean straightJoin;
+    
+    private boolean smallResult;
+    
+    private boolean bigResult;
+    
+    private boolean bufferResult;
+    
+    private Boolean cache;
+    
+    private boolean calcFoundRows;
+    
+    private SQLOrderBy orderBy;
+    
+    private Limit limit;
+    
+    private SQLName procedureName;
+    
+    private boolean forUpdate;
+    
+    private boolean lockInShareMode;
+    
+    private final List<SQLExpr> procedureArgumentList = new ArrayList<>(2);
+    
+    private final List<SQLCommentHint> hints = new ArrayList<>(2);
+    
+    public void setLimit(final Limit limit) {
+        if (null != limit) {
             limit.setParent(this);
         }
         this.limit = limit;
     }
-
+    
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (bigResult ? 1231 : 1237);
-        result = prime * result + (bufferResult ? 1231 : 1237);
-        result = prime * result + ((cache == null) ? 0 : cache.hashCode());
-        result = prime * result + (calcFoundRows ? 1231 : 1237);
-        result = prime * result + (forUpdate ? 1231 : 1237);
-        result = prime * result + (hignPriority ? 1231 : 1237);
-        result = prime * result + ((hints == null) ? 0 : hints.hashCode());
-        result = prime * result + ((limit == null) ? 0 : limit.hashCode());
-        result = prime * result + (lockInShareMode ? 1231 : 1237);
-        result = prime * result + ((orderBy == null) ? 0 : orderBy.hashCode());
-        result = prime * result + ((procedureArgumentList == null) ? 0 : procedureArgumentList.hashCode());
-        result = prime * result + ((procedureName == null) ? 0 : procedureName.hashCode());
-        result = prime * result + (smallResult ? 1231 : 1237);
-        result = prime * result + (straightJoin ? 1231 : 1237);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        MySqlSelectQueryBlock other = (MySqlSelectQueryBlock) obj;
-        if (bigResult != other.bigResult) return false;
-        if (bufferResult != other.bufferResult) return false;
-        if (cache == null) {
-            if (other.cache != null) return false;
-        } else if (!cache.equals(other.cache)) return false;
-        if (calcFoundRows != other.calcFoundRows) return false;
-        if (forUpdate != other.forUpdate) return false;
-        if (hignPriority != other.hignPriority) return false;
-        if (hints == null) {
-            if (other.hints != null) return false;
-        } else if (!hints.equals(other.hints)) return false;
-        if (limit == null) {
-            if (other.limit != null) return false;
-        } else if (!limit.equals(other.limit)) return false;
-        if (lockInShareMode != other.lockInShareMode) return false;
-        if (orderBy == null) {
-            if (other.orderBy != null) return false;
-        } else if (!orderBy.equals(other.orderBy)) return false;
-        if (procedureArgumentList == null) {
-            if (other.procedureArgumentList != null) return false;
-        } else if (!procedureArgumentList.equals(other.procedureArgumentList)) return false;
-        if (procedureName == null) {
-            if (other.procedureName != null) return false;
-        } else if (!procedureName.equals(other.procedureName)) return false;
-        if (smallResult != other.smallResult) return false;
-        if (straightJoin != other.straightJoin) return false;
-        return true;
-    }
-
-    @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
             return;
         }
-
         super.acceptInternal(visitor);
     }
 
     @Override
-    public void accept0(MySqlASTVisitor visitor) {
+    public void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getSelectList());
             acceptChild(visitor, getFrom());
@@ -251,50 +94,39 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
             acceptChild(visitor, procedureArgumentList);
             acceptChild(visitor, getInto());
         }
-
         visitor.endVisit(this);
     }
-
+    
+    @NoArgsConstructor
+    @Getter
     public static class Limit extends SQLObjectImpl {
-
-        public Limit(){
-
-        }
         
-        public Limit(SQLExpr rowCount){
+        private SQLExpr rowCount;
+        
+        private SQLExpr offset;
+        
+        public Limit(final SQLExpr rowCount){
             this.setRowCount(rowCount);
         }
-
-        private SQLExpr rowCount;
-        private SQLExpr offset;
-
-        public SQLExpr getRowCount() {
-            return rowCount;
-        }
-
-        public void setRowCount(SQLExpr rowCount) {
-            if (rowCount != null) {
+        
+        public void setRowCount(final SQLExpr rowCount) {
+            if (null != rowCount) {
                 rowCount.setParent(this);
             }
             this.rowCount = rowCount;
         }
-
-        public SQLExpr getOffset() {
-            return offset;
-        }
-
-        public void setOffset(SQLExpr offset) {
-            if (offset != null) {
+        
+        public void setOffset(final SQLExpr offset) {
+            if (null != offset) {
                 offset.setParent(this);
             }
             this.offset = offset;
         }
-
+        
         @Override
-        protected void acceptInternal(SQLASTVisitor visitor) {
+        protected void acceptInternal(final SQLASTVisitor visitor) {
             if (visitor instanceof MySqlASTVisitor) {
                 MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
-
                 if (mysqlVisitor.visit(this)) {
                     acceptChild(visitor, offset);
                     acceptChild(visitor, rowCount);
@@ -302,7 +134,5 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
                 mysqlVisitor.endVisit(this);
             }
         }
-
     }
-
 }

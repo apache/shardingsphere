@@ -43,8 +43,7 @@ public class SQLStatementParser extends SQLParser {
         this.exprParser = exprParser;
     }
     
-    
-    
+    // TODO 提炼delete
     public SQLDeleteStatement parseDeleteStatement() {
         getLexer().nextToken();
         SQLDeleteStatement result = createSQLDeleteStatement();

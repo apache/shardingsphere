@@ -70,7 +70,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
         print("SELECT ");
 
-        for (int i = 0, size = x.getHintsSize(); i < size; ++i) {
+        for (int i = 0; i < x.getHints().size(); ++i) {
             SQLCommentHint hint = x.getHints().get(i);
             hint.accept(this);
             print(' ');
@@ -84,7 +84,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             print("DISTINCTROW ");
         }
 
-        if (x.isHignPriority()) {
+        if (x.isHighPriority()) {
             print("HIGH_PRIORITY ");
         }
 
@@ -264,27 +264,20 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         return false;
     }
 
-    public boolean visit(SQLVariantRefExpr x) {
+    public boolean visit(final SQLVariantRefExpr x) {
         {
-            int parametersSize = this.getParametersSize();
             int index = x.getIndex();
-
-            if (index >= 0 && index < parametersSize) {
+            if (index >= 0 && index < getParameters().size()) {
                 Object param = this.getParameters().get(index);
                 printParameter(param);
                 return false;
             }
         }
-
         String varName = x.getName();
         if (x.isGlobal()) {
             print("@@global.");
         } else {
-            if ((!varName.startsWith("@")) // /
-                && (!varName.equals("?")) //
-                && (!varName.startsWith("#")) //
-                && (!varName.startsWith("$")) //
-                && (!varName.startsWith(":"))) {
+            if ((!varName.startsWith("@")) && (!varName.equals("?")) && (!varName.startsWith("#")) && (!varName.startsWith("$")) && (!varName.startsWith(":"))) {
                 print("@@");
             }
         }

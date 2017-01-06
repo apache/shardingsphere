@@ -39,7 +39,7 @@ public class OrVisitor extends AbstractMySQLVisitor {
     private AbstractOrASTNode orASTNode;
     
     public OrVisitor(final SQLASTOutputVisitor dependencyVisitor) {
-        setParameters(dependencyVisitor.getParameters());
+        getParameters().addAll(dependencyVisitor.getParameters());
         SQLVisitor visitor = (SQLVisitor) dependencyVisitor;
         if (null != visitor.getParseContext().getCurrentTable()) {
             getParseContext().setCurrentTable(visitor.getParseContext().getCurrentTable().getName(), Optional.<String>absent());

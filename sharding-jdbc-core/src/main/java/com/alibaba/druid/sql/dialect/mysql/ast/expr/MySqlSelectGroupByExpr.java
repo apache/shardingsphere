@@ -32,7 +32,7 @@ public class MySqlSelectGroupByExpr extends SQLExprImpl implements MySqlExpr {
     private SQLExpr expr;
     
     private SQLOrderingSpecification type;
-
+    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;

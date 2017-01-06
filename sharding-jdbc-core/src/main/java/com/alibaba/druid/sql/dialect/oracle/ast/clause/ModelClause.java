@@ -40,7 +40,7 @@ public class ModelClause extends OracleSQLObjectImpl {
     private final List<ReferenceModelClause> referenceModelClauses = new ArrayList<>();
     
     @Override
-    public void accept0(OracleASTVisitor visitor) {
+    public void accept0(final OracleASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, returnRowsClause);
             acceptChild(visitor, referenceModelClauses);

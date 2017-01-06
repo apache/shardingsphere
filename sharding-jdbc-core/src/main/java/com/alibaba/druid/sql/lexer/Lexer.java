@@ -372,15 +372,6 @@ public class Lexer {
         return new BigDecimal(term.getValue().toCharArray());
     }
     
-    /**
-     * 判断是否为结束标记.
-     * 
-     * @return 是否为结束标记
-     */
-    public boolean isEndToken() {
-        return token == Token.EOF || token == Token.END;
-    }
-    
     public final boolean identifierEquals(final String text) {
         return Token.IDENTIFIER == token && literals.equalsIgnoreCase(text);
     }

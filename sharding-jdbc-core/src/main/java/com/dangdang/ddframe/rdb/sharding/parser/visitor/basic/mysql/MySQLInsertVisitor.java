@@ -78,7 +78,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
             if (isPreparedStatement) {
                 sqlExpr = new SQLVariantRefExpr("?");
                 getParameters().add(id);
-                ((SQLVariantRefExpr) sqlExpr).setIndex(getParametersSize() - 1);
+                ((SQLVariantRefExpr) sqlExpr).setIndex(getParameters().size() - 1);
             } else {
                 sqlExpr = (id instanceof Number) ? new SQLNumberExpr((Number) id) : new SQLCharExpr((String) id);
             }

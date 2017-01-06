@@ -58,10 +58,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCommitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
@@ -683,16 +681,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
     }
 
     @Override
-    public boolean visit(OracleCommitStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleCommitStatement x) {
-
-    }
-
-    @Override
     public boolean visit(AsOfSnapshotClause x) {
         return true;
     }
@@ -719,16 +707,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
 
     @Override
     public void endVisit(OracleFileSpecification x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleExitStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleExitStatement x) {
 
     }
     

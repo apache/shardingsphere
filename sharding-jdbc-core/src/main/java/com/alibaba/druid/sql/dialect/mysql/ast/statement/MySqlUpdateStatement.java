@@ -32,7 +32,7 @@ public class MySqlUpdateStatement extends AbstractSQLUpdateStatement implements 
     private Limit limit;
     
     private SQLOrderBy orderBy;
-
+    
     public void setLimit(final Limit limit) {
         if (limit != null) {
             limit.setParent(this);

@@ -524,17 +524,14 @@ public class MySqlExprParser extends SQLExprParser {
 
     protected SQLDataType parseDataTypeRest(SQLDataType dataType) {
         super.parseDataTypeRest(dataType);
-
         if (getLexer().identifierEquals("UNSIGNED")) {
             getLexer().nextToken();
             dataType.getAttributes().put("UNSIGNED", true);
         }
-
         if (getLexer().identifierEquals("ZEROFILL")) {
             getLexer().nextToken();
             dataType.getAttributes().put("ZEROFILL", true);
         }
-
         return dataType;
     }
 
@@ -562,14 +559,13 @@ public class MySqlExprParser extends SQLExprParser {
     public SQLExpr additiveRest(SQLExpr expr) {
         if (getLexer().equalToken(Token.PLUS)) {
             getLexer().nextToken();
-            SQLExpr rightExp = multiplicative();
+            SQLExpr rightExp = multiplicativeRest(bitXorRest(primary()));
 
             expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Add, rightExp, JdbcConstants.MYSQL);
             expr = additiveRest(expr);
         } else if (getLexer().equalToken(Token.SUB)) {
             getLexer().nextToken();
-            SQLExpr rightExp = multiplicative();
-
+            SQLExpr rightExp = multiplicativeRest(bitXorRest(primary()));
             expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Subtract, rightExp, JdbcConstants.MYSQL);
             expr = additiveRest(expr);
         }

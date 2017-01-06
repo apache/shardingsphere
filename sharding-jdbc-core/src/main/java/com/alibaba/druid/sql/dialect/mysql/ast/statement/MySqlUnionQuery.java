@@ -20,33 +20,31 @@ import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
+import lombok.Getter;
 
+@Getter
 public class MySqlUnionQuery extends SQLUnionQuery implements MySqlObject {
-
+    
     private Limit limit;
-
-    public Limit getLimit() {
-        return limit;
-    }
-
-    public void setLimit(Limit limit) {
-        if (limit != null) {
+    
+    public void setLimit(final Limit limit) {
+        if (null != limit) {
             limit.setParent(this);
         }
         this.limit = limit;
     }
-
+    
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {
             accept0((MySqlASTVisitor) visitor);
         } else {
             throw new IllegalArgumentException("not support visitor type : " + visitor.getClass().getName());
         }
     }
-
+    
     @Override
-    public void accept0(MySqlASTVisitor visitor) {
+    public void accept0(final MySqlASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getLeft());
             acceptChild(visitor, getRight());

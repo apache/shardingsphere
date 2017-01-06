@@ -81,7 +81,7 @@ public class OracleExprParser extends SQLExprParser {
         getLexer().nextToken();
     }
     
-    protected boolean isCharType(String dataTypeName) {
+    protected boolean isCharType(final String dataTypeName) {
         return "varchar2".equalsIgnoreCase(dataTypeName) || "nvarchar2".equalsIgnoreCase(dataTypeName)
                 || "char".equalsIgnoreCase(dataTypeName) || "varchar".equalsIgnoreCase(dataTypeName) 
                 || "nchar".equalsIgnoreCase(dataTypeName) || "nvarchar".equalsIgnoreCase(dataTypeName);
@@ -899,24 +899,17 @@ public class OracleExprParser extends SQLExprParser {
                 String argumentName = ((SQLIdentifierExpr) expr).getSimpleName();
                 return new OracleArgumentExpr(argumentName, rightExp);
             }
-            
             rightExp = shift();
-
             rightExp = equalityRest(rightExp);
-
             expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp, getDbType());
         } else if (getLexer().equalToken(Token.BANG_EQ)) {
             getLexer().nextToken();
             rightExp = shift();
-
             rightExp = equalityRest(rightExp);
-
             expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotEqual, rightExp, getDbType());
         }
-
         return expr;
     }
-    
     
     public SQLExpr exprRest(SQLExpr expr) {
         expr = super.exprRest(expr);

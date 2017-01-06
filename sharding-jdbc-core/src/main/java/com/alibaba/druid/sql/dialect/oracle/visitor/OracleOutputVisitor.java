@@ -77,10 +77,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCommitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExitStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
@@ -1534,40 +1532,8 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleParameter x) {
-
     }
-
-    @Override
-    public boolean visit(OracleCommitStatement x) {
-        print("COMMIT");
-
-        if (x.isWrite()) {
-            print(" WRITE");
-            if (x.getWait() != null) {
-                if (x.getWait().booleanValue()) {
-                    print(" WAIT");
-                } else {
-                    print(" NOWAIT");
-                }
-            }
-
-            if (x.getImmediate() != null) {
-                if (x.getImmediate().booleanValue()) {
-                    print(" IMMEDIATE");
-                } else {
-                    print(" BATCH");
-                }
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleCommitStatement x) {
-
-    }
-
+    
     @Override
     public boolean visit(AsOfSnapshotClause x) {
         print("AS OF SNAPSHOT(");
@@ -1615,22 +1581,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     public void endVisit(OracleFileSpecification x) {
 
     }
-
-    @Override
-    public boolean visit(OracleExitStatement x) {
-        print("EXIT");
-        if (x.getWhen() != null) {
-            print(" WHEN ");
-            x.getWhen().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleExitStatement x) {
-
-    }
-
+    
     public boolean visit(SQLCharacterDataType x) {
         print(x.getName());
         if (x.getArguments().size() > 0) {

@@ -30,6 +30,14 @@ public class OracleExceptionStatement extends OracleStatementImpl implements Ora
     
     private final List<Item> items = new ArrayList<>();
     
+    @Override
+    public void accept0(final OracleASTVisitor visitor) {
+        if (visitor.visit(this)) {
+            acceptChild(visitor, items);
+        }
+        visitor.endVisit(this);
+    }
+    
     @Getter
     @Setter
     public static class Item extends OracleSQLObjectImpl {
@@ -46,13 +54,5 @@ public class OracleExceptionStatement extends OracleStatementImpl implements Ora
             }
             visitor.endVisit(this);
         }
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, items);
-        }
-        visitor.endVisit(this);
     }
 }

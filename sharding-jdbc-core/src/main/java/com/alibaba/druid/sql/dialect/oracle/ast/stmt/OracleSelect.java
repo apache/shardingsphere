@@ -28,7 +28,7 @@ public class OracleSelect extends SQLSelect {
     private OracleSelectForUpdate forUpdate;
     
     @Override
-    protected void acceptInternal(SQLASTVisitor visitor) {
+    protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, getWithSubQuery());
             acceptChild(visitor, getQuery());
