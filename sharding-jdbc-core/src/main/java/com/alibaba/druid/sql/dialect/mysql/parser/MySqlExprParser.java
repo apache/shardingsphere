@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
@@ -50,6 +49,10 @@ import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.util.JdbcConstants;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 public class MySqlExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "GROUP_CONCAT"};
@@ -58,6 +61,37 @@ public class MySqlExprParser extends SQLExprParser {
         super(new MySqlLexer(sql), JdbcConstants.MYSQL, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
+    
+    public final List<String> parsePartition() {
+        if (!getLexer().equalToken(Token.PARTITION)) {
+            return Collections.emptyList();
+        }
+        List<String> result = new LinkedList<>();
+        accept(Token.PARTITION);
+        accept(Token.LEFT_PAREN);
+        do {
+            if (getLexer().equalToken(Token.COMMA)) {
+                getLexer().nextToken();
+            }
+            result.add(getLexer().getLiterals());
+            getLexer().nextToken();
+        } while (getLexer().equalToken(Token.COMMA));
+        accept(Token.RIGHT_PAREN);
+        return result;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     public SQLExpr relationalRest(SQLExpr expr) {
         if (getLexer().identifierEquals("REGEXP")) {
@@ -357,7 +391,7 @@ public class MySqlExprParser extends SQLExprParser {
                     accept(Token.RIGHT_PAREN);
                 }
 
-                acceptIdentifier("AGAINST");
+                accept("AGAINST");
 
                 accept(Token.LEFT_PAREN);
                 SQLExpr against = primary();
@@ -367,19 +401,19 @@ public class MySqlExprParser extends SQLExprParser {
                     getLexer().nextToken();
                     if (getLexer().identifierEquals("NATURAL")) {
                         getLexer().nextToken();
-                        acceptIdentifier("LANGUAGE");
-                        acceptIdentifier("MODE");
+                        accept("LANGUAGE");
+                        accept("MODE");
                         if (getLexer().equalToken(Token.WITH)) {
                             getLexer().nextToken();
-                            acceptIdentifier("QUERY");
-                            acceptIdentifier("EXPANSION");
+                            accept("QUERY");
+                            accept("EXPANSION");
                             matchAgainstExpr.setSearchModifier(SearchModifier.IN_NATURAL_LANGUAGE_MODE_WITH_QUERY_EXPANSION);
                         } else {
                             matchAgainstExpr.setSearchModifier(SearchModifier.IN_NATURAL_LANGUAGE_MODE);
                         }
                     } else if (getLexer().identifierEquals("BOOLEAN")) {
                         getLexer().nextToken();
-                        acceptIdentifier("MODE");
+                        accept("MODE");
                         matchAgainstExpr.setSearchModifier(SearchModifier.IN_BOOLEAN_MODE);
                     } else {
                         throw new ParserUnsupportedException(getLexer().getToken());
@@ -584,26 +618,20 @@ public class MySqlExprParser extends SQLExprParser {
         return null;
     }
     
-    protected SQLAggregateExpr parseAggregateExprRest(SQLAggregateExpr aggregateExpr) {
+    protected SQLAggregateExpr parseAggregateExprRest(final SQLAggregateExpr aggregateExpr) {
         if (getLexer().equalToken(Token.ORDER)) {
-            SQLOrderBy orderBy = this.parseOrderBy();
-            aggregateExpr.putAttribute("ORDER BY", orderBy);
+            aggregateExpr.putAttribute("ORDER BY", parseOrderBy());
         }
         if (getLexer().identifierEquals("SEPARATOR")) {
             getLexer().nextToken();
-
-            SQLExpr seperator = this.primary();
-
-            aggregateExpr.putAttribute("SEPARATOR", seperator);
+            aggregateExpr.putAttribute("SEPARATOR", primary());
         }
         return aggregateExpr;
     }
 
     public MySqlSelectGroupByExpr parseSelectGroupByItem() {
         MySqlSelectGroupByExpr item = new MySqlSelectGroupByExpr();
-
         item.setExpr(expr());
-
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
             item.setType(SQLOrderingSpecification.ASC);
@@ -611,7 +639,6 @@ public class MySqlExprParser extends SQLExprParser {
             getLexer().nextToken();
             item.setType(SQLOrderingSpecification.DESC);
         }
-
         return item;
     }
 }

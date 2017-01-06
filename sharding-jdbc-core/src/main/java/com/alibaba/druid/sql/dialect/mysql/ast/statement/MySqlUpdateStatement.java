@@ -39,7 +39,7 @@ public class MySqlUpdateStatement extends AbstractSQLUpdateStatement implements 
         }
         this.limit = limit;
     }
-
+    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof MySqlASTVisitor) {

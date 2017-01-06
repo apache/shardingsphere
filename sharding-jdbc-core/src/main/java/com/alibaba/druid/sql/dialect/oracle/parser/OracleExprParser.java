@@ -109,11 +109,11 @@ public class OracleExprParser extends SQLExprParser {
                 }
                 
                 accept(Token.TO);
-                acceptIdentifier("MONTH");
+                accept("MONTH");
                 
                 return interval;
             } else {
-                acceptIdentifier("DAY");
+                accept("DAY");
                 OracleDataTypeIntervalDay interval = new OracleDataTypeIntervalDay();
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
@@ -122,7 +122,7 @@ public class OracleExprParser extends SQLExprParser {
                 }
                 
                 accept(Token.TO);
-                acceptIdentifier("SECOND");
+                accept("SECOND");
                 
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
@@ -137,7 +137,7 @@ public class OracleExprParser extends SQLExprParser {
         String typeName;
         if (getLexer().identifierEquals("LONG")) {
             getLexer().nextToken();
-            acceptIdentifier("RAW");
+            accept("RAW");
             typeName = "LONG RAW";
         } else {
             SQLName typeExpr = name();
@@ -163,8 +163,8 @@ public class OracleExprParser extends SQLExprParser {
                     timestamp.setWithTimeZone(true);
                 }
                 
-                acceptIdentifier("TIME");
-                acceptIdentifier("ZONE");
+                accept("TIME");
+                accept("ZONE");
             }
             
             return timestamp;
@@ -467,8 +467,8 @@ public class OracleExprParser extends SQLExprParser {
 
                 if (getLexer().identifierEquals("AT")) {
                     getLexer().nextToken();
-                    acceptIdentifier("TIME");
-                    acceptIdentifier("ZONE");
+                    accept("TIME");
+                    accept("ZONE");
 
                     String timezone = getLexer().getLiterals();
                     timestamp.setTimeZone(timezone);
@@ -590,7 +590,7 @@ public class OracleExprParser extends SQLExprParser {
                     getLexer().setToken(Token.IDENTIFIER);
                     return expr;
                 }
-                acceptIdentifier("ZONE");
+                accept("ZONE");
                 
                 SQLExpr timeZone = primary();
                 expr = new OracleDatetimeExpr(expr, timeZone);

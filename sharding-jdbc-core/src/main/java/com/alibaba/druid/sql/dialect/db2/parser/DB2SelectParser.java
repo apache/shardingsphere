@@ -90,7 +90,7 @@ public class DB2SelectParser extends SQLSelectParser {
             
             if (getLexer().equalToken(Token.FOR)) {
                 getLexer().nextToken();
-                acceptIdentifier("READ");
+                accept("READ");
                 accept(Token.ONLY);
                 queryBlock.setForReadOnly(true);
             }
@@ -103,7 +103,7 @@ public class DB2SelectParser extends SQLSelectParser {
                 if (getLexer().identifierEquals("ROW")) {
                     getLexer().nextToken();
                 } else {
-                    acceptIdentifier("ROWS");
+                    accept("ROWS");
                 }
             }
             

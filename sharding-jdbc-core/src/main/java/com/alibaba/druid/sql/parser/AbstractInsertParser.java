@@ -87,11 +87,20 @@ public abstract class AbstractInsertParser extends SQLParser {
             getLexer().nextToken();
         }
         accept(Token.INTO);
+        parseBetweenIntoAndTable(sqlInsertStatement);
+        sqlInsertStatement.setTableSource(new SQLExprTableSource(exprParser.name()));
+        parseBetweenTableAndValues(sqlInsertStatement);
+        parseAlias(sqlInsertStatement);
+    }
+    
+    protected void parseBetweenIntoAndTable(final AbstractSQLInsertStatement sqlInsertStatement) {
         while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
             sqlInsertStatement.getIdentifiersBetweenIntoAndTable().add(getLexer().getLiterals());
             getLexer().nextToken();
         }
-        sqlInsertStatement.setTableSource(new SQLExprTableSource(exprParser.name()));
+    }
+    
+    protected void parseBetweenTableAndValues(final AbstractSQLInsertStatement sqlInsertStatement) {
         while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
             sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
             getLexer().nextToken();
@@ -105,7 +114,6 @@ public abstract class AbstractInsertParser extends SQLParser {
                 accept(Token.RIGHT_PAREN);
             }
         }
-        parseAlias(sqlInsertStatement);
     }
     
     private void parseAlias(final AbstractSQLInsertStatement sqlInsertStatement) {

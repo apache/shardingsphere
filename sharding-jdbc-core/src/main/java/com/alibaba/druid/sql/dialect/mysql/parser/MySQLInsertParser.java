@@ -3,8 +3,8 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
+import com.alibaba.druid.sql.parser.SQLExprParser;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,6 +43,11 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     @Override
     protected MySqlInsertStatement createSQLInsertStatement() {
         return new MySqlInsertStatement();
+    }
+    
+    @Override
+    protected void parseBetweenTableAndValues(final AbstractSQLInsertStatement sqlInsertStatement) {
+        ((MySqlInsertStatement) sqlInsertStatement).getPartitionNames().addAll(((MySqlExprParser) getExprParser()).parsePartition());
     }
     
     @Override

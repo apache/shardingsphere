@@ -25,9 +25,14 @@ import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class MySqlDeleteStatement extends SQLDeleteStatement {
+    
+    private final List<String> partitionNames = new ArrayList<>();
     
     private SQLOrderBy orderBy;
     

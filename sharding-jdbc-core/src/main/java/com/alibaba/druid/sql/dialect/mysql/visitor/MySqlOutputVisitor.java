@@ -445,7 +445,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(MySqlDeleteStatement x) {
+    public boolean visit(final MySqlDeleteStatement x) {
         print("DELETE ");
         for (String each : x.getIdentifiersBetweenDeleteAndFrom()) {
             print(each);
@@ -453,7 +453,8 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         }
         print("FROM ");
         x.getTableSource().accept(this);
-        if (x.getWhere() != null) {
+        visitPartition(x);
+        if (null != x.getWhere()) {
             println();
             incrementIndent();
             print("WHERE ");
@@ -474,7 +475,23 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
         return false;
     }
-
+    
+    private void visitPartition(final MySqlDeleteStatement x) {
+        int count = 0;
+        for (String each : x.getPartitionNames()) {
+            if (0 == count) {
+                print(" PARTITION (");
+            }
+            print(each);
+            if (count == x.getPartitionNames().size() - 1) {
+                print(")");
+            } else {
+                print(",");
+            }
+            count++;
+        }
+    }
+    
     @Override
     public void endVisit(MySqlInsertStatement x) {
 
@@ -489,10 +506,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         }
         print("INTO ");
         x.getTableSource().accept(this);
-        for (String each : x.getIdentifiersBetweenTableAndValues()) {
-            print(" ");
-            print(each);
-        }
+        visitPartition(x);
         if (x.getColumns().size() > 0) {
             incrementIndent();
             print(" (");
@@ -524,6 +538,22 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             print(each);
         }
         return false;
+    }
+    
+    private void visitPartition(final MySqlInsertStatement x) {
+        int count = 0;
+        for (String each : x.getPartitionNames()) {
+            if (0 == count) {
+                print(" PARTITION (");
+            }
+            print(each);
+            if (count == x.getPartitionNames().size() - 1) {
+                print(")");
+            } else {
+                print(",");
+            }
+            count++;
+        }
     }
 
     protected void printValuesList(MySqlInsertStatement x) {

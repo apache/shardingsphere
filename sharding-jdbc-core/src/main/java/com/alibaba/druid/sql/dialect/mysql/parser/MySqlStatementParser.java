@@ -58,9 +58,9 @@ public class MySqlStatementParser extends SQLStatementParser {
         return result;
     }
     
-    // TODO 解析 PARTITION
     @Override
     protected void parseCustomizedParserBetweenTableAndNextIdentifier(final SQLDeleteStatement deleteStatement) {
+        ((MySqlDeleteStatement) deleteStatement).getPartitionNames().addAll(((MySqlExprParser) getExprParser()).parsePartition());
     }
     
     @Override

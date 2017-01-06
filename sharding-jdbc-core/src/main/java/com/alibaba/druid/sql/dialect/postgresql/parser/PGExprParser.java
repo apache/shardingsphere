@@ -165,8 +165,8 @@ public class PGExprParser extends SQLExprParser {
                 
                 if (getLexer().equalToken(Token.WITH)) {
                     getLexer().nextToken();
-                    acceptIdentifier("TIME");
-                    acceptIdentifier("ZONE");
+                    accept("TIME");
+                    accept("ZONE");
                     timestamp.setWithTimeZone(true);
                 }
 
@@ -176,8 +176,8 @@ public class PGExprParser extends SQLExprParser {
 
                 if (getLexer().identifierEquals("AT")) {
                     getLexer().nextToken();
-                    acceptIdentifier("TIME");
-                    acceptIdentifier("ZONE");
+                    accept("TIME");
+                    accept("ZONE");
 
                     String timezone = getLexer().getLiterals();
                     timestamp.setTimeZone(timezone);

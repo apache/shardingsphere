@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,6 +34,38 @@ public final class MySqlDeleteStatementParserTest {
         assertThat(deleteStatement.getIdentifiersBetweenDeleteAndFrom().get(1), is("QUICK"));
         assertThat(deleteStatement.getIdentifiersBetweenDeleteAndFrom().get(2), is("IGNORE"));
         assertThat(deleteStatement.toString(), is("DELETE LOW_PRIORITY QUICK IGNORE FROM TABLE_XXX\nWHERE field1 < 1\nORDER BY field1\nLIMIT 10"));
+    }
+    
+    @Test
+    public void parseStatementWithDeleteSingleTableAndOnePartition() {
+        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE FROM TABLE_XXX PARTITION(partition_1) WHERE field1<1");
+        MySqlDeleteStatement deleteStatement = (MySqlDeleteStatement) statementParser.parseStatement();
+        assertThat(deleteStatement.getDbType(), is(JdbcConstants.MYSQL));
+        assertThat(deleteStatement.getTableSource().toString(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getPartitionNames().size(), is(1));
+        assertThat(deleteStatement.getPartitionNames().get(0), is("partition_1"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getLeft().toString(), is("field1"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getRight().toString(), is("1"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getOperator().getName(), is("<"));
+        assertTrue(deleteStatement.getIdentifiersBetweenDeleteAndFrom().isEmpty());
+        assertThat(deleteStatement.toString(), is("DELETE FROM TABLE_XXX PARTITION (partition_1)\nWHERE field1 < 1"));
+    }
+    
+    @Test
+    public void parseStatementWithDeleteSingleTableAndMultiplePartitions() {
+        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1<1");
+        MySqlDeleteStatement deleteStatement = (MySqlDeleteStatement) statementParser.parseStatement();
+        assertThat(deleteStatement.getDbType(), is(JdbcConstants.MYSQL));
+        assertThat(deleteStatement.getTableSource().toString(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getPartitionNames().size(), is(3));
+        assertThat(deleteStatement.getPartitionNames().get(0), is("partition_1"));
+        assertThat(deleteStatement.getPartitionNames().get(1), is("partition_2"));
+        assertThat(deleteStatement.getPartitionNames().get(2), is("partition_3"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getLeft().toString(), is("field1"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getRight().toString(), is("1"));
+        assertThat(((SQLBinaryOpExpr) deleteStatement.getWhere()).getOperator().getName(), is("<"));
+        assertTrue(deleteStatement.getIdentifiersBetweenDeleteAndFrom().isEmpty());
+        assertThat(deleteStatement.toString(), is("DELETE FROM TABLE_XXX PARTITION (partition_1,partition_2,partition_3)\nWHERE field1 < 1"));
     }
     
     @Test(expected = UnsupportedOperationException.class)

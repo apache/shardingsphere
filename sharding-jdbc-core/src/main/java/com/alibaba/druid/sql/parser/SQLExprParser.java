@@ -1327,15 +1327,6 @@ public class SQLExprParser extends SQLParser {
         return charType;
     }
     
-    @Override
-    public void accept(final Token token) {
-        if (getLexer().equalToken(token)) {
-            getLexer().nextToken();
-        } else {
-            throw new ParserException(getLexer(), token);
-        }
-    }
-
     public List<SQLCommentHint> parseHints() {
         List<SQLCommentHint> result = new ArrayList<>();
         if (getLexer().equalToken(Token.HINT)) {

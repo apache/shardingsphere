@@ -44,19 +44,17 @@ import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 
 public class MySqlSelectParser extends SQLSelectParser {
-
-    public MySqlSelectParser(SQLExprParser exprParser){
+    
+    public MySqlSelectParser(final SQLExprParser exprParser) {
         super(exprParser);
     }
-
+    
     @Override
     public SQLSelectQuery query() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-
             SQLSelectQuery select = query();
             accept(Token.RIGHT_PAREN);
-
             return queryRest(select);
         }
 
@@ -158,8 +156,8 @@ public class MySqlSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.LOCK)) {
             getLexer().nextToken();
             accept(Token.IN);
-            acceptIdentifier("SHARE");
-            acceptIdentifier("MODE");
+            accept("SHARE");
+            accept("MODE");
             queryBlock.setLockInShareMode(true);
         }
 
@@ -280,7 +278,7 @@ public class MySqlSelectParser extends SQLSelectParser {
 
             if (getLexer().equalToken(Token.WITH)) {
                 getLexer().nextToken();
-                acceptIdentifier("ROLLUP");
+                accept("ROLLUP");
 
                 MySqlSelectGroupBy mySqlGroupBy = new MySqlSelectGroupBy();
                 for (SQLExpr sqlExpr : groupBy.getItems()) {

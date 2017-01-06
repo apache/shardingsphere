@@ -49,17 +49,14 @@ public final class MySqlInsertStatementParserTest {
         assertThat(((SQLIntegerExpr) insertStatement.getValuesList().get(0).getValues().get(0)).getNumber().intValue(), is(1));
         assertThat(insertStatement.getValuesList().get(0).getValues().get(1).toString(), is("'value_char'"));
         assertThat(((SQLCharExpr) insertStatement.getValuesList().get(0).getValues().get(1)).getText(), is("value_char"));
+        assertThat(insertStatement.getPartitionNames().size(), is(2));
+        assertThat(insertStatement.getPartitionNames().get(0), is("partition1"));
+        assertThat(insertStatement.getPartitionNames().get(1), is("partition2"));
         assertThat(insertStatement.getIdentifiersBetweenInsertAndInto().size(), is(2));
         assertThat(insertStatement.getIdentifiersBetweenInsertAndInto().get(0), is("LOW_PRIORITY"));
         assertThat(insertStatement.getIdentifiersBetweenInsertAndInto().get(1), is("IGNORE"));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().size(), is(6));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(0), is("PARTITION"));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(1), is("("));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(2), is("partition1"));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(3), is(","));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(4), is("partition2"));
-        assertThat(insertStatement.getIdentifiersBetweenTableAndValues().get(5), is(")"));
-        assertThat(insertStatement.toString(), is("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION ( partition1 , partition2 ) (`field1`, `field2`)\nVALUES (1, 'value_char')"));
+        assertTrue(insertStatement.getIdentifiersBetweenTableAndValues().isEmpty());
+        assertThat(insertStatement.toString(), is("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION (partition1,partition2) (`field1`, `field2`)\nVALUES (1, 'value_char')"));
     }
     
     @Test

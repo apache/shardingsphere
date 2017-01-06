@@ -87,16 +87,16 @@ public class SQLServerSelectParser extends SQLSelectParser {
         if (getLexer().identifierEquals("OFFSET")) {
             getLexer().nextToken();
             SQLExpr offset = getExprParser().expr();
-            acceptIdentifier("ROWS");
+            accept("ROWS");
             select.setOffset(offset);
             
             if (getLexer().equalToken(Token.FETCH)) {
                 getLexer().nextToken();
-                acceptIdentifier("NEXT");
+                accept("NEXT");
                 
                 SQLExpr rowCount = getExprParser().expr();
-                acceptIdentifier("ROWS");
-                acceptIdentifier("ONLY");
+                accept("ROWS");
+                accept("ONLY");
                 select.setRowCount(rowCount);
             }
         }

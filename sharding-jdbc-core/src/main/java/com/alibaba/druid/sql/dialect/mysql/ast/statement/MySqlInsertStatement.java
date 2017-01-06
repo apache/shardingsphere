@@ -23,8 +23,13 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcConstants;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class MySqlInsertStatement extends AbstractSQLInsertStatement {
+    
+    private final List<String> partitionNames = new ArrayList<>();
     
     @Override
     public String getDbType() {

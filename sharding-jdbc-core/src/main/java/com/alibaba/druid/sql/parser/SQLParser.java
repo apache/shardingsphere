@@ -42,7 +42,7 @@ public class SQLParser {
         this.dbType = dbType;
     }
     
-    public void accept(final Token token) {
+    protected final void accept(final Token token) {
         if (lexer.equalToken(token)) {
             lexer.nextToken();
             return;
@@ -50,7 +50,7 @@ public class SQLParser {
         throw new ParserException(lexer, token);
     }
     
-    protected final void acceptIdentifier(final String text) {
+    protected final void accept(final String text) {
         if (lexer.identifierEquals(text)) {
             lexer.nextToken();
             return;
