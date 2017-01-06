@@ -51,9 +51,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
@@ -67,9 +65,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public interface OracleASTVisitor extends SQLASTVisitor {
@@ -270,21 +266,9 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleSysdateExpr x);
 
-    boolean visit(OracleExceptionStatement x);
-
-    void endVisit(OracleExceptionStatement x);
-
-    boolean visit(OracleExceptionStatement.Item x);
-
-    void endVisit(OracleExceptionStatement.Item x);
-
     boolean visit(OracleArgumentExpr x);
 
     void endVisit(OracleArgumentExpr x);
-
-    boolean visit(OracleSetTransactionStatement x);
-
-    void endVisit(OracleSetTransactionStatement x);
 
     boolean visit(OracleRangeExpr x);
 
@@ -310,10 +294,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleSizeExpr x);
 
-    boolean visit(OracleFileSpecification x);
-
-    void endVisit(OracleFileSpecification x);
-
     boolean visit(OracleDataTypeTimestamp x);
 
     void endVisit(OracleDataTypeTimestamp x);
@@ -325,10 +305,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleDataTypeIntervalDay x);
 
     void endVisit(OracleDataTypeIntervalDay x);
-
-    boolean visit(OracleUsingIndexClause x);
-
-    void endVisit(OracleUsingIndexClause x);
 
     boolean visit(OracleLobStorageClause x);
 

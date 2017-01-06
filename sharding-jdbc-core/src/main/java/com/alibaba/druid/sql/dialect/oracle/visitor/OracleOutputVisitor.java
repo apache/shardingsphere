@@ -19,7 +19,6 @@ import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -78,9 +77,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
@@ -95,9 +92,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 import java.util.List;
@@ -1342,44 +1337,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public void endVisit(com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement.Item x) {
-
-    }
-
-    @Override
-    public boolean visit(com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement.Item x) {
-        print("WHEN ");
-        x.getWhen().accept(this);
-        incrementIndent();
-
-        for (int i = 0, size = x.getStatements().size(); i < size; ++i) {
-            println();
-            SQLStatement stmt = x.getStatements().get(i);
-            stmt.setParent(x);
-            stmt.accept(this);
-        }
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public boolean visit(OracleExceptionStatement x) {
-        print("EXCEPTION");
-        incrementIndent();
-        for (OracleExceptionStatement.Item item : x.getItems()) {
-            println();
-            item.accept(this);
-        }
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleExceptionStatement x) {
-
-    }
-
-    @Override
     public boolean visit(OracleArgumentExpr x) {
         print(x.getArgumentName());
         print(" => ");
@@ -1389,22 +1346,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleArgumentExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleSetTransactionStatement x) {
-        if (x.isReadOnly()) {
-            print("SET TRANSACTION READ ONLY NAME ");
-        } else {
-            print("SET TRANSACTION NAME ");
-        }
-        x.getName().accept(this);
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleSetTransactionStatement x) {
 
     }
 
@@ -1558,29 +1499,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     public void endVisit(OracleSizeExpr x) {
 
     }
-
-    @Override
-    public boolean visit(OracleFileSpecification x) {
-        printAndAccept(x.getFileNames(), ", ");
-
-        if (x.getSize() != null) {
-            print(" SIZE ");
-            x.getSize().accept(this);
-        }
-
-        if (x.isAutoExtendOff()) {
-            print(" AUTOEXTEND OFF");
-        } else if (x.getAutoExtendOn() != null) {
-            print(" AUTOEXTEND ON ");
-            x.getAutoExtendOn().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleFileSpecification x) {
-
-    }
     
     public boolean visit(SQLCharacterDataType x) {
         print(x.getName());
@@ -1660,59 +1578,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleDataTypeIntervalDay x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleUsingIndexClause x) {
-        print("USING INDEX");
-        if (x.getIndex() != null) {
-            print(' ');
-            x.getIndex().accept(this);
-        } else {
-            if (x.getPtcfree() != null) {
-                print(" PCTFREE ");
-                x.getPtcfree().accept(this);
-            }
-
-            if (x.getInitrans() != null) {
-                print(" INITRANS ");
-                x.getInitrans().accept(this);
-            }
-
-            if (x.getMaxtrans() != null) {
-                print(" MAXTRANS ");
-                x.getMaxtrans().accept(this);
-            }
-
-            if (x.isComputeStatistics()) {
-                print(" COMPUTE STATISTICS");
-            }
-
-            if (x.getTablespace() != null) {
-                print(" TABLESPACE ");
-                x.getTablespace().accept(this);
-            }
-
-            if (x.getEnable() != null) {
-                if (x.getEnable().booleanValue()) {
-                    print(" ENABLE");
-                } else {
-                    print(" DISABLE");
-                }
-            }
-
-            if (x.getStorage() != null) {
-                println();
-                x.getStorage().accept(this);
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleUsingIndexClause x) {
 
     }
 

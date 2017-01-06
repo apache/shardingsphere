@@ -106,7 +106,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     
     private final Appendable appender;
     
-    private final List<Object> parameters = new LinkedList<>();
+    private List<Object> parameters = new LinkedList<>();
     
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)

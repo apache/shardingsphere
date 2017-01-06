@@ -34,7 +34,7 @@ public class SQLServerObjectReferenceExpr extends SQLServerObjectImpl implements
     
     private String schema;
     
-    public SQLServerObjectReferenceExpr(final SQLExpr owner){
+    public SQLServerObjectReferenceExpr(final SQLExpr owner) {
         if (owner instanceof SQLIdentifierExpr) {
             database = ((SQLIdentifierExpr) owner).getSimpleName();
         } else if (owner instanceof SQLPropertyExpr) {

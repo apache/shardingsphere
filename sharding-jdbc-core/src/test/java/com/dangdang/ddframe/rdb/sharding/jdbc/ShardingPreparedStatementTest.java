@@ -286,7 +286,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                java.sql.Statement queryStatement = connection.createStatement()) {
+                Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setString(2, "BATCH");
             preparedStatement.addBatch();

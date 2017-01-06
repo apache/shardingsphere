@@ -59,9 +59,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExceptionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleFileSpecification;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
@@ -76,9 +74,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSetTransactionStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUsingIndexClause;
 import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
 
 public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements OracleASTVisitor {
@@ -601,42 +597,12 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
     }
 
     @Override
-    public boolean visit(OracleExceptionStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleExceptionStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleExceptionStatement.Item x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleExceptionStatement.Item x) {
-
-    }
-
-    @Override
     public boolean visit(OracleArgumentExpr x) {
         return true;
     }
 
     @Override
     public void endVisit(OracleArgumentExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleSetTransactionStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleSetTransactionStatement x) {
 
     }
 
@@ -699,16 +665,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
     public void endVisit(OracleSizeExpr x) {
 
     }
-
-    @Override
-    public boolean visit(OracleFileSpecification x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleFileSpecification x) {
-
-    }
     
     @Override
     public boolean visit(OracleDataTypeTimestamp x) {
@@ -737,16 +693,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
 
     @Override
     public void endVisit(OracleDataTypeIntervalDay x) {
-
-    }
-
-    @Override
-    public boolean visit(OracleUsingIndexClause x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(OracleUsingIndexClause x) {
 
     }
 

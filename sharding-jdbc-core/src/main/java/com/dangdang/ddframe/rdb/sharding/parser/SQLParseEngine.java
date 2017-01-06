@@ -61,7 +61,7 @@ public final class SQLParseEngine {
     public SQLParsedResult parse() {
         Preconditions.checkArgument(visitor instanceof SQLVisitor);
         SQLVisitor sqlVisitor = (SQLVisitor) visitor;
-        visitor.getParameters().addAll(parameters);
+        visitor.setParameters(parameters);
         sqlVisitor.getParseContext().setShardingRule(shardingRule);
         sqlStatement.accept(visitor);
         SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
