@@ -92,6 +92,35 @@
             </condition-context>
         </condition-contexts>
     </assert>
+
+    <assert id="assertSelectForInWithTableName" sql="select * from order where order.order_id in (1,2,3) and order.other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id IN (1, 2, 3) AND [Token(order)].other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="IN">
+                    <value value="1" type="int" />
+                    <value value="2" type="int" />
+                    <value value="3" type="int" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+
+    <assert id="assertSelectForBetweenWithTableName" sql="select * from order where order.order_id between 1 and 3 and order.other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id BETWEEN 1 AND 3 AND [Token(order)].other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                    <value value="1" type="int" />
+                    <value value="3" type="int" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
     
     <assert id="assertSelectWithDateFunction" sql="select * from order where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')" expected-sql="SELECT * FROM [Token(order)] WHERE date = str_to_date('2013-01-01 01:21:01', '%Y-%m-%d %H:%i:%s')">
         <tables>

@@ -151,7 +151,7 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     @Override
     // TODO SELECT [别名.xxx]的情况，目前都是替换成token，解析之后应该替换回去
     public final boolean visit(final SQLPropertyExpr x) {
-        if (!(x.getParent() instanceof SQLBinaryOpExpr) && !(x.getParent() instanceof SQLSelectItem)) {
+        if (null != x.getParent() && !(x.getParent() instanceof SQLBinaryOpExpr) && !(x.getParent() instanceof SQLSelectItem) && !(x.getParent() instanceof SQLBetweenExpr)) {
             return super.visit(x);
         }
         if (!(x.getOwner() instanceof SQLIdentifierExpr)) {
