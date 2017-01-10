@@ -82,4 +82,16 @@ public final class StaticShardingBothForStatementWithSelectTest extends Abstract
         String sql = "SELECT * FROM t_global";
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGlobalTableOnly.xml", getShardingDataSource().getConnection(), "t_global", sql);
     }
+    
+    @Test
+    public void assertSelectGlobalTableWithDatabaseName() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT * FROM dataSource_dbtbl_0.t_global";
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGlobalTableOnly.xml", getShardingDataSource().getConnection(), "t_global", sql);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertSelectGlobalTableLacking() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT * FROM dbtbl_0.t_global";
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGlobalTableOnly.xml", getShardingDataSource().getConnection(), "t_global", sql);
+    }
 }

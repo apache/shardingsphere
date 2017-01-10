@@ -8,6 +8,15 @@
             <condition-context />
         </condition-contexts>
     </assert>
+
+    <assert id="assertSelectWithDatabaseName" sql="select * from db.order" expected-sql="SELECT * FROM [Token(db.order)]">
+        <tables>
+            <table name="db.order" />
+        </tables>
+        <condition-contexts>
+            <condition-context />
+        </condition-contexts>
+    </assert>
     
     <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id = 1">
         <tables>
