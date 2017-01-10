@@ -7,6 +7,14 @@ prev = "/03-community/architecture"
 next = "/03-community/directory-structure"
 
 +++
+## 1.4.2
+
+### 功能提升
+
+### 缺陷修正
+
+1. [ISSUE #212](https://github.com/dangdangdotcom/sharding-jdbc/issues/212) 对去缺少数据源规则给出更有意义的提示
+1. [ISSUE #214](https://github.com/dangdangdotcom/sharding-jdbc/issues/214) where中 table_name.column_name in (?,?)无法解析表达式
 
 ## 1.4.1
 
