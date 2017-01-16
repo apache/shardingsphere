@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
@@ -39,31 +38,14 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseCustomizedParserBetweenUpdateAndTable(final AbstractSQLUpdateStatement updateStatement) {
-        ((OracleUpdateStatement) updateStatement).getHints().addAll(getExprParser().parseHints());
+    protected void parseBetweenUpdateAndTable() {
+        getExprParser().parseHints();
     }
     
     @Override
     protected Set<String> getIdentifiersBetweenUpdateAndTable() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.add(Token.ONLY.getName());
-        return result;
-    }
-    
-    @Override
-    protected void parseAlias(final AbstractSQLUpdateStatement updateStatement) {
-        OracleUpdateStatement oracleUpdateStatement = (OracleUpdateStatement) updateStatement; 
-        if ((oracleUpdateStatement.getAlias() == null) || (oracleUpdateStatement.getAlias().length() == 0)) {
-            oracleUpdateStatement.setAlias(as());
-        }
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add("LOG");
-        result.add(Token.RETURNING.getName());
-        result.add("RETURN");
         return result;
     }
 }

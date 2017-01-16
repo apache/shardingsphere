@@ -1,7 +1,5 @@
-package com.alibaba.druid.sql.parser;
+package com.alibaba.druid.sql.lexer;
 
-import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.lexer.Token;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

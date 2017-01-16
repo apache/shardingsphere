@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
@@ -35,17 +34,10 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseCustomizedParserBetweenSetAndWhere(final AbstractSQLUpdateStatement updateStatement) {
+    protected void parseBetweenSetAndWhere() {
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            ((PGUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
+            getExprParser().createSelectParser().parseTableSource();
         }
-    }
-    
-    @Override
-    protected Set<String> getAppendixIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.RETURNING.getName());
-        return result;
     }
 }

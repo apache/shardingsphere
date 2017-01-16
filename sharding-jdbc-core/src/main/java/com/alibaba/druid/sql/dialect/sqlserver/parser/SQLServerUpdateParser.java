@@ -1,8 +1,5 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
@@ -27,22 +24,17 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
         return new SQLServerUpdateStatement();
     }
     
-    protected void parseCustomizedParserBetweenUpdateAndTable(final AbstractSQLUpdateStatement updateStatement) {
-        SQLServerTop top = ((SQLServerExprParser) getExprParser()).parseTop();
-        if (null != top) {
-            ((SQLServerUpdateStatement) updateStatement).setTop(top);
-        }
+    @Override
+    protected void parseBetweenUpdateAndTable() {
+        ((SQLServerExprParser) getExprParser()).parseTop();
     }
     
     @Override
-    protected void parseCustomizedParserBetweenSetAndWhere(final AbstractSQLUpdateStatement updateStatement) {
-        SQLServerOutput output = ((SQLServerExprParser) getExprParser()).parserOutput();
-        if (null != output) {
-            ((SQLServerUpdateStatement) updateStatement).setOutput(output);
-        }
+    protected void parseBetweenSetAndWhere() {
+        ((SQLServerExprParser) getExprParser()).parserOutput();
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            ((SQLServerUpdateStatement) updateStatement).setFrom(getExprParser().createSelectParser().parseTableSource());
+            getExprParser().createSelectParser().parseTableSource();
         }
     }
 }
