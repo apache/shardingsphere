@@ -8,9 +8,9 @@ import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
@@ -27,7 +27,6 @@ import lombok.Getter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Update语句解析器.
@@ -63,7 +62,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
     public SQLUpdateStatement parse() {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
-        parseIdentifiersBetweenUpdateAndTable();
         updateSQLContext.append(getLexer().getInput().substring(0, getLexer().getCurrentPosition() - getLexer().getLiterals().length()));
         Table table = parseTableSource();
         updateSQLContext.setTable(table);
@@ -97,16 +95,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
     }
     
     protected void parseBetweenSetAndWhere() {
-    }
-    
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        return Collections.emptySet();
-    }
-    
-    private void parseIdentifiersBetweenUpdateAndTable() {
-        while (getIdentifiersBetweenUpdateAndTable().contains(getLexer().getLiterals())) {
-            getLexer().nextToken();
-        }
     }
     
     private void parseUpdateSet() {

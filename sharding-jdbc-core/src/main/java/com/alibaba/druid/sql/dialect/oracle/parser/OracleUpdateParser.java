@@ -22,8 +22,6 @@ import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
@@ -34,12 +32,8 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     @Override
     protected void parseBetweenUpdateAndTable() {
         getExprParser().parseHints();
-    }
-    
-    @Override
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.ONLY.getName());
-        return result;
+        if (getLexer().equalToken(Token.ONLY) || Token.ONLY.getName().equalsIgnoreCase(getLexer().getLiterals())) {
+            getLexer().nextToken();
+        }
     }
 }

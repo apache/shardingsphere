@@ -220,6 +220,9 @@ public enum Token {
     TOP("TOP", false, false, false, false, true, false),
     ARRAY("ARRAY", false, false, true, false, false, false),
     PARTITION("PARTITION", false, true, false, false, false, false),
+    IGNORE("IGNORE", false, true, false, false, false, false),
+    LOW_PRIORITY("LOW_PRIORITY", false, true, false, false, false, false),
+    HIGH_PRIORITY("HIGH_PRIORITY", false, true, false, false, false, false),
     
     EOF, 
     ERROR,

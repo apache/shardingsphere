@@ -6,8 +6,6 @@ import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * PostgreSQL Update语句解析器.
@@ -21,10 +19,10 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.ONLY.getName());
-        return result;
+    protected void parseBetweenUpdateAndTable() {
+        if (getLexer().equalToken(Token.ONLY)) {
+            getLexer().nextToken();
+        }
     }
     
     @Override

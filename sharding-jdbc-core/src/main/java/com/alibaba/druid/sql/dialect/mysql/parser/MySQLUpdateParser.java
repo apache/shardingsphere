@@ -1,12 +1,11 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
+import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * MySQL Update语句解析器.
@@ -20,10 +19,9 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected Set<String> getIdentifiersBetweenUpdateAndTable() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(MySqlKeyword.LOW_PRIORITY);
-        result.add(MySqlKeyword.IGNORE);
-        return result;
+    protected void parseBetweenUpdateAndTable() {
+        while (getLexer().equalToken(Token.LOW_PRIORITY) || getLexer().equalToken(Token.IGNORE)) {
+            getLexer().nextToken();
+        }
     }
 }
