@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
@@ -32,7 +33,7 @@ public class SQLVariantRefExpr extends SQLExprImpl {
     
     private int index  = -1;
     
-    public SQLVariantRefExpr(final String name){
+    public SQLVariantRefExpr(final String name) {
         this.name = name;
     }
     

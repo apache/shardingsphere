@@ -6,6 +6,8 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -19,7 +21,7 @@ public final class MySqlDeleteStatementParserTest {
     }
     
     private void parseStatementWithDeleteSingleTable(final String sql) {
-        MySqlStatementParser statementParser = new MySqlStatementParser(sql);
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), sql);
         MySqlDeleteStatement deleteStatement = (MySqlDeleteStatement) statementParser.parseStatement();
         assertThat(deleteStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(deleteStatement.getTableSource().toString(), is("TABLE_XXX"));
@@ -38,7 +40,7 @@ public final class MySqlDeleteStatementParserTest {
     
     @Test
     public void parseStatementWithDeleteSingleTableAndOnePartition() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE FROM TABLE_XXX PARTITION(partition_1) WHERE field1<1");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "DELETE FROM TABLE_XXX PARTITION(partition_1) WHERE field1<1");
         MySqlDeleteStatement deleteStatement = (MySqlDeleteStatement) statementParser.parseStatement();
         assertThat(deleteStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(deleteStatement.getTableSource().toString(), is("TABLE_XXX"));
@@ -53,7 +55,7 @@ public final class MySqlDeleteStatementParserTest {
     
     @Test
     public void parseStatementWithDeleteSingleTableAndMultiplePartitions() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1<1");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1<1");
         MySqlDeleteStatement deleteStatement = (MySqlDeleteStatement) statementParser.parseStatement();
         assertThat(deleteStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(deleteStatement.getTableSource().toString(), is("TABLE_XXX"));
@@ -70,13 +72,13 @@ public final class MySqlDeleteStatementParserTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTable() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2");
         statementParser.parseStatement();
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2");
         statementParser.parseStatement();
     }
 }

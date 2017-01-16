@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.SQLDataType;
@@ -47,12 +48,12 @@ public class PGExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER"};
     
-    public PGExprParser(String sql){
+    public PGExprParser(final String sql) {
         super(new PGLexer(sql), JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
-    public PGExprParser(Lexer lexer){
+    public PGExprParser(final Lexer lexer) {
         super(lexer, JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
     }
     
@@ -116,11 +117,11 @@ public class PGExprParser extends SQLExprParser {
         
         return super.primary();
     }
-
+    
     @Override
     protected SQLExpr parseInterval() {
         accept(Token.INTERVAL);
-        PGIntervalExpr intervalExpr=new PGIntervalExpr();
+        PGIntervalExpr intervalExpr = new PGIntervalExpr();
         if (!getLexer().equalToken(Token.LITERAL_CHARS)) {
             return new SQLIdentifierExpr("INTERVAL");
         }
@@ -128,7 +129,7 @@ public class PGExprParser extends SQLExprParser {
         getLexer().nextToken();
         return intervalExpr;
     }
-
+    
     public SQLExpr primaryRest(SQLExpr expr) {
         if (getLexer().equalToken(Token.DOUBLE_COLON)) {
             getLexer().nextToken();
@@ -152,12 +153,11 @@ public class PGExprParser extends SQLExprParser {
         }
         
         if (expr.getClass() == SQLIdentifierExpr.class) {
-            String ident = ((SQLIdentifierExpr)expr).getSimpleName();
-            
+            String ident = ((SQLIdentifierExpr) expr).getSimpleName();
             if ("TIMESTAMP".equalsIgnoreCase(ident)) {
                 if (!getLexer().equalToken(Token.LITERAL_ALIAS)
                         && !getLexer().equalToken(Token.LITERAL_CHARS)
-                        && !getLexer().equalToken( Token.WITH)) {
+                        && !getLexer().equalToken(Token.WITH)) {
                     return new SQLIdentifierExpr("TIMESTAMP");
                 }
 
@@ -230,7 +230,7 @@ public class PGExprParser extends SQLExprParser {
             } else if ("lseg".equalsIgnoreCase(ident)) {
                 PGLineSegmentsExpr lseg = new PGLineSegmentsExpr(primary());
                 return primaryRest(lseg);
-            } else if (ident.equalsIgnoreCase("b") && getLexer().equalToken(Token.LITERAL_CHARS)) {
+            } else if ("b".equalsIgnoreCase(ident) && getLexer().equalToken(Token.LITERAL_CHARS)) {
                 String charValue = getLexer().getLiterals();
                 getLexer().nextToken();
                 expr = new SQLBinaryExpr(charValue);

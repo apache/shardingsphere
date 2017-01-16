@@ -10,6 +10,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -19,19 +21,19 @@ public class OracleInsertStatementParserTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithInsertAllValue() {
-        OracleStatementParser statementParser = new OracleStatementParser("INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2");
+        OracleStatementParser statementParser = new OracleStatementParser(null, Collections.emptyList(), "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2");
         statementParser.parseStatement();
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithInsertFirst() {
-        OracleStatementParser statementParser = new OracleStatementParser("INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2");
+        OracleStatementParser statementParser = new OracleStatementParser(null, Collections.emptyList(), "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2");
         statementParser.parseStatement();
     }
     
     @Test
     public void parseStatementWithInsertValues() {
-        OracleStatementParser statementParser = new OracleStatementParser(
+        OracleStatementParser statementParser = new OracleStatementParser(null, Collections.emptyList(), 
                 "INSERT /*+ index(field1) */ INTO TABLE_XXX XXX (`field1`, `field2`) VALUES (1, 'value_char') RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
         OracleInsertStatement insertStatement = (OracleInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.ORACLE));
@@ -70,7 +72,7 @@ public class OracleInsertStatementParserTest {
     }
     
     public void parseStatementWithInsertSelect(final String sql) {
-        OracleStatementParser statementParser = new OracleStatementParser(sql);
+        OracleStatementParser statementParser = new OracleStatementParser(null, Collections.emptyList(), sql);
         OracleInsertStatement insertStatement = (OracleInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.ORACLE));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));

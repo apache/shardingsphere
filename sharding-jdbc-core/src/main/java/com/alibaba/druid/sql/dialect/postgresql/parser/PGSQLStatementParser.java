@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
@@ -28,11 +29,14 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class PGSQLStatementParser extends SQLStatementParser {
     
-    public PGSQLStatementParser(final String sql) {
-        super(new PGExprParser(sql));
+    public PGSQLStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new PGExprParser(sql));
     }
     
     @Override
@@ -154,7 +158,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             } else if (getLexer().equalToken(Token.INSERT)) {
                 query = new PostgreSQLInsertParser(getExprParser()).parse();
             } else if (getLexer().equalToken(Token.UPDATE)) {
-                query = SQLUpdateParserFactory.newInstance(getExprParser(), JdbcConstants.POSTGRESQL).parse();
+                query = SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.DELETE)) {
                 query = parseDeleteStatement();
             } else if (getLexer().equalToken(Token.VALUES)) {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.SQLUtils;
@@ -20,6 +21,7 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,8 @@ import java.util.List;
 @Getter
 @Setter
 public abstract class AbstractSQLUpdateStatement extends SQLObjectImpl implements SQLStatement {
+    
+    private UpdateSQLContext sqlContext;
     
     private SQLExpr where;
     

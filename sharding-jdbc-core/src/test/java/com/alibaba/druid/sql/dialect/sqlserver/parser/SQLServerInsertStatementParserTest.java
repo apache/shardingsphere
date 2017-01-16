@@ -7,6 +7,8 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -16,7 +18,7 @@ public class SQLServerInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsert() {
-        SQLServerStatementParser statementParser = new SQLServerStatementParser("INSERT TOP(10) INTO OUTPUT TABLE_XXX VALUES (1, 'char')");
+        SQLServerStatementParser statementParser = new SQLServerStatementParser(null, Collections.emptyList(), "INSERT TOP(10) INTO OUTPUT TABLE_XXX VALUES (1, 'char')");
         SQLServerInsertStatement insertStatement = (SQLServerInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.SQL_SERVER));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -40,7 +42,7 @@ public class SQLServerInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertDefaultValue() {
-        SQLServerStatementParser statementParser = new SQLServerStatementParser("INSERT INTO TABLE_XXX (field1, field2) DEFAULT VALUES");
+        SQLServerStatementParser statementParser = new SQLServerStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX (field1, field2) DEFAULT VALUES");
         SQLServerInsertStatement insertStatement = (SQLServerInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.SQL_SERVER));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -59,7 +61,7 @@ public class SQLServerInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertBatchValues() {
-        SQLServerStatementParser statementParser = new SQLServerStatementParser("INSERT INTO TABLE_XXX VALUES (1, 'char1'), (2, 'char2')");
+        SQLServerStatementParser statementParser = new SQLServerStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX VALUES (1, 'char1'), (2, 'char2')");
         SQLServerInsertStatement insertStatement = (SQLServerInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.SQL_SERVER));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));

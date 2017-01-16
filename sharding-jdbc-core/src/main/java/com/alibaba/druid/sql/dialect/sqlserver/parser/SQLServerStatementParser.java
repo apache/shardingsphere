@@ -19,11 +19,14 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class SQLServerStatementParser extends SQLStatementParser {
     
-    public SQLServerStatementParser(final String sql) {
-        super(new SQLServerExprParser(sql));
+    public SQLServerStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new SQLServerExprParser(sql));
     }
     
     @Override

@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.db2.parser;
 
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class DB2StatementParser extends SQLStatementParser {
     
-    public DB2StatementParser(final String sql) {
-        super(new DB2ExprParser(sql));
+    public DB2StatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new DB2ExprParser(sql));
     }
     
     @Override

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
@@ -22,10 +23,12 @@ import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,10 +39,16 @@ import java.util.Set;
 @Getter(AccessLevel.PROTECTED)
 public class SQLStatementParser extends SQLParser {
     
+    private final ShardingRule shardingRule;
+    
+    private final List<Object> parameters;
+    
     private final SQLExprParser exprParser;
     
-    public SQLStatementParser(final SQLExprParser exprParser) {
+    public SQLStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
+        this.shardingRule = shardingRule;
+        this.parameters = parameters;
         this.exprParser = exprParser;
     }
     
@@ -105,7 +114,7 @@ public class SQLStatementParser extends SQLParser {
             return SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(exprParser, getDbType()).parse();
+            return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
             return parseDeleteStatement();

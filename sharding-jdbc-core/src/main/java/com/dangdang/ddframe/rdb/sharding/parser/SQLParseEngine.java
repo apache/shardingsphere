@@ -26,6 +26,7 @@ import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.or.OrParser;
@@ -59,6 +60,27 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
+        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
+            return parseNew();
+        }
+        return parseOriginal();
+    }
+    
+    private SQLParsedResult parseNew() {
+        SQLParsedResult result = new SQLParsedResult();
+        AbstractSQLUpdateStatement updateStatement = (AbstractSQLUpdateStatement) sqlStatement;
+        if (updateStatement.getSqlContext().getConditionContexts().isEmpty()) {
+            result.getConditionContexts().add(new ConditionContext());
+        } else {
+            result.getConditionContexts().addAll(updateStatement.getSqlContext().getConditionContexts());
+        }
+        result.getRouteContext().getTables().add(updateStatement.getSqlContext().getTable());
+        result.getRouteContext().setSqlBuilder(updateStatement.getSqlContext().getSqlBuilder());
+        result.getRouteContext().setSqlStatementType(getType());
+        return result;
+    }
+    
+    private SQLParsedResult parseOriginal() {
         Preconditions.checkArgument(visitor instanceof SQLVisitor);
         SQLVisitor sqlVisitor = (SQLVisitor) visitor;
         visitor.setParameters(parameters);
@@ -67,7 +89,7 @@ public final class SQLParseEngine {
         SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
         if (sqlVisitor.getParseContext().isHasOrCondition()) {
             new OrParser(sqlStatement, visitor).fillConditionContext(result);
-        } 
+        }
         sqlVisitor.getParseContext().mergeCurrentConditionContext();
         log.debug("Parsed SQL result: {}", result);
         log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());

@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.db2.parser.DB2StatementParser;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
@@ -60,22 +60,25 @@ public final class SQLParserFactory {
      */
     public static SQLParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final ShardingRule shardingRule) throws SQLParserException {
         log.debug("Logic SQL: {}, {}", sql, parameters);
-        SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql).parseStatement();
+        SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql, shardingRule, parameters).parseStatement();
+        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
+            return new SQLParseEngine(sqlStatement, parameters, null, shardingRule);
+        }
         log.trace("Get {} SQL Statement", sqlStatement.getClass().getName());
         return new SQLParseEngine(sqlStatement, parameters, getSQLVisitor(databaseType, sqlStatement), shardingRule);
     }
     
-    private static SQLStatementParser getSQLStatementParser(final DatabaseType databaseType, final String sql) {
+    private static SQLStatementParser getSQLStatementParser(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         switch (databaseType) {
             case H2: 
             case MySQL: 
-                return new MySqlStatementParser(sql);
+                return new MySqlStatementParser(shardingRule, parameters, sql);
             case Oracle: 
-                return new OracleStatementParser(sql);
+                return new OracleStatementParser(shardingRule, parameters, sql);
             case SQLServer: 
-                return new SQLServerStatementParser(sql);
+                return new SQLServerStatementParser(shardingRule, parameters, sql);
             case DB2: 
-                return new DB2StatementParser(sql);
+                return new DB2StatementParser(shardingRule, parameters, sql);
             default: 
                 throw new UnsupportedOperationException(String.format("Cannot support database type [%s]", databaseType));
         }

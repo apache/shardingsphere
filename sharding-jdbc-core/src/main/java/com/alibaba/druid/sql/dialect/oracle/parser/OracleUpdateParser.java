@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
@@ -20,14 +21,16 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
-    public OracleUpdateParser(final SQLExprParser exprParser) {
-        super(exprParser);
+    public OracleUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+        super(shardingRule, parameters, exprParser);
     }
     
     @Override

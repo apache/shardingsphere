@@ -7,6 +7,8 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -16,7 +18,7 @@ public class PGSQLInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsert() {
-        PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX (field1, field2) VALUES (1, 'char') RETURNING id");
+        PGSQLStatementParser statementParser = new PGSQLStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX (field1, field2) VALUES (1, 'char') RETURNING id");
         PGInsertStatement insertStatement = (PGInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -38,7 +40,7 @@ public class PGSQLInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertDefaultValue() {
-        PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX DEFAULT VALUES RETURNING *");
+        PGSQLStatementParser statementParser = new PGSQLStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX DEFAULT VALUES RETURNING *");
         PGInsertStatement insertStatement = (PGInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -57,7 +59,7 @@ public class PGSQLInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertBatchValues() {
-        PGSQLStatementParser statementParser = new PGSQLStatementParser("INSERT INTO TABLE_XXX VALUES (1, 'char1'), (2, 'char2')");
+        PGSQLStatementParser statementParser = new PGSQLStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX VALUES (1, 'char1'), (2, 'char2')");
         PGInsertStatement insertStatement = (PGInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.POSTGRESQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));

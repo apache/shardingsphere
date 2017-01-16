@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
@@ -27,11 +28,14 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class OracleStatementParser extends SQLStatementParser {
     
-    public OracleStatementParser(final String sql) {
-        super(new OracleExprParser(sql));
+    public OracleStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new OracleExprParser(sql));
     }
     
     @Override
@@ -51,7 +55,7 @@ public class OracleStatementParser extends SQLStatementParser {
             return new OracleInsertParser(getExprParser()).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(getExprParser(), JdbcConstants.ORACLE).parse();
+            return SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.ORACLE).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
             return parseDeleteStatement();

@@ -4,7 +4,9 @@ import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -15,8 +17,8 @@ import java.util.TreeSet;
  */
 public final class MySQLUpdateParser extends AbstractUpdateParser {
     
-    public MySQLUpdateParser(final SQLExprParser exprParser) {
-        super(exprParser);
+    public MySQLUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+        super(shardingRule, parameters, exprParser);
     }
     
     @Override

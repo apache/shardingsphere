@@ -9,6 +9,8 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -18,7 +20,7 @@ public final class MySqlInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertValue() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'value_char') ");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX VALUE (1, 'value_char') ");
         MySqlInsertStatement insertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -36,7 +38,8 @@ public final class MySqlInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertValues() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION (partition1,partition2) (`field1`, `field2`) VALUES (1, 'value_char')");
+        MySqlStatementParser statementParser = new MySqlStatementParser(
+                null, Collections.emptyList(), "INSERT LOW_PRIORITY IGNORE INTO TABLE_XXX PARTITION (partition1,partition2) (`field1`, `field2`) VALUES (1, 'value_char')");
         MySqlInsertStatement insertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -61,7 +64,7 @@ public final class MySqlInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertBatchValues() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX VALUE (1, 'char1'), (2, 'char2')");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX VALUE (1, 'char1'), (2, 'char2')");
         MySqlInsertStatement insertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -86,7 +89,7 @@ public final class MySqlInsertStatementParserTest {
     }
     
     public void parseStatementWithInsertSelect(final String sql) {
-        MySqlStatementParser statementParser = new MySqlStatementParser(sql);
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), sql);
         MySqlInsertStatement insertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
@@ -114,7 +117,7 @@ public final class MySqlInsertStatementParserTest {
     
     @Test
     public void parseStatementWithInsertSet() {
-        MySqlStatementParser statementParser = new MySqlStatementParser("INSERT INTO TABLE_XXX SET field1=1, field2='char'");
+        MySqlStatementParser statementParser = new MySqlStatementParser(null, Collections.emptyList(), "INSERT INTO TABLE_XXX SET field1=1, field2='char'");
         MySqlInsertStatement insertStatement = (MySqlInsertStatement) statementParser.parseStatement();
         assertThat(insertStatement.getDbType(), is(JdbcConstants.MYSQL));
         assertThat(insertStatement.getTableSource().getExpr().toString(), is("TABLE_XXX"));
