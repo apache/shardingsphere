@@ -8,7 +8,7 @@ import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
@@ -60,7 +60,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
      *
      * @return 解析结果
      */
-    public AbstractSQLUpdateStatement parse() {
+    public SQLUpdateStatement parse() {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
         parseIdentifiersBetweenUpdateAndTable();
@@ -77,9 +77,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         parseUpdateSet();
         parseBetweenSetAndWhere();
         parseWhere(table);
-        AbstractSQLUpdateStatement result = createUpdateStatement();
-        result.setSqlContext(updateSQLContext);
-        return result;
+        return new SQLUpdateStatement(updateSQLContext);
     }
     
     private Table parseTableSource() {
@@ -94,8 +92,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
         }
         return new Table(SQLUtil.getExactlyValue(tableName), alias);
     }
-    
-    protected abstract AbstractSQLUpdateStatement createUpdateStatement();
     
     protected void parseBetweenUpdateAndTable() {
     }

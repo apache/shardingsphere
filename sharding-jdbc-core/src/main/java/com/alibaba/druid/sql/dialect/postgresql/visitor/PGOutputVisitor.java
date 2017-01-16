@@ -41,7 +41,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.ForC
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.WindowClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
@@ -354,54 +353,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         }
 
         return visit((SQLSelectStatement) x);
-    }
-
-    @Override
-    public void endVisit(PGUpdateStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGUpdateStatement x) {
-        if (x.getWith() != null) {
-            x.getWith().accept(this);
-            println();
-        }
-
-        print("UPDATE ");
-        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
-            print(each);
-            print(" ");
-        }
-        x.getTableSource().accept(this);
-
-        println();
-        print("SET ");
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getItems().get(i).accept(this);
-        }
-        if (x.getFrom() != null) {
-            println();
-            print("FROM ");
-            x.getFrom().setParent(x);
-            x.getFrom().accept(this);
-        }
-        if (x.getWhere() != null) {
-            println();
-            print("WHERE ");
-            incrementIndent();
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-        for (String each : x.getAppendices()) {
-            print(" ");
-            print(each);
-        }
-        return false;
     }
 
     @Override

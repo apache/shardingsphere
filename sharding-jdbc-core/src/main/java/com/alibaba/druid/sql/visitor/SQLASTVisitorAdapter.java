@@ -53,7 +53,7 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
@@ -364,12 +364,12 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     }
     
     @Override
-    public boolean visit(final AbstractSQLUpdateStatement x) {
+    public boolean visit(final SQLUpdateStatement x) {
         return true;
     }
     
     @Override
-    public void endVisit(final AbstractSQLUpdateStatement x) {
+    public void endVisit(final SQLUpdateStatement x) {
     }
 
     @Override

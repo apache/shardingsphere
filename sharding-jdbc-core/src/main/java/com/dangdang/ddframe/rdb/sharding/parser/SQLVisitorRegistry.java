@@ -17,19 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLDeleteVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLSelectVisitor;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLUpdateVisitor;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL访问器注册表.
@@ -50,7 +48,6 @@ public final class SQLVisitorRegistry {
     static {
         registerSelectVistor();
         registerInsertVistor();
-        registerUpdateVistor();
         registerDeleteVistor();
     }
     
@@ -72,16 +69,6 @@ public final class SQLVisitorRegistry {
         INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLInsertVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.DB2, MySQLInsertVisitor.class);
         INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLInsertVisitor.class);
-    }
-    
-    private static void registerUpdateVistor() {
-        UPDATE_REGISTRY.put(DatabaseType.H2, MySQLUpdateVisitor.class);
-        UPDATE_REGISTRY.put(DatabaseType.MySQL, MySQLUpdateVisitor.class);
-        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
-        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLUpdateVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLUpdateVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLUpdateVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLUpdateVisitor.class);
     }
     
     private static void registerDeleteVistor() {

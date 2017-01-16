@@ -58,7 +58,7 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
@@ -826,29 +826,8 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         return false;
     }
 
-    public boolean visit(AbstractSQLUpdateStatement x) {
-        print("UPDATE ");
-
-        x.getTableSource().accept(this);
-
-        println();
-        print("SET ");
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getItems().get(i).accept(this);
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            incrementIndent();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
+    // TODO tobe removed
+    public boolean visit(SQLUpdateStatement x) {
         return false;
     }
 

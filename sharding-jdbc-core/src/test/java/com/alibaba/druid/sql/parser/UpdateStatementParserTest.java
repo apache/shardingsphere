@@ -1,7 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLStatementParser;
@@ -37,8 +36,7 @@ public final class UpdateStatementParserTest {
     public void parseWithoutParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
                 "UPDATE TABLE_XXX xxx SET field1=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1, 3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
-        MySqlUpdateStatement updateStatement = (MySqlUpdateStatement) statementParser.parseStatement();
-        assertThat(updateStatement.getDbType(), is(JdbcConstants.MYSQL));
+        SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
         Iterator<Condition> conditions = updateStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
@@ -71,8 +69,7 @@ public final class UpdateStatementParserTest {
     public void parseWithParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10),
                 "UPDATE TABLE_XXX AS xxx SET field1=? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?");
-        MySqlUpdateStatement updateStatement = (MySqlUpdateStatement) statementParser.parseStatement();
-        assertThat(updateStatement.getDbType(), is(JdbcConstants.MYSQL));
+        SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
         Iterator<Condition> conditions = updateStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
@@ -123,18 +120,7 @@ public final class UpdateStatementParserTest {
     }
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {
-        SQLStatementParser statementParser = null;
-        if (dbType.equalsIgnoreCase(JdbcConstants.MYSQL)) {
-            statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
-        } else if (dbType.equalsIgnoreCase(JdbcConstants.ORACLE)) {
-            statementParser = new OracleStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
-        } else if (dbType.equalsIgnoreCase(JdbcConstants.SQL_SERVER)) {
-            statementParser = new SQLServerStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
-        } else if (dbType.equalsIgnoreCase(JdbcConstants.POSTGRESQL)) {
-            statementParser = new PGSQLStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
-        }
-        AbstractSQLUpdateStatement updateStatement = (AbstractSQLUpdateStatement) statementParser.parseStatement();
-        assertThat(updateStatement.getDbType(), is(dbType));
+        SQLUpdateStatement updateStatement = (SQLUpdateStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertFalse(updateStatement.getSqlContext().getTable().getAlias().isPresent());
         Iterator<Condition> conditions = updateStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
@@ -146,6 +132,19 @@ public final class UpdateStatementParserTest {
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
         assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is(expectedSQL));
+    }
+    
+    private SQLStatementParser getSqlStatementParser(final String dbType, final String actualSQL) throws SQLException {
+        if (dbType.equalsIgnoreCase(JdbcConstants.MYSQL)) {
+            return new MySqlStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
+        } else if (dbType.equalsIgnoreCase(JdbcConstants.ORACLE)) {
+            return new OracleStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
+        } else if (dbType.equalsIgnoreCase(JdbcConstants.SQL_SERVER)) {
+            return new SQLServerStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
+        } else if (dbType.equalsIgnoreCase(JdbcConstants.POSTGRESQL)) {
+            return new PGSQLStatementParser(createShardingRule(), Collections.emptyList(), actualSQL);
+        }
+        throw new UnsupportedOperationException("dbType");
     }
     
     private ShardingRule createShardingRule() throws SQLException {

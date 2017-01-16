@@ -45,7 +45,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTVisitor {
@@ -630,49 +629,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     @Override
     public void endVisit(MySqlOutFileExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(final MySqlUpdateStatement x) {
-        print("UPDATE ");
-        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
-            print(each);
-            print(" ");
-        }
-        x.getTableSource().accept(this);
-        println();
-        print("SET ");
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getItems().get(i).accept(this);
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            incrementIndent();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        if (x.getOrderBy() != null) {
-            println();
-            x.getOrderBy().accept(this);
-        }
-
-        if (x.getLimit() != null) {
-            println();
-            x.getLimit().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlUpdateStatement x) {
 
     }
 

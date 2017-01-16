@@ -23,7 +23,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLServerASTVisitor {
@@ -88,7 +87,7 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
 
         boolean paren = false;
 
-        if (x.getParent() instanceof SQLServerUpdateStatement || x.getParent() instanceof SQLServerInsertStatement) {
+        if (x.getParent() instanceof SQLServerInsertStatement) {
             paren = true;
             print("(");
         }
@@ -181,57 +180,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
 
     @Override
     public void endVisit(SQLServerInsertStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLServerUpdateStatement x) {
-        print("UPDATE ");
-
-        if (x.getTop() != null) {
-            x.getTop().setParent(x);
-            x.getTop().accept(this);
-            print(' ');
-        }
-
-        x.getTableSource().accept(this);
-
-        println();
-        print("SET ");
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getItems().get(i).accept(this);
-        }
-        
-        if (x.getOutput() != null) {
-            println();
-            x.getOutput().setParent(x);
-            x.getOutput().accept(this);
-        }
-
-        if (x.getFrom() != null) {
-            println();
-            print("FROM ");
-            x.getFrom().setParent(x);
-            x.getFrom().accept(this);
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            print("WHERE ");
-            incrementIndent();
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerUpdateStatement x) {
 
     }
 

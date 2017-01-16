@@ -30,7 +30,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public interface MySqlASTVisitor extends SQLASTVisitor {
@@ -70,10 +69,6 @@ public interface MySqlASTVisitor extends SQLASTVisitor {
     boolean visit(MySqlOutFileExpr x);
     
     void endVisit(MySqlOutFileExpr x);
-    
-    boolean visit(MySqlUpdateStatement x);
-    
-    void endVisit(MySqlUpdateStatement x);
     
     boolean visit(MySqlUserName x);
     

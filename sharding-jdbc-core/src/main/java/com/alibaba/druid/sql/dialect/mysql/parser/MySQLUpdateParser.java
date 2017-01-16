@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -18,11 +17,6 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     
     public MySQLUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);
-    }
-    
-    @Override
-    protected MySqlUpdateStatement createUpdateStatement() {
-        return new MySqlUpdateStatement();
     }
     
     @Override

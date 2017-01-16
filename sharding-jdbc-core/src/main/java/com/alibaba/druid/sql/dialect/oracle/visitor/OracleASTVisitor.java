@@ -65,7 +65,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public interface OracleASTVisitor extends SQLASTVisitor {
@@ -106,8 +105,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
 
     void endVisit(OracleSelectUnPivot x);
 
-    void endVisit(OracleUpdateStatement x);
-
     boolean visit(OraclePLSQLCommitStatement astNode);
 
     boolean visit(OracleAnalytic x);
@@ -143,8 +140,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleSelectSubqueryTableSource x);
 
     boolean visit(OracleSelectUnPivot x);
-
-    boolean visit(OracleUpdateStatement x);
 
     boolean visit(SampleClause x);
 

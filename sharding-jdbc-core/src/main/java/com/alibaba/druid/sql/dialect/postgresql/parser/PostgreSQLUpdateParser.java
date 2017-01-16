@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -19,11 +18,6 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     
     public PostgreSQLUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);
-    }
-    
-    @Override
-    protected PGUpdateStatement createUpdateStatement() {
-        return new PGUpdateStatement();
     }
     
     @Override

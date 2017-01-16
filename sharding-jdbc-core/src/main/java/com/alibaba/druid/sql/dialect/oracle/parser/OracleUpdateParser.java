@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -30,11 +29,6 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     
     public OracleUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);
-    }
-    
-    @Override
-    protected OracleUpdateStatement createUpdateStatement() {
-        return new OracleUpdateStatement();
     }
     
     @Override

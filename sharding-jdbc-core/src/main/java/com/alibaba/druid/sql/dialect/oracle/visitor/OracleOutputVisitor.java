@@ -92,7 +92,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectSubqueryTableSource;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 import java.util.List;
@@ -617,46 +616,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         return false;
     }
 
-    public boolean visit(OracleUpdateStatement x) {
-        print("UPDATE ");
-        for (SQLHint each : x.getHints()) {
-            print("/*+");
-            print(((SQLCommentHint) each).getText());
-            print("*/ ");
-        }
-        for (String each : x.getIdentifiersBetweenUpdateAndTable()) {
-            print(each);
-            print(" ");
-        }
-        x.getTableSource().accept(this);
-
-        printAlias(x.getAlias());
-
-        println();
-
-        print("SET ");
-        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
-            if (i != 0) {
-                print(", ");
-            }
-            x.getItems().get(i).accept(this);
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            print("WHERE ");
-            incrementIndent();
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-        for (String each : x.getAppendices()) {
-            print(" ");
-            print(each);
-        }
-        return false;
-    }
-
     @Override
     public void endVisit(OraclePLSQLCommitStatement astNode) {
 
@@ -749,12 +708,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleSelectUnPivot x) {
-
-    }
-
-
-    @Override
-    public void endVisit(OracleUpdateStatement x) {
 
     }
 

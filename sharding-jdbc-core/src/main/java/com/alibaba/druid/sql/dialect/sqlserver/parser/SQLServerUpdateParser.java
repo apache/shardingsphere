@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -17,11 +16,6 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
     public SQLServerUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);
-    }
-    
-    @Override
-    protected SQLServerUpdateStatement createUpdateStatement() {
-        return new SQLServerUpdateStatement();
     }
     
     @Override

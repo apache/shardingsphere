@@ -21,7 +21,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public interface SQLServerASTVisitor extends SQLASTVisitor {
@@ -42,10 +41,6 @@ public interface SQLServerASTVisitor extends SQLASTVisitor {
     
     void endVisit(SQLServerInsertStatement x);
 
-    boolean visit(SQLServerUpdateStatement x);
-    
-    void endVisit(SQLServerUpdateStatement x);
-    
     boolean visit(SQLServerOutput x);
 
     void endVisit(SQLServerOutput x);

@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLUpdateStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -60,7 +60,7 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
+        if (sqlStatement instanceof SQLUpdateStatement) {
             return parseNew();
         }
         return parseOriginal();
@@ -68,7 +68,7 @@ public final class SQLParseEngine {
     
     private SQLParsedResult parseNew() {
         SQLParsedResult result = new SQLParsedResult();
-        AbstractSQLUpdateStatement updateStatement = (AbstractSQLUpdateStatement) sqlStatement;
+        SQLUpdateStatement updateStatement = (SQLUpdateStatement) sqlStatement;
         if (updateStatement.getSqlContext().getConditionContexts().isEmpty()) {
             result.getConditionContexts().add(new ConditionContext());
         } else {
@@ -105,7 +105,7 @@ public final class SQLParseEngine {
         if (sqlStatement instanceof AbstractSQLInsertStatement) {
             return SQLStatementType.INSERT;
         }
-        if (sqlStatement instanceof AbstractSQLUpdateStatement) {
+        if (sqlStatement instanceof SQLUpdateStatement) {
             return SQLStatementType.UPDATE;
         }
         if (sqlStatement instanceof SQLDeleteStatement) {
