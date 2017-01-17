@@ -24,9 +24,6 @@ public abstract class AbstractDeleteParser extends SQLParser {
     @Getter
     private final SQLExprParser exprParser;
     
-    @Getter
-    private DeleteSQLContext deleteSQLContext;
-    
     private final ShardingRule shardingRule;
     
     private final List<Object> parameters;
@@ -34,7 +31,6 @@ public abstract class AbstractDeleteParser extends SQLParser {
     public AbstractDeleteParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
         this.exprParser = exprParser;
-        this.deleteSQLContext = new DeleteSQLContext();
         this.shardingRule = shardingRule;
         this.parameters = parameters;
     }
@@ -45,39 +41,31 @@ public abstract class AbstractDeleteParser extends SQLParser {
      * @return 解析结果
      */
     public SQLDeleteStatement parse() {
+        DeleteSQLContext result = new DeleteSQLContext();
         getLexer().nextToken();
-        SQLDeleteStatement result = new SQLDeleteStatement(getDbType());
         parseBetweenDeleteAndTable();
-        deleteSQLContext.append(getLexer().getInput().substring(0, getLexer().getCurrentPosition() - getLexer().getLiterals().length()));
-        
-        
-        SQLTableSource tableSource = createSQLSelectParser().parseTableSource();
-        if (tableSource instanceof SQLJoinTableSource) {
-            throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
-        }
-        
-        result.setTableSource(tableSource);
-        Table table = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
-        deleteSQLContext.setTable(table);
-        deleteSQLContext.appendToken(table.getName());
-        // TODO 应该使用计算offset而非output AS + alias的方式生成sql
-        if (table.getAlias().isPresent()) {
-            deleteSQLContext.append(" AS " + table.getAlias().get());
-        }
+        result.appendBeforeTable(getLexer());
+        Table table = parseTable(result);
         if (!getLexer().equalToken(Token.EOF)) {
-            deleteSQLContext.append(" " + getLexer().getInput().substring(getLexer().getCurrentPosition() - getLexer().getLiterals().length(), getLexer().getInput().length()));
+            result.appendAfterTable(getLexer());
             parseBetweenTableAndWhere();
             Optional<ConditionContext> conditionContext = new ParserUtil(shardingRule, parameters, exprParser, 0).parseWhere(table);
             if (conditionContext.isPresent()) {
-                deleteSQLContext.getConditionContexts().add(conditionContext.get());
+                result.getConditionContexts().add(conditionContext.get());
             }
         }
-        result.setSqlContext(deleteSQLContext);
-        return result;
+        return new SQLDeleteStatement(result);
     }
     
-    protected SQLSelectParser createSQLSelectParser() {
-        return new SQLSelectParser(exprParser);
+    private Table parseTable(final DeleteSQLContext deleteSQLContext) {
+        SQLTableSource tableSource = new SQLSelectParser(exprParser).parseTableSource();
+        if (tableSource instanceof SQLJoinTableSource) {
+            throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
+        }
+        Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
+        deleteSQLContext.setTable(result);
+        deleteSQLContext.appendTable(result);
+        return result;
     }
     
     protected abstract void parseBetweenDeleteAndTable();

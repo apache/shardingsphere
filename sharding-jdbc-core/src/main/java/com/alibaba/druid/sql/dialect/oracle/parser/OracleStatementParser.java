@@ -19,7 +19,6 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
@@ -129,51 +128,5 @@ public class OracleStatementParser extends SQLStatementParser {
             }
         }
         return clause;
-    }
-
-    public OracleDeleteStatement parseDeleteStatement() {
-        OracleDeleteStatement deleteStatement = new OracleDeleteStatement();
-
-        if (getLexer().equalToken(Token.DELETE)) {
-            getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
-            }
-            deleteStatement.getHints().addAll(getExprParser().parseHints());
-            if (getLexer().equalToken(Token.FROM)) {
-                getLexer().nextToken();
-            }
-
-            if (getLexer().identifierEquals("ONLY")) {
-                getLexer().nextToken();
-                accept(Token.LEFT_PAREN);
-                deleteStatement.setTableName(getExprParser().name());
-                accept(Token.RIGHT_PAREN);
-            } else {
-                deleteStatement.setTableName(getExprParser().name());
-            }
-
-            deleteStatement.setAlias(as());
-        }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            deleteStatement.setWhere(getExprParser().expr());
-        }
-
-        if (getLexer().equalToken(Token.RETURNING)) {
-            OracleReturningClause clause = this.parseReturningClause();
-            deleteStatement.setReturning(clause);
-        }
-        if (getLexer().identifierEquals("RETURN") || getLexer().identifierEquals("RETURNING")) {
-            throw new ParserUnsupportedException(getLexer().getToken());
-        }
-
-        if (getLexer().identifierEquals("LOG")) {
-            throw new ParserUnsupportedException(getLexer().getToken());
-        }
-
-        return deleteStatement;
     }
 }

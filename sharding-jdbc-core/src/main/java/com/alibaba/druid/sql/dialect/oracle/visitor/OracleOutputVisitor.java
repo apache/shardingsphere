@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
@@ -76,7 +77,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
@@ -164,44 +164,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
         x.getExpr().accept(this);
         print("@");
         print(x.getDbLink());
-        return false;
-    }
-
-    public boolean visit(OracleDeleteStatement x) {
-        if (x.getTableName() != null) {
-            print("DELETE ");
-            
-            if (x.getHints().size() > 0) {
-                printAndAccept(x.getHints(), ", ");
-                print(' ');
-            }
-
-            print("FROM ");
-            if (x.isOnly()) {
-                print("ONLY (");
-                x.getTableName().accept(this);
-                print(")");
-            } else {
-                x.getTableName().accept(this);
-            }
-
-            printAlias(x.getAlias());
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            incrementIndent();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        if (x.getReturning() != null) {
-            println();
-            x.getReturning().accept(this);
-        }
-
         return false;
     }
 
@@ -638,11 +600,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleDbLinkExpr x) {
-
-    }
-
-    @Override
-    public void endVisit(OracleDeleteStatement x) {
 
     }
 

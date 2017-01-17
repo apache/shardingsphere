@@ -18,18 +18,13 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * SQL解析器.
@@ -50,48 +45,6 @@ public class SQLStatementParser extends SQLParser {
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.exprParser = exprParser;
-    }
-    
-    // TODO 提炼delete
-    public SQLDeleteStatement parseDeleteStatement() {
-        getLexer().nextToken();
-        SQLDeleteStatement result = createSQLDeleteStatement();
-        while (getIdentifiersBetweenDeleteAndFrom().contains(getLexer().getLiterals())) {
-            result.getIdentifiersBetweenDeleteAndFrom().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.COMMENT)) {
-            getLexer().nextToken();
-        }
-        SQLTableSource tableSource = createSQLSelectParser().parseTableSource();
-        if (tableSource instanceof SQLJoinTableSource) {
-            throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
-        }
-        result.setTableSource(tableSource);
-        parseCustomizedParserBetweenTableAndNextIdentifier(result);
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-            result.setWhere(exprParser.expr());
-        }
-        parseCustomizedParserAfterWhere(result);
-        return result;
-    }
-    
-    protected SQLDeleteStatement createSQLDeleteStatement() {
-        return new SQLDeleteStatement(getDbType());
-    }
-    
-    protected Set<String> getIdentifiersBetweenDeleteAndFrom() {
-        return Collections.emptySet();
-    }
-    
-    protected void parseCustomizedParserBetweenTableAndNextIdentifier(final SQLDeleteStatement deleteStatement) {
-    }
-    
-    protected void parseCustomizedParserAfterWhere(final SQLDeleteStatement deleteStatement) {
     }
     
     /**

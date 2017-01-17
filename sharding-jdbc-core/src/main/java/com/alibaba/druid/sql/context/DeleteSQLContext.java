@@ -1,5 +1,6 @@
 package com.alibaba.druid.sql.context;
 
+import com.alibaba.druid.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
@@ -25,15 +26,31 @@ public final class DeleteSQLContext implements SQLContext {
     
     private final SQLBuilder sqlBuilder = new SQLBuilder();
     
-    public void append(final String str) {
+    public void appendBeforeTable(final Lexer lexer) {
         try {
-            sqlBuilder.append(str);
+            sqlBuilder.append(lexer.getInput().substring(0, lexer.getCurrentPosition() - lexer.getLiterals().length()));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    public void appendToken(final String token) {
-        sqlBuilder.appendToken(token);
+    public void appendTable(final Table table) {
+        sqlBuilder.appendToken(table.getName());
+        // TODO 应该使用计算offset而非output AS + alias的方式生成sql
+        if (table.getAlias().isPresent()) {
+            try {
+                sqlBuilder.append(" AS ").append(table.getAlias().get());
+            } catch (final IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    
+    public void appendAfterTable(final Lexer lexer) {
+        try {
+            sqlBuilder.append(" " + lexer.getInput().substring(lexer.getCurrentPosition() - lexer.getLiterals().length(), lexer.getInput().length()));
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

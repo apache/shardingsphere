@@ -3,6 +3,8 @@ package com.alibaba.druid.sql.parser;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
@@ -25,9 +27,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
     @Getter
     private final SQLExprParser exprParser;
     
-    @Getter
-    private final UpdateSQLContext updateSQLContext;
-    
     private final ShardingRule shardingRule;
     
     private final List<Object> parameters;
@@ -37,7 +36,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
     public AbstractUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
         this.exprParser = exprParser;
-        this.updateSQLContext = new UpdateSQLContext();
         this.shardingRule = shardingRule;
         this.parameters = parameters;
     }
@@ -48,36 +46,31 @@ public abstract class AbstractUpdateParser extends SQLParser {
      * @return 解析结果
      */
     public SQLUpdateStatement parse() {
+        UpdateSQLContext result = new UpdateSQLContext();
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
-        updateSQLContext.append(getLexer().getInput().substring(0, getLexer().getCurrentPosition() - getLexer().getLiterals().length()));
-        Table table = parseTable();
-        updateSQLContext.append(" " + getLexer().getInput().substring(getLexer().getCurrentPosition() - getLexer().getLiterals().length(), getLexer().getInput().length()));
+        result.appendBeforeTable(getLexer());
+        Table table = parseTable(result);
+        result.appendAfterTable(getLexer());
         parseSetItems();
         parseBetweenSetAndWhere();
         Optional<ConditionContext> conditionContext = new ParserUtil(shardingRule, parameters, exprParser, parametersIndex).parseWhere(table);
         if (conditionContext.isPresent()) {
-            updateSQLContext.getConditionContexts().add(conditionContext.get());
+            result.getConditionContexts().add(conditionContext.get());
         }
-        return new SQLUpdateStatement(updateSQLContext);
+        return new SQLUpdateStatement(result);
     }
     
     protected abstract void parseBetweenUpdateAndTable();
     
-    private Table parseTable() {
-        String tableName = SQLUtil.getExactlyValue(getLexer().getLiterals());
-        getLexer().nextToken();
-        if (getLexer().equalToken(Token.AS)) {
-            getLexer().nextToken();
+    private Table parseTable(final UpdateSQLContext updateSQLContext) {
+        SQLTableSource tableSource = new SQLSelectParser(exprParser).parseTableSource();
+        if (tableSource instanceof SQLJoinTableSource) {
+            throw new UnsupportedOperationException("Cannot support update Multiple-Table.");
         }
-        Optional<String> alias = getLexer().equalToken(Token.IDENTIFIER) ? Optional.of(SQLUtil.getExactlyValue(getLexer().getLiterals())) : Optional.<String>absent();
-        Table result = new Table(tableName, alias);
+        Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
         updateSQLContext.setTable(result);
-        updateSQLContext.appendToken(tableName);
-        // TODO 应该使用计算offset而非output AS + alias的方式生成sql
-        if (alias.isPresent()) {
-            updateSQLContext.append(" AS " + alias.get());
-        }
+        updateSQLContext.appendTable(result);
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
         }

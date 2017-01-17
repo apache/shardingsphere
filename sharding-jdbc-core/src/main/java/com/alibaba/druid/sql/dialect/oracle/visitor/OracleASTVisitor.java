@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
@@ -50,7 +51,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleOuterExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleDeleteStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
@@ -78,8 +78,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     void endVisit(OracleDateExpr x);
 
     void endVisit(OracleDbLinkExpr x);
-
-    void endVisit(OracleDeleteStatement x);
 
     void endVisit(OracleExtractExpr x);
 
@@ -114,8 +112,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleDateExpr x);
 
     boolean visit(OracleDbLinkExpr x);
-
-    boolean visit(OracleDeleteStatement x);
 
     boolean visit(OracleExtractExpr x);
 

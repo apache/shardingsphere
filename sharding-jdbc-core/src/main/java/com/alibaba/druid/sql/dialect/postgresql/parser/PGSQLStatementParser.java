@@ -17,11 +17,9 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
 import com.alibaba.druid.sql.lexer.Token;
@@ -45,61 +43,6 @@ public class PGSQLStatementParser extends SQLStatementParser {
         return new PGSelectParser(getExprParser());
     }
     
-    public PGDeleteStatement parseDeleteStatement() {
-        getLexer().nextToken();
-        PGDeleteStatement deleteStatement = new PGDeleteStatement();
-
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.ONLY)) {
-            getLexer().nextToken();
-            deleteStatement.setOnly(true);
-        }
-
-        deleteStatement.setTableName(getExprParser().name());
-        
-        if (getLexer().equalToken(Token.AS)) {
-            accept(Token.AS);
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER)) {
-            deleteStatement.setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-
-        if (getLexer().equalToken(Token.USING)) {
-            getLexer().nextToken();
-            while (true) {
-                deleteStatement.getUsing().add(getExprParser().name());
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-        }
-
-        if (getLexer().equalToken(Token.WHERE)) {
-            getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.CURRENT)) {
-                getLexer().nextToken();
-                accept(Token.OF);
-                deleteStatement.setWhere(new SQLCurrentOfCursorExpr(getExprParser().name()));
-            } else {
-                deleteStatement.setWhere(getExprParser().expr());
-            }
-        }
-
-        if (getLexer().equalToken(Token.RETURNING)) {
-            getLexer().nextToken();
-            accept(Token.STAR);
-            deleteStatement.setReturning(true);
-        }
-
-        return deleteStatement;
-    }
-
     public PGWithClause parseWithClause() {
         getLexer().nextToken();
 
@@ -196,9 +139,8 @@ public class PGSQLStatementParser extends SQLStatementParser {
         }
 
         if (getLexer().equalToken(Token.DELETE)) {
-            PGDeleteStatement stmt = parseDeleteStatement();
-            stmt.setWith(with);
-            return stmt;
+            // TODO call AbstractDeleteParser, need sharding rule
+            return null;
         }
         throw new ParserUnsupportedException(getLexer().getToken());
     }

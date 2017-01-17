@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.postgresql.visitor;
 
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
@@ -32,7 +33,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGParameter;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPointExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPolygonExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGDeleteStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
@@ -46,7 +46,7 @@ import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor {
     
-    public PGOutputVisitor(Appendable appender){
+    public PGOutputVisitor(Appendable appender) {
         super(appender);
     }
     
@@ -237,54 +237,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         if (x.getForClause() != null) {
             println();
             x.getForClause().accept(this);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(PGDeleteStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGDeleteStatement x) {
-        if (x.getWith() != null) {
-            x.getWith().accept(this);
-            println();
-        }
-
-        print("DELETE FROM ");
-
-        if (x.isOnly()) {
-            print("ONLY ");
-        }
-
-        x.getTableName().accept(this);
-
-        if (x.getAlias() != null) {
-            print(" AS ");
-            print(x.getAlias());
-        }
-
-        if (x.getUsing().size() > 0) {
-            println();
-            print("USING ");
-            printAndAccept(x.getUsing(), ", ");
-        }
-
-        if (x.getWhere() != null) {
-            println();
-            print("WHERE ");
-            incrementIndent();
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        if (x.isReturning()) {
-            println();
-            print("RETURNING *");
         }
 
         return false;

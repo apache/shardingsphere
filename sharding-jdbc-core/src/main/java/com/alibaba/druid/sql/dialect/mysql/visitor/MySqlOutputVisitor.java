@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.mysql.visitor;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
@@ -39,7 +40,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
@@ -430,60 +430,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
         return false;
     }
-    
-    @Override
-    public void endVisit(MySqlDeleteStatement x) {
 
-    }
-
-    @Override
-    public boolean visit(final MySqlDeleteStatement x) {
-        print("DELETE ");
-        for (String each : x.getIdentifiersBetweenDeleteAndFrom()) {
-            print(each);
-            print(" ");
-        }
-        print("FROM ");
-        x.getTableSource().accept(this);
-        visitPartition(x);
-        if (null != x.getWhere()) {
-            println();
-            incrementIndent();
-            print("WHERE ");
-            x.getWhere().setParent(x);
-            x.getWhere().accept(this);
-            decrementIndent();
-        }
-
-        if (x.getOrderBy() != null) {
-            println();
-            x.getOrderBy().accept(this);
-        }
-
-        if (x.getLimit() != null) {
-            println();
-            x.getLimit().accept(this);
-        }
-
-        return false;
-    }
-    
-    private void visitPartition(final MySqlDeleteStatement x) {
-        int count = 0;
-        for (String each : x.getPartitionNames()) {
-            if (0 == count) {
-                print(" PARTITION (");
-            }
-            print(each);
-            if (count == x.getPartitionNames().size() - 1) {
-                print(")");
-            } else {
-                print(",");
-            }
-            count++;
-        }
-    }
-    
     @Override
     public void endVisit(MySqlInsertStatement x) {
 

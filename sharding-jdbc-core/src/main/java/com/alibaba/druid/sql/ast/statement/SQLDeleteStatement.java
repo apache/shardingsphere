@@ -16,69 +16,19 @@
 
 package com.alibaba.druid.sql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
 import com.alibaba.druid.sql.context.DeleteSQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@RequiredArgsConstructor
 @Getter
 public class SQLDeleteStatement extends SQLStatementImpl {
     
-    @Setter
-    private DeleteSQLContext sqlContext;
-    
-    private SQLTableSource tableSource;
-    
-    private SQLExpr where;
-    
-    private final List<String> identifiersBetweenDeleteAndFrom = new ArrayList<>();
-    
-    public SQLDeleteStatement(final String dbType) {
-        super(dbType);
-    }
-    
-    public void setTableSource(final SQLTableSource tableSource) {
-        if (null != tableSource) {
-            tableSource.setParent(this);
-        }
-        this.tableSource = tableSource;
-    }
-    
-    public void setWhere(final SQLExpr where) {
-        if (null != where) {
-            where.setParent(this);
-        }
-        this.where = where;
-    }
-    
-    public SQLName getTableName() {
-        return (SQLName) ((SQLExprTableSource) tableSource).getExpr();
-    }
-    
-    public void setTableName(final SQLName tableName) {
-        setTableSource(new SQLExprTableSource(tableName));
-    }
-    
-    public String getAlias() {
-        return tableSource.getAlias();
-    }
-    
-    public void setAlias(final String alias) {
-        tableSource.setAlias(alias);
-    }
+    private final DeleteSQLContext sqlContext;
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, where);
-        }
-        visitor.endVisit(this);
     }
 }

@@ -16,18 +16,13 @@
 
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
-import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class MySqlStatementParser extends SQLStatementParser {
     
@@ -43,32 +38,5 @@ public class MySqlStatementParser extends SQLStatementParser {
     @Override
     protected SQLSelectParser createSQLSelectParser() {
         return new MySqlSelectParser(getExprParser());
-    }
-    
-    @Override
-    protected MySqlDeleteStatement createSQLDeleteStatement() {
-        return new MySqlDeleteStatement();
-    }
-    
-    @Override
-    protected Set<String> getIdentifiersBetweenDeleteAndFrom() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(MySqlKeyword.LOW_PRIORITY);
-        result.add("QUICK");
-        result.add(MySqlKeyword.IGNORE);
-        return result;
-    }
-    
-    @Override
-    protected void parseCustomizedParserBetweenTableAndNextIdentifier(final SQLDeleteStatement deleteStatement) {
-        ((MySqlDeleteStatement) deleteStatement).getPartitionNames().addAll(((MySqlExprParser) getExprParser()).parsePartition());
-    }
-    
-    @Override
-    protected void parseCustomizedParserAfterWhere(final SQLDeleteStatement deleteStatement) {
-        if (getLexer().equalToken(Token.ORDER)) {
-            ((MySqlDeleteStatement) deleteStatement).setOrderBy(getExprParser().parseOrderBy());
-        }
-        ((MySqlDeleteStatement) deleteStatement).setLimit(((MySqlExprParser) getExprParser()).parseLimit());
     }
 }
