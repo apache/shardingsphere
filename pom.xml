@@ -72,6 +72,8 @@
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <powermock.version>1.6.6</powermock.version>
+        <curator.version>2.10.0</curator.version>
+        <testng.version>6.8.8</testng.version>
     </properties>
     
     <dependencyManagement>
@@ -285,6 +287,28 @@
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-module-junit4</artifactId>
                 <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-recipes</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-test</artifactId>
+                <version>${curator.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
