@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -60,7 +61,7 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        if (sqlStatement instanceof SQLUpdateStatement) {
+        if (sqlStatement instanceof SQLUpdateStatement || sqlStatement instanceof SQLDeleteStatement) {
             return parseNew();
         }
         return parseOriginal();
@@ -68,16 +69,26 @@ public final class SQLParseEngine {
     
     private SQLParsedResult parseNew() {
         SQLParsedResult result = new SQLParsedResult();
-        SQLUpdateStatement updateStatement = (SQLUpdateStatement) sqlStatement;
-        if (updateStatement.getSqlContext().getConditionContexts().isEmpty()) {
+        SQLContext sqlContext = getSQLContext();
+        if (sqlContext.getConditionContexts().isEmpty()) {
             result.getConditionContexts().add(new ConditionContext());
         } else {
-            result.getConditionContexts().addAll(updateStatement.getSqlContext().getConditionContexts());
+            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
-        result.getRouteContext().getTables().add(updateStatement.getSqlContext().getTable());
-        result.getRouteContext().setSqlBuilder(updateStatement.getSqlContext().getSqlBuilder());
+        result.getRouteContext().getTables().add(sqlContext.getTable());
+        result.getRouteContext().setSqlBuilder(sqlContext.getSqlBuilder());
         result.getRouteContext().setSqlStatementType(getType());
         return result;
+    }
+    
+    private SQLContext getSQLContext() {
+        if (sqlStatement instanceof SQLUpdateStatement) {
+            return ((SQLUpdateStatement) sqlStatement).getSqlContext();
+        }
+        if (sqlStatement instanceof SQLDeleteStatement) {
+            return ((SQLDeleteStatement) sqlStatement).getSqlContext();
+        }
+        return null;
     }
     
     private SQLParsedResult parseOriginal() {

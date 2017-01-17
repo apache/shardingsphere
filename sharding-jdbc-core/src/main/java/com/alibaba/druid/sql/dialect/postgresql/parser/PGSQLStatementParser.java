@@ -26,6 +26,7 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
+import com.alibaba.druid.sql.parser.SQLDeleteParserFactory;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
@@ -160,7 +161,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             } else if (getLexer().equalToken(Token.UPDATE)) {
                 query = SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.DELETE)) {
-                query = parseDeleteStatement();
+                query = SQLDeleteParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.VALUES)) {
                 query = parseSelect();
             } else {

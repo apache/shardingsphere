@@ -92,10 +92,10 @@ public final class SQLParserFactory {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getInsertVistor(databaseType));
         }
         if (sqlStatement instanceof SQLUpdateStatement) {
-            return VisitorLogProxy.enhance(SQLVisitorRegistry.getUpdateVistor(databaseType));
+            return null;
         }
         if (sqlStatement instanceof SQLDeleteStatement) {
-            return VisitorLogProxy.enhance(SQLVisitorRegistry.getDeleteVistor(databaseType));
+            return null;
         }
         throw new SQLParserException("Unsupported SQL statement: [%s]", sqlStatement);
     }

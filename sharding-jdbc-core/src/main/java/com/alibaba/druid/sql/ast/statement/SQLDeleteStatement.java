@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
+import com.alibaba.druid.sql.context.DeleteSQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class SQLDeleteStatement extends SQLStatementImpl {
+    
+    @Setter
+    private DeleteSQLContext sqlContext;
     
     private SQLTableSource tableSource;
     

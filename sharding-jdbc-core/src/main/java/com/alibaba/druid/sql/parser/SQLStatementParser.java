@@ -117,7 +117,7 @@ public class SQLStatementParser extends SQLParser {
             return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
-            return parseDeleteStatement();
+            return SQLDeleteParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
         }
         if (getLexer().equalToken(Token.CREATE) || getLexer().equalToken(Token.EXPLAIN) || getLexer().equalToken(Token.SET) || getLexer().equalToken(Token.ALTER)
                 || getLexer().equalToken(Token.DROP) || getLexer().equalToken(Token.TRUNCATE) || getLexer().equalToken(Token.USE) || getLexer().equalToken(Token.GRANT)

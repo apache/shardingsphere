@@ -48,17 +48,17 @@ public final class DMLTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertUpdate() throws SQLParserException {
-//        assertSingleTarget("update `order` set name = 'test' where order_id = 1", "ds_1", "update order_1 set name = 'test' where order_id = 1");
+        assertSingleTarget("update `order` set name = 'test' where order_id = 1", "ds_1", "update order_1 set name = 'test' where order_id = 1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "update `order` set name = 'test'", "ds_1", "update order_1 set name = 'test'");
-//        assertSingleTarget("update `order` set name = ? where order_id = ?", Arrays.<Object>asList("test", 2), "ds_0", "update order_0 set name = ? where order_id = ?");
-//        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "update `order` set name = ?", Collections.<Object>singletonList("test"), "ds_0", "update order_0 set name = ?");
+        assertSingleTarget("update `order` set name = ? where order_id = ?", Arrays.<Object>asList("test", 2), "ds_0", "update order_0 set name = ? where order_id = ?");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "update `order` set name = ?", Collections.<Object>singletonList("test"), "ds_0", "update order_0 set name = ?");
     }
     
     @Test
     public void assertDelete() throws SQLParserException {
-        assertSingleTarget("delete from `order` where order_id = 1", "ds_1", "DELETE FROM order_1 WHERE order_id = 1");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "delete from `order`", "ds_1", "DELETE FROM order_1");
-        assertSingleTarget("delete from `order` where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "DELETE FROM order_0 WHERE order_id = ?");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "delete from `order`", "ds_0", "DELETE FROM order_0");
+        assertSingleTarget("delete from `order` where order_id = 1", "ds_1", "delete from order_1 where order_id = 1");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "delete from `order`", "ds_1", "delete from order_1");
+        assertSingleTarget("delete from `order` where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "delete from order_0 where order_id = ?");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "delete from `order`", "ds_0", "delete from order_0");
     }
 }

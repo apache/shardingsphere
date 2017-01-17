@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLDeleteVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLSelectVisitor;
 import lombok.AccessLevel;
@@ -41,14 +40,9 @@ public final class SQLVisitorRegistry {
     
     private static final Map<DatabaseType, Class<? extends SQLASTOutputVisitor>> INSERT_REGISTRY = new HashMap<>(DatabaseType.values().length);
     
-    private static final Map<DatabaseType, Class<? extends SQLASTOutputVisitor>> UPDATE_REGISTRY = new HashMap<>(DatabaseType.values().length);
-    
-    private static final Map<DatabaseType, Class<? extends SQLASTOutputVisitor>> DELETE_REGISTRY = new HashMap<>(DatabaseType.values().length);
-    
     static {
         registerSelectVistor();
         registerInsertVistor();
-        registerDeleteVistor();
     }
     
     private static void registerSelectVistor() {
@@ -71,16 +65,6 @@ public final class SQLVisitorRegistry {
         INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLInsertVisitor.class);
     }
     
-    private static void registerDeleteVistor() {
-        DELETE_REGISTRY.put(DatabaseType.H2, MySQLDeleteVisitor.class);
-        DELETE_REGISTRY.put(DatabaseType.MySQL, MySQLDeleteVisitor.class);
-        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
-        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLDeleteVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLDeleteVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLDeleteVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLDeleteVisitor.class);
-    }
-    
     /**
      * 获取SELECT访问器.
      * 
@@ -99,26 +83,6 @@ public final class SQLVisitorRegistry {
      */
     public static Class<? extends SQLASTOutputVisitor> getInsertVistor(final DatabaseType databaseType) {
         return getVistor(databaseType, INSERT_REGISTRY);
-    }
-    
-    /**
-     * 获取UPDATE访问器.
-     * 
-     * @param databaseType 数据库类型
-     * @return UPDATE访问器
-     */
-    public static Class<? extends SQLASTOutputVisitor> getUpdateVistor(final DatabaseType databaseType) {
-        return getVistor(databaseType, UPDATE_REGISTRY);
-    }
-    
-    /**
-     * 获取DELETE访问器.
-     * 
-     * @param databaseType 数据库类型
-     * @return DELETE访问器
-     */
-    public static Class<? extends SQLASTOutputVisitor> getDeleteVistor(final DatabaseType databaseType) {
-        return getVistor(databaseType, DELETE_REGISTRY);
     }
     
     private static Class<? extends SQLASTOutputVisitor> getVistor(final DatabaseType databaseType, final Map<DatabaseType, Class<? extends SQLASTOutputVisitor>> registry) {

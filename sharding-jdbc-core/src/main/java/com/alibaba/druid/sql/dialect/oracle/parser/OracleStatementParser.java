@@ -25,6 +25,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
+import com.alibaba.druid.sql.parser.SQLDeleteParserFactory;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.SQLUpdateParserFactory;
 import com.alibaba.druid.util.JdbcConstants;
@@ -58,7 +59,7 @@ public class OracleStatementParser extends SQLStatementParser {
             return SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.ORACLE).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
-            return parseDeleteStatement();
+            return SQLDeleteParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.ORACLE).parse();
         }
         if (getLexer().equalToken(Token.SLASH)) {
             getLexer().nextToken();

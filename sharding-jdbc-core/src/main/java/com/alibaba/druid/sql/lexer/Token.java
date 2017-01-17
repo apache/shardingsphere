@@ -148,7 +148,7 @@ public enum Token {
     OFFSET("OFFSET", false, false, true, false, false, false),
     ROW("ROW", false, true, true, true, false, false), 
     ROWS("ROWS", false, false, true, false, false, false),
-    ONLY("ONLY", false, false, true, false, false, true), 
+    ONLY("ONLY", false, false, true, true, false, true), 
     FIRST("FIRST", false, false, true, false, false, true), 
     NEXT("NEXT", false, false, true, true, false, false),
     OF("OF", false, false, true, true, false, false),
@@ -221,6 +221,7 @@ public enum Token {
     ARRAY("ARRAY", false, false, true, false, false, false),
     PARTITION("PARTITION", false, true, false, false, false, false),
     IGNORE("IGNORE", false, true, false, false, false, false),
+    QUICK("QUICK", false, true, false, false, false, false),
     LOW_PRIORITY("LOW_PRIORITY", false, true, false, false, false, false),
     HIGH_PRIORITY("HIGH_PRIORITY", false, true, false, false, false, false),
     

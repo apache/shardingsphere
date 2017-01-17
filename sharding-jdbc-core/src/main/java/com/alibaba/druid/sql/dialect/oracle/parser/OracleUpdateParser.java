@@ -32,7 +32,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     @Override
     protected void parseBetweenUpdateAndTable() {
         getExprParser().parseHints();
-        if (getLexer().equalToken(Token.ONLY) || Token.ONLY.getName().equalsIgnoreCase(getLexer().getLiterals())) {
+        if (getLexer().equalToken(Token.ONLY)) {
             getLexer().nextToken();
         }
     }
