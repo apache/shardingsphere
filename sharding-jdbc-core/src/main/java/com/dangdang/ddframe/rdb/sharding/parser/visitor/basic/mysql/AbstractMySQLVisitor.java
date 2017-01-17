@@ -27,6 +27,7 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
@@ -174,8 +175,8 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
                 parseContext.setHasOrCondition(true);
                 break;
             case Equality: 
-                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Collections.singletonList(x.getRight()), getDatabaseType(), getParameters());
-                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Collections.singletonList(x.getLeft()), getDatabaseType(), getParameters());
+                parseContext.addCondition(x.getLeft(), BinaryOperator.EQUAL, Collections.singletonList(x.getRight()), JdbcConstants.MYSQL, getParameters());
+                parseContext.addCondition(x.getRight(), BinaryOperator.EQUAL, Collections.singletonList(x.getLeft()), JdbcConstants.MYSQL, getParameters());
                 break;
             default:
                 break;
@@ -186,14 +187,14 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
     @Override
     public boolean visit(final SQLInListExpr x) {
         if (!x.isNot()) {
-            parseContext.addCondition(x.getExpr(), BinaryOperator.IN, x.getTargetList(), getDatabaseType(), getParameters());
+            parseContext.addCondition(x.getExpr(), BinaryOperator.IN, x.getTargetList(), JdbcConstants.MYSQL, getParameters());
         }
         return super.visit(x);
     }
     
     @Override
     public boolean visit(final SQLBetweenExpr x) {
-        parseContext.addCondition(x.getTestExpr(), BinaryOperator.BETWEEN, Arrays.asList(x.getBeginExpr(), x.getEndExpr()), getDatabaseType(), getParameters());
+        parseContext.addCondition(x.getTestExpr(), BinaryOperator.BETWEEN, Arrays.asList(x.getBeginExpr(), x.getEndExpr()), JdbcConstants.MYSQL, getParameters());
         return super.visit(x);
     }
 }

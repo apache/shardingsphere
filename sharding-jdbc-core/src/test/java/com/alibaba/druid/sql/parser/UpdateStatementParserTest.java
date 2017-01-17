@@ -35,7 +35,7 @@ public final class UpdateStatementParserTest {
     @Test
     public void parseWithoutParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
-                "UPDATE TABLE_XXX xxx SET field1=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1, 3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
+                "UPDATE TABLE_XXX xxx SET field1=field1+1,field2=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
@@ -61,8 +61,8 @@ public final class UpdateStatementParserTest {
         assertThat(condition.getValues().get(0), is((Comparable) 5));
         assertThat(condition.getValues().get(1), is((Comparable) 20));
         assertFalse(conditions.hasNext());
-        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is(
-                "UPDATE [Token(TABLE_XXX)] AS xxx SET field1=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1, 3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
+        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx "
+                + "SET field1=field1+1,field2=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
     @Test
@@ -117,6 +117,8 @@ public final class UpdateStatementParserTest {
                 "UPDATE TOP(10) [Token(TABLE_XXX)] SET field1=1 OUTPUT (inserted.field1) WHERE field1=1");
         parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "UPDATE ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
                 "UPDATE ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURNING *");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "UPDATE ONLY TABLE_XXX SET (field1,field2)=(1,?) WHERE field1=1",
+                "UPDATE ONLY [Token(TABLE_XXX)] SET (field1,field2)=(1,?) WHERE field1=1");
     }
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {

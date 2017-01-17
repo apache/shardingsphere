@@ -28,7 +28,6 @@ import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
@@ -149,10 +148,10 @@ public final class ParseContext {
      * @param expr SQL表达式
      * @param operator 操作符
      * @param valueExprList 值对象表达式集合
-     * @param databaseType 数据库类型
+     * @param dbType 数据库类型
      * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final DatabaseType databaseType, final List<Object> parameters) {
+    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final String dbType, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
         if (!column.isPresent()) {
             return;
@@ -162,7 +161,7 @@ public final class ParseContext {
         }
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
         for (SQLExpr each : valueExprList) {
-            ValuePair evalValue = evalExpression(databaseType, each, parameters);
+            ValuePair evalValue = evalExpression(dbType, each, parameters);
             if (null != evalValue) {
                 values.add(evalValue);
             }
@@ -180,15 +179,15 @@ public final class ParseContext {
      * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
-     * @param databaseType 数据库类型
+     * @param dbType 数据库类型
      * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final DatabaseType databaseType, final List<Object> parameters) {
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final String dbType, final List<Object> parameters) {
         Column column = createColumn(columnName, tableName);
         if (notShardingColumns(column)) {
             return; 
         }
-        ValuePair value = evalExpression(databaseType, valueExpr, parameters);
+        ValuePair value = evalExpression(dbType, valueExpr, parameters);
         if (null != value) {
             addCondition(column, operator, Collections.singletonList(value));
         }
@@ -219,19 +218,19 @@ public final class ParseContext {
         return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
-    private ValuePair evalExpression(final DatabaseType databaseType, final SQLObject sqlObject, final List<Object> parameters) {
+    private ValuePair evalExpression(final String dbType, final SQLObject sqlObject, final List<Object> parameters) {
         if (sqlObject instanceof SQLMethodInvokeExpr) {
             // TODO 解析函数中的sharingValue不支持
             return null;
         }
         SQLEvalVisitor visitor;
-        switch (databaseType.name().toLowerCase()) {
+        switch (dbType) {
             case JdbcConstants.MYSQL:
             case JdbcConstants.H2: 
                 visitor = new MySQLEvalVisitor();
                 break;
             default: 
-                visitor = SQLEvalVisitorUtils.createEvalVisitor(databaseType.name());    
+                visitor = SQLEvalVisitorUtils.createEvalVisitor(dbType);
         }
         visitor.setParameters(parameters);
         sqlObject.accept(visitor);

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
@@ -60,7 +61,6 @@ import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 
@@ -859,26 +859,6 @@ public class SQLExprParser extends SQLParser {
             getLexer().nextToken();
             result.setType(SQLOrderingSpecification.DESC);
         }
-        return result;
-    }
-    
-    public SQLUpdateSetItem parseUpdateSetItem() {
-        SQLUpdateSetItem result = new SQLUpdateSetItem();
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            SQLListExpr list = new SQLListExpr();
-            list.getItems().addAll(exprList(list));
-            accept(Token.RIGHT_PAREN);
-            result.setColumn(list);
-        } else {
-            result.setColumn(primary());
-        }
-        if (getLexer().equalToken(Token.COLON_EQ)) {
-            getLexer().nextToken();
-        } else {
-            accept(Token.EQ);
-        }
-        result.setValue(expr());
         return result;
     }
     

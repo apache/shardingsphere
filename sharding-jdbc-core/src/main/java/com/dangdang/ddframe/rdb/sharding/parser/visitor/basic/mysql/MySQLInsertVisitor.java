@@ -23,6 +23,7 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
@@ -52,7 +53,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
         List<SQLExpr> values = x.getValuesList().get(0).getValues();
         for (int i = 0; i < x.getColumns().size(); i++) {
             String columnName = SQLUtil.getExactlyValue(columns.get(i).toString());
-            getParseContext().addCondition(columnName, tableName, BinaryOperator.EQUAL, values.get(i), getDatabaseType(), getParameters());
+            getParseContext().addCondition(columnName, tableName, BinaryOperator.EQUAL, values.get(i), JdbcConstants.MYSQL, getParameters());
             if (autoIncrementColumns.contains(columnName)) {
                 autoIncrementColumns.remove(columnName);
             }
@@ -82,7 +83,7 @@ public class MySQLInsertVisitor extends AbstractMySQLVisitor {
             } else {
                 sqlExpr = (id instanceof Number) ? new SQLNumberExpr((Number) id) : new SQLCharExpr((String) id);
             }
-            getParseContext().addCondition(each, tableName, BinaryOperator.EQUAL, sqlExpr, getDatabaseType(), getParameters());
+            getParseContext().addCondition(each, tableName, BinaryOperator.EQUAL, sqlExpr, JdbcConstants.MYSQL, getParameters());
             columns.add(new SQLIdentifierExpr(each));
             values.add(sqlExpr);
         }

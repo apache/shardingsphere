@@ -4,18 +4,17 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
+import com.alibaba.druid.sql.ast.expr.SQLListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
@@ -33,14 +32,15 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Getter
 public abstract class AbstractUpdateParser extends SQLParser {
     
-    private final ShardingRule shardingRule;
-    
+    @Getter
     private final SQLExprParser exprParser;
     
+    @Getter
     private final UpdateSQLContext updateSQLContext;
+    
+    private final ShardingRule shardingRule;
     
     private final List<Object> parameters;
     
@@ -48,10 +48,10 @@ public abstract class AbstractUpdateParser extends SQLParser {
     
     public AbstractUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
-        this.shardingRule = shardingRule;
-        this.parameters = parameters;
         this.exprParser = exprParser;
         this.updateSQLContext = new UpdateSQLContext();
+        this.shardingRule = shardingRule;
+        this.parameters = parameters;
     }
     
     /**
@@ -63,52 +63,74 @@ public abstract class AbstractUpdateParser extends SQLParser {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
         updateSQLContext.append(getLexer().getInput().substring(0, getLexer().getCurrentPosition() - getLexer().getLiterals().length()));
-        Table table = parseTableSource();
-        updateSQLContext.setTable(table);
-        updateSQLContext.appendToken(table.getName());
-        // TODO 应该使用计算offset而非output AS + alias的方式生成sql
-        if (table.getAlias().isPresent()) {
-            updateSQLContext.append(" AS " + table.getAlias().get());
-        }
-        int afterTablePosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        updateSQLContext.append(" " + getLexer().getInput().substring(afterTablePosition, getLexer().getInput().length()));
-        parseUpdateSet();
+        Table table = parseTable();
+        updateSQLContext.append(" " + getLexer().getInput().substring(getLexer().getCurrentPosition() - getLexer().getLiterals().length(), getLexer().getInput().length()));
+        parseSetItems();
         parseBetweenSetAndWhere();
         parseWhere(table);
         return new SQLUpdateStatement(updateSQLContext);
     }
     
-    private Table parseTableSource() {
-        String tableName = getLexer().getLiterals();
+    protected abstract void parseBetweenUpdateAndTable();
+    
+    private Table parseTable() {
+        String tableName = SQLUtil.getExactlyValue(getLexer().getLiterals());
         getLexer().nextToken();
         if (getLexer().equalToken(Token.AS)) {
             getLexer().nextToken();
         }
         Optional<String> alias = getLexer().equalToken(Token.IDENTIFIER) ? Optional.of(SQLUtil.getExactlyValue(getLexer().getLiterals())) : Optional.<String>absent();
+        Table result = new Table(tableName, alias);
+        updateSQLContext.setTable(result);
+        updateSQLContext.appendToken(tableName);
+        // TODO 应该使用计算offset而非output AS + alias的方式生成sql
+        if (alias.isPresent()) {
+            updateSQLContext.append(" AS " + alias.get());
+        }
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
         }
-        return new Table(SQLUtil.getExactlyValue(tableName), alias);
+        return result;
     }
     
-    protected void parseBetweenUpdateAndTable() {
+    private void parseSetItems() {
+        accept(Token.SET);
+        do {
+            if (getLexer().equalToken(Token.COMMA)) {
+                getLexer().nextToken();
+            }
+            parseSetItem();
+        } while (getLexer().equalToken(Token.COMMA));
+    }
+    
+    private void parseSetItem() {
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            while (!getLexer().equalToken(Token.RIGHT_PAREN)) {
+                getLexer().nextToken();
+            }
+            getLexer().nextToken();
+        } else {
+            exprParser.primary();
+        }
+        if (getLexer().equalToken(Token.COLON_EQ)) {
+            getLexer().nextToken();
+        } else {
+            accept(Token.EQ);
+        }
+        SQLExpr value = exprParser.expr();
+        if (value instanceof SQLListExpr) {
+            for (SQLExpr each : ((SQLListExpr) value).getItems()) {
+                if (each instanceof SQLVariantRefExpr) {
+                    parametersIndex++;
+                }
+            }
+        }
+        if (value instanceof SQLVariantRefExpr) {
+            parametersIndex++;
+        }
     }
     
     protected void parseBetweenSetAndWhere() {
-    }
-    
-    private void parseUpdateSet() {
-        accept(Token.SET);
-        while (true) {
-            SQLUpdateSetItem item = exprParser.parseUpdateSetItem();
-            if (item.getValue() instanceof SQLVariantRefExpr) {
-                parametersIndex++;
-            }
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            }
-            getLexer().nextToken();
-        }
     }
     
     private void parseWhere(final Table table) {
@@ -118,6 +140,19 @@ public abstract class AbstractUpdateParser extends SQLParser {
             parseConditions(parseContext);
             updateSQLContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
         }
+    }
+    
+    private ParseContext getParseContext(final Table table) {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(shardingRule);
+        SQLExprTableSource tableSource = new SQLExprTableSource();
+        tableSource.setExpr(new SQLIdentifierExpr(table.getName()));
+        if (table.getAlias().isPresent()) {
+            tableSource.setAlias(table.getAlias().get());
+        }
+        result.addTable(tableSource);
+        result.setCurrentTable(table.getName(), table.getAlias());
+        return result;
     }
     
     private void parseConditions(final ParseContext parseContext) {
@@ -135,58 +170,58 @@ public abstract class AbstractUpdateParser extends SQLParser {
     private void parseCondition(final ParseContext parseContext) {
         SQLExpr left = getSqlExprWithVariant();
         if (getLexer().equalToken(Token.EQ)) {
-            getLexer().nextToken();
-            SQLExpr right = getSqlExprWithVariant();
-            // TODO DatabaseType.MySQL
-            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), DatabaseType.MySQL, parameters);
+            parseEqualCondition(parseContext, left);
         } else if (getLexer().equalToken(Token.IN)) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-            List<SQLExpr> rights = new LinkedList<>();
-            do {
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                }
-                rights.add(getSqlExprWithVariant());
-            } while (!getLexer().equalToken(Token.RIGHT_PAREN));
-            // TODO DatabaseType.MySQL
-            parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, DatabaseType.MySQL, parameters);
-            getLexer().nextToken();
+            parseInCondition(parseContext, left);
         } else if (getLexer().equalToken(Token.BETWEEN)) {
-            getLexer().nextToken();
-            List<SQLExpr> rights = new LinkedList<>();
-            rights.add(getSqlExprWithVariant());
-            accept(Token.AND);
-            rights.add(getSqlExprWithVariant());
-            // TODO DatabaseType.MySQL
-            parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, DatabaseType.MySQL, parameters);
-            getLexer().nextToken();
+            parseBetweenCondition(parseContext, left);
         } else if (getLexer().equalToken(Token.LT) || getLexer().equalToken(Token.GT) || getLexer().equalToken(Token.LT_EQ) || getLexer().equalToken(Token.GT_EQ)) {
-            getLexer().nextToken();
-            getSqlExprWithVariant();
+            parserOtherCondition();
         }
+    }
+    
+    private void parseEqualCondition(final ParseContext parseContext, final SQLExpr left) {
+        getLexer().nextToken();
+        SQLExpr right = getSqlExprWithVariant();
+        parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), getDbType(), parameters);
+    }
+    
+    private void parseInCondition(final ParseContext parseContext, final SQLExpr left) {
+        getLexer().nextToken();
+        accept(Token.LEFT_PAREN);
+        List<SQLExpr> rights = new LinkedList<>();
+        do {
+            if (getLexer().equalToken(Token.COMMA)) {
+                getLexer().nextToken();
+            }
+            rights.add(getSqlExprWithVariant());
+        } while (!getLexer().equalToken(Token.RIGHT_PAREN));
+        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, getDbType(), parameters);
+        getLexer().nextToken();
+    }
+    
+    private void parseBetweenCondition(final ParseContext parseContext, final SQLExpr left) {
+        getLexer().nextToken();
+        List<SQLExpr> rights = new LinkedList<>();
+        rights.add(getSqlExprWithVariant());
+        accept(Token.AND);
+        rights.add(getSqlExprWithVariant());
+        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, getDbType(), parameters);
+        getLexer().nextToken();
+    }
+    
+    private void parserOtherCondition() {
+        getLexer().nextToken();
+        getSqlExprWithVariant();
     }
     
     private SQLExpr getSqlExprWithVariant() {
-        SQLExpr right = parseSQLExpr();
-        if (right instanceof SQLVariantRefExpr) {
-            ((SQLVariantRefExpr) right).setIndex(++parametersIndex);
-            right.getAttributes().put(SQLEvalVisitor.EVAL_VALUE, parameters.get(parametersIndex - 1));
-            right.getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parametersIndex - 1);
+        SQLExpr result = parseSQLExpr();
+        if (result instanceof SQLVariantRefExpr) {
+            ((SQLVariantRefExpr) result).setIndex(++parametersIndex);
+            result.getAttributes().put(SQLEvalVisitor.EVAL_VALUE, parameters.get(parametersIndex - 1));
+            result.getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parametersIndex - 1);
         }
-        return right;
-    }
-    
-    private ParseContext getParseContext(final Table table) {
-        ParseContext result = new ParseContext(1);
-        result.setShardingRule(shardingRule);
-        SQLExprTableSource tableSource = new SQLExprTableSource();
-        tableSource.setExpr(new SQLIdentifierExpr(table.getName()));
-        if (table.getAlias().isPresent()) {
-            tableSource.setAlias(table.getAlias().get());
-        }
-        result.addTable(tableSource);
-        result.setCurrentTable(table.getName(), table.getAlias());
         return result;
     }
     
@@ -202,12 +237,12 @@ public abstract class AbstractUpdateParser extends SQLParser {
             }
             return new SQLIdentifierExpr(literals);
         }
-        SQLExpr result = getSqlExpr(literals);
+        SQLExpr result = getSQLExpr(literals);
         getLexer().nextToken();
         return result;
     }
     
-    private SQLExpr getSqlExpr(final String literals) {
+    private SQLExpr getSQLExpr(final String literals) {
         if (getLexer().equalToken(Token.VARIANT) || getLexer().equalToken(Token.QUESTION)) {
             return new SQLVariantRefExpr("?");
         }
