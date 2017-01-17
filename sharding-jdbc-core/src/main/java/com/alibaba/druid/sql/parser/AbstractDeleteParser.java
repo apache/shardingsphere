@@ -41,9 +41,9 @@ public abstract class AbstractDeleteParser extends SQLParser {
      * @return 解析结果
      */
     public SQLDeleteStatement parse() {
-        DeleteSQLContext result = new DeleteSQLContext();
         getLexer().nextToken();
         parseBetweenDeleteAndTable();
+        DeleteSQLContext result = new DeleteSQLContext();
         result.appendBeforeTable(getLexer());
         Table table = parseTable(result);
         if (!getLexer().equalToken(Token.EOF)) {

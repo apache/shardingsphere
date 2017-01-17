@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
@@ -100,33 +99,5 @@ public class OracleStatementParser extends SQLStatementParser {
             throw new ParserUnsupportedException(getLexer().getToken());
         }
         throw new ParserUnsupportedException(getLexer().getToken());
-    }
-
-    private OracleReturningClause parseReturningClause() {
-        OracleReturningClause clause = null;
-
-        if (getLexer().equalToken(Token.RETURNING)) {
-            getLexer().nextToken();
-            clause = new OracleReturningClause();
-
-            while (true) {
-                clause.getItems().add(getExprParser().expr());
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-            accept(Token.INTO);
-            while (true) {
-                clause.getValues().add(getExprParser().expr());
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-        }
-        return clause;
     }
 }

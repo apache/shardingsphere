@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.SQLDataType;
@@ -76,7 +77,7 @@ public class OracleExprParser extends SQLExprParser {
             "REGR_SLOPE", "REGR_INTERCEPT", "REGR_INTERCEPT", "REGR_COUNT", "REGR_R2", "REGR_AVGX", "REGR_AVGY", "REGR_SXX", "REGR_SYY", "REGR_SXY", 
             "ROW_NUMBER", "STDDEV", "STDDEV_POP", "STDDEV_SAMP", "VAR_POP", "VAR_SAMP", "VARIANCE", "WM_CONCAT"};
     
-    public OracleExprParser(final String sql){
+    public OracleExprParser(final String sql) {
         super(new OracleLexer(sql), JdbcConstants.ORACLE, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
@@ -355,57 +356,56 @@ public class OracleExprParser extends SQLExprParser {
                         throw new ParserUnsupportedException(getLexer().getToken());
                 }
                 return primaryRest(sqlExpr);
+            case CURSOR:
+                getLexer().nextToken();
+                accept(Token.LEFT_PAREN);
                 
-           case CURSOR:
-                    getLexer().nextToken();
-                    accept(Token.LEFT_PAREN);
-                    
-                    OracleSelect select = createSelectParser().select();
-                    OracleCursorExpr cursorExpr = new OracleCursorExpr(select);
-                    
-                    accept(Token.RIGHT_PAREN);
-                    
-                    sqlExpr = cursorExpr;
-                    return  primaryRest(sqlExpr);
-           case MODEL:
-           case PCTFREE:
-           case INITRANS:
-           case MAXTRANS:
-           case SEGMENT:
-           case CREATION:
-           case IMMEDIATE:
-           case DEFERRED:
-           case STORAGE:
-           case NEXT:
-           case MINEXTENTS:
-           case MAXEXTENTS:
-           case MAXSIZE:
-           case PCTINCREASE:
-           case FLASH_CACHE:
-           case CELL_FLASH_CACHE:
-           case KEEP:
-           case NONE:
-           case LOB:
-           case STORE:
-           case ROW:
-           case CHUNK:
-           case CACHE:
-           case NOCACHE:
-           case LOGGING:
-           case NOCOMPRESS:
-           case KEEP_DUPLICATES:
-           case EXCEPTIONS:
-           case PURGE:
-               sqlExpr = new SQLIdentifierExpr(getLexer().getLiterals());
-               getLexer().nextToken();
-               return  primaryRest(sqlExpr);
+                OracleSelect select = createSelectParser().select();
+                OracleCursorExpr cursorExpr = new OracleCursorExpr(select);
+                
+                accept(Token.RIGHT_PAREN);
+                
+                sqlExpr = cursorExpr;
+                return  primaryRest(sqlExpr);
+            case MODEL:
+            case PCTFREE:
+            case INITRANS:
+            case MAXTRANS:
+            case SEGMENT:
+            case CREATION:
+            case IMMEDIATE:
+            case DEFERRED:
+            case STORAGE:
+            case NEXT:
+            case MINEXTENTS:
+            case MAXEXTENTS:
+            case MAXSIZE:
+            case PCTINCREASE:
+            case FLASH_CACHE:
+            case CELL_FLASH_CACHE:
+            case KEEP:
+            case NONE:
+            case LOB:
+            case STORE:
+            case ROW:
+            case CHUNK:
+            case CACHE:
+            case NOCACHE:
+            case LOGGING:
+            case NOCOMPRESS:
+            case KEEP_DUPLICATES:
+            case EXCEPTIONS:
+            case PURGE:
+                sqlExpr = new SQLIdentifierExpr(getLexer().getLiterals());
+                getLexer().nextToken();
+                return primaryRest(sqlExpr);
             default:
                 return super.primary();
         }
     }
     
     @Override
-    protected SQLExpr methodRest(SQLExpr expr, boolean acceptLPAREN) {
+    protected SQLExpr methodRest(final SQLExpr expr, final boolean acceptLPAREN) {
         if (acceptLPAREN) {
             accept(Token.LEFT_PAREN);
         }
@@ -420,20 +420,17 @@ public class OracleExprParser extends SQLExprParser {
             String methodName = ((SQLIdentifierExpr) expr).getSimpleName();
             SQLMethodInvokeExpr methodExpr = new SQLMethodInvokeExpr(methodName);
             if ("trim".equalsIgnoreCase(methodName)) {
-                if (getLexer().identifierEquals("LEADING") //
-                        || getLexer().identifierEquals("TRAILING") //
-                        || getLexer().identifierEquals("BOTH")
-                        ) {
+                if (getLexer().identifierEquals("LEADING") || getLexer().identifierEquals("TRAILING") || getLexer().identifierEquals("BOTH")) {
                     methodExpr.putAttribute("trim_option", getLexer().getLiterals());
                     getLexer().nextToken();
                 }
-                SQLExpr trim_character = this.primary();
-                trim_character.setParent(methodExpr);
-                methodExpr.putAttribute("trim_character", trim_character);
+                SQLExpr trimCharacter = this.primary();
+                trimCharacter.setParent(methodExpr);
+                methodExpr.putAttribute("trim_character", trimCharacter);
                 if (getLexer().equalToken(Token.FROM)) {
                     getLexer().nextToken();
-                    SQLExpr trim_source = this.expr();
-                    methodExpr.addParameter(trim_source);
+                    SQLExpr trimSource = this.expr();
+                    methodExpr.addParameter(trimSource);
                 }
                 
                 accept(Token.RIGHT_PAREN);
@@ -443,10 +440,10 @@ public class OracleExprParser extends SQLExprParser {
         
         return super.methodRest(expr, false);
     }
-
+    
     public SQLExpr primaryRest(SQLExpr expr) {
         if (expr.getClass() == SQLIdentifierExpr.class) {
-            String ident = ((SQLIdentifierExpr)expr).getSimpleName();
+            String ident = ((SQLIdentifierExpr) expr).getSimpleName();
             
             if ("DATE".equalsIgnoreCase(ident)) {
                 OracleDateExpr timestamp = new OracleDateExpr(getLexer().getLiterals());
@@ -501,7 +498,7 @@ public class OracleExprParser extends SQLExprParser {
                         getLexer().nextToken();
                         break;
                     default:
-                    break;
+                        break;
                 }
             }
         }

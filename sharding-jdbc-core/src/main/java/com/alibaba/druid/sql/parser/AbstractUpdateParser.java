@@ -46,9 +46,9 @@ public abstract class AbstractUpdateParser extends SQLParser {
      * @return 解析结果
      */
     public SQLUpdateStatement parse() {
-        UpdateSQLContext result = new UpdateSQLContext();
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
+        UpdateSQLContext result = new UpdateSQLContext();
         result.appendBeforeTable(getLexer());
         Table table = parseTable(result);
         result.appendAfterTable(getLexer());

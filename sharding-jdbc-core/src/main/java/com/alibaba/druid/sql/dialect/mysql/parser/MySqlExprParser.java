@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLDataType;
@@ -79,19 +80,6 @@ public class MySqlExprParser extends SQLExprParser {
         accept(Token.RIGHT_PAREN);
         return result;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     public SQLExpr relationalRest(SQLExpr expr) {
         if (getLexer().identifierEquals("REGEXP")) {
@@ -427,7 +415,7 @@ public class MySqlExprParser extends SQLExprParser {
                 expr = matchAgainstExpr;
 
                 return primaryRest(expr);
-            } else if (("CONVERT".equalsIgnoreCase(ident))||("CHAR".equalsIgnoreCase(ident))) {
+            } else if (("CONVERT".equalsIgnoreCase(ident)) || ("CHAR".equalsIgnoreCase(ident))) {
                 getLexer().nextToken();
                 SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr(ident);
                 if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
@@ -573,11 +561,11 @@ public class MySqlExprParser extends SQLExprParser {
         return expr;
     }
 
-    public SQLName nameRest(SQLName name) {
+    public SQLName nameRest(final SQLName name) {
         if (getLexer().equalToken(Token.VARIANT) && "@".equals(getLexer().getLiterals())) {
             getLexer().nextToken();
             MySqlUserName userName = new MySqlUserName();
-            userName.setUserName((name).getSimpleName());
+            userName.setUserName(name.getSimpleName());
 
             if (getLexer().equalToken(Token.LITERAL_CHARS)) {
                 userName.setHost("'" + getLexer().getLiterals() + "'");
