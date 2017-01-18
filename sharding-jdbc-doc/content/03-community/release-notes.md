@@ -8,6 +8,13 @@ next = "/03-community/directory-structure"
 
 +++
 
+## 1.4.2
+
+### 功能提升
+
+1. [ISSUE #215](https://github.com/dangdangdotcom/sharding-jdbc/issues/215) 流式排序的聚集结果集 StreamingOrderByReducerResultSet性能优化
+1. [ISSUE #161](https://github.com/dangdangdotcom/sharding-jdbc/issues/161) 结果集归并的时候可以采用堆排序来提升性能
+
 ## 1.4.1
 
 ### 功能提升
