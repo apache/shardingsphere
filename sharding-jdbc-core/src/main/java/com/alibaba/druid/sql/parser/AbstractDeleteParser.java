@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.context.DeleteSQLContext;
+import com.alibaba.druid.sql.context.SQLToken;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
@@ -43,13 +44,11 @@ public abstract class AbstractDeleteParser extends SQLParser {
     public SQLDeleteStatement parse() {
         getLexer().nextToken();
         parseBetweenDeleteAndTable();
-        DeleteSQLContext result = new DeleteSQLContext();
-        result.appendBeforeTable(getLexer());
+        DeleteSQLContext result = new DeleteSQLContext(getLexer().getInput());
         Table table = parseTable(result);
         if (!getLexer().equalToken(Token.EOF)) {
-            result.appendAfterTable(getLexer());
             parseBetweenTableAndWhere();
-            Optional<ConditionContext> conditionContext = new ParserUtil(shardingRule, parameters, exprParser, 0).parseWhere(table);
+            Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, 0).parseWhere();
             if (conditionContext.isPresent()) {
                 result.getConditionContexts().add(conditionContext.get());
             }
@@ -58,13 +57,14 @@ public abstract class AbstractDeleteParser extends SQLParser {
     }
     
     private Table parseTable(final DeleteSQLContext deleteSQLContext) {
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
         SQLTableSource tableSource = new SQLSelectParser(exprParser).parseTableSource();
         if (tableSource instanceof SQLJoinTableSource) {
             throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
         }
         Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
+        deleteSQLContext.getSqlTokens().add(new SQLToken(beginPosition, tableSource.toString()));
         deleteSQLContext.setTable(result);
-        deleteSQLContext.appendTable(result);
         return result;
     }
     

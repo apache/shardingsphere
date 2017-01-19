@@ -15,7 +15,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3" expected-sql="DELETE FROM [Token(order)] AS o WHERE order_id BETWEEN 1 AND 3">
+    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3" expected-sql="DELETE FROM [Token(order)] o WHERE order_id BETWEEN 1 AND 3">
         <tables>
             <table name="order" alias="o" />
         </tables>

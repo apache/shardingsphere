@@ -5,6 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * SQL上下文.
@@ -28,9 +29,16 @@ public interface SQLContext {
     Collection<ConditionContext> getConditionContexts();
     
     /**
-     * 获取SQL构建器.
+     * 获取SQL语言标记对象集合.
      * 
+     * @return SQL语言标记对象集合
+     */
+    List<SQLToken> getSqlTokens();
+    
+    /**
+     * 生成SQL构建器.
+     *
      * @return SQL构建器
      */
-    SQLBuilder getSqlBuilder();
+    SQLBuilder toSqlBuilder();
 }

@@ -76,7 +76,7 @@ public final class SQLParseEngine {
             result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
         result.getRouteContext().getTables().add(sqlContext.getTable());
-        result.getRouteContext().setSqlBuilder(sqlContext.getSqlBuilder());
+        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         result.getRouteContext().setSqlStatementType(getType());
         return result;
     }

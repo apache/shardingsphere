@@ -1,11 +1,14 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.context.SQLToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -48,13 +51,11 @@ public abstract class AbstractUpdateParser extends SQLParser {
     public SQLUpdateStatement parse() {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
-        UpdateSQLContext result = new UpdateSQLContext();
-        result.appendBeforeTable(getLexer());
+        UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
         Table table = parseTable(result);
-        result.appendAfterTable(getLexer());
-        parseSetItems();
+        parseSetItems(result);
         parseBetweenSetAndWhere();
-        Optional<ConditionContext> conditionContext = new ParserUtil(shardingRule, parameters, exprParser, parametersIndex).parseWhere(table);
+        Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, parametersIndex).parseWhere();
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
         }
@@ -64,37 +65,43 @@ public abstract class AbstractUpdateParser extends SQLParser {
     protected abstract void parseBetweenUpdateAndTable();
     
     private Table parseTable(final UpdateSQLContext updateSQLContext) {
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
         SQLTableSource tableSource = new SQLSelectParser(exprParser).parseTableSource();
         if (tableSource instanceof SQLJoinTableSource) {
             throw new UnsupportedOperationException("Cannot support update Multiple-Table.");
         }
         Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
+        updateSQLContext.getSqlTokens().add(new SQLToken(beginPosition, tableSource.toString()));
         updateSQLContext.setTable(result);
-        updateSQLContext.appendTable(result);
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
         }
         return result;
     }
     
-    private void parseSetItems() {
+    private void parseSetItems(final UpdateSQLContext sqlContext) {
         accept(Token.SET);
         do {
             if (getLexer().equalToken(Token.COMMA)) {
                 getLexer().nextToken();
             }
-            parseSetItem();
+            parseSetItem(sqlContext);
         } while (getLexer().equalToken(Token.COMMA));
     }
     
-    private void parseSetItem() {
+    private void parseSetItem(final UpdateSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             while (!getLexer().equalToken(Token.RIGHT_PAREN)) {
                 getLexer().nextToken();
             }
             getLexer().nextToken();
         } else {
-            exprParser.primary();
+            String literals = getLexer().getLiterals();
+            int beginPosition = getLexer().getCurrentPosition();
+            SQLExpr sqlExpr = exprParser.primary();
+            if (sqlExpr instanceof SQLPropertyExpr && sqlContext.getTable().getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                sqlContext.getSqlTokens().add(new SQLToken(beginPosition - literals.length(), literals));
+            }
         }
         if (getLexer().equalToken(Token.COLON_EQ)) {
             getLexer().nextToken();
@@ -102,14 +109,21 @@ public abstract class AbstractUpdateParser extends SQLParser {
             accept(Token.EQ);
         }
         SQLExpr value = exprParser.expr();
-        if (value instanceof SQLListExpr) {
+        if (value instanceof SQLBinaryOpExpr) {
+            if (((SQLBinaryOpExpr) value).getLeft() instanceof SQLVariantRefExpr) {
+                parametersIndex++;
+            }
+            if (((SQLBinaryOpExpr) value).getRight() instanceof SQLVariantRefExpr) {
+                parametersIndex++;
+            }
+            // TODO 二元操作替换table token
+        } else if (value instanceof SQLListExpr) {
             for (SQLExpr each : ((SQLListExpr) value).getItems()) {
                 if (each instanceof SQLVariantRefExpr) {
                     parametersIndex++;
                 }
             }
-        }
-        if (value instanceof SQLVariantRefExpr) {
+        } else if (value instanceof SQLVariantRefExpr) {
             parametersIndex++;
         }
     }

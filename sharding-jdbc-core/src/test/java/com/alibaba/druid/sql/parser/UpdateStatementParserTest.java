@@ -24,13 +24,13 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertTrue(updateStatement.getSqlContext().getConditionContexts().isEmpty());
-        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
+        assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
     
     @Test
     public void parseWithoutParameter()  {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
-                "UPDATE TABLE_XXX xxx SET field1=field1+1,field2=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
+        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 "
+                + "WHERE TABLE_XXX.field4<10 AND TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10");
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
@@ -56,14 +56,14 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().get(0), is((Comparable) 5));
         assertThat(condition.getValues().get(1), is((Comparable) 20));
         assertFalse(conditions.hasNext());
-        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx "
-                + "SET field1=field1+1,field2=2 WHERE field4<10 AND field1=1 AND field5>10 AND field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
+        assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] xxx SET [Token(TABLE_XXX)].field1=field1+1,xxx.field2=2 WHERE [Token(TABLE_XXX)].field4<10 "
+                + "AND [Token(TABLE_XXX)].field1=1 AND xxx.field5>10 AND [Token(TABLE_XXX)].field2 IN (1,3) AND xxx.field6<=10 AND [Token(TABLE_XXX)].field3 BETWEEN 5 AND 20 AND xxx.field7>=10"));
     }
     
     @Test
     public void parseWithParameter() {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10),
-                "UPDATE TABLE_XXX AS xxx SET field1=? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?");
+                "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?");
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
@@ -89,8 +89,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().get(0), is((Comparable) 5));
         assertThat(condition.getValues().get(1), is((Comparable) 20));
         assertFalse(conditions.hasNext());
-        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is(
-                "UPDATE [Token(TABLE_XXX)] AS xxx SET field1=? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
+        assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is(
+                "UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
     @Test(expected = ParserUnsupportedException.class)
@@ -123,6 +123,6 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
         String expectedSQL = actualSQL.contains("`TABLE_XXX`") ? actualSQL.replace("`TABLE_XXX`", "[Token(TABLE_XXX)]") : actualSQL.replace("TABLE_XXX", "[Token(TABLE_XXX)]");
-        assertThat(updateStatement.getSqlContext().getSqlBuilder().toString(), is(expectedSQL));
+        assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is(expectedSQL));
     }
 }
