@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +42,11 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     private final Optional<DMLExecutionEvent> dmlExecutionEvent;
     
     private final Optional<DQLExecutionEvent> dqlExecutionEvent;
+    
+    @Getter
+    private final List<Integer[]> batchIndices = new ArrayList<>();
+    
+    private int batchIndex;
     
     public PreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final List<Object> parameters,
                                             final SQLExecutionUnit sqlExecutionUnit) {
@@ -76,5 +82,15 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     public void addBatchParameters(final List<Object> parameters) {
         Preconditions.checkArgument(isDML() && dmlExecutionEvent.isPresent());
         dmlExecutionEvent.get().addBatchParameters(Lists.newArrayList(parameters));
+    }
+    
+    /**
+     * 映射批量执行索引.
+     * 将{@linkplain com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement}批量执行索引映射为真实的{@linkplain PreparedStatement}批量执行索引.
+     * 
+     * @param shardingBatchIndex 分片批量执行索引
+     */
+    public void mapBatchIndex(final int shardingBatchIndex) {
+        batchIndices.add(new Integer[]{shardingBatchIndex, this.batchIndex++});
     }
 }

@@ -12,18 +12,14 @@ next = "/03-community/directory-structure"
 ### 功能提升
 
 1. [ISSUE #219](https://github.com/dangdangdotcom/sharding-jdbc/issues/219) 线程性能优化
+1. [ISSUE #215](https://github.com/dangdangdotcom/sharding-jdbc/issues/215) 流式排序的聚集结果集 StreamingOrderByReducerResultSet性能优化
+1. [ISSUE #161](https://github.com/dangdangdotcom/sharding-jdbc/issues/161) 结果集归并的时候可以采用堆排序来提升性能
 
 ### 缺陷修正
 
 1. [ISSUE #212](https://github.com/dangdangdotcom/sharding-jdbc/issues/212) 对去缺少数据源规则给出更有意义的提示
 1. [ISSUE #214](https://github.com/dangdangdotcom/sharding-jdbc/issues/214) where中 table_name.column_name in (?,?)无法解析表达式
-
-## 1.4.2
-
-### 功能提升
-
-1. [ISSUE #215](https://github.com/dangdangdotcom/sharding-jdbc/issues/215) 流式排序的聚集结果集 StreamingOrderByReducerResultSet性能优化
-1. [ISSUE #161](https://github.com/dangdangdotcom/sharding-jdbc/issues/161) 结果集归并的时候可以采用堆排序来提升性能
+1. [ISSUE #180](https://github.com/dangdangdotcom/sharding-jdbc/issues/180) 批量执行Update返回值不准确
 
 ## 1.4.1
 
