@@ -11,6 +11,8 @@ next = "/03-community/directory-structure"
 
 ### 功能提升
 
+1. [ISSUE #219](https://github.com/dangdangdotcom/sharding-jdbc/issues/219) 线程性能优化
+
 ### 缺陷修正
 
 1. [ISSUE #212](https://github.com/dangdangdotcom/sharding-jdbc/issues/212) 对去缺少数据源规则给出更有意义的提示
