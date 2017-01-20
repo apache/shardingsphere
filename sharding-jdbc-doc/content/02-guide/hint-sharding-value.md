@@ -36,7 +36,7 @@ __现有一个假设，如果`WHERE`中没有`user_id`和`order_id`的条件，�
 String sql = "SELECT * FROM t_order";
         
 try (
-        HintManager hintManager = new HintManager();
+        HintManager hintManager = HintManager.getInstance();
         Connection conn = dataSource.getConnection();
         PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
     hintManager.addDatabaseShardingValue("t_order", "user_id", 1);
@@ -50,7 +50,7 @@ try (
 ```
 
 ### 实例化
-使用`HintManager hintManager = new HintManager()`实例化后将初始化`ThreadLocal`中的数据。
+使用`HintManager hintManager = HintManager.getInstance()`实例化后将初始化`ThreadLocal`中的数据。
 
 ### 添加分片键值
 - 使用`hintManager.addDatabaseShardingValue`来添加数据源分片键值
