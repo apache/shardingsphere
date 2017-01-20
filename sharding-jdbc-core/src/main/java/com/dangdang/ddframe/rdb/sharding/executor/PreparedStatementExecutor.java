@@ -204,8 +204,9 @@ public final class PreparedStatementExecutor {
      * 执行批量接口.
      *
      * @return 每个
+     * @param batchSize 批量执行语句总数
      */
-    public int[] executeBatch() {
+    public int[] executeBatch(final int batchSize) {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         eventPostman.postExecutionEvents();
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
@@ -229,15 +230,13 @@ public final class PreparedStatementExecutor {
                     if (null == results) {
                         return new int[]{0};
                     }
-                    int length = 0;
-                    for (int[] array : results) {
-                        length += array.length;
-                    }
-                    int[] result = new int[length];
-                    int pos = 0;
-                    for (int[] array : results) {
-                        System.arraycopy(array, 0, result, pos, array.length);
-                        pos += array.length;
+                    int[] result = new int[batchSize];
+                    int i = 0;
+                    for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
+                        for (Integer[] indices : each.getBatchIndices()) {
+                            result[indices[0]] += results.get(i)[indices[1]];
+                        }
+                        i++;
                     }
                     return result;
                 }
