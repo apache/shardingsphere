@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -46,25 +47,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * 通过zookeeper维护工作进程Id，启动时会在"/snowflake/appName(这里可以是应用名，服务名，表名)/"节点下注册工作进程Id.
- * ，例如注册节点"/snowflake/default/7"，则workId为7.
+ * 通过zookeeper维护工作进程Id，启动时会在"/sharding-jdbc/appName(这里可以是应用名，服务名，表名)/"节点下注册工作进程Id.
+ * ，例如注册节点"/sharding-jdbc/default/7"，则workId为7.
  * 运行时需要设置三个参数：
  * <pre>
  * zkNodes（zookeeper节点，IP:PORT逗号分隔，如"192.168.1.100:2181,127.0.0.1:2181"）: 系统变量{@code sjdbc.zk.id.generator.zk.nodes} > 环境变量{@code SJDBC_ZK_ID_GENERATOR_ZK_NODES}
  * appName（可以是表名，如"default_table"）: 系统变量{@code sjdbc.zk.id.generator.app.name} > 环境变量{@code SJDBC_ZK_ID_GENERATOR_APP_NAME}
  * authority（ZK节点权限，如"admin:password"，可以不设置）: 系统变量{@code sjdbc.zk.id.generator.zk.authority} > 环境变量{@code SJDBC_ZK_ID_GENERATOR_ZK_AUTHORITY}
  * </pre>
- * 如无"/snowflake/appName/"节点，会先创建节点。
+ * 如无"/sharding-jdbc/appName/"节点，会先创建节点。
  * 每次注册新节点时，会将当前更新节点写入应用根节点
- * ，如注册的新节点为"/snowflake/appName/108/"，则将108写入"/snowflake/appName/"节点。
- * 注册时，先获取最后一次写入的节点ID，即"/snowflake/appName/"节点数据，
- * ，如"/snowflake/appName/"节点值为108，则创建新节点"/snowflake/appName/109/"，并更新"/snowflake/appName/"节点为109。
+ * ，如注册的新节点为"/sharding-jdbc/appName/108/"，则将108写入"/sharding-jdbc/appName/"节点。
+ * 注册时，先获取最后一次写入的节点ID，即"/sharding-jdbc/appName/"节点数据，
+ * ，如"/sharding-jdbc/appName/"节点值为108，则创建新节点"/sharding-jdbc/appName/109/"，并更新"/sharding-jdbc/appName/"节点为109。
  * 如果109节点以存在，则往后顺延到110节点；如顺延到1023节点还未找到空节点，则从0开始重新遍历；如0-1023节点都被占用，则抛出异常
  * 如果与zookeeper失去连接，将触发监听器，重新去zookeeper中注册节点ID。
  *
  * @author DonneyYoung
  */
+@Slf4j
 public class ZkIdGenerator implements IdGenerator {
+
+//    private static boolean available;
 
     private final CommonSelfIdGenerator commonSelfIdGenerator = new CommonSelfIdGenerator();
 
@@ -77,15 +81,19 @@ public class ZkIdGenerator implements IdGenerator {
             String zkNodes = System.getProperty("sjdbc.zk.id.generator.zk.nodes");
             String appName = System.getProperty("sjdbc.zk.id.generator.app.name");
             String authority = System.getProperty("sjdbc.zk.id.generator.zk.authority");
+            String root = System.getProperty("sjdbc.zk.id.generator.zk.root");
+            root = (root == null || root.isEmpty()) ? ZkClient.SHARDING_JDBC_ROOT : root;
             if (!Strings.isNullOrEmpty(zkNodes) && !Strings.isNullOrEmpty(appName)) {
-                ZkClient.initZkClient(zkNodes, authority, ZkClient.SNOWFLAKE_URL + "/" + appName);
+                ZkClient.initZkClient(zkNodes, authority, root + "/" + appName);
                 return;
             }
             zkNodes = System.getenv("SJDBC_ZK_ID_GENERATOR_ZK_NODES");
             appName = System.getenv("SJDBC_ZK_ID_GENERATOR_APP_NAME");
             authority = System.getenv("SJDBC_ZK_ID_GENERATOR_ZK_AUTHORITY");
+            root = System.getProperty("SJDBC_ZK_ID_GENERATOR_ZK_ROOT");
+            root = (root == null || root.isEmpty()) ? ZkClient.SHARDING_JDBC_ROOT : root;
             if (!Strings.isNullOrEmpty(zkNodes) && !Strings.isNullOrEmpty(appName)) {
-                ZkClient.initZkClient(zkNodes, authority, ZkClient.SNOWFLAKE_URL + "/" + appName);
+                ZkClient.initZkClient(zkNodes, authority, root + "/" + appName);
                 return;
             }
         } catch (final Exception e) {
@@ -96,22 +104,25 @@ public class ZkIdGenerator implements IdGenerator {
 
     @Override
     public Number generateId() {
+//        if (!available) {
+//            throw new IllegalStateException("Sharding-jdbc-zk-id-generator is not available!");
+//        }
         return commonSelfIdGenerator.generateId();
     }
 
     private static class ZkClient {
 
         // 向Zookeeper注册的根节点
-        private static final String SNOWFLAKE_URL = "/snowflake";
+        private static final String SHARDING_JDBC_ROOT = "/sharding-jdbc";
 
-        // 向Zookeeper注册的Snowflake Node节点
-        private static final String SNOWFLAKE_NODE = "/node";
+        // 向Zookeeper注册的Sharding-jdbc Node节点
+        private static final String SHARDING_JDBC_NODE = "/node";
 
-        // 向Zookeeper注册的Snowflake Config节点
-        private static final String SNOWFLAKE_CONFIG = "/config";
+        // 向Zookeeper注册的Sharding-jdbc Config节点
+        private static final String SHARDING_JDBC_CONFIG = "/config";
 
-        // 向Zookeeper注册的Snowflake Config节点
-        private static final String SNOWFLAKE_ORDER = "/order";
+        // 向Zookeeper注册的Sharding-jdbc Config节点
+        private static final String SHARDING_JDBC_ORDER = "/order";
 
         // 授权方式
         private static final String AUTHORIZATION = "digest";
@@ -133,9 +144,6 @@ public class ZkIdGenerator implements IdGenerator {
 
         // 注册节点监听
         private static TreeCache treeCache;
-
-        // 分布式锁
-        private static InterProcessMutex lock;
 
         // 节点创建时间
         private static volatile long pathCreatedTime;
@@ -167,9 +175,7 @@ public class ZkIdGenerator implements IdGenerator {
                     public List<ACL> getDefaultAcl() {
                         if (acls == null) {
                             ArrayList<ACL> acls = ZooDefs.Ids.CREATOR_ALL_ACL;
-                            acls.clear();
                             acls.add(new ACL(ZooDefs.Perms.ALL, new Id(AUTHORIZATION, authority)));
-                            acls.add(new ACL(ZooDefs.Perms.ALL, new Id("world", "anyone")));
                             this.acls = acls;
                         }
                         return acls;
@@ -188,25 +194,29 @@ public class ZkIdGenerator implements IdGenerator {
         }
 
         private static void doRegister(final String appPath) throws Exception {
+            if (null == client) {
+                log.warn(String.format("Client closed, node:\"%s\".", appPath));
+                return;
+            }
             if (null == client.checkExists().forPath(appPath)) {
                 try {
                     client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(appPath);
                 } catch (final KeeperException.NodeExistsException ignored) {
                 }
             }
+            InterProcessMutex lock = new InterProcessMutex(client, appPath);
             try {
-                lock = new InterProcessMutex(client, appPath);
                 if (!lock.acquire(LOCK_WAIT_TIME_MS, TimeUnit.MILLISECONDS)) {
                     throw new TimeoutException(String.format("acquire lock failed after %s ms.", LOCK_WAIT_TIME_MS));
                 }
-                if (null == client.checkExists().forPath(appPath + SNOWFLAKE_NODE)) {
-                    client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(appPath + SNOWFLAKE_NODE);
+                if (null == client.checkExists().forPath(appPath + SHARDING_JDBC_NODE)) {
+                    client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(appPath + SHARDING_JDBC_NODE);
                 }
-                if (null == client.checkExists().forPath(appPath + SNOWFLAKE_CONFIG + SNOWFLAKE_ORDER)) {
-                    client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(appPath + SNOWFLAKE_CONFIG + SNOWFLAKE_ORDER);
+                if (null == client.checkExists().forPath(appPath + SHARDING_JDBC_CONFIG + SHARDING_JDBC_ORDER)) {
+                    client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(appPath + SHARDING_JDBC_CONFIG + SHARDING_JDBC_ORDER);
                 }
-                Set<Integer> orderIdSet = checkAndInitOrder(new String(client.getData().forPath(appPath + SNOWFLAKE_CONFIG + SNOWFLAKE_ORDER)));
-                Set<Integer> nodeIdSet = new LinkedHashSet<>(Lists.transform(client.getChildren().forPath(appPath + SNOWFLAKE_NODE), new Function<String, Integer>() {
+                Set<Integer> orderIdSet = checkAndInitOrder(new String(client.getData().forPath(appPath + SHARDING_JDBC_CONFIG + SHARDING_JDBC_ORDER)));
+                Set<Integer> nodeIdSet = new LinkedHashSet<>(Lists.transform(client.getChildren().forPath(appPath + SHARDING_JDBC_NODE), new Function<String, Integer>() {
                     @Override
                     public Integer apply(final String nodeIdStr) {
                         return Integer.parseInt(nodeIdStr);
@@ -216,11 +226,11 @@ public class ZkIdGenerator implements IdGenerator {
                     if (!nodeIdSet.contains(each)) {
                         orderIdSet.remove(each);
                         orderIdSet.add(each);
-                        final String nodePath = appPath + SNOWFLAKE_NODE + "/" + each;
-                        String nodeDate = String.format("ip:%s\r\nhostName:%s\r\npid:%s\r\n", InetAddress.getLocalHost().getHostAddress(), InetAddress.getLocalHost().getHostName(), ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                        final String nodePath = appPath + SHARDING_JDBC_NODE + "/" + each;
+                        String nodeDate = String.format("{\"ip\":\"%s\",\"hostName\":\"%s\",\"pid\":\"%s\"}", InetAddress.getLocalHost().getHostAddress(), InetAddress.getLocalHost().getHostName(), ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
                         client.inTransaction().create().withMode(CreateMode.EPHEMERAL).forPath(nodePath)
                                 .and().setData().forPath(nodePath, nodeDate.getBytes())
-                                .and().setData().forPath(appPath + SNOWFLAKE_CONFIG + SNOWFLAKE_ORDER, orderIdSet.toString().getBytes())
+                                .and().setData().forPath(appPath + SHARDING_JDBC_CONFIG + SHARDING_JDBC_ORDER, orderIdSet.toString().getBytes())
                                 .and().commit();
                         pathCreatedTime = client.checkExists().forPath(nodePath).getCtime();
                         ZkClient.treeCache = new TreeCache(client, nodePath);
@@ -236,6 +246,7 @@ public class ZkIdGenerator implements IdGenerator {
                                             pathTime = 0;
                                         }
                                         if (pathCreatedTime != pathTime) {
+//                                            available = false;
                                             doRegister(appPath);
                                             treeCache.close();
                                         }
@@ -244,10 +255,11 @@ public class ZkIdGenerator implements IdGenerator {
                         );
                         treeCache.start();
                         CommonSelfIdGenerator.setWorkerId(Long.valueOf(each));
+//                        available = true;
                         return;
                     }
                 }
-                throw new IllegalStateException(String.format("The snowflake node is full! The max node amount is %s.", WORKER_ID_MAX_VALUE));
+                throw new IllegalStateException(String.format("The sharding-jdbc node is full! The max node amount is %s.", WORKER_ID_MAX_VALUE));
             } catch (final Exception e) {
                 throw new IllegalStateException(e.getMessage(), e);
             } finally {

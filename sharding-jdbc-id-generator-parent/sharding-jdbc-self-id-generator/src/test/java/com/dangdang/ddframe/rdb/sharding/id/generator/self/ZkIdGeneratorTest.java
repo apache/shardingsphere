@@ -61,13 +61,13 @@ public class ZkIdGeneratorTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private static final String SNOWFLAKE_URL = "/snowflake";
+    private static final String SHARDING_JDBC_ROOT = "/sharding-jdbc";
 
-    private static final String SNOWFLAKE_NODE = "/node";
+    private static final String SHARDING_JDBC_NODE = "/node";
 
     private static String appName = "defaultapp";
 
-    private static String appPath = SNOWFLAKE_URL + "/" + appName;
+    private static String appPath = SHARDING_JDBC_ROOT + "/" + appName;
 
     private static CuratorFramework client;
 
@@ -180,7 +180,7 @@ public class ZkIdGeneratorTest {
         ENVIRONMENT_VARIABLES.set("SJDBC_ZK_ID_GENERATOR_ZK_NODES", "");
         ENVIRONMENT_VARIABLES.set("SJDBC_ZK_ID_GENERATOR_APP_NAME", "");
         ZkIdGenerator.initWorkerId();
-        assertThat("SnowflakeNode is not created!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L)), notNullValue());
+        assertThat("ShardingJdbcNode is not created!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L)), notNullValue());
         assertThat("WorkerId is not equal!", CommonSelfIdGenerator.getWorkerId(), equalTo(0L));
     }
 
@@ -191,7 +191,7 @@ public class ZkIdGeneratorTest {
         ENVIRONMENT_VARIABLES.set("SJDBC_ZK_ID_GENERATOR_ZK_NODES", connectString);
         ENVIRONMENT_VARIABLES.set("SJDBC_ZK_ID_GENERATOR_APP_NAME", appName);
         ZkIdGenerator.initWorkerId();
-        assertThat("SnowflakeNode is not created!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L)), notNullValue());
+        assertThat("ShardingJdbcNode is not created!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L)), notNullValue());
         assertThat("WorkerId is not equal!", CommonSelfIdGenerator.getWorkerId(), equalTo(0L));
     }
 
@@ -199,16 +199,16 @@ public class ZkIdGeneratorTest {
     @Test
     public void reRegisterTest() throws Exception {
         ZkIdGenerator.initWorkerId();
-        assertThat("SnowflakeNode is not created!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L)), notNullValue());
+        assertThat("ShardingJdbcNode is not created!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L)), notNullValue());
         assertThat("WorkerId is not equal!", CommonSelfIdGenerator.getWorkerId(), equalTo(0L));
-        deleteNode(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L));
+        deleteNode(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L));
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        assertThat("SnowflakeNode is not closed!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L)), equalTo(null));
-        assertThat("SnowflakeNode is not created!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(1L)), notNullValue());
+        assertThat("ShardingJdbcNode is not closed!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L)), equalTo(null));
+        assertThat("ShardingJdbcNode is not created!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(1L)), notNullValue());
         assertThat("WorkerId is not equal!", CommonSelfIdGenerator.getWorkerId(), equalTo(1L));
     }
 
@@ -216,10 +216,10 @@ public class ZkIdGeneratorTest {
     @Test
     public void whenFullTest() throws Exception {
         for (long i = 0L; i < 1024L; i++) {
-            createEphemeral(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(i));
+            createEphemeral(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(i));
         }
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("The snowflake node is full! The max node amount is 1024.");
+        exception.expectMessage("The sharding-jdbc node is full! The max node amount is 1024.");
         ZkIdGenerator.initWorkerId();
     }
 
@@ -229,7 +229,7 @@ public class ZkIdGeneratorTest {
         createPersistent(appPath);
         setAcl(appPath, "digest", "admin:admin123");
         ZkIdGenerator.initWorkerId();
-        assertThat("SnowflakeNode is not created!", checkExists(appPath + SNOWFLAKE_NODE + "/" + String.valueOf(0L)), notNullValue());
+        assertThat("ShardingJdbcNode is not created!", checkExists(appPath + SHARDING_JDBC_NODE + "/" + String.valueOf(0L)), notNullValue());
         assertThat("WorkerId is not equal!", CommonSelfIdGenerator.getWorkerId(), equalTo(0L));
     }
 
