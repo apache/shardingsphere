@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.visitor;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
@@ -51,8 +52,6 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
@@ -71,6 +70,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 
 public interface SQLASTVisitor {
@@ -206,14 +206,6 @@ public interface SQLASTVisitor {
     boolean visit(SQLDeleteStatement x);
     
     void endVisit(SQLDeleteStatement x);
-    
-    boolean visit(AbstractSQLInsertStatement x);
-    
-    void endVisit(AbstractSQLInsertStatement x);
-    
-    boolean visit(AbstractSQLInsertStatement.ValuesClause x);
-    
-    void endVisit(AbstractSQLInsertStatement.ValuesClause x);
     
     boolean visit(SQLUpdateSetItem x);
     

@@ -57,7 +57,6 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
@@ -764,44 +763,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         return false;
     }
 
-    public boolean visit(AbstractSQLInsertStatement x) {
-        print("INSERT INTO ");
-
-        x.getTableSource().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            println();
-            print("(");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (!x.getValuesList().isEmpty()) {
-            println();
-            print("VALUES");
-            println();
-            printlnAndAccept(x.getValuesList(), ", ");
-        } else {
-            if (x.getQuery() != null) {
-                println();
-                x.getQuery().setParent(x);
-                x.getQuery().accept(this);
-            }
-        }
-
-        return false;
-    }
-
     public boolean visit(SQLUpdateSetItem x) {
         x.getColumn().accept(this);
         print(" = ");
@@ -946,27 +907,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
     protected void printJoinType(JoinType joinType) {
         print(joinType.getName());
-    }
-
-    @Override
-    public boolean visit(ValuesClause x) {
-        print("(");
-        incrementIndent();
-        for (int i = 0, size = x.getValues().size(); i < size; ++i) {
-            if (i != 0) {
-                if (i % 5 == 0) {
-                    println();
-                }
-                print(", ");
-            }
-
-            SQLExpr expr = x.getValues().get(i);
-            expr.setParent(x);
-            expr.accept(this);
-        }
-        decrementIndent();
-        print(")");
-        return false;
     }
 
     @Override

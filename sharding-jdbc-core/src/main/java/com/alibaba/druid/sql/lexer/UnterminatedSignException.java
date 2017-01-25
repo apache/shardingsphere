@@ -9,7 +9,7 @@ public final class UnterminatedSignException extends RuntimeException {
     
     private static final long serialVersionUID = 8575890835166900925L;
     
-    private static String MESSAGE = "Illegal input, unterminated '%s'.";
+    private static final String MESSAGE = "Illegal input, unterminated '%s'.";
     
     public UnterminatedSignException(final char terminatedSign) {
         super(String.format(MESSAGE, terminatedSign));

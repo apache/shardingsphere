@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
@@ -20,7 +21,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
 
 public class SQLServerASTVisitorAdapter extends SQLASTVisitorAdapter implements SQLServerASTVisitor {
@@ -52,16 +52,6 @@ public class SQLServerASTVisitorAdapter extends SQLASTVisitorAdapter implements 
 
     @Override
     public void endVisit(SQLServerObjectReferenceExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLServerInsertStatement x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(SQLServerInsertStatement x) {
 
     }
 

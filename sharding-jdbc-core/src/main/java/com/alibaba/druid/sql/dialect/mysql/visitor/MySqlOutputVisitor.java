@@ -40,7 +40,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
@@ -236,7 +235,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
                 print(" COLLATE ");
                 print(x.getCollate());
             }
-        }else if (x.getCollate() != null) {
+        } else if (x.getCollate() != null) {
             print(" COLLATE ");
             print(x.getCollate());
         }
@@ -359,7 +358,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             return false;
         }
 
-        if (("CONVERT".equalsIgnoreCase(x.getMethodName()))||"CHAR".equalsIgnoreCase(x.getMethodName())) {
+        if (("CONVERT".equalsIgnoreCase(x.getMethodName())) || "CHAR".equalsIgnoreCase(x.getMethodName())) {
             if (x.getOwner() != null) {
                 x.getOwner().accept(this);
                 print(".");
@@ -429,87 +428,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         print(')');
 
         return false;
-    }
-
-    @Override
-    public void endVisit(MySqlInsertStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(final MySqlInsertStatement x) {
-        print("INSERT ");
-        for (String each : x.getIdentifiersBetweenInsertAndInto()) {
-            print(each);
-            print(" ");
-        }
-        print("INTO ");
-        x.getTableSource().accept(this);
-        visitPartition(x);
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            print(" (");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (x.getValuesList().size() != 0) {
-            println();
-            printValuesList(x);
-        }
-
-        if (x.getQuery() != null) {
-            println();
-            x.getQuery().accept(this);
-        }
-        for (String each : x.getAppendices()) {
-            print(" ");
-            print(each);
-        }
-        return false;
-    }
-    
-    private void visitPartition(final MySqlInsertStatement x) {
-        int count = 0;
-        for (String each : x.getPartitionNames()) {
-            if (0 == count) {
-                print(" PARTITION (");
-            }
-            print(each);
-            if (count == x.getPartitionNames().size() - 1) {
-                print(")");
-            } else {
-                print(",");
-            }
-            count++;
-        }
-    }
-
-    protected void printValuesList(MySqlInsertStatement x) {
-        print("VALUES ");
-        if (x.getValuesList().size() > 1) {
-            incrementIndent();
-        }
-        for (int i = 0, size = x.getValuesList().size(); i < size; ++i) {
-            if (i != 0) {
-                print(",");
-                println();
-            }
-            x.getValuesList().get(i).accept(this);
-        }
-        if (x.getValuesList().size() > 1) {
-            decrementIndent();
-        }
     }
 
     @Override

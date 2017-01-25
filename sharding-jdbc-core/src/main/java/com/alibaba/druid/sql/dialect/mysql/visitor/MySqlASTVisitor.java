@@ -26,7 +26,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUnionQuery;
@@ -49,10 +48,6 @@ public interface MySqlASTVisitor extends SQLASTVisitor {
     void endVisit(MySqlMatchAgainstExpr x);
     
     boolean visit(MySqlMatchAgainstExpr x);
-    
-    void endVisit(MySqlInsertStatement x);
-    
-    boolean visit(MySqlInsertStatement x);
     
     void endVisit(MySqlSelectGroupBy x);
     

@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
@@ -26,7 +25,6 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource.JoinType;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -78,7 +76,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
@@ -1137,59 +1134,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     @Override
     public void endVisit(OracleReturningClause x) {
 
-    }
-
-    @Override
-    public boolean visit(final OracleInsertStatement x) {
-        print("INSERT ");
-        for (SQLHint each : x.getHints()) {
-            print("/*+");
-            print(((SQLCommentHint) each).getText());
-            print("*/ ");
-        }
-        print("INTO ");
-        
-        x.getTableSource().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            println();
-            print("(");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (!x.getValuesList().isEmpty()) {
-            println();
-            print("VALUES");
-            println();
-            x.getValuesList().get(0).accept(this);
-        } else {
-            if (x.getQuery() != null) {
-                println();
-                x.getQuery().setParent(x);
-                x.getQuery().accept(this);
-            }
-        }
-        for (String each : x.getAppendices()) {
-            print(" ");
-            print(each);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleInsertStatement x) {
-        endVisit((AbstractSQLInsertStatement) x);
     }
 
     @Override

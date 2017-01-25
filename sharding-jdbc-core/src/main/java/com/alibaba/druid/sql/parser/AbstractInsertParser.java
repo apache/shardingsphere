@@ -5,7 +5,6 @@ import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableToken;
@@ -211,11 +210,11 @@ public abstract class AbstractInsertParser extends SQLParser {
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
-    private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {
-        SQLSelect select = exprParser.createSelectParser().select();
-        select.setParent(sqlInsertStatement);
-        sqlInsertStatement.setQuery(select);
-    }
+//    private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {
+//        SQLSelect select = exprParser.createSelectParser().select();
+//        select.setParent(sqlInsertStatement);
+//        sqlInsertStatement.setQuery(select);
+//    }
     
     protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
     }

@@ -31,36 +31,8 @@ import java.util.List;
 @Setter
 public abstract class AbstractSQLInsertStatement extends SQLObjectImpl implements SQLStatement {
     
-    private SQLExprTableSource  tableSource;
-    
-    private final List<SQLExpr> columns = new ArrayList<>();
-    
-    private final List<ValuesClause> valuesList = new ArrayList<>();
-    
-    private SQLSelect query;
-    
-    private final List<String> identifiersBetweenInsertAndInto = new ArrayList<>();
-    
-    private final List<String> identifiersBetweenIntoAndTable = new ArrayList<>();
-    
-    private final List<String> identifiersBetweenTableAndValues = new ArrayList<>();
-    
-    private final List<String> appendices = new ArrayList<>();
-    
-    public void setTableSource(final SQLExprTableSource tableSource) {
-        tableSource.setParent(this);
-        this.tableSource = tableSource;
-    }
-    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, tableSource);
-            acceptChild(visitor, columns);
-            acceptChild(visitor, valuesList);
-            acceptChild(visitor, query);
-        }
-        visitor.endVisit(this);
     }
     
     @Override
@@ -86,10 +58,6 @@ public abstract class AbstractSQLInsertStatement extends SQLObjectImpl implement
         
         @Override
         protected void acceptInternal(final SQLASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, values);
-            }
-            visitor.endVisit(this);
         }
         
         @Override

@@ -34,7 +34,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPointExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPolygonExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.FetchClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.ForClause;
@@ -239,56 +238,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             x.getForClause().accept(this);
         }
 
-        return false;
-    }
-
-    @Override
-    public void endVisit(PGInsertStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(PGInsertStatement x) {
-        if (x.getWith() != null) {
-            x.getWith().accept(this);
-            println();
-        }
-
-        print("INSERT INTO ");
-
-        x.getTableSource().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            println();
-            print("(");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (!x.getValuesList().isEmpty()) {
-            println();
-            print("VALUES ");
-            printlnAndAccept(x.getValuesList(), ", ");
-        } else {
-            if (x.getQuery() != null) {
-                println();
-                x.getQuery().accept(this);
-            }
-        }
-        for (String each : x.getAppendices()) {
-            print(" ");
-            print(each);
-        }
         return false;
     }
 

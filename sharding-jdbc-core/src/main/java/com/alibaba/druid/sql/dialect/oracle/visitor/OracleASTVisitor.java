@@ -52,7 +52,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleInsertStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
@@ -236,10 +235,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleReturningClause x);
 
     void endVisit(OracleReturningClause x);
-
-    boolean visit(OracleInsertStatement x);
-
-    void endVisit(OracleInsertStatement x);
 
     boolean visit(OracleSelectQueryBlock x);
 

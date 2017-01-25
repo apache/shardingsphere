@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.visitor;
 
 import com.alibaba.druid.sql.ast.SQLCommentHint;
@@ -51,9 +52,6 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
@@ -72,6 +70,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 
 public class SQLASTVisitorAdapter implements SQLASTVisitor {
@@ -346,15 +345,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     }
     
     @Override
-    public boolean visit(final AbstractSQLInsertStatement x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final AbstractSQLInsertStatement x) {
-    }
-    
-    @Override
     public boolean visit(final SQLUpdateSetItem x) {
         return true;
     }
@@ -440,16 +430,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     @Override
     public boolean visit(final SQLJoinTableSource x) {
         return true;
-    }
-
-    @Override
-    public boolean visit(final ValuesClause x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(final ValuesClause x) {
-
     }
 
     @Override

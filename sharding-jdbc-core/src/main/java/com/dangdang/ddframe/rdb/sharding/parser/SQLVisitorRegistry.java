@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLInsertVisitor;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLSelectVisitor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,7 +41,6 @@ public final class SQLVisitorRegistry {
     
     static {
         registerSelectVistor();
-        registerInsertVistor();
     }
     
     private static void registerSelectVistor() {
@@ -55,16 +53,6 @@ public final class SQLVisitorRegistry {
         SELECT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLSelectVisitor.class);
     }
     
-    private static void registerInsertVistor() {
-        INSERT_REGISTRY.put(DatabaseType.H2, MySQLInsertVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.MySQL, MySQLInsertVisitor.class);
-        // TODO 其他数据库先使用MySQL, 只能使用标准SQL
-        INSERT_REGISTRY.put(DatabaseType.Oracle, MySQLInsertVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.SQLServer, MySQLInsertVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.DB2, MySQLInsertVisitor.class);
-        INSERT_REGISTRY.put(DatabaseType.PostgreSQL, MySQLInsertVisitor.class);
-    }
-    
     /**
      * 获取SELECT访问器.
      * 
@@ -73,16 +61,6 @@ public final class SQLVisitorRegistry {
      */
     public static Class<? extends SQLASTOutputVisitor> getSelectVistor(final DatabaseType databaseType) {
         return getVistor(databaseType, SELECT_REGISTRY);
-    }
-    
-    /**
-     * 获取INSERT访问器.
-     * 
-     * @param databaseType 数据库类型
-     * @return INSERT访问器
-     */
-    public static Class<? extends SQLASTOutputVisitor> getInsertVistor(final DatabaseType databaseType) {
-        return getVistor(databaseType, INSERT_REGISTRY);
     }
     
     private static Class<? extends SQLASTOutputVisitor> getVistor(final DatabaseType databaseType, final Map<DatabaseType, Class<? extends SQLASTOutputVisitor>> registry) {

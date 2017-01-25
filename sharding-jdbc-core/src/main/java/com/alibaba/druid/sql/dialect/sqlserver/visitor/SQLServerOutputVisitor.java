@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
@@ -22,7 +23,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.stmt.SQLServerInsertStatement;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLServerASTVisitor {
@@ -84,24 +84,10 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     @Override
     public boolean visit(SQLServerTop x) {
         print("TOP ");
-
-        boolean paren = false;
-
-        if (x.getParent() instanceof SQLServerInsertStatement) {
-            paren = true;
-            print("(");
-        }
-
         x.getExpr().accept(this);
-
-        if (paren) {
-            print(")");
-        }
-
         if (x.isPercent()) {
             print(" PERCENT");
         }
-
         return false;
     }
 
@@ -118,69 +104,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
 
     @Override
     public void endVisit(SQLServerObjectReferenceExpr x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLServerInsertStatement x) {
-        print("INSERT ");
-        for (String each : x.getIdentifiersBetweenInsertAndInto()) {
-            print(each);
-            print(' ');
-        }
-        print("INTO ");
-        for (String each : x.getIdentifiersBetweenIntoAndTable()) {
-            print(each);
-            print(' ');
-        }
-        x.getTableSource().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            incrementIndent();
-            println();
-            print("(");
-            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                if (i != 0) {
-                    if (i % 5 == 0) {
-                        println();
-                    }
-                    print(", ");
-                }
-
-                x.getColumns().get(i).accept(this);
-            }
-            print(")");
-            decrementIndent();
-        }
-
-        if (x.getValuesList().size() != 0) {
-            println();
-            print("VALUES");
-            println();
-            for (int i = 0, size = x.getValuesList().size(); i < size; ++i) {
-                if (i != 0) {
-                    print(",");
-                    println();
-                }
-                x.getValuesList().get(i).accept(this);
-            }
-        }
-
-        if (x.getQuery() != null) {
-            println();
-            x.getQuery().accept(this);
-        }
-        for (String each : x.getAppendices()) {
-            print(' ');
-            print(each);
-            
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerInsertStatement x) {
-
     }
 
     public boolean visit(SQLExprTableSource x) {
