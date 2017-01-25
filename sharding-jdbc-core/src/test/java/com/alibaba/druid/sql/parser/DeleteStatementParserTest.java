@@ -32,30 +32,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
         SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertThat(deleteStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = deleteStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
-        Condition condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field1"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.EQUAL));
-        assertThat(condition.getValues().size(), is(1));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
-        condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field2"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.IN));
-        assertThat(condition.getValues().size(), is(2));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertThat(condition.getValues().get(1), is((Comparable) 3));
-        condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field3"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.BETWEEN));
-        assertThat(condition.getValues().size(), is(2));
-        assertThat(condition.getValues().get(0), is((Comparable) 5));
-        assertThat(condition.getValues().get(1), is((Comparable) 20));
-        assertFalse(conditions.hasNext());
+        assertDeleteStatement(deleteStatement);
         assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
@@ -65,9 +42,15 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10),
                 "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?");
         SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertThat(deleteStatement.getSqlContext().getTable().getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = deleteStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
+        assertDeleteStatement(deleteStatement);
+        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is(
+                "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
+    }
+    
+    private void assertDeleteStatement(final SQLDeleteStatement statement) {
+        assertThat(statement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
+        assertThat(statement.getSqlContext().getTable().getAlias().get(), is("xxx"));
+        Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -89,8 +72,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().get(0), is((Comparable) 5));
         assertThat(condition.getValues().get(1), is((Comparable) 20));
         assertFalse(conditions.hasNext());
-        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is(
-                "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
     @Test(expected = UnsupportedOperationException.class)

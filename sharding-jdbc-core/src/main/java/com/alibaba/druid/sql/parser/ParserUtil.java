@@ -10,7 +10,7 @@ import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.context.SQLToken;
+import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -59,7 +59,7 @@ public class ParserUtil {
         return Optional.absent();
     }
     
-    private ParseContext getParseContext() {
+    public ParseContext getParseContext() {
         ParseContext result = new ParseContext(1);
         result.setShardingRule(shardingRule);
         SQLExprTableSource tableSource = new SQLExprTableSource();
@@ -133,7 +133,7 @@ public class ParserUtil {
         getSqlExprWithVariant();
     }
     
-    private SQLExpr getSqlExprWithVariant() {
+    public SQLExpr getSqlExprWithVariant() {
         SQLExpr result = parseSQLExpr();
         if (result instanceof SQLVariantRefExpr) {
             ((SQLVariantRefExpr) result).setIndex(++parametersIndex);
@@ -147,7 +147,7 @@ public class ParserUtil {
         String literals = exprParser.getLexer().getLiterals();
         if (exprParser.getLexer().equalToken(Token.IDENTIFIER)) {
             if (table.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new SQLToken(exprParser.getLexer().getCurrentPosition() - literals.length(), literals));
+                sqlContext.getSqlTokens().add(new TableToken(exprParser.getLexer().getCurrentPosition() - literals.length(), literals, table.getName()));
             }
             exprParser.getLexer().nextToken();
             if (exprParser.getLexer().equalToken(Token.DOT)) {

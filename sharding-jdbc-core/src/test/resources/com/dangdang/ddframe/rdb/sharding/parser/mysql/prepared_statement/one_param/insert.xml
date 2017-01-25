@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertInsertWithParameter" sql="insert into `order`('order_id','state') values(?,'RUNNING')" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') VALUES (?, 'RUNNING')">
+    <assert id="assertInsertWithParameter" sql="insert into `order`('order_id','state') values(?,'RUNNING')" expected-sql="insert into [Token(order)]('order_id','state') values(?,'RUNNING')">
         <tables>
             <table name="order" />
         </tables>
@@ -16,7 +16,7 @@
             </condition-context>
         </condition-contexts>
     </assert>
-    <assert id="assertInsertWithParameterAndAutoincrementColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="INSERT INTO [Token(order)] ('state', order_id) VALUES (?, ?)">
+    <assert id="assertInsertWithParameterAndAutoincrementColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="insert into [Token(order)]('state', order_id) values(?, ?)">
         <tables>
             <table name="order" />
         </tables>
@@ -33,7 +33,7 @@
             </condition-context>
         </condition-contexts>
     </assert>
-    <assert id="assertInsertWithParameterAndAutoincrementColumn" sql="insert into `payment`('state') values(?)" expected-sql="INSERT INTO [Token(payment)] ('state', order_id, pay_no) VALUES (?, ?, ?)">
+    <assert id="assertInsertWithParameterAndAutoincrementColumn" sql="insert into `payment`('state') values(?)" expected-sql="insert into [Token(payment)]('state', order_id, pay_no) values(?, ?, ?)">
         <tables>
             <table name="payment" />
         </tables>

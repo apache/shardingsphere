@@ -40,7 +40,7 @@ public class SQLServerExprParser extends SQLExprParser {
         getLexer().nextToken();
     }
     
-    public SQLServerExprParser(final Lexer lexer){
+    public SQLServerExprParser(final Lexer lexer) {
         super(lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
     }
     
@@ -142,7 +142,7 @@ public class SQLServerExprParser extends SQLExprParser {
     }
 
     protected SQLServerOutput parserOutput() {
-        if (getLexer().identifierEquals("OUTPUT")) {
+        if (getLexer().equalToken(Token.OUTPUT)) {
             getLexer().nextToken();
             SQLServerOutput output = new SQLServerOutput();
 

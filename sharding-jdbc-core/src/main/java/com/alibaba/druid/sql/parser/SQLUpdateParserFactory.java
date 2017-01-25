@@ -19,6 +19,8 @@ public class SQLUpdateParserFactory {
     /**
      * 创建Update语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
+     * @param parameters 参数列表
      * @param exprParser 表达式
      * @param dbType 数据库类型
      * @return Update语句解析器

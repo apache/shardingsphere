@@ -3,7 +3,6 @@ package com.alibaba.druid.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -47,20 +46,25 @@ public abstract class AbstractSQLContext implements SQLContext {
             return result;
         }
         int count = 0;
-        SQLToken previousToken = null;
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
                 append(result, originalSQL.substring(0, each.getBeginPosition()));
             }
-            if (null != previousToken) {
-                append(result, originalSQL.substring(previousToken.getBeginPosition() + previousToken.getOriginalLiterals().length(), each.getBeginPosition()));
-            }
-            result.appendToken(SQLUtil.getExactlyValue(each.getOriginalLiterals()));
-            if (sqlTokens.size() - 1 == count) {
-                append(result, originalSQL.substring(each.getBeginPosition() + each.getOriginalLiterals().length(), originalSQL.length()));
+            if (each instanceof TableToken) {
+                result.appendToken(((TableToken) each).getTableName());
+                int beginPosition = each.getBeginPosition() + ((TableToken) each).getOriginalLiterals().length();
+                int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+                append(result, originalSQL.substring(beginPosition, endPosition));
+            } else if (each instanceof ItemsToken) {
+                for (String item : ((ItemsToken) each).getItems()) {
+                    append(result, ", ");
+                    append(result, item);
+                }
+                int beginPosition = each.getBeginPosition();
+                int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+                append(result, originalSQL.substring(beginPosition, endPosition));
             }
             count++;
-            previousToken = each;
         }
         return result;
     }

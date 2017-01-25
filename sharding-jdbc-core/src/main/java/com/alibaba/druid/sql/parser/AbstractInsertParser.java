@@ -1,13 +1,29 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
+import com.alibaba.druid.sql.context.InsertSQLContext;
+import com.alibaba.druid.sql.context.ItemsToken;
+import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Optional;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,14 +32,20 @@ import java.util.TreeSet;
  *
  * @author zhangliang
  */
+@Getter
 public abstract class AbstractInsertParser extends SQLParser {
     
-    @Getter
     private final SQLExprParser exprParser;
     
-    public AbstractInsertParser(final SQLExprParser exprParser) {
+    private final ShardingRule shardingRule;
+    
+    private final List<Object> parameters;
+    
+    public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer(), exprParser.getDbType());
         this.exprParser = exprParser;
+        this.shardingRule = shardingRule;
+        this.parameters = parameters;
     }
     
     /**
@@ -31,40 +53,111 @@ public abstract class AbstractInsertParser extends SQLParser {
      * 
      * @return 解析结果
      */
-    public final SQLStatement parse() {
+    public final SQLInsertStatement parse() {
         getLexer().nextToken();
-        AbstractSQLInsertStatement result = createSQLInsertStatement();
-        if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
-            throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
-        }
+        InsertSQLContext result = new InsertSQLContext(getLexer().getInput());
         parseInto(result);
-        parseColumns(result);
+        Collection<Condition.Column> columns = parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            parseValues(result);
+            parseValues(columns, result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            parseSelect(result);
+            // TODO 暂时不做
+            //parseSelect(result);
         } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
             parseCustomizedInsert(result);
         }
-        parseAppendices(result);
-        return result;
-    }
-    
-    protected abstract AbstractSQLInsertStatement createSQLInsertStatement();
-    
-    protected void parseCustomizedInsert(final AbstractSQLInsertStatement sqlInsertStatement) {
+        return new SQLInsertStatement(result);
     }
     
     protected Set<String> getUnsupportedIdentifiers() {
         return Collections.emptySet();
     }
     
+    private void parseInto(final InsertSQLContext sqlContext) {
+        exprParser.parseHints();
+        if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
+            throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
+        }
+        parseBetweenInsertAndInfo();
+        accept(Token.INTO);
+        parseBetweenIntoAndTable();
+        parseTable(sqlContext);
+        parseBetweenTableAndValues();
+    }
+    
+    private void parseBetweenInsertAndInfo() {
+        while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
+            getLexer().nextToken();
+        }
+    }
+    
+    private void parseBetweenIntoAndTable() {
+        while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
+            getLexer().nextToken();
+        }
+    }
+    
     protected Set<String> getIdentifiersBetweenIntoAndTable() {
         return Collections.emptySet();
     }
     
+    private Table parseTable(final InsertSQLContext insertSQLContext) {
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
+        String tableName = getLexer().getLiterals();
+        getLexer().nextToken();
+        Table result = new Table(SQLUtil.getExactlyValue(tableName), Optional.<String>absent());
+        insertSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableName, result.getName()));
+        insertSQLContext.setTable(result);
+        return result;
+    }
+    
+    private void parseBetweenTableAndValues() {
+        while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.LEFT_PAREN)) {
+                do {
+                    getLexer().nextToken();
+                }
+                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
+                accept(Token.RIGHT_PAREN);
+            }
+        }
+    }
+    
     protected Set<String> getIdentifiersBetweenTableAndValues() {
         return Collections.emptySet();
+    }
+    
+    protected Set<String> getCustomizedInsertIdentifiers() {
+        return Collections.emptySet();
+    }
+    
+    private Collection<Condition.Column> parseColumns(final InsertSQLContext sqlContext) {
+        Collection<Condition.Column> result = new LinkedList<>();
+        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTable(), sqlContext, 0);
+        Collection<String> autoIncrementColumns = parserUtil.getParseContext().getShardingRule().getAutoIncrementColumns(sqlContext.getTable().getName());
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            do {
+                getLexer().nextToken();
+                String columnName = SQLUtil.getExactlyValue(getLexer().getLiterals());
+                if (autoIncrementColumns.contains(columnName)) {
+                    autoIncrementColumns.remove(columnName);
+                }
+                result.add(new Condition.Column(columnName, sqlContext.getTable().getName()));
+                getLexer().nextToken();
+            }
+            while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
+            ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
+            for (String each : autoIncrementColumns) {
+                itemsToken.getItems().add(each);
+                result.add(new Condition.Column(each, sqlContext.getTable().getName(), true));
+            }
+            if (!itemsToken.getItems().isEmpty()) {
+                sqlContext.getSqlTokens().add(itemsToken);
+            }
+            getLexer().nextToken();
+        }
+        return result;
     }
     
     protected Set<String> getValuesIdentifiers() {
@@ -73,81 +166,49 @@ public abstract class AbstractInsertParser extends SQLParser {
         return result;
     }
     
-    protected Set<String> getCustomizedInsertIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getAppendixIdentifiers() {
-        return Collections.emptySet();
-    }
-    
-    private void parseInto(final AbstractSQLInsertStatement sqlInsertStatement) {
-        parseBetweenInsertAndInfo(sqlInsertStatement);
-        accept(Token.INTO);
-        parseBetweenIntoAndTable(sqlInsertStatement);
-        sqlInsertStatement.setTableSource(new SQLExprTableSource(exprParser.name()));
-        parseBetweenTableAndValues(sqlInsertStatement);
-        parseAlias(sqlInsertStatement);
-    }
-    
-    protected void parseBetweenInsertAndInfo(final AbstractSQLInsertStatement sqlInsertStatement) {
-        while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
-            sqlInsertStatement.getIdentifiersBetweenInsertAndInto().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-    }
-    
-    protected void parseBetweenIntoAndTable(final AbstractSQLInsertStatement sqlInsertStatement) {
-        while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.getIdentifiersBetweenIntoAndTable().add(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-    }
-    
-    protected void parseBetweenTableAndValues(final AbstractSQLInsertStatement sqlInsertStatement) {
-        while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                do {
-                    sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-                    getLexer().nextToken();
-                }
-                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
-                sqlInsertStatement.getIdentifiersBetweenTableAndValues().add(getLexer().getLiterals());
-                accept(Token.RIGHT_PAREN);
-            }
-        }
-    }
-    
-    private void parseAlias(final AbstractSQLInsertStatement sqlInsertStatement) {
-        if (getLexer().equalToken(Token.LITERAL_ALIAS)) {
-            sqlInsertStatement.getTableSource().setAlias(as());
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER) && !getValuesIdentifiers().contains(getLexer().getLiterals())) {
-            sqlInsertStatement.getTableSource().setAlias(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-    }
-    
-    private void parseColumns(final AbstractSQLInsertStatement sqlInsertStatement) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            sqlInsertStatement.getColumns().addAll(exprParser.exprList(sqlInsertStatement));
-            accept(Token.RIGHT_PAREN);
-        }
-    }
-    
-    private void parseValues(final AbstractSQLInsertStatement sqlInsertStatement) {
+    private void parseValues(final Collection<Condition.Column> columns, final InsertSQLContext sqlContext) {
+        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTable(), sqlContext, 0);
+        ParseContext parseContext = parserUtil.getParseContext();
+        boolean parsed = false;
         do {
+            // TODO support multiple insert
+            if (parsed) {
+                throw new UnsupportedOperationException("Cannot support multiple insert");
+            }
             getLexer().nextToken();
             accept(Token.LEFT_PAREN);
-            AbstractSQLInsertStatement.ValuesClause values = new AbstractSQLInsertStatement.ValuesClause();
-            values.getValues().addAll(getExprParser().exprList(values));
-            sqlInsertStatement.getValuesList().add(values);
+            List<SQLExpr> sqlExprs = getExprParser().exprList(new AbstractSQLInsertStatement.ValuesClause());
+            ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
+            int count = 0;
+            for (Condition.Column each : columns) {
+                if (each.isAutoIncrement()) {
+                    Number autoIncrementedValue = (Number) parseContext.getShardingRule().findTableRule(sqlContext.getTable().getName()).generateId(each.getColumnName());
+                    if (parameters.isEmpty()) {
+                        itemsToken.getItems().add(autoIncrementedValue.toString());
+                        sqlExprs.add(new SQLNumberExpr(autoIncrementedValue));
+                    } else {
+                        itemsToken.getItems().add("?");
+                        parameters.add(autoIncrementedValue);
+                        SQLVariantRefExpr sqlVariantRefExpr = new SQLVariantRefExpr("?");
+                        sqlVariantRefExpr.setIndex(parameters.size());
+                        sqlVariantRefExpr.getAttributes().put(SQLEvalVisitor.EVAL_VALUE, autoIncrementedValue);
+                        sqlVariantRefExpr.getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parameters.size() - 1);
+                        sqlExprs.add(sqlVariantRefExpr);
+                    }
+                    sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
+                    sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
+                }
+                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), exprParser.getDbType(), parameters);
+                count++;
+            }
+            if (!itemsToken.getItems().isEmpty()) {
+                sqlContext.getSqlTokens().add(itemsToken);
+            }
             accept(Token.RIGHT_PAREN);
+            parsed = true;
         }
         while (getLexer().equalToken(Token.COMMA));
+        sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
     private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {
@@ -156,12 +217,6 @@ public abstract class AbstractInsertParser extends SQLParser {
         sqlInsertStatement.setQuery(select);
     }
     
-    private void parseAppendices(final AbstractSQLInsertStatement sqlInsertStatement) {
-        if (getAppendixIdentifiers().contains(getLexer().getLiterals())) {
-            while (!getLexer().equalToken(Token.EOF)) {
-                sqlInsertStatement.getAppendices().add(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
+    protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
     }
 }

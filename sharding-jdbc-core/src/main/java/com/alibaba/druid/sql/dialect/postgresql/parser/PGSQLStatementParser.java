@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGInsertStatement;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectStatement;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -100,7 +99,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
             if (getLexer().equalToken(Token.SELECT)) {
                 query = parseSelect();
             } else if (getLexer().equalToken(Token.INSERT)) {
-                query = new PostgreSQLInsertParser(getExprParser()).parse();
+                query = new PostgreSQLInsertParser(getShardingRule(), getParameters(), getExprParser()).parse();
             } else if (getLexer().equalToken(Token.UPDATE)) {
                 query = SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.POSTGRESQL).parse();
             } else if (getLexer().equalToken(Token.DELETE)) {
@@ -127,9 +126,11 @@ public class PGSQLStatementParser extends SQLStatementParser {
     public SQLStatement parseWith() {
         PGWithClause with = parseWithClause();
         if (getLexer().equalToken(Token.INSERT)) {
-            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(getExprParser()).parse();
-            stmt.setWith(with);
-            return stmt;
+//            PGInsertStatement stmt = (PGInsertStatement) new PostgreSQLInsertParser(getExprParser()).parse();
+//            stmt.setWith(with);
+//            return stmt;
+            // TODO call AbstractDeleteParser, need sharding rule
+            return null;
         }
 
         if (getLexer().equalToken(Token.SELECT)) {

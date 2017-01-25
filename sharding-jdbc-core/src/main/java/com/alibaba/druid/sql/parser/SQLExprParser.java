@@ -678,8 +678,8 @@ public class SQLExprParser extends SQLParser {
         }
     }
     
-    public final Collection<SQLExpr> exprList(final SQLObject parent) {
-        Collection<SQLExpr> result = new LinkedList<>();
+    public final List<SQLExpr> exprList(final SQLObject parent) {
+        List<SQLExpr> result = new LinkedList<>();
         if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET) || getLexer().equalToken(Token.EOF)) {
             return result;
         }

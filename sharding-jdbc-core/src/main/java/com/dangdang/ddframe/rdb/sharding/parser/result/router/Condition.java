@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,15 +51,21 @@ public final class Condition {
      * @author gaohongtao
      * @author zhangliang
      */
-    @RequiredArgsConstructor
+    @AllArgsConstructor
     @Getter
-    @EqualsAndHashCode
-    @ToString
+    @EqualsAndHashCode(exclude = "autoIncrement")
+    @ToString(exclude = "autoIncrement")
     public static final class Column {
         
         private final String columnName;
         
         private final String tableName;
+    
+        private final boolean autoIncrement;
+        
+        public Column(final String columnName, final String tableName) {
+            this(columnName, tableName, false);
+        }
     }
     
     /**

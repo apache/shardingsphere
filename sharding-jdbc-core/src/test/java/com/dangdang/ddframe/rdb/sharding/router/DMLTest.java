@@ -33,10 +33,10 @@ public final class DMLTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertInsert() throws SQLParserException {
-        assertSingleTarget("insert into `order` (order_id, name) value (1,'test')", "ds_1", "INSERT INTO order_1 (order_id, name) VALUES (1, 'test')");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "insert into `order` value (1,'test')", "ds_1", "INSERT INTO order_1 VALUES (1, 'test')");
-        assertSingleTarget("insert into `order` (order_id, name) value (?,?)", Arrays.<Object>asList(2, "test"), "ds_0", "INSERT INTO order_0 (order_id, name) VALUES (?, ?)");
-        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "insert into `order` value (?,?)", Arrays.<Object>asList(2, "test"), "ds_0", "INSERT INTO order_0 VALUES (?, ?)");
+        assertSingleTarget("insert into `order` (order_id, name) value (1,'test')", "ds_1", "insert into order_1 (order_id, name) value (1,'test')");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "insert into `order` value (1,'test')", "ds_1", "insert into order_1 value (1,'test')");
+        assertSingleTarget("insert into `order` (order_id, name) value (?,?)", Arrays.<Object>asList(2, "test"), "ds_0", "insert into order_0 (order_id, name) value (?,?)");
+        assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 2)), "insert into `order` value (?,?)", Arrays.<Object>asList(2, "test"), "ds_0", "insert into order_0 value (?,?)");
     }
     
     @Test

@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.dialect.db2.parser.DB2StatementParser;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
@@ -61,9 +61,6 @@ public final class SQLParserFactory {
     public static SQLParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final ShardingRule shardingRule) throws SQLParserException {
         log.debug("Logic SQL: {}, {}", sql, parameters);
         SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql, shardingRule, parameters).parseStatement();
-        if (sqlStatement instanceof SQLUpdateStatement) {
-            return new SQLParseEngine(sqlStatement, parameters, null, shardingRule);
-        }
         log.trace("Get {} SQL Statement", sqlStatement.getClass().getName());
         return new SQLParseEngine(sqlStatement, parameters, getSQLVisitor(databaseType, sqlStatement), shardingRule);
     }
@@ -88,8 +85,8 @@ public final class SQLParserFactory {
         if (sqlStatement instanceof SQLSelectStatement) {
             return VisitorLogProxy.enhance(SQLVisitorRegistry.getSelectVistor(databaseType));
         }
-        if (sqlStatement instanceof AbstractSQLInsertStatement) {
-            return VisitorLogProxy.enhance(SQLVisitorRegistry.getInsertVistor(databaseType));
+        if (sqlStatement instanceof SQLInsertStatement) {
+            return null;
         }
         if (sqlStatement instanceof SQLUpdateStatement) {
             return null;

@@ -104,7 +104,8 @@ public enum Token {
     LIKE("LIKE", true, false, false, false, false, false), 
     ESCAPE("ESCAPE", true, false, false, false, false, false), 
     BETWEEN("BETWEEN", true, false, false, false, false, false), 
-    VALUES("VALUES", true, false, false, false, false, false), 
+    VALUES("VALUES", true, false, false, false, false, false),
+    VALUE("VALUE", false, true, false, false, false, false),
     INTERVAL("INTERVAL", true, false, false, false, false, false), 
     LOCK("LOCK", true, false, false, false, false, false), 
     SOME("SOME", true, false, false, false, false, false), 
@@ -224,6 +225,7 @@ public enum Token {
     QUICK("QUICK", false, true, false, false, false, false),
     LOW_PRIORITY("LOW_PRIORITY", false, true, false, false, false, false),
     HIGH_PRIORITY("HIGH_PRIORITY", false, true, false, false, false, false),
+    OUTPUT("OUTPUT", false, false, false, false, true, false),
     
     EOF, 
     ERROR,

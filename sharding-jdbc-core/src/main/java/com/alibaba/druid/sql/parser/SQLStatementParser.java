@@ -64,7 +64,7 @@ public class SQLStatementParser extends SQLParser {
             return parseSelect();
         }
         if (getLexer().equalToken(Token.INSERT)) {
-            return SQLInsertParserFactory.newInstance(exprParser, getDbType()).parse();
+            return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();

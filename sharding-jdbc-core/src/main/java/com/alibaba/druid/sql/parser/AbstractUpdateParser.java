@@ -8,7 +8,7 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.sql.context.SQLToken;
+import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -71,7 +71,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
             throw new UnsupportedOperationException("Cannot support update Multiple-Table.");
         }
         Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
-        updateSQLContext.getSqlTokens().add(new SQLToken(beginPosition, tableSource.toString()));
+        updateSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableSource.toString(), result.getName()));
         updateSQLContext.setTable(result);
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
@@ -100,7 +100,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
             int beginPosition = getLexer().getCurrentPosition();
             SQLExpr sqlExpr = exprParser.primary();
             if (sqlExpr instanceof SQLPropertyExpr && sqlContext.getTable().getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new SQLToken(beginPosition - literals.length(), literals));
+                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, sqlContext.getTable().getName()));
             }
         }
         if (getLexer().equalToken(Token.COLON_EQ)) {

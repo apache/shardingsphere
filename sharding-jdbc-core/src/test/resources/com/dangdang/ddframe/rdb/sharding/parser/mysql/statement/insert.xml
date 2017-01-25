@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertInsert" sql="insert into `order`('order_id','state') values(1,'RUNNING')" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') VALUES (1, 'RUNNING')">
+    <assert id="assertInsert" sql="insert into `order`('order_id','state') values (1,'RUNNING')" expected-sql="insert into [Token(order)]('order_id','state') values (1,'RUNNING')">
         <tables>
             <table name="order" />
         </tables>
@@ -15,8 +15,8 @@
             </condition-context>
         </condition-contexts>
     </assert>
-
-    <assert id="assertInsertWithAutoIncrementColumn" sql="insert into `order`('state') values('RUNNING')" expected-sql="INSERT INTO [Token(order)] ('state', order_id) VALUES ('RUNNING', 1)">
+    
+    <assert id="assertInsertWithAutoIncrementColumn" sql="insert into `order`('state') values('RUNNING')" expected-sql="insert into [Token(order)]('state', order_id) values('RUNNING', 1)">
         <tables>
             <table name="order" />
         </tables>
@@ -31,8 +31,8 @@
             </condition-context>
         </condition-contexts>
     </assert>
-
-    <assert id="assertInsertWithoutAutoIncrementColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')" expected-sql="INSERT INTO [Token(user)] ('user_id', 'state') VALUES (1, 'RUNNING')">
+    
+    <assert id="assertInsertWithoutAutoIncrementColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')" expected-sql="insert into [Token(user)]('user_id', 'state') values(1, 'RUNNING')">
         <tables>
             <table name="user" />
         </tables>
@@ -47,8 +47,8 @@
             </condition-context>
         </condition-contexts>
     </assert>
-
-    <assert id="assertInsertWithMultiAutoIncrementColumn" sql="insert into `payment`('state') values('RUNNING')" expected-sql="INSERT INTO [Token(payment)] ('state', id, order_id) VALUES ('RUNNING', 1, 1)">
+    
+    <assert id="assertInsertWithMultiAutoIncrementColumn" sql="insert into `payment`('state') values('RUNNING')" expected-sql="insert into [Token(payment)]('state', id, order_id) values('RUNNING', 1, 1)">
         <tables>
             <table name="payment" />
         </tables>
@@ -64,7 +64,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertNull" sql="insert into `order`('order_id','state') values(NULL,'')" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') VALUES (NULL, '')">
+    <assert id="assertInsertNull" sql="insert into `order`('order_id','state') values(NULL,'')" expected-sql="insert into [Token(order)]('order_id','state') values(NULL,'')">
         <tables>
             <table name="order" />
         </tables>
@@ -80,30 +80,12 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertWithAlias" sql="INSERT INTO `order` o ('order_id', 'state') VALUES (1, 'RUNNING')" expected-sql="INSERT INTO [Token(order)] o ('order_id', 'state') VALUES (1, 'RUNNING')">
+    <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )">
         <tables>
-            <table name="order" alias="o" />
-        </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                </condition>
-                <condition column-name="state" table-name="order" operator="EQUAL">
-                    <value value="RUNNING" type="java.lang.String" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
-    </assert>
-
-    <assert id="assertInsertBatch1" sql="INSERT INTO `order` o ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] o ('order_id', 'state') SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual">
-        <tables>
-            <table name="order" alias="o" />
+            <table name="order" />
         </tables>
         <condition-contexts>
            <condition-context/>
         </condition-contexts>
     </assert>
-    
-    
 </asserts>

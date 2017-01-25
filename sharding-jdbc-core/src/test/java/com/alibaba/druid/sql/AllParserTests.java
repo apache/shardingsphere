@@ -17,13 +17,10 @@
 
 package com.alibaba.druid.sql;
 
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlInsertStatementParserTest;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleInsertStatementParserTest;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PGSQLInsertStatementParserTest;
-import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerInsertStatementParserTest;
 import com.alibaba.druid.sql.lexer.LexerTest;
 import com.alibaba.druid.sql.parser.DeleteStatementParserTest;
+import com.alibaba.druid.sql.parser.InsertStatementParserTest;
 import com.alibaba.druid.sql.parser.UpdateStatementParserTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -33,12 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         LexerTest.class, 
         MySqlLexerTest.class,
+        InsertStatementParserTest.class, 
         UpdateStatementParserTest.class,
-        DeleteStatementParserTest.class,
-        MySqlInsertStatementParserTest.class,
-        PGSQLInsertStatementParserTest.class,
-        OracleInsertStatementParserTest.class,
-        SQLServerInsertStatementParserTest.class
+        DeleteStatementParserTest.class
     })
 public class AllParserTests {
 }

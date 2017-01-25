@@ -51,7 +51,7 @@ public class OracleStatementParser extends SQLStatementParser {
             return new SQLSelectStatement(new OracleSelectParser(getExprParser()).select(), JdbcConstants.ORACLE);
         }
         if (getLexer().equalToken(Token.INSERT)) {
-            return new OracleInsertParser(getExprParser()).parse();
+            return new OracleInsertParser(getShardingRule(), getParameters(), getExprParser()).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(getShardingRule(), getParameters(), getExprParser(), JdbcConstants.ORACLE).parse();

@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -33,12 +34,13 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@Setter
 @ToString
 public final class SQLParsedResult {
     
     private final RouteContext routeContext = new RouteContext();
     
-    private final GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
+    private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
     
     private final List<ConditionContext> conditionContexts = new ArrayList<>();
     

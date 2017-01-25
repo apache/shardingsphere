@@ -19,9 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -61,7 +62,7 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        if (sqlStatement instanceof SQLUpdateStatement || sqlStatement instanceof SQLDeleteStatement) {
+        if (sqlStatement instanceof SQLInsertStatement || sqlStatement instanceof SQLUpdateStatement || sqlStatement instanceof SQLDeleteStatement) {
             return parseNew();
         }
         return parseOriginal();
@@ -78,10 +79,16 @@ public final class SQLParseEngine {
         result.getRouteContext().getTables().add(sqlContext.getTable());
         result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         result.getRouteContext().setSqlStatementType(getType());
+        if (sqlContext instanceof InsertSQLContext) {
+            result.setGeneratedKeyContext(((InsertSQLContext) sqlContext).getGeneratedKeyContext());
+        }
         return result;
     }
     
     private SQLContext getSQLContext() {
+        if (sqlStatement instanceof SQLInsertStatement) {
+            return ((SQLInsertStatement) sqlStatement).getSqlContext();
+        }
         if (sqlStatement instanceof SQLUpdateStatement) {
             return ((SQLUpdateStatement) sqlStatement).getSqlContext();
         }
@@ -113,7 +120,7 @@ public final class SQLParseEngine {
         if (sqlStatement instanceof SQLSelectStatement) {
             return SQLStatementType.SELECT;
         }
-        if (sqlStatement instanceof AbstractSQLInsertStatement) {
+        if (sqlStatement instanceof SQLInsertStatement) {
             return SQLStatementType.INSERT;
         }
         if (sqlStatement instanceof SQLUpdateStatement) {
