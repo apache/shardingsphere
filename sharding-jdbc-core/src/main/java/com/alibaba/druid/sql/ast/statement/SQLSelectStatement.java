@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLStatementImpl;
@@ -24,7 +25,7 @@ public class SQLSelectStatement extends SQLStatementImpl {
     
     private final SQLSelect select;
     
-    public SQLSelectStatement(final SQLSelect select){
+    public SQLSelectStatement(final SQLSelect select) {
         this(select, null);
     }
     

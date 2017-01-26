@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -32,10 +31,5 @@ public class SQLServerStatementParser extends SQLStatementParser {
     @Override
     protected SQLSelectParser createSQLSelectParser() {
         return new SQLServerSelectParser(getExprParser());
-    }
-    
-    @Override
-    public SQLStatement parseWith() {
-        return parseSelect();
     }
 }

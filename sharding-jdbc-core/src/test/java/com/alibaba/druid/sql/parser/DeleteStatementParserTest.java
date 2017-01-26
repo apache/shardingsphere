@@ -86,17 +86,27 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithSpecialSyntax() throws SQLException {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE `TABLE_XXX` WHERE `field1`=1");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE LOW_PRIORITY QUICK IGNORE TABLE_XXX PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1=1");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, "DELETE TOP(10) OUTPUT (inserted.field1) FROM TABLE_XXX WHERE field1=1");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 OUTPUT *");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE `TABLE_XXX` WHERE `field1`=1", "DELETE [Token(TABLE_XXX)] WHERE `field1`=1");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE LOW_PRIORITY QUICK IGNORE TABLE_XXX PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10",
+                "DELETE LOW_PRIORITY QUICK IGNORE [Token(TABLE_XXX)] PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1=1",
+                "DELETE FROM [Token(TABLE_XXX)] PARTITION (partition_1, partition_2,partition_3) WHERE field1=1");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
+                "DELETE /*+ index(field1) */ ONLY ([Token(TABLE_XXX)]) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *",
+                "DELETE /*+ index(field1) */ ONLY ([Token(TABLE_XXX)]) WHERE field1=1 RETURNING *");
+        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER,
+                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) DELETE TOP(10) OUTPUT (inserted.field1) FROM TABLE_XXX WHERE field1=1",
+                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) DELETE TOP(10) OUTPUT (inserted.field1) FROM [Token(TABLE_XXX)] WHERE field1=1");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+                "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 RETURNING *",
+                "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) DELETE FROM ONLY [Token(TABLE_XXX)] USING producers WHERE field1=1 RETURNING *");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 OUTPUT *",
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) DELETE FROM ONLY [Token(TABLE_XXX)] USING producers WHERE field1=1 OUTPUT *");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL) throws SQLException {
+    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {
         SQLDeleteStatement deleteStatement = (SQLDeleteStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(deleteStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertFalse(deleteStatement.getSqlContext().getTable().getAlias().isPresent());
@@ -108,7 +118,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        String expectedSQL = actualSQL.contains("`TABLE_XXX`") ? actualSQL.replace("`TABLE_XXX`", "[Token(TABLE_XXX)]") : actualSQL.replace("TABLE_XXX", "[Token(TABLE_XXX)]");
         assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
     }
 }

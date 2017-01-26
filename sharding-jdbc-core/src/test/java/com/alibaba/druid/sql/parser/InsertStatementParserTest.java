@@ -105,16 +105,26 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithSpecialSyntax() {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX SET field1=1");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)", 
+                "INSERT LOW_PRIORITY IGNORE INTO [Token(TABLE_XXX)] PARTITION (partition1,partition2) (`field1`) VALUE (1)");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX SET field1=1", "INSERT INTO [Token(TABLE_XXX)] SET field1=1");
         // TODO
-        // parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, "INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id");
+//         parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1", 
+//                 "INSERT INTO [Token(TABLE_XXX)] (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG",
+                "INSERT /*+ index(field1) */ INTO [Token(TABLE_XXX)] (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
+        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, 
+                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)", 
+                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT [Token(TABLE_XXX)] (`field1`) VALUES (1)");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, 
+                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id",
+                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING id");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING *",
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING *");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL) {
+    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
         SQLInsertStatement insertStatement = (SQLInsertStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(insertStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getSqlContext().getTable().getAlias().isPresent());
@@ -126,7 +136,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        String expectedSQL = actualSQL.contains("`TABLE_XXX`") ? actualSQL.replace("`TABLE_XXX`", "[Token(TABLE_XXX)]") : actualSQL.replace("TABLE_XXX", "[Token(TABLE_XXX)]");
         assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is(expectedSQL));
     }
     

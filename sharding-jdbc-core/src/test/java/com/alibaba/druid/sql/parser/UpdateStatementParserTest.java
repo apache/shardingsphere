@@ -81,17 +81,27 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithSpecialSyntax() {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE `TABLE_XXX` SET `field1`=1 WHERE `field1`=1");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE LOW_PRIORITY IGNORE TABLE_XXX SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, "UPDATE TOP(10) TABLE_XXX SET field1=1 OUTPUT (inserted.field1) WHERE field1=1");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "UPDATE ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, "UPDATE ONLY TABLE_XXX SET (field1,field2)=(1,?) WHERE field1=1");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE `TABLE_XXX` SET `field1`=1 WHERE `field1`=1", "UPDATE [Token(TABLE_XXX)] SET `field1`=1 WHERE `field1`=1");
+        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE LOW_PRIORITY IGNORE TABLE_XXX SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10",
+                "UPDATE LOW_PRIORITY IGNORE [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
+                "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
+                "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURNING *");
+        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG",
+                "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG");
+        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, 
+                "WITH field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx GROUP BY field1) UPDATE TOP(10) TABLE_XXX SET field1=1 OUTPUT (inserted.field1) WHERE field1=1",
+                "WITH field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx GROUP BY field1) UPDATE TOP(10) [Token(TABLE_XXX)] SET field1=1 OUTPUT (inserted.field1) WHERE field1=1");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+                "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) UPDATE ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
+                "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) UPDATE ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURNING *");
+        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) UPDATE ONLY TABLE_XXX SET (field1,field2)=(1,?) WHERE field1=1",
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) UPDATE ONLY [Token(TABLE_XXX)] SET (field1,field2)=(1,?) WHERE field1=1");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL) {
+    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
         assertFalse(updateStatement.getSqlContext().getTable().getAlias().isPresent());
@@ -103,7 +113,6 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        String expectedSQL = actualSQL.contains("`TABLE_XXX`") ? actualSQL.replace("`TABLE_XXX`", "[Token(TABLE_XXX)]") : actualSQL.replace("TABLE_XXX", "[Token(TABLE_XXX)]");
         assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is(expectedSQL));
     }
 }

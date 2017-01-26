@@ -57,7 +57,6 @@ public class SQLStatementParser extends SQLParser {
             getLexer().nextToken();
         }
         if (getLexer().equalToken(Token.WITH)) {
-            // TODO 目前丢弃With的SQL
             parseWith();
         }
         if (getLexer().equalToken(Token.SELECT)) {
@@ -94,19 +93,43 @@ public class SQLStatementParser extends SQLParser {
         throw new ParserException(getLexer());
     }
     
-    protected SQLStatement parseWith() {
-        return null;
+    private void parseWith() {
+        getLexer().nextToken();
+        do {
+            parseWithQuery();
+            if (getLexer().equalToken(Token.EOF)) {
+                return;
+            }
+        } while (getLexer().equalToken(Token.COMMA));
     }
     
-    protected SQLSelectStatement parseSelect() {
-        return new SQLSelectStatement(createSQLSelectParser().select());
+    private void parseWithQuery() {
+        while (!getLexer().equalToken(Token.AS)) {
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.EOF)) {
+                return;
+            }
+        }
+        accept(Token.AS);
+        accept(Token.LEFT_PAREN);
+        while (!getLexer().equalToken(Token.RIGHT_PAREN)) {
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.EOF)) {
+                return;
+            }
+        }
+        accept(Token.RIGHT_PAREN);
+    }
+    
+    protected final SQLSelectStatement parseSelect() {
+        return new SQLSelectStatement(createSQLSelectParser().select(), getDbType());
     }
     
     protected SQLSelectParser createSQLSelectParser() {
         return new SQLSelectParser(exprParser);
     }
     
-    public SQLCommentStatement parseComment() {
+    protected final SQLCommentStatement parseComment() {
         accept(Token.COMMENT);
         SQLCommentStatement result = new SQLCommentStatement();
         accept(Token.ON);
@@ -119,7 +142,7 @@ public class SQLStatementParser extends SQLParser {
         }
         result.setOn(exprParser.name());
         accept(Token.IS);
-        result.setComment(this.exprParser.expr());
+        result.setComment(exprParser.expr());
         return result;
     }
 }
