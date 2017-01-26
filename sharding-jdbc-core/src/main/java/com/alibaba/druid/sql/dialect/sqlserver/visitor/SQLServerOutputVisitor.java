@@ -27,7 +27,7 @@ import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
 public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLServerASTVisitor {
 
-    public SQLServerOutputVisitor(Appendable appender){
+    public SQLServerOutputVisitor(final Appendable appender) {
         super(appender);
     }
 
@@ -169,22 +169,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
     @Override
     public boolean visit(SQLServerSelect x) {
         super.visit(x);
-        if (x.isForBrowse()) {
-            println();
-            print("FOR BROWSE");
-        }
-        
-        if (x.getForXmlOptions().size() > 0) {
-            println();
-            print("FOR XML ");
-            for (int i = 0; i < x.getForXmlOptions().size(); ++i) {
-                if (i != 0) {
-                    print(", ");
-                    print(x.getForXmlOptions().get(i));
-                }
-            }
-        }
-        
         if (x.getOffset() != null) {
             println();
             print("OFFSET ");

@@ -60,7 +60,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprHint;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
@@ -591,11 +590,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             println();
             x.getOrderBy().accept(this);
         }
-
-        if (!x.getHints().isEmpty()) {
-            printAndAccept(x.getHints(), "");
-        }
-
         return false;
     }
 
@@ -991,26 +985,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         return false;
     }
 
-    @Override
-    public void endVisit(SQLCommentStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(SQLCommentStatement x) {
-        print("COMMENT ON ");
-        if (x.getType() != null) {
-            print(x.getType().name());
-            print(" ");
-        }
-        x.getOn().accept(this);
-
-        print(" IS ");
-        x.getComment().accept(this);
-
-        return false;
-    }
-
     public boolean visit(SQLCommentHint x) {
         print("/*");
         print(x.getText());
@@ -1036,9 +1010,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     @Override
     public boolean visit(SQLWithSubqueryClause x) {
         print("WITH");
-        if (x.getRecursive() == Boolean.TRUE) {
-            print(" RECURSIVE");
-        }
         incrementIndent();
         println();
         printlnAndAccept(x.getEntries(), ", ");

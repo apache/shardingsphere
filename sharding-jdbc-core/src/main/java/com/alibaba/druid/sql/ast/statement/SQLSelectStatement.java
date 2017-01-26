@@ -25,10 +25,6 @@ public class SQLSelectStatement extends SQLStatementImpl {
     
     private final SQLSelect select;
     
-    public SQLSelectStatement(final SQLSelect select) {
-        this(select, null);
-    }
-    
     public SQLSelectStatement(final SQLSelect select, final String dbType) {
         super(dbType);
         if (null != select) {

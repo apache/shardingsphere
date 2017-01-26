@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -25,9 +25,6 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -39,8 +36,6 @@ public class SQLSelect extends SQLObjectImpl {
     private SQLSelectQuery query;
     
     private SQLOrderBy orderBy;
-    
-    private final List<SQLHint> hints = new ArrayList<>(2);
     
     public void setQuery(final SQLSelectQuery query) {
         if (null != query) {
@@ -54,7 +49,6 @@ public class SQLSelect extends SQLObjectImpl {
         if (visitor.visit(this)) {
             acceptChild(visitor, query);
             acceptChild(visitor, orderBy);
-            acceptChild(visitor, hints);
         }
         visitor.endVisit(this);
     }

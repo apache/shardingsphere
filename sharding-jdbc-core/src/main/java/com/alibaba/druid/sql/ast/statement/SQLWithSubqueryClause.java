@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLName;
@@ -28,8 +29,6 @@ import java.util.List;
 @Getter
 @Setter
 public class SQLWithSubqueryClause extends SQLObjectImpl {
-    
-    private Boolean recursive;
     
     private final List<Entry> entries = new ArrayList<>();
     

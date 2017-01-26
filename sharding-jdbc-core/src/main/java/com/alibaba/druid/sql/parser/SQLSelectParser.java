@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -51,11 +52,8 @@ public class SQLSelectParser extends SQLParser {
         withSubquery(result);
         result.setQuery(query());
         result.setOrderBy(exprParser.parseOrderBy());
-        if (null == result.getOrderBy()) {
-            result.setOrderBy(exprParser.parseOrderBy());
-        }
         while (getLexer().equalToken(Token.HINT)) {
-            result.getHints().addAll(exprParser.parseHints());
+            exprParser.parseHints();
         }
         return result;
     }
@@ -68,7 +66,6 @@ public class SQLSelectParser extends SQLParser {
         SQLWithSubqueryClause withQueryClause = new SQLWithSubqueryClause();
         if (getLexer().equalToken(Token.RECURSIVE) || getLexer().identifierEquals("RECURSIVE")) {
             getLexer().nextToken();
-            withQueryClause.setRecursive(true);
         }
         while (true) {
             SQLWithSubqueryClause.Entry entry = new SQLWithSubqueryClause.Entry();
@@ -122,7 +119,7 @@ public class SQLSelectParser extends SQLParser {
         return queryRest(queryBlock);
     }
     
-    public SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {
+    protected SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {
         if (getLexer().equalToken(Token.UNION)) {
             getLexer().nextToken();
             SQLUnionQuery union = createSQLUnionQuery();

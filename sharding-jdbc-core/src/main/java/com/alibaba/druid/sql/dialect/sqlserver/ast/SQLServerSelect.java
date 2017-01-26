@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -23,21 +24,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @EqualsAndHashCode
 public class SQLServerSelect extends SQLSelect implements SQLServerObject {
     
-    private boolean forBrowse;
-    
     private SQLExpr rowCount;
     
     private SQLExpr offset;
-    
-    private final List<String> forXmlOptions = new ArrayList<>(4);
     
     public void setRowCount(final SQLExpr rowCount) {
         if (null != rowCount) {
@@ -63,7 +57,6 @@ public class SQLServerSelect extends SQLSelect implements SQLServerObject {
         if (visitor.visit(this)) {
             acceptChild(visitor, getQuery());
             acceptChild(visitor, getOrderBy());
-            acceptChild(visitor, getHints());
             acceptChild(visitor, offset);
             acceptChild(visitor, rowCount);
         }

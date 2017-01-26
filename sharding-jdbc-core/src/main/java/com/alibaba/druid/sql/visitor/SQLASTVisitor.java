@@ -54,7 +54,6 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLCommentStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprHint;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
@@ -262,10 +261,6 @@ public interface SQLASTVisitor {
     void endVisit(SQLDefaultExpr x);
     
     boolean visit(SQLDefaultExpr x);
-    
-    void endVisit(SQLCommentStatement x);
-    
-    boolean visit(SQLCommentStatement x);
     
     void endVisit(SQLCommentHint x);
     
