@@ -31,8 +31,6 @@ import lombok.Setter;
 @EqualsAndHashCode(of = {"withSubQuery", "query", "orderBy"})
 public class SQLSelect extends SQLObjectImpl {
     
-    private SQLWithSubqueryClause withSubQuery;
-    
     private SQLSelectQuery query;
     
     private SQLOrderBy orderBy;

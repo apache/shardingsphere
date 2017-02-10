@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.SQLUtils;
@@ -30,7 +31,6 @@ public class OracleSelect extends SQLSelect {
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getWithSubQuery());
             acceptChild(visitor, getQuery());
             acceptChild(visitor, getOrderBy());
             acceptChild(visitor, forUpdate);

@@ -22,14 +22,11 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionOperator;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.CycleClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause.AsOfFlashbackQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.FlashbackQueryClause.AsOfSnapshotClause;
@@ -47,11 +44,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ModelRulesCla
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.QueryPartitionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReferenceModelClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReturnRowsClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleWithSubqueryEntry;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.PartitionExtensionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SampleClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.SearchClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
@@ -78,7 +72,6 @@ public class OracleSelectParser extends SQLSelectParser {
     
     public OracleSelect select() {
         OracleSelect result = new OracleSelect();
-        withSubquery(result);
         result.setQuery(query());
         result.setOrderBy(getExprParser().parseOrderBy());
         if (getLexer().equalToken(Token.FOR)) {
@@ -91,73 +84,6 @@ public class OracleSelectParser extends SQLSelectParser {
             parseWith();
         }
         return result;
-    }
-    
-    @Override
-    protected void withSubquery(final SQLSelect select) {
-        if (getLexer().equalToken(Token.WITH)) {
-            getLexer().nextToken();
-            SQLWithSubqueryClause subqueryFactoringClause = new SQLWithSubqueryClause();
-            while (true) {
-                OracleWithSubqueryEntry entry = new OracleWithSubqueryEntry();
-                entry.setName((SQLIdentifierExpr) getExprParser().name());
-                if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                    getLexer().nextToken();
-                    getExprParser().names(entry.getColumns());
-                    accept(Token.RIGHT_PAREN);
-                }
-                accept(Token.AS);
-                accept(Token.LEFT_PAREN);
-                entry.setSubQuery(select());
-                accept(Token.RIGHT_PAREN);
-                if (getLexer().identifierEquals("SEARCH")) {
-                    getLexer().nextToken();
-                    SearchClause searchClause = new SearchClause();
-
-                    if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                        throw new ParserException(getLexer());
-                    }
-
-                    searchClause.setType(SearchClause.Type.valueOf(getLexer().getLiterals()));
-                    getLexer().nextToken();
-
-                    accept("FIRST");
-                    accept(Token.BY);
-
-                    searchClause.getItems().add((OracleOrderByItem) getExprParser().parseSelectOrderByItem());
-
-                    while (getLexer().equalToken(Token.COMMA)) {
-                        getLexer().nextToken();
-                        searchClause.getItems().add((OracleOrderByItem) getExprParser().parseSelectOrderByItem());
-                    }
-
-                    accept(Token.SET);
-
-                    searchClause.setOrderingColumn((SQLIdentifierExpr) getExprParser().name());
-
-                    entry.setSearchClause(searchClause);
-                }
-                if (getLexer().identifierEquals("CYCLE")) {
-                    getLexer().nextToken();
-                    CycleClause cycleClause = new CycleClause();
-                    cycleClause.getAliases().addAll(getExprParser().exprList(cycleClause));
-                    accept(Token.SET);
-                    cycleClause.setMark(getExprParser().expr());
-                    accept(Token.TO);
-                    cycleClause.setValue(getExprParser().expr());
-                    accept(Token.DEFAULT);
-                    cycleClause.setDefaultValue(getExprParser().expr());
-                    entry.setCycleClause(cycleClause);
-                }
-                subqueryFactoringClause.getEntries().add(entry);
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-            select.setWithSubQuery(subqueryFactoringClause);
-        }
     }
     
     @Override

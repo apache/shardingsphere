@@ -55,7 +55,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleParameter;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleReturningClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleWithSubqueryEntry;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.PartitionExtensionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SampleClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SearchClause;
@@ -243,11 +242,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     public boolean visit(OracleSelect x) {
-        if (x.getWithSubQuery() != null) {
-            x.getWithSubQuery().accept(this);
-            println();
-        }
-
         x.getQuery().accept(this);
 
         if (x.getForUpdate() != null) {
@@ -765,44 +759,7 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     public void endVisit(GroupingSetExpr x) {
 
     }
-
-    @Override
-    public boolean visit(OracleWithSubqueryEntry x) {
-        x.getName().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            print(" (");
-            printAndAccept(x.getColumns(), ", ");
-            print(")");
-        }
-        println();
-        print("AS");
-        println();
-        print("(");
-        incrementIndent();
-        println();
-        x.getSubQuery().accept(this);
-        decrementIndent();
-        println();
-        print(")");
-
-        if (x.getSearchClause() != null) {
-            println();
-            x.getSearchClause().accept(this);
-        }
-
-        if (x.getCycleClause() != null) {
-            println();
-            x.getCycleClause().accept(this);
-        }
-        return false;
-    }
-
-    @Override
-    public void endVisit(OracleWithSubqueryEntry x) {
-
-    }
-
+    
     @Override
     public boolean visit(SearchClause x) {
         print("SEARCH ");

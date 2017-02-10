@@ -39,7 +39,6 @@ public class SQLServerSelectParser extends SQLSelectParser {
     @Override
     public SQLSelect select() {
         SQLServerSelect result = new SQLServerSelect();
-        withSubquery(result);
         result.setQuery(query());
         result.setOrderBy(getExprParser().parseOrderBy());
         if (getLexer().equalToken(Token.FOR)) {

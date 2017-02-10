@@ -31,7 +31,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public class SQLStatementParser extends SQLParser {
+public abstract class SQLStatementParser extends SQLParser {
     
     private final ShardingRule shardingRule;
     
@@ -101,7 +101,5 @@ public class SQLStatementParser extends SQLParser {
         accept(Token.RIGHT_PAREN);
     }
     
-    protected SQLSelectParser createSQLSelectParser() {
-        return new SQLSelectParser(exprParser);
-    }
+    protected abstract SQLSelectParser createSQLSelectParser();
 }

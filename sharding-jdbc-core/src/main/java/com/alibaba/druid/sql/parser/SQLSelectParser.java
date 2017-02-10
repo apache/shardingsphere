@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -31,7 +30,6 @@ import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionOperator;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.Getter;
 
@@ -49,7 +47,6 @@ public class SQLSelectParser extends SQLParser {
     
     public SQLSelect select() {
         SQLSelect result = new SQLSelect();
-        withSubquery(result);
         result.setQuery(query());
         result.setOrderBy(exprParser.parseOrderBy());
         while (getLexer().equalToken(Token.HINT)) {
@@ -58,39 +55,7 @@ public class SQLSelectParser extends SQLParser {
         return result;
     }
     
-    protected void withSubquery(final SQLSelect select) {
-        if (!getLexer().equalToken(Token.WITH)) {
-            return;
-        }
-        getLexer().nextToken();
-        SQLWithSubqueryClause withQueryClause = new SQLWithSubqueryClause();
-        if (getLexer().equalToken(Token.RECURSIVE) || getLexer().identifierEquals("RECURSIVE")) {
-            getLexer().nextToken();
-        }
-        while (true) {
-            SQLWithSubqueryClause.Entry entry = new SQLWithSubqueryClause.Entry();
-            entry.setParent(withQueryClause);
-            entry.setName((SQLIdentifierExpr) exprParser.name());
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                getLexer().nextToken();
-                exprParser.names(entry.getColumns());
-                accept(Token.RIGHT_PAREN);
-            }
-            accept(Token.AS);
-            accept(Token.LEFT_PAREN);
-            entry.setSubQuery(select());
-            accept(Token.RIGHT_PAREN);
-            withQueryClause.getEntries().add(entry);
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-                continue;
-            }
-            break;
-        }
-        select.setWithSubQuery(withQueryClause);
-    }
-    
-    public SQLSelectQuery query() {
+    protected SQLSelectQuery query() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();

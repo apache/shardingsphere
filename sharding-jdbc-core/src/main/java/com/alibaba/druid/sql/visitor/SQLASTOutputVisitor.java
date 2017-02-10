@@ -76,7 +76,6 @@ import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.sql.ast.statement.SQLWithSubqueryClause;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -578,12 +577,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
     public boolean visit(SQLSelect x) {
         x.getQuery().setParent(x);
-
-        if (x.getWithSubQuery() != null) {
-            x.getWithSubQuery().accept(this);
-            println();
-        }
-
         x.getQuery().accept(this);
 
         if (x.getOrderBy() != null) {
@@ -1004,39 +997,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getOrderBy().accept(this);
         }
         print(")");
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLWithSubqueryClause x) {
-        print("WITH");
-        incrementIndent();
-        println();
-        printlnAndAccept(x.getEntries(), ", ");
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLWithSubqueryClause.Entry x) {
-        x.getName().accept(this);
-
-        if (x.getColumns().size() > 0) {
-            print(" (");
-            printAndAccept(x.getColumns(), ", ");
-            print(")");
-        }
-        println();
-        print("AS");
-        println();
-        print("(");
-        incrementIndent();
-        println();
-        x.getSubQuery().accept(this);
-        decrementIndent();
-        println();
-        print(")");
-
         return false;
     }
 
