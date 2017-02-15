@@ -61,20 +61,16 @@ public class CommonSelfIdGeneratorTest {
     public void testMaxSequence() throws Exception {
         assertThat(maxId((1 << 12) - 1), is((1L << 12L) - 2));
         assertThat(maxId(1 << 12), is((1L << 12L) - 1));
-        assertThat(maxId((1 << 12) + 1), is((1L << 12L) - 1));
-        assertThat(maxId(1 << 13), is((1L << 12L) - 1));
-        assertThat(maxId((1 << 13) + 1), is((1L << 12L) - 1));
+        assertThat(maxId((1 << 12) + 1), is(1L << 22));
     }
     
     private long maxId(final int maxSequence) {
         CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
-        CommonSelfIdGenerator.setClock(new FixClock(maxSequence));
+        CommonSelfIdGenerator.setClock(new FixClock(1 << 13));
         long id = 0;
-        long preId = 0;
-        while (id < (1L << 12)) {
-            preId = id;
+        for (int i = 0; i < maxSequence; i++) {
             id = (Long) idGenerator.generateId();
         }
-        return preId;
+        return id;
     }
 }
