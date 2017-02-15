@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.visitor;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
@@ -60,7 +59,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLExprHint;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource.JoinType;
@@ -70,7 +68,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
@@ -833,20 +830,7 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
         return false;
     }
-
-    @Override
-    public boolean visit(SQLSetStatement x) {
-        print("SET ");
-        printAndAccept(x.getItems(), ", ");
-
-        if (x.getHints() != null && x.getHints().size() > 0) {
-            print(" ");
-            printAndAccept(x.getHints(), " ");
-        }
-
-        return false;
-    }
-
+    
     @Override
     public boolean visit(SQLAssignItem x) {
         x.getTarget().accept(this);
@@ -978,13 +962,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         return false;
     }
 
-    public boolean visit(SQLCommentHint x) {
-        print("/*");
-        print(x.getText());
-        print("*/");
-        return false;
-    }
-
     @Override
     public boolean visit(SQLOver x) {
         print("OVER (");
@@ -997,12 +974,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getOrderBy().accept(this);
         }
         print(")");
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLExprHint x) {
-        x.getExpr().accept(this);
         return false;
     }
 

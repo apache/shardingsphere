@@ -16,9 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.mysql.visitor;
 
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
@@ -68,18 +65,6 @@ public interface MySqlASTVisitor extends SQLASTVisitor {
     boolean visit(MySqlUnionQuery x);
     
     void endVisit(MySqlUnionQuery x);
-    
-    boolean visit(MySqlUseIndexHint x);
-    
-    void endVisit(MySqlUseIndexHint x);
-    
-    boolean visit(MySqlIgnoreIndexHint x);
-    
-    void endVisit(MySqlIgnoreIndexHint x);
-    
-    boolean visit(MySqlForceIndexHint x);
-    
-    void endVisit(MySqlForceIndexHint x);
     
     boolean visit(MySqlCharExpr x);
     

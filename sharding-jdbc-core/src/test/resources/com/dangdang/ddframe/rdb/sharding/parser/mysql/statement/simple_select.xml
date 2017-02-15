@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
+    <!-- // FIXME
     <assert id="assertSelectWithoutShardingKey" sql="select * from order FORCE INDEX (order_id)" expected-sql="SELECT * FROM [Token(order)] FORCE INDEX (order_id)">
         <tables>
             <table name="order" />
@@ -8,7 +9,7 @@
             <condition-context />
         </condition-contexts>
     </assert>
-    
+    -->
     <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id = 1">
         <tables>
             <table name="order" />

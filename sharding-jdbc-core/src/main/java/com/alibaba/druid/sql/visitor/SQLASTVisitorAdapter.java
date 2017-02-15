@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.visitor;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -55,7 +54,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLExprHint;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -64,7 +62,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
@@ -399,17 +396,7 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     public void endVisit(final SQLHexExpr x) {
 
     }
-
-    @Override
-    public void endVisit(final SQLSetStatement x) {
-
-    }
-
-    @Override
-    public boolean visit(final SQLSetStatement x) {
-        return true;
-    }
-
+    
     @Override
     public void endVisit(final SQLAssignItem x) {
 
@@ -499,17 +486,7 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     public boolean visit(final SQLDefaultExpr x) {
         return true;
     }
-
-    @Override
-    public boolean visit(final SQLCommentHint x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(final SQLCommentHint x) {
-
-    }
-
+    
     @Override
     public void endVisit(final SQLOver x) {
     }
@@ -527,16 +504,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     @Override
     public void endVisit(final SQLCharacterDataType x) {
     
-    }
-
-    @Override
-    public boolean visit(final SQLExprHint x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(final SQLExprHint x) {
-
     }
 
     @Override

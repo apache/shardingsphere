@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
-import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -125,10 +124,6 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         if (table.getAlias().isPresent()) {
             print(' ');
             print(table.getAlias().get());
-        }
-        for (SQLHint each : x.getHints()) {
-            print(' ');
-            each.accept(this);
         }
         return false;
     }

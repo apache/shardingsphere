@@ -50,7 +50,7 @@ public class SQLSelectParser extends SQLParser {
         result.setQuery(query());
         result.setOrderBy(exprParser.parseOrderBy());
         while (getLexer().equalToken(Token.HINT)) {
-            exprParser.parseHints();
+            getLexer().nextToken();
         }
         return result;
     }

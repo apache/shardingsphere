@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.SQLUtils;
@@ -31,14 +32,13 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
     
     private FlashbackQueryClause  flashback;
     
-    public OracleSelectSubqueryTableSource(final SQLSelect select){
+    public OracleSelectSubqueryTableSource(final SQLSelect select) {
         super(select);
     }
     
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor.visit(this)) {
-            acceptChild(visitor, getHints());
             acceptChild(visitor, getSelect());
             acceptChild(visitor, pivot);
             acceptChild(visitor, flashback);
@@ -47,7 +47,7 @@ public class OracleSelectSubqueryTableSource extends SQLSubqueryTableSource impl
     }
     
     @Override
-    public String toString () {
+    public String toString() {
         return SQLUtils.toOracleString(this);
     }
 }

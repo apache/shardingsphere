@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLObject;
-
-import java.util.List;
 
 public interface SQLTableSource extends SQLObject {
     
     String getAlias();
     
     void setAlias(String alias);
-    
-    List<SQLHint> getHints();
 }

@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.visitor;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
@@ -55,7 +54,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLExprHint;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -64,7 +62,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSetStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
@@ -221,10 +218,6 @@ public interface SQLASTVisitor {
     
     boolean visit(SQLUnionQuery x);
     
-    void endVisit(SQLSetStatement x);
-    
-    boolean visit(SQLSetStatement x);
-    
     void endVisit(SQLAssignItem x);
     
     boolean visit(SQLAssignItem x);
@@ -261,17 +254,9 @@ public interface SQLASTVisitor {
     
     boolean visit(SQLDefaultExpr x);
     
-    void endVisit(SQLCommentHint x);
-    
-    boolean visit(SQLCommentHint x);
-    
     void endVisit(SQLOver x);
     
     boolean visit(SQLOver x);
-    
-    boolean visit(SQLExprHint x);
-    
-    void endVisit(SQLExprHint x);
     
     void endVisit(SQLBooleanExpr x);
     

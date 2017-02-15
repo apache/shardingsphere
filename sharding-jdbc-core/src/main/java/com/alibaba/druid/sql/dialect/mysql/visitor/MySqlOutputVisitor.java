@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.mysql.visitor;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
@@ -30,9 +29,6 @@ import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
@@ -65,15 +61,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
         if (x.getOrderBy() != null) {
             x.getOrderBy().setParent(x);
         }
-
         print("SELECT ");
-
-        for (int i = 0; i < x.getHints().size(); ++i) {
-            SQLCommentHint hint = x.getHints().get(i);
-            hint.accept(this);
-            print(' ');
-        }
-
         if (SQLSetQuantifier.ALL == x.getDistionOption()) {
             print("ALL ");
         } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
@@ -571,44 +559,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     }
 
-    @Override
-    public boolean visit(MySqlUseIndexHint x) {
-        print("USE INDEX ");
-        if (x.getOption() != null) {
-            print("FOR ");
-            print(x.getOption().name);
-            print(' ');
-        }
-        print('(');
-        printAndAccept(x.getIndexList(), ", ");
-        print(')');
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlUseIndexHint x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlIgnoreIndexHint x) {
-        print("IGNORE INDEX ");
-        if (x.getOption() != null) {
-            print("FOR ");
-            print(x.getOption().name);
-            print(' ');
-        }
-        print('(');
-        printAndAccept(x.getIndexList(), ", ");
-        print(')');
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlIgnoreIndexHint x) {
-
-    }
-
     public boolean visit(SQLExprTableSource x) {
         x.getExpr().accept(this);
 
@@ -616,32 +566,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             print(' ');
             print(x.getAlias());
         }
-
-        for (int i = 0; i < x.getHints().size(); ++i) {
-            print(' ');
-            x.getHints().get(i).accept(this);
-        }
-
         return false;
-    }
-
-    @Override
-    public boolean visit(MySqlForceIndexHint x) {
-        print("FORCE INDEX ");
-        if (x.getOption() != null) {
-            print("FOR ");
-            print(x.getOption().name);
-            print(' ');
-        }
-        print('(');
-        printAndAccept(x.getIndexList(), ", ");
-        print(')');
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlForceIndexHint x) {
-
     }
     
     @Override

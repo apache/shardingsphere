@@ -16,9 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.mysql.visitor;
 
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
@@ -126,37 +123,7 @@ public class MySqlASTVisitorAdapter extends SQLASTVisitorAdapter implements MySq
     public void endVisit(MySqlUnionQuery x) {
 
     }
-
-    @Override
-    public boolean visit(MySqlUseIndexHint x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(MySqlUseIndexHint x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlIgnoreIndexHint x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(MySqlIgnoreIndexHint x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlForceIndexHint x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(MySqlForceIndexHint x) {
-
-    }
-
+    
     @Override
     public boolean visit(MySqlCharExpr x) {
         return true;

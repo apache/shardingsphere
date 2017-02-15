@@ -108,13 +108,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
 
     public boolean visit(SQLExprTableSource x) {
         x.getExpr().accept(this);
-
-        if (x.getHints() != null && x.getHints().size() > 0) {
-            print(" WITH (");
-            printAndAccept(x.getHints(), ", ");
-            print(")");
-        }
-
         if (x.getAlias() != null) {
             print(' ');
             print(x.getAlias());

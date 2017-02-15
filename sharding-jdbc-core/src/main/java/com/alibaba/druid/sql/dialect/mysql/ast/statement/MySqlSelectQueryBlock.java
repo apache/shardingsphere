@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.mysql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
@@ -63,8 +63,6 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
     
     private final List<SQLExpr> procedureArgumentList = new ArrayList<>(2);
     
-    private final List<SQLCommentHint> hints = new ArrayList<>(2);
-    
     public void setLimit(final Limit limit) {
         if (null != limit) {
             limit.setParent(this);
@@ -105,7 +103,7 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
         
         private SQLExpr offset;
         
-        public Limit(final SQLExpr rowCount){
+        public Limit(final SQLExpr rowCount) {
             this.setRowCount(rowCount);
         }
         

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -28,11 +29,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlForceIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIgnoreIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIndexHint;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlIndexHintImpl;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlUseIndexHint;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
@@ -42,6 +38,8 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
+
+import java.util.ArrayList;
 
 public class MySqlSelectParser extends SQLSelectParser {
     
@@ -64,9 +62,8 @@ public class MySqlSelectParser extends SQLSelectParser {
             getLexer().nextToken();
 
             if (getLexer().equalToken(Token.HINT)) {
-                queryBlock.getHints().addAll(getExprParser().parseHints());
+                getLexer().nextToken();
             }
-
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
@@ -188,7 +185,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             return parseTableSourceRest(tableSource);
         }
         
-        if(getLexer().equalToken(Token.UPDATE)) {
+        if (getLexer().equalToken(Token.UPDATE)) {
             throw new ParserUnsupportedException(getLexer().getToken());
         }
 
@@ -203,7 +200,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         return parseTableSourceRest(tableReference);
     }
     
-    protected void parseInto(SQLSelectQueryBlock queryBlock) {
+    protected void parseInto(final SQLSelectQueryBlock queryBlock) {
         if (getLexer().equalToken(Token.INTO)) {
             getLexer().nextToken();
 
@@ -259,7 +256,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         }
     }
 
-    protected void parseGroupBy(SQLSelectQueryBlock queryBlock) {
+    protected void parseGroupBy(final SQLSelectQueryBlock queryBlock) {
         SQLSelectGroupByClause groupBy = null;
 
         if (getLexer().equalToken(Token.GROUP)) {
@@ -270,7 +267,7 @@ public class MySqlSelectParser extends SQLSelectParser {
 
             while (true) {
                 groupBy.addItem(((MySqlExprParser) getExprParser()).parseSelectGroupByItem());
-                if (!getLexer().equalToken((Token.COMMA))) {
+                if (!getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
                 getLexer().nextToken();
@@ -302,65 +299,48 @@ public class MySqlSelectParser extends SQLSelectParser {
         queryBlock.setGroupBy(groupBy);
     }
 
-    protected SQLTableSource parseTableSourceRest(SQLTableSource tableSource) {
+    protected SQLTableSource parseTableSourceRest(final SQLTableSource tableSource) {
         if (getLexer().identifierEquals("USING")) {
             return tableSource;
         }
-
         if (getLexer().equalToken(Token.USE)) {
             getLexer().nextToken();
-            MySqlUseIndexHint hint = new MySqlUseIndexHint();
-            parseIndexHint(hint);
-            tableSource.getHints().add(hint);
+            parseIndexHint();
         }
-
         if (getLexer().identifierEquals("IGNORE")) {
             getLexer().nextToken();
-            MySqlIgnoreIndexHint hint = new MySqlIgnoreIndexHint();
-            parseIndexHint(hint);
-            tableSource.getHints().add(hint);
+            parseIndexHint();
         }
-
         if (getLexer().identifierEquals("FORCE")) {
             getLexer().nextToken();
-            MySqlForceIndexHint hint = new MySqlForceIndexHint();
-            parseIndexHint(hint);
-            tableSource.getHints().add(hint);
+            parseIndexHint();
         }
-
         return super.parseTableSourceRest(tableSource);
     }
 
-    private void parseIndexHint(MySqlIndexHintImpl hint) {
+    private void parseIndexHint() {
         if (getLexer().equalToken(Token.INDEX)) {
             getLexer().nextToken();
         } else {
             accept(Token.KEY);
         }
-
         if (getLexer().equalToken(Token.FOR)) {
             getLexer().nextToken();
-
             if (getLexer().equalToken(Token.JOIN)) {
                 getLexer().nextToken();
-                hint.setOption(MySqlIndexHint.Option.JOIN);
             } else if (getLexer().equalToken(Token.ORDER)) {
                 getLexer().nextToken();
                 accept(Token.BY);
-                hint.setOption(MySqlIndexHint.Option.ORDER_BY);
             } else {
                 accept(Token.GROUP);
                 accept(Token.BY);
-                hint.setOption(MySqlIndexHint.Option.GROUP_BY);
             }
         }
-
         accept(Token.LEFT_PAREN);
         if (getLexer().equalToken(Token.PRIMARY)) {
             getLexer().nextToken();
-            hint.getIndexList().add(new SQLIdentifierExpr("PRIMARY"));
         } else {
-            getExprParser().names(hint.getIndexList());
+            getExprParser().names(new ArrayList<SQLName>());
         }
         accept(Token.RIGHT_PAREN);
     }
@@ -370,7 +350,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         return new MySqlUnionQuery();
     }
 
-    public SQLUnionQuery unionRest(SQLUnionQuery union) {
+    public SQLUnionQuery unionRest(final SQLUnionQuery union) {
         if (getLexer().equalToken(Token.LIMIT)) {
             MySqlUnionQuery mysqlUnionQuery = (MySqlUnionQuery) union;
             mysqlUnionQuery.setLimit(parseLimit());

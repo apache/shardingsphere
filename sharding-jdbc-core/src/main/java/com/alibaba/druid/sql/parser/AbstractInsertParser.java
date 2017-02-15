@@ -73,7 +73,9 @@ public abstract class AbstractInsertParser extends SQLParser {
     }
     
     private void parseInto(final InsertSQLContext sqlContext) {
-        exprParser.parseHints();
+        if (getLexer().equalToken(Token.HINT)) {
+            getLexer().nextToken();
+        }
         if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
             throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
         }

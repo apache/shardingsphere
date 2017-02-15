@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLHint;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
@@ -90,20 +89,10 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectUnPivot;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 
-import java.util.List;
-
 public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleASTVisitor {
 
     public OracleOutputVisitor(Appendable appender) {
         super(appender);
-    }
-
-    private void printHints(List<SQLHint> hints) {
-        if (hints.size() > 0) {
-            print("/*+ ");
-            printAndAccept(hints, ", ");
-            print(" */");
-        }
     }
 
     public boolean visit(SQLAllColumnExpr x) {
@@ -405,12 +394,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     public boolean visit(OracleSelectQueryBlock x) {
         print("SELECT ");
-
-        if (x.getHints().size() > 0) {
-            printAndAccept(x.getHints(), ", ");
-            print(' ');
-        }
-
         if (SQLSetQuantifier.ALL == x.getDistionOption()) {
             print("ALL ");
         } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
@@ -507,11 +490,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
                 x.getPartition().accept(this);
             }
         }
-
-        if (x.getHints().size() > 0) {
-            this.printHints(x.getHints());
-        }
-
         if (x.getSampleClause() != null) {
             print(" ");
             x.getSampleClause().accept(this);

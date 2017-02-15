@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -65,7 +64,6 @@ import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -1222,15 +1220,6 @@ public class SQLExprParser extends SQLParser {
             }
         }
         return charType;
-    }
-    
-    public List<SQLCommentHint> parseHints() {
-        List<SQLCommentHint> result = new ArrayList<>();
-        if (getLexer().equalToken(Token.HINT)) {
-            result.add(new SQLCommentHint(getLexer().getLiterals()));
-            getLexer().nextToken();
-        }
-        return result;
     }
     
     public SQLSelectItem parseSelectItem() {
