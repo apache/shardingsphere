@@ -54,8 +54,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
@@ -84,8 +82,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     void endVisit(OracleOrderBy x);
 
     void endVisit(OracleOuterExpr x);
-
-    void endVisit(OracleSelectForUpdate x);
 
     void endVisit(OracleSelectHierarchicalQueryClause x);
 
@@ -118,8 +114,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleOrderBy x);
 
     boolean visit(OracleOuterExpr x);
-
-    boolean visit(OracleSelectForUpdate x);
 
     boolean visit(OracleSelectHierarchicalQueryClause x);
 
@@ -174,10 +168,6 @@ public interface OracleASTVisitor extends SQLASTVisitor {
     boolean visit(OracleBinaryDoubleExpr x);
 
     void endVisit(OracleBinaryDoubleExpr x);
-
-    boolean visit(OracleSelect x);
-
-    void endVisit(OracleSelect x);
 
     boolean visit(OracleCursorExpr x);
 

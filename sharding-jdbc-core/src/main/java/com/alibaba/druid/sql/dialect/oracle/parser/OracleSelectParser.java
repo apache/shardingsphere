@@ -22,6 +22,7 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
@@ -46,8 +47,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReferenceMode
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause.ReturnRowsClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.PartitionExtensionClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.clause.SampleClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
@@ -70,33 +69,25 @@ public class OracleSelectParser extends SQLSelectParser {
         super(exprParser);
     }
     
-    public OracleSelect select() {
-        OracleSelect result = new OracleSelect();
-        result.setQuery(query());
-        result.setOrderBy(getExprParser().parseOrderBy());
+    @Override
+    protected void customizedSelect(final SQLSelect sqlSelect) {
         if (getLexer().equalToken(Token.FOR)) {
-            parseForUpdate(result);
+            parseForUpdate();
         }
-        if (null == result.getOrderBy()) {
-            result.setOrderBy(getExprParser().parseOrderBy());
+        if (null == sqlSelect.getOrderBy()) {
+            sqlSelect.setOrderBy(getExprParser().parseOrderBy());
         }
-        if (getLexer().equalToken(Token.WITH)) {
-            parseWith();
-        }
-        return result;
     }
     
     @Override
     public SQLSelectQuery query() {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-
             SQLSelectQuery select = query();
             accept(Token.RIGHT_PAREN);
-
             return queryRest(select);
         }
-
+        
         OracleSelectQueryBlock queryBlock = new OracleSelectQueryBlock();
         if (getLexer().equalToken(Token.SELECT)) {
             getLexer().nextToken();
@@ -224,7 +215,7 @@ public class OracleSelectParser extends SQLSelectParser {
 
             accept(Token.ON);
             accept(Token.LEFT_PAREN);
-            OracleSelect subQuery = this.select();
+            SQLSelect subQuery = this.select();
             accept(Token.RIGHT_PAREN);
             referenceModelClause.setSubQuery(subQuery);
 
@@ -977,55 +968,20 @@ public class OracleSelectParser extends SQLSelectParser {
         }
     }
     
-    
-    private void parseForUpdate(final OracleSelect select) {
+    private void parseForUpdate() {
         getLexer().nextToken();
         accept(Token.UPDATE);
-        
-        OracleSelectForUpdate forUpdate = new OracleSelectForUpdate();
-        
         if (getLexer().equalToken(Token.OF)) {
             getLexer().nextToken();
-            forUpdate.getOf().addAll(getExprParser().exprList(forUpdate));
+            getExprParser().exprList(null);
         }
         if (getLexer().equalToken(Token.NOWAIT)) {
             getLexer().nextToken();
-            forUpdate.setNotWait(true);
         } else if (getLexer().equalToken(Token.WAIT)) {
             getLexer().nextToken();
-            forUpdate.setWait(getExprParser().primary());
         } else if (getLexer().identifierEquals("SKIP")) {
             getLexer().nextToken();
             accept("LOCKED");
-            forUpdate.setSkipLocked(true);
-        }
-        select.setForUpdate(forUpdate);
-    }
-    
-    private void parseWith() {
-        getLexer().nextToken();
-        if (getLexer().identifierEquals("READ")) {
-            getLexer().nextToken();
-            if (getLexer().identifierEquals("ONLY")) {
-                getLexer().nextToken();
-            } else {
-                throw new ParserException(getLexer());
-            }
-        } else if (getLexer().equalToken(Token.CHECK)) {
-            getLexer().nextToken();
-            
-            if (getLexer().identifierEquals("OPTION")) {
-                getLexer().nextToken();
-            } else {
-                throw new ParserException(getLexer());
-            }
-            
-            if (getLexer().equalToken(Token.CONSTRAINT)) {
-                getLexer().nextToken();
-                throw new ParserUnsupportedException(getLexer().getToken());
-            }
-        } else {
-            throw new ParserException(getLexer());
         }
     }
 }

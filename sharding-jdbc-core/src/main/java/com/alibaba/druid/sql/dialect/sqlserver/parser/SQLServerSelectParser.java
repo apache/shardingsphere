@@ -36,17 +36,18 @@ public class SQLServerSelectParser extends SQLSelectParser {
     }
     
     @Override
-    public SQLSelect select() {
-        SQLServerSelect result = new SQLServerSelect();
-        result.setQuery(query());
-        result.setOrderBy(getExprParser().parseOrderBy());
+    protected SQLSelect createSQLSelect() {
+        return new SQLServerSelect();
+    }
+    
+    @Override
+    protected void customizedSelect(final SQLSelect sqlSelect) {
         if (getLexer().equalToken(Token.FOR)) {
             parseFor();
         }
         if (getLexer().identifierEquals("OFFSET")) {
-            parseOffset(result);
+            parseOffset((SQLServerSelect) sqlSelect);
         }
-        return result;
     }
     
     @Override

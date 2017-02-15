@@ -16,6 +16,7 @@
 
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
@@ -62,8 +63,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
@@ -76,11 +75,11 @@ import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
 
 public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements OracleASTVisitor {
 
-    public boolean visit(OracleSelect x) {
+    public boolean visit(SQLSelect x) {
         return true;
     }
 
-    public void endVisit(OracleSelect x) {
+    public void endVisit(SQLSelect x) {
     }
 
     @Override
@@ -125,11 +124,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
 
     @Override
     public void endVisit(OracleOuterExpr x) {
-
-    }
-
-    @Override
-    public void endVisit(OracleSelectForUpdate x) {
 
     }
 
@@ -218,12 +212,6 @@ public class OracleASTVisitorAdapter extends SQLASTVisitorAdapter implements Ora
 
     @Override
     public boolean visit(OracleOuterExpr x) {
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(OracleSelectForUpdate x) {
 
         return true;
     }

@@ -38,6 +38,7 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
@@ -61,7 +62,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleRangeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSizeExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleSysdateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -359,8 +359,8 @@ public class OracleExprParser extends SQLExprParser {
             case CURSOR:
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-                
-                OracleSelect select = createSelectParser().select();
+    
+                SQLSelect select = createSelectParser().select();
                 OracleCursorExpr cursorExpr = new OracleCursorExpr(select);
                 
                 accept(Token.RIGHT_PAREN);

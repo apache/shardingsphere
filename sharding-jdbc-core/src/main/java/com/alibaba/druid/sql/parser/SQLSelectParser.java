@@ -45,14 +45,19 @@ public class SQLSelectParser extends SQLParser {
         this.exprParser = exprParser;
     }
     
-    public SQLSelect select() {
-        SQLSelect result = new SQLSelect();
+    public final SQLSelect select() {
+        SQLSelect result = createSQLSelect();
         result.setQuery(query());
         result.setOrderBy(exprParser.parseOrderBy());
-        while (getLexer().equalToken(Token.HINT)) {
-            getLexer().nextToken();
-        }
+        customizedSelect(result);
         return result;
+    }
+    
+    protected SQLSelect createSQLSelect() {
+        return new SQLSelect();
+    }
+    
+    protected void customizedSelect(final SQLSelect sqlSelect) {
     }
     
     protected SQLSelectQuery query() {

@@ -77,8 +77,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleExprStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleLabelStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleOrderByItem;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OraclePLSQLCommitStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelect;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectForUpdate;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectHierarchicalQueryClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
@@ -219,49 +217,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     public boolean visit(OraclePLSQLCommitStatement astNode) {
         print("/");
         println();
-        return false;
-    }
-
-    public boolean visit(SQLSelect x) {
-        if (x instanceof OracleSelect) {
-            return visit((OracleSelect) x);
-        }
-
-        return super.visit(x);
-    }
-
-    public boolean visit(OracleSelect x) {
-        x.getQuery().accept(this);
-
-        if (x.getForUpdate() != null) {
-            println();
-            x.getForUpdate().accept(this);
-        }
-
-        if (x.getOrderBy() != null) {
-            println();
-            x.getOrderBy().accept(this);
-        }
-
-        return false;
-    }
-
-    public boolean visit(OracleSelectForUpdate x) {
-        print("FOR UPDATE");
-        if (x.getOf().size() > 0) {
-            print("(");
-            printAndAccept(x.getOf(), ", ");
-            print(")");
-        }
-
-        if (x.isNotWait()) {
-            print(" NOWAIT");
-        } else if (x.isSkipLocked()) {
-            print(" SKIP LOCKED");
-        } else if (x.getWait() != null) {
-            print(" WAIT ");
-            x.getWait().accept(this);
-        }
         return false;
     }
 
@@ -598,11 +553,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
     }
 
     @Override
-    public void endVisit(OracleSelectForUpdate x) {
-
-    }
-
-    @Override
     public void endVisit(OracleSelectHierarchicalQueryClause x) {
 
     }
@@ -795,11 +745,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     @Override
     public void endVisit(OracleBinaryDoubleExpr x) {
-
-    }
-
-    @Override
-    public void endVisit(OracleSelect x) {
 
     }
 
