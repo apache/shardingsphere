@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
@@ -62,13 +61,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             x.getOrderBy().setParent(x);
         }
         print("SELECT ");
-        if (SQLSetQuantifier.ALL == x.getDistionOption()) {
-            print("ALL ");
-        } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
-            print("DISTINCT ");
-        } else if (SQLSetQuantifier.DISTINCTROW == x.getDistionOption()) {
-            print("DISTINCTROW ");
-        }
 
         if (x.isHighPriority()) {
             print("HIGH_PRIORITY ");

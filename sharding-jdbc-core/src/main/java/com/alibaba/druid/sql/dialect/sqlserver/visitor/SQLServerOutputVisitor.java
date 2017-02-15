@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
@@ -33,14 +32,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
 
     public boolean visit(SQLServerSelectQueryBlock x) {
         print("SELECT ");
-
-        if (SQLSetQuantifier.ALL == x.getDistionOption()) {
-            print("ALL ");
-        } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
-            print("DISTINCT ");
-        } else if (SQLSetQuantifier.UNIQUE == x.getDistionOption()) {
-            print("UNIQUE ");
-        }
 
         if (x.getTop() != null) {
             x.getTop().accept(this);

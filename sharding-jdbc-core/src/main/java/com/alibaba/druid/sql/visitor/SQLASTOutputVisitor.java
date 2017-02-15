@@ -21,7 +21,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLOver;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
@@ -585,14 +584,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
 
     public boolean visit(SQLSelectQueryBlock x) {
         print("SELECT ");
-        if (SQLSetQuantifier.ALL == x.getDistionOption()) {
-            print("ALL ");
-        } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
-            print("DISTINCT ");
-        } else if (SQLSetQuantifier.UNIQUE == x.getDistionOption()) {
-            print("UNIQUE ");
-        }
-
         printSelectList(x.getSelectList());
 
         if (x.getFrom() != null) {

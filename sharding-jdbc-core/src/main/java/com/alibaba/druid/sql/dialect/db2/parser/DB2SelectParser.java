@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.db2.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.dialect.db2.ast.stmt.DB2SelectQueryBlock;
 import com.alibaba.druid.sql.dialect.db2.ast.stmt.DB2SelectQueryBlock.Isolation;
@@ -27,7 +27,7 @@ import com.alibaba.druid.sql.parser.SQLSelectParser;
 
 public class DB2SelectParser extends SQLSelectParser {
     
-    public DB2SelectParser(SQLExprParser exprParser){
+    public DB2SelectParser(final SQLExprParser exprParser) {
         super(exprParser);
     }
     
@@ -44,16 +44,7 @@ public class DB2SelectParser extends SQLSelectParser {
             getLexer().nextToken();
         }
         DB2SelectQueryBlock queryBlock = new DB2SelectQueryBlock();
-        if (getLexer().equalToken(Token.DISTINCT)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
-            getLexer().nextToken();
-        } else if (getLexer().equalToken(Token.UNIQUE)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.UNIQUE);
-            getLexer().nextToken();
-        } else if (getLexer().equalToken(Token.ALL)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.ALL);
-            getLexer().nextToken();
-        }
+        parseDistinct(queryBlock);
         parseSelectList(queryBlock);
         parseFrom(queryBlock);
         parseWhere(queryBlock);

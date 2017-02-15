@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
@@ -36,7 +36,7 @@ import java.util.List;
 
 public class PGSelectParser extends SQLSelectParser {
     
-    public PGSelectParser(SQLExprParser exprParser){
+    public PGSelectParser(final SQLExprParser exprParser) {
         super(exprParser);
     }
     
@@ -70,29 +70,7 @@ public class PGSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-
-            if (getLexer().equalToken(Token.DISTINCT)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
-                getLexer().nextToken();
-
-                if (getLexer().equalToken(Token.ON)) {
-                    getLexer().nextToken();
-
-                    while (true) {
-                        SQLExpr expr = this.createExprParser().expr();
-                        queryBlock.getDistinctOn().add(expr);
-                        if (getLexer().equalToken(Token.COMMA)) {
-                            getLexer().nextToken();
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            } else if (getLexer().equalToken(Token.ALL)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.ALL);
-                getLexer().nextToken();
-            }
-
+            parseDistinct(queryBlock);
             parseSelectList(queryBlock);
 
             if (getLexer().equalToken(Token.INTO)) {
@@ -242,7 +220,7 @@ public class PGSelectParser extends SQLSelectParser {
         return queryRest(queryBlock);
     }
 
-    protected SQLTableSource parseTableSourceRest(SQLTableSource tableSource) {
+    protected SQLTableSource parseTableSourceRest(final SQLTableSource tableSource) {
         if (getLexer().equalToken(Token.AS) && tableSource instanceof SQLExprTableSource) {
             getLexer().nextToken();
 
@@ -271,7 +249,7 @@ public class PGSelectParser extends SQLSelectParser {
         return super.parseTableSourceRest(tableSource);
     }
 
-    private void parserParameters(List<PGParameter> parameters) {
+    private void parserParameters(final List<PGParameter> parameters) {
         while (true) {
             PGParameter parameter = new PGParameter();
 
@@ -288,5 +266,9 @@ public class PGSelectParser extends SQLSelectParser {
             }
             break;
         }
+    }
+    
+    protected boolean hasDistinctOn() {
+        return true;
     }
 }

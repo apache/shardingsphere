@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.oracle.visitor;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -349,14 +348,6 @@ public class OracleOutputVisitor extends SQLASTOutputVisitor implements OracleAS
 
     public boolean visit(OracleSelectQueryBlock x) {
         print("SELECT ");
-        if (SQLSetQuantifier.ALL == x.getDistionOption()) {
-            print("ALL ");
-        } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
-            print("DISTINCT ");
-        } else if (SQLSetQuantifier.UNIQUE == x.getDistionOption()) {
-            print("UNIQUE ");
-        }
-
         printSelectList(x.getSelectList());
 
         if (x.getInto() != null) {

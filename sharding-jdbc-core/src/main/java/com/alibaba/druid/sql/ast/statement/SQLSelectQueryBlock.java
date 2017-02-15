@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -30,7 +31,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class SQLSelectQueryBlock extends SQLObjectImpl implements SQLSelectQuery {
     
-    private int distionOption;
+    private boolean distinct;
     
     private SQLTableSource from;
     
@@ -42,7 +43,7 @@ public class SQLSelectQueryBlock extends SQLObjectImpl implements SQLSelectQuery
     
     private final List<SQLSelectItem> selectList = new ArrayList<>();
     
-    public void setInto(SQLExpr into) {
+    public void setInto(final SQLExpr into) {
         setInto(new SQLExprTableSource(into));
     }
     

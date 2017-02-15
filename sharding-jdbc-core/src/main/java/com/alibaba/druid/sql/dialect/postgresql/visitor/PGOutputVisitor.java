@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.postgresql.visitor;
 
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
@@ -168,17 +167,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
         }
 
         print("SELECT ");
-
-        if (SQLSetQuantifier.ALL == x.getDistionOption()) {
-            print("ALL ");
-        } else if (SQLSetQuantifier.DISTINCT == x.getDistionOption()) {
-            print("DISTINCT ");
-
-            if (x.getDistinctOn() != null && x.getDistinctOn().size() > 0) {
-                print("ON ");
-                printAndAccept(x.getDistinctOn(), ", ");
-            }
-        }
 
         printSelectList(x.getSelectList());
 

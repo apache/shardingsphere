@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -67,18 +66,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-
-            if (getLexer().equalToken(Token.DISTINCT)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
-                getLexer().nextToken();
-            } else if (getLexer().identifierEquals("DISTINCTROW")) {
-                queryBlock.setDistionOption(SQLSetQuantifier.DISTINCTROW);
-                getLexer().nextToken();
-            } else if (getLexer().equalToken(Token.ALL)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.ALL);
-                getLexer().nextToken();
-            }
-
+            parseDistinct(queryBlock);
             if (getLexer().identifierEquals("HIGH_PRIORITY")) {
                 queryBlock.setHighPriority(true);
                 getLexer().nextToken();

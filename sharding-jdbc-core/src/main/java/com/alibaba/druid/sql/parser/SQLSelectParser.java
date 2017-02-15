@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -72,21 +71,32 @@ public class SQLSelectParser extends SQLParser {
         if (getLexer().equalToken(Token.COMMENT)) {
             getLexer().nextToken();
         }
-        if (getLexer().equalToken(Token.DISTINCT)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
-            getLexer().nextToken();
-        } else if (getLexer().equalToken(Token.UNIQUE)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.UNIQUE);
-            getLexer().nextToken();
-        } else if (getLexer().equalToken(Token.ALL)) {
-            queryBlock.setDistionOption(SQLSetQuantifier.ALL);
-            getLexer().nextToken();
-        }
+        parseDistinct(queryBlock);
         parseSelectList(queryBlock);
         parseFrom(queryBlock);
         parseWhere(queryBlock);
         parseGroupBy(queryBlock);
         return queryRest(queryBlock);
+    }
+    
+    protected final void parseDistinct(final SQLSelectQueryBlock queryBlock) {
+        if (getLexer().equalToken(Token.DISTINCT) || getLexer().equalToken(Token.DISTINCTROW) || getLexer().equalToken(Token.UNION)) {
+            queryBlock.setDistinct(true);
+            getLexer().nextToken();
+            if (hasDistinctOn() && getLexer().equalToken(Token.ON)) {
+                getLexer().nextToken();
+                accept(Token.LEFT_PAREN);
+                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF)) {
+                    getLexer().nextToken();
+                }
+            }
+        } else if (getLexer().equalToken(Token.ALL)) {
+            getLexer().nextToken();
+        }
+    }
+    
+    protected boolean hasDistinctOn() {
+        return false;
     }
     
     protected SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {

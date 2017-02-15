@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -98,16 +97,7 @@ public class OracleSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.HINT)) {
                 getLexer().nextToken();
             }
-            if (getLexer().equalToken(Token.DISTINCT)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.DISTINCT);
-                getLexer().nextToken();
-            } else if (getLexer().equalToken(Token.UNIQUE)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.UNIQUE);
-                getLexer().nextToken();
-            } else if (getLexer().equalToken(Token.ALL)) {
-                queryBlock.setDistionOption(SQLSetQuantifier.ALL);
-                getLexer().nextToken();
-            }
+            parseDistinct(queryBlock);
             if (getLexer().equalToken(Token.HINT)) {
                 getLexer().nextToken();
             }
@@ -713,7 +703,7 @@ public class OracleSelectParser extends SQLSelectParser {
         return null;
     }
 
-    protected SQLTableSource parseTableSourceRest(OracleSelectTableSource tableSource) {
+    protected SQLTableSource parseTableSourceRest(final OracleSelectTableSource tableSource) {
         if (getLexer().equalToken(Token.AS)) {
             getLexer().nextToken();
 
