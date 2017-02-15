@@ -226,6 +226,13 @@ public enum Token {
     QUICK("QUICK", false, true, false, false, false, false),
     LOW_PRIORITY("LOW_PRIORITY", false, true, false, false, false, false),
     HIGH_PRIORITY("HIGH_PRIORITY", false, true, false, false, false, false),
+    STRAIGHT_JOIN("STRAIGHT_JOIN", false, true, false, false, false, false),
+    SQL_SMALL_RESULT("SQL_SMALL_RESULT", false, true, false, false, false, false),
+    SQL_BIG_RESULT("SQL_BIG_RESULT", false, true, false, false, false, false),
+    SQL_BUFFER_RESULT("SQL_BUFFER_RESULT", false, true, false, false, false, false),
+    SQL_CACHE("SQL_CACHE", false, true, false, false, false, false),
+    SQL_NO_CACHE("SQL_NO_CACHE", false, true, false, false, false, false),
+    SQL_CALC_FOUND_ROWS("SQL_CALC_FOUND_ROWS", false, true, false, false, false, false),
     OUTPUT("OUTPUT", false, false, false, false, true, false),
     
     EOF, 

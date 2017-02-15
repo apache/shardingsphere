@@ -32,7 +32,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOutFileExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectGroupBy;
@@ -61,39 +60,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
             x.getOrderBy().setParent(x);
         }
         print("SELECT ");
-
-        if (x.isHighPriority()) {
-            print("HIGH_PRIORITY ");
-        }
-
-        if (x.isStraightJoin()) {
-            print("STRAIGHT_JOIN ");
-        }
-
-        if (x.isSmallResult()) {
-            print("SQL_SMALL_RESULT ");
-        }
-
-        if (x.isBigResult()) {
-            print("SQL_BIG_RESULT ");
-        }
-
-        if (x.isBufferResult()) {
-            print("SQL_BUFFER_RESULT ");
-        }
-
-        if (x.getCache() != null) {
-            if (x.getCache().booleanValue()) {
-                print("SQL_CACHE ");
-            } else {
-                print("SQL_NO_CACHE ");
-            }
-        }
-
-        if (x.isCalcFoundRows()) {
-            print("SQL_CALC_FOUND_ROWS ");
-        }
-
         printSelectList(x.getSelectList());
 
         if (x.getInto() != null) {
@@ -139,17 +105,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
                 print(")");
             }
         }
-
-        if (x.isForUpdate()) {
-            println();
-            print("FOR UPDATE");
-        }
-
-        if (x.isLockInShareMode()) {
-            println();
-            print("LOCK IN SHARE MODE");
-        }
-
         return false;
     }
 
@@ -163,7 +118,7 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
         return false;
     }
-
+    
     public boolean visit(SQLDataType x) {
         print(x.getName());
         if (x.getArguments().size() > 0) {
@@ -428,52 +383,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
 
     @Override
     public void endVisit(MySqlSelectQueryBlock x) {
-
-    }
-
-    @Override
-    public boolean visit(MySqlOutFileExpr x) {
-        print("OUTFILE ");
-        x.getFile().accept(this);
-        if (x.getColumnsTerminatedBy() != null || x.getColumnsEnclosedBy() != null || x.getColumnsEscaped() != null) {
-            print(" COLUMNS");
-            if (x.getColumnsTerminatedBy() != null) {
-                print(" TERMINATED BY ");
-                x.getColumnsTerminatedBy().accept(this);
-            }
-
-            if (x.getColumnsEnclosedBy() != null) {
-                if (x.isColumnsEnclosedOptionally()) {
-                    print(" OPTIONALLY");
-                }
-                print(" ENCLOSED BY ");
-                x.getColumnsEnclosedBy().accept(this);
-            }
-
-            if (x.getColumnsEscaped() != null) {
-                print(" ESCAPED BY ");
-                x.getColumnsEscaped().accept(this);
-            }
-        }
-
-        if (x.getLinesStartingBy() != null || x.getLinesTerminatedBy() != null) {
-            print(" LINES");
-            if (x.getLinesStartingBy() != null) {
-                print(" STARTING BY ");
-                x.getLinesStartingBy().accept(this);
-            }
-
-            if (x.getLinesTerminatedBy() != null) {
-                print(" TERMINATED BY ");
-                x.getLinesTerminatedBy().accept(this);
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void endVisit(MySqlOutFileExpr x) {
 
     }
 

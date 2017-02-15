@@ -32,8 +32,6 @@ import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.lexer.Token;
 import lombok.Getter;
 
-import java.util.List;
-
 public class SQLSelectParser extends SQLParser {
     
     @Getter
@@ -97,6 +95,17 @@ public class SQLSelectParser extends SQLParser {
     
     protected boolean hasDistinctOn() {
         return false;
+    }
+    
+    protected final void parseSelectList(final SQLSelectQueryBlock queryBlock) {
+        do {
+            if (getLexer().equalToken(Token.COMMA)) {
+                getLexer().nextToken();
+            }
+            SQLSelectItem selectItem = exprParser.parseSelectItem();
+            selectItem.setParent(queryBlock);
+            queryBlock.getSelectList().add(selectItem);
+        } while (getLexer().equalToken(Token.COMMA));
     }
     
     protected SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {
@@ -183,19 +192,6 @@ public class SQLSelectParser extends SQLParser {
             SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
             groupBy.setHaving(exprParser.expr());
             queryBlock.setGroupBy(groupBy);
-        }
-    }
-    
-    protected void parseSelectList(final SQLSelectQueryBlock queryBlock) {
-        List<SQLSelectItem> selectList = queryBlock.getSelectList();
-        while (true) {
-            SQLSelectItem selectItem = exprParser.parseSelectItem();
-            selectList.add(selectItem);
-            selectItem.setParent(queryBlock);
-            if (!getLexer().equalToken(Token.COMMA)) {
-                break;
-            }
-            getLexer().nextToken();
         }
     }
     

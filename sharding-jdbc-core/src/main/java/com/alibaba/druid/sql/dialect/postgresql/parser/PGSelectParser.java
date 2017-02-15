@@ -26,7 +26,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.IntoOption;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -46,15 +45,6 @@ public class PGSelectParser extends SQLSelectParser {
     
     @Override
     public SQLSelectQuery query() {
-        if (getLexer().equalToken(Token.VALUES)) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-            PGValuesQuery valuesQuery = new PGValuesQuery();
-            valuesQuery.getValues().addAll(getExprParser().exprList(valuesQuery));
-            accept(Token.RIGHT_PAREN);
-            return queryRest(valuesQuery);
-        }
-
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();

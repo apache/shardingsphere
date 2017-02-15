@@ -37,29 +37,11 @@ import java.util.List;
 @EqualsAndHashCode
 public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlObject {
     
-    private boolean highPriority;
-    
-    private boolean straightJoin;
-    
-    private boolean smallResult;
-    
-    private boolean bigResult;
-    
-    private boolean bufferResult;
-    
-    private Boolean cache;
-    
-    private boolean calcFoundRows;
-    
     private SQLOrderBy orderBy;
     
     private Limit limit;
     
     private SQLName procedureName;
-    
-    private boolean forUpdate;
-    
-    private boolean lockInShareMode;
     
     private final List<SQLExpr> procedureArgumentList = new ArrayList<>(2);
     
