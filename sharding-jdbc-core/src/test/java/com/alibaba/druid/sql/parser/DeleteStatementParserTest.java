@@ -22,7 +22,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutCondition() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "DELETE FROM TABLE_XXX");
         SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
         assertTrue(deleteStatement.getSqlContext().getConditionContexts().isEmpty());
         assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
@@ -48,8 +48,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertDeleteStatement(final SQLDeleteStatement statement) {
-        assertThat(statement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertThat(statement.getSqlContext().getTable().getAlias().get(), is("xxx"));
+        assertThat(statement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(statement.getSqlContext().getTables().get(0).getAlias().get(), is("xxx"));
         Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
@@ -108,8 +108,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {
         SQLDeleteStatement deleteStatement = (SQLDeleteStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertFalse(deleteStatement.getSqlContext().getTable().getAlias().isPresent());
+        assertThat(deleteStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
+        assertFalse(deleteStatement.getSqlContext().getTables().get(0).getAlias().isPresent());
         Iterator<Condition> conditions = deleteStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));

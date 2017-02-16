@@ -108,7 +108,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         getLexer().nextToken();
         Table result = new Table(SQLUtil.getExactlyValue(tableName), Optional.<String>absent());
         insertSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableName, result.getName()));
-        insertSQLContext.setTable(result);
+        insertSQLContext.getTables().add(result);
         return result;
     }
     
@@ -135,8 +135,8 @@ public abstract class AbstractInsertParser extends SQLParser {
     
     private Collection<Condition.Column> parseColumns(final InsertSQLContext sqlContext) {
         Collection<Condition.Column> result = new LinkedList<>();
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTable(), sqlContext, 0);
-        Collection<String> autoIncrementColumns = parserUtil.getParseContext().getShardingRule().getAutoIncrementColumns(sqlContext.getTable().getName());
+        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTables().get(0), sqlContext, 0);
+        Collection<String> autoIncrementColumns = parserUtil.getParseContext().getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             do {
                 getLexer().nextToken();
@@ -144,14 +144,14 @@ public abstract class AbstractInsertParser extends SQLParser {
                 if (autoIncrementColumns.contains(columnName)) {
                     autoIncrementColumns.remove(columnName);
                 }
-                result.add(new Condition.Column(columnName, sqlContext.getTable().getName()));
+                result.add(new Condition.Column(columnName, sqlContext.getTables().get(0).getName()));
                 getLexer().nextToken();
             }
             while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
             ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
-                result.add(new Condition.Column(each, sqlContext.getTable().getName(), true));
+                result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
             }
             if (!itemsToken.getItems().isEmpty()) {
                 sqlContext.getSqlTokens().add(itemsToken);
@@ -168,7 +168,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     }
     
     private void parseValues(final Collection<Condition.Column> columns, final InsertSQLContext sqlContext) {
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTable(), sqlContext, 0);
+        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTables().get(0), sqlContext, 0);
         ParseContext parseContext = parserUtil.getParseContext();
         boolean parsed = false;
         do {
@@ -183,7 +183,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             int count = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {
-                    Number autoIncrementedValue = (Number) parseContext.getShardingRule().findTableRule(sqlContext.getTable().getName()).generateId(each.getColumnName());
+                    Number autoIncrementedValue = (Number) parseContext.getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
                     if (parameters.isEmpty()) {
                         itemsToken.getItems().add(autoIncrementedValue.toString());
                         sqlExprs.add(new SQLNumberExpr(autoIncrementedValue));

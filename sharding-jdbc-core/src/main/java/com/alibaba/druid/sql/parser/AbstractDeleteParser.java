@@ -64,7 +64,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
         }
         Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
         deleteSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableSource.toString(), result.getName()));
-        deleteSQLContext.setTable(result);
+        deleteSQLContext.getTables().add(result);
         return result;
     }
     

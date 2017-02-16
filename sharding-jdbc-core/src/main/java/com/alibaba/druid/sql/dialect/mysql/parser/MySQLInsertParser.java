@@ -32,14 +32,14 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     private void parseInsertSet(final InsertSQLContext sqlContext) {
-        ParserUtil parserUtil = new ParserUtil(getExprParser(), getShardingRule(), getParameters(), sqlContext.getTable(), sqlContext, 0);
+        ParserUtil parserUtil = new ParserUtil(getExprParser(), getShardingRule(), getParameters(), sqlContext.getTables().get(0), sqlContext, 0);
         ParseContext parseContext = parserUtil.getParseContext();
         do {
             getLexer().nextToken();
             SQLName column = getExprParser().name();
             accept(Token.EQ);
             SQLExpr value = getExprParser().expr();
-            parseContext.addCondition(column.getSimpleName(), sqlContext.getTable().getName(), Condition.BinaryOperator.EQUAL, value, getExprParser().getDbType(), getParameters());
+            parseContext.addCondition(column.getSimpleName(), sqlContext.getTables().get(0).getName(), Condition.BinaryOperator.EQUAL, value, getExprParser().getDbType(), getParameters());
         } while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }

@@ -22,7 +22,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutCondition() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "UPDATE TABLE_XXX SET field1=field1+1");
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) statementParser.parseStatement();
-        assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
+        assertThat(updateStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
         assertTrue(updateStatement.getSqlContext().getConditionContexts().isEmpty());
         assertThat(updateStatement.getSqlContext().toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
@@ -48,8 +48,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertUpdateStatement(final SQLUpdateStatement statement) {
-        assertThat(statement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertThat(statement.getSqlContext().getTable().getAlias().get(), is("xxx"));
+        assertThat(statement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(statement.getSqlContext().getTables().get(0).getAlias().get(), is("xxx"));
         Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
@@ -103,8 +103,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
         SQLUpdateStatement updateStatement = (SQLUpdateStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
-        assertThat(updateStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertFalse(updateStatement.getSqlContext().getTable().getAlias().isPresent());
+        assertThat(updateStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
+        assertFalse(updateStatement.getSqlContext().getTables().get(0).getAlias().isPresent());
         Iterator<Condition> conditions = updateStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));

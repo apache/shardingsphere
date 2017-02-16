@@ -65,7 +65,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertInsertStatement(final SQLInsertStatement statement) {
-        assertThat(statement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
+        assertThat(statement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(statement.getSqlContext().getConditionContexts().size(), is(1));
         Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition1 = conditions.next();
@@ -126,8 +126,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
         SQLInsertStatement insertStatement = (SQLInsertStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
-        assertThat(insertStatement.getSqlContext().getTable().getName(), is("TABLE_XXX"));
-        assertFalse(insertStatement.getSqlContext().getTable().getAlias().isPresent());
+        assertThat(insertStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
+        assertFalse(insertStatement.getSqlContext().getTables().get(0).getAlias().isPresent());
         Iterator<Condition> conditions = insertStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));

@@ -72,7 +72,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         }
         Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
         updateSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableSource.toString(), result.getName()));
-        updateSQLContext.setTable(result);
+        updateSQLContext.getTables().add(result);
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();
         }
@@ -96,8 +96,8 @@ public abstract class AbstractUpdateParser extends SQLParser {
             String literals = getLexer().getLiterals();
             int beginPosition = getLexer().getCurrentPosition();
             SQLExpr sqlExpr = exprParser.primary();
-            if (sqlExpr instanceof SQLPropertyExpr && sqlContext.getTable().getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, sqlContext.getTable().getName()));
+            if (sqlExpr instanceof SQLPropertyExpr && sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, sqlContext.getTables().get(0).getName()));
             }
         }
         if (getLexer().equalToken(Token.COLON_EQ)) {

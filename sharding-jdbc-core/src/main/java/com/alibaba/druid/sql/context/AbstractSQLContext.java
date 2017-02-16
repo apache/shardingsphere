@@ -5,9 +5,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +23,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private final String originalSQL;
     
-    @Setter
-    private Table table;
+    private List<Table> tables = new ArrayList<>();
     
     private final Collection<ConditionContext> conditionContexts = new LinkedList<>();
     

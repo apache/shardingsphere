@@ -15,11 +15,11 @@ import java.util.List;
 public interface SQLContext {
     
     /**
-     * 获取表解析对象.
+     * 获取表解析对象集合.
      * 
-     * @return 表解析对象
+     * @return 表解析对象集合
      */
-    Table getTable();
+    List<Table> getTables();
     
     /**
      * 获取条件对象上下文集合.

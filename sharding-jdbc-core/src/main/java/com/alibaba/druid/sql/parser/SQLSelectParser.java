@@ -66,9 +66,7 @@ public class SQLSelectParser extends SQLParser {
         }
         SQLSelectQueryBlock queryBlock = new SQLSelectQueryBlock();
         accept(Token.SELECT);
-        if (getLexer().equalToken(Token.COMMENT)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.COMMENT);
         parseDistinct(queryBlock);
         parseSelectList(queryBlock);
         parseFrom(queryBlock);

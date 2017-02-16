@@ -76,7 +76,7 @@ public final class SQLParseEngine {
         } else {
             result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
-        result.getRouteContext().getTables().add(sqlContext.getTable());
+        result.getRouteContext().getTables().add(sqlContext.getTables().get(0));
         result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         result.getRouteContext().setSqlStatementType(getType());
         if (sqlContext instanceof InsertSQLContext) {
