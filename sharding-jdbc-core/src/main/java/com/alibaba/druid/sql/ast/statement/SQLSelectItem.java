@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -30,14 +31,7 @@ public class SQLSelectItem extends SQLObjectImpl {
     
     private final String alias;
     
-    private final boolean connectByRoot;
-    
     public SQLSelectItem(final SQLExpr expr, final String alias) {
-        this(expr, alias, false);
-    }
-    
-    public SQLSelectItem(final SQLExpr expr, final String alias, final boolean connectByRoot) {
-        this.connectByRoot = connectByRoot;
         this.expr = expr;
         this.alias = alias;
         if (null != expr) {
@@ -55,9 +49,6 @@ public class SQLSelectItem extends SQLObjectImpl {
     
     @Override
     public void output(final StringBuffer buffer) {
-        if (connectByRoot) {
-            buffer.append(" CONNECT_BY_ROOT ");
-        }
         expr.output(buffer);
         if (!Strings.isNullOrEmpty(alias)) {
             buffer.append(" AS ");

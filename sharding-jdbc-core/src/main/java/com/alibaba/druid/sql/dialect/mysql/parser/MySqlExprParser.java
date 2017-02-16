@@ -70,12 +70,9 @@ public class MySqlExprParser extends SQLExprParser {
         accept(Token.PARTITION);
         accept(Token.LEFT_PAREN);
         do {
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-            }
             result.add(getLexer().getLiterals());
             getLexer().nextToken();
-        } while (getLexer().equalToken(Token.COMMA));
+        } while (getLexer().skipIfEqual(Token.COMMA));
         accept(Token.RIGHT_PAREN);
         return result;
     }

@@ -60,6 +60,22 @@ public class Lexer {
     }
     
     /**
+     * 如果当前语言符号等于传入值, 则跳过.
+     * 
+     * @param tokens 待跳过的语言符号
+     * @return 是否跳过(或可理解为是否相等)
+     */
+    public final boolean skipIfEqual(final Token... tokens) {
+        for (Token each : tokens) {
+            if (equalToken(each)) {
+                nextToken();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * 跳至下一个语言符号.
      */
     public final void nextToken() {

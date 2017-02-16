@@ -74,11 +74,8 @@ public class ParserUtil {
     
     private void parseConditions(final ParseContext parseContext) {
         do {
-            if (exprParser.getLexer().equalToken(Token.AND)) {
-                exprParser.getLexer().nextToken();
-            }
             parseCondition(parseContext);
-        } while (exprParser.getLexer().equalToken(Token.AND));
+        } while (exprParser.getLexer().skipIfEqual(Token.AND));
         if (exprParser.getLexer().equalToken(Token.OR)) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken());
         }

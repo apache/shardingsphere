@@ -116,10 +116,10 @@ public abstract class AbstractMySQLVisitor extends MySqlOutputVisitor implements
         if ("dual".equalsIgnoreCase(SQLUtil.getExactlyValue(x.getExpr().toString()))) {
             return super.visit(x);
         }
-        return visit(x, getParseContext().addTable(x));
+        return visit(getParseContext().addTable(x));
     }
     
-    private boolean visit(final SQLExprTableSource x, final Table table) {
+    private boolean visit(final Table table) {
         printToken(table.getName());
         if (table.getAlias().isPresent()) {
             print(' ');

@@ -90,17 +90,10 @@ public class OracleSelectParser extends SQLSelectParser {
         OracleSelectQueryBlock queryBlock = new OracleSelectQueryBlock();
         if (getLexer().equalToken(Token.SELECT)) {
             getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
-            }
-            if (getLexer().equalToken(Token.HINT)) {
-                getLexer().nextToken();
-            }
+            getLexer().skipIfEqual(Token.COMMENT);
+            getLexer().skipIfEqual(Token.HINT);
             parseDistinct(queryBlock);
-            if (getLexer().equalToken(Token.HINT)) {
-                getLexer().nextToken();
-            }
+            getLexer().skipIfEqual(Token.HINT);
             parseSelectList(queryBlock);
         }
 
@@ -242,9 +235,7 @@ public class OracleSelectParser extends SQLSelectParser {
             }
             ModelColumn column = new ModelColumn(getExprParser().expr(), as());
             modelColumnClause.getDimensionByColumns().add(column);
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-            }
+            getLexer().skipIfEqual(Token.COMMA);
         }
 
         accept("MEASURES");
@@ -254,13 +245,9 @@ public class OracleSelectParser extends SQLSelectParser {
                 getLexer().nextToken();
                 break;
             }
-
             ModelColumn column = new ModelColumn(getExprParser().expr(), as());
             modelColumnClause.getMeasuresColumns().add(column);
-
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-            }
+            getLexer().skipIfEqual(Token.COMMA);
         }
         mainModel.setModelColumnClause(modelColumnClause);
 

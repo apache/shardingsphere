@@ -82,11 +82,8 @@ public abstract class AbstractUpdateParser extends SQLParser {
     private void parseSetItems(final UpdateSQLContext sqlContext) {
         accept(Token.SET);
         do {
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-            }
             parseSetItem(sqlContext);
-        } while (getLexer().equalToken(Token.COMMA));
+        } while (getLexer().skipIfEqual(Token.COMMA));
     }
     
     private void parseSetItem(final UpdateSQLContext sqlContext) {

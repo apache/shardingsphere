@@ -56,10 +56,7 @@ public class PGSelectParser extends SQLSelectParser {
 
         if (getLexer().equalToken(Token.SELECT)) {
             getLexer().nextToken();
-
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
-            }
+            getLexer().skipIfEqual(Token.COMMENT);
             parseDistinct(queryBlock);
             parseSelectList(queryBlock);
 
@@ -76,13 +73,8 @@ public class PGSelectParser extends SQLSelectParser {
                     getLexer().nextToken();
                     queryBlock.setIntoOption(IntoOption.UNLOGGED);
                 }
-
-                if (getLexer().equalToken(Token.TABLE)) {
-                    getLexer().nextToken();
-                }
-
-                SQLExpr name = this.createExprParser().name();
-
+                getLexer().skipIfEqual(Token.TABLE);
+                SQLExpr name = createExprParser().name();
                 queryBlock.setInto(new SQLExprTableSource(name));
             }
         }
@@ -134,10 +126,7 @@ public class PGSelectParser extends SQLSelectParser {
                 }
                 getLexer().nextToken();
                 limit.setOffset(getExprParser().expr());
-
-                if (getLexer().equalToken(Token.ROW) || getLexer().equalToken(Token.ROWS)) {
-                    getLexer().nextToken();
-                }
+                getLexer().skipIfEqual(Token.ROW, Token.ROWS);
             } else {
                 break;
             }
@@ -247,10 +236,7 @@ public class PGSelectParser extends SQLSelectParser {
             parameter.setDataType(getExprParser().parseDataType());
 
             parameters.add(parameter);
-            if (getLexer().equalToken(Token.COMMA) || getLexer().equalToken(Token.SEMI)) {
-                getLexer().nextToken();
-            }
-
+            getLexer().skipIfEqual(Token.COMMA, Token.SEMI);
             if (!getLexer().equalToken(Token.BEGIN) && !getLexer().equalToken(Token.RIGHT_PAREN)) {
                 continue;
             }

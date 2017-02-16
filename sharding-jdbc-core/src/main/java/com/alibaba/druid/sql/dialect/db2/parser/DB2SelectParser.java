@@ -40,9 +40,7 @@ public class DB2SelectParser extends SQLSelectParser {
             return queryRest(select);
         }
         accept(Token.SELECT);
-        if (getLexer().equalToken(Token.COMMENT)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.COMMENT);
         DB2SelectQueryBlock queryBlock = new DB2SelectQueryBlock();
         parseDistinct(queryBlock);
         parseSelectList(queryBlock);

@@ -59,9 +59,7 @@ public class PGExprParser extends SQLExprParser {
     
     @Override
     public SQLDataType parseDataType() {
-        if (getLexer().equalToken(Token.TYPE)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.TYPE);
         return super.parseDataType();
     }
 

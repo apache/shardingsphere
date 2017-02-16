@@ -62,6 +62,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.google.common.base.Preconditions;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -561,9 +562,8 @@ public class SQLExprParser extends SQLParser {
     }
     
     public SQLExpr primaryRest(SQLExpr expr) {
-        if (null == expr) {
-            throw new IllegalArgumentException("expr");
-        }
+        Preconditions.checkNotNull(expr);
+        // TODO 解析游标, 未来删除
         if (getLexer().equalToken(Token.OF)) {
             if (expr instanceof SQLIdentifierExpr) {
                 String name = ((SQLIdentifierExpr) expr).getSimpleName();
@@ -627,16 +627,8 @@ public class SQLExprParser extends SQLParser {
             getLexer().nextToken();
             expr = new SQLPropertyExpr(expr, "*");
         } else {
-            String name;
-            if (getLexer().equalToken(Token.IDENTIFIER) || getLexer().equalToken(Token.LITERAL_CHARS) || getLexer().equalToken(Token.LITERAL_ALIAS)) {
-                name = getLexer().getLiterals();
-                getLexer().nextToken();
-            } else if (getLexer().containsToken()) {
-                name = getLexer().getLiterals();
-                getLexer().nextToken();
-            } else {
-                throw new ParserException(getLexer());
-            }
+            String name = getLexer().getLiterals();
+            getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr(name, expr);
@@ -1223,15 +1215,11 @@ public class SQLExprParser extends SQLParser {
     }
     
     public SQLSelectItem parseSelectItem() {
+        getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
         SQLExpr expr;
-        boolean connectByRoot = false;
         if (getLexer().equalToken(Token.IDENTIFIER)) {
-            if (getLexer().identifierEquals("CONNECT_BY_ROOT")) {
-                connectByRoot = true;
-                getLexer().nextToken();
-            }
             expr = new SQLIdentifierExpr(getLexer().getLiterals());
-            getLexer().nextTokenCommaOrRightParen();
+            getLexer().nextToken();
             if (!getLexer().equalToken(Token.COMMA)) {
                 expr = primaryRest(expr);
                 expr = exprRest(expr);
@@ -1239,6 +1227,6 @@ public class SQLExprParser extends SQLParser {
         } else {
             expr = expr();
         }
-        return new SQLSelectItem(expr, as(), connectByRoot);
+        return new SQLSelectItem(expr, as());
     }
 }

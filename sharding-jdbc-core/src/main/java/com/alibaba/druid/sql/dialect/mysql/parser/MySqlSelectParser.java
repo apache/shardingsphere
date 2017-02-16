@@ -70,13 +70,9 @@ public class MySqlSelectParser extends SQLSelectParser {
             parseSelectList(queryBlock);
             skipToFrom();
         }
-
         parseFrom(queryBlock);
-
         parseWhere(queryBlock);
-
         parseGroupBy(queryBlock);
-
         queryBlock.setOrderBy(getExprParser().parseOrderBy());
 
         if (getLexer().equalToken(Token.LIMIT)) {
@@ -91,10 +87,8 @@ public class MySqlSelectParser extends SQLSelectParser {
     }
     
     private void skipToFrom() {
-        if (getLexer().equalToken(Token.INTO)) {
-            while (!getLexer().equalToken(Token.FROM) || !getLexer().equalToken(Token.EOF)) {
-                getLexer().nextToken();
-            }
+        while (!getLexer().equalToken(Token.FROM) && !getLexer().equalToken(Token.EOF)) {
+            getLexer().nextToken();
         }
     }
     

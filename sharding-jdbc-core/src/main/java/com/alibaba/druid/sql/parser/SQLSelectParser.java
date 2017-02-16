@@ -99,13 +99,10 @@ public class SQLSelectParser extends SQLParser {
     
     protected final void parseSelectList(final SQLSelectQueryBlock queryBlock) {
         do {
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-            }
             SQLSelectItem selectItem = exprParser.parseSelectItem();
             selectItem.setParent(queryBlock);
             queryBlock.getSelectList().add(selectItem);
-        } while (getLexer().equalToken(Token.COMMA));
+        } while (getLexer().skipIfEqual(Token.COMMA));
     }
     
     protected SQLSelectQuery queryRest(final SQLSelectQuery selectQuery) {

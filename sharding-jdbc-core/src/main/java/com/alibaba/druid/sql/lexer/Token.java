@@ -234,6 +234,7 @@ public enum Token {
     SQL_NO_CACHE("SQL_NO_CACHE", false, true, false, false, false, false),
     SQL_CALC_FOUND_ROWS("SQL_CALC_FOUND_ROWS", false, true, false, false, false, false),
     OUTPUT("OUTPUT", false, false, false, false, true, false),
+    CONNECT_BY_ROOT("CONNECT_BY_ROOT", false, false, false, true, false, false),
     
     EOF, 
     ERROR,
