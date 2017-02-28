@@ -101,15 +101,12 @@ public class SQLSelectParser extends SQLParser {
     }
     
     protected final void parseDistinct() {
-        if (getLexer().equalToken(Token.DISTINCT) || getLexer().equalToken(Token.DISTINCTROW) || getLexer().equalToken(Token.UNION)) {
+        if (getLexer().equalToken(Token.DISTINCT, Token.DISTINCTROW, Token.UNION)) {
             sqlContext.setDistinct(true);
             getLexer().nextToken();
             if (hasDistinctOn() && getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();
-                getLexer().accept(Token.LEFT_PAREN);
-                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF)) {
-                    getLexer().nextToken();
-                }
+                getLexer().skipParentheses();
             }
         } else if (getLexer().equalToken(Token.ALL)) {
             getLexer().nextToken();
