@@ -17,6 +17,7 @@
 
 package com.alibaba.druid.sql.lexer;
 
+import com.alibaba.druid.sql.parser.ParserException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -344,6 +345,22 @@ public class Lexer {
     
     public final boolean containsToken() {
         return tokenDictionary.containsValue(token);
+    }
+    
+    public final void accept(final Token token) {
+        if (this.token == token) {
+            nextToken();
+            return;
+        }
+        throw new ParserException(this, token);
+    }
+    
+    public final void accept(final String text) {
+        if (identifierEquals(text)) {
+            nextToken();
+            return;
+        }
+        throw new ParserException(this);
     }
     
     /**

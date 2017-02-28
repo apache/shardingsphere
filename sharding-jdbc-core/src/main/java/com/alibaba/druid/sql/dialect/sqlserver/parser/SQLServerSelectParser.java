@@ -59,7 +59,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
@@ -124,16 +124,16 @@ public class SQLServerSelectParser extends SQLSelectParser {
     private void parseOffset(final SQLServerSelect result) {
         getLexer().nextToken();
         SQLExpr offset = getExprParser().expr();
-        accept("ROWS");
+        getLexer().accept("ROWS");
         result.setOffset(offset);
         
         if (getLexer().equalToken(Token.FETCH)) {
             getLexer().nextToken();
-            accept("NEXT");
+            getLexer().accept("NEXT");
             
             SQLExpr rowCount = getExprParser().expr();
-            accept("ROWS");
-            accept("ONLY");
+            getLexer().accept("ROWS");
+            getLexer().accept("ONLY");
             result.setRowCount(rowCount);
         }
     }

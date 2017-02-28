@@ -80,7 +80,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
         }
         parseBetweenInsertAndInfo();
-        accept(Token.INTO);
+        getLexer().accept(Token.INTO);
         parseBetweenIntoAndTable();
         parseTable(sqlContext);
         parseBetweenTableAndValues();
@@ -120,7 +120,7 @@ public abstract class AbstractInsertParser extends SQLParser {
                     getLexer().nextToken();
                 }
                 while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             }
         }
     }
@@ -177,7 +177,7 @@ public abstract class AbstractInsertParser extends SQLParser {
                 throw new UnsupportedOperationException("Cannot support multiple insert");
             }
             getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
             List<SQLExpr> sqlExprs = getExprParser().exprList(new AbstractSQLInsertStatement.ValuesClause());
             ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
             int count = 0;
@@ -205,7 +205,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             if (!itemsToken.getItems().isEmpty()) {
                 sqlContext.getSqlTokens().add(itemsToken);
             }
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             parsed = true;
         }
         while (getLexer().equalToken(Token.COMMA));

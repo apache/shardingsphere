@@ -84,12 +84,12 @@ public class SQLSelectParser extends SQLParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
         SQLSelectQueryBlock queryBlock = new SQLSelectQueryBlock();
-        accept(Token.SELECT);
+        getLexer().accept(Token.SELECT);
         getLexer().skipIfEqual(Token.COMMENT);
         parseDistinct();
         parseSelectList();
@@ -106,7 +106,7 @@ public class SQLSelectParser extends SQLParser {
             getLexer().nextToken();
             if (hasDistinctOn() && getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();
-                accept(Token.LEFT_PAREN);
+                getLexer().accept(Token.LEFT_PAREN);
                 while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF)) {
                     getLexer().nextToken();
                 }
@@ -166,7 +166,7 @@ public class SQLSelectParser extends SQLParser {
     protected void parseGroupBy() {
         if (getLexer().equalToken(Token.GROUP)) {
             getLexer().nextToken();
-            accept(Token.BY);
+            getLexer().accept(Token.BY);
             while (true) {
                 addGroupByItem(exprParser.expr());
                 if (!getLexer().equalToken(Token.COMMA)) {
@@ -275,11 +275,11 @@ public class SQLSelectParser extends SQLParser {
             if (getLexer().equalToken(Token.OUTER)) {
                 getLexer().nextToken();
             }
-            accept(Token.JOIN);
+            getLexer().accept(Token.JOIN);
             result = true;
         } else if (getLexer().equalToken(Token.INNER)) {
             getLexer().nextToken();
-            accept(Token.JOIN);
+            getLexer().accept(Token.JOIN);
             result = true;
         } else if (getLexer().equalToken(Token.JOIN) || getLexer().equalToken(Token.COMMA) || getLexer().identifierEquals("STRAIGHT_JOIN")) {
             getLexer().nextToken();

@@ -70,9 +70,9 @@ public class PGExprParser extends SQLExprParser {
             SQLArrayExpr array = new SQLArrayExpr();
             array.setExpr(new SQLIdentifierExpr(getLexer().getLiterals()));
             getLexer().nextToken();
-            accept(Token.LEFT_BRACKET);
+            getLexer().accept(Token.LEFT_BRACKET);
             array.getValues().addAll(exprList(array));
-            accept(Token.RIGHT_BRACKET);
+            getLexer().accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         } else if (getLexer().equalToken(Token.POUND)) {
             getLexer().nextToken();
@@ -80,7 +80,7 @@ public class PGExprParser extends SQLExprParser {
                 getLexer().nextToken();
                 String varName = getLexer().getLiterals();
                 getLexer().nextToken();
-                accept(Token.RIGHT_BRACE);
+                getLexer().accept(Token.RIGHT_BRACE);
                 SQLVariantRefExpr expr = new SQLVariantRefExpr("#{" + varName + "}");
                 return primaryRest(expr);
             } else {
@@ -95,7 +95,7 @@ public class PGExprParser extends SQLExprParser {
     
     @Override
     protected SQLExpr parseInterval() {
-        accept(Token.INTERVAL);
+        getLexer().accept(Token.INTERVAL);
         PGIntervalExpr intervalExpr = new PGIntervalExpr();
         if (!getLexer().equalToken(Token.LITERAL_CHARS)) {
             return new SQLIdentifierExpr("INTERVAL");
@@ -123,7 +123,7 @@ public class PGExprParser extends SQLExprParser {
             array.setExpr(expr);
             getLexer().nextToken();
             array.getValues().addAll(exprList(array));
-            accept(Token.RIGHT_BRACKET);
+            getLexer().accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         }
         
@@ -140,29 +140,29 @@ public class PGExprParser extends SQLExprParser {
                 
                 if (getLexer().equalToken(Token.WITH)) {
                     getLexer().nextToken();
-                    accept("TIME");
-                    accept("ZONE");
+                    getLexer().accept("TIME");
+                    getLexer().accept("ZONE");
                     timestamp.setWithTimeZone(true);
                 }
 
                 String literal = getLexer().getLiterals();
                 timestamp.setLiteral(literal);
-                accept(Token.LITERAL_CHARS);
+                getLexer().accept(Token.LITERAL_CHARS);
 
                 if (getLexer().identifierEquals("AT")) {
                     getLexer().nextToken();
-                    accept("TIME");
-                    accept("ZONE");
+                    getLexer().accept("TIME");
+                    getLexer().accept("ZONE");
 
                     String timezone = getLexer().getLiterals();
                     timestamp.setTimeZone(timezone);
-                    accept(Token.LITERAL_CHARS);
+                    getLexer().accept(Token.LITERAL_CHARS);
                 }
 
                 
                 return primaryRest(timestamp);     
             } else if ("EXTRACT".equalsIgnoreCase(ident)) {
-                accept(Token.LEFT_PAREN);
+                getLexer().accept(Token.LEFT_PAREN);
                 
                 PGExtractExpr extract = new PGExtractExpr();
                 
@@ -171,13 +171,13 @@ public class PGExprParser extends SQLExprParser {
                 getLexer().nextToken();
                 
                 extract.setField(field);
-                
-                accept(Token.FROM);
+    
+                getLexer().accept(Token.FROM);
                 SQLExpr source = this.expr();
                 
                 extract.setSource(source);
-                
-                accept(Token.RIGHT_PAREN);
+    
+                getLexer().accept(Token.RIGHT_PAREN);
                 
                 return primaryRest(extract);     
             } else if ("POINT".equalsIgnoreCase(ident)) {

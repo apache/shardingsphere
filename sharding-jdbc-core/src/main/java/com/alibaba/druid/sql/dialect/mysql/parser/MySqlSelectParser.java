@@ -38,7 +38,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
@@ -101,7 +101,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.INDEX)) {
             getLexer().nextToken();
         } else {
-            accept(Token.KEY);
+            getLexer().accept(Token.KEY);
         }
         if (getLexer().equalToken(Token.FOR)) {
             getLexer().nextToken();
@@ -109,10 +109,10 @@ public class MySqlSelectParser extends SQLSelectParser {
                 getLexer().nextToken();
             } else if (getLexer().equalToken(Token.ORDER)) {
                 getLexer().nextToken();
-                accept(Token.BY);
+                getLexer().accept(Token.BY);
             } else {
-                accept(Token.GROUP);
-                accept(Token.BY);
+                getLexer().accept(Token.GROUP);
+                getLexer().accept(Token.BY);
             }
         }
         getLexer().skipParentheses();

@@ -37,7 +37,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         do {
             getLexer().nextToken();
             SQLName column = getExprParser().name();
-            accept(Token.EQ);
+            getLexer().accept(Token.EQ);
             SQLExpr value = getExprParser().expr();
             parseContext.addCondition(column.getSimpleName(), sqlContext.getTables().get(0).getName(), Condition.BinaryOperator.EQUAL, value, getExprParser().getDbType(), getParameters());
         } while (getLexer().equalToken(Token.COMMA));

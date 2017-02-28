@@ -90,15 +90,15 @@ public abstract class SQLStatementParser extends SQLParser {
                 return;
             }
         }
-        accept(Token.AS);
-        accept(Token.LEFT_PAREN);
+        getLexer().accept(Token.AS);
+        getLexer().accept(Token.LEFT_PAREN);
         while (!getLexer().equalToken(Token.RIGHT_PAREN)) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.EOF)) {
                 return;
             }
         }
-        accept(Token.RIGHT_PAREN);
+        getLexer().accept(Token.RIGHT_PAREN);
     }
     
     protected abstract SQLSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters);

@@ -110,7 +110,7 @@ public class SQLExprParser extends SQLParser {
             SQLExpr sqlExpr = new SQLAllColumnExpr();
             if (getLexer().equalToken(Token.DOT)) {
                 getLexer().nextToken();
-                accept(Token.STAR);
+                getLexer().accept(Token.STAR);
                 return new SQLPropertyExpr(sqlExpr, "*");
             }
             return sqlExpr;
@@ -138,7 +138,7 @@ public class SQLExprParser extends SQLParser {
                     } while (getLexer().equalToken(Token.COMMA));
                     sqlExpr = listExpr;
                 }
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
                 break;
             case INSERT:
                 getLexer().nextToken();
@@ -269,16 +269,16 @@ public class SQLExprParser extends SQLParser {
                 if (!getLexer().equalToken(Token.WHEN)) {
                     caseExpr.setValueExpr(expr());
                 }
-                accept(Token.WHEN);
+                getLexer().accept(Token.WHEN);
                 SQLExpr testExpr = expr();
-                accept(Token.THEN);
+                getLexer().accept(Token.THEN);
                 SQLExpr valueExpr = expr();
                 SQLCaseExpr.Item caseItem = new SQLCaseExpr.Item(testExpr, valueExpr);
                 caseExpr.addItem(caseItem);
                 while (getLexer().equalToken(Token.WHEN)) {
                     getLexer().nextToken();
                     testExpr = expr();
-                    accept(Token.THEN);
+                    getLexer().accept(Token.THEN);
                     valueExpr = expr();
                     caseItem = new SQLCaseExpr.Item(testExpr, valueExpr);
                     caseExpr.getItems().add(caseItem);
@@ -287,26 +287,26 @@ public class SQLExprParser extends SQLParser {
                     getLexer().nextToken();
                     caseExpr.setElseExpr(expr());
                 }
-                accept(Token.END);
+                getLexer().accept(Token.END);
                 sqlExpr = caseExpr;
                 break;
             case EXISTS:
                 getLexer().nextToken();
-                accept(Token.LEFT_PAREN);
+                getLexer().accept(Token.LEFT_PAREN);
                 sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), false);
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
                 break;
             case NOT:
                 getLexer().nextToken();
                 if (getLexer().equalToken(Token.EXISTS)) {
                     getLexer().nextToken();
-                    accept(Token.LEFT_PAREN);
+                    getLexer().accept(Token.LEFT_PAREN);
                     sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), true);
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     SQLExpr notTarget = expr();
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                     notTarget = exprRest(notTarget);
                     sqlExpr = new SQLNotExpr(notTarget);
                     return primaryRest(sqlExpr);
@@ -319,12 +319,12 @@ public class SQLExprParser extends SQLParser {
                 break;
             case CAST:
                 getLexer().nextToken();
-                accept(Token.LEFT_PAREN);
+                getLexer().accept(Token.LEFT_PAREN);
                 SQLCastExpr cast = new SQLCastExpr();
                 cast.setExpr(expr());
-                accept(Token.AS);
+                getLexer().accept(Token.AS);
                 cast.setDataType(parseDataType());
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
                 sqlExpr = cast;
                 break;
             case SUB:
@@ -371,7 +371,7 @@ public class SQLExprParser extends SQLParser {
                     case LEFT_PAREN:
                         getLexer().nextToken();
                         sqlExpr = expr();
-                        accept(Token.RIGHT_PAREN);
+                        getLexer().accept(Token.RIGHT_PAREN);
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Negative, sqlExpr);
                         break;
                     default:
@@ -397,7 +397,7 @@ public class SQLExprParser extends SQLParser {
                     case LEFT_PAREN:
                         getLexer().nextToken();
                         sqlExpr = expr();
-                        accept(Token.RIGHT_PAREN);
+                        getLexer().accept(Token.RIGHT_PAREN);
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Plus, sqlExpr);
                         break;
                     default:
@@ -529,10 +529,10 @@ public class SQLExprParser extends SQLParser {
     protected SQLExpr parseAll() {
         SQLAllExpr result = new SQLAllExpr();
         getLexer().nextToken();
-        accept(Token.LEFT_PAREN);
+        getLexer().accept(Token.LEFT_PAREN);
         SQLSelect allSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
         result.setSubQuery(allSubQuery);
-        accept(Token.RIGHT_PAREN);
+        getLexer().accept(Token.RIGHT_PAREN);
         allSubQuery.setParent(result);
         return result;
     }
@@ -540,10 +540,10 @@ public class SQLExprParser extends SQLParser {
     protected SQLExpr parseSome() {
         SQLSomeExpr result = new SQLSomeExpr();
         getLexer().nextToken();
-        accept(Token.LEFT_PAREN);
+        getLexer().accept(Token.LEFT_PAREN);
         SQLSelect someSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
         result.setSubQuery(someSubQuery);
-        accept(Token.RIGHT_PAREN);
+        getLexer().accept(Token.RIGHT_PAREN);
         someSubQuery.setParent(result);
         return result;
     }
@@ -551,18 +551,18 @@ public class SQLExprParser extends SQLParser {
     protected SQLExpr parseAny() {
         getLexer().nextToken();
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
             if (getLexer().equalToken(Token.IDENTIFIER)) {
                 SQLExpr expr = this.expr();
                 SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr("ANY");
                 methodInvokeExpr.addParameter(expr);
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
                 return methodInvokeExpr;
             }
             SQLAnyExpr anyExpr = new SQLAnyExpr();
             SQLSelect anySubQuery = createSelectParser(getShardingRule(), getParameters()).select();
             anyExpr.setSubQuery(anySubQuery);
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             anySubQuery.setParent(anyExpr);
             return anyExpr;
         } else {
@@ -609,7 +609,7 @@ public class SQLExprParser extends SQLParser {
     
     protected SQLExpr methodRest(final SQLExpr expr, final boolean acceptLeftParen) {
         if (acceptLeftParen) {
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
         }
         if (expr instanceof SQLName || expr instanceof SQLDefaultExpr) {
             String methodName;
@@ -627,7 +627,7 @@ public class SQLExprParser extends SQLParser {
             if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
                 methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
             }
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             if (getLexer().equalToken(Token.OVER)) {
                 SQLAggregateExpr aggregateExpr = new SQLAggregateExpr(methodName);
                 aggregateExpr.getArguments().addAll(methodInvokeExpr.getParameters());
@@ -658,7 +658,7 @@ public class SQLExprParser extends SQLParser {
                     } else {
                         methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
                     }
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
                 expr = methodInvokeExpr;
             } else {
@@ -811,7 +811,7 @@ public class SQLExprParser extends SQLParser {
         }
         result.getArguments().addAll(exprList(result));
         parseAggregateExprRest(result);
-        accept(Token.RIGHT_PAREN);
+        getLexer().accept(Token.RIGHT_PAREN);
         if (getLexer().equalToken(Token.OVER)) {
             over(result);
         }
@@ -821,21 +821,21 @@ public class SQLExprParser extends SQLParser {
     protected void over(final SQLAggregateExpr aggregateExpr) {
         getLexer().nextToken();
         SQLOver over = new SQLOver();
-        accept(Token.LEFT_PAREN);
+        getLexer().accept(Token.LEFT_PAREN);
         if (getLexer().equalToken(Token.PARTITION) || getLexer().identifierEquals("PARTITION")) {
             getLexer().nextToken();
-            accept(Token.BY);
+            getLexer().accept(Token.BY);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 over.getPartitionBy().addAll(exprList(over));
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             } else {
                 over.getPartitionBy().addAll(exprList(over));
             }
         }
         // TODO 弄明白
         //over.setOrderBy(parseOrderBy());
-        accept(Token.RIGHT_PAREN);
+        getLexer().accept(Token.RIGHT_PAREN);
         aggregateExpr.setOver(over);
     }
     
@@ -849,7 +849,7 @@ public class SQLExprParser extends SQLParser {
         }
         List<OrderByContext> result = new LinkedList<>();
         getLexer().skipIfEqual(Token.SIBLINGS);
-        accept(Token.BY);
+        getLexer().accept(Token.BY);
         OrderByContext orderByContext = parseSelectOrderByItem();
         if (null != orderByContext) {
             result.add(orderByContext);
@@ -939,7 +939,7 @@ public class SQLExprParser extends SQLParser {
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 inListExpr.getTargetList().addAll(exprList(inListExpr));
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             } else {
                 SQLExpr itemExpr = primary();
                 itemExpr.setParent(inListExpr);
@@ -1109,7 +1109,7 @@ public class SQLExprParser extends SQLParser {
         } else if (getLexer().equalToken(Token.BETWEEN)) {
             getLexer().nextToken();
             SQLExpr beginExpr = bitOrRest(bitAndRest(shift()));
-            accept(Token.AND);
+            getLexer().accept(Token.AND);
             SQLExpr endExpr = bitOrRest(bitAndRest(shift()));
             expr = new SQLBetweenExpr(expr, beginExpr, endExpr);
         } else if (getLexer().equalToken(Token.IS)) {
@@ -1141,11 +1141,11 @@ public class SQLExprParser extends SQLParser {
             }
         } else if (getLexer().getToken() == Token.IN) {
             getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
             SQLInListExpr inListExpr = new SQLInListExpr(expr, true);
             inListExpr.getTargetList().addAll(exprList(inListExpr));
             expr = inListExpr;
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             if (inListExpr.getTargetList().size() == 1) {
                 SQLExpr targetExpr = inListExpr.getTargetList().get(0);
                 if (targetExpr instanceof SQLQueryExpr) {
@@ -1161,7 +1161,7 @@ public class SQLExprParser extends SQLParser {
         } else if (getLexer().equalToken(Token.BETWEEN)) {
             getLexer().nextToken();
             SQLExpr beginExpr = bitOrRest(bitAndRest(shift()));
-            accept(Token.AND);
+            getLexer().accept(Token.AND);
             SQLExpr endExpr = bitOrRest(bitAndRest(shift()));
             expr = new SQLBetweenExpr(expr, true, beginExpr, endExpr);
             return expr;
@@ -1188,7 +1188,7 @@ public class SQLExprParser extends SQLParser {
                 SQLExpr arg = this.expr();
                 arg.setParent(charType);
                 charType.getArguments().add(arg);
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             }
             return parseCharTypeRest(charType);
         }
@@ -1204,7 +1204,7 @@ public class SQLExprParser extends SQLParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             dataType.getArguments().addAll(exprList(dataType));
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
         }
         return dataType;
     }
@@ -1227,7 +1227,7 @@ public class SQLExprParser extends SQLParser {
         }
         if (getLexer().identifierEquals("CHARACTER")) {
             getLexer().nextToken();
-            accept(Token.SET);
+            getLexer().accept(Token.SET);
             if (!getLexer().equalToken(Token.IDENTIFIER) && !getLexer().equalToken(Token.LITERAL_CHARS)) {
                 throw new ParserException(getLexer());
             }

@@ -80,7 +80,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
     }
     
     private void parseSetItems(final UpdateSQLContext sqlContext) {
-        accept(Token.SET);
+        getLexer().accept(Token.SET);
         do {
             parseSetItem(sqlContext);
         } while (getLexer().skipIfEqual(Token.COMMA));
@@ -103,7 +103,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         if (getLexer().equalToken(Token.COLON_EQ)) {
             getLexer().nextToken();
         } else {
-            accept(Token.EQ);
+            getLexer().accept(Token.EQ);
         }
         SQLExpr value = exprParser.expr();
         if (value instanceof SQLBinaryOpExpr) {

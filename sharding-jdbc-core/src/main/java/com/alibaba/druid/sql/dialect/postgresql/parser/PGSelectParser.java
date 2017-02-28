@@ -42,7 +42,7 @@ public class PGSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
@@ -63,7 +63,7 @@ public class PGSelectParser extends SQLSelectParser {
         parseGroupBy();
         if (getLexer().skipIfEqual(Token.WINDOW)) {
             getExprParser().expr();
-            accept(Token.AS);
+            getLexer().accept(Token.AS);
             while (true) {
                 createExprParser().expr();
                 if (getLexer().equalToken(Token.COMMA)) {

@@ -56,7 +56,7 @@ public class SQLServerExprParser extends SQLExprParser {
             top.setExpr(primary());
             
             if (paren) {
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             }
             
             if (getLexer().equalToken(Token.PERCENT)) {
@@ -79,15 +79,11 @@ public class SQLServerExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.LEFT_BRACKET)) {
             getLexer().nextToken();
             SQLExpr name = this.name();
-            accept(Token.RIGHT_BRACKET);
+            getLexer().accept(Token.RIGHT_BRACKET);
             return primaryRest(name);
         }
 
         return super.primary();
-    }
-
-    public SQLServerSelectParser createSelectParser() {
-        return new SQLServerSelectParser(getShardingRule(), getParameters(), this);
     }
 
     public SQLExpr primaryRest(SQLExpr expr) {
@@ -109,7 +105,7 @@ public class SQLServerExprParser extends SQLExprParser {
         expr = super.dotRest(expr);
 
         if (backet) {
-            accept(Token.RIGHT_BRACKET);
+            getLexer().accept(Token.RIGHT_BRACKET);
         }
 
         return expr;
@@ -128,7 +124,7 @@ public class SQLServerExprParser extends SQLExprParser {
             getLexer().nextToken();
 
             if (backet) {
-                accept(Token.RIGHT_BRACKET);
+                getLexer().accept(Token.RIGHT_BRACKET);
             }
 
             SQLServerObjectReferenceExpr owner = new SQLServerObjectReferenceExpr(expr);

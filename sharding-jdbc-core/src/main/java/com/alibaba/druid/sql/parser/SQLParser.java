@@ -42,22 +42,6 @@ public class SQLParser {
         this.dbType = dbType;
     }
     
-    protected final void accept(final Token token) {
-        if (lexer.equalToken(token)) {
-            lexer.nextToken();
-            return;
-        }
-        throw new ParserException(lexer, token);
-    }
-    
-    protected final void accept(final String text) {
-        if (lexer.identifierEquals(text)) {
-            lexer.nextToken();
-            return;
-        }
-        throw new ParserException(lexer);
-    }
-    
     protected String as() {
         if (lexer.skipIfEqual(Token.AS)) {
             // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN

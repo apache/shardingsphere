@@ -105,29 +105,29 @@ public class OracleExprParser extends SQLExprParser {
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     interval.getArguments().add(this.expr());
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
-                
-                accept(Token.TO);
-                accept("MONTH");
+    
+                getLexer().accept(Token.TO);
+                getLexer().accept("MONTH");
                 
                 return interval;
             } else {
-                accept("DAY");
+                getLexer().accept("DAY");
                 OracleDataTypeIntervalDay interval = new OracleDataTypeIntervalDay();
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     interval.getArguments().add(this.expr());
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
-                
-                accept(Token.TO);
-                accept("SECOND");
+    
+                getLexer().accept(Token.TO);
+                getLexer().accept("SECOND");
                 
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     interval.getFractionalSeconds().add(expr());
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
                 
                 return interval;
@@ -137,7 +137,7 @@ public class OracleExprParser extends SQLExprParser {
         String typeName;
         if (getLexer().identifierEquals("LONG")) {
             getLexer().nextToken();
-            accept("RAW");
+            getLexer().accept("RAW");
             typeName = "LONG RAW";
         } else {
             SQLName typeExpr = name();
@@ -150,7 +150,7 @@ public class OracleExprParser extends SQLExprParser {
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().nextToken();
                 timestamp.getArguments().add(this.expr());
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             }
             
             if (getLexer().equalToken(Token.WITH)) {
@@ -162,9 +162,9 @@ public class OracleExprParser extends SQLExprParser {
                 } else {
                     timestamp.setWithTimeZone(true);
                 }
-                
-                accept("TIME");
-                accept("ZONE");
+    
+                getLexer().accept("TIME");
+                getLexer().accept("ZONE");
             }
             
             return timestamp;
@@ -185,8 +185,8 @@ public class OracleExprParser extends SQLExprParser {
                     getLexer().nextToken();
                     charType.setCharType(SQLCharacterDataType.CHAR_TYPE_BYTE);
                 }
-                
-                accept(Token.RIGHT_PAREN);
+    
+                getLexer().accept(Token.RIGHT_PAREN);
             }
             
             return parseCharTypeRest(charType);
@@ -217,7 +217,7 @@ public class OracleExprParser extends SQLExprParser {
                 OracleSysdateExpr sysdate = new OracleSysdateExpr();
                 if (getLexer().equalToken(Token.MONKEYS_AT)) {
                     getLexer().nextToken();
-                    accept(Token.BANG);
+                    getLexer().accept(Token.BANG);
                     sysdate.setOption("!");
                 }
                 sqlExpr = sysdate;
@@ -250,17 +250,17 @@ public class OracleExprParser extends SQLExprParser {
             case EXTRACT:
                 getLexer().nextToken();
                 OracleExtractExpr extract = new OracleExtractExpr();
-
-                accept(Token.LEFT_PAREN);
+    
+                getLexer().accept(Token.LEFT_PAREN);
 
                 extract.setUnit(OracleDateTimeUnit.valueOf(getLexer().getLiterals().toUpperCase()));
                 getLexer().nextToken();
-
-                accept(Token.FROM);
+    
+                getLexer().accept(Token.FROM);
 
                 extract.setFrom(expr());
-
-                accept(Token.RIGHT_PAREN);
+    
+                getLexer().accept(Token.RIGHT_PAREN);
 
                 return primaryRest(extract);
             case BINARY_FLOAT:
@@ -296,7 +296,7 @@ public class OracleExprParser extends SQLExprParser {
                     case LEFT_PAREN:
                         getLexer().nextToken();
                         sqlExpr = expr();
-                        accept(Token.RIGHT_PAREN);
+                        getLexer().accept(Token.RIGHT_PAREN);
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Plus, sqlExpr);
                         break;
                     default:
@@ -348,7 +348,7 @@ public class OracleExprParser extends SQLExprParser {
                     case LEFT_PAREN:
                         getLexer().nextToken();
                         sqlExpr = expr();
-                        accept(Token.RIGHT_PAREN);
+                        getLexer().accept(Token.RIGHT_PAREN);
                         sqlExpr = new SQLUnaryExpr(SQLUnaryOperator.Negative, sqlExpr);
                         break;
                     default:
@@ -357,12 +357,12 @@ public class OracleExprParser extends SQLExprParser {
                 return primaryRest(sqlExpr);
             case CURSOR:
                 getLexer().nextToken();
-                accept(Token.LEFT_PAREN);
+                getLexer().accept(Token.LEFT_PAREN);
     
                 SQLSelect select = createSelectParser(getShardingRule(), getParameters()).select();
                 OracleCursorExpr cursorExpr = new OracleCursorExpr(select);
-                
-                accept(Token.RIGHT_PAREN);
+    
+                getLexer().accept(Token.RIGHT_PAREN);
                 
                 sqlExpr = cursorExpr;
                 return  primaryRest(sqlExpr);
@@ -406,12 +406,12 @@ public class OracleExprParser extends SQLExprParser {
     @Override
     protected SQLExpr methodRest(final SQLExpr expr, final boolean acceptLPAREN) {
         if (acceptLPAREN) {
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
         }
         
         if (getLexer().equalToken(Token.PLUS)) {
             getLexer().nextToken();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             return new OracleOuterExpr(expr);
         }
         
@@ -431,8 +431,8 @@ public class OracleExprParser extends SQLExprParser {
                     SQLExpr trimSource = this.expr();
                     methodExpr.addParameter(trimSource);
                 }
-                
-                accept(Token.RIGHT_PAREN);
+    
+                getLexer().accept(Token.RIGHT_PAREN);
                 return primaryRest(methodExpr);
             }
         }
@@ -446,7 +446,7 @@ public class OracleExprParser extends SQLExprParser {
             
             if ("DATE".equalsIgnoreCase(ident)) {
                 OracleDateExpr timestamp = new OracleDateExpr(getLexer().getLiterals());
-                accept(Token.LITERAL_CHARS);
+                getLexer().accept(Token.LITERAL_CHARS);
                 return primaryRest(timestamp);     
             }
             
@@ -459,16 +459,16 @@ public class OracleExprParser extends SQLExprParser {
 
                 String literal = getLexer().getLiterals();
                 timestamp.setLiteral(literal);
-                accept(Token.LITERAL_CHARS);
+                getLexer().accept(Token.LITERAL_CHARS);
 
                 if (getLexer().identifierEquals("AT")) {
                     getLexer().nextToken();
-                    accept("TIME");
-                    accept("ZONE");
+                    getLexer().accept("TIME");
+                    getLexer().accept("ZONE");
 
                     String timezone = getLexer().getLiterals();
                     timestamp.setTimeZone(timezone);
-                    accept(Token.LITERAL_CHARS);
+                    getLexer().accept(Token.LITERAL_CHARS);
                 }
 
                 
@@ -520,7 +520,7 @@ public class OracleExprParser extends SQLExprParser {
                 getLexer().nextToken();
             } else {
                 String link = getLexer().getLiterals();
-                accept(Token.IDENTIFIER);
+                getLexer().accept(Token.IDENTIFIER);
                 dblink.setDbLink(link);
             }
 
@@ -548,10 +548,10 @@ public class OracleExprParser extends SQLExprParser {
                 }
                 interval.setPrecision(getLexer().integerValue().intValue());
                 getLexer().nextToken();
-                accept(Token.RIGHT_PAREN);
+                getLexer().accept(Token.RIGHT_PAREN);
             }
-            
-            accept(Token.TO);
+    
+            getLexer().accept(Token.TO);
             if (getLexer().identifierEquals("SECOND")) {
                 getLexer().nextToken();
                 interval.setToType(OracleIntervalType.SECOND);
@@ -562,7 +562,7 @@ public class OracleExprParser extends SQLExprParser {
                     }
                     interval.setFactionalSecondsPrecision(getLexer().integerValue().intValue());
                     getLexer().nextToken();
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
             } else {
                 interval.setToType(OracleIntervalType.MONTH);
@@ -586,7 +586,7 @@ public class OracleExprParser extends SQLExprParser {
                     getLexer().setToken(Token.IDENTIFIER);
                     return expr;
                 }
-                accept("ZONE");
+                getLexer().accept("ZONE");
                 
                 SQLExpr timeZone = primary();
                 expr = new OracleDatetimeExpr(expr, timeZone);
@@ -652,12 +652,12 @@ public class OracleExprParser extends SQLExprParser {
             getLexer().nextToken();
             getLexer().skipIfEqual(Token.NULLS);
         }
-
-        accept(Token.RIGHT_PAREN);
+    
+        getLexer().accept(Token.RIGHT_PAREN);
         
         if (getLexer().identifierEquals("WITHIN")) {
             getLexer().nextToken();
-            accept(Token.GROUP);
+            getLexer().accept(Token.GROUP);
             getLexer().skipParentheses();
         }
 
@@ -665,16 +665,16 @@ public class OracleExprParser extends SQLExprParser {
             OracleAnalytic over = new OracleAnalytic();
 
             getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
 
             if (getLexer().identifierEquals("PARTITION")) {
                 getLexer().nextToken();
-                accept(Token.BY);
+                getLexer().accept(Token.BY);
 
                 if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     over.getPartitionBy().addAll(exprList(over));
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 } else {
                     over.getPartitionBy().addAll(exprList(over));
                 }
@@ -717,8 +717,8 @@ public class OracleExprParser extends SQLExprParser {
                     over.setWindowing(windowing);
                 }
             }
-
-            accept(Token.RIGHT_PAREN);
+    
+            getLexer().accept(Token.RIGHT_PAREN);
 
             aggregateExpr.setOver(over);
         }
@@ -747,7 +747,7 @@ public class OracleExprParser extends SQLExprParser {
     }
 
     protected SQLExpr parseInterval() {
-        accept(Token.INTERVAL);
+        getLexer().accept(Token.INTERVAL);
         
         OracleIntervalExpr interval = new OracleIntervalExpr();
         if (!getLexer().equalToken(Token.LITERAL_CHARS)) {
@@ -777,7 +777,7 @@ public class OracleExprParser extends SQLExprParser {
                 interval.setFactionalSecondsPrecision(getLexer().integerValue().intValue());
                 getLexer().nextToken();
             }
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
         }
         
         if (getLexer().equalToken(Token.TO)) {
@@ -792,7 +792,7 @@ public class OracleExprParser extends SQLExprParser {
                     }
                     interval.setToFactionalSecondsPrecision(getLexer().integerValue().intValue());
                     getLexer().nextToken();
-                    accept(Token.RIGHT_PAREN);
+                    getLexer().accept(Token.RIGHT_PAREN);
                 }
             } else {
                 interval.setToType(OracleIntervalType.MONTH);
@@ -813,7 +813,7 @@ public class OracleExprParser extends SQLExprParser {
                 expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.IsNot, rightExpr, getDbType());
             } else if (getLexer().identifierEquals("A")) {
                 getLexer().nextToken();
-                accept(Token.SET);
+                getLexer().accept(Token.SET);
                 expr = new OracleIsSetExpr(expr);
             } else {
                 SQLExpr rightExpr = primary();

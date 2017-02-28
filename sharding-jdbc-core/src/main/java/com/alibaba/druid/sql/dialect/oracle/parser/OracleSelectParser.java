@@ -53,7 +53,7 @@ public class OracleSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
             SQLSelectQuery select = query();
-            accept(Token.RIGHT_PAREN);
+            getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
@@ -93,7 +93,7 @@ public class OracleSelectParser extends SQLSelectParser {
     private void skipStart() {
         if (getLexer().equalToken(Token.START)) {
             getLexer().nextToken();
-            accept(Token.WITH);
+            getLexer().accept(Token.WITH);
             getExprParser().expr();
         }
     }
@@ -101,7 +101,7 @@ public class OracleSelectParser extends SQLSelectParser {
     private void skipConnect() {
         if (getLexer().equalToken(Token.CONNECT)) {
             getLexer().nextToken();
-            accept(Token.BY);
+            getLexer().accept(Token.BY);
             getLexer().skipIfEqual(Token.PRIOR);
             if (getLexer().identifierEquals("NOCYCLE")) {
                 getLexer().nextToken();
@@ -122,7 +122,7 @@ public class OracleSelectParser extends SQLSelectParser {
         getLexer().skipIfEqual(Token.ROWS);
         while (getLexer().skipIfEqual(Token.REFERENCE)) {
             getExprParser().expr();
-            accept(Token.ON);
+            getLexer().accept(Token.ON);
             getLexer().skipParentheses();
             skipModelColumnClause();
             skipCellReferenceOptions();
@@ -133,17 +133,17 @@ public class OracleSelectParser extends SQLSelectParser {
     private void skipCellReferenceOptions() {
         if (getLexer().identifierEquals("IGNORE")) {
             getLexer().nextToken();
-            accept("NAV");
+            getLexer().accept("NAV");
         } else if (getLexer().identifierEquals("KEEP")) {
             getLexer().nextToken();
-            accept("NAV");
+            getLexer().accept("NAV");
         }
         if (getLexer().skipIfEqual(Token.UNIQUE)) {
             if (getLexer().identifierEquals("DIMENSION")) {
                 getLexer().nextToken();
             } else {
-                accept("SINGLE");
-                accept("REFERENCE");
+                getLexer().accept("SINGLE");
+                getLexer().accept("REFERENCE");
             }
         }
     }
@@ -154,10 +154,10 @@ public class OracleSelectParser extends SQLSelectParser {
             getExprParser().expr();
         }
         skipQueryPartitionClause();
-        accept("DIMENSION");
-        accept(Token.BY);
+        getLexer().accept("DIMENSION");
+        getLexer().accept(Token.BY);
         getLexer().skipParentheses();
-        accept("MEASURES");
+        getLexer().accept("MEASURES");
         getLexer().skipParentheses();
         skipCellReferenceOptions();
         skipModelRulesClause();
@@ -170,10 +170,10 @@ public class OracleSelectParser extends SQLSelectParser {
             getLexer().skipIfEqual(Token.UPSERT);
             if (getLexer().identifierEquals("AUTOMATIC")) {
                 getLexer().nextToken();
-                accept(Token.ORDER);
+                getLexer().accept(Token.ORDER);
             } else if (getLexer().identifierEquals("SEQUENTIAL")) {
                 getLexer().nextToken();
-                accept(Token.ORDER);
+                getLexer().accept(Token.ORDER);
             }
         }
         if (getLexer().identifierEquals("ITERATE")) {
@@ -189,7 +189,7 @@ public class OracleSelectParser extends SQLSelectParser {
     
     private void skipQueryPartitionClause() {
         if (getLexer().skipIfEqual(Token.PARTITION)) {
-            accept(Token.BY);
+            getLexer().accept(Token.BY);
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().skipParentheses();
             } else {
@@ -206,7 +206,7 @@ public class OracleSelectParser extends SQLSelectParser {
     protected void parseGroupBy() {
         if (getLexer().equalToken(Token.GROUP)) {
             getLexer().nextToken();
-            accept(Token.BY);
+            getLexer().accept(Token.BY);
             while (true) {
                 if (getLexer().identifierEquals("GROUPING")) {
                     throw new UnsupportedOperationException("Cannot support GROUPING SETS");
@@ -228,7 +228,7 @@ public class OracleSelectParser extends SQLSelectParser {
 
             if (getLexer().equalToken(Token.GROUP)) {
                 getLexer().nextToken();
-                accept(Token.BY);
+                getLexer().accept(Token.BY);
                 while (true) {
                     if (getLexer().identifierEquals("GROUPING")) {
                         throw new UnsupportedOperationException("Cannot support GROUPING SETS");
@@ -317,10 +317,10 @@ public class OracleSelectParser extends SQLSelectParser {
             getLexer().nextToken();
             if (getLexer().identifierEquals("INCLUDE")) {
                 getLexer().nextToken();
-                accept(Token.NULLS);
+                getLexer().accept(Token.NULLS);
             } else if (getLexer().identifierEquals("EXCLUDE")) {
                 getLexer().nextToken();
-                accept(Token.NULLS);
+                getLexer().accept(Token.NULLS);
             }
             getLexer().skipParentheses();
         }
@@ -369,7 +369,7 @@ public class OracleSelectParser extends SQLSelectParser {
     
     private void parseForUpdate() {
         getLexer().nextToken();
-        accept(Token.UPDATE);
+        getLexer().accept(Token.UPDATE);
         if (getLexer().equalToken(Token.OF)) {
             getLexer().nextToken();
             getExprParser().exprList(null);
@@ -380,7 +380,7 @@ public class OracleSelectParser extends SQLSelectParser {
             getLexer().nextToken();
         } else if (getLexer().identifierEquals("SKIP")) {
             getLexer().nextToken();
-            accept("LOCKED");
+            getLexer().accept("LOCKED");
         }
     }
 }

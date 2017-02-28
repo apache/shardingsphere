@@ -112,7 +112,7 @@ public class ParserUtil {
     
     private void parseInCondition(final ParseContext parseContext, final SQLExpr left) {
         exprParser.getLexer().nextToken();
-        exprParser.accept(Token.LEFT_PAREN);
+        exprParser.getLexer().accept(Token.LEFT_PAREN);
         List<SQLExpr> rights = new LinkedList<>();
         do {
             if (exprParser.getLexer().equalToken(Token.COMMA)) {
@@ -128,7 +128,7 @@ public class ParserUtil {
         exprParser.getLexer().nextToken();
         List<SQLExpr> rights = new LinkedList<>();
         rights.add(getSqlExprWithVariant());
-        exprParser.accept(Token.AND);
+        exprParser.getLexer().accept(Token.AND);
         rights.add(getSqlExprWithVariant());
         parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, exprParser.getDbType(), parameters);
     }

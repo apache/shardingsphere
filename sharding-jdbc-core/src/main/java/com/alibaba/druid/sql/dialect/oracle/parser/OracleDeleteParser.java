@@ -42,7 +42,7 @@ public class OracleDeleteParser extends AbstractDeleteParser {
         }
         if (getLexer().equalToken(Token.ONLY)) {
             getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
+            getLexer().accept(Token.LEFT_PAREN);
         }
     }
     
