@@ -59,123 +59,21 @@ public class SQLParser {
     }
     
     protected String as() {
-        String result = null;
-        if (lexer.equalToken(Token.AS)) {
-            lexer.nextToken();
-            if (lexer.equalToken(Token.LITERAL_ALIAS) || lexer.equalToken(Token.LITERAL_CHARS)) {
-                result = '"' + lexer.getLiterals() + '"';
-                lexer.nextToken();
-            } else if (lexer.equalToken(Token.IDENTIFIER)) {
-                result = lexer.getLiterals();
-                lexer.nextToken();
-            } else {
-                switch (lexer.getToken()) {
-                    case KEY:
-                    case INDEX:
-                    case CASE:
-                    case MODEL:
-                    case PCTFREE:
-                    case INITRANS:
-                    case MAXTRANS:
-                    case SEGMENT:
-                    case CREATION:
-                    case IMMEDIATE:
-                    case DEFERRED:
-                    case STORAGE:
-                    case NEXT:
-                    case MINEXTENTS:
-                    case MAXEXTENTS:
-                    case MAXSIZE:
-                    case PCTINCREASE:
-                    case FLASH_CACHE:
-                    case CELL_FLASH_CACHE:
-                    case KEEP:
-                    case NONE:
-                    case LOB:
-                    case STORE:
-                    case ROW:
-                    case CHUNK:
-                    case CACHE:
-                    case NOCACHE:
-                    case LOGGING:
-                    case NOCOMPRESS:
-                    case KEEP_DUPLICATES:
-                    case EXCEPTIONS:
-                    case PURGE:
-                    case INITIALLY:
-                    case END:
-                    case COMMENT:
-                    case ENABLE:
-                    case DISABLE:
-                    case SEQUENCE:
-                    case USER:
-                    case ANALYZE:
-                    case OPTIMIZE:
-                    case GRANT:
-                    case REVOKE:
-                    case FULL:
-                    case TO:
-                    case NEW:
-                    case INTERVAL:
-                    case LOCK:
-                    case LIMIT:
-                    case IDENTIFIED:
-                    case PASSWORD:
-                    case BINARY:
-                    case WINDOW:
-                    case OFFSET:
-                    case SHARE:
-                    case START:
-                    case CONNECT:
-                    case MATCHED:
-                    case ERRORS:
-                    case REJECT:
-                    case UNLIMITED:
-                    case BEGIN:
-                    case EXCLUSIVE:
-                    case MODE:
-                    case ADVISE:
-                    case TYPE:
-                        result = lexer.getLiterals();
-                        lexer.nextToken();
-                        return result;
-                    case QUESTION:
-                        result = Token.QUESTION.getName();
-                        lexer.nextToken();
-                    default:
-                        break;
-                }
-            }
-            if (null != result) {
-                while (lexer.equalToken(Token.DOT)) {
-                    lexer.nextToken();
-                    result += Token.DOT.getName() + lexer.getToken().name();
-                    lexer.nextToken();
-                }
-                return result;
-            }
+        if (lexer.skipIfEqual(Token.AS)) {
+            // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN
             if (lexer.equalToken(Token.LEFT_PAREN)) {
                 return null;
             }
-            throw new ParserException(lexer);
+            String result = lexer.getLiterals();
+            lexer.nextToken();
+            return result;
         }
-        if (lexer.equalToken(Token.IDENTIFIER) || lexer.equalToken(Token.USER) || lexer.equalToken(Token.END)) {
-            result = lexer.getLiterals();
+        // TODO 增加哪些数据库识别哪些关键字作为别名的配置
+        if (lexer.equalToken(Token.IDENTIFIER, Token.LITERAL_ALIAS, Token.LITERAL_CHARS, Token.USER, Token.END, Token.CASE, Token.KEY, Token.INTERVAL, Token.CONSTRAINT)) {
+            String result = lexer.getLiterals();
             lexer.nextToken();
-        } else if (lexer.equalToken(Token.LITERAL_ALIAS)) {
-            result = '"' + lexer.getLiterals() + '"';
-            lexer.nextToken();
-        } else if (lexer.equalToken(Token.LITERAL_CHARS)) {
-            result = "'" + lexer.getLiterals() + "'";
-            lexer.nextToken();
-        } else if (lexer.equalToken(Token.CASE)) {
-            result = lexer.getToken().name();
-            lexer.nextToken();
+            return result;
         }
-        if (lexer.equalToken(Token.KEY) || lexer.equalToken(Token.INTERVAL) || lexer.equalToken(Token.CONSTRAINT)) {
-            result = lexer.getToken().name();
-            lexer.nextToken();
-        }
-        return result;
+        return null;
     }
 }

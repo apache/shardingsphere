@@ -346,8 +346,19 @@ public class Lexer {
         return tokenDictionary.containsValue(token);
     }
     
-    public final boolean equalToken(final Token token) {
-        return this.token == token;
+    /**
+     * 判断当前语言标记是否和其中一个传入的标记相等.
+     * 
+     * @param tokens 待判断的标记
+     * @return 是否有相等的标记
+     */
+    public final boolean equalToken(final Token... tokens) {
+        for (Token each : tokens) {
+            if (each == token) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public int nextVarIndex() {
