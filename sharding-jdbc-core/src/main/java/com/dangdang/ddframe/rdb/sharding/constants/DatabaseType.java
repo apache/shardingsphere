@@ -31,7 +31,7 @@ import java.util.Arrays;
  */
 public enum DatabaseType {
     
-    H2("H2"), MySQL("MySQL"), Oracle("Oracle"), SQLServer("Microsoft SQL Server"), DB2("DB2"), PostgreSQL("PostgreSQL");
+    H2("H2"), MySQL("MySQL"), Oracle("Oracle"), SQLServer("Microsoft SQL Server"), PostgreSQL("PostgreSQL");
     
     private final String productName;
     

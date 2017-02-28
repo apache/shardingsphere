@@ -31,8 +31,6 @@ import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
-import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -60,12 +58,6 @@ import java.util.List;
 public final class SQLParseEngine {
     
     private final SQLStatement sqlStatement;
-    
-    private final List<Object> parameters;
-    
-    private final SQLASTOutputVisitor visitor;
-    
-    private final ShardingRule shardingRule;
     
     /**
      *  解析SQL.
@@ -209,25 +201,6 @@ public final class SQLParseEngine {
         result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         return result;
     }
-    
-    // TODO remove
-//    private SQLParsedResult parseOriginal() {
-//        Preconditions.checkArgument(visitor instanceof SQLVisitor);
-//        SQLVisitor sqlVisitor = (SQLVisitor) visitor;
-//        visitor.setParameters(parameters);
-//        sqlVisitor.getParseContext().setShardingRule(shardingRule);
-//        sqlStatement.accept(visitor);
-//        SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
-//        if (sqlVisitor.getParseContext().isHasOrCondition()) {
-//            new OrParser(sqlStatement, visitor).fillConditionContext(result);
-//        }
-//        sqlVisitor.getParseContext().mergeCurrentConditionContext();
-//        log.debug("Parsed SQL result: {}", result);
-//        log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());
-//        result.getRouteContext().setSqlBuilder(sqlVisitor.getSQLBuilder());
-//        result.getRouteContext().setSqlStatementType(getType());
-//        return result;
-//    }
     
     private SQLStatementType getType() {
         if (sqlStatement instanceof SQLSelectStatement) {
