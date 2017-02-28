@@ -49,14 +49,6 @@ public interface PGASTVisitor extends SQLASTVisitor {
 
     boolean visit(PGSelectQueryBlock.WindowClause x);
 
-    void endVisit(PGSelectQueryBlock.FetchClause x);
-
-    boolean visit(PGSelectQueryBlock.FetchClause x);
-
-    void endVisit(PGSelectQueryBlock.ForClause x);
-
-    boolean visit(PGSelectQueryBlock.ForClause x);
-
     void endVisit(PGWithQuery x);
 
     boolean visit(PGWithQuery x);

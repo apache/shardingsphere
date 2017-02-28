@@ -30,7 +30,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertSelectWithJoinUsing" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING (user_id) JOIN [Token(order_item)] USING (user_id) WHERE u.user_id = 1000">
+    <assert id="assertSelectWithJoinUsing" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
         <tables>
             <table name="user" alias="u" />
             <table name="order" alias="o" />
@@ -45,7 +45,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertSelectAmbiguousTableName" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING (user_id) JOIN [Token(order_item)] USING (user_id) WHERE u.user_id = 1000">
+    <assert id="assertSelectAmbiguousTableName" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
         <tables>
             <table name="user" alias="u" />
             <table name="order" alias="o" />

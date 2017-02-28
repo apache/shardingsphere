@@ -59,7 +59,7 @@ public abstract class SQLStatementParser extends SQLParser {
             parseWith();
         }
         if (getLexer().equalToken(Token.SELECT)) {
-            return new SQLSelectStatement(createSQLSelectParser().select(), getDbType());
+            return new SQLSelectStatement(createSQLSelectParser(shardingRule, parameters).select(), getDbType());
         }
         if (getLexer().equalToken(Token.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
@@ -101,5 +101,5 @@ public abstract class SQLStatementParser extends SQLParser {
         accept(Token.RIGHT_PAREN);
     }
     
-    protected abstract SQLSelectParser createSQLSelectParser();
+    protected abstract SQLSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters);
 }

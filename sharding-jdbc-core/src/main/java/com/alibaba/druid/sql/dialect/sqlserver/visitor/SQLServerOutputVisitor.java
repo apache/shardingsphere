@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
@@ -107,44 +106,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
         return false;
     }
 
-    @Override
-    public boolean visit(SQLServerOutput x) {
-        print("OUTPUT ");
-        printSelectList(x.getSelectList());
-
-        if (x.getInto() != null) {
-            incrementIndent();
-            println();
-            print("INTO ");
-            x.getInto().accept(this);
-
-            if (x.getColumns().size() > 0) {
-                incrementIndent();
-                println();
-                print("(");
-                for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
-                    if (i != 0) {
-                        if (i % 5 == 0) {
-                            println();
-                        }
-                        print(", ");
-                    }
-
-                    x.getColumns().get(i).accept(this);
-                }
-                print(")");
-                decrementIndent();
-            }
-        }
-        decrementIndent();
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerOutput x) {
-
-    }
-    
     @Override
     public void endVisit(SQLServerSelect x) {
         

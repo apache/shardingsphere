@@ -42,10 +42,6 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
     
     private SQLOrderBy orderBy;
     
-    private FetchClause fetch;
-    
-    private ForClause forClause;
-    
     private IntoOption intoOption;
     
     private final List<SQLExpr> distinctOn = new ArrayList<>(2);
@@ -67,8 +63,6 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
             acceptChild(visitor, window);
             acceptChild(visitor, orderBy);
             acceptChild(visitor, limit);
-            acceptChild(visitor, fetch);
-            acceptChild(visitor, forClause);
         }
         visitor.endVisit(this);
     }
@@ -100,50 +94,6 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
                 acceptChild(visitor, definition);
             }
             visitor.endVisit(this);
-        }
-    }
-    
-    @Getter
-    @Setter
-    public static class FetchClause extends PGSQLObjectImpl {
-        
-        private Option  option;
-        
-        private SQLExpr count;
-
-        @Override
-        public void accept0(final PGASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, count);
-            }
-            visitor.endVisit(this);
-        }
-        
-        public enum Option {
-            FIRST, NEXT
-        }
-    }
-    
-    @Getter
-    @Setter
-    public static class ForClause extends PGSQLObjectImpl {
-        
-        private List<SQLExpr> of = new ArrayList<>(2);
-        
-        private boolean noWait;
-        
-        private Option option;
-        
-        @Override
-        public void accept0(final PGASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, of);
-            }
-            visitor.endVisit(this);
-        }
-        
-        public enum Option {
-            UPDATE, SHARE
         }
     }
     

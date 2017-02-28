@@ -17,26 +17,31 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class SQLServerSelectParser extends SQLSelectParser {
     
-    public SQLServerSelectParser(final SQLExprParser exprParser) {
-        super(exprParser);
+    private final SelectSQLContext sqlContext;
+    
+    public SQLServerSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+        super(shardingRule, parameters, exprParser);
+        sqlContext = new SelectSQLContext(getLexer().getInput());
     }
     
     @Override
     protected SQLSelect createSQLSelect() {
-        return new SQLServerSelect();
+        return new SQLServerSelect(sqlContext);
     }
     
     @Override
@@ -55,7 +60,8 @@ public class SQLServerSelectParser extends SQLSelectParser {
             getLexer().nextToken();
             SQLSelectQuery select = query();
             accept(Token.RIGHT_PAREN);
-            return queryRest(select);
+            queryRest();
+            return select;
         }
         SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
         if (getLexer().equalToken(Token.SELECT)) {
@@ -63,40 +69,28 @@ public class SQLServerSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-            parseDistinct(queryBlock);
+            parseDistinct();
             if (getLexer().equalToken(Token.TOP)) {
-                queryBlock.setTop(new SQLServerExprParser(getLexer()).parseTop());
+                queryBlock.setTop(new SQLServerExprParser(getShardingRule(), getParameters(), getLexer()).parseTop());
             }
-            parseSelectList(queryBlock);
+            parseSelectList();
         }
         if (getLexer().equalToken(Token.INTO)) {
-            getLexer().nextToken();
-            SQLTableSource into = this.parseTableSource();
-            queryBlock.setInto((SQLExprTableSource) into);
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-        parseFrom(queryBlock);
-        parseWhere(queryBlock);
-        parseGroupBy(queryBlock);
-        return queryRest(queryBlock);
+        parseFrom();
+        parseWhere();
+        parseGroupBy();
+        queryRest();
+        return queryBlock;
     }
     
     @Override
-    protected SQLTableSource parseTableSourceRest(final SQLTableSource tableSource) {
-        if (getLexer().equalToken(Token.WITH)) {
-            getLexer().nextToken();
-            accept(Token.LEFT_PAREN);
-
-            while (true) {
-                getExprParser().expr();
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
-                    continue;
-                }
-                break;
-            }
-            accept(Token.RIGHT_PAREN);
+    protected void parseJoinTable() {
+        if (getLexer().skipIfEqual(Token.WITH)) {
+            getLexer().skipParentheses();
         }
-        return super.parseTableSourceRest(tableSource);
+        super.parseJoinTable();
     }
     
     private void parseFor() {

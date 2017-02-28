@@ -24,11 +24,11 @@ import java.util.List;
 public class OracleStatementParser extends SQLStatementParser {
     
     public OracleStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new OracleExprParser(sql));
+        super(shardingRule, parameters, new OracleExprParser(shardingRule, parameters, sql));
     }
     
     @Override
-    protected OracleSelectParser createSQLSelectParser() {
-        return new OracleSelectParser(getExprParser());
+    protected OracleSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new OracleSelectParser(shardingRule, parameters, getExprParser());
     }
 }

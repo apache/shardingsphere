@@ -10,6 +10,7 @@ import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
@@ -43,15 +44,15 @@ public class ParserUtil {
     
     private final List<Object> parameters;
     
-    private final Table table;
+    private final TableContext table;
     
     private final SQLContext sqlContext;
     
+    @Getter
     private int parametersIndex;
     
     public Optional<ConditionContext> parseWhere() {
-        if (exprParser.getLexer().equalToken(Token.WHERE)) {
-            exprParser.getLexer().nextToken();
+        if (exprParser.getLexer().skipIfEqual(Token.WHERE)) {
             ParseContext parseContext = getParseContext();
             parseConditions(parseContext);
             return Optional.of(parseContext.getCurrentConditionContext());
@@ -69,6 +70,11 @@ public class ParserUtil {
         }
         result.addTable(tableSource);
         result.setCurrentTable(table.getName(), table.getAlias());
+        
+        //TODO 剔除之前加入的table
+        for (TableContext each : sqlContext.getTables()) {
+            result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+        }
         return result;
     }
     
@@ -98,7 +104,10 @@ public class ParserUtil {
     private void parseEqualCondition(final ParseContext parseContext, final SQLExpr left) {
         exprParser.getLexer().nextToken();
         SQLExpr right = getSqlExprWithVariant();
-        parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), exprParser.getDbType(), parameters);
+        // TODO 如果有多表,且找不到cloumn是哪个表的,则不加入condition,以后需要解析binding table
+        if (1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) {
+            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), exprParser.getDbType(), parameters);
+        }
     }
     
     private void parseInCondition(final ParseContext parseContext, final SQLExpr left) {
@@ -122,7 +131,6 @@ public class ParserUtil {
         exprParser.accept(Token.AND);
         rights.add(getSqlExprWithVariant());
         parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, exprParser.getDbType(), parameters);
-        exprParser.getLexer().nextToken();
     }
     
     private void parserOtherCondition() {

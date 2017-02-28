@@ -19,7 +19,6 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -29,25 +28,29 @@ import com.alibaba.druid.sql.ast.expr.SQLHexExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.context.LimitContext;
+import com.alibaba.druid.sql.context.OffsetLimitToken;
+import com.alibaba.druid.sql.context.RowCountLimitToken;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalUnit;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr.SearchModifier;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlUserName;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -57,8 +60,8 @@ public class MySqlExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "GROUP_CONCAT"};
     
-    public MySqlExprParser(final String sql) {
-        super(new MySqlLexer(sql), JdbcConstants.MYSQL, AGGREGATE_FUNCTIONS);
+    public MySqlExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new MySqlLexer(sql), JdbcConstants.MYSQL, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
@@ -222,8 +225,7 @@ public class MySqlExprParser extends SQLExprParser {
             }
         } else if (getLexer().equalToken(Token.IDENTIFIER)) {
             if (expr instanceof SQLHexExpr) {
-                if ("USING".equalsIgnoreCase(getLexer().getLiterals())) {
-                    getLexer().nextToken();
+                if (getLexer().skipIfEqual(Token.USING)) {
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
                         throw new ParserException("syntax error, illegal hex");
                     }
@@ -415,8 +417,7 @@ public class MySqlExprParser extends SQLExprParser {
                 if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
                     methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
                 }
-                if (getLexer().identifierEquals("USING")) {
-                    getLexer().nextToken();
+                if (getLexer().skipIfEqual(Token.USING)) {
                     if (!getLexer().equalToken(Token.IDENTIFIER)) {
                         throw new ParserException(getLexer());
                     }
@@ -470,9 +471,10 @@ public class MySqlExprParser extends SQLExprParser {
 
         return super.primaryRest(expr);
     }
-
-    public SQLSelectParser createSelectParser() {
-        return new MySqlSelectParser(this);
+    
+    @Override
+    public SQLSelectParser createSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new MySqlSelectParser(shardingRule, parameters, this);
     }
 
     protected SQLExpr parseInterval() {
@@ -571,29 +573,82 @@ public class MySqlExprParser extends SQLExprParser {
         }
         return super.nameRest(name);
     }
-
-    public Limit parseLimit() {
-        if (getLexer().equalToken(Token.LIMIT)) {
-            getLexer().nextToken();
-
-            MySqlSelectQueryBlock.Limit limit = new MySqlSelectQueryBlock.Limit();
-
-            SQLExpr temp = this.expr();
-            if (getLexer().equalToken(Token.COMMA)) {
-                limit.setOffset(temp);
-                getLexer().nextToken();
-                limit.setRowCount(this.expr());
-            } else if (getLexer().identifierEquals("OFFSET")) {
-                limit.setRowCount(temp);
-                getLexer().nextToken();
-                limit.setOffset(this.expr());
-            } else {
-                limit.setRowCount(temp);
-            }
-            return limit;
+    
+    public LimitContext parseLimit(final int parametersIndex, final SelectSQLContext sqlContext) {
+        getLexer().skipIfEqual(Token.LIMIT);
+        int valueIndex = -1;
+        int valueBeginPosition = getLexer().getCurrentPosition();
+        SQLExpr expr = expr();
+        int value;
+        boolean isParameterForValue = false;
+        if (expr instanceof SQLNumericLiteralExpr) {
+            value = ((SQLNumericLiteralExpr) expr).getNumber().intValue();
+            valueBeginPosition = valueBeginPosition - (value + "").length();
+        } else {
+            valueIndex = parametersIndex;
+            value = (int) getParameters().get(valueIndex);
+            valueBeginPosition--;
+            isParameterForValue = true;
         }
-
-        return null;
+        if (getLexer().skipIfEqual(Token.COMMA)) {
+            int rowCountBeginPosition = getLexer().getCurrentPosition();
+            SQLExpr rowCountExpr = expr();
+            int rowCount;
+            int rowCountIndex = -1;
+            boolean isParameterForRowCount = false;
+            if (rowCountExpr instanceof SQLNumericLiteralExpr) {
+                rowCount = ((SQLNumericLiteralExpr) rowCountExpr).getNumber().intValue();
+                rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
+            } else {
+                rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
+                rowCount = (int) getParameters().get(rowCountIndex);
+                rowCountBeginPosition--;
+                isParameterForRowCount = true;
+            }
+            if (!isParameterForValue) {
+                sqlContext.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
+            }
+            if (!isParameterForRowCount) {
+                sqlContext.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
+            }
+            if (value < 0 || rowCount < 0) {
+                throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+            }
+            return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
+        }
+        if (getLexer().skipIfEqual(Token.OFFSET)) {
+            int offsetBeginPosition = getLexer().getCurrentPosition();
+            SQLExpr offsetExpr = expr();
+            int offset;
+            int offsetIndex = -1;
+            boolean isParameterForOffset = false;
+            if (offsetExpr instanceof SQLNumericLiteralExpr) {
+                offset = ((SQLNumericLiteralExpr) offsetExpr).getNumber().intValue();
+                offsetBeginPosition = offsetBeginPosition - (offset + "").length();
+            } else {
+                offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
+                offset = (int) getParameters().get(offsetIndex);
+                offsetBeginPosition--;
+                isParameterForOffset = true;
+            }
+            if (!isParameterForOffset) {
+                sqlContext.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+            }
+            if (!isParameterForValue) {
+                sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value)); 
+            }
+            if (value < 0 || offset < 0) {
+                throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+            }
+            return new LimitContext(offset, value, offsetIndex, valueIndex);
+        }
+        if (!isParameterForValue) {
+            sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+        }
+        if (value < 0) {
+            throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+        }
+        return new LimitContext(value, valueIndex);
     }
     
     protected SQLAggregateExpr parseAggregateExprRest(final SQLAggregateExpr aggregateExpr) {
@@ -605,18 +660,5 @@ public class MySqlExprParser extends SQLExprParser {
             aggregateExpr.putAttribute("SEPARATOR", primary());
         }
         return aggregateExpr;
-    }
-
-    public MySqlSelectGroupByExpr parseSelectGroupByItem() {
-        MySqlSelectGroupByExpr item = new MySqlSelectGroupByExpr();
-        item.setExpr(expr());
-        if (getLexer().equalToken(Token.ASC)) {
-            getLexer().nextToken();
-            item.setType(SQLOrderingSpecification.ASC);
-        } else if (getLexer().equalToken(Token.DESC)) {
-            getLexer().nextToken();
-            item.setType(SQLOrderingSpecification.DESC);
-        }
-        return item;
     }
 }

@@ -40,7 +40,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.db2.visitor.DB2EvalVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlEvalVisitorImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleEvalVisitor;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGEvalVisitor;
@@ -154,9 +153,6 @@ public class SQLEvalVisitorUtils {
         }
         if (JdbcConstants.SQL_SERVER.equals(dbType) || JdbcConstants.JTDS.equals(dbType)) {
             return new SQLServerEvalVisitor();
-        }
-        if (JdbcConstants.DB2.equals(dbType)) {
-            return new DB2EvalVisitor();
         }
         return new SQLEvalVisitorImpl();
     }

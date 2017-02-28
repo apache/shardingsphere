@@ -25,11 +25,11 @@ import java.util.List;
 public class MySqlStatementParser extends SQLStatementParser {
     
     public MySqlStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new MySqlExprParser(sql));
+        super(shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, sql));
     }
     
     @Override
-    protected SQLSelectParser createSQLSelectParser() {
-        return new MySqlSelectParser(getExprParser());
+    protected SQLSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new MySqlSelectParser(shardingRule, parameters, getExprParser());
     }
 }

@@ -76,6 +76,55 @@ public class Lexer {
     }
     
     /**
+     * 跳过小括号内所有的语言符号.
+     */
+    // TODO 返回跳过的内容
+    public final void skipParentheses() {
+        int count = 0;
+        if (Token.LEFT_PAREN == token) {
+            nextToken();
+            while (true) {
+                if (Token.EOF == token || (Token.RIGHT_PAREN == token && 0 == count)) {
+                    break;
+                }
+                if (Token.LEFT_PAREN == token) {
+                    count++;
+                } else if (Token.RIGHT_PAREN == token) {
+                    count--;
+                }
+                nextToken();
+            }
+        }
+        nextToken();
+    }
+    
+//    /**
+//     * 跳过小括号内所有的语言符号.
+//     */
+//    public final String skipParentheses() {
+//        int beginPosition = currentPosition;
+//        int count = 0;
+//        if (Token.LEFT_PAREN == token) {
+//            currentPosition++;
+//            while (true) {
+//                if (currentPosition == input.length() || (input.charAt(currentPosition) == Token.RIGHT_PAREN.getName().charAt(0) && 0 == count)) {
+//                    break;
+//                }
+//                if (input.charAt(currentPosition) == Token.LEFT_PAREN.getName().charAt(0)) {
+//                    count++;
+//                } else if (input.charAt(currentPosition) == Token.RIGHT_PAREN.getName().charAt(0)) {
+//                    count--;
+//                }
+//                currentPosition++;
+//            }
+//        }
+//        if (currentPosition != input.length()) {
+//            currentPosition++;
+//        }
+//        return input.substring(beginPosition, currentPosition);
+//    }
+    
+    /**
      * 跳至下一个语言符号.
      */
     public final void nextToken() {
@@ -303,23 +352,6 @@ public class Lexer {
     
     public int nextVarIndex() {
         return ++varIndex;
-    }
-    
-    public final void nextTokenCommaOrRightParen() {
-        if (' ' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-        }
-        if (',' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-            token = Token.COMMA;
-            return;
-        }
-        if (')' == charAt(currentPosition)) {
-            increaseCurrentPosition();
-            token = Token.RIGHT_PAREN;
-            return;
-        }
-        nextToken();
     }
     
     private static final long  MULTMIN_RADIX_TEN   = Long.MIN_VALUE / 10;

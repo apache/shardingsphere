@@ -29,7 +29,7 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     protected void parseBetweenSetAndWhere() {
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            getExprParser().createSelectParser().parseTableSource();
+            getExprParser().createSelectParser(getShardingRule(), getParameters()).parseTableSource();
         }
     }
 }

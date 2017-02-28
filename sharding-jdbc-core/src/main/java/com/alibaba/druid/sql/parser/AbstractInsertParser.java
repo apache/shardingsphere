@@ -7,12 +7,12 @@ import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -102,11 +102,11 @@ public abstract class AbstractInsertParser extends SQLParser {
         return Collections.emptySet();
     }
     
-    private Table parseTable(final InsertSQLContext insertSQLContext) {
+    private TableContext parseTable(final InsertSQLContext insertSQLContext) {
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
         String tableName = getLexer().getLiterals();
         getLexer().nextToken();
-        Table result = new Table(SQLUtil.getExactlyValue(tableName), Optional.<String>absent());
+        TableContext result = new TableContext(tableName, SQLUtil.getExactlyValue(tableName), Optional.<String>absent());
         insertSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableName, result.getName()));
         insertSQLContext.getTables().add(result);
         return result;

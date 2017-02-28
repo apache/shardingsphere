@@ -2,7 +2,6 @@ package com.alibaba.druid.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +18,7 @@ public interface SQLContext {
      * 
      * @return 表解析对象集合
      */
-    List<Table> getTables();
+    List<TableContext> getTables();
     
     /**
      * 获取条件对象上下文集合.

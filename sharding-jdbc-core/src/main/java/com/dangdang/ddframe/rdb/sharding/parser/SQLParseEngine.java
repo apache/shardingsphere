@@ -22,17 +22,28 @@ import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.context.AggregationSelectItemContext;
+import com.alibaba.druid.sql.context.GroupByContext;
 import com.alibaba.druid.sql.context.InsertSQLContext;
+import com.alibaba.druid.sql.context.ItemsToken;
+import com.alibaba.druid.sql.context.OrderByContext;
 import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.SelectItemContext;
+import com.alibaba.druid.sql.context.SelectSQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.SQLVisitor;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.or.OrParser;
-import com.google.common.base.Preconditions;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,7 +87,8 @@ public final class SQLParseEngine {
         } else {
             result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
-        result.getRouteContext().getTables().add(sqlContext.getTables().get(0));
+        TableContext tableContext = sqlContext.getTables().get(0);
+        result.getRouteContext().getTables().add(new Table(tableContext.getName(), tableContext.getAlias()));
         result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         result.getRouteContext().setSqlStatementType(getType());
         if (sqlContext instanceof InsertSQLContext) {
@@ -99,22 +111,123 @@ public final class SQLParseEngine {
     }
     
     private SQLParsedResult parseOriginal() {
-        Preconditions.checkArgument(visitor instanceof SQLVisitor);
-        SQLVisitor sqlVisitor = (SQLVisitor) visitor;
-        visitor.setParameters(parameters);
-        sqlVisitor.getParseContext().setShardingRule(shardingRule);
-        sqlStatement.accept(visitor);
-        SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
-        if (sqlVisitor.getParseContext().isHasOrCondition()) {
-            new OrParser(sqlStatement, visitor).fillConditionContext(result);
+        ParseContext parseContext = new ParseContext(0);
+        SQLParsedResult result = parseContext.getParsedResult();
+        SelectSQLContext sqlContext = ((SQLSelectStatement) sqlStatement).getSelect().getSqlContext();
+        if (sqlContext.getConditionContexts().isEmpty()) {
+            result.getConditionContexts().add(new ConditionContext());
+        } else {
+            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
-        sqlVisitor.getParseContext().mergeCurrentConditionContext();
-        log.debug("Parsed SQL result: {}", result);
-        log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());
-        result.getRouteContext().setSqlBuilder(sqlVisitor.getSQLBuilder());
+        for (TableContext each : sqlContext.getTables()) {
+            result.getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+        }
         result.getRouteContext().setSqlStatementType(getType());
+        
+        
+        for (SelectItemContext each : sqlContext.getItemContexts()) {
+            parseContext.getSelectItems().add(each);
+        }
+    
+        if (sqlContext.isContainStar()) {
+            parseContext.registerSelectItem("*");
+        }
+        
+        
+        
+        ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
+        
+        
+        for (SelectItemContext each : sqlContext.getItemContexts()) {
+            if (each instanceof AggregationSelectItemContext) {
+                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
+                // TODO index获取不准，考虑使用别名替换
+                AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(), 
+                        Optional.fromNullable(aggregationSelectItemContext.getAlias()), Optional.<String>absent(), aggregationSelectItemContext.getIndex());
+                result.getMergeContext().getAggregationColumns().add(column);
+                if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
+                    List<AggregationColumn> aggregationColumns = parseContext.addDerivedColumnsForAvgColumn(column);
+                    // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+                    for (AggregationColumn aggregationColumn : aggregationColumns) {
+                        itemsToken.getItems().add(aggregationColumn.getExpression() + " AS " + aggregationColumn.getAlias().get() + " ");
+                    }
+                }
+            }
+        }
+        
+        if (!sqlContext.getGroupByContexts().isEmpty()) {
+            for (GroupByContext each : sqlContext.getGroupByContexts()) {
+                GroupByColumn groupByColumn = parseContext.addGroupByColumns(each.getOwner(), each.getName(), each.getOrderByType());
+                boolean found = false;
+                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() :each.getName();
+                for (SelectItemContext context : sqlContext.getItemContexts()) {
+                    if ((null == context.getAlias() && context.getExpression().equalsIgnoreCase(groupByExpression)) || (null != context.getAlias() && context.getAlias().equalsIgnoreCase(groupByExpression))) {
+                        found = true;
+                        break;
+                    }
+                }
+                // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
+                if (!found && groupByColumn.getAlias().isPresent()) {
+                    itemsToken.getItems().add(groupByExpression + " AS " + groupByColumn.getAlias().get() + " ");
+                }
+            }
+        }
+        
+        
+        if (!sqlContext.getOrderByContexts().isEmpty()) {
+            for (OrderByContext each : sqlContext.getOrderByContexts()) {
+                if (each.getIndex().isPresent()) {
+                    parseContext.addOrderByColumn(each.getIndex().get(), each.getOrderByType());
+                } else {
+                    OrderByColumn orderByColumn = parseContext.addOrderByColumn(each.getOwner(), each.getName().get(), each.getOrderByType());
+                    boolean found = false;
+                    String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
+                    for (SelectItemContext context : sqlContext.getItemContexts()) {
+                        if (context.getExpression().equalsIgnoreCase(orderByExpression) || (null != context.getAlias() && context.getAlias().equalsIgnoreCase(orderByExpression))) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
+                    if (!found && orderByColumn.getAlias().isPresent()) {
+                        itemsToken.getItems().add(orderByExpression + " AS " + orderByColumn.getAlias().get() + " ");
+                    }
+                }
+            }
+        }
+        
+        if (!itemsToken.getItems().isEmpty()) {
+            sqlContext.getSqlTokens().add(itemsToken);
+        }
+        
+        
+        if (null != sqlContext.getLimitContext()) {
+            parseContext.getParsedResult().getMergeContext().setLimit(
+                    new Limit(sqlContext.getLimitContext().getOffset().isPresent() ? sqlContext.getLimitContext().getOffset().get() : 0, sqlContext.getLimitContext().getRowCount(), 
+                            sqlContext.getLimitContext().getOffsetParameterIndex(), sqlContext.getLimitContext().getRowCountParameterIndex()));
+        }
+        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         return result;
     }
+    
+    // TODO remove
+//    private SQLParsedResult parseOriginal() {
+//        Preconditions.checkArgument(visitor instanceof SQLVisitor);
+//        SQLVisitor sqlVisitor = (SQLVisitor) visitor;
+//        visitor.setParameters(parameters);
+//        sqlVisitor.getParseContext().setShardingRule(shardingRule);
+//        sqlStatement.accept(visitor);
+//        SQLParsedResult result = sqlVisitor.getParseContext().getParsedResult();
+//        if (sqlVisitor.getParseContext().isHasOrCondition()) {
+//            new OrParser(sqlStatement, visitor).fillConditionContext(result);
+//        }
+//        sqlVisitor.getParseContext().mergeCurrentConditionContext();
+//        log.debug("Parsed SQL result: {}", result);
+//        log.debug("Parsed SQL: {}", sqlVisitor.getSQLBuilder());
+//        result.getRouteContext().setSqlBuilder(sqlVisitor.getSQLBuilder());
+//        result.getRouteContext().setSqlStatementType(getType());
+//        return result;
+//    }
     
     private SQLStatementType getType() {
         if (sqlStatement instanceof SQLSelectStatement) {

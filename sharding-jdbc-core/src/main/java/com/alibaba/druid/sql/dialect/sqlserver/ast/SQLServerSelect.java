@@ -18,6 +18,7 @@ package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,10 @@ public class SQLServerSelect extends SQLSelect implements SQLServerObject {
     private SQLExpr rowCount;
     
     private SQLExpr offset;
+    
+    public SQLServerSelect(final SelectSQLContext sqlContext) {
+        super(sqlContext);
+    }
     
     public void setRowCount(final SQLExpr rowCount) {
         if (null != rowCount) {

@@ -33,7 +33,7 @@ public class UnsupportedOperationDerivedColumnResultSetTest extends AbstractShar
     
     @Before
     public void init() throws SQLException {
-        actual = getShardingDataSource().getConnection().createStatement().executeQuery("SELECT user_id AS `uid` FROM `t_order` group by `user_id`");
+        actual = getShardingDataSource().getConnection().createStatement().executeQuery("SELECT user_id AS `uid` FROM `t_order` group by `uid`");
     }
     
     @After
@@ -63,7 +63,7 @@ public class UnsupportedOperationDerivedColumnResultSetTest extends AbstractShar
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetBinaryStreamForColumnIndex() throws Exception {
-        actual.getBinaryStream(1);   
+        actual.getBinaryStream(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

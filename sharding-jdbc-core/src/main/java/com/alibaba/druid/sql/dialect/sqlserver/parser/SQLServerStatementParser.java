@@ -25,11 +25,11 @@ import java.util.List;
 public class SQLServerStatementParser extends SQLStatementParser {
     
     public SQLServerStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new SQLServerExprParser(sql));
+        super(shardingRule, parameters, new SQLServerExprParser(shardingRule, parameters, sql));
     }
     
     @Override
-    protected SQLSelectParser createSQLSelectParser() {
-        return new SQLServerSelectParser(getExprParser());
+    protected SQLSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new SQLServerSelectParser(shardingRule, parameters, getExprParser());
     }
 }

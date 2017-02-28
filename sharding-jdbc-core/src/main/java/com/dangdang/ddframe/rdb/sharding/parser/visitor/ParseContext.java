@@ -24,6 +24,8 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.context.CommonSelectItemContext;
+import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
 import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
 import com.alibaba.druid.util.JdbcConstants;
@@ -89,7 +91,7 @@ public final class ParseContext {
     
     private int selectItemsCount;
     
-    private final Collection<String> selectItems = new HashSet<>();
+    private final Collection<SelectItemContext> selectItems = new HashSet<>();
     
     private boolean hasAllColumn;
     
@@ -136,6 +138,7 @@ public final class ParseContext {
      * 
      * @param x 表名表达式, 来源于FROM, INSERT ,UPDATE, DELETE等语句
      */
+    @Deprecated
     public Table addTable(final SQLExprTableSource x) {
         Table result = new Table(SQLUtil.getExactlyValue(x.getExpr().toString()), SQLUtil.getExactlyValue(x.getAlias()));
         parsedResult.getRouteContext().getTables().add(result);
@@ -316,9 +319,15 @@ public final class ParseContext {
      * 
      * @param avgColumn 求平均值的列
      */
-    public void addDerivedColumnsForAvgColumn(final AggregationColumn avgColumn) {
-        addDerivedColumnForAvgColumn(avgColumn, getDerivedCountColumn(avgColumn));
-        addDerivedColumnForAvgColumn(avgColumn, getDerivedSumColumn(avgColumn));
+    public List<AggregationColumn> addDerivedColumnsForAvgColumn(final AggregationColumn avgColumn) {
+        List<AggregationColumn> result = new ArrayList<>(2);
+        AggregationColumn countColumn = getDerivedCountColumn(avgColumn);
+        addDerivedColumnForAvgColumn(avgColumn, countColumn);
+        result.add(countColumn);
+        AggregationColumn sumColumn = getDerivedSumColumn(avgColumn);
+        addDerivedColumnForAvgColumn(avgColumn, sumColumn);
+        result.add(sumColumn);
+        return result;
     }
     
     private void addDerivedColumnForAvgColumn(final AggregationColumn avgColumn, final AggregationColumn derivedColumn) {
@@ -327,7 +336,7 @@ public final class ParseContext {
     }
     
     private AggregationColumn getDerivedCountColumn(final AggregationColumn avgColumn) {
-        String expression = avgColumn.getExpression().replaceFirst(AggregationType.AVG.toString(), AggregationType.COUNT.toString());
+        String expression = avgColumn.getExpression().replaceFirst("(?i)" + AggregationType.AVG.toString(), AggregationType.COUNT.toString());
         return new AggregationColumn(expression, AggregationType.COUNT, Optional.of(generateDerivedColumnAlias()), avgColumn.getOption());
     }
     
@@ -336,7 +345,7 @@ public final class ParseContext {
     }
     
     private AggregationColumn getDerivedSumColumn(final AggregationColumn avgColumn) {
-        String expression = avgColumn.getExpression().replaceFirst(AggregationType.AVG.toString(), AggregationType.SUM.toString());
+        String expression = avgColumn.getExpression().replaceFirst("(?i)" + AggregationType.AVG.toString(), AggregationType.SUM.toString());
         if (avgColumn.getOption().isPresent()) {
             expression = expression.replaceFirst(avgColumn.getOption().get() + " ", "");
         }
@@ -359,21 +368,30 @@ public final class ParseContext {
      * @param owner 列拥有者
      * @param name 列名称
      * @param orderByType 排序类型
+     * 
+     * @return 排序列
      */
-    public void addOrderByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
-        String rawName = SQLUtil.getExactlyValue(name);
-        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(owner, rawName, getAlias(rawName), orderByType));
+    public OrderByColumn addOrderByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
+        String rawName = owner.isPresent() ? SQLUtil.getExactlyValue(owner.get()) + "." + SQLUtil.getExactlyValue(name) : SQLUtil.getExactlyValue(name);
+        OrderByColumn result = new OrderByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
+        parsedResult.getMergeContext().getOrderByColumns().add(result);
+        return result;
     }
     
     private Optional<String> getAlias(final String name) {
-        if (containsSelectItem(name)) {
+        if (hasAllColumn) {
             return Optional.absent();
         }
+        String rawName = SQLUtil.getExactlyValue(name);
+        for (SelectItemContext each : selectItems) {
+            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+                return Optional.fromNullable(SQLUtil.getExactlyValue(each.getAlias()));
+            }
+            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getAlias()))) {
+                return Optional.of(rawName);
+            }
+        }
         return Optional.of(generateDerivedColumnAlias());
-    }
-    
-    private boolean containsSelectItem(final String selectItem) {
-        return hasAllColumn || selectItems.contains(selectItem);
     }
     
     /**
@@ -382,12 +400,16 @@ public final class ParseContext {
      * @param owner 列拥有者
      * @param name 列名称
      * @param orderByType 排序类型
+     * 
+     * @return 分组列
      */
-    public void addGroupByColumns(final Optional<String> owner, final String name, final OrderByType orderByType) {
-        String rawName = SQLUtil.getExactlyValue(name);
-        parsedResult.getMergeContext().getGroupByColumns().add(new GroupByColumn(owner, rawName, getAlias(rawName), orderByType));
+    // TODO rename addGroupByColumns => addGroupByColumn
+    public GroupByColumn addGroupByColumns(final Optional<String> owner, final String name, final OrderByType orderByType) {
+        String rawName = owner.isPresent() ? SQLUtil.getExactlyValue(owner.get()) + "." + SQLUtil.getExactlyValue(name) : SQLUtil.getExactlyValue(name);
+        GroupByColumn result = new GroupByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
+        parsedResult.getMergeContext().getGroupByColumns().add(result);
+        return result;
     }
-    
     
     /**
      * 将当前解析的条件对象归并入解析结果.
@@ -426,13 +448,15 @@ public final class ParseContext {
      *
      * @param selectItem SELECT语句中声明的列名称或别名
      */
+    @Deprecated
+    // TODO remove
     public void registerSelectItem(final String selectItem) {
         String rawItemExpr = SQLUtil.getExactlyValue(selectItem);
         if ("*".equals(rawItemExpr)) {
             hasAllColumn = true;
             return;
         }
-        selectItems.add(rawItemExpr);
+        selectItems.add(new CommonSelectItemContext(rawItemExpr, null, 0, false));
     }
     
     @RequiredArgsConstructor

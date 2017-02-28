@@ -28,7 +28,7 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
         ((SQLServerExprParser) getExprParser()).parserOutput();
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            getExprParser().createSelectParser().parseTableSource();
+            getExprParser().createSelectParser(getShardingRule(), getParameters()).parseTableSource();
         }
     }
 }

@@ -17,13 +17,16 @@ package com.alibaba.druid.sql.dialect.db2.parser;
 
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class DB2ExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER", "ROWNUMBER"};
     
-    public DB2ExprParser(final String sql) {
-        super(new DB2Lexer(sql), JdbcConstants.DB2, AGGREGATE_FUNCTIONS);
+    public DB2ExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new DB2Lexer(sql), JdbcConstants.DB2, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
 }

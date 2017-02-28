@@ -116,6 +116,7 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         return super.visit(x);
     }
     
+    @Override
     public boolean visit(final SQLOrderBy x) {
         for (SQLSelectOrderByItem each : x.getItems()) {
             SQLExpr expr = each.getExpr();
@@ -127,7 +128,6 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
             } else if (expr instanceof SQLPropertyExpr) {
                 SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
                 getParseContext().addOrderByColumn(Optional.of(sqlPropertyExpr.getOwner().toString()), sqlPropertyExpr.getSimpleName(), orderByType);
-                
             }
         }
         return super.visit(x);

@@ -24,11 +24,11 @@ import java.util.List;
 public class DB2StatementParser extends SQLStatementParser {
     
     public DB2StatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new DB2ExprParser(sql));
+        super(shardingRule, parameters, new DB2ExprParser(shardingRule, parameters, sql));
     }
     
     @Override
-    protected DB2SelectParser createSQLSelectParser() {
-        return new DB2SelectParser(getExprParser());
+    protected DB2SelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new DB2SelectParser(shardingRule, parameters, getExprParser());
     }
 }

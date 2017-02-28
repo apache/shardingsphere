@@ -24,11 +24,11 @@ import java.util.List;
 public class PGSQLStatementParser extends SQLStatementParser {
     
     public PGSQLStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new PGExprParser(sql));
+        super(shardingRule, parameters, new PGExprParser(shardingRule, parameters, sql));
     }
     
     @Override
-    protected PGSelectParser createSQLSelectParser() {
-        return new PGSelectParser(getExprParser());
+    protected PGSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new PGSelectParser(shardingRule, parameters, getExprParser());
     }
 }

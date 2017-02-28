@@ -19,7 +19,6 @@ package com.alibaba.druid.sql;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.alibaba.druid.sql.dialect.db2.visitor.DB2OutputVisitor;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
@@ -41,9 +40,6 @@ public final class SQLUtils {
         }
         if (JdbcConstants.POSTGRESQL.equals(dbType)) {
             return toPGString(sqlObject);
-        }
-        if (JdbcConstants.DB2.equals(dbType)) {
-            return toDB2String(sqlObject);
         }
         return toSQLServerString(sqlObject);
     }
@@ -69,12 +65,6 @@ public final class SQLUtils {
     public static String toPGString(final SQLObject sqlObject) {
         StringBuilder out = new StringBuilder();
         sqlObject.accept(new PGOutputVisitor(out));
-        return out.toString();
-    }
-    
-    public static String toDB2String(final SQLObject sqlObject) {
-        StringBuilder out = new StringBuilder();
-        sqlObject.accept(new DB2OutputVisitor(out));
         return out.toString();
     }
     

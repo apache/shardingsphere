@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.ModelClause;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
@@ -28,10 +27,6 @@ import lombok.Setter;
 @Setter
 public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
     
-    private OracleSelectHierarchicalQueryClause hierarchicalQueryClause;
-    
-    private ModelClause modelClause;
-    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
@@ -40,9 +35,7 @@ public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
                 acceptChild(visitor, getInto());
                 acceptChild(visitor, getFrom());
                 acceptChild(visitor, getWhere());
-                acceptChild(visitor, hierarchicalQueryClause);
                 acceptChild(visitor, getGroupBy());
-                acceptChild(visitor, modelClause);
             }
             visitor.endVisit(this);
             return;

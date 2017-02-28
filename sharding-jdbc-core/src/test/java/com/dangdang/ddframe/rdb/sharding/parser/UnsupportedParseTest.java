@@ -51,5 +51,4 @@ public final class UnsupportedParseTest {
     public void assertNegativeLimitRowCount() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "select * from order limit -2,-1", Collections.emptyList(), new ShardingRuleMockBuilder().build()).parse();
     }
-    
 }

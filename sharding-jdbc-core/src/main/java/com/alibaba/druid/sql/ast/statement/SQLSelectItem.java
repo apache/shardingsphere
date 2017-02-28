@@ -18,10 +18,12 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @EqualsAndHashCode(of = {"expr", "alias"})
@@ -30,6 +32,9 @@ public class SQLSelectItem extends SQLObjectImpl {
     private final SQLExpr expr;
     
     private final String alias;
+    
+    @Setter
+    private SelectItemContext selectItemContext;
     
     public SQLSelectItem(final SQLExpr expr, final String alias) {
         this.expr = expr;

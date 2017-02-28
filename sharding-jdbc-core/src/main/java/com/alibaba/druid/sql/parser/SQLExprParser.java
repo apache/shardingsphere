@@ -21,8 +21,6 @@ import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObject;
-import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.ast.SQLOver;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateOption;
@@ -59,14 +57,25 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
+import com.alibaba.druid.sql.context.AggregationSelectItemContext;
+import com.alibaba.druid.sql.context.CommonSelectItemContext;
+import com.alibaba.druid.sql.context.OrderByContext;
+import com.alibaba.druid.sql.context.SelectItemContext;
+import com.alibaba.druid.sql.context.SelectSQLContext;
+import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -76,8 +85,16 @@ public class SQLExprParser extends SQLParser {
     
     private final Set<String> aggregateFunctions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
-    public SQLExprParser(final Lexer lexer, final String dbType, final String... aggregateFunctions) {
+    @Getter
+    private final ShardingRule shardingRule;
+    
+    @Getter
+    private final List<Object> parameters;
+    
+    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer, final String dbType, final String... aggregateFunctions) {
         super(lexer, dbType);
+        this.shardingRule = shardingRule;
+        this.parameters = parameters;
         this.aggregateFunctions.addAll(Arrays.asList(aggregateFunctions));
     }
     
@@ -276,7 +293,7 @@ public class SQLExprParser extends SQLParser {
             case EXISTS:
                 getLexer().nextToken();
                 accept(Token.LEFT_PAREN);
-                sqlExpr = new SQLExistsExpr(createSelectParser().select(), false);
+                sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), false);
                 accept(Token.RIGHT_PAREN);
                 break;
             case NOT:
@@ -284,7 +301,7 @@ public class SQLExprParser extends SQLParser {
                 if (getLexer().equalToken(Token.EXISTS)) {
                     getLexer().nextToken();
                     accept(Token.LEFT_PAREN);
-                    sqlExpr = new SQLExistsExpr(createSelectParser().select(), true);
+                    sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), true);
                     accept(Token.RIGHT_PAREN);
                 } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
@@ -298,7 +315,7 @@ public class SQLExprParser extends SQLParser {
                 }
                 break;
             case SELECT:
-                sqlExpr = new SQLQueryExpr(createSelectParser().select());
+                sqlExpr = new SQLQueryExpr(createSelectParser(getShardingRule(), getParameters()).select());
                 break;
             case CAST:
                 getLexer().nextToken();
@@ -513,7 +530,7 @@ public class SQLExprParser extends SQLParser {
         SQLAllExpr result = new SQLAllExpr();
         getLexer().nextToken();
         accept(Token.LEFT_PAREN);
-        SQLSelect allSubQuery = createSelectParser().select();
+        SQLSelect allSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
         result.setSubQuery(allSubQuery);
         accept(Token.RIGHT_PAREN);
         allSubQuery.setParent(result);
@@ -524,7 +541,7 @@ public class SQLExprParser extends SQLParser {
         SQLSomeExpr result = new SQLSomeExpr();
         getLexer().nextToken();
         accept(Token.LEFT_PAREN);
-        SQLSelect someSubQuery = createSelectParser().select();
+        SQLSelect someSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
         result.setSubQuery(someSubQuery);
         accept(Token.RIGHT_PAREN);
         someSubQuery.setParent(result);
@@ -543,7 +560,7 @@ public class SQLExprParser extends SQLParser {
                 return methodInvokeExpr;
             }
             SQLAnyExpr anyExpr = new SQLAnyExpr();
-            SQLSelect anySubQuery = createSelectParser().select();
+            SQLSelect anySubQuery = createSelectParser(getShardingRule(), getParameters()).select();
             anyExpr.setSubQuery(anySubQuery);
             accept(Token.RIGHT_PAREN);
             anySubQuery.setParent(anyExpr);
@@ -557,8 +574,8 @@ public class SQLExprParser extends SQLParser {
         throw new ParserUnsupportedException(getLexer().getToken());
     }
     
-    public SQLSelectParser createSelectParser() {
-        return new SQLSelectParser(this);
+    public SQLSelectParser createSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
+        return new SQLSelectParser(shardingRule, parameters, this);
     }
     
     public SQLExpr primaryRest(SQLExpr expr) {
@@ -816,7 +833,8 @@ public class SQLExprParser extends SQLParser {
                 over.getPartitionBy().addAll(exprList(over));
             }
         }
-        over.setOrderBy(parseOrderBy());
+        // TODO 弄明白
+        //over.setOrderBy(parseOrderBy());
         accept(Token.RIGHT_PAREN);
         aggregateExpr.setOver(over);
     }
@@ -825,31 +843,47 @@ public class SQLExprParser extends SQLParser {
         return aggregateExpr;
     }
     
-    public SQLOrderBy parseOrderBy() {
-        if (!getLexer().equalToken(Token.ORDER)) {
-            return null;
+    public List<OrderByContext> parseOrderBy() {
+        if (!getLexer().skipIfEqual(Token.ORDER)) {
+            return Collections.emptyList();
         }
-        SQLOrderBy result = new SQLOrderBy();
-        getLexer().nextToken();
+        List<OrderByContext> result = new LinkedList<>();
+        getLexer().skipIfEqual(Token.SIBLINGS);
         accept(Token.BY);
-        result.addItem(parseSelectOrderByItem());
+        OrderByContext orderByContext = parseSelectOrderByItem();
+        if (null != orderByContext) {
+            result.add(orderByContext);
+        }
         while (getLexer().equalToken(Token.COMMA)) {
             getLexer().nextToken();
-            result.addItem(parseSelectOrderByItem());
+            orderByContext = parseSelectOrderByItem();
+            if (null != orderByContext) {
+                result.add(orderByContext);
+            }
         }
         return result;
     }
     
-    public SQLSelectOrderByItem parseSelectOrderByItem() {
-        SQLSelectOrderByItem result = new SQLSelectOrderByItem(expr());
+    public OrderByContext parseSelectOrderByItem() {
+        SQLExpr expr = expr();
+        OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
-            result.setType(SQLOrderingSpecification.ASC);
         } else if (getLexer().equalToken(Token.DESC)) {
             getLexer().nextToken();
-            result.setType(SQLOrderingSpecification.DESC);
+            orderByType = OrderByColumn.OrderByType.DESC;
         }
-        return result;
+        if (expr instanceof SQLIntegerExpr) {
+            return new OrderByContext(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
+        }
+        if (expr instanceof SQLIdentifierExpr) {
+            return new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getSimpleName()), orderByType);
+        }
+        if (expr instanceof SQLPropertyExpr) {
+            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
+            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()), SQLUtil.getExactlyValue(sqlPropertyExpr.getSimpleName()), orderByType);
+        }
+        return null;
     }
     
     public final SQLExpr bitAndRest(SQLExpr expr) {
@@ -879,9 +913,12 @@ public class SQLExprParser extends SQLParser {
         SQLExpr rightExp;
         if (getLexer().equalToken(Token.EQ)) {
             getLexer().nextToken();
+            int rightStartPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
             rightExp = bitOrRest(bitAndRest(shift()));
             rightExp = equalityRest(rightExp);
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp, getDbType());
+            SQLBinaryOpExpr sqlBinaryOpExpr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp, getDbType());
+            sqlBinaryOpExpr.setRightStartPosition(rightStartPosition);
+            expr = sqlBinaryOpExpr;
         } else if (getLexer().equalToken(Token.BANG_EQ)) {
             getLexer().nextToken();
             rightExp = bitOrRest(bitAndRest(shift()));
@@ -1214,19 +1251,63 @@ public class SQLExprParser extends SQLParser {
         return charType;
     }
     
-    public SQLSelectItem parseSelectItem() {
+    public final SQLSelectItem parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
-        SQLExpr expr;
-        if (getLexer().equalToken(Token.IDENTIFIER)) {
-            expr = new SQLIdentifierExpr(getLexer().getLiterals());
+        String literals = getLexer().getLiterals();
+        if (literals.equalsIgnoreCase(AggregationColumn.AggregationType.MAX.name())
+                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.MIN.name())
+                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.SUM.name())
+                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.COUNT.name())
+                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.AVG.name())) {
+            AggregationColumn.AggregationType aggregationType = AggregationColumn.AggregationType.valueOf(literals.toUpperCase());
             getLexer().nextToken();
-            if (!getLexer().equalToken(Token.COMMA)) {
-                expr = primaryRest(expr);
-                expr = exprRest(expr);
+            if (getLexer().equalToken(Token.LEFT_PAREN)) {
+                StringBuilder expression = new StringBuilder(literals);
+                int parenthesesDeep = 0;
+                while (true) {
+                    if (getLexer().equalToken(Token.EOF)) {
+                        break;
+                    }
+                    if (getLexer().equalToken(Token.LEFT_PAREN)) {
+                        parenthesesDeep++;
+                    }
+                    if (getLexer().equalToken(Token.RIGHT_PAREN)) {
+                        parenthesesDeep--;
+                    }
+                    expression.append(" " + getLexer().getLiterals());
+                    if (0 == parenthesesDeep && getLexer().equalToken(Token.RIGHT_PAREN)) {
+                        getLexer().nextToken();
+                        break;
+                    }
+                    getLexer().nextToken();
+                }
+                String alias = as();
+                SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
+                SelectItemContext selectItemContext = new AggregationSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, aggregationType);
+                result.setSelectItemContext(selectItemContext);
+                return result;
             }
-        } else {
-            expr = expr();
         }
-        return new SQLSelectItem(expr, as());
+        StringBuilder expression = new StringBuilder();
+        boolean isStar = false;
+        // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
+        // FIXME *解析不完全正确,乘号也会解析为star
+        while (!getLexer().equalToken(Token.AS) && !getLexer().equalToken(Token.COMMA) && !getLexer().equalToken(Token.FROM) && !getLexer().equalToken(Token.EOF)) {
+            String value = getLexer().getLiterals();
+            int position = getLexer().getCurrentPosition() - value.length();
+            expression.append(value);
+            if (getLexer().equalToken(Token.STAR)) {
+                isStar = true;
+            }
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.DOT)) {
+                sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
+            }
+        }
+        String alias = as();
+        SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
+        SelectItemContext selectItemContext = new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, isStar);
+        result.setSelectItemContext(selectItemContext);
+        return result;
     }
 }

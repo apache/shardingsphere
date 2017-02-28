@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
@@ -37,10 +36,6 @@ public interface SQLServerASTVisitor extends SQLASTVisitor {
     
     void endVisit(SQLServerObjectReferenceExpr x);
 
-    boolean visit(SQLServerOutput x);
-
-    void endVisit(SQLServerOutput x);
-    
     boolean visit(SQLServerSelect x);
     
     void endVisit(SQLServerSelect x);

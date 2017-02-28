@@ -26,7 +26,6 @@ import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.dialect.postgresql.ast.PGOrderBy;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGBoxExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCidrExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCircleExpr;
@@ -43,18 +42,21 @@ import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+
+import java.util.List;
 
 public class PGExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER"};
     
-    public PGExprParser(final String sql) {
-        super(new PGLexer(sql), JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
+    public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new PGLexer(sql), JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
-    public PGExprParser(final Lexer lexer) {
-        super(lexer, JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
+    public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
+        super(shardingRule, parameters, lexer, JdbcConstants.POSTGRESQL, AGGREGATE_FUNCTIONS);
     }
     
     @Override
@@ -63,31 +65,6 @@ public class PGExprParser extends SQLExprParser {
         return super.parseDataType();
     }
 
-    @Override
-    public PGOrderBy parseOrderBy() {
-        if (getLexer().equalToken(Token.ORDER)) {
-            PGOrderBy orderBy = new PGOrderBy();
-            getLexer().nextToken();
-
-            if (getLexer().identifierEquals("SIBLINGS")) {
-                getLexer().nextToken();
-            }
-
-            accept(Token.BY);
-
-            orderBy.addItem(parseSelectOrderByItem());
-
-            while (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-                orderBy.addItem(parseSelectOrderByItem());
-            }
-
-            return orderBy;
-        }
-
-        return null;
-    }
-    
     public SQLExpr primary() {
         if (getLexer().equalToken(Token.ARRAY)) {
             SQLArrayExpr array = new SQLArrayExpr();
@@ -236,7 +213,6 @@ public class PGExprParser extends SQLExprParser {
                 return primaryRest(expr);
             }
         }
-
         return super.primaryRest(expr);
     }
 }

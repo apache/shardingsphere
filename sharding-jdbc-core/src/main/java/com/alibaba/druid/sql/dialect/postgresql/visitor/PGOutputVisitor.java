@@ -33,8 +33,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPolygonExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.FetchClause;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.ForClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.WindowClause;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
@@ -63,54 +61,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             x.getDefinition().get(i).accept(this);
             print(")");
         }
-        return false;
-    }
-
-    @Override
-    public void endVisit(FetchClause x) {
-
-    }
-
-    @Override
-    public boolean visit(FetchClause x) {
-        print("FETCH ");
-        if (FetchClause.Option.FIRST.equals(x.getOption())) {
-            print("FIRST ");
-        } else if (FetchClause.Option.NEXT.equals(x.getOption())) {
-            print("NEXT ");
-        }
-        x.getCount().accept(this);
-        print(" ROWS ONLY");
-        return false;
-    }
-
-    @Override
-    public void endVisit(ForClause x) {
-
-    }
-
-    @Override
-    public boolean visit(ForClause x) {
-        print("FOR ");
-        if (ForClause.Option.UPDATE.equals(x.getOption())) {
-            print("UPDATE ");
-        } else if (ForClause.Option.SHARE.equals(x.getOption())) {
-            print("SHARE ");
-        }
-
-        if (x.getOf().size() > 0) {
-            for (int i = 0; i < x.getOf().size(); ++i) {
-                if (i != 0) {
-                    println(", ");
-                }
-                x.getOf().get(i).accept(this);
-            }
-        }
-
-        if (x.isNoWait()) {
-            print(" NOWAIT");
-        }
-
         return false;
     }
 
@@ -213,17 +163,6 @@ public class PGOutputVisitor extends SQLASTOutputVisitor implements PGASTVisitor
             print("LIMIT ");
             x.getLimit().accept(this);
         }
-
-        if (x.getFetch() != null) {
-            println();
-            x.getFetch().accept(this);
-        }
-
-        if (x.getForClause() != null) {
-            println();
-            x.getForClause().accept(this);
-        }
-
         return false;
     }
 

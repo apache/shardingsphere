@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerOutput;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.util.JdbcConstants;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
@@ -35,13 +33,13 @@ public class SQLServerExprParser extends SQLExprParser {
     
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER"};
     
-    public SQLServerExprParser(final String sql) {
-        super(new SQLServerLexer(sql), JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
+    public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new SQLServerLexer(sql), JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
-    public SQLServerExprParser(final Lexer lexer) {
-        super(lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
+    public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
+        super(shardingRule, parameters, lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
     }
     
     public SQLServerTop parseTop() {
@@ -68,7 +66,6 @@ public class SQLServerExprParser extends SQLExprParser {
             
             return top;
         }
-        
         return null;
     }
     
@@ -90,7 +87,7 @@ public class SQLServerExprParser extends SQLExprParser {
     }
 
     public SQLServerSelectParser createSelectParser() {
-        return new SQLServerSelectParser(this);
+        return new SQLServerSelectParser(getShardingRule(), getParameters(), this);
     }
 
     public SQLExpr primaryRest(SQLExpr expr) {
@@ -140,52 +137,10 @@ public class SQLServerExprParser extends SQLExprParser {
 
         return super.nameRest(expr);
     }
-
-    protected SQLServerOutput parserOutput() {
+    
+    protected void parserOutput() {
         if (getLexer().equalToken(Token.OUTPUT)) {
-            getLexer().nextToken();
-            SQLServerOutput output = new SQLServerOutput();
-
-            final List<SQLSelectItem> selectList = output.getSelectList();
-            while (true) {
-                final SQLSelectItem selectItem = parseSelectItem();
-                selectList.add(selectItem);
-
-                if (!getLexer().equalToken(Token.COMMA)) {
-                    break;
-                }
-
-                getLexer().nextToken();
-            }
-
-            if (getLexer().equalToken(Token.INTO)) {
-                getLexer().nextToken();
-                output.setInto(new SQLExprTableSource(this.name()));
-                if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                    getLexer().nextToken();
-                    output.getColumns().addAll(exprList(output));
-                    accept(Token.RIGHT_PAREN);
-                }
-            }
-            return output;
+            throw new UnsupportedOperationException("OUTPUT");
         }
-        return null;
-    }
-
-    public SQLSelectItem parseSelectItem() {
-        SQLExpr expr;
-        if (getLexer().equalToken(Token.IDENTIFIER)) {
-            expr = new SQLIdentifierExpr(getLexer().getLiterals());
-            getLexer().nextTokenCommaOrRightParen();
-
-            if (getLexer().equalToken(Token.COMMA)) {
-                expr = this.primaryRest(expr);
-                expr = this.exprRest(expr);
-            }
-        } else {
-            expr = this.expr();
-        }
-        final String alias = as();
-        return new SQLSelectItem(expr, alias);
     }
 }

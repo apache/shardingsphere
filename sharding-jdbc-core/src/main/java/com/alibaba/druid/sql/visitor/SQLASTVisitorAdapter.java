@@ -64,7 +64,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 
@@ -513,16 +512,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     
     @Override
     public boolean visit(final SQLBooleanExpr x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final SQLUnionQueryTableSource x) {
-        
-    }
-
-    @Override
-    public boolean visit(final SQLUnionQueryTableSource x) {
         return true;
     }
     

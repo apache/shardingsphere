@@ -21,6 +21,7 @@ import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -37,6 +38,9 @@ public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
     private SQLBinaryOperator operator;
     
     private String dbType;
+    
+    @Setter
+    private int rightStartPosition;
     
     public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right, final String dbType) {
         if (null != left) {

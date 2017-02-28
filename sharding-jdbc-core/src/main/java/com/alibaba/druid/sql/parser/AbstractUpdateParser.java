@@ -5,15 +5,13 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -30,8 +28,10 @@ public abstract class AbstractUpdateParser extends SQLParser {
     @Getter
     private final SQLExprParser exprParser;
     
+    @Getter
     private final ShardingRule shardingRule;
     
+    @Getter
     private final List<Object> parameters;
     
     private int parametersIndex;
@@ -52,7 +52,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
         UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
-        Table table = parseTable(result);
+        TableContext table = parseTable(result);
         parseSetItems(result);
         parseBetweenSetAndWhere();
         Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, parametersIndex).parseWhere();
@@ -64,14 +64,14 @@ public abstract class AbstractUpdateParser extends SQLParser {
     
     protected abstract void parseBetweenUpdateAndTable();
     
-    private Table parseTable(final UpdateSQLContext updateSQLContext) {
+    private TableContext parseTable(final UpdateSQLContext updateSQLContext) {
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        SQLTableSource tableSource = new SQLSelectParser(exprParser).parseTableSource();
-        if (tableSource instanceof SQLJoinTableSource) {
+        List<TableContext> tables = new SQLSelectParser(shardingRule, parameters, exprParser).parseTableSource();
+        if (1 != tables.size()) {
             throw new UnsupportedOperationException("Cannot support update Multiple-Table.");
         }
-        Table result = new Table(SQLUtil.getExactlyValue(tableSource.toString()), Optional.fromNullable(SQLUtil.getExactlyValue(tableSource.getAlias())));
-        updateSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableSource.toString(), result.getName()));
+        TableContext result = tables.get(0);
+        updateSQLContext.getSqlTokens().add(new TableToken(beginPosition, result.getOriginalLiterals(), result.getName()));
         updateSQLContext.getTables().add(result);
         if (!getLexer().equalToken(Token.SET)) {
             getLexer().nextToken();

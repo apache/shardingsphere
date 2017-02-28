@@ -25,8 +25,6 @@ import lombok.Setter;
 @Setter
 public class OracleOrderBy extends SQLOrderBy {
     
-    private boolean sibings;
-    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
         if (visitor instanceof OracleASTVisitor) {
@@ -47,9 +45,6 @@ public class OracleOrderBy extends SQLOrderBy {
     @Override
     public void output(final StringBuffer buffer) {
         buffer.append("ORDER ");
-        if (this.sibings) {
-            buffer.append("SIBLINGS ");
-        }
         buffer.append("BY ");
         int i = 0;
         for (int size = getItems().size(); i < size; ++i) {

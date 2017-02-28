@@ -21,15 +21,20 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+@RequiredArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"withSubQuery", "query", "orderBy"})
 public class SQLSelect extends SQLObjectImpl {
+    
+    private final SelectSQLContext sqlContext;
     
     private SQLSelectQuery query;
     

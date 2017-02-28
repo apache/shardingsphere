@@ -65,7 +65,7 @@ public final class SQLParsedResultTest {
     }
     
     private void generateRouteContext(final RouteContext routeContext) throws IOException {
-        routeContext.getTables().add(new Table("order", Optional.of("o")));
+        routeContext.getTables().add(new Table("order", "o"));
         routeContext.getTables().add(new Table("order_item", Optional.<String>absent()));
         routeContext.setSqlBuilder(generateSqlBuilder());
     }
