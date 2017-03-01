@@ -266,34 +266,24 @@ public class SQLSelectParser extends SQLParser {
     }
     
     protected boolean parseJoinType() {
-        boolean result = false;
-        if (getLexer().equalToken(Token.LEFT) || getLexer().equalToken(Token.RIGHT) || getLexer().equalToken(Token.FULL)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.OUTER)) {
-                getLexer().nextToken();
-            }
+        if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
+            getLexer().skipIfEqual(Token.OUTER);
             getLexer().accept(Token.JOIN);
-            result = true;
-        } else if (getLexer().equalToken(Token.INNER)) {
-            getLexer().nextToken();
+            return true;
+        } else if (getLexer().skipIfEqual(Token.INNER)) {
             getLexer().accept(Token.JOIN);
-            result = true;
-        } else if (getLexer().equalToken(Token.JOIN) || getLexer().equalToken(Token.COMMA) || getLexer().identifierEquals("STRAIGHT_JOIN")) {
-            getLexer().nextToken();
-            result = true;
-        } else if (getLexer().identifierEquals("CROSS")) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.JOIN) || getLexer().identifierEquals("APPLY")) {
-                getLexer().nextToken();
-                result = true;
+            return true;
+        } else if (getLexer().skipIfEqual(Token.JOIN, Token.COMMA, Token.STRAIGHT_JOIN)) {
+            return true;
+        } else if (getLexer().skipIfEqual(Token.CROSS)) {
+            if (getLexer().skipIfEqual(Token.JOIN, Token.APPLY)) {
+                return true;
             }
-        } else if (getLexer().equalToken(Token.OUTER)) {
-            getLexer().nextToken();
-            if (getLexer().identifierEquals("APPLY")) {
-                getLexer().nextToken();
-                result = true;
+        } else if (getLexer().skipIfEqual(Token.OUTER)) {
+            if (getLexer().skipIfEqual(Token.APPLY)) {
+                return true;
             }
         }
-        return result;
+        return false;
     }
 }

@@ -352,9 +352,7 @@ public class OracleSelectParser extends SQLSelectParser {
     
     @Override
     protected void parseJoinTable() {
-        if (getLexer().equalToken(Token.HINT)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.HINT);
         if (parseJoinType()) {
             parseTableSource();
             if (getLexer().equalToken(Token.ON)) {
