@@ -65,31 +65,21 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        if (sqlStatement instanceof SQLInsertStatement || sqlStatement instanceof SQLUpdateStatement || sqlStatement instanceof SQLDeleteStatement) {
-            return parseNew();
-        }
-        return parseOriginal();
-    }
-    
-    private SQLParsedResult parseNew() {
-        SQLParsedResult result = new SQLParsedResult();
         SQLContext sqlContext = getSQLContext();
-        if (sqlContext.getConditionContexts().isEmpty()) {
-            result.getConditionContexts().add(new ConditionContext());
-        } else {
-            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
+        ParseContext parseContext = getParseContext(sqlContext);
+        if (sqlContext instanceof SelectSQLContext) {
+            parseSelect(parseContext, (SelectSQLContext) sqlContext);
+        } else if (sqlContext instanceof InsertSQLContext) {
+            parseInsert(parseContext, (InsertSQLContext) sqlContext);
         }
-        TableContext tableContext = sqlContext.getTables().get(0);
-        result.getRouteContext().getTables().add(new Table(tableContext.getName(), tableContext.getAlias()));
-        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
-        result.getRouteContext().setSqlStatementType(getType());
-        if (sqlContext instanceof InsertSQLContext) {
-            result.setGeneratedKeyContext(((InsertSQLContext) sqlContext).getGeneratedKeyContext());
-        }
-        return result;
+        parseContext.getParsedResult().getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
+        return parseContext.getParsedResult();
     }
     
     private SQLContext getSQLContext() {
+        if (sqlStatement instanceof SQLSelectStatement) {
+            return ((SQLSelectStatement) sqlStatement).getSelect().getSqlContext();
+        }
         if (sqlStatement instanceof SQLInsertStatement) {
             return ((SQLInsertStatement) sqlStatement).getSqlContext();
         }
@@ -99,34 +89,52 @@ public final class SQLParseEngine {
         if (sqlStatement instanceof SQLDeleteStatement) {
             return ((SQLDeleteStatement) sqlStatement).getSqlContext();
         }
-        return null;
+        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
     
-    private SQLParsedResult parseOriginal() {
-        ParseContext parseContext = new ParseContext(0);
-        SQLParsedResult result = parseContext.getParsedResult();
-        SelectSQLContext sqlContext = ((SQLSelectStatement) sqlStatement).getSelect().getSqlContext();
+    private ParseContext getParseContext(final SQLContext sqlContext) {
+        ParseContext result = new ParseContext(0);
+        SQLParsedResult sqlParsedResult = result.getParsedResult();
         if (sqlContext.getConditionContexts().isEmpty()) {
-            result.getConditionContexts().add(new ConditionContext());
+            sqlParsedResult.getConditionContexts().add(new ConditionContext());
         } else {
-            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
+            sqlParsedResult.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
         for (TableContext each : sqlContext.getTables()) {
-            result.getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+            sqlParsedResult.getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
         }
-        result.getRouteContext().setSqlStatementType(getType());
-        
-        
+        sqlParsedResult.getRouteContext().setSqlStatementType(getType());
+        return result;
+    }
+    
+    private SQLStatementType getType() {
+        if (sqlStatement instanceof SQLSelectStatement) {
+            return SQLStatementType.SELECT;
+        }
+        if (sqlStatement instanceof SQLInsertStatement) {
+            return SQLStatementType.INSERT;
+        }
+        if (sqlStatement instanceof SQLUpdateStatement) {
+            return SQLStatementType.UPDATE;
+        }
+        if (sqlStatement instanceof SQLDeleteStatement) {
+            return SQLStatementType.DELETE;
+        }
+        throw new SQLParserException("Unsupported SQL statement: [%s]", sqlStatement);
+    }
+    
+    private void parseInsert(final ParseContext parseContext, final InsertSQLContext sqlContext) {
+        parseContext.getParsedResult().setGeneratedKeyContext(sqlContext.getGeneratedKeyContext());
+    }
+    
+    private void parseSelect(final ParseContext parseContext, final SelectSQLContext sqlContext) {
+        SQLParsedResult sqlParsedResult = parseContext.getParsedResult();
         for (SelectItemContext each : sqlContext.getItemContexts()) {
             parseContext.getSelectItems().add(each);
         }
-    
         if (sqlContext.isContainStar()) {
             parseContext.registerSelectItem("*");
         }
-        
-        
-        
         ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
         
         
@@ -136,7 +144,7 @@ public final class SQLParseEngine {
                 // TODO index获取不准，考虑使用别名替换
                 AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(), 
                         Optional.fromNullable(aggregationSelectItemContext.getAlias()), Optional.<String>absent(), aggregationSelectItemContext.getIndex());
-                result.getMergeContext().getAggregationColumns().add(column);
+                sqlParsedResult.getMergeContext().getAggregationColumns().add(column);
                 if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     List<AggregationColumn> aggregationColumns = parseContext.addDerivedColumnsForAvgColumn(column);
                     // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
@@ -198,23 +206,5 @@ public final class SQLParseEngine {
                     new Limit(sqlContext.getLimitContext().getOffset().isPresent() ? sqlContext.getLimitContext().getOffset().get() : 0, sqlContext.getLimitContext().getRowCount(), 
                             sqlContext.getLimitContext().getOffsetParameterIndex(), sqlContext.getLimitContext().getRowCountParameterIndex()));
         }
-        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
-        return result;
-    }
-    
-    private SQLStatementType getType() {
-        if (sqlStatement instanceof SQLSelectStatement) {
-            return SQLStatementType.SELECT;
-        }
-        if (sqlStatement instanceof SQLInsertStatement) {
-            return SQLStatementType.INSERT;
-        }
-        if (sqlStatement instanceof SQLUpdateStatement) {
-            return SQLStatementType.UPDATE;
-        }
-        if (sqlStatement instanceof SQLDeleteStatement) {
-            return SQLStatementType.DELETE;
-        }
-        throw new SQLParserException("Unsupported SQL statement: [%s]", sqlStatement);
     }
 }
