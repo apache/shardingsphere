@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.context.DeleteSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
@@ -21,19 +21,19 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutCondition() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "DELETE FROM TABLE_XXX");
-        SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
-        assertTrue(deleteStatement.getSqlContext().getConditionContexts().isEmpty());
-        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertTrue(sqlContext.getConditionContexts().isEmpty());
+        assertThat(sqlContext.toSqlBuilder().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
     
     @Test
     public void parseWithoutParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
                 "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
-        SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertDeleteStatement(deleteStatement);
-        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is(
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        assertDeleteStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
@@ -41,16 +41,16 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10),
                 "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?");
-        SQLDeleteStatement deleteStatement = (SQLDeleteStatement) statementParser.parseStatement();
-        assertDeleteStatement(deleteStatement);
-        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString(), is(
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        assertDeleteStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
-    private void assertDeleteStatement(final SQLDeleteStatement statement) {
-        assertThat(statement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(statement.getSqlContext().getTables().get(0).getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
+    private void assertDeleteStatement(final DeleteSQLContext sqlContext) {
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
+        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -109,10 +109,10 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {
-        SQLDeleteStatement deleteStatement = (SQLDeleteStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
-        assertThat(deleteStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
-        assertFalse(deleteStatement.getSqlContext().getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = deleteStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
+        DeleteSQLContext sqlContext = (DeleteSQLContext) getSqlStatementParser(dbType, actualSQL).parseStatement();
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
+        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -120,6 +120,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        assertThat(deleteStatement.getSqlContext().toSqlBuilder().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
+        assertThat(sqlContext.toSqlBuilder().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
     }
 }

@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
@@ -35,39 +35,39 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)");
-        SQLInsertStatement insertStatement = (SQLInsertStatement) statementParser.parseStatement();
-        assertInsertStatement(insertStatement);
-        assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
+        InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
+        assertInsertStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
     @Test
     public void parseWithParameter() {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(10, 1), "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)");
-        SQLInsertStatement insertStatement = (SQLInsertStatement) statementParser.parseStatement();
-        assertInsertStatement(insertStatement);
-        assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
+        InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
+        assertInsertStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
     @Test
     public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRuleWithAutoIncrementColumns(), Collections.emptyList(), "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)");
-        SQLInsertStatement insertStatement = (SQLInsertStatement) statementParser.parseStatement();
-        assertInsertStatement(insertStatement);
-        assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
+        InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
+        assertInsertStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     @Test
     public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
         MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRuleWithAutoIncrementColumns(), Lists.<Object>newArrayList(10), "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)");
-        SQLInsertStatement insertStatement = (SQLInsertStatement) statementParser.parseStatement();
-        assertInsertStatement(insertStatement);
-        assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
+        InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
+        assertInsertStatement(sqlContext);
+        assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
     }
     
-    private void assertInsertStatement(final SQLInsertStatement statement) {
-        assertThat(statement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(statement.getSqlContext().getConditionContexts().size(), is(1));
-        Iterator<Condition> conditions = statement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
+    private void assertInsertStatement(final InsertSQLContext sqlContext) {
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(sqlContext.getConditionContexts().size(), is(1));
+        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition1 = conditions.next();
         assertThat(condition1.getColumn().getColumnName(), is("field1"));
         assertThat(condition1.getColumn().getTableName(), is("TABLE_XXX"));
@@ -127,10 +127,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
-        SQLInsertStatement insertStatement = (SQLInsertStatement) getSqlStatementParser(dbType, actualSQL).parseStatement();
-        assertThat(insertStatement.getSqlContext().getTables().get(0).getName(), is("TABLE_XXX"));
-        assertFalse(insertStatement.getSqlContext().getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = insertStatement.getSqlContext().getConditionContexts().iterator().next().getAllConditions().iterator();
+        InsertSQLContext sqlContext = (InsertSQLContext) getSqlStatementParser(dbType, actualSQL).parseStatement();
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
+        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -138,7 +138,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        assertThat(insertStatement.getSqlContext().toSqlBuilder().toString(), is(expectedSQL));
+        assertThat(sqlContext.toSqlBuilder().toString(), is(expectedSQL));
     }
     
     @Test(expected = UnsupportedOperationException.class)
