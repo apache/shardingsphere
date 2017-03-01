@@ -1,9 +1,9 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableContext;
@@ -177,7 +177,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().accept(Token.LEFT_PAREN);
-            List<SQLExpr> sqlExprs = getExprParser().exprList(new AbstractSQLInsertStatement.ValuesClause());
+            List<SQLExpr> sqlExprs = getExprParser().exprList(new SQLIdentifierExpr(""));
             ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
             int count = 0;
             for (Condition.Column each : columns) {

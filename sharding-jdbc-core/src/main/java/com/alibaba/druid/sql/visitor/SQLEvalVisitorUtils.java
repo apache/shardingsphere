@@ -35,7 +35,6 @@ import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlEvalVisitorImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleEvalVisitor;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGEvalVisitor;
@@ -1829,9 +1828,5 @@ public class SQLEvalVisitorUtils {
     
     public static boolean isSimpleCountTableSource(final SQLSelect select) {
         return select.getSqlContext().getTables().size() == 1;
-    }
-    
-    private static boolean isAllowTrueWhere(final SQLSelectQueryBlock queryBlock) {
-        return null == queryBlock.getWhere() || Boolean.TRUE == getValue(queryBlock.getWhere());
     }
 }

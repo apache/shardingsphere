@@ -55,22 +55,14 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement.ValuesClause;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource.JoinType;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -538,12 +530,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
             x.getSubQuery().accept(this);
 
             decrementIndent();
-        } else if (parent instanceof ValuesClause) {
-            println();
-            print("(");
-            x.getSubQuery().accept(this);
-            print(")");
-            println();
         } else {
             print("(");
             incrementIndent();
@@ -649,14 +635,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         return false;
     }
 
-    public boolean visit(SQLSelectStatement stmt) {
-        SQLSelect select = stmt.getSelect();
-
-        select.accept(this);
-
-        return false;
-    }
-
     public boolean visit(SQLVariantRefExpr x) {
         int index = x.getIndex();
 
@@ -724,18 +702,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     public boolean visit(SQLCurrentOfCursorExpr x) {
         print("CURRENT OF ");
         x.getCursorName().accept(this);
-        return false;
-    }
-
-    public boolean visit(SQLUpdateSetItem x) {
-        x.getColumn().accept(this);
-        print(" = ");
-        x.getValue().accept(this);
-        return false;
-    }
-
-    // TODO tobe removed
-    public boolean visit(SQLUpdateStatement x) {
         return false;
     }
 
@@ -812,55 +778,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
     
     @Override
-    public boolean visit(SQLAssignItem x) {
-        x.getTarget().accept(this);
-        print(" = ");
-        x.getValue().accept(this);
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLJoinTableSource x) {
-        x.getLeft().accept(this);
-        incrementIndent();
-
-        if (x.getJoinType() == JoinType.COMMA) {
-            print(",");
-        } else {
-            println();
-            printJoinType(x.getJoinType());
-        }
-        print(" ");
-        x.getRight().accept(this);
-
-        if (x.getCondition() != null) {
-            incrementIndent();
-            print(" ON ");
-            x.getCondition().accept(this);
-            decrementIndent();
-        }
-
-        if (x.getUsing().size() > 0) {
-            print(" USING (");
-            printAndAccept(x.getUsing(), ", ");
-            print(")");
-        }
-
-        if (x.getAlias() != null) {
-            print(" AS ");
-            print(x.getAlias());
-        }
-
-        decrementIndent();
-
-        return false;
-    }
-
-    protected void printJoinType(JoinType joinType) {
-        print(joinType.getName());
-    }
-
-    @Override
     public boolean visit(SQLSomeExpr x) {
         print("SOME (");
 
@@ -915,23 +832,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
         print("(");
         printAndAccept(x.getItems(), ", ");
         print(")");
-
-        return false;
-    }
-
-    @Override
-    public boolean visit(SQLSubqueryTableSource x) {
-        print("(");
-        incrementIndent();
-        x.getSelect().accept(this);
-        println();
-        decrementIndent();
-        print(")");
-
-        if (x.getAlias() != null) {
-            print(' ');
-            print(x.getAlias());
-        }
 
         return false;
     }

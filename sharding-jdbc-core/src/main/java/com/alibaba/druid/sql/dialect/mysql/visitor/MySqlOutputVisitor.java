@@ -24,7 +24,6 @@ import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
@@ -465,15 +464,6 @@ public class MySqlOutputVisitor extends SQLASTOutputVisitor implements MySqlASTV
     }
 
     @Override
-    public boolean visit(SQLAssignItem x) {
-        x.getTarget().accept(this);
-        if (!"NAMES".equalsIgnoreCase(x.getTarget().toString())) {
-            print(" = ");
-        }
-        x.getValue().accept(this);
-        return false;
-    }
-
     protected void visitAggreateRest(SQLAggregateExpr aggregateExpr) {
         {
             SQLOrderBy value = (SQLOrderBy) aggregateExpr.getAttribute("ORDER BY");

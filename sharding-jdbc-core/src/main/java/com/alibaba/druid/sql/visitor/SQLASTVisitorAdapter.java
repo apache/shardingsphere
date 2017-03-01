@@ -51,21 +51,14 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 
 public class SQLASTVisitorAdapter implements SQLASTVisitor {
     
@@ -135,10 +128,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     
     @Override
     public void endVisit(final SQLSelectItem x) {
-    }
-    
-    @Override
-    public void endVisit(final SQLSelectStatement selectStatement) {
     }
     
     @Override
@@ -244,11 +233,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     }
     
     @Override
-    public boolean visit(final SQLSelectStatement astNode) {
-        return true;
-    }
-    
-    @Override
     public void endVisit(final SQLAggregateExpr x) {
     }
     
@@ -328,33 +312,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
     @Override
     public void endVisit(final SQLDataType x) {
     }
-    
-    @Override
-    public boolean visit(final SQLDeleteStatement x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final SQLDeleteStatement x) {
-    }
-    
-    @Override
-    public boolean visit(final SQLUpdateSetItem x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final SQLUpdateSetItem x) {
-    }
-    
-    @Override
-    public boolean visit(final SQLUpdateStatement x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final SQLUpdateStatement x) {
-    }
 
     @Override
     public void endVisit(final SQLMethodInvokeExpr x) {
@@ -396,26 +353,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
 
     }
     
-    @Override
-    public void endVisit(final SQLAssignItem x) {
-
-    }
-
-    @Override
-    public boolean visit(final SQLAssignItem x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(final SQLJoinTableSource x) {
-
-    }
-
-    @Override
-    public boolean visit(final SQLJoinTableSource x) {
-        return true;
-    }
-
     @Override
     public void endVisit(final SQLSomeExpr x) {
 
@@ -463,16 +400,6 @@ public class SQLASTVisitorAdapter implements SQLASTVisitor {
 
     @Override
     public boolean visit(final SQLListExpr x) {
-        return true;
-    }
-
-    @Override
-    public void endVisit(final SQLSubqueryTableSource x) {
-
-    }
-
-    @Override
-    public boolean visit(final SQLSubqueryTableSource x) {
         return true;
     }
     

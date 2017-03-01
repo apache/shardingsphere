@@ -19,22 +19,15 @@ import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 public class PGWithClause extends PGSQLObjectImpl {
     
     private boolean recursive;
     
-    private final List<PGWithQuery> withQuery = new ArrayList<>(2);
-    
     @Override
     public void accept0(final PGASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, withQuery);
-        }
+        visitor.visit(this);
         visitor.endVisit(this);
     }
 }

@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.postgresql.visitor;
 
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
-import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithQuery;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGBoxExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCidrExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCircleExpr;
@@ -30,11 +29,9 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGParameter;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPointExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPolygonExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGFunctionTableSource;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.WindowClause;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGValuesQuery;
 import com.alibaba.druid.sql.visitor.SQLASTVisitorAdapter;
 
 public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVisitor {
@@ -45,15 +42,6 @@ public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVi
     
     @Override
     public boolean visit(final WindowClause x) {
-        return true;
-    }
-    
-    @Override
-    public void endVisit(final PGWithQuery x) {
-    }
-    
-    @Override
-    public boolean visit(final PGWithQuery x) {
         return true;
     }
     
@@ -84,15 +72,6 @@ public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVi
         return true;
     }
     
-    @Override
-    public void endVisit(final PGFunctionTableSource x) {
-    }
-    
-    @Override
-    public boolean visit(final PGFunctionTableSource x) {
-        return true;
-    }
-    
     @Override 
     public boolean visit(final PGLimit x) {
         return true;
@@ -109,15 +88,6 @@ public class PGASTVisitorAdapter extends SQLASTVisitorAdapter implements PGASTVi
     
     @Override
     public void endVisit(final PGTypeCastExpr x) {
-    }
-    
-    @Override
-    public void endVisit(final PGValuesQuery x) {
-    }
-    
-    @Override
-    public boolean visit(final PGValuesQuery x) {
-        return true;
     }
     
     @Override

@@ -51,21 +51,14 @@ import com.alibaba.druid.sql.ast.expr.SQLSomeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLAssignItem;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 
 public interface SQLASTVisitor {
     
@@ -102,8 +95,6 @@ public interface SQLASTVisitor {
     void endVisit(SQLSelectGroupByClause x);
     
     void endVisit(SQLSelectItem x);
-    
-    void endVisit(SQLSelectStatement selectStatement);
     
     void postVisit(SQLObject astNode);
     
@@ -146,8 +137,6 @@ public interface SQLASTVisitor {
     boolean visit(SQLSelectItem x);
     
     void endVisit(SQLCastExpr x);
-    
-    boolean visit(SQLSelectStatement astNode);
     
     void endVisit(SQLAggregateExpr astNode);
     
@@ -197,18 +186,6 @@ public interface SQLASTVisitor {
     
     void endVisit(SQLCharacterDataType x);
     
-    boolean visit(SQLDeleteStatement x);
-    
-    void endVisit(SQLDeleteStatement x);
-    
-    boolean visit(SQLUpdateSetItem x);
-    
-    void endVisit(SQLUpdateSetItem x);
-    
-    boolean visit(SQLUpdateStatement x);
-    
-    void endVisit(SQLUpdateStatement x);
-    
     void endVisit(SQLMethodInvokeExpr x);
     
     boolean visit(SQLMethodInvokeExpr x);
@@ -216,14 +193,6 @@ public interface SQLASTVisitor {
     void endVisit(SQLUnionQuery x);
     
     boolean visit(SQLUnionQuery x);
-    
-    void endVisit(SQLAssignItem x);
-    
-    boolean visit(SQLAssignItem x);
-    
-    void endVisit(SQLJoinTableSource x);
-    
-    boolean visit(SQLJoinTableSource x);
     
     void endVisit(SQLSomeExpr x);
     
@@ -244,10 +213,6 @@ public interface SQLASTVisitor {
     void endVisit(SQLListExpr x);
     
     boolean visit(SQLListExpr x);
-    
-    void endVisit(SQLSubqueryTableSource x);
-    
-    boolean visit(SQLSubqueryTableSource x);
     
     void endVisit(SQLDefaultExpr x);
     
