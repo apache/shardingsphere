@@ -28,8 +28,4 @@ public interface JdbcConstants {
     String ORACLE = "oracle";
     
     String SQL_SERVER = "sqlserver";
-    
-    String JTDS = "jtds";
-    
-    String DB2 = "db2";
 }

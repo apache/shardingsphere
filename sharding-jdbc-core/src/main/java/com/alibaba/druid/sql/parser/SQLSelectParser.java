@@ -37,6 +37,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class SQLSelectParser extends SQLParser {
     private final SelectSQLContext sqlContext;
     
     @Getter
+    @Setter
     private int parametersIndex;
     
     public SQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
@@ -66,15 +68,11 @@ public class SQLSelectParser extends SQLParser {
     }
     
     public final SQLSelect select() {
-        SQLSelect result = createSQLSelect();
+        SQLSelect result = new SQLSelect(sqlContext);
         query();
         sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
         customizedSelect(result);
         return result;
-    }
-    
-    protected SQLSelect createSQLSelect() {
-        return new SQLSelect(sqlContext);
     }
     
     protected void customizedSelect(final SQLSelect sqlSelect) {

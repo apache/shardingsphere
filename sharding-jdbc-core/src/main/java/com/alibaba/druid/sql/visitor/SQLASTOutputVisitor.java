@@ -571,13 +571,6 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Printab
     }
 
     public boolean visit(SQLSelect x) {
-        x.getQuery().setParent(x);
-        x.getQuery().accept(this);
-
-        if (x.getOrderBy() != null) {
-            println();
-            x.getOrderBy().accept(this);
-        }
         return false;
     }
 

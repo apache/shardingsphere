@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.visitor;
 
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelect;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
@@ -103,29 +102,6 @@ public class SQLServerOutputVisitor extends SQLASTOutputVisitor implements SQLSe
             print(x.getAlias());
         }
 
-        return false;
-    }
-
-    @Override
-    public void endVisit(SQLServerSelect x) {
-        
-    }
-
-    @Override
-    public boolean visit(SQLServerSelect x) {
-        super.visit(x);
-        if (x.getOffset() != null) {
-            println();
-            print("OFFSET ");
-            x.getOffset().accept(this);
-            print(" ROWS");
-            
-            if (x.getRowCount() != null) {
-                print(" FETCH NEXT ");
-                x.getRowCount().accept(this);
-                print(" ROWS ONLY");
-            }
-        }
         return false;
     }
 }

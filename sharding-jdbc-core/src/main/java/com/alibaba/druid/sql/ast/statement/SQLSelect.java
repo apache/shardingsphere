@@ -19,7 +19,6 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
@@ -31,28 +30,14 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"withSubQuery", "query", "orderBy"})
+@EqualsAndHashCode
 public class SQLSelect extends SQLObjectImpl {
     
     private final SelectSQLContext sqlContext;
     
-    private SQLSelectQuery query;
-    
-    private SQLOrderBy orderBy;
-    
-    public void setQuery(final SQLSelectQuery query) {
-        if (null != query) {
-            query.setParent(this);
-        }
-        this.query = query;
-    }
-    
     @Override
     protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, query);
-            acceptChild(visitor, orderBy);
-        }
+        visitor.visit(this);
         visitor.endVisit(this);
     }
     

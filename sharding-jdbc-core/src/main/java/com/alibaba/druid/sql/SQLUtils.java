@@ -16,18 +16,13 @@
 
 package com.alibaba.druid.sql;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.alibaba.druid.util.JdbcConstants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class SQLUtils {
     
@@ -72,22 +67,5 @@ public final class SQLUtils {
         StringBuilder out = new StringBuilder();
         sqlObject.accept(new SQLServerOutputVisitor(out));
         return out.toString();
-    }
-    
-    public static List<SQLExpr> split(final SQLBinaryOpExpr x) {
-        List<SQLExpr> groupList = new ArrayList<>();
-        groupList.add(x.getRight());
-        SQLExpr left = x.getLeft();
-        while (true) {
-            if (left instanceof SQLBinaryOpExpr && ((SQLBinaryOpExpr) left).getOperator() == x.getOperator()) {
-                SQLBinaryOpExpr binaryLeft = (SQLBinaryOpExpr) left;
-                groupList.add(binaryLeft.getRight());
-                left = binaryLeft.getLeft();
-            } else {
-                groupList.add(left);
-                break;
-            }
-        }
-        return groupList;
     }
 }

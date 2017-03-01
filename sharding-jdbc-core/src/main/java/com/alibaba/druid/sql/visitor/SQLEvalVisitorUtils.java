@@ -19,7 +19,6 @@ import com.alibaba.druid.DruidRuntimeException;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
-import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
@@ -35,10 +34,7 @@ import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlEvalVisitorImpl;
 import com.alibaba.druid.sql.dialect.oracle.visitor.OracleEvalVisitor;
@@ -80,7 +76,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -136,13 +131,7 @@ public class SQLEvalVisitorUtils {
     }
     
     public static SQLEvalVisitor createEvalVisitor(final String dbType) {
-        if (JdbcConstants.MYSQL.equals(dbType)) {
-            return new MySqlEvalVisitorImpl();
-        }
-        if (JdbcConstants.MARIADB.equals(dbType)) {
-            return new MySqlEvalVisitorImpl();
-        }
-        if (JdbcConstants.H2.equals(dbType)) {
+        if (JdbcConstants.MYSQL.equals(dbType) || JdbcConstants.MARIADB.equals(dbType) || JdbcConstants.H2.equals(dbType)) {
             return new MySqlEvalVisitorImpl();
         }
         if (JdbcConstants.ORACLE.equals(dbType)) {
@@ -151,7 +140,7 @@ public class SQLEvalVisitorUtils {
         if (JdbcConstants.POSTGRESQL.equals(dbType)) {
             return new PGEvalVisitor();
         }
-        if (JdbcConstants.SQL_SERVER.equals(dbType) || JdbcConstants.JTDS.equals(dbType)) {
+        if (JdbcConstants.SQL_SERVER.equals(dbType)) {
             return new SQLServerEvalVisitor();
         }
         return new SQLEvalVisitorImpl();
@@ -571,16 +560,7 @@ public class SQLEvalVisitorUtils {
             if (select == null) {
                 return null;
             }
-            if (select.getQuery() instanceof SQLSelectQueryBlock) {
-                SQLSelectQueryBlock queryBlock = (SQLSelectQueryBlock) select.getQuery();
-                if (queryBlock.getFrom() == null) {
-                    if (queryBlock.getSelectList().size() == 1) {
-                        return queryBlock.getSelectList().get(0).getExpr();
-                    }
-                }
-            }
         }
-
         return expr;
     }
 
@@ -703,38 +683,6 @@ public class SQLEvalVisitorUtils {
         if (isSimpleCountTableSource((x).getSubQuery())) {
             x.putAttribute(EVAL_VALUE, 1);
             return false;
-        }
-
-        if (x.getSubQuery().getQuery() instanceof SQLSelectQueryBlock) {
-            SQLSelectQueryBlock queryBlock = (SQLSelectQueryBlock) x.getSubQuery().getQuery();
-
-            boolean nullFrom = false;
-            if (queryBlock.getFrom() == null) {
-                nullFrom = true;
-            } else if (queryBlock.getFrom() instanceof SQLExprTableSource) {
-                SQLExpr expr = ((SQLExprTableSource) queryBlock.getFrom()).getExpr();
-                if (expr instanceof SQLIdentifierExpr) {
-                    if ("dual".equalsIgnoreCase(((SQLIdentifierExpr) expr).getSimpleName())) {
-                        nullFrom = true;
-                    }
-                }
-            }
-
-            if (nullFrom) {
-                List<Object> row = new ArrayList<>(queryBlock.getSelectList().size());
-                for (int i = 0; i < queryBlock.getSelectList().size(); ++i) {
-                    SQLSelectItem item = queryBlock.getSelectList().get(i);
-                    item.getExpr().accept(visitor);
-                    Object cell = item.getExpr().getAttribute(EVAL_VALUE);
-                    row.add(cell);
-                }
-                List<List<Object>> rows = new ArrayList<>(1);
-                rows.add(row);
-                queryBlock.putAttribute(EVAL_VALUE, rows);
-                x.getSubQuery().putAttribute(EVAL_VALUE, rows);
-                x.putAttribute(EVAL_VALUE, rows);
-                return false;
-            }
         }
         return false;
     }
@@ -1880,25 +1828,7 @@ public class SQLEvalVisitorUtils {
     }
     
     public static boolean isSimpleCountTableSource(final SQLSelect select) {
-        SQLSelectQuery query = select.getQuery();
-        if (!(query instanceof SQLSelectQueryBlock)) {
-            return false;
-        }
-        SQLSelectQueryBlock queryBlock = (SQLSelectQueryBlock) query;
-        if (!isAllowTrueWhere(queryBlock) || 1 != queryBlock.getSelectList().size()) {
-            return false;
-        }
-        SQLExpr selectItemExpr = queryBlock.getSelectList().get(0).getExpr();
-        return selectItemExpr instanceof SQLAggregateExpr && (((SQLAggregateExpr) selectItemExpr).getMethodName().equalsIgnoreCase("COUNT"));
-    }
-    
-    public static boolean isSimpleCaseTableSource(final SQLSelect select) {
-        SQLSelectQuery query = select.getQuery();
-        if (!(query instanceof SQLSelectQueryBlock)) {
-            return false;
-        }
-        SQLSelectQueryBlock queryBlock = (SQLSelectQueryBlock) query;
-        return !(!isAllowTrueWhere(queryBlock) || 1 != queryBlock.getSelectList().size()) && queryBlock.getSelectList().get(0).getExpr() instanceof SQLCaseExpr;
+        return select.getSqlContext().getTables().size() == 1;
     }
     
     private static boolean isAllowTrueWhere(final SQLSelectQueryBlock queryBlock) {
