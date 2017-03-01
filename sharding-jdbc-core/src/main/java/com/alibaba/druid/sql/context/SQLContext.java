@@ -2,6 +2,7 @@ package com.alibaba.druid.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,4 +41,11 @@ public interface SQLContext {
      * @return SQL构建器
      */
     SQLBuilder toSqlBuilder();
+    
+    /**
+     * 获取SQL语句类型.
+     * 
+     * @return SQL语句类型
+     */
+    SQLStatementType getType();
 }

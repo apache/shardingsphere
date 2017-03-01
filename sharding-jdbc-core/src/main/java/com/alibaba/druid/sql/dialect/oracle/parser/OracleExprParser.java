@@ -36,7 +36,6 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.context.OrderByContext;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
@@ -46,7 +45,6 @@ import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleAnalyticWindowing;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleArgumentExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleBinaryDoubleExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleBinaryFloatExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleCursorExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleDateExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleDateTimeUnit;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleDatetimeExpr;
@@ -356,16 +354,7 @@ public class OracleExprParser extends SQLExprParser {
                 }
                 return primaryRest(sqlExpr);
             case CURSOR:
-                getLexer().nextToken();
-                getLexer().accept(Token.LEFT_PAREN);
-    
-                SQLSelect select = createSelectParser(getShardingRule(), getParameters()).select();
-                OracleCursorExpr cursorExpr = new OracleCursorExpr(select);
-    
-                getLexer().accept(Token.RIGHT_PAREN);
-                
-                sqlExpr = cursorExpr;
-                return  primaryRest(sqlExpr);
+                throw new ParserUnsupportedException(getLexer().getToken());
             case MODEL:
             case PCTFREE:
             case INITRANS:

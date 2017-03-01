@@ -36,7 +36,6 @@ import com.alibaba.druid.sql.ast.expr.SQLCastExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCurrentOfCursorExpr;
 import com.alibaba.druid.sql.ast.expr.SQLDefaultExpr;
-import com.alibaba.druid.sql.ast.expr.SQLExistsExpr;
 import com.alibaba.druid.sql.ast.expr.SQLHexExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLInListExpr;
@@ -55,7 +54,6 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
@@ -290,18 +288,20 @@ public class SQLExprParser extends SQLParser {
                 getLexer().accept(Token.END);
                 sqlExpr = caseExpr;
                 break;
+            // TODO exist 需要处理
             case EXISTS:
                 getLexer().nextToken();
                 getLexer().accept(Token.LEFT_PAREN);
-                sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), false);
+                sqlExpr = new SQLIdentifierExpr(createSelectParser(getShardingRule(), getParameters()).select().toString());
                 getLexer().accept(Token.RIGHT_PAREN);
                 break;
+            // TODO not 需要处理
             case NOT:
                 getLexer().nextToken();
                 if (getLexer().equalToken(Token.EXISTS)) {
                     getLexer().nextToken();
                     getLexer().accept(Token.LEFT_PAREN);
-                    sqlExpr = new SQLExistsExpr(createSelectParser(getShardingRule(), getParameters()).select(), true);
+                    sqlExpr = new SQLIdentifierExpr(createSelectParser(getShardingRule(), getParameters()).select().toString());
                     getLexer().accept(Token.RIGHT_PAREN);
                 } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
@@ -315,8 +315,7 @@ public class SQLExprParser extends SQLParser {
                 }
                 break;
             case SELECT:
-                sqlExpr = new SQLQueryExpr(createSelectParser(getShardingRule(), getParameters()).select());
-                break;
+                throw new UnsupportedOperationException("Cannot support subquery");
             case CAST:
                 getLexer().nextToken();
                 getLexer().accept(Token.LEFT_PAREN);
@@ -526,45 +525,26 @@ public class SQLExprParser extends SQLParser {
         return expr;
     }
     
+    // FIXME skip all for subquery
     protected SQLExpr parseAll() {
-        SQLAllExpr result = new SQLAllExpr();
         getLexer().nextToken();
-        getLexer().accept(Token.LEFT_PAREN);
-        SQLSelect allSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
-        result.setSubQuery(allSubQuery);
-        getLexer().accept(Token.RIGHT_PAREN);
-        allSubQuery.setParent(result);
-        return result;
+        getLexer().skipParentheses();
+        return new SQLAllExpr();
     }
     
+    // FIXME skip some for subquery
     protected SQLExpr parseSome() {
-        SQLSomeExpr result = new SQLSomeExpr();
         getLexer().nextToken();
-        getLexer().accept(Token.LEFT_PAREN);
-        SQLSelect someSubQuery = createSelectParser(getShardingRule(), getParameters()).select();
-        result.setSubQuery(someSubQuery);
-        getLexer().accept(Token.RIGHT_PAREN);
-        someSubQuery.setParent(result);
-        return result;
+        getLexer().skipParentheses();
+        return new SQLSomeExpr();
     }
     
+    // FIXME skip any for subquery
     protected SQLExpr parseAny() {
         getLexer().nextToken();
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().accept(Token.LEFT_PAREN);
-            if (getLexer().equalToken(Token.IDENTIFIER)) {
-                SQLExpr expr = this.expr();
-                SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr("ANY");
-                methodInvokeExpr.addParameter(expr);
-                getLexer().accept(Token.RIGHT_PAREN);
-                return methodInvokeExpr;
-            }
-            SQLAnyExpr anyExpr = new SQLAnyExpr();
-            SQLSelect anySubQuery = createSelectParser(getShardingRule(), getParameters()).select();
-            anyExpr.setSubQuery(anySubQuery);
-            getLexer().accept(Token.RIGHT_PAREN);
-            anySubQuery.setParent(anyExpr);
-            return anyExpr;
+            getLexer().skipParentheses();
+            return new SQLAnyExpr();
         } else {
             return new SQLIdentifierExpr("ANY");
         }

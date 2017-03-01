@@ -5,7 +5,6 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
@@ -48,7 +47,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
      *
      * @return 解析结果
      */
-    public SQLUpdateStatement parse() {
+    public UpdateSQLContext parse() {
         getLexer().nextToken();
         parseBetweenUpdateAndTable();
         UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
@@ -59,7 +58,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
         }
-        return new SQLUpdateStatement(result);
+        return result;
     }
     
     protected abstract void parseBetweenUpdateAndTable();

@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
 import com.alibaba.druid.sql.context.DeleteSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
@@ -38,7 +37,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
      *
      * @return 解析结果
      */
-    public SQLDeleteStatement parse() {
+    public DeleteSQLContext parse() {
         getLexer().nextToken();
         parseBetweenDeleteAndTable();
         DeleteSQLContext result = new DeleteSQLContext(getLexer().getInput());
@@ -50,7 +49,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
                 result.getConditionContexts().add(conditionContext.get());
             }
         }
-        return new SQLDeleteStatement(result);
+        return result;
     }
     
     private TableContext parseTable(final DeleteSQLContext deleteSQLContext) {

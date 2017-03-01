@@ -1,5 +1,6 @@
 package com.alibaba.druid.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,5 +39,10 @@ public final class SelectSQLContext extends AbstractSQLContext {
     
     public SelectSQLContext(final String originalSQL) {
         super(originalSQL);
+    }
+    
+    @Override
+    public SQLStatementType getType() {
+        return SQLStatementType.SELECT;
     }
 }

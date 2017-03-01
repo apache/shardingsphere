@@ -16,8 +16,7 @@
 
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import lombok.AccessLevel;
@@ -51,7 +50,7 @@ public abstract class SQLStatementParser extends SQLParser {
      * 
      * @return SQL解析对象
      */
-    public SQLStatement parseStatement() {
+    public SQLContext parseStatement() {
         if (getLexer().equalToken(Token.SEMI)) {
             getLexer().nextToken();
         }
@@ -59,7 +58,7 @@ public abstract class SQLStatementParser extends SQLParser {
             parseWith();
         }
         if (getLexer().equalToken(Token.SELECT)) {
-            return new SQLSelectStatement(createSQLSelectParser(shardingRule, parameters).select(), getDbType());
+            return createSQLSelectParser(shardingRule, parameters).select();
         }
         if (getLexer().equalToken(Token.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();

@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParser;
@@ -53,9 +54,9 @@ public final class SQLParserFactory {
      */
     public static SQLParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final ShardingRule shardingRule) throws SQLParserException {
         log.debug("Logic SQL: {}, {}", sql, parameters);
-        SQLStatement sqlStatement = getSQLStatementParser(databaseType, sql, shardingRule, parameters).parseStatement();
-        log.trace("Get {} SQL Statement", sqlStatement.getClass().getName());
-        return new SQLParseEngine(sqlStatement);
+        SQLContext sqlContext = getSQLStatementParser(databaseType, sql, shardingRule, parameters).parseStatement();
+        log.trace("Get {} SQL Statement", sqlContext.getClass().getName());
+        return new SQLParseEngine(sqlContext);
     }
     
     private static SQLStatementParser getSQLStatementParser(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {

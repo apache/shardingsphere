@@ -19,7 +19,6 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.context.LimitContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
@@ -34,20 +33,17 @@ import java.util.List;
 
 public class SQLServerSelectParser extends SQLSelectParser {
     
-    private final SelectSQLContext sqlContext;
-    
     public SQLServerSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);
-        sqlContext = new SelectSQLContext(getLexer().getInput());
     }
     
     @Override
-    protected void customizedSelect(final SQLSelect sqlSelect) {
+    protected void customizedSelect(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.FOR)) {
             parseFor();
         }
         if (getLexer().equalToken(Token.OFFSET)) {
-            parseOffset(sqlSelect);
+            parseOffset(sqlContext);
         }
     }
     
@@ -118,7 +114,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
         }
     }
     
-    private void parseOffset(final SQLSelect result) {
+    private void parseOffset(final SelectSQLContext sqlContext) {
         getLexer().nextToken();
         SQLExpr offsetExpr = getExprParser().expr();
         int offset;
@@ -154,6 +150,6 @@ public class SQLServerSelectParser extends SQLSelectParser {
         } else {
             limitContext = new LimitContext(offset, offsetIndex);
         }
-        result.getSqlContext().setLimitContext(limitContext);
+        sqlContext.setLimitContext(limitContext);
     }
 }

@@ -21,6 +21,7 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
@@ -39,7 +40,7 @@ public class OracleSelectParser extends SQLSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SQLSelect sqlSelect) {
+    protected void customizedSelect(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.FOR)) {
             parseForUpdate();
         }

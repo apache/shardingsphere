@@ -1,6 +1,7 @@
 package com.alibaba.druid.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 
 /**
@@ -16,5 +17,10 @@ public final class InsertSQLContext extends AbstractSQLContext {
     public InsertSQLContext(final String originalSQL) {
         super(originalSQL);
         generatedKeyContext = new GeneratedKeyContext();
+    }
+    
+    @Override
+    public SQLStatementType getType() {
+        return SQLStatementType.INSERT;
     }
 }

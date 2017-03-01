@@ -4,7 +4,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.AbstractSQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableContext;
@@ -52,7 +51,7 @@ public abstract class AbstractInsertParser extends SQLParser {
      * 
      * @return 解析结果
      */
-    public final SQLInsertStatement parse() {
+    public final InsertSQLContext parse() {
         getLexer().nextToken();
         InsertSQLContext result = new InsertSQLContext(getLexer().getInput());
         parseInto(result);
@@ -65,7 +64,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
             parseCustomizedInsert(result);
         }
-        return new SQLInsertStatement(result);
+        return result;
     }
     
     protected Set<String> getUnsupportedIdentifiers() {

@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
 import com.alibaba.druid.sql.context.InsertSQLContext;
@@ -31,14 +26,12 @@ import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.google.common.base.Optional;
@@ -57,7 +50,7 @@ import java.util.List;
 @Slf4j
 public final class SQLParseEngine {
     
-    private final SQLStatement sqlStatement;
+    private final SQLContext sqlContext;
     
     /**
      *  解析SQL.
@@ -65,7 +58,6 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        SQLContext sqlContext = getSQLContext();
         ParseContext parseContext = getParseContext(sqlContext);
         if (sqlContext instanceof SelectSQLContext) {
             parseSelect(parseContext, (SelectSQLContext) sqlContext);
@@ -74,22 +66,6 @@ public final class SQLParseEngine {
         }
         parseContext.getParsedResult().getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         return parseContext.getParsedResult();
-    }
-    
-    private SQLContext getSQLContext() {
-        if (sqlStatement instanceof SQLSelectStatement) {
-            return ((SQLSelectStatement) sqlStatement).getSelect().getSqlContext();
-        }
-        if (sqlStatement instanceof SQLInsertStatement) {
-            return ((SQLInsertStatement) sqlStatement).getSqlContext();
-        }
-        if (sqlStatement instanceof SQLUpdateStatement) {
-            return ((SQLUpdateStatement) sqlStatement).getSqlContext();
-        }
-        if (sqlStatement instanceof SQLDeleteStatement) {
-            return ((SQLDeleteStatement) sqlStatement).getSqlContext();
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
     
     private ParseContext getParseContext(final SQLContext sqlContext) {
@@ -103,24 +79,8 @@ public final class SQLParseEngine {
         for (TableContext each : sqlContext.getTables()) {
             sqlParsedResult.getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
         }
-        sqlParsedResult.getRouteContext().setSqlStatementType(getType());
+        sqlParsedResult.getRouteContext().setSqlStatementType(sqlContext.getType());
         return result;
-    }
-    
-    private SQLStatementType getType() {
-        if (sqlStatement instanceof SQLSelectStatement) {
-            return SQLStatementType.SELECT;
-        }
-        if (sqlStatement instanceof SQLInsertStatement) {
-            return SQLStatementType.INSERT;
-        }
-        if (sqlStatement instanceof SQLUpdateStatement) {
-            return SQLStatementType.UPDATE;
-        }
-        if (sqlStatement instanceof SQLDeleteStatement) {
-            return SQLStatementType.DELETE;
-        }
-        throw new SQLParserException("Unsupported SQL statement: [%s]", sqlStatement);
     }
     
     private void parseInsert(final ParseContext parseContext, final InsertSQLContext sqlContext) {

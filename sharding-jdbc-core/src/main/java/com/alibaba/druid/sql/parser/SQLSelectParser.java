@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
@@ -67,15 +66,14 @@ public class SQLSelectParser extends SQLParser {
         sqlContext = new SelectSQLContext(getLexer().getInput());
     }
     
-    public final SQLSelect select() {
-        SQLSelect result = new SQLSelect(sqlContext);
+    public final SelectSQLContext select() {
         query();
         sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
-        customizedSelect(result);
-        return result;
+        customizedSelect(sqlContext);
+        return sqlContext;
     }
     
-    protected void customizedSelect(final SQLSelect sqlSelect) {
+    protected void customizedSelect(final SelectSQLContext sqlContext) {
     }
     
     protected SQLSelectQuery query() {
