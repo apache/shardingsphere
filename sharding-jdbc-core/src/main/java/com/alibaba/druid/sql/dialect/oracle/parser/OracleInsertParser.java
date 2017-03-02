@@ -5,9 +5,9 @@ import com.alibaba.druid.sql.parser.AbstractInsertParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Oracle Insert语句解析器.
@@ -20,10 +20,11 @@ public final class OracleInsertParser extends AbstractInsertParser {
         super(shardingRule, parameters, exprParser);
     }
     
-    protected Set<String> getUnsupportedIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.ALL.getName());
-        result.add(Token.FIRST.getName());
+    @Override
+    protected Set<Token> getUnsupportedTokens() {
+        Set<Token> result = new HashSet<>();
+        result.add(Token.ALL);
+        result.add(Token.FIRST);
         return result;
     }
 }

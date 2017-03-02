@@ -25,9 +25,4 @@ public final class MySQLDeleteParser extends AbstractDeleteParser {
         }
         getLexer().skipIfEqual(Token.FROM);
     }
-    
-    @Override
-    protected void skipBetweenTableAndWhere() {
-        ((MySqlExprParser) getExprParser()).skipPartition();
-    }
 }

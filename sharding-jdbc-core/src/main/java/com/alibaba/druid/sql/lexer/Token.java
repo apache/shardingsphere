@@ -151,7 +151,7 @@ public enum Token {
     ROW("ROW", false, true, true, true, false, false), 
     ROWS("ROWS", false, false, true, true, false, false),
     ONLY("ONLY", false, false, true, true, true, true), 
-    FIRST("FIRST", false, false, true, false, false, true), 
+    FIRST("FIRST", false, false, true, true, false, true), 
     NEXT("NEXT", false, false, true, true, false, false),
     OF("OF", false, false, true, true, false, false),
     SHARE("SHARE", false, false, true, true, false, false),

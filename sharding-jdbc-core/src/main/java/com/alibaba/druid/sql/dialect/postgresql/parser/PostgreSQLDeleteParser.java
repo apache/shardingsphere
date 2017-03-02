@@ -23,16 +23,4 @@ public final class PostgreSQLDeleteParser extends AbstractDeleteParser {
         getLexer().skipIfEqual(Token.FROM);
         getLexer().skipIfEqual(Token.ONLY);
     }
-    
-    @Override
-    protected void skipBetweenTableAndWhere() {
-        if (getLexer().skipIfEqual(Token.USING)) {
-            do {
-                getLexer().nextToken();
-                if (getLexer().skipIfEqual(Token.DOT)) {
-                    getLexer().nextToken();
-                }
-            } while (getLexer().equalToken(Token.COMMA));
-        }
-    }
 }

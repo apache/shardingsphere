@@ -41,18 +41,13 @@ public abstract class AbstractDeleteParser extends SQLParser {
         getLexer().nextToken();
         skipBetweenDeleteAndTable();
         TableContext table = parseSingleTable(result);
-        if (!getLexer().equalToken(Token.EOF)) {
-            skipBetweenTableAndWhere();
-            Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, 0).parseWhere();
-            if (conditionContext.isPresent()) {
-                result.getConditionContexts().add(conditionContext.get());
-            }
+        getLexer().skipUntil(Token.WHERE);
+        Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, 0).parseWhere();
+        if (conditionContext.isPresent()) {
+            result.getConditionContexts().add(conditionContext.get());
         }
         return result;
     }
     
     protected abstract void skipBetweenDeleteAndTable();
-    
-    protected void skipBetweenTableAndWhere() {
-    }
 }

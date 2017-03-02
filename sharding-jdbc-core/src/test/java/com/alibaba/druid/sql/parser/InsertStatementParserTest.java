@@ -146,12 +146,12 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')").parseStatement();
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void parseInsertAllForOracle() {
         new OracleStatementParser(createShardingRule(), Collections.emptyList(), "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2").parseStatement();
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = ParserUnsupportedException.class)
     public void parseInsertFirstForOracle() {
         new OracleStatementParser(createShardingRule(), Collections.emptyList(), "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2").parseStatement();
     }

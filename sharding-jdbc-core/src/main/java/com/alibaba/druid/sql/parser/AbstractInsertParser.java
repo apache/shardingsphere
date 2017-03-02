@@ -1,20 +1,17 @@
 package com.alibaba.druid.sql.parser;
 
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
-import com.alibaba.druid.sql.context.TableContext;
-import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.SQLEvalConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.google.common.base.Optional;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -51,83 +48,45 @@ public abstract class AbstractInsertParser extends SQLParser {
      * @return 解析结果
      */
     public final InsertSQLContext parse() {
-        getLexer().nextToken();
         InsertSQLContext result = new InsertSQLContext(getLexer().getInput());
+        getLexer().nextToken();
         parseInto(result);
         Collection<Condition.Column> columns = parseColumns(result);
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(columns, result);
         } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            // TODO 暂时不做
-            //parseSelect(result);
+            throw new UnsupportedOperationException("Cannot support subquery");
         } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
             parseCustomizedInsert(result);
         }
         return result;
     }
     
-    protected Set<String> getUnsupportedIdentifiers() {
+    protected Set<Token> getUnsupportedTokens() {
         return Collections.emptySet();
     }
     
     private void parseInto(final InsertSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.HINT)) {
-            getLexer().nextToken();
+        getLexer().skipIfEqual(Token.HINT);
+        if (getUnsupportedTokens().contains(getLexer().getToken())) {
+            throw new ParserUnsupportedException(getLexer().getToken());
         }
-        if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
-            throw new UnsupportedOperationException(String.format("Cannot support %s.", getLexer().getLiterals()));
-        }
-        parseBetweenInsertAndInfo();
-        getLexer().accept(Token.INTO);
-        parseBetweenIntoAndTable();
-        parseTable(sqlContext);
-        parseBetweenTableAndValues();
-    }
-    
-    private void parseBetweenInsertAndInfo() {
-        while (!getLexer().equalToken(Token.INTO) && !getLexer().equalToken(Token.EOF)) {
-            getLexer().nextToken();
-        }
-    }
-    
-    private void parseBetweenIntoAndTable() {
-        while (getIdentifiersBetweenIntoAndTable().contains(getLexer().getLiterals())) {
-            getLexer().nextToken();
-        }
-    }
-    
-    protected Set<String> getIdentifiersBetweenIntoAndTable() {
-        return Collections.emptySet();
-    }
-    
-    private TableContext parseTable(final InsertSQLContext insertSQLContext) {
-        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        String tableName = getLexer().getLiterals();
+        getLexer().skipUntil(Token.INTO);
         getLexer().nextToken();
-        TableContext result = new TableContext(tableName, SQLUtil.getExactlyValue(tableName), Optional.<String>absent());
-        insertSQLContext.getSqlTokens().add(new TableToken(beginPosition, tableName, result.getName()));
-        insertSQLContext.getTables().add(result);
-        return result;
+        parseSingleTable(sqlContext);
+        parseBetweenTableAndValues();
     }
     
     private void parseBetweenTableAndValues() {
         while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                do {
-                    getLexer().nextToken();
-                }
-                while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
-                getLexer().accept(Token.RIGHT_PAREN);
+                getLexer().skipParentheses();
             }
         }
     }
     
     protected Set<String> getIdentifiersBetweenTableAndValues() {
-        return Collections.emptySet();
-    }
-    
-    protected Set<String> getCustomizedInsertIdentifiers() {
         return Collections.emptySet();
     }
     
@@ -213,6 +172,10 @@ public abstract class AbstractInsertParser extends SQLParser {
         }
         while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
+    }
+    
+    protected Set<String> getCustomizedInsertIdentifiers() {
+        return Collections.emptySet();
     }
     
     protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
