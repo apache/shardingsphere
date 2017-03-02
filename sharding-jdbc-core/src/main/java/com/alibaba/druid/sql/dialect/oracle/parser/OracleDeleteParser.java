@@ -34,5 +34,6 @@ public class OracleDeleteParser extends AbstractDeleteParser {
         getLexer().skipIfEqual(Token.HINT);
         getLexer().skipIfEqual(Token.FROM);
         getLexer().skipIfEqual(Token.COMMENT);
+        getLexer().skipIfEqual(Token.ONLY);
     }
 }

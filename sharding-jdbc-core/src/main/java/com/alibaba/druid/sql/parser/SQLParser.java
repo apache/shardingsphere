@@ -15,8 +15,12 @@
  */
 package com.alibaba.druid.sql.parser;
 
+import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.TableContext;
+import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
@@ -52,6 +56,39 @@ public class SQLParser {
             return Optional.of(result);
         }
         return Optional.absent();
+    }
+    
+    protected final TableContext parseSingleTable(final SQLContext sqlContext) {
+        boolean hasParentheses = false;
+        if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
+            if (getLexer().equalToken(Token.SELECT)) {
+                throw new UnsupportedOperationException("Cannot support subquery");
+            }
+            hasParentheses = true;
+        }
+        TableContext result;
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
+        String literals = getLexer().getLiterals();
+        getLexer().nextToken();
+        if (getLexer().skipIfEqual(Token.DOT)) {
+            String tableName = getLexer().getLiterals();
+            getLexer().nextToken();
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            result = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
+        } else {
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            result = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
+        }
+        if (isJoin()) {
+            throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+        }
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, result.getOriginalLiterals(), result.getName()));
+        sqlContext.getTables().add(result);
+        return result;
     }
     
     protected final boolean isJoin() {

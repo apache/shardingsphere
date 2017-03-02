@@ -49,9 +49,9 @@ public abstract class AbstractUpdateParser extends SQLParser {
      */
     public UpdateSQLContext parse() {
         getLexer().nextToken();
-        parseBetweenUpdateAndTable();
+        skipBetweenUpdateAndTable();
         UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
-        TableContext table = parseTable(result);
+        TableContext table = parseSingleTable(result);
         parseSetItems(result);
         parseBetweenSetAndWhere();
         Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, parametersIndex).parseWhere();
@@ -61,22 +61,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
         return result;
     }
     
-    protected abstract void parseBetweenUpdateAndTable();
-    
-    private TableContext parseTable(final UpdateSQLContext updateSQLContext) {
-        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        List<TableContext> tables = new SQLSelectParser(shardingRule, parameters, exprParser).parseTableSource();
-        if (1 != tables.size()) {
-            throw new UnsupportedOperationException("Cannot support update Multiple-Table.");
-        }
-        TableContext result = tables.get(0);
-        updateSQLContext.getSqlTokens().add(new TableToken(beginPosition, result.getOriginalLiterals(), result.getName()));
-        updateSQLContext.getTables().add(result);
-        if (!getLexer().equalToken(Token.SET)) {
-            getLexer().nextToken();
-        }
-        return result;
-    }
+    protected abstract void skipBetweenUpdateAndTable();
     
     private void parseSetItems(final UpdateSQLContext sqlContext) {
         getLexer().accept(Token.SET);

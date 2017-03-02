@@ -19,15 +19,14 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     }
     
     @Override
-    protected void parseBetweenUpdateAndTable() {
+    protected void skipBetweenUpdateAndTable() {
         ((SQLServerExprParser) getExprParser()).parseTop();
     }
     
     @Override
     protected void parseBetweenSetAndWhere() {
         ((SQLServerExprParser) getExprParser()).skipOutput();
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
+        if (getLexer().skipIfEqual(Token.FROM)) {
             getExprParser().createSelectParser(getShardingRule(), getParameters()).parseTableSource();
         }
     }
