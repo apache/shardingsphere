@@ -52,10 +52,11 @@ public abstract class AbstractInsertParser extends SQLParser {
         getLexer().nextToken();
         parseInto(result);
         Collection<Condition.Column> columns = parseColumns(result);
+        if (getLexer().equalToken(Token.SELECT, Token.LEFT_PAREN)) {
+            throw new UnsupportedOperationException("Cannot support subquery");
+        }
         if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
             parseValues(columns, result);
-        } else if (getLexer().equalToken(Token.SELECT) || getLexer().equalToken(Token.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
         } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
             parseCustomizedInsert(result);
         }
@@ -74,10 +75,10 @@ public abstract class AbstractInsertParser extends SQLParser {
         getLexer().skipUntil(Token.INTO);
         getLexer().nextToken();
         parseSingleTable(sqlContext);
-        parseBetweenTableAndValues();
+        skipBetweenTableAndValues();
     }
     
-    private void parseBetweenTableAndValues() {
+    private void skipBetweenTableAndValues() {
         while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
