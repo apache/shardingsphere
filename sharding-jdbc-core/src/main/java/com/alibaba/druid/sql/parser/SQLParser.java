@@ -17,6 +17,7 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.google.common.base.Optional;
 import lombok.Getter;
 
 /**
@@ -34,23 +35,23 @@ public class SQLParser {
         this.lexer = lexer;
     }
     
-    protected String as() {
+    protected Optional<String> as() {
         if (lexer.skipIfEqual(Token.AS)) {
             // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN
             if (lexer.equalToken(Token.LEFT_PAREN)) {
-                return null;
+                return Optional.absent();
             }
             String result = lexer.getLiterals();
             lexer.nextToken();
-            return result;
+            return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
         if (lexer.equalToken(Token.IDENTIFIER, Token.LITERAL_ALIAS, Token.LITERAL_CHARS, Token.USER, Token.END, Token.CASE, Token.KEY, Token.INTERVAL, Token.CONSTRAINT)) {
             String result = lexer.getLiterals();
             lexer.nextToken();
-            return result;
+            return Optional.of(result);
         }
-        return null;
+        return Optional.absent();
     }
     
     protected final boolean isJoin() {

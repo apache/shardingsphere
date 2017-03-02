@@ -213,7 +213,7 @@ public class SQLSelectParser extends SQLParser {
         }
         // FIXME 根据shardingRule过滤table
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
-        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), Optional.fromNullable(as())));
+        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), as()));
     }
     
     protected void parseJoinTable() {

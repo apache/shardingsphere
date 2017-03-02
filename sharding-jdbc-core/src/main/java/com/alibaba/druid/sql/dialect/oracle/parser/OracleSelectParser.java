@@ -29,6 +29,7 @@ import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -244,7 +245,7 @@ public class OracleSelectParser extends SQLSelectParser {
     }
     
     @Override
-    protected String as() {
+    protected Optional<String> as() {
         if (getLexer().equalToken(Token.CONNECT)) {
             return null;
         }

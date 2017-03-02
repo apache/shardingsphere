@@ -1261,7 +1261,7 @@ public class SQLExprParser extends SQLParser {
                     }
                     getLexer().nextToken();
                 }
-                String alias = as();
+                String alias = as().orNull();
                 SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
                 SelectItemContext selectItemContext = new AggregationSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, aggregationType);
                 result.setSelectItemContext(selectItemContext);
@@ -1284,7 +1284,7 @@ public class SQLExprParser extends SQLParser {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        String alias = as();
+        String alias = as().orNull();
         SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
         SelectItemContext selectItemContext = new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, isStar);
         result.setSelectItemContext(selectItemContext);

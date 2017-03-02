@@ -87,8 +87,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
         if (isOnly) {
             getLexer().accept(Token.RIGHT_PAREN);
         }
-        String alias = as();
-        result = new TableContext(literals, SQLUtil.getExactlyValue(literals), Optional.fromNullable(alias));
+        result = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
         return result;
     }
     
