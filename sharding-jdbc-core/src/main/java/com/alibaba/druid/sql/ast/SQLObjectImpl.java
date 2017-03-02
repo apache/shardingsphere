@@ -16,10 +16,7 @@
 
 package com.alibaba.druid.sql.ast;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class SQLObjectImpl implements SQLObject {
@@ -27,15 +24,6 @@ public abstract class SQLObjectImpl implements SQLObject {
     private final Map<String, Object> attributes = new HashMap<>();
     
     private SQLObject parent;
-    
-    @Override
-    public final void accept(final SQLASTVisitor visitor) {
-        visitor.preVisit(this);
-        acceptInternal(visitor);
-        visitor.postVisit(this);
-    }
-    
-    protected abstract void acceptInternal(final SQLASTVisitor visitor);
     
     @Override
     public Map<String, Object> getAttributes() {
@@ -64,28 +52,5 @@ public abstract class SQLObjectImpl implements SQLObject {
     @Override
     public void output(final StringBuffer buffer) {
         buffer.append(super.toString());
-    }
-    
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        output(buffer);
-        return buffer.toString();
-    }
-    
-    protected final void acceptChild(final SQLASTVisitor visitor, final List<? extends SQLObject> children) {
-        if (null == children) {
-            return;
-        }
-        for (SQLObject each : children) {
-            acceptChild(visitor, each);
-        }
-    }
-    
-    protected final void acceptChild(final SQLASTVisitor visitor, final SQLObject child) {
-        if (null == child) {
-            return;
-        }
-        child.accept(visitor);
     }
 }

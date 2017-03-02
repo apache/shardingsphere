@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +31,6 @@ public class SQLSelectGroupByClause extends SQLObjectImpl {
     
     private final List<SQLExpr> items = new ArrayList<>();
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, items);
-            acceptChild(visitor, having);
-        }
-        visitor.endVisit(this);
-    }
     
     public void addItem(final SQLExpr sqlExpr) {
         if (null != sqlExpr) {

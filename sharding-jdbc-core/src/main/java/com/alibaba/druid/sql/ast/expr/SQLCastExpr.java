@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,13 +36,5 @@ public class SQLCastExpr extends SQLExprImpl {
             expr.setParent(this);
         }
         this.expr = expr;
-    }
-    
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-            acceptChild(visitor, dataType);
-        }
-        visitor.endVisit(this);
     }
 }

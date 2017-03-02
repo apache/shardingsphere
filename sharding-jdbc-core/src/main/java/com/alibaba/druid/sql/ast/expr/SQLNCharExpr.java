@@ -15,19 +15,12 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
 
 public class SQLNCharExpr extends SQLTextLiteralExpr {
     
     public SQLNCharExpr(final String text) {
         super(text);
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override

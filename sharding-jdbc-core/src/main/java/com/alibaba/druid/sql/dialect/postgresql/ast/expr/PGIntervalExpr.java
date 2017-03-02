@@ -18,8 +18,6 @@ package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,14 +29,4 @@ public class PGIntervalExpr extends SQLExprImpl implements SQLLiteralExpr, PGExp
     
     private SQLExpr value;
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final PGASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
 }

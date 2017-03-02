@@ -17,8 +17,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,17 +29,4 @@ public class OracleExtractExpr extends SQLExprImpl implements OracleExpr {
     private OracleDateTimeUnit unit;
     
     private SQLExpr from;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, from);
-        }
-        visitor.endVisit(this);
-    }
 }

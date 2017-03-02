@@ -17,8 +17,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,18 +28,6 @@ public class OracleAnalyticWindowing extends SQLObjectImpl implements OracleExpr
     
     private SQLExpr expr;
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, this.expr);
-        }
-        visitor.endVisit(this);
-    }
     
     public enum Type {
         ROWS, RANGE

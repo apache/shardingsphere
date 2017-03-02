@@ -16,15 +16,8 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLDefaultExpr extends SQLExprImpl implements SQLLiteralExpr {
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     @Override
     public boolean equals(final Object o) {

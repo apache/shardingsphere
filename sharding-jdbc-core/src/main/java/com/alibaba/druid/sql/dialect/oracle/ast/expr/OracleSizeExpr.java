@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,13 +28,6 @@ public class OracleSizeExpr extends OracleSQLObjectImpl implements OracleExpr {
     
     private final Unit unit;
     
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, value);
-        }
-        visitor.endVisit(this);
-    }
     
     public enum Unit {
         K, M, G, T, P, E

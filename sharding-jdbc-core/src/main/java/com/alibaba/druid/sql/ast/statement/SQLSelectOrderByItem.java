@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,14 +41,6 @@ public class SQLSelectOrderByItem extends SQLObjectImpl {
             expr.setParent(this);
         }
         this.expr = expr;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-        }
-        visitor.endVisit(this);
     }
     
     @Getter

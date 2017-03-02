@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,12 +39,6 @@ public class SQLVariantRefExpr extends SQLExprImpl {
     public SQLVariantRefExpr(final String name, final boolean global) {
         this.name = name;
         this.global = global;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override

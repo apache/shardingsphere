@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,13 +53,4 @@ public class SQLUnionQuery extends SQLObjectImpl implements SQLSelectQuery {
         this.orderBy = orderBy;
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, left);
-            acceptChild(visitor, right);
-            acceptChild(visitor, orderBy);
-        }
-        visitor.endVisit(this);
-    }
 }

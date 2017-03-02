@@ -16,8 +16,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 
 @Getter
@@ -32,19 +30,4 @@ public class SQLServerSelectQueryBlock extends SQLSelectQueryBlock {
         this.top = top;
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((SQLServerASTVisitor) visitor);
-    }
-    
-    protected void accept0(final SQLServerASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, top);
-            acceptChild(visitor, getSelectList());
-            acceptChild(visitor, getFrom());
-            acceptChild(visitor, getWhere());
-            acceptChild(visitor, getGroupBy());
-        }
-        visitor.endVisit(this);
-    }
 }

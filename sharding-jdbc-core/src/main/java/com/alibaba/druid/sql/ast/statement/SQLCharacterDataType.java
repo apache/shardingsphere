@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,13 +37,5 @@ public class SQLCharacterDataType extends SQLDataTypeImpl {
     
     public SQLCharacterDataType(final String name) {
         super(name);
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getArguments());
-        }
-        visitor.endVisit(this);
     }
 }

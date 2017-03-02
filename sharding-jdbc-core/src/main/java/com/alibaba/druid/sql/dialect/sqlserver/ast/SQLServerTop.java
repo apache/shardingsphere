@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,11 +32,5 @@ public class SQLServerTop extends SQLServerObjectImpl {
             expr.setParent(this);
         }
         this.expr = expr;
-    }
-    
-    @Override
-    public void accept0(final SQLServerASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
 }

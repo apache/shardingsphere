@@ -16,10 +16,7 @@
 
 package com.alibaba.druid.sql.dialect.oracle.ast.stmt;
 
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,24 +24,4 @@ import lombok.Setter;
 @Setter
 public class OracleSelectQueryBlock extends SQLSelectQueryBlock {
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor instanceof OracleASTVisitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, getSelectList());
-                acceptChild(visitor, getInto());
-                acceptChild(visitor, getFrom());
-                acceptChild(visitor, getWhere());
-                acceptChild(visitor, getGroupBy());
-            }
-            visitor.endVisit(this);
-            return;
-        }
-        super.acceptInternal(visitor);
-    }
-    
-    @Override
-    public String toString() {
-        return SQLUtils.toOracleString(this);
-    }
 }

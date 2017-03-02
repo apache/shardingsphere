@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.ast;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -20,14 +19,5 @@ public class SQLOver extends SQLObjectImpl {
             orderBy.setParent(this);
         }
         this.orderBy = orderBy;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, partitionBy);
-            acceptChild(visitor, orderBy);
-        }
-        visitor.endVisit(this);
     }
 }

@@ -15,13 +15,9 @@
  */
 package com.alibaba.druid.sql.ast;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
-
 import java.util.Map;
 
 public interface SQLObject {
-    
-    void accept(SQLASTVisitor visitor);
     
     Map<String, Object> getAttributes();
     

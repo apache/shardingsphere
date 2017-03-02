@@ -22,8 +22,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObject;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,23 +48,6 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
         TEMPORARY, TEMP, UNLOGGED
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, with);
-            acceptChild(visitor, distinctOn);
-            acceptChild(visitor, getSelectList());
-            acceptChild(visitor, getInto());
-            acceptChild(visitor, getFrom());
-            acceptChild(visitor, getWhere());
-            acceptChild(visitor, getGroupBy());
-            acceptChild(visitor, window);
-            acceptChild(visitor, orderBy);
-            acceptChild(visitor, limit);
-        }
-        visitor.endVisit(this);
-    }
-    
     public SQLExpr getOffset() {
         return null == limit ? null : limit.offset;
     }
@@ -86,15 +67,6 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
         private SQLExpr name;
         
         private List<SQLExpr> definition = new ArrayList<>(2);
-        
-        @Override
-        public void accept0(final PGASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, name);
-                acceptChild(visitor, definition);
-            }
-            visitor.endVisit(this);
-        }
     }
     
     @Getter
@@ -118,18 +90,5 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
             this.offset = offset;
         }
         
-        @Override
-        protected void acceptInternal(final SQLASTVisitor visitor) {
-            accept0((PGASTVisitor) visitor);
-        }
-        
-        @Override
-        public void accept0(final PGASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, offset);
-                acceptChild(visitor, rowCount);
-            }
-            visitor.endVisit(this);
-        }
     }
 }

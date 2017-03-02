@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -41,14 +40,6 @@ public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
     @Override
     public String getSimpleName() {
         return name;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, owner);
-        }
-        visitor.endVisit(this);
     }
     
     @Override

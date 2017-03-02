@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,11 +28,4 @@ public class OracleArgumentExpr extends OracleSQLObjectImpl implements SQLExpr {
     
     private final SQLExpr value;
     
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, value);
-        }
-        visitor.endVisit(this);
-    }
 }

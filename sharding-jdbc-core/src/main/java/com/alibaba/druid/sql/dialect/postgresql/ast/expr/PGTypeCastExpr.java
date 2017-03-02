@@ -15,29 +15,8 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.expr.SQLCastExpr;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class PGTypeCastExpr extends SQLCastExpr implements PGExpr {
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final PGASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getExpr());
-            acceptChild(visitor, getDataType());
-        }
-        visitor.endVisit(this);
-    }
-    
-    @Override
-    public String toString() {
-        return SQLUtils.toPGString(this);
-    }
 }

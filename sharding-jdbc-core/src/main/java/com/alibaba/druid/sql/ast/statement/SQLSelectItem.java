@@ -19,7 +19,6 @@ package com.alibaba.druid.sql.ast.statement;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.context.SelectItemContext;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -44,13 +43,6 @@ public class SQLSelectItem extends SQLObjectImpl {
         }
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-        }
-        visitor.endVisit(this);
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

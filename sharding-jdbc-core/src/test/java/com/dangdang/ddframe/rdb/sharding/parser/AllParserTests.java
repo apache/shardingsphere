@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForT
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.OrParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResultTest;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -33,8 +32,7 @@ import org.junit.runners.Suite;
         MySQLPreparedStatementForOneParameterTest.class, 
         MySQLPreparedStatementForTowParametersTest.class,  
         OrParseTest.class, 
-        UnsupportedParseTest.class, 
-        MySQLEvalVisitorTest.class
+        UnsupportedParseTest.class
     })
 public class AllParserTests {
 }

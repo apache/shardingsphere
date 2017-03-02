@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class SQLBinaryExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     private final String value;
-    
-    @Override
-    public void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

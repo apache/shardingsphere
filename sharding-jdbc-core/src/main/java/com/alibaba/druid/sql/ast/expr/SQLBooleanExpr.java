@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class SQLBooleanExpr extends SQLExprImpl implements SQLExpr, SQLLiteralExpr {
     
     private final boolean value;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     public void output(final StringBuffer buffer) {
         buffer.append("x");

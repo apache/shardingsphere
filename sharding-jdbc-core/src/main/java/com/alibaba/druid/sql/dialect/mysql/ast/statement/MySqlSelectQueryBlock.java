@@ -22,8 +22,6 @@ import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,31 +50,6 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
         this.limit = limit;
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor instanceof MySqlASTVisitor) {
-            accept0((MySqlASTVisitor) visitor);
-            return;
-        }
-        super.acceptInternal(visitor);
-    }
-
-    @Override
-    public void accept0(final MySqlASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getSelectList());
-            acceptChild(visitor, getFrom());
-            acceptChild(visitor, getWhere());
-            acceptChild(visitor, getGroupBy());
-            acceptChild(visitor, orderBy);
-            acceptChild(visitor, limit);
-            acceptChild(visitor, procedureName);
-            acceptChild(visitor, procedureArgumentList);
-            acceptChild(visitor, getInto());
-        }
-        visitor.endVisit(this);
-    }
-    
     @NoArgsConstructor
     @Getter
     public static class Limit extends SQLObjectImpl {
@@ -103,16 +76,5 @@ public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlO
             this.offset = offset;
         }
         
-        @Override
-        protected void acceptInternal(final SQLASTVisitor visitor) {
-            if (visitor instanceof MySqlASTVisitor) {
-                MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
-                if (mysqlVisitor.visit(this)) {
-                    acceptChild(visitor, offset);
-                    acceptChild(visitor, rowCount);
-                }
-                mysqlVisitor.endVisit(this);
-            }
-        }
     }
 }

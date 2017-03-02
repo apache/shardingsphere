@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,12 +29,6 @@ public class MySqlCharExpr extends SQLCharExpr implements MySqlExpr {
     
     public MySqlCharExpr(final String text){
         super(text);
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override

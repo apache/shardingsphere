@@ -16,12 +16,8 @@
 
 package com.alibaba.druid.sql.ast.statement;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.context.SelectSQLContext;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +30,4 @@ import lombok.Setter;
 public class SQLSelect extends SQLObjectImpl {
     
     private final SelectSQLContext sqlContext;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
-    
-    @Override
-    public String toString() {
-        SQLObject parent = getParent();
-        if (parent instanceof SQLStatement) {
-            String dbType = ((SQLStatement) parent).getDbType();
-            if (null != dbType) {
-                return SQLUtils.toSQLString(this, dbType);
-            }
-        }
-        return super.toString();
-    }
 }

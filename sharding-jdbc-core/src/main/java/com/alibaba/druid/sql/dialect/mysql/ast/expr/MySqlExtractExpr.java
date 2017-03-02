@@ -17,8 +17,6 @@ package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,10 +30,4 @@ public class MySqlExtractExpr extends SQLExprImpl implements MySqlExpr {
     
     private MySqlIntervalUnit unit;
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
-        mysqlVisitor.visit(this);
-        mysqlVisitor.endVisit(this);
-    }
 }

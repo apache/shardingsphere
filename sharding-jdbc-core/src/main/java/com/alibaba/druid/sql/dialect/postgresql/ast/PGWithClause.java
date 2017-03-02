@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast;
 
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,10 +23,4 @@ import lombok.Setter;
 public class PGWithClause extends PGSQLObjectImpl {
     
     private boolean recursive;
-    
-    @Override
-    public void accept0(final PGASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
 }

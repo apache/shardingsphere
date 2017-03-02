@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -44,14 +43,6 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
             expr.setParent(this);
         }
         this.expr = expr;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-        }
-        visitor.endVisit(this);
     }
 
     @Override

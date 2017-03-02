@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
-import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,12 +54,6 @@ public class SQLServerObjectReferenceExpr extends SQLServerObjectImpl implements
             return database;
         }
         return server;
-    }
-    
-    @Override
-    public void accept0(final SQLServerASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override

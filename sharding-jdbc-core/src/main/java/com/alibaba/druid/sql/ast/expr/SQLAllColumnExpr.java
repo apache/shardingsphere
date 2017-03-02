@@ -16,14 +16,8 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public class SQLAllColumnExpr extends SQLExprImpl {
-    
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

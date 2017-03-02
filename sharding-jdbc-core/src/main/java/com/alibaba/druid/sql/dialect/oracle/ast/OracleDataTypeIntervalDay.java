@@ -17,8 +17,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast;
 
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -34,16 +32,4 @@ public class OracleDataTypeIntervalDay extends SQLDataTypeImpl implements Oracle
         fractionalSeconds = new ArrayList<>();
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getArguments());
-        }
-        visitor.endVisit(this);
-    }
 }

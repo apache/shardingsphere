@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +31,6 @@ public class SQLNotExpr extends SQLExprImpl implements Serializable {
     private static final long serialVersionUID = -9073712221968847458L;
     
     private final SQLExpr expr;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-        }
-        visitor.endVisit(this);
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

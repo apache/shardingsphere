@@ -16,8 +16,6 @@
 package com.alibaba.druid.sql.dialect.oracle.ast;
 
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,16 +31,4 @@ public class OracleDataTypeTimestamp extends SQLDataTypeImpl implements OracleSQ
         super("TIMESTAMP");
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        this.accept0((OracleASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, getArguments());
-        }
-        visitor.endVisit(this);
-    }
 }

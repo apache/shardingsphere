@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,12 +28,4 @@ public class PGExtractExpr extends PGExprImpl {
     private PGDateField field;
     
     private SQLExpr source;
-    
-    @Override
-    public void accept0(final PGASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, source);
-        }
-        visitor.endVisit(this);
-    }
 }

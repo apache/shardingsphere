@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,14 +27,6 @@ import lombok.Setter;
 public class SQLSomeExpr extends SQLExprImpl {
     
     private SQLSelect subQuery;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, subQuery);
-        }
-        visitor.endVisit(this);
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

@@ -16,8 +16,6 @@
 package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +32,4 @@ public class OracleBinaryDoubleExpr extends SQLNumericLiteralExpr implements Ora
         return value;
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-    
-    public void accept0(final OracleASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
 }

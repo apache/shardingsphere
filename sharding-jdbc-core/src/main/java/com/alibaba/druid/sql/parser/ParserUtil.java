@@ -13,13 +13,12 @@ import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
@@ -142,8 +141,8 @@ public class ParserUtil {
         SQLExpr result = parseSQLExpr();
         if (result instanceof SQLVariantRefExpr) {
             ((SQLVariantRefExpr) result).setIndex(++parametersIndex);
-            result.getAttributes().put(SQLEvalVisitor.EVAL_VALUE, parameters.get(parametersIndex - 1));
-            result.getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parametersIndex - 1);
+            result.getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parametersIndex - 1));
+            result.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parametersIndex - 1);
         }
         return result;
     }

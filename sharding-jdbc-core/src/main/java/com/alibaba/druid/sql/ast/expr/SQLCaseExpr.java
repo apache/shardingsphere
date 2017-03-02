@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -59,16 +58,6 @@ public class SQLCaseExpr extends SQLExprImpl implements Serializable {
         }
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, valueExpr);
-            acceptChild(visitor, items);
-            acceptChild(visitor, elseExpr);
-        }
-        visitor.endVisit(this);
-    }
-    
     @Getter
     @EqualsAndHashCode
     public static class Item extends SQLObjectImpl implements Serializable {
@@ -88,15 +77,6 @@ public class SQLCaseExpr extends SQLExprImpl implements Serializable {
                 valueExpr.setParent(this);
             }
             this.valueExpr = valueExpr;
-        }
-        
-        @Override
-        protected void acceptInternal(final SQLASTVisitor visitor) {
-            if (visitor.visit(this)) {
-                acceptChild(visitor, conditionExpr);
-                acceptChild(visitor, valueExpr);
-            }
-            visitor.endVisit(this);
         }
     }
 }

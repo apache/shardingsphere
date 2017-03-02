@@ -9,11 +9,10 @@ import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -192,15 +191,15 @@ public abstract class AbstractInsertParser extends SQLParser {
                         parameters.add(autoIncrementedValue);
                         SQLVariantRefExpr sqlVariantRefExpr = new SQLVariantRefExpr("?");
                         sqlVariantRefExpr.setIndex(parameters.size());
-                        sqlVariantRefExpr.getAttributes().put(SQLEvalVisitor.EVAL_VALUE, autoIncrementedValue);
-                        sqlVariantRefExpr.getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parameters.size() - 1);
+                        sqlVariantRefExpr.getAttributes().put(SQLEvalConstants.EVAL_VALUE, autoIncrementedValue);
+                        sqlVariantRefExpr.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameters.size() - 1);
                         sqlExprs.add(sqlVariantRefExpr);
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
-                    sqlExprs.get(count).getAttributes().put(SQLEvalVisitor.EVAL_VALUE, parameters.get(parameterCount));
-                    sqlExprs.get(count).getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parameterCount);
+                    sqlExprs.get(count).getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parameterCount));
+                    sqlExprs.get(count).getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameterCount);
                     parameterCount++;
                 }
                 parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), parameters);

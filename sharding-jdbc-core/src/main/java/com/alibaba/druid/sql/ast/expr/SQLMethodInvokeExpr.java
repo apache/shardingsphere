@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -55,15 +54,6 @@ public class SQLMethodInvokeExpr extends SQLExprImpl implements Serializable {
             param.setParent(this);
         }
         parameters.add(param);
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, owner);
-            acceptChild(visitor, parameters);
-        }
-        visitor.endVisit(this);
     }
     
     @Override

@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +29,6 @@ public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuable
     @Override
     public Object getValue() {
         return number;
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override

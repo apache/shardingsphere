@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class SQLCurrentOfCursorExpr extends SQLExprImpl {
     
     private final SQLName cursorName;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        // TODO
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

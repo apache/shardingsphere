@@ -15,7 +15,6 @@
  */
 package com.alibaba.druid.sql.ast;
 
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +30,4 @@ public class SQLDataTypeImpl extends SQLObjectImpl implements SQLDataType {
     private final String name;
     
     private final List<SQLExpr> arguments = new ArrayList<>();
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, arguments);
-        }
-        visitor.endVisit(this);
-    }
 }

@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,12 +26,6 @@ public class MySqlUserName extends MySqlExprImpl implements SQLName {
     private String userName;
     
     private String host;
-    
-    @Override
-    public void accept0(final MySqlASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     @Override
     public String getSimpleName() {

@@ -18,8 +18,6 @@ package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,14 +39,4 @@ public class OracleIntervalExpr extends SQLExprImpl implements SQLLiteralExpr, O
     
     private Integer toFactionalSecondsPrecision;
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((OracleASTVisitor) visitor);
-    }
-    
-    @Override
-    public void accept0(final OracleASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
 }

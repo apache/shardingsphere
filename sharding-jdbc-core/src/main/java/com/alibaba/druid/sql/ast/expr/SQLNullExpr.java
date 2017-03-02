@@ -16,17 +16,10 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
-import static com.alibaba.druid.sql.visitor.SQLEvalVisitor.EVAL_VALUE_NULL;
+import static com.alibaba.druid.sql.SQLEvalConstants.EVAL_VALUE_NULL;
 
 public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr, SQLValuableExpr {
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
-    }
     
     @Override
     public Object getValue() {

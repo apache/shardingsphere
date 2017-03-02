@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +26,5 @@ import lombok.RequiredArgsConstructor;
 public class PGMacAddrExpr extends PGExprImpl {
     
     private final SQLExpr value;
-    
-    @Override
-    public void accept0(final PGASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, value);
-        }
-        visitor.endVisit(this);
-    }
 }
 

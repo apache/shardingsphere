@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,13 +32,4 @@ public class SQLArrayExpr extends SQLExprImpl {
     private SQLExpr expr;
     
     private final List<SQLExpr> values = new ArrayList<>();
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-            acceptChild(visitor, values);
-        }
-        visitor.endVisit(this);
-    }
 }

@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.visitor.functions;
 
-import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
-import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
+package com.alibaba.druid.sql;
 
-import java.util.Date;
-
-public class Now implements Function {
+public interface SQLEvalConstants {
     
-    public final static Now instance = new Now();
+    String EVAL_VALUE = "eval.value";
     
-    public Object eval(SQLEvalVisitor visitor, SQLMethodInvokeExpr x) {
-        return new Date();
-    }
+    String EVAL_VAR_INDEX = "eval.index";
+    
+    Object EVAL_VALUE_NULL = new Object();
 }

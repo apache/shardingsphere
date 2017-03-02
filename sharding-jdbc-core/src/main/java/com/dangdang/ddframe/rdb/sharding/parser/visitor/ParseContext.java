@@ -30,6 +30,7 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -42,7 +43,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOp
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql.MySQLEvalVisitor;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -230,8 +230,8 @@ public final class ParseContext {
             SQLVariantRefExpr x = (SQLVariantRefExpr) sqlObject;
             Map<String, Object> attributes = x.getAttributes();
             if ("?".equals(x.getName()) && -1 != x.getIndex() && x.getIndex() - 1 < parameters.size()) {
-                Comparable value = null == attributes.get(MySQLEvalVisitor.EVAL_VALUE) ? "" : (Comparable) attributes.get(MySQLEvalVisitor.EVAL_VALUE);
-                int index = null == attributes.get(MySQLEvalVisitor.EVAL_VAR_INDEX) ? -1 : (int) attributes.get(MySQLEvalVisitor.EVAL_VAR_INDEX);
+                Comparable value = null == attributes.get(SQLEvalConstants.EVAL_VALUE) ? "" : (Comparable) attributes.get(SQLEvalConstants.EVAL_VALUE);
+                int index = null == attributes.get(SQLEvalConstants.EVAL_VAR_INDEX) ? -1 : (int) attributes.get(SQLEvalConstants.EVAL_VAR_INDEX);
                 return new ValuePair(value, index);
             }
         }

@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,14 +60,4 @@ public class SQLSelectQueryBlock extends SQLObjectImpl implements SQLSelectQuery
         this.where = where;
     }
     
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, selectList);
-            acceptChild(visitor, from);
-            acceptChild(visitor, where);
-            acceptChild(visitor, groupBy);
-        }
-        visitor.endVisit(this);
-    }
 }

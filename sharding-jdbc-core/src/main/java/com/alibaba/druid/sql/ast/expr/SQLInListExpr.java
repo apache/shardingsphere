@@ -17,7 +17,6 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +37,4 @@ public class SQLInListExpr extends SQLExprImpl implements Serializable {
     private final boolean not;
     
     private final List<SQLExpr> targetList = new ArrayList<>();
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        if (visitor.visit(this)) {
-            acceptChild(visitor, expr);
-            acceptChild(visitor, targetList);
-        }
-        visitor.endVisit(this);
-    }
 }

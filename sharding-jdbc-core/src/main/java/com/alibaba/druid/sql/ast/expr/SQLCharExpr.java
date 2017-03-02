@@ -15,20 +15,12 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.google.common.base.Strings;
 
 public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr {
     
     public SQLCharExpr(final String text){
         super(text);
-    }
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        visitor.visit(this);
-        visitor.endVisit(this);
     }
     
     @Override
@@ -45,10 +37,5 @@ public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr {
     @Override
     public Object getValue() {
         return getText();
-    }
-    
-    @Override
-    public String toString() {
-        return SQLUtils.toSQLString(this);
     }
 }

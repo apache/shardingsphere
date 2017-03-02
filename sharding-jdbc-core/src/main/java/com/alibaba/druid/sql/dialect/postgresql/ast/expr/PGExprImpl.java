@@ -15,23 +15,8 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.dialect.postgresql.visitor.PGASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 public abstract class PGExprImpl extends SQLExprImpl implements PGExpr {
     
-    @Override
-    public abstract void accept0(final PGASTVisitor visitor);
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        accept0((PGASTVisitor) visitor);
-    }
-    
-    @Override
-    public String toString() {
-        return SQLUtils.toPGString(this);
-    }
 }

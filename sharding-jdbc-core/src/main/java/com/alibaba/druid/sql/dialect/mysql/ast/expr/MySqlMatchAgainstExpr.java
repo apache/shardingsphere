@@ -17,8 +17,6 @@ package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitor;
-import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,16 +35,6 @@ public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
     private SQLExpr against;
 
     private SearchModifier searchModifier;
-    
-    @Override
-    protected void acceptInternal(final SQLASTVisitor visitor) {
-        MySqlASTVisitor mysqlVisitor = (MySqlASTVisitor) visitor;
-        if (mysqlVisitor.visit(this)) {
-            acceptChild(visitor, columns);
-            acceptChild(visitor, against);
-        }
-        mysqlVisitor.endVisit(this);
-    }
     
     @RequiredArgsConstructor
     @Getter
