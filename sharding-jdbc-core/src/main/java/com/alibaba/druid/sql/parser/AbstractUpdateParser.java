@@ -3,7 +3,6 @@ package com.alibaba.druid.sql.parser;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
@@ -48,12 +47,12 @@ public abstract class AbstractUpdateParser extends SQLParser {
      * @return 解析结果
      */
     public UpdateSQLContext parse() {
+        UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
         getLexer().nextToken();
         skipBetweenUpdateAndTable();
-        UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
         TableContext table = parseSingleTable(result);
         parseSetItems(result);
-        parseBetweenSetAndWhere();
+        getLexer().skipUntil(Token.WHERE);
         Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, parametersIndex).parseWhere();
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
@@ -72,23 +71,18 @@ public abstract class AbstractUpdateParser extends SQLParser {
     
     private void parseSetItem(final UpdateSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            while (!getLexer().equalToken(Token.RIGHT_PAREN)) {
+            getLexer().skipParentheses();
+        } else {
+            int beginPosition = getLexer().getCurrentPosition();
+            String literals = getLexer().getLiterals();
+            getLexer().nextToken();
+            String tableName = sqlContext.getTables().get(0).getName();
+            if (getLexer().skipIfEqual(Token.DOT) && tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 getLexer().nextToken();
             }
-            getLexer().nextToken();
-        } else {
-            String literals = getLexer().getLiterals();
-            int beginPosition = getLexer().getCurrentPosition();
-            SQLExpr sqlExpr = exprParser.primary();
-            if (sqlExpr instanceof SQLPropertyExpr && sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, sqlContext.getTables().get(0).getName()));
-            }
         }
-        if (getLexer().equalToken(Token.COLON_EQ)) {
-            getLexer().nextToken();
-        } else {
-            getLexer().accept(Token.EQ);
-        }
+        getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
         SQLExpr value = exprParser.expr();
         if (value instanceof SQLBinaryOpExpr) {
             if (((SQLBinaryOpExpr) value).getLeft() instanceof SQLVariantRefExpr) {
@@ -107,8 +101,5 @@ public abstract class AbstractUpdateParser extends SQLParser {
         } else if (value instanceof SQLVariantRefExpr) {
             parametersIndex++;
         }
-    }
-    
-    protected void parseBetweenSetAndWhere() {
     }
 }

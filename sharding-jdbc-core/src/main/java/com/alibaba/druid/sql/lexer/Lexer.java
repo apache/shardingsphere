@@ -77,6 +77,17 @@ public class Lexer {
     }
     
     /**
+     * 直接跳转至传入的语言符号.
+     *
+     * @param token 跳转至的语言符号
+     */
+    public final void skipUntil(final Token token) {
+        while (this.token != token && this.token != Token.EOF) {
+            nextToken();
+        }
+    }
+    
+    /**
      * 跳过小括号内所有的语言符号.
      */
     // TODO 返回跳过的内容

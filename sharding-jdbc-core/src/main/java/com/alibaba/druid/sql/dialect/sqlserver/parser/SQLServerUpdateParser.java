@@ -1,6 +1,5 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -21,13 +20,5 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     @Override
     protected void skipBetweenUpdateAndTable() {
         ((SQLServerExprParser) getExprParser()).parseTop();
-    }
-    
-    @Override
-    protected void parseBetweenSetAndWhere() {
-        ((SQLServerExprParser) getExprParser()).skipOutput();
-        if (getLexer().skipIfEqual(Token.FROM)) {
-            getExprParser().createSelectParser(getShardingRule(), getParameters()).parseTableSource();
-        }
     }
 }

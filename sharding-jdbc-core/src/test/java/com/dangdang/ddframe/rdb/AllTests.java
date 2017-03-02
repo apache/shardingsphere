@@ -48,7 +48,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllUtilTests.class, 
         AllMetricsTests.class, 
         AllIntegrateTests.class, 
-        AllIdGeneratorTest.class
+        AllIdGeneratorTest.class,
+        com.alibaba.druid.sql.AllParserTests.class
     })
 public class AllTests {
 }
