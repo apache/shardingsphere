@@ -106,7 +106,7 @@ public class ParserUtil {
         SQLExpr right = getSqlExprWithVariant();
         // TODO 如果有多表,且找不到cloumn是哪个表的,则不加入condition,以后需要解析binding table
         if (1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) {
-            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), exprParser.getDbType(), parameters);
+            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
         }
     }
     
@@ -120,7 +120,7 @@ public class ParserUtil {
             }
             rights.add(getSqlExprWithVariant());
         } while (!exprParser.getLexer().equalToken(Token.RIGHT_PAREN));
-        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, exprParser.getDbType(), parameters);
+        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, parameters);
         exprParser.getLexer().nextToken();
     }
     
@@ -130,7 +130,7 @@ public class ParserUtil {
         rights.add(getSqlExprWithVariant());
         exprParser.getLexer().accept(Token.AND);
         rights.add(getSqlExprWithVariant());
-        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, exprParser.getDbType(), parameters);
+        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, parameters);
     }
     
     private void parserOtherCondition() {

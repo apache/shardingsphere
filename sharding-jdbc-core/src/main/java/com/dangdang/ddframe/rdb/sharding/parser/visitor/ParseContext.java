@@ -22,13 +22,14 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.expr.SQLTextLiteralExpr;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
-import com.alibaba.druid.sql.visitor.SQLEvalVisitor;
-import com.alibaba.druid.sql.visitor.SQLEvalVisitorUtils;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -57,6 +58,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -151,10 +153,9 @@ public final class ParseContext {
      * @param expr SQL表达式
      * @param operator 操作符
      * @param valueExprList 值对象表达式集合
-     * @param dbType 数据库类型
      * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final String dbType, final List<Object> parameters) {
+    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final List<Object> parameters) {
         Optional<Column> column = getColumn(expr);
         if (!column.isPresent()) {
             return;
@@ -164,7 +165,7 @@ public final class ParseContext {
         }
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
         for (SQLExpr each : valueExprList) {
-            ValuePair evalValue = evalExpression(dbType, each, parameters);
+            ValuePair evalValue = evalExpression(each, parameters);
             if (null != evalValue) {
                 values.add(evalValue);
             }
@@ -182,15 +183,14 @@ public final class ParseContext {
      * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
-     * @param dbType 数据库类型
      * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final String dbType, final List<Object> parameters) {
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final List<Object> parameters) {
         Column column = createColumn(columnName, tableName);
         if (notShardingColumns(column)) {
             return; 
         }
-        ValuePair value = evalExpression(dbType, valueExpr, parameters);
+        ValuePair value = evalExpression(valueExpr, parameters);
         if (null != value) {
             addCondition(column, operator, Collections.singletonList(value));
         }
@@ -221,40 +221,30 @@ public final class ParseContext {
         return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
-    private ValuePair evalExpression(final String dbType, final SQLObject sqlObject, final List<Object> parameters) {
+    private ValuePair evalExpression(final SQLObject sqlObject, final List<Object> parameters) {
         if (sqlObject instanceof SQLMethodInvokeExpr) {
             // TODO 解析函数中的sharingValue不支持
             return null;
         }
-        SQLEvalVisitor visitor;
-        switch (dbType) {
-            case JdbcConstants.MYSQL:
-            case JdbcConstants.H2: 
-                visitor = new MySQLEvalVisitor();
-                break;
-            default: 
-                visitor = SQLEvalVisitorUtils.createEvalVisitor(dbType);
+        if (sqlObject instanceof SQLVariantRefExpr) {
+            SQLVariantRefExpr x = (SQLVariantRefExpr) sqlObject;
+            Map<String, Object> attributes = x.getAttributes();
+            if ("?".equals(x.getName()) && -1 != x.getIndex() && x.getIndex() - 1 < parameters.size()) {
+                Comparable value = null == attributes.get(MySQLEvalVisitor.EVAL_VALUE) ? "" : (Comparable) attributes.get(MySQLEvalVisitor.EVAL_VALUE);
+                int index = null == attributes.get(MySQLEvalVisitor.EVAL_VAR_INDEX) ? -1 : (int) attributes.get(MySQLEvalVisitor.EVAL_VAR_INDEX);
+                return new ValuePair(value, index);
+            }
         }
-        visitor.setParameters(parameters);
-        sqlObject.accept(visitor);
-        
-        Object value = SQLEvalVisitorUtils.getValue(sqlObject);
-        if (null == value) {
-            // TODO 对于NULL目前解析为空字符串,此处待考虑解决方法
-            return null;
+        if (sqlObject instanceof SQLTextLiteralExpr) {
+            return new ValuePair(((SQLTextLiteralExpr) sqlObject).getText(), -1);
         }
-        
-        Comparable<?> finalValue;
-        if (value instanceof Comparable<?>) {
-            finalValue = (Comparable<?>) value;
-        } else {
-            finalValue = "";
+        if (sqlObject instanceof SQLNumericLiteralExpr) {
+            return new ValuePair((Comparable) ((SQLNumericLiteralExpr) sqlObject).getNumber(), -1);
         }
-        Integer index = (Integer) sqlObject.getAttribute(MySQLEvalVisitor.EVAL_VAR_INDEX);
-        if (null == index) {
-            index = -1;
+        if (sqlObject instanceof SQLNullExpr) {
+            return new ValuePair("", -1);
         }
-        return new ValuePair(finalValue, index);
+        return null;
     }
     
     private Optional<Column> getColumn(final SQLExpr expr) {

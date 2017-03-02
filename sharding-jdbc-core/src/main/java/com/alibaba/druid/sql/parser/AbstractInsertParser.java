@@ -180,6 +180,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             List<SQLExpr> sqlExprs = getExprParser().exprList(new SQLIdentifierExpr(""));
             ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
             int count = 0;
+            int parameterCount = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {
                     Number autoIncrementedValue = (Number) parseContext.getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
@@ -197,8 +198,12 @@ public abstract class AbstractInsertParser extends SQLParser {
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
+                } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
+                    sqlExprs.get(count).getAttributes().put(SQLEvalVisitor.EVAL_VALUE, parameters.get(parameterCount));
+                    sqlExprs.get(count).getAttributes().put(MySQLEvalVisitor.EVAL_VAR_INDEX, parameterCount);
+                    parameterCount++;
                 }
-                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), exprParser.getDbType(), parameters);
+                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), parameters);
                 count++;
             }
             if (!itemsToken.getItems().isEmpty()) {
@@ -210,12 +215,6 @@ public abstract class AbstractInsertParser extends SQLParser {
         while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
-    
-//    private void parseSelect(final AbstractSQLInsertStatement sqlInsertStatement) {
-//        SQLSelect select = exprParser.createSelectParser().select();
-//        select.setParent(sqlInsertStatement);
-//        sqlInsertStatement.setQuery(select);
-//    }
     
     protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
     }
