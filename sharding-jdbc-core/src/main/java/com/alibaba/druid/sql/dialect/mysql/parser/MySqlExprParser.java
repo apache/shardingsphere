@@ -51,8 +51,6 @@ import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MySqlExprParser extends SQLExprParser {
@@ -64,19 +62,10 @@ public class MySqlExprParser extends SQLExprParser {
         getLexer().nextToken();
     }
     
-    public final List<String> parsePartition() {
-        if (!getLexer().equalToken(Token.PARTITION)) {
-            return Collections.emptyList();
+    public final void skipPartition() {
+        if (getLexer().skipIfEqual(Token.PARTITION)) {
+            getLexer().skipParentheses();
         }
-        List<String> result = new LinkedList<>();
-        getLexer().accept(Token.PARTITION);
-        getLexer().accept(Token.LEFT_PAREN);
-        do {
-            result.add(getLexer().getLiterals());
-            getLexer().nextToken();
-        } while (getLexer().skipIfEqual(Token.COMMA));
-        getLexer().accept(Token.RIGHT_PAREN);
-        return result;
     }
     
     public SQLExpr relationalRest(SQLExpr expr) {

@@ -27,7 +27,7 @@ public final class MySQLDeleteParser extends AbstractDeleteParser {
     }
     
     @Override
-    protected void parseBetweenTableAndWhere() {
-        ((MySqlExprParser) getExprParser()).parsePartition();
+    protected void skipBetweenTableAndWhere() {
+        ((MySqlExprParser) getExprParser()).skipPartition();
     }
 }

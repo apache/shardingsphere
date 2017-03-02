@@ -18,7 +18,6 @@
 package com.alibaba.druid.sql.context;
 
 import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +29,6 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 public class TableContext {
     
     private final String originalLiterals;

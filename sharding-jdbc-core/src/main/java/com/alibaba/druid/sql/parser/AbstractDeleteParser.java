@@ -44,7 +44,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
         skipBetweenDeleteAndTable();
         TableContext table = parseTable(result);
         if (!getLexer().equalToken(Token.EOF)) {
-            parseBetweenTableAndWhere();
+            skipBetweenTableAndWhere();
             Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, table, result, 0).parseWhere();
             if (conditionContext.isPresent()) {
                 result.getConditionContexts().add(conditionContext.get());
@@ -53,9 +53,15 @@ public abstract class AbstractDeleteParser extends SQLParser {
         return result;
     }
     
+    protected abstract void skipBetweenDeleteAndTable();
+    
     private TableContext parseTable(final DeleteSQLContext deleteSQLContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
+        }
+        boolean isOnly = getLexer().skipIfEqual(Token.ONLY);
+        if (isOnly) {
+            getLexer().accept(Token.LEFT_PAREN);
         }
         TableContext result;
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
@@ -64,11 +70,9 @@ public abstract class AbstractDeleteParser extends SQLParser {
         if (getLexer().skipIfEqual(Token.DOT)) {
             String tableName = getLexer().getLiterals();
             getLexer().nextToken();
-            String alias = as();
-            result = new TableContext(tableName, SQLUtil.getExactlyValue(tableName), Optional.fromNullable(alias));
+            result = getTableContext(isOnly, tableName);
         } else {
-            String alias = as();
-            result = new TableContext(literals, SQLUtil.getExactlyValue(literals), Optional.fromNullable(alias));
+            result = getTableContext(isOnly, literals);
         }
         if (isJoin()) {
             throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
@@ -78,7 +82,16 @@ public abstract class AbstractDeleteParser extends SQLParser {
         return result;
     }
     
-    protected abstract void skipBetweenDeleteAndTable();
+    private TableContext getTableContext(final boolean isOnly, final String literals) {
+        final TableContext result;
+        if (isOnly) {
+            getLexer().accept(Token.RIGHT_PAREN);
+        }
+        String alias = as();
+        result = new TableContext(literals, SQLUtil.getExactlyValue(literals), Optional.fromNullable(alias));
+        return result;
+    }
     
-    protected abstract void parseBetweenTableAndWhere();
+    protected void skipBetweenTableAndWhere() {
+    }
 }
