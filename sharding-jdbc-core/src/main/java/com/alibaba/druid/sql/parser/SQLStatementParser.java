@@ -32,14 +32,17 @@ import java.util.List;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLStatementParser extends SQLParser {
     
+    private final String dbType;
+    
     private final ShardingRule shardingRule;
     
     private final List<Object> parameters;
     
     private final SQLExprParser exprParser;
     
-    public SQLStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer(), exprParser.getDbType());
+    public SQLStatementParser(final String dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+        super(exprParser.getLexer());
+        this.dbType = dbType;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.exprParser = exprParser;
@@ -61,13 +64,13 @@ public abstract class SQLStatementParser extends SQLParser {
             return createSQLSelectParser(shardingRule, parameters).select();
         }
         if (getLexer().equalToken(Token.INSERT)) {
-            return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
+            return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
         if (getLexer().equalToken(Token.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
+            return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
         if (getLexer().equalToken(Token.DELETE)) {
-            return SQLDeleteParserFactory.newInstance(shardingRule, parameters, exprParser, getDbType()).parse();
+            return SQLDeleteParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
         throw new ParserUnsupportedException(getLexer().getToken());
     }

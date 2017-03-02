@@ -39,7 +39,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     private final List<Object> parameters;
     
     public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer(), exprParser.getDbType());
+        super(exprParser.getLexer());
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
@@ -75,7 +75,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             getLexer().nextToken();
         }
         if (getUnsupportedIdentifiers().contains(getLexer().getLiterals())) {
-            throw new UnsupportedOperationException(String.format("Cannot support %s for %s.", getLexer().getLiterals(), getDbType()));
+            throw new UnsupportedOperationException(String.format("Cannot support %s.", getLexer().getLiterals()));
         }
         parseBetweenInsertAndInfo();
         getLexer().accept(Token.INTO);

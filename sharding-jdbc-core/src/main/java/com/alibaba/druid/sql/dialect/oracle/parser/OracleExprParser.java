@@ -61,7 +61,6 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.math.BigInteger;
@@ -75,7 +74,7 @@ public class OracleExprParser extends SQLExprParser {
             "ROW_NUMBER", "STDDEV", "STDDEV_POP", "STDDEV_SAMP", "VAR_POP", "VAR_SAMP", "VARIANCE", "WM_CONCAT"};
     
     public OracleExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new OracleLexer(sql), JdbcConstants.ORACLE, AGGREGATE_FUNCTIONS);
+        super(shardingRule, parameters, new OracleLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
@@ -799,14 +798,14 @@ public class OracleExprParser extends SQLExprParser {
             if (getLexer().equalToken(Token.NOT)) {
                 getLexer().nextToken();
                 SQLExpr rightExpr = primary();
-                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.IsNot, rightExpr, getDbType());
+                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.IsNot, rightExpr);
             } else if (getLexer().identifierEquals("A")) {
                 getLexer().nextToken();
                 getLexer().accept(Token.SET);
                 expr = new OracleIsSetExpr(expr);
             } else {
                 SQLExpr rightExpr = primary();
-                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Is, rightExpr, getDbType());
+                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Is, rightExpr);
             }
             
             return expr;
@@ -846,12 +845,12 @@ public class OracleExprParser extends SQLExprParser {
             }
             rightExp = shift();
             rightExp = equalityRest(rightExp);
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp, getDbType());
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp);
         } else if (getLexer().equalToken(Token.BANG_EQ)) {
             getLexer().nextToken();
             rightExp = shift();
             rightExp = equalityRest(rightExp);
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotEqual, rightExp, getDbType());
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotEqual, rightExp);
         }
         return expr;
     }
@@ -862,7 +861,7 @@ public class OracleExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.COLON_EQ)) {
             getLexer().nextToken();
             SQLExpr right = expr();
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Assignment, right, getDbType());
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Assignment, right);
         }
         
         return expr;

@@ -18,6 +18,7 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
 public class SQLServerStatementParser extends SQLStatementParser {
     
     public SQLServerStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new SQLServerExprParser(shardingRule, parameters, sql));
+        super(JdbcConstants.SQL_SERVER, shardingRule, parameters, new SQLServerExprParser(shardingRule, parameters, sql));
     }
     
     @Override

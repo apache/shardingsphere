@@ -48,7 +48,6 @@ import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
@@ -61,7 +60,7 @@ public class MySqlExprParser extends SQLExprParser {
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "GROUP_CONCAT"};
     
     public MySqlExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new MySqlLexer(sql), JdbcConstants.MYSQL, AGGREGATE_FUNCTIONS);
+        super(shardingRule, parameters, new MySqlLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
@@ -87,7 +86,7 @@ public class MySqlExprParser extends SQLExprParser {
 
             rightExp = relationalRest(rightExp);
 
-            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.RegExp, rightExp, JdbcConstants.MYSQL);
+            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.RegExp, rightExp);
         }
 
         return super.relationalRest(expr);
@@ -100,7 +99,7 @@ public class MySqlExprParser extends SQLExprParser {
 
             rightExp = relationalRest(rightExp);
 
-            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.Modulus, rightExp, JdbcConstants.MYSQL);
+            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.Modulus, rightExp);
         }
 
         return super.multiplicativeRest(expr);
@@ -113,7 +112,7 @@ public class MySqlExprParser extends SQLExprParser {
 
             rightExp = relationalRest(rightExp);
 
-            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotRegExp, rightExp, JdbcConstants.MYSQL);
+            return new SQLBinaryOpExpr(expr, SQLBinaryOperator.NotRegExp, rightExp);
         }
 
         return super.notRationalRest(expr);
@@ -247,7 +246,7 @@ public class MySqlExprParser extends SQLExprParser {
                 }
                 String collate = getLexer().getLiterals();
                 getLexer().nextToken();
-                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.COLLATE, new SQLIdentifierExpr(collate), JdbcConstants.MYSQL);
+                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.COLLATE, new SQLIdentifierExpr(collate));
                 return primaryRest(expr);
             } else if (expr instanceof SQLVariantRefExpr) {
                 if ("COLLATE".equalsIgnoreCase(getLexer().getLiterals())) {
@@ -526,12 +525,12 @@ public class MySqlExprParser extends SQLExprParser {
                 getLexer().nextToken();
                 SQLExpr rightExp = and();
 
-                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BooleanOr, rightExp, JdbcConstants.MYSQL);
+                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BooleanOr, rightExp);
             } else if (getLexer().equalToken(Token.XOR)) {
                 getLexer().nextToken();
                 SQLExpr rightExp = and();
 
-                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BooleanXor, rightExp, JdbcConstants.MYSQL);
+                expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.BooleanXor, rightExp);
             } else {
                 break;
             }
@@ -545,12 +544,12 @@ public class MySqlExprParser extends SQLExprParser {
             getLexer().nextToken();
             SQLExpr rightExp = multiplicativeRest(bitXorRest(primary()));
 
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Add, rightExp, JdbcConstants.MYSQL);
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Add, rightExp);
             expr = additiveRest(expr);
         } else if (getLexer().equalToken(Token.SUB)) {
             getLexer().nextToken();
             SQLExpr rightExp = multiplicativeRest(bitXorRest(primary()));
-            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Subtract, rightExp, JdbcConstants.MYSQL);
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Subtract, rightExp);
             expr = additiveRest(expr);
         }
 

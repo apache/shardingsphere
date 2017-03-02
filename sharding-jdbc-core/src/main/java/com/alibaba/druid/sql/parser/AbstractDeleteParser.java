@@ -26,7 +26,7 @@ public abstract class AbstractDeleteParser extends SQLParser {
     private final List<Object> parameters;
     
     public AbstractDeleteParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer(), exprParser.getDbType());
+        super(exprParser.getLexer());
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;

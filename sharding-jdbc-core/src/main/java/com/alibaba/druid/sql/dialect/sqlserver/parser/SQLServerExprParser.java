@@ -24,7 +24,6 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReference
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -34,12 +33,12 @@ public class SQLServerExprParser extends SQLExprParser {
     private static final String[] AGGREGATE_FUNCTIONS = {"MAX", "MIN", "COUNT", "SUM", "AVG", "STDDEV", "ROW_NUMBER"};
     
     public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new SQLServerLexer(sql), JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
+        super(shardingRule, parameters, new SQLServerLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
     }
     
     public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
-        super(shardingRule, parameters, lexer, JdbcConstants.SQL_SERVER, AGGREGATE_FUNCTIONS);
+        super(shardingRule, parameters, lexer, AGGREGATE_FUNCTIONS);
     }
     
     public SQLServerTop parseTop() {

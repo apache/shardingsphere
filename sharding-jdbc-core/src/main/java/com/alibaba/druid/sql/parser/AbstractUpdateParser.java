@@ -36,7 +36,7 @@ public abstract class AbstractUpdateParser extends SQLParser {
     private int parametersIndex;
     
     public AbstractUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer(), exprParser.getDbType());
+        super(exprParser.getLexer());
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;

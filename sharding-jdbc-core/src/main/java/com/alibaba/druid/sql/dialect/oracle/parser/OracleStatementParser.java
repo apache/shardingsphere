@@ -17,6 +17,7 @@
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 public class OracleStatementParser extends SQLStatementParser {
     
     public OracleStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new OracleExprParser(shardingRule, parameters, sql));
+        super(JdbcConstants.ORACLE, shardingRule, parameters, new OracleExprParser(shardingRule, parameters, sql));
     }
     
     @Override

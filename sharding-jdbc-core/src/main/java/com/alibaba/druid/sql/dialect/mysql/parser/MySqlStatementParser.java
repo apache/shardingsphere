@@ -18,6 +18,7 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
 public class MySqlStatementParser extends SQLStatementParser {
     
     public MySqlStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, sql));
+        super(JdbcConstants.MYSQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, sql));
     }
     
     @Override

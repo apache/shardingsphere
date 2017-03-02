@@ -17,6 +17,7 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 public class PGSQLStatementParser extends SQLStatementParser {
     
     public PGSQLStatementParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new PGExprParser(shardingRule, parameters, sql));
+        super(JdbcConstants.POSTGRESQL, shardingRule, parameters, new PGExprParser(shardingRule, parameters, sql));
     }
     
     @Override

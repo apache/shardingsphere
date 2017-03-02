@@ -30,16 +30,8 @@ public class SQLParser {
     @Getter
     private final Lexer lexer;
     
-    @Getter
-    private String dbType;
-    
     public SQLParser(final Lexer lexer) {
-        this(lexer, null);
-    }
-    
-    public SQLParser(final Lexer lexer, final String dbType) {
         this.lexer = lexer;
-        this.dbType = dbType;
     }
     
     protected String as() {

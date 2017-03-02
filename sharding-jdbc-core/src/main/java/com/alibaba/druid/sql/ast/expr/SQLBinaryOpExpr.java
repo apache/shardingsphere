@@ -35,12 +35,10 @@ public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
     
     private SQLBinaryOperator operator;
     
-    private String dbType;
-    
     @Setter
     private int rightStartPosition;
     
-    public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right, final String dbType) {
+    public SQLBinaryOpExpr(final SQLExpr left, final SQLBinaryOperator operator, final SQLExpr right) {
         if (null != left) {
             left.setParent(this);
         }
@@ -50,6 +48,5 @@ public class SQLBinaryOpExpr extends SQLExprImpl implements Serializable {
         }
         this.right = right;
         this.operator = operator;
-        this.dbType = dbType;
     }
 }
