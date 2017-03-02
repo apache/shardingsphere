@@ -27,11 +27,4 @@ import java.util.List;
 public class SQLOrderBy extends SQLObjectImpl {
     
     private final List<SQLSelectOrderByItem> items = new ArrayList<>();
-    
-    public void addItem(final SQLSelectOrderByItem item) {
-        if (null != item) {
-            item.setParent(this);
-        }
-        items.add(item);
-    }
 }

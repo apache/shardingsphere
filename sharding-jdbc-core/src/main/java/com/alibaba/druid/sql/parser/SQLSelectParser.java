@@ -23,7 +23,6 @@ import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
@@ -132,16 +131,6 @@ public class SQLSelectParser extends SQLParser {
         if (getLexer().equalToken(Token.UNION) || getLexer().equalToken(Token.EXCEPT) || getLexer().equalToken(Token.INTERSECT) || getLexer().equalToken(Token.MINUS)) {
             throw new ParserUnsupportedException(getLexer().getToken());
         }
-    }
-    
-    public SQLUnionQuery unionRest(final SQLUnionQuery union) {
-        // TODO 确定是否要删除union
-//        if (getLexer().equalToken(Token.ORDER)) {
-//            SQLOrderBy orderBy = exprParser.parseOrderBy();
-//            union.setOrderBy(orderBy);
-//            return unionRest(union);
-//        }
-        return union;
     }
     
     protected final void parseWhere() {

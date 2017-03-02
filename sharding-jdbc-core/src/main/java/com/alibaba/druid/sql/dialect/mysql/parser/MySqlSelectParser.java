@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -116,14 +115,5 @@ public class MySqlSelectParser extends SQLSelectParser {
             }
         }
         getLexer().skipParentheses();
-    }
-    
-    public SQLUnionQuery unionRest(final SQLUnionQuery union) {
-        // TODO union先不处理
-//        if (getLexer().equalToken(Token.LIMIT)) {
-//            MySqlUnionQuery mysqlUnionQuery = (MySqlUnionQuery) union;
-//            mysqlUnionQuery.setLimit(parseLimit());
-//        }
-        return super.unionRest(union);
     }
 }

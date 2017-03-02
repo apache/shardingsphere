@@ -2,7 +2,6 @@ package com.alibaba.druid.sql.context;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * 分页上下文.
@@ -10,8 +9,6 @@ import lombok.ToString;
  * @author zhangliang
  */
 @Getter
-// TODO remove @ToString
-@ToString
 public final class LimitContext {
     
     private final int rowCount;

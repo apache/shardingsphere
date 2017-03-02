@@ -2,7 +2,6 @@ package com.alibaba.druid.sql.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * Select Item上下文.
@@ -11,8 +10,6 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-// TODO remove @ToString
-@ToString
 public final class CommonSelectItemContext implements SelectItemContext {
     
     private final String expression;

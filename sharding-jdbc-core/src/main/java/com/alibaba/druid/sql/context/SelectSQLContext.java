@@ -3,7 +3,6 @@ package com.alibaba.druid.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +14,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-// TODO remove @ToString
-@ToString(callSuper = true)
 public final class SelectSQLContext extends AbstractSQLContext {
     
     private boolean distinct;

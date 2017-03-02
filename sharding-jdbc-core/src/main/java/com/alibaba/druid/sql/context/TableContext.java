@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * 表上下文.
@@ -32,7 +31,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-@ToString
 public class TableContext {
     
     private final String originalLiterals;
@@ -40,8 +38,4 @@ public class TableContext {
     private final String name;
     
     private final Optional<String> alias;
-    
-    public TableContext(final String name, final String alias) {
-        this(name, name, Optional.fromNullable(alias));
-    }
 }

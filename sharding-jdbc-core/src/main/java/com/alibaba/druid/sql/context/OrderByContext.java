@@ -3,7 +3,6 @@ package com.alibaba.druid.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * 排序上下文.
@@ -11,8 +10,6 @@ import lombok.ToString;
  * @author zhangliang
  */
 @Getter
-// TODO remove @ToString
-@ToString
 public final class OrderByContext {
     
     private final Optional<String> owner;
