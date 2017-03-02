@@ -28,7 +28,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class MySqlMatchAgainstExpr extends SQLExprImpl implements MySqlExpr {
+public class MySqlMatchAgainstExpr extends SQLExprImpl implements SQLExpr {
     
     private final List<SQLExpr> columns = new ArrayList<>();
 

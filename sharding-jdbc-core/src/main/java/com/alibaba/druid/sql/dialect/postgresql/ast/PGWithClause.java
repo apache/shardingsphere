@@ -15,12 +15,13 @@
  */
 package com.alibaba.druid.sql.dialect.postgresql.ast;
 
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class PGWithClause extends PGSQLObjectImpl {
+public class PGWithClause extends SQLObjectImpl {
     
     private boolean recursive;
 }

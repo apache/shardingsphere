@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class OracleIsSetExpr extends SQLExprImpl implements OracleExpr {
+public class OracleIsSetExpr extends SQLExprImpl implements SQLExpr {
     
     private final SQLExpr nestedTable;
     

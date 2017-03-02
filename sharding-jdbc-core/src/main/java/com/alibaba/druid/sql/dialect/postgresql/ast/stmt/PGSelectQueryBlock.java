@@ -19,8 +19,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObject;
-import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObjectImpl;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGWithClause;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,7 +60,7 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
     
     @Getter
     @Setter
-    public static class WindowClause extends PGSQLObjectImpl {
+    public static class WindowClause extends SQLObjectImpl {
         
         private SQLExpr name;
         
@@ -70,7 +68,7 @@ public class PGSelectQueryBlock extends SQLSelectQueryBlock {
     }
     
     @Getter
-    public static class PGLimit extends SQLObjectImpl implements SQLExpr, PGSQLObject {
+    public static class PGLimit extends SQLObjectImpl implements SQLExpr {
         
         private SQLExpr rowCount;
         

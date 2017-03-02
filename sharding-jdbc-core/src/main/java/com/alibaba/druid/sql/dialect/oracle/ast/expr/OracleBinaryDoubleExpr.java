@@ -15,6 +15,7 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class OracleBinaryDoubleExpr extends SQLNumericLiteralExpr implements OracleExpr {
+public class OracleBinaryDoubleExpr extends SQLNumericLiteralExpr implements SQLExpr {
     
     private final Double value;
     

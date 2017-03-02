@@ -17,6 +17,6 @@ package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
 import com.alibaba.druid.sql.ast.expr.SQLCastExpr;
 
-public class PGTypeCastExpr extends SQLCastExpr implements PGExpr {
+public class PGTypeCastExpr extends SQLCastExpr {
     
 }

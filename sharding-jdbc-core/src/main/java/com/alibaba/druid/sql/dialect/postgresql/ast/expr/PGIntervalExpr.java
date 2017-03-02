@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class PGIntervalExpr extends SQLExprImpl implements SQLLiteralExpr, PGExpr {
+public class PGIntervalExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     private SQLExpr value;
     

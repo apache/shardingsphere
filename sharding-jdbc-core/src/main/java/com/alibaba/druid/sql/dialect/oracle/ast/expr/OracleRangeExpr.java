@@ -16,13 +16,13 @@
 package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class OracleRangeExpr extends OracleSQLObjectImpl implements SQLExpr {
+public class OracleRangeExpr extends SQLObjectImpl implements SQLExpr {
     
     private final SQLExpr lowBound;
     

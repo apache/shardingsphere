@@ -15,19 +15,20 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MySqlCharExpr extends SQLCharExpr implements MySqlExpr {
+public class MySqlCharExpr extends SQLCharExpr implements SQLExpr {
     
     private String charset;
     
     private String collate;
     
-    public MySqlCharExpr(final String text){
+    public MySqlCharExpr(final String text) {
         super(text);
     }
     

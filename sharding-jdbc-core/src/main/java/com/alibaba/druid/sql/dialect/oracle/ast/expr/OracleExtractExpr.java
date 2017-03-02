@@ -24,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class OracleExtractExpr extends SQLExprImpl implements OracleExpr {
+public class OracleExtractExpr extends SQLExprImpl implements SQLExpr {
     
     private OracleDateTimeUnit unit;
     

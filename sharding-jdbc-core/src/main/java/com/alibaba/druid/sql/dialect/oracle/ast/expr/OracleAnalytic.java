@@ -15,13 +15,14 @@
  */
 package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOver;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class OracleAnalytic extends SQLOver implements OracleExpr {
+public class OracleAnalytic extends SQLOver implements SQLExpr {
     
     private OracleAnalyticWindowing windowing;
     

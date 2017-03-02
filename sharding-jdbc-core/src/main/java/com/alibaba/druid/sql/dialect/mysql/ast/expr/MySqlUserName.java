@@ -15,13 +15,14 @@
  */
 package com.alibaba.druid.sql.dialect.mysql.ast.expr;
 
+import com.alibaba.druid.sql.ast.SQLExprImpl;
 import com.alibaba.druid.sql.ast.SQLName;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MySqlUserName extends MySqlExprImpl implements SQLName {
+public class MySqlUserName extends SQLExprImpl implements SQLName {
     
     private String userName;
     

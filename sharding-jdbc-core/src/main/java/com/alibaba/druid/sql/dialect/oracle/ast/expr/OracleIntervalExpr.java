@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class OracleIntervalExpr extends SQLExprImpl implements SQLLiteralExpr, OracleExpr {
+public class OracleIntervalExpr extends SQLExprImpl implements SQLLiteralExpr, SQLExpr {
     
     private SQLExpr value;
     

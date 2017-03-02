@@ -16,12 +16,13 @@
 package com.alibaba.druid.sql.dialect.sqlserver.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerTop extends SQLServerObjectImpl {
+public class SQLServerTop extends SQLObjectImpl {
     
     private SQLExpr expr;
     

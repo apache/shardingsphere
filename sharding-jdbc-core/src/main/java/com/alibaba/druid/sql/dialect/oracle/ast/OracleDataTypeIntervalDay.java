@@ -22,7 +22,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OracleDataTypeIntervalDay extends SQLDataTypeImpl implements OracleSQLObject {
+public class OracleDataTypeIntervalDay extends SQLDataTypeImpl {
     
     @Getter
     private final List<SQLExpr> fractionalSeconds;

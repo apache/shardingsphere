@@ -16,13 +16,13 @@
 package com.alibaba.druid.sql.dialect.oracle.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObjectImpl;
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class OracleSysdateExpr extends OracleSQLObjectImpl implements SQLExpr {
+public class OracleSysdateExpr extends SQLObjectImpl implements SQLExpr {
     
     private String option;
     

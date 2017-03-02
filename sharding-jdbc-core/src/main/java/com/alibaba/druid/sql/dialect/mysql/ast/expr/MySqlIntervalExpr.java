@@ -24,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class MySqlIntervalExpr extends SQLExprImpl implements MySqlExpr {
+public class MySqlIntervalExpr extends SQLExprImpl implements SQLExpr {
     
     private SQLExpr value;
     

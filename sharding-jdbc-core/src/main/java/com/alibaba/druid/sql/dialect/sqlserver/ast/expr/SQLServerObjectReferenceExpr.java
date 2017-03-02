@@ -17,15 +17,15 @@ package com.alibaba.druid.sql.dialect.sqlserver.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
+import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerObjectImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerObjectReferenceExpr extends SQLServerObjectImpl implements SQLServerExpr, SQLName {
+public class SQLServerObjectReferenceExpr extends SQLObjectImpl implements SQLName {
     
     private String server;
     

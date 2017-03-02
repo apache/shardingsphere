@@ -17,7 +17,7 @@ package com.alibaba.druid.sql.dialect.oracle.ast;
 
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 
-public class OracleDataTypeIntervalYear extends SQLDataTypeImpl implements OracleSQLObject {
+public class OracleDataTypeIntervalYear extends SQLDataTypeImpl {
     
     public OracleDataTypeIntervalYear() {
         super("INTERVAL YEAR");

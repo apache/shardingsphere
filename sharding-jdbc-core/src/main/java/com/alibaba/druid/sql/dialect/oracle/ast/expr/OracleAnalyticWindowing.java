@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OracleAnalyticWindowing extends SQLObjectImpl implements OracleExpr {
+public class OracleAnalyticWindowing extends SQLObjectImpl implements SQLExpr {
     
     private Type type;
     

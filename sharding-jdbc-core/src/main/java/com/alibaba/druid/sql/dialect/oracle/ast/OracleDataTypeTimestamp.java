@@ -21,7 +21,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OracleDataTypeTimestamp extends SQLDataTypeImpl implements OracleSQLObject {
+public class OracleDataTypeTimestamp extends SQLDataTypeImpl {
     
     private boolean withTimeZone;
     

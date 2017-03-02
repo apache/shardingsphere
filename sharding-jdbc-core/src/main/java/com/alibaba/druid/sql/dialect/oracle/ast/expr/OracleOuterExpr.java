@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class OracleOuterExpr extends SQLExprImpl implements OracleExpr {
+public class OracleOuterExpr extends SQLExprImpl implements SQLExpr {
     
     private final SQLExpr expr;
     

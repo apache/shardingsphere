@@ -21,7 +21,6 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObjectImpl;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class MySqlSelectQueryBlock extends SQLSelectQueryBlock implements MySqlObject {
+public class MySqlSelectQueryBlock extends SQLSelectQueryBlock {
     
     private SQLOrderBy orderBy;
     

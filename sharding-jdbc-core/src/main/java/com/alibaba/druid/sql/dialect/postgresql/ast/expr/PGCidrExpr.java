@@ -16,12 +16,13 @@
 package com.alibaba.druid.sql.dialect.postgresql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class PGCidrExpr extends PGExprImpl {
+public class PGCidrExpr extends SQLExprImpl {
     
     private final SQLExpr value;
 }
