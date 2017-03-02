@@ -18,7 +18,6 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.context.SelectSQLContext;
@@ -354,7 +353,7 @@ public class OracleSelectParser extends SQLSelectParser {
     @Override
     protected void parseJoinTable() {
         getLexer().skipIfEqual(Token.HINT);
-        if (parseJoinType()) {
+        if (isJoin()) {
             parseTableSource();
             if (getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();

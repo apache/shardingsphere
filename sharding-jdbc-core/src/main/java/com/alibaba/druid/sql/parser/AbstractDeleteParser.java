@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
@@ -38,9 +39,9 @@ public abstract class AbstractDeleteParser extends SQLParser {
      * @return 解析结果
      */
     public DeleteSQLContext parse() {
-        getLexer().nextToken();
-        parseBetweenDeleteAndTable();
         DeleteSQLContext result = new DeleteSQLContext(getLexer().getInput());
+        getLexer().nextToken();
+        skipBetweenDeleteAndTable();
         TableContext table = parseTable(result);
         if (!getLexer().equalToken(Token.EOF)) {
             parseBetweenTableAndWhere();
@@ -53,18 +54,31 @@ public abstract class AbstractDeleteParser extends SQLParser {
     }
     
     private TableContext parseTable(final DeleteSQLContext deleteSQLContext) {
+        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+            throw new UnsupportedOperationException("Cannot support subquery");
+        }
+        TableContext result;
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        List<TableContext> tables = new SQLSelectParser(shardingRule, parameters, exprParser).parseTableSource();
-        if (1 != tables.size()) {
+        String literals = getLexer().getLiterals();
+        getLexer().nextToken();
+        if (getLexer().skipIfEqual(Token.DOT)) {
+            String tableName = getLexer().getLiterals();
+            getLexer().nextToken();
+            String alias = as();
+            result = new TableContext(tableName, SQLUtil.getExactlyValue(tableName), Optional.fromNullable(alias));
+        } else {
+            String alias = as();
+            result = new TableContext(literals, SQLUtil.getExactlyValue(literals), Optional.fromNullable(alias));
+        }
+        if (isJoin()) {
             throw new UnsupportedOperationException("Cannot support delete Multiple-Table.");
         }
-        TableContext result = tables.get(0);
         deleteSQLContext.getSqlTokens().add(new TableToken(beginPosition, result.getOriginalLiterals(), result.getName()));
         deleteSQLContext.getTables().add(result);
         return result;
     }
     
-    protected abstract void parseBetweenDeleteAndTable();
+    protected abstract void skipBetweenDeleteAndTable();
     
     protected abstract void parseBetweenTableAndWhere();
 }

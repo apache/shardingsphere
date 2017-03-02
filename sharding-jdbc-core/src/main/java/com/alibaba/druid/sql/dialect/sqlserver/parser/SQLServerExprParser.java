@@ -23,6 +23,7 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
@@ -133,9 +134,9 @@ public class SQLServerExprParser extends SQLExprParser {
         return super.nameRest(expr);
     }
     
-    protected void parserOutput() {
+    protected void skipOutput() {
         if (getLexer().equalToken(Token.OUTPUT)) {
-            throw new UnsupportedOperationException("OUTPUT");
+            throw new ParserUnsupportedException(Token.OUTPUT);
         }
     }
 }

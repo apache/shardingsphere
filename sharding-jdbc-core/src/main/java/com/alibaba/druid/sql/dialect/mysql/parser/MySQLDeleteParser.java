@@ -19,13 +19,11 @@ public final class MySQLDeleteParser extends AbstractDeleteParser {
     }
     
     @Override
-    protected void parseBetweenDeleteAndTable() {
-        while (getLexer().equalToken(Token.LOW_PRIORITY) || getLexer().equalToken(Token.IGNORE) || getLexer().equalToken(Token.QUICK)) {
+    protected void skipBetweenDeleteAndTable() {
+        while (getLexer().equalToken(Token.LOW_PRIORITY) || getLexer().equalToken(Token.QUICK) || getLexer().equalToken(Token.IGNORE)) {
             getLexer().nextToken();
         }
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.FROM);
     }
     
     @Override

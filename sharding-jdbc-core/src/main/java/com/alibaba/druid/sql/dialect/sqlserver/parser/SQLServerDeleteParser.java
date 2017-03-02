@@ -19,12 +19,10 @@ public final class SQLServerDeleteParser extends AbstractDeleteParser {
     }
     
     @Override
-    protected void parseBetweenDeleteAndTable() {
+    protected void skipBetweenDeleteAndTable() {
         ((SQLServerExprParser) getExprParser()).parseTop();
-        ((SQLServerExprParser) getExprParser()).parserOutput();
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-        }
+        ((SQLServerExprParser) getExprParser()).skipOutput();
+        getLexer().skipIfEqual(Token.FROM);
     }
     
     @Override

@@ -52,4 +52,26 @@ public class SQLParser {
         }
         return null;
     }
+    
+    protected final boolean isJoin() {
+        if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
+            getLexer().skipIfEqual(Token.OUTER);
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.INNER)) {
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.JOIN, Token.COMMA, Token.STRAIGHT_JOIN)) {
+            return true;
+        } else if (getLexer().skipIfEqual(Token.CROSS)) {
+            if (getLexer().skipIfEqual(Token.JOIN, Token.APPLY)) {
+                return true;
+            }
+        } else if (getLexer().skipIfEqual(Token.OUTER)) {
+            if (getLexer().skipIfEqual(Token.APPLY)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

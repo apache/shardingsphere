@@ -30,26 +30,17 @@ public class OracleDeleteParser extends AbstractDeleteParser {
     }
     
     @Override
-    protected void parseBetweenDeleteAndTable() {
-        if (getLexer().equalToken(Token.HINT)) {
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.COMMENT)) {
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.ONLY)) {
-            getLexer().nextToken();
+    protected void skipBetweenDeleteAndTable() {
+        getLexer().skipIfEqual(Token.HINT);
+        getLexer().skipIfEqual(Token.FROM);
+        getLexer().skipIfEqual(Token.COMMENT);
+        if (getLexer().skipIfEqual(Token.ONLY)) {
             getLexer().accept(Token.LEFT_PAREN);
         }
     }
     
     @Override
     protected void parseBetweenTableAndWhere() {
-        if (getLexer().equalToken(Token.RIGHT_PAREN)) {
-            getLexer().nextToken();
-        }
+        getLexer().skipIfEqual(Token.RIGHT_PAREN);
     }
 }
