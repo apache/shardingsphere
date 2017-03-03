@@ -17,6 +17,7 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -33,10 +34,10 @@ public class MySqlSelectParser extends SQLSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelectQuery select = query();
+            SQLSelectQuery select = query(sqlContext);
             getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -47,21 +48,21 @@ public class MySqlSelectParser extends SQLSelectParser {
             while (getLexer().equalToken(Token.HINT) || getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-            parseDistinct();
+            parseDistinct(sqlContext);
             while (getLexer().equalToken(Token.HIGH_PRIORITY) || getLexer().equalToken(Token.STRAIGHT_JOIN) || getLexer().equalToken(Token.SQL_SMALL_RESULT)
                     || getLexer().equalToken(Token.SQL_BIG_RESULT) || getLexer().equalToken(Token.SQL_BUFFER_RESULT) || getLexer().equalToken(Token.SQL_CACHE)
                     || getLexer().equalToken(Token.SQL_NO_CACHE) || getLexer().equalToken(Token.SQL_CALC_FOUND_ROWS)) {
                 getLexer().nextToken();
             }
-            parseSelectList();
+            parseSelectList(sqlContext);
             skipToFrom();
         }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
-        getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
+        parseFrom(sqlContext);
+        parseWhere(sqlContext);
+        parseGroupBy(sqlContext);
+        sqlContext.getOrderByContexts().addAll(getExprParser().parseOrderBy());
         if (getLexer().equalToken(Token.LIMIT)) {
-            getSqlContext().setLimitContext(((MySqlExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
+            sqlContext.setLimitContext(((MySqlExprParser) getExprParser()).parseLimit(getParametersIndex(), sqlContext));
         }
         if (getLexer().equalToken(Token.PROCEDURE)) {
             throw new ParserUnsupportedException(getLexer().getToken());
@@ -77,7 +78,7 @@ public class MySqlSelectParser extends SQLSelectParser {
     }
     
     @Override
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.USING)) {
             return;
         }
@@ -93,7 +94,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             getLexer().nextToken();
             parseIndexHint();
         }
-        super.parseJoinTable();
+        super.parseJoinTable(sqlContext);
     }
 
     private void parseIndexHint() {

@@ -48,10 +48,10 @@ public class SQLServerSelectParser extends SQLSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelectQuery select = query();
+            SQLSelectQuery select = query(sqlContext);
             getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -62,28 +62,28 @@ public class SQLServerSelectParser extends SQLSelectParser {
             if (getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-            parseDistinct();
+            parseDistinct(sqlContext);
             if (getLexer().equalToken(Token.TOP)) {
                 queryBlock.setTop(new SQLServerExprParser(getShardingRule(), getParameters(), getLexer()).parseTop());
             }
-            parseSelectList();
+            parseSelectList(sqlContext);
         }
         if (getLexer().equalToken(Token.INTO)) {
             throw new ParserUnsupportedException(getLexer().getToken());
         }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
+        parseFrom(sqlContext);
+        parseWhere(sqlContext);
+        parseGroupBy(sqlContext);
         queryRest();
         return queryBlock;
     }
     
     @Override
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectSQLContext sqlContext) {
         if (getLexer().skipIfEqual(Token.WITH)) {
             getLexer().skipParentheses();
         }
-        super.parseJoinTable();
+        super.parseJoinTable(sqlContext);
     }
     
     private void parseFor() {

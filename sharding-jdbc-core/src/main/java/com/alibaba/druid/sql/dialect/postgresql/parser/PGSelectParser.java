@@ -18,6 +18,7 @@ package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.lexer.Token;
@@ -38,10 +39,10 @@ public class PGSelectParser extends SQLSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelectQuery select = query();
+            SQLSelectQuery select = query(sqlContext);
             getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -50,17 +51,17 @@ public class PGSelectParser extends SQLSelectParser {
         if (getLexer().equalToken(Token.SELECT)) {
             getLexer().nextToken();
             getLexer().skipIfEqual(Token.COMMENT);
-            parseDistinct();
-            parseSelectList();
+            parseDistinct(sqlContext);
+            parseSelectList(sqlContext);
             if (getLexer().skipIfEqual(Token.INTO)) {
                 getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
                 getLexer().skipIfEqual(Token.TABLE);
                 createExprParser().name();
             }
         }
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
+        parseFrom(sqlContext);
+        parseWhere(sqlContext);
+        parseGroupBy(sqlContext);
         if (getLexer().skipIfEqual(Token.WINDOW)) {
             getExprParser().expr();
             getLexer().accept(Token.AS);
@@ -73,7 +74,7 @@ public class PGSelectParser extends SQLSelectParser {
                 }
             }
         }
-        getSqlContext().getOrderByContexts().addAll(createExprParser().parseOrderBy());
+        sqlContext.getOrderByContexts().addAll(createExprParser().parseOrderBy());
         while (true) {
             if (getLexer().equalToken(Token.LIMIT)) {
                 PGLimit limit = new PGLimit();

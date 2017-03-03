@@ -51,9 +51,6 @@ public class SQLSelectParser extends SQLParser {
     private final List<Object> parameters;
     
     @Getter
-    private final SelectSQLContext sqlContext;
-    
-    @Getter
     @Setter
     private int parametersIndex;
     
@@ -62,23 +59,23 @@ public class SQLSelectParser extends SQLParser {
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.exprParser = exprParser;
-        sqlContext = new SelectSQLContext(getLexer().getInput());
     }
     
     public final SelectSQLContext select() {
-        query();
-        sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
-        customizedSelect(sqlContext);
-        return sqlContext;
+        SelectSQLContext result = new SelectSQLContext(getLexer().getInput());
+        query(result);
+        result.getOrderByContexts().addAll(exprParser.parseOrderBy());
+        customizedSelect(result);
+        return result;
     }
     
     protected void customizedSelect(final SelectSQLContext sqlContext) {
     }
     
-    protected SQLSelectQuery query() {
+    protected SQLSelectQuery query(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelectQuery select = query();
+            SQLSelectQuery select = query(sqlContext);
             getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -86,16 +83,16 @@ public class SQLSelectParser extends SQLParser {
         SQLSelectQueryBlock queryBlock = new SQLSelectQueryBlock();
         getLexer().accept(Token.SELECT);
         getLexer().skipIfEqual(Token.COMMENT);
-        parseDistinct();
-        parseSelectList();
-        parseFrom();
-        parseWhere();
-        parseGroupBy();
+        parseDistinct(sqlContext);
+        parseSelectList(sqlContext);
+        parseFrom(sqlContext);
+        parseWhere(sqlContext);
+        parseGroupBy(sqlContext);
         queryRest();
         return queryBlock;
     }
     
-    protected final void parseDistinct() {
+    protected final void parseDistinct(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.DISTINCT, Token.DISTINCTROW, Token.UNION)) {
             sqlContext.setDistinct(true);
             getLexer().nextToken();
@@ -112,7 +109,7 @@ public class SQLSelectParser extends SQLParser {
         return false;
     }
     
-    protected final void parseSelectList() {
+    protected final void parseSelectList(final SelectSQLContext sqlContext) {
         int index = 1;
         do {
             SQLSelectItem selectItem = exprParser.parseSelectItem(index, sqlContext);
@@ -133,7 +130,7 @@ public class SQLSelectParser extends SQLParser {
         }
     }
     
-    protected final void parseWhere() {
+    protected final void parseWhere(final SelectSQLContext sqlContext) {
         if (sqlContext.getTables().isEmpty()) {
             return;
         }
@@ -145,12 +142,12 @@ public class SQLSelectParser extends SQLParser {
         parametersIndex = parserUtil.getParametersIndex();
     }
     
-    protected void parseGroupBy() {
+    protected void parseGroupBy(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.GROUP)) {
             getLexer().nextToken();
             getLexer().accept(Token.BY);
             while (true) {
-                addGroupByItem(exprParser.expr());
+                addGroupByItem(exprParser.expr(), sqlContext);
                 if (!getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
@@ -169,7 +166,7 @@ public class SQLSelectParser extends SQLParser {
         }
     }
     
-    protected final void addGroupByItem(final SQLExpr sqlExpr) {
+    protected final void addGroupByItem(final SQLExpr sqlExpr, final SelectSQLContext sqlContext) {
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
@@ -179,30 +176,30 @@ public class SQLSelectParser extends SQLParser {
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            getSqlContext().getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().toString())), SQLUtil.getExactlyValue(expr.getSimpleName()), orderByType));
+            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().toString())), SQLUtil.getExactlyValue(expr.getSimpleName()), orderByType));
         } else if (sqlExpr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
-            getSqlContext().getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getSimpleName()), orderByType));
+            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getSimpleName()), orderByType));
         }
     }
     
-    public final void parseFrom() {
+    public final void parseFrom(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.FROM)) {
             getLexer().nextToken();
-            parseTableSource();
+            parseTableSource(sqlContext);
         }
     }
     
-    public List<TableContext> parseTableSource() {
+    public List<TableContext> parseTableSource(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        parseTableFactor();
-        parseJoinTable();
+        parseTableFactor(sqlContext);
+        parseJoinTable(sqlContext);
         return sqlContext.getTables();
     }
     
-    protected final void parseTableFactor() {
+    protected final void parseTableFactor(final SelectSQLContext sqlContext) {
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
         String literals = getLexer().getLiterals();
         getLexer().nextToken();
@@ -216,9 +213,9 @@ public class SQLSelectParser extends SQLParser {
         sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), as()));
     }
     
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectSQLContext sqlContext) {
         if (isJoin()) {
-            parseTableSource();
+            parseTableSource(sqlContext);
             if (getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();
                 int leftStartPosition = getLexer().getCurrentPosition();
@@ -245,7 +242,7 @@ public class SQLSelectParser extends SQLParser {
             } else if (getLexer().skipIfEqual(Token.USING)) {
                 getLexer().skipParentheses();
             }
-            parseJoinTable();
+            parseJoinTable(sqlContext);
         }
     }
 }

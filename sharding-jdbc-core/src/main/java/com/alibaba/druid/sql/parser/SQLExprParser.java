@@ -291,18 +291,14 @@ public class SQLExprParser extends SQLParser {
             // TODO exist 需要处理
             case EXISTS:
                 getLexer().nextToken();
-                getLexer().accept(Token.LEFT_PAREN);
-                sqlExpr = new SQLIdentifierExpr(createSelectParser(getShardingRule(), getParameters()).select().toString());
-                getLexer().accept(Token.RIGHT_PAREN);
+                getLexer().skipParentheses();
                 break;
             // TODO not 需要处理
             case NOT:
                 getLexer().nextToken();
                 if (getLexer().equalToken(Token.EXISTS)) {
                     getLexer().nextToken();
-                    getLexer().accept(Token.LEFT_PAREN);
-                    sqlExpr = new SQLIdentifierExpr(createSelectParser(getShardingRule(), getParameters()).select().toString());
-                    getLexer().accept(Token.RIGHT_PAREN);
+                    getLexer().skipParentheses();
                 } else if (getLexer().equalToken(Token.LEFT_PAREN)) {
                     getLexer().nextToken();
                     SQLExpr notTarget = expr();

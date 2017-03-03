@@ -42,18 +42,18 @@ public class OracleSelectParser extends SQLSelectParser {
     @Override
     protected void customizedSelect(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.FOR)) {
-            parseForUpdate();
+            skipForUpdate();
         }
-        if (getSqlContext().getOrderByContexts().isEmpty()) {
-            getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
+        if (sqlContext.getOrderByContexts().isEmpty()) {
+            sqlContext.getOrderByContexts().addAll(getExprParser().parseOrderBy());
         }
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             getLexer().nextToken();
-            SQLSelectQuery select = query();
+            SQLSelectQuery select = query(sqlContext);
             getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -64,21 +64,21 @@ public class OracleSelectParser extends SQLSelectParser {
             while (getLexer().equalToken(Token.HINT) || getLexer().equalToken(Token.COMMENT)) {
                 getLexer().nextToken();
             }
-            parseDistinct();
+            parseDistinct(sqlContext);
             getLexer().skipIfEqual(Token.HINT);
-            parseSelectList();
+            parseSelectList(sqlContext);
         }
-        parseInto();
-        parseFrom();
-        parseWhere();
+        skipInto();
+        parseFrom(sqlContext);
+        parseWhere(sqlContext);
         skipHierarchicalQueryClause();
-        parseGroupBy();
+        parseGroupBy(sqlContext);
         skipModelClause();
         queryRest();
         return queryBlock;
     }
     
-    private void parseInto() {
+    private void skipInto() {
         if (getLexer().equalToken(Token.INTO)) {
             throw new ParserUnsupportedException(getLexer().getToken());
         }
@@ -204,7 +204,7 @@ public class OracleSelectParser extends SQLSelectParser {
     }
     
     @Override
-    protected void parseGroupBy() {
+    protected void parseGroupBy(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.GROUP)) {
             getLexer().nextToken();
             getLexer().accept(Token.BY);
@@ -212,7 +212,7 @@ public class OracleSelectParser extends SQLSelectParser {
                 if (getLexer().identifierEquals("GROUPING")) {
                     throw new UnsupportedOperationException("Cannot support GROUPING SETS");
                 } 
-                addGroupByItem(getExprParser().expr());
+                addGroupByItem(getExprParser().expr(), sqlContext);
                 if (!getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
@@ -234,7 +234,7 @@ public class OracleSelectParser extends SQLSelectParser {
                     if (getLexer().identifierEquals("GROUPING")) {
                         throw new UnsupportedOperationException("Cannot support GROUPING SETS");
                     }
-                    addGroupByItem(getExprParser().expr());
+                    addGroupByItem(getExprParser().expr(), sqlContext);
                     if (!getLexer().equalToken(Token.COMMA)) {
                         break;
                     }
@@ -253,7 +253,7 @@ public class OracleSelectParser extends SQLSelectParser {
     }
     
     @Override
-    public final List<TableContext> parseTableSource() {
+    public final List<TableContext> parseTableSource(final SelectSQLContext sqlContext) {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
@@ -262,20 +262,20 @@ public class OracleSelectParser extends SQLSelectParser {
         }
         if (getLexer().identifierEquals("ONLY")) {
             getLexer().skipIfEqual(Token.LEFT_PAREN);
-            parseQueryTableExpression();
+            parseQueryTableExpression(sqlContext);
             getLexer().skipIfEqual(Token.RIGHT_PAREN);
             parseFlashbackQueryClause();
         } else {
-            parseQueryTableExpression();
+            parseQueryTableExpression(sqlContext);
             parsePivotClause();
             parseFlashbackQueryClause();
         }
-        parseJoinTable();
-        return getSqlContext().getTables();
+        parseJoinTable(sqlContext);
+        return sqlContext.getTables();
     }
     
-    private void parseQueryTableExpression() {
-        parseTableFactor();
+    private void parseQueryTableExpression(final SelectSQLContext sqlContext) {
+        parseTableFactor(sqlContext);
         parseSample();
         parsePartition();
     }
@@ -352,21 +352,21 @@ public class OracleSelectParser extends SQLSelectParser {
     }
     
     @Override
-    protected void parseJoinTable() {
+    protected void parseJoinTable(final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(Token.HINT);
         if (isJoin()) {
-            parseTableSource();
+            parseTableSource(sqlContext);
             if (getLexer().equalToken(Token.ON)) {
                 getLexer().nextToken();
                 getExprParser().expr();
             } else if (getLexer().skipIfEqual(Token.USING)) {
                 getLexer().skipParentheses();
             }
-            parseJoinTable();
+            parseJoinTable(sqlContext);
         }
     }
     
-    private void parseForUpdate() {
+    private void skipForUpdate() {
         getLexer().nextToken();
         getLexer().accept(Token.UPDATE);
         if (getLexer().equalToken(Token.OF)) {
