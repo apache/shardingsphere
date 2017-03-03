@@ -35,8 +35,6 @@ public class Lexer {
     @Getter
     private final String input;
     
-    private final Map<String, Token> tokenDictionary;
-    
     @Getter
     private final Term term;
     
@@ -56,7 +54,6 @@ public class Lexer {
     
     public Lexer(final String input, final Map<String, Token> tokenDictionary) {
         this.input = input;
-        this.tokenDictionary = tokenDictionary;
         term = new Term(input, tokenDictionary);
     }
     
@@ -278,9 +275,9 @@ public class Lexer {
                 || isSymbol("&") || isSymbol("|") || isSymbol(".") || isSymbol(":") || isSymbol("#") || isSymbol(",") || isSymbol(";");
     }
     
-    private boolean isSymbol(final String symbols) {
-        for (int i = 0; i < symbols.length(); i++) {
-            if (symbols.charAt(i) != charAt(currentPosition + i)) {
+    private boolean isSymbol(final String symbol) {
+        for (int i = 0; i < symbol.length(); i++) {
+            if (symbol.charAt(i) != charAt(currentPosition + i)) {
                 return false;
             }
         }
@@ -326,10 +323,6 @@ public class Lexer {
     
     protected final int increaseCurrentPosition() {
         return ++currentPosition;
-    }
-    
-    public final boolean containsToken() {
-        return tokenDictionary.containsValue(token);
     }
     
     public final void accept(final Token token) {

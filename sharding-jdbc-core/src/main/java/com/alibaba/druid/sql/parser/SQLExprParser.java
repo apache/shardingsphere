@@ -750,8 +750,7 @@ public class SQLExprParser extends SQLParser {
                 return name;
             }
 
-            if (!getLexer().equalToken(Token.LITERAL_ALIAS) && !getLexer().equalToken(Token.IDENTIFIER)
-                && (!getLexer().containsToken())) {
+            if (!getLexer().equalToken(Token.LITERAL_ALIAS) && !getLexer().equalToken(Token.IDENTIFIER)) {
                 throw new ParserException(getLexer());
             }
 
