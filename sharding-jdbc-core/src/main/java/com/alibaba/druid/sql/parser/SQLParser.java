@@ -58,7 +58,7 @@ public class SQLParser {
         return Optional.absent();
     }
     
-    protected final TableContext parseSingleTable(final SQLContext sqlContext) {
+    protected final void parseSingleTable(final SQLContext sqlContext) {
         boolean hasParentheses = false;
         if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
             if (getLexer().equalToken(Token.SELECT)) {
@@ -66,7 +66,7 @@ public class SQLParser {
             }
             hasParentheses = true;
         }
-        TableContext result;
+        TableContext tableContext;
         int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
         String literals = getLexer().getLiterals();
         getLexer().nextToken();
@@ -76,19 +76,18 @@ public class SQLParser {
             if (hasParentheses) {
                 getLexer().accept(Token.RIGHT_PAREN);
             }
-            result = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
+            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
         } else {
             if (hasParentheses) {
                 getLexer().accept(Token.RIGHT_PAREN);
             }
-            result = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
+            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
         }
         if (isJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, result.getOriginalLiterals(), result.getName()));
-        sqlContext.getTables().add(result);
-        return result;
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlContext.getTables().add(tableContext);
     }
     
     protected final boolean isJoin() {

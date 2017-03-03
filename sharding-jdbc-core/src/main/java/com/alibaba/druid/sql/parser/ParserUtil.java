@@ -1,5 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
@@ -8,16 +9,11 @@ import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.SQLEvalConstants;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -39,42 +35,19 @@ public class ParserUtil {
     @Getter
     private final SQLExprParser exprParser;
     
-    private final ShardingRule shardingRule;
-    
     private final List<Object> parameters;
-    
-    private final TableContext table;
     
     private final SQLContext sqlContext;
     
     @Getter
     private int parametersIndex;
     
-    public Optional<ConditionContext> parseWhere() {
+    public Optional<ConditionContext> parseWhere(final ParseContext parseContext) {
         if (exprParser.getLexer().skipIfEqual(Token.WHERE)) {
-            ParseContext parseContext = getParseContext();
             parseConditions(parseContext);
             return Optional.of(parseContext.getCurrentConditionContext());
         }
         return Optional.absent();
-    }
-    
-    public ParseContext getParseContext() {
-        ParseContext result = new ParseContext(1);
-        result.setShardingRule(shardingRule);
-        SQLExprTableSource tableSource = new SQLExprTableSource();
-        tableSource.setExpr(new SQLIdentifierExpr(table.getName()));
-        if (table.getAlias().isPresent()) {
-            tableSource.setAlias(table.getAlias().get());
-        }
-        result.addTable(tableSource);
-        result.setCurrentTable(table.getName(), table.getAlias());
-        
-        //TODO 剔除之前加入的table
-        for (TableContext each : sqlContext.getTables()) {
-            result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
-        }
-        return result;
     }
     
     private void parseConditions(final ParseContext parseContext) {
@@ -150,8 +123,9 @@ public class ParserUtil {
     private SQLExpr parseSQLExpr() {
         String literals = exprParser.getLexer().getLiterals();
         if (exprParser.getLexer().equalToken(Token.IDENTIFIER)) {
-            if (table.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new TableToken(exprParser.getLexer().getCurrentPosition() - literals.length(), literals, table.getName()));
+            String tableName = sqlContext.getTables().get(0).getName();
+            if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                sqlContext.getSqlTokens().add(new TableToken(exprParser.getLexer().getCurrentPosition() - literals.length(), literals, tableName));
             }
             exprParser.getLexer().nextToken();
             if (exprParser.getLexer().equalToken(Token.DOT)) {

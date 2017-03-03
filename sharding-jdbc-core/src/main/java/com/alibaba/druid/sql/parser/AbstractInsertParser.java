@@ -7,6 +7,8 @@ import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
+import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
@@ -93,8 +95,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     
     private Collection<Condition.Column> parseColumns(final InsertSQLContext sqlContext) {
         Collection<Condition.Column> result = new LinkedList<>();
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTables().get(0), sqlContext, 0);
-        Collection<String> autoIncrementColumns = parserUtil.getParseContext().getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
+        Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             do {
                 getLexer().nextToken();
@@ -127,8 +128,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     }
     
     private void parseValues(final Collection<Condition.Column> columns, final InsertSQLContext sqlContext) {
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTables().get(0), sqlContext, 0);
-        ParseContext parseContext = parserUtil.getParseContext();
+        ParseContext parseContext = getParseContext(sqlContext);
         boolean parsed = false;
         do {
             if (parsed) {
@@ -173,6 +173,15 @@ public abstract class AbstractInsertParser extends SQLParser {
         }
         while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
+    }
+    
+    private ParseContext getParseContext(final SQLContext sqlContext) {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(shardingRule);
+        for (TableContext each : sqlContext.getTables()) {
+            result.setCurrentTable(each.getName(), each.getAlias());
+        }
+        return result;
     }
     
     protected Set<Token> getCustomizedInsertTokens() {

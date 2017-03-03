@@ -2,9 +2,10 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
+import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
-import com.alibaba.druid.sql.parser.ParserUtil;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
@@ -32,8 +33,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     private void parseInsertSet(final InsertSQLContext sqlContext) {
-        ParserUtil parserUtil = new ParserUtil(getExprParser(), getShardingRule(), getParameters(), sqlContext.getTables().get(0), sqlContext, 0);
-        ParseContext parseContext = parserUtil.getParseContext();
+        ParseContext parseContext = getParseContext(sqlContext);
         Collection<String> autoIncrementColumns = parseContext.getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         do {
             getLexer().nextToken();
@@ -44,6 +44,15 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, value, getParameters());
         } while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
+    }
+    
+    private ParseContext getParseContext(final SQLContext sqlContext) {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(getShardingRule());
+        for (TableContext each : sqlContext.getTables()) {
+            result.setCurrentTable(each.getName(), each.getAlias());
+        }
+        return result;
     }
     
     @Override

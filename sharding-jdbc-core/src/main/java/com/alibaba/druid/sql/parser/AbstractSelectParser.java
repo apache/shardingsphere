@@ -25,6 +25,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
@@ -32,6 +33,7 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -139,12 +141,21 @@ public abstract class AbstractSelectParser extends SQLParser {
         if (sqlContext.getTables().isEmpty()) {
             return;
         }
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext.getTables().get(0), sqlContext, 0);
-        Optional<ConditionContext> conditionContext = parserUtil.parseWhere();
+        ParserUtil parserUtil = new ParserUtil(exprParser, parameters, sqlContext, 0);
+        Optional<ConditionContext> conditionContext = parserUtil.parseWhere(getParseContext(sqlContext));
         if (conditionContext.isPresent()) {
             sqlContext.getConditionContexts().add(conditionContext.get());
         }
         parametersIndex = parserUtil.getParametersIndex();
+    }
+    
+    private ParseContext getParseContext(final SQLContext sqlContext) {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(shardingRule);
+        for (TableContext each : sqlContext.getTables()) {
+            result.setCurrentTable(each.getName(), each.getAlias());
+        }
+        return result;
     }
     
     protected void parseGroupBy(final SelectSQLContext sqlContext) {
