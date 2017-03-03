@@ -12,6 +12,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -19,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Insert语句解析器.
@@ -55,9 +55,9 @@ public abstract class AbstractInsertParser extends SQLParser {
         if (getLexer().equalToken(Token.SELECT, Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        if (getValuesIdentifiers().contains(getLexer().getLiterals())) {
+        if (getValuesTokens().contains(getLexer().getToken())) {
             parseValues(columns, result);
-        } else if (getCustomizedInsertIdentifiers().contains(getLexer().getToken().getName())) {
+        } else if (getCustomizedInsertTokens().contains(getLexer().getToken())) {
             parseCustomizedInsert(result);
         }
         return result;
@@ -79,7 +79,7 @@ public abstract class AbstractInsertParser extends SQLParser {
     }
     
     private void skipBetweenTableAndValues() {
-        while (getIdentifiersBetweenTableAndValues().contains(getLexer().getLiterals())) {
+        while (getSkippedTokensBetweenTableAndValues().contains(getLexer().getToken())) {
             getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 getLexer().skipParentheses();
@@ -87,7 +87,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         }
     }
     
-    protected Set<String> getIdentifiersBetweenTableAndValues() {
+    protected Set<Token> getSkippedTokensBetweenTableAndValues() {
         return Collections.emptySet();
     }
     
@@ -98,14 +98,9 @@ public abstract class AbstractInsertParser extends SQLParser {
         if (getLexer().equalToken(Token.LEFT_PAREN)) {
             do {
                 getLexer().nextToken();
-                String columnName = SQLUtil.getExactlyValue(getLexer().getLiterals());
-                if (autoIncrementColumns.contains(columnName)) {
-                    autoIncrementColumns.remove(columnName);
-                }
-                result.add(new Condition.Column(columnName, sqlContext.getTables().get(0).getName()));
+                result.add(getColumn(sqlContext, autoIncrementColumns));
                 getLexer().nextToken();
-            }
-            while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
+            } while (!getLexer().equalToken(Token.RIGHT_PAREN) && !getLexer().equalToken(Token.EOF));
             ItemsToken itemsToken = new ItemsToken(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
@@ -119,10 +114,16 @@ public abstract class AbstractInsertParser extends SQLParser {
         return result;
     }
     
-    protected Set<String> getValuesIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.VALUES.getName());
-        return result;
+    protected final Condition.Column getColumn(final InsertSQLContext sqlContext, final Collection<String> autoIncrementColumns) {
+        String columnName = SQLUtil.getExactlyValue(getLexer().getLiterals());
+        if (autoIncrementColumns.contains(columnName)) {
+            autoIncrementColumns.remove(columnName);
+        }
+        return new Condition.Column(columnName, sqlContext.getTables().get(0).getName());
+    }
+    
+    protected Set<Token> getValuesTokens() {
+        return Sets.newHashSet(Token.VALUES);
     }
     
     private void parseValues(final Collection<Condition.Column> columns, final InsertSQLContext sqlContext) {
@@ -130,7 +131,6 @@ public abstract class AbstractInsertParser extends SQLParser {
         ParseContext parseContext = parserUtil.getParseContext();
         boolean parsed = false;
         do {
-            // TODO support multiple insert
             if (parsed) {
                 throw new UnsupportedOperationException("Cannot support multiple insert");
             }
@@ -175,7 +175,7 @@ public abstract class AbstractInsertParser extends SQLParser {
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
-    protected Set<String> getCustomizedInsertIdentifiers() {
+    protected Set<Token> getCustomizedInsertTokens() {
         return Collections.emptySet();
     }
     

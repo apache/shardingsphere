@@ -1,7 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
@@ -10,10 +9,11 @@ import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.google.common.collect.Sets;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * MySQL Insert语句解析器.
@@ -34,35 +34,30 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     private void parseInsertSet(final InsertSQLContext sqlContext) {
         ParserUtil parserUtil = new ParserUtil(getExprParser(), getShardingRule(), getParameters(), sqlContext.getTables().get(0), sqlContext, 0);
         ParseContext parseContext = parserUtil.getParseContext();
+        Collection<String> autoIncrementColumns = parseContext.getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         do {
             getLexer().nextToken();
-            SQLName column = getExprParser().name();
+            Condition.Column column = getColumn(sqlContext, autoIncrementColumns);
+            getLexer().nextToken();
             getLexer().accept(Token.EQ);
             SQLExpr value = getExprParser().expr();
-            parseContext.addCondition(column.getSimpleName(), sqlContext.getTables().get(0).getName(), Condition.BinaryOperator.EQUAL, value, getParameters());
+            parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, value, getParameters());
         } while (getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
     @Override
-    protected Set<String> getIdentifiersBetweenTableAndValues() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.PARTITION.getName());
-        return result;
+    protected Set<Token> getSkippedTokensBetweenTableAndValues() {
+        return Sets.newHashSet(Token.PARTITION);
     }
     
     @Override
-    protected Set<String> getValuesIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.VALUES.getName());
-        result.add(Token.VALUE.getName());
-        return result;
+    protected Set<Token> getValuesTokens() {
+        return Sets.newHashSet(Token.VALUES, Token.VALUE);
     }
     
     @Override
-    protected Set<String> getCustomizedInsertIdentifiers() {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.add(Token.SET.getName());
-        return result;
+    protected Set<Token> getCustomizedInsertTokens() {
+        return Sets.newHashSet(Token.SET);
     }
 }

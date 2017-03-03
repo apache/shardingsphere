@@ -4,8 +4,8 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.google.common.collect.Sets;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,9 +22,6 @@ public final class OracleInsertParser extends AbstractInsertParser {
     
     @Override
     protected Set<Token> getUnsupportedTokens() {
-        Set<Token> result = new HashSet<>();
-        result.add(Token.ALL);
-        result.add(Token.FIRST);
-        return result;
+        return Sets.newHashSet(Token.ALL, Token.FIRST);
     }
 }
