@@ -28,5 +28,4 @@ import java.util.List;
 public class SQLListExpr extends SQLExprImpl {
     
     private final List<SQLExpr> items = new ArrayList<>();
-    
 }

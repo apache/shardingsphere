@@ -61,12 +61,6 @@ public class MySqlExprParser extends SQLExprParser {
         getLexer().nextToken();
     }
     
-    public final void skipPartition() {
-        if (getLexer().skipIfEqual(Token.PARTITION)) {
-            getLexer().skipParentheses();
-        }
-    }
-    
     public SQLExpr relationalRest(SQLExpr expr) {
         if (getLexer().identifierEquals("REGEXP")) {
             getLexer().nextToken();

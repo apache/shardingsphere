@@ -27,7 +27,6 @@ public class SQLHexExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     private final String hex;
     
-    
     @Override
     public void output(final StringBuffer buffer) {
         buffer.append("0x");

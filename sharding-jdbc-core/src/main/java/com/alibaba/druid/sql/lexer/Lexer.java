@@ -110,32 +110,6 @@ public class Lexer {
         nextToken();
     }
     
-//    /**
-//     * 跳过小括号内所有的语言符号.
-//     */
-//    public final String skipParentheses() {
-//        int beginPosition = currentPosition;
-//        int count = 0;
-//        if (Token.LEFT_PAREN == token) {
-//            currentPosition++;
-//            while (true) {
-//                if (currentPosition == input.length() || (input.charAt(currentPosition) == Token.RIGHT_PAREN.getName().charAt(0) && 0 == count)) {
-//                    break;
-//                }
-//                if (input.charAt(currentPosition) == Token.LEFT_PAREN.getName().charAt(0)) {
-//                    count++;
-//                } else if (input.charAt(currentPosition) == Token.RIGHT_PAREN.getName().charAt(0)) {
-//                    count--;
-//                }
-//                currentPosition++;
-//            }
-//        }
-//        if (currentPosition != input.length()) {
-//            currentPosition++;
-//        }
-//        return input.substring(beginPosition, currentPosition);
-//    }
-    
     /**
      * 跳至下一个语言符号.
      */
