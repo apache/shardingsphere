@@ -4,8 +4,8 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySQLInsertParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleInsertParser;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLInsertParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerInsertParser;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
 import java.util.List;
 
@@ -25,18 +25,17 @@ public class SQLInsertParserFactory {
      * @param dbType 数据库类型
      * @return Insert语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser, final String dbType) {
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
-            case JdbcConstants.MYSQL :
-            case JdbcConstants.MARIADB :
-            case JdbcConstants.H2 :
+            case H2 :
+            case MySQL :
                 return new MySQLInsertParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.POSTGRESQL :
-                return new PostgreSQLInsertParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.ORACLE :
+            case Oracle:
                 return new OracleInsertParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.SQL_SERVER :
+            case SQLServer:
                 return new SQLServerInsertParser(shardingRule, parameters, exprParser);
+            case PostgreSQL:
+                return new PostgreSQLInsertParser(shardingRule, parameters, exprParser);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
         }

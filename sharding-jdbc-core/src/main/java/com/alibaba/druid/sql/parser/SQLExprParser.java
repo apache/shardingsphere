@@ -550,10 +550,6 @@ public class SQLExprParser extends SQLParser {
         throw new ParserUnsupportedException(getLexer().getToken());
     }
     
-    public SQLSelectParser createSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
-        return new SQLSelectParser(shardingRule, parameters, this);
-    }
-    
     public SQLExpr primaryRest(SQLExpr expr) {
         Preconditions.checkNotNull(expr);
         // TODO 解析游标, 未来删除

@@ -4,8 +4,8 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySQLDeleteParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleDeleteParser;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLDeleteParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerDeleteParser;
-import com.alibaba.druid.util.JdbcConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
 import java.util.List;
 
@@ -25,18 +25,17 @@ public class SQLDeleteParserFactory {
      * @param dbType 数据库类型
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser, final String dbType) {
+    public static AbstractDeleteParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
-            case JdbcConstants.MYSQL :
-            case JdbcConstants.MARIADB :
-            case JdbcConstants.H2 :
+            case H2 :
+            case MySQL :
                 return new MySQLDeleteParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.POSTGRESQL :
-                return new PostgreSQLDeleteParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.ORACLE :
+            case Oracle:
                 return new OracleDeleteParser(shardingRule, parameters, exprParser);
-            case JdbcConstants.SQL_SERVER :
+            case SQLServer:
                 return new SQLServerDeleteParser(shardingRule, parameters, exprParser);
+            case PostgreSQL:
+                return new PostgreSQLDeleteParser(shardingRule, parameters, exprParser);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
         }

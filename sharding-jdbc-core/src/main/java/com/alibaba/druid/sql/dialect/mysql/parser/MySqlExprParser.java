@@ -47,7 +47,6 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
@@ -458,11 +457,6 @@ public class MySqlExprParser extends SQLExprParser {
         }
 
         return super.primaryRest(expr);
-    }
-    
-    @Override
-    public SQLSelectParser createSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
-        return new MySqlSelectParser(shardingRule, parameters, this);
     }
 
     protected SQLExpr parseInterval() {

@@ -19,8 +19,7 @@ package com.alibaba.druid.sql.parser;
 import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import lombok.AccessLevel;
-import lombok.Getter;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
 import java.util.List;
 
@@ -29,10 +28,9 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@Getter(AccessLevel.PROTECTED)
-public abstract class SQLStatementParser extends SQLParser {
+public class SQLStatementParser extends SQLParser {
     
-    private final String dbType;
+    private final DatabaseType dbType;
     
     private final ShardingRule shardingRule;
     
@@ -40,7 +38,7 @@ public abstract class SQLStatementParser extends SQLParser {
     
     private final SQLExprParser exprParser;
     
-    public SQLStatementParser(final String dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public SQLStatementParser(final DatabaseType dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(exprParser.getLexer());
         this.dbType = dbType;
         this.shardingRule = shardingRule;
@@ -61,7 +59,7 @@ public abstract class SQLStatementParser extends SQLParser {
             parseWith();
         }
         if (getLexer().equalToken(Token.SELECT)) {
-            return createSQLSelectParser(shardingRule, parameters).select();
+            return SQLSelectParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
         if (getLexer().equalToken(Token.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
@@ -102,6 +100,4 @@ public abstract class SQLStatementParser extends SQLParser {
         }
         getLexer().accept(Token.RIGHT_PAREN);
     }
-    
-    protected abstract SQLSelectParser createSQLSelectParser(final ShardingRule shardingRule, final List<Object> parameters);
 }

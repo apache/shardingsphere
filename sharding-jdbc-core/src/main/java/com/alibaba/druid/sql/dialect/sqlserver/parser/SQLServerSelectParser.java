@@ -26,12 +26,12 @@ import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.SQLSelectParser;
+import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class SQLServerSelectParser extends SQLSelectParser {
+public class SQLServerSelectParser extends AbstractSelectParser {
     
     public SQLServerSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         super(shardingRule, parameters, exprParser);

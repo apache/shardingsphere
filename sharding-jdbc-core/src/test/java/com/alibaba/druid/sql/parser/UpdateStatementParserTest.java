@@ -1,8 +1,10 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.UpdateSQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
-import com.alibaba.druid.util.JdbcConstants;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
+import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import org.junit.Test;
 
@@ -10,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -20,7 +23,10 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutCondition() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "UPDATE TABLE_XXX SET field1=field1+1");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "UPDATE TABLE_XXX SET field1=field1+1"));
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertTrue(sqlContext.getConditionContexts().isEmpty());
@@ -29,8 +35,11 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutParameter()  {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 "
-                + "WHERE TABLE_XXX.field4<10 AND TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 WHERE "
+                        + "TABLE_XXX.field4<10 AND TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10"));
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] xxx SET [Token(TABLE_XXX)].field1=field1+1,xxx.field2=2 WHERE [Token(TABLE_XXX)].field4<10 "
@@ -39,8 +48,10 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithParameter() {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10),
-                "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10);
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
@@ -76,34 +87,37 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     @Test(expected = ParserUnsupportedException.class)
     public void parseWithOr() {
-        new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters,
+                "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)")).parseStatement();
     }
     
     @Test
     public void parseWithSpecialSyntax() {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE `TABLE_XXX` SET `field1`=1 WHERE `field1`=1", "UPDATE [Token(TABLE_XXX)] SET `field1`=1 WHERE `field1`=1");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "UPDATE LOW_PRIORITY IGNORE TABLE_XXX SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10",
+        parseWithSpecialSyntax(DatabaseType.MySQL, "UPDATE `TABLE_XXX` SET `field1`=1 WHERE `field1`=1", "UPDATE [Token(TABLE_XXX)] SET `field1`=1 WHERE `field1`=1");
+        parseWithSpecialSyntax(DatabaseType.MySQL, "UPDATE LOW_PRIORITY IGNORE TABLE_XXX SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10",
                 "UPDATE LOW_PRIORITY IGNORE [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 ORDER BY field1 LIMIT 10");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
+        parseWithSpecialSyntax(DatabaseType.Oracle, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
                 "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
+        parseWithSpecialSyntax(DatabaseType.Oracle, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
                 "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG",
+        parseWithSpecialSyntax(DatabaseType.Oracle, "UPDATE /*+ index(field1) */ ONLY TABLE_XXX SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG",
                 "UPDATE /*+ index(field1) */ ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 LOG ERRORS INTO TABLE_LOG");
         /* // TODO 不支持
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, 
+        parseWithSpecialSyntax(DatabaseType.SQLServer, 
                 "WITH field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx GROUP BY field1) UPDATE TOP(10) TABLE_XXX SET field1=1 OUTPUT (inserted.field1) WHERE field1=1",
                 "WITH field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx GROUP BY field1) UPDATE TOP(10) [Token(TABLE_XXX)] SET field1=1 OUTPUT (inserted.field1) WHERE field1=1");
         */
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
                 "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) UPDATE ONLY TABLE_XXX SET field1=1 WHERE field1=1 RETURNING *",
                 "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) UPDATE ONLY [Token(TABLE_XXX)] SET field1=1 WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) UPDATE ONLY TABLE_XXX SET (field1,field2)=(1,?) WHERE field1=1",
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) UPDATE ONLY [Token(TABLE_XXX)] SET (field1,field2)=(1,?) WHERE field1=1");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
         UpdateSQLContext sqlContext = (UpdateSQLContext) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());

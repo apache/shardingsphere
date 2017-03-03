@@ -714,11 +714,6 @@ public class OracleExprParser extends SQLExprParser {
     }
     
     @Override
-    public OracleSelectParser createSelectParser(final ShardingRule shardingRule, final List<Object> parameters) {
-        return new OracleSelectParser(shardingRule, parameters, this);
-    }
-    
-    @Override
     public OrderByContext parseSelectOrderByItem() {
         OrderByContext result = super.parseSelectOrderByItem();
         if (getLexer().skipIfEqual(Token.NULLS)) {

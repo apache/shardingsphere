@@ -1,8 +1,9 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.DeleteSQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
-import com.alibaba.druid.util.JdbcConstants;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -20,7 +22,9 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutCondition() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "DELETE FROM TABLE_XXX");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, "DELETE FROM TABLE_XXX"));
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertTrue(sqlContext.getConditionContexts().isEmpty());
@@ -29,8 +33,10 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutParameter() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), 
-                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, 
+                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is(
@@ -39,8 +45,10 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithParameter() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10),
-                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10);
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is(
@@ -76,39 +84,45 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTable() {
-        new MySqlStatementParser(null, Collections.emptyList(), "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2"))
+                .parseStatement();
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
-        new MySqlStatementParser(null, Collections.emptyList(), "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2"))
+                .parseStatement();
     }
     
     @Test
     public void parseWithSpecialSyntax() throws SQLException {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE `TABLE_XXX` WHERE `field1`=1", "DELETE [Token(TABLE_XXX)] WHERE `field1`=1");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE LOW_PRIORITY QUICK IGNORE TABLE_XXX PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10",
+        parseWithSpecialSyntax(DatabaseType.MySQL, "DELETE `TABLE_XXX` WHERE `field1`=1", "DELETE [Token(TABLE_XXX)] WHERE `field1`=1");
+        parseWithSpecialSyntax(DatabaseType.MySQL, "DELETE LOW_PRIORITY QUICK IGNORE TABLE_XXX PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10",
                 "DELETE LOW_PRIORITY QUICK IGNORE [Token(TABLE_XXX)] PARTITION (partition_1) WHERE field1=1 ORDER BY field1 LIMIT 10");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1=1",
+        parseWithSpecialSyntax(DatabaseType.MySQL, "DELETE FROM TABLE_XXX PARTITION (partition_1, partition_2,partition_3) WHERE field1=1",
                 "DELETE FROM [Token(TABLE_XXX)] PARTITION (partition_1, partition_2,partition_3) WHERE field1=1");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
+        parseWithSpecialSyntax(DatabaseType.Oracle, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG",
                 "DELETE /*+ index(field1) */ ONLY ([Token(TABLE_XXX)]) WHERE field1=1 RETURN * LOG ERRORS INTO TABLE_LOG");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *",
+        parseWithSpecialSyntax(DatabaseType.Oracle, "DELETE /*+ index(field1) */ ONLY (TABLE_XXX) WHERE field1=1 RETURNING *",
                 "DELETE /*+ index(field1) */ ONLY ([Token(TABLE_XXX)]) WHERE field1=1 RETURNING *");
         /* // TODO 不支持
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER,
+        parseWithSpecialSyntax(DatabaseType.SQLServer,
                 "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) DELETE TOP(10) OUTPUT (inserted.field1) FROM TABLE_XXX WHERE field1=1",
                 "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) DELETE TOP(10) OUTPUT (inserted.field1) FROM [Token(TABLE_XXX)] WHERE field1=1");
                 */
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
                 "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 RETURNING *",
                 "WITH RECURSIVE field_query (field1) AS (SELECT field1 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) DELETE FROM ONLY [Token(TABLE_XXX)] USING producers WHERE field1=1 RETURNING *");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) DELETE FROM ONLY TABLE_XXX USING producers WHERE field1=1 OUTPUT *",
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) DELETE FROM ONLY [Token(TABLE_XXX)] USING producers WHERE field1=1 OUTPUT *");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) throws SQLException {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) throws SQLException {
         DeleteSQLContext sqlContext = (DeleteSQLContext) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());

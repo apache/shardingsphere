@@ -18,9 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
-import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerStatementParser;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
+import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PGExprParser;
+import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerExprParser;
+import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
@@ -58,17 +60,25 @@ public final class SQLParserFactory {
         return new SQLParseEngine(sqlContext);
     }
     
-    private static SQLStatementParser getSQLStatementParser(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        switch (databaseType) {
-            case H2: 
-            case MySQL: 
-                return new MySqlStatementParser(shardingRule, parameters, sql);
-            case Oracle: 
-                return new OracleStatementParser(shardingRule, parameters, sql);
-            case SQLServer: 
-                return new SQLServerStatementParser(shardingRule, parameters, sql);
-            default: 
-                throw new UnsupportedOperationException(String.format("Cannot support database type [%s]", databaseType));
+    private static SQLStatementParser getSQLStatementParser(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+        SQLExprParser sqlExprParser;
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                sqlExprParser = new MySqlExprParser(shardingRule, parameters, sql);
+                break;
+            case Oracle:
+                sqlExprParser = new OracleExprParser(shardingRule, parameters, sql);
+                break;
+            case SQLServer:
+                sqlExprParser = new SQLServerExprParser(shardingRule, parameters, sql);
+                break;
+            case PostgreSQL:
+                sqlExprParser = new PGExprParser(shardingRule, parameters, sql);
+                break;
+            default:
+                throw new UnsupportedOperationException(dbType.name());
         }
+        return new SQLStatementParser(dbType, shardingRule, parameters, sqlExprParser);
     }
 }

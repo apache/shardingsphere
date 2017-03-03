@@ -1,14 +1,14 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.InsertSQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
-import com.alibaba.druid.util.JdbcConstants;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
+import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.google.common.collect.Lists;
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
@@ -34,7 +35,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutParameter() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
@@ -42,7 +46,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithParameter() {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRule(), Arrays.<Object>asList(10, 1), "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)");
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Lists.<Object>newArrayList(10, 1);
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
@@ -50,7 +57,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRuleWithAutoIncrementColumns(), Collections.emptyList(), "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)");
+        ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
+        List<Object> parameters = Collections.emptyList();
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
@@ -58,7 +68,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
-        MySqlStatementParser statementParser = new MySqlStatementParser(createShardingRuleWithAutoIncrementColumns(), Lists.<Object>newArrayList(10), "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)");
+        ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
+        List<Object> parameters = Lists.<Object>newArrayList(10);
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
@@ -105,28 +118,28 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithSpecialSyntax() {
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)", 
+        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)", 
                 "INSERT LOW_PRIORITY IGNORE INTO [Token(TABLE_XXX)] PARTITION (partition1,partition2) (`field1`) VALUE (1)");
-        parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX SET field1=1", "INSERT INTO [Token(TABLE_XXX)] SET field1=1");
+        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX SET field1=1", "INSERT INTO [Token(TABLE_XXX)] SET field1=1");
         // TODO
-//         parseWithSpecialSyntax(JdbcConstants.MYSQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1", 
+//         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1", 
 //                 "INSERT INTO [Token(TABLE_XXX)] (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
-        parseWithSpecialSyntax(JdbcConstants.ORACLE, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG",
+        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG",
                 "INSERT /*+ index(field1) */ INTO [Token(TABLE_XXX)] (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
         /* // TODO 不支持
-        parseWithSpecialSyntax(JdbcConstants.SQL_SERVER, 
+        parseWithSpecialSyntax(DatabaseType.SQLServer, 
                 "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)", 
                 "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT [Token(TABLE_XXX)] (`field1`) VALUES (1)");
         */
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL, 
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL, 
                 "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id",
                 "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING id");
-        parseWithSpecialSyntax(JdbcConstants.POSTGRESQL,
+        parseWithSpecialSyntax(DatabaseType.PostgreSQL,
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING *",
                 "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING *");
     }
     
-    private void parseWithSpecialSyntax(final String dbType, final String actualSQL, final String expectedSQL) {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
         InsertSQLContext sqlContext = (InsertSQLContext) getSqlStatementParser(dbType, actualSQL).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
@@ -143,16 +156,25 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseMultipleInsertForMySQL() {
-        new MySqlStatementParser(createShardingRule(), Collections.emptyList(), "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters,
+                "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')")).parseStatement();
     }
     
     @Test(expected = ParserUnsupportedException.class)
     public void parseInsertAllForOracle() {
-        new OracleStatementParser(createShardingRule(), Collections.emptyList(), "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters, 
+                "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2")).parseStatement();
     }
     
     @Test(expected = ParserUnsupportedException.class)
     public void parseInsertFirstForOracle() {
-        new OracleStatementParser(createShardingRule(), Collections.emptyList(), "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2").parseStatement();
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Collections.emptyList();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters,
+                "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2")).parseStatement();
     }
 }
