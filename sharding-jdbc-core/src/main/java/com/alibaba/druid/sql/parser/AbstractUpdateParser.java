@@ -51,7 +51,8 @@ public abstract class AbstractUpdateParser {
         exprParser.parseSingleTable(result);
         parseSetItems(result);
         exprParser.getLexer().skipUntil(Token.WHERE);
-        Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, result, parametersIndex).parseWhere();
+        exprParser.setParametersIndex(parametersIndex);
+        Optional<ConditionContext> conditionContext = exprParser.parseWhere(result);
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
         }

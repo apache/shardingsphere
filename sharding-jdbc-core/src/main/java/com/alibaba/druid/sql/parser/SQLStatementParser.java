@@ -67,7 +67,7 @@ public final class SQLStatementParser {
             return SQLUpdateParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
         if (exprParser.getLexer().equalToken(Token.DELETE)) {
-            return SQLDeleteParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
+            return SQLDeleteParserFactory.newInstance(exprParser, dbType).parse();
         }
         throw new ParserUnsupportedException(exprParser.getLexer().getToken());
     }

@@ -138,12 +138,11 @@ public abstract class AbstractSelectParser {
         if (sqlContext.getTables().isEmpty()) {
             return;
         }
-        ParserUtil parserUtil = new ParserUtil(exprParser, shardingRule, parameters, sqlContext, 0);
-        Optional<ConditionContext> conditionContext = parserUtil.parseWhere();
+        Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
             sqlContext.getConditionContexts().add(conditionContext.get());
         }
-        parametersIndex = parserUtil.getParametersIndex();
+        parametersIndex = exprParser.getParametersIndex();
     }
     
     protected void parseGroupBy(final SelectSQLContext sqlContext) {

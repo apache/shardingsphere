@@ -19,14 +19,11 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractDeleteParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
 
 public class OracleDeleteParser extends AbstractDeleteParser {
     
-    public OracleDeleteParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public OracleDeleteParser(final SQLExprParser exprParser) {
+        super(exprParser);
     }
     
     @Override

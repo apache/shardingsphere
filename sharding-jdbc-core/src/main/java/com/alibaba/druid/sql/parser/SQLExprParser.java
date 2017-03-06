@@ -16,6 +16,7 @@
 
 package com.alibaba.druid.sql.parser;
 
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
@@ -68,10 +69,14 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -99,6 +104,10 @@ public class SQLExprParser {
     
     @Getter
     private final List<Object> parameters;
+    
+    @Getter
+    @Setter
+    private int parametersIndex;
     
     public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer, final String... aggregateFunctions) {
         this.lexer = lexer;
@@ -1364,5 +1373,136 @@ public class SQLExprParser {
         SelectItemContext selectItemContext = new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, isStar);
         result.setSelectItemContext(selectItemContext);
         return result;
+    }
+    
+    public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
+        if (lexer.skipIfEqual(Token.WHERE)) {
+            ParseContext parseContext = getParseContext(sqlContext);
+            parseConditions(sqlContext, parseContext);
+            return Optional.of(parseContext.getCurrentConditionContext());
+        }
+        return Optional.absent();
+    }
+    
+    private ParseContext getParseContext(final SQLContext sqlContext) {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(shardingRule);
+        for (TableContext each : sqlContext.getTables()) {
+            result.setCurrentTable(each.getName(), each.getAlias());
+        }
+        return result;
+    }
+    
+    private void parseConditions(final SQLContext sqlContext, final ParseContext parseContext) {
+        do {
+            parseCondition(sqlContext, parseContext);
+        } while (lexer.skipIfEqual(Token.AND));
+        if (lexer.equalToken(Token.OR)) {
+            throw new ParserUnsupportedException(lexer.getToken());
+        }
+    }
+    
+    private void parseCondition(final SQLContext sqlContext, final ParseContext parseContext) {
+        SQLExpr left = getSqlExprWithVariant(sqlContext);
+        if (lexer.equalToken(Token.EQ)) {
+            parseEqualCondition(sqlContext, parseContext, left);
+        } else if (lexer.equalToken(Token.IN)) {
+            parseInCondition(sqlContext, parseContext, left);
+        } else if (lexer.equalToken(Token.BETWEEN)) {
+            parseBetweenCondition(sqlContext, parseContext, left);
+        } else if (lexer.equalToken(Token.LT) || lexer.equalToken(Token.GT)
+                || lexer.equalToken(Token.LT_EQ) || lexer.equalToken(Token.GT_EQ)) {
+            parserOtherCondition(sqlContext);
+        }
+    }
+    
+    private void parseEqualCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
+        lexer.nextToken();
+        SQLExpr right = getSqlExprWithVariant(sqlContext);
+        // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
+        if (1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) {
+            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
+        }
+    }
+    
+    private void parseInCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
+        lexer.nextToken();
+        lexer.accept(Token.LEFT_PAREN);
+        List<SQLExpr> rights = new LinkedList<>();
+        do {
+            if (lexer.equalToken(Token.COMMA)) {
+                lexer.nextToken();
+            }
+            rights.add(getSqlExprWithVariant(sqlContext));
+        } while (!lexer.equalToken(Token.RIGHT_PAREN));
+        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, parameters);
+        lexer.nextToken();
+    }
+    
+    private void parseBetweenCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
+        lexer.nextToken();
+        List<SQLExpr> rights = new LinkedList<>();
+        rights.add(getSqlExprWithVariant(sqlContext));
+        lexer.accept(Token.AND);
+        rights.add(getSqlExprWithVariant(sqlContext));
+        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, parameters);
+    }
+    
+    private void parserOtherCondition(final SQLContext sqlContext) {
+        lexer.nextToken();
+        getSqlExprWithVariant(sqlContext);
+    }
+    
+    private SQLExpr getSqlExprWithVariant(final SQLContext sqlContext) {
+        SQLExpr result = parseSQLExpr(sqlContext);
+        if (result instanceof SQLVariantRefExpr) {
+            ((SQLVariantRefExpr) result).setIndex(++parametersIndex);
+            result.getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parametersIndex - 1));
+            result.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parametersIndex - 1);
+        }
+        return result;
+    }
+    
+    private SQLExpr parseSQLExpr(final SQLContext sqlContext) {
+        String literals = lexer.getLiterals();
+        if (lexer.equalToken(Token.IDENTIFIER)) {
+            String tableName = sqlContext.getTables().get(0).getName();
+            if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                sqlContext.getSqlTokens().add(new TableToken(lexer.getCurrentPosition() - literals.length(), literals, tableName));
+            }
+            lexer.nextToken();
+            if (lexer.equalToken(Token.DOT)) {
+                lexer.nextToken();
+                SQLExpr result = new SQLPropertyExpr(new SQLIdentifierExpr(literals), lexer.getLiterals());
+                lexer.nextToken();
+                return result;
+            }
+            return new SQLIdentifierExpr(literals);
+        }
+        SQLExpr result = getSQLExpr(literals);
+        lexer.nextToken();
+        return result;
+    }
+    
+    private SQLExpr getSQLExpr(final String literals) {
+        if (lexer.equalToken(Token.VARIANT) || lexer.equalToken(Token.QUESTION)) {
+            return new SQLVariantRefExpr("?");
+        }
+        if (lexer.equalToken(Token.LITERAL_CHARS)) {
+            return new SQLCharExpr(literals);
+        }
+        if (lexer.equalToken(Token.LITERAL_NCHARS)) {
+            return new SQLNCharExpr(literals);
+        }
+        if (lexer.equalToken(Token.LITERAL_INT)) {
+            return new SQLIntegerExpr(Integer.parseInt(literals));
+        }
+        if (lexer.equalToken(Token.LITERAL_FLOAT)) {
+            return new SQLNumberExpr(Double.parseDouble(literals));
+        }
+        if (lexer.equalToken(Token.LITERAL_HEX)) {
+            return new SQLNumberExpr(Integer.parseInt(literals, 16));
+        }
+        throw new ParserUnsupportedException(lexer.getToken());
     }
 }
