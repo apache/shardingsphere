@@ -58,8 +58,10 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.OrderByContext;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
@@ -67,6 +69,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -79,9 +82,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class SQLExprParser extends SQLParser {
+/**
+ * SQL解析器.
+ *
+ * @author zhangliang
+ */
+public class SQLExprParser {
     
     private final Set<String> aggregateFunctions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
+    @Getter
+    private final Lexer lexer;
     
     @Getter
     private final ShardingRule shardingRule;
@@ -90,10 +101,83 @@ public class SQLExprParser extends SQLParser {
     private final List<Object> parameters;
     
     public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer, final String... aggregateFunctions) {
-        super(lexer);
+        this.lexer = lexer;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.aggregateFunctions.addAll(Arrays.asList(aggregateFunctions));
+    }
+    
+    protected Optional<String> as() {
+        if (lexer.skipIfEqual(Token.AS)) {
+            // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN
+            if (lexer.equalToken(Token.LEFT_PAREN)) {
+                return Optional.absent();
+            }
+            String result = lexer.getLiterals();
+            lexer.nextToken();
+            return Optional.of(result);
+        }
+        // TODO 增加哪些数据库识别哪些关键字作为别名的配置
+        if (lexer.equalToken(Token.IDENTIFIER, Token.LITERAL_ALIAS, Token.LITERAL_CHARS, Token.USER, Token.END, Token.CASE, Token.KEY, Token.INTERVAL, Token.CONSTRAINT)) {
+            String result = lexer.getLiterals();
+            lexer.nextToken();
+            return Optional.of(result);
+        }
+        return Optional.absent();
+    }
+    
+    protected final void parseSingleTable(final SQLContext sqlContext) {
+        boolean hasParentheses = false;
+        if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
+            if (getLexer().equalToken(Token.SELECT)) {
+                throw new UnsupportedOperationException("Cannot support subquery");
+            }
+            hasParentheses = true;
+        }
+        TableContext tableContext;
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
+        String literals = getLexer().getLiterals();
+        getLexer().nextToken();
+        if (getLexer().skipIfEqual(Token.DOT)) {
+            String tableName = getLexer().getLiterals();
+            getLexer().nextToken();
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
+        } else {
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
+        }
+        if (isJoin()) {
+            throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+        }
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlContext.getTables().add(tableContext);
+    }
+    
+    public final boolean isJoin() {
+        if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
+            getLexer().skipIfEqual(Token.OUTER);
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.INNER)) {
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.JOIN, Token.COMMA, Token.STRAIGHT_JOIN)) {
+            return true;
+        } else if (getLexer().skipIfEqual(Token.CROSS)) {
+            if (getLexer().skipIfEqual(Token.JOIN, Token.APPLY)) {
+                return true;
+            }
+        } else if (getLexer().skipIfEqual(Token.OUTER)) {
+            if (getLexer().skipIfEqual(Token.APPLY)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public final SQLExpr expr(final SQLObject parent) {
