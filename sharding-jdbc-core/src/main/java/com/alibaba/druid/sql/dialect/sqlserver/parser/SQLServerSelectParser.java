@@ -39,37 +39,37 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void customizedSelect(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.FOR)) {
+        if (getExprParser().getLexer().equalToken(Token.FOR)) {
             parseFor();
         }
-        if (getLexer().equalToken(Token.OFFSET)) {
+        if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
             parseOffset(sqlContext);
         }
     }
     
     @Override
     public SQLSelectQuery query(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
+            getExprParser().getLexer().nextToken();
             SQLSelectQuery select = query(sqlContext);
-            getLexer().accept(Token.RIGHT_PAREN);
+            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
         SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
-        if (getLexer().equalToken(Token.SELECT)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.SELECT)) {
+            getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().equalToken(Token.COMMENT)) {
+                getExprParser().getLexer().nextToken();
             }
             parseDistinct(sqlContext);
-            if (getLexer().equalToken(Token.TOP)) {
-                queryBlock.setTop(new SQLServerExprParser(getShardingRule(), getParameters(), getLexer()).parseTop());
+            if (getExprParser().getLexer().equalToken(Token.TOP)) {
+                queryBlock.setTop(new SQLServerExprParser(getShardingRule(), getParameters(), getExprParser().getLexer()).parseTop());
             }
             parseSelectList(sqlContext);
         }
-        if (getLexer().equalToken(Token.INTO)) {
-            throw new ParserUnsupportedException(getLexer().getToken());
+        if (getExprParser().getLexer().equalToken(Token.INTO)) {
+            throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
         parseFrom(sqlContext);
         parseWhere(sqlContext);
@@ -80,42 +80,42 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseJoinTable(final SelectSQLContext sqlContext) {
-        if (getLexer().skipIfEqual(Token.WITH)) {
-            getLexer().skipParentheses();
+        if (getExprParser().getLexer().skipIfEqual(Token.WITH)) {
+            getExprParser().getLexer().skipParentheses();
         }
         super.parseJoinTable(sqlContext);
     }
     
     private void parseFor() {
-        getLexer().nextToken();
-        if (getLexer().identifierEquals("BROWSE")) {
-            getLexer().nextToken();
-        } else if (getLexer().identifierEquals("XML")) {
-            getLexer().nextToken();
+        getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().identifierEquals("BROWSE")) {
+            getExprParser().getLexer().nextToken();
+        } else if (getExprParser().getLexer().identifierEquals("XML")) {
+            getExprParser().getLexer().nextToken();
             while (true) {
-                if (getLexer().identifierEquals("AUTO") || getLexer().identifierEquals("TYPE") || getLexer().identifierEquals("XMLSCHEMA")) {
-                    getLexer().nextToken();
-                } else if (getLexer().identifierEquals("ELEMENTS")) {
-                    getLexer().nextToken();
-                    if (getLexer().identifierEquals("XSINIL")) {
-                        getLexer().nextToken();
+                if (getExprParser().getLexer().identifierEquals("AUTO") || getExprParser().getLexer().identifierEquals("TYPE") || getExprParser().getLexer().identifierEquals("XMLSCHEMA")) {
+                    getExprParser().getLexer().nextToken();
+                } else if (getExprParser().getLexer().identifierEquals("ELEMENTS")) {
+                    getExprParser().getLexer().nextToken();
+                    if (getExprParser().getLexer().identifierEquals("XSINIL")) {
+                        getExprParser().getLexer().nextToken();
                     }
                 } else {
                     break;
                 }
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
+                if (getExprParser().getLexer().equalToken(Token.COMMA)) {
+                    getExprParser().getLexer().nextToken();
                 } else {
                     break;
                 }
             }
         } else {
-            throw new ParserUnsupportedException(getLexer().getToken());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
     }
     
     private void parseOffset(final SelectSQLContext sqlContext) {
-        getLexer().nextToken();
+        getExprParser().getLexer().nextToken();
         SQLExpr offsetExpr = getExprParser().expr();
         int offset;
         int offsetIndex = -1;
@@ -128,10 +128,10 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         } else {
             throw new UnsupportedOperationException("Cannot support offset for: " + offsetExpr.getClass().getCanonicalName());
         }
-        getLexer().nextToken();
+        getExprParser().getLexer().nextToken();
         LimitContext limitContext;
-        if (getLexer().skipIfEqual(Token.FETCH)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
+            getExprParser().getLexer().nextToken();
             int rowCount;
             int rowCountIndex = -1;
             SQLExpr rowCountExpr = getExprParser().expr();
@@ -144,8 +144,8 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             } else {
                 throw new UnsupportedOperationException("Cannot support rowCount for: " + rowCountExpr.getClass().getCanonicalName());
             }
-            getLexer().nextToken();
-            getLexer().nextToken();
+            getExprParser().getLexer().nextToken();
+            getExprParser().getLexer().nextToken();
             limitContext = new LimitContext(offset, rowCount, offsetIndex, rowCountIndex);
         } else {
             limitContext = new LimitContext(offset, offsetIndex);

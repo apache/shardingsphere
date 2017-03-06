@@ -124,7 +124,7 @@ public class ParserUtil {
         getSqlExprWithVariant();
     }
     
-    public SQLExpr getSqlExprWithVariant() {
+    private SQLExpr getSqlExprWithVariant() {
         SQLExpr result = parseSQLExpr();
         if (result instanceof SQLVariantRefExpr) {
             ((SQLVariantRefExpr) result).setIndex(++parametersIndex);

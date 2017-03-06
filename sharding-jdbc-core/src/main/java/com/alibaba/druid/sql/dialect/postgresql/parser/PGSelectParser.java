@@ -35,40 +35,40 @@ public class PGSelectParser extends AbstractSelectParser {
     }
     
     protected SQLExprParser createExprParser() {
-        return new PGExprParser(getShardingRule(), getParameters(), getLexer());
+        return new PGExprParser(getShardingRule(), getParameters(), getExprParser().getLexer());
     }
     
     @Override
     public SQLSelectQuery query(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
+            getExprParser().getLexer().nextToken();
             SQLSelectQuery select = query(sqlContext);
-            getLexer().accept(Token.RIGHT_PAREN);
+            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
         PGSelectQueryBlock queryBlock = new PGSelectQueryBlock();
-        if (getLexer().equalToken(Token.SELECT)) {
-            getLexer().nextToken();
-            getLexer().skipIfEqual(Token.COMMENT);
+        if (getExprParser().getLexer().equalToken(Token.SELECT)) {
+            getExprParser().getLexer().nextToken();
+            getExprParser().getLexer().skipIfEqual(Token.COMMENT);
             parseDistinct(sqlContext);
             parseSelectList(sqlContext);
-            if (getLexer().skipIfEqual(Token.INTO)) {
-                getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
-                getLexer().skipIfEqual(Token.TABLE);
+            if (getExprParser().getLexer().skipIfEqual(Token.INTO)) {
+                getExprParser().getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
+                getExprParser().getLexer().skipIfEqual(Token.TABLE);
                 createExprParser().name();
             }
         }
         parseFrom(sqlContext);
         parseWhere(sqlContext);
         parseGroupBy(sqlContext);
-        if (getLexer().skipIfEqual(Token.WINDOW)) {
+        if (getExprParser().getLexer().skipIfEqual(Token.WINDOW)) {
             getExprParser().expr();
-            getLexer().accept(Token.AS);
+            getExprParser().getLexer().accept(Token.AS);
             while (true) {
                 createExprParser().expr();
-                if (getLexer().equalToken(Token.COMMA)) {
-                    getLexer().nextToken();
+                if (getExprParser().getLexer().equalToken(Token.COMMA)) {
+                    getExprParser().getLexer().nextToken();
                 } else {
                     break;
                 }
@@ -76,49 +76,49 @@ public class PGSelectParser extends AbstractSelectParser {
         }
         sqlContext.getOrderByContexts().addAll(createExprParser().parseOrderBy());
         while (true) {
-            if (getLexer().equalToken(Token.LIMIT)) {
+            if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
                 PGLimit limit = new PGLimit();
-                getLexer().nextToken();
-                if (getLexer().equalToken(Token.ALL)) {
+                getExprParser().getLexer().nextToken();
+                if (getExprParser().getLexer().equalToken(Token.ALL)) {
                     limit.setRowCount(new SQLIdentifierExpr("ALL"));
-                    getLexer().nextToken();
+                    getExprParser().getLexer().nextToken();
                 } else {
                     limit.setRowCount(getExprParser().expr());
                 }
 
                 queryBlock.setLimit(limit);
-            } else if (getLexer().equalToken(Token.OFFSET)) {
+            } else if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
                 PGLimit limit = queryBlock.getLimit();
                 if (limit == null) {
                     limit = new PGLimit();
                     queryBlock.setLimit(limit);
                 }
-                getLexer().nextToken();
+                getExprParser().getLexer().nextToken();
                 limit.setOffset(getExprParser().expr());
-                getLexer().skipIfEqual(Token.ROW, Token.ROWS);
+                getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
             } else {
                 break;
             }
         }
-        if (getLexer().skipIfEqual(Token.FETCH)) {
-            getLexer().skipIfEqual(Token.FIRST, Token.NEXT);
+        if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
+            getExprParser().getLexer().skipIfEqual(Token.FIRST, Token.NEXT);
             getExprParser().expr();
-            getLexer().skipIfEqual(Token.ROW, Token.ROWS);
-            getLexer().skipIfEqual(Token.ONLY);
+            getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
+            getExprParser().getLexer().skipIfEqual(Token.ONLY);
         }
-        if (getLexer().skipIfEqual(Token.FOR)) {
-            getLexer().skipIfEqual(Token.UPDATE, Token.SHARE);
-            if (getLexer().equalToken(Token.OF)) {
+        if (getExprParser().getLexer().skipIfEqual(Token.FOR)) {
+            getExprParser().getLexer().skipIfEqual(Token.UPDATE, Token.SHARE);
+            if (getExprParser().getLexer().equalToken(Token.OF)) {
                 while (true) {
                     createExprParser().expr();
-                    if (getLexer().equalToken(Token.COMMA)) {
-                        getLexer().nextToken();
+                    if (getExprParser().getLexer().equalToken(Token.COMMA)) {
+                        getExprParser().getLexer().nextToken();
                     } else {
                         break;
                     }
                 }
             }
-            getLexer().skipIfEqual(Token.NOWAIT);
+            getExprParser().getLexer().skipIfEqual(Token.NOWAIT);
         }
         queryRest();
         return queryBlock;

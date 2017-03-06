@@ -29,7 +29,6 @@ import lombok.Getter;
  *
  * @author zhangliang
  */
-// TODO 与SQLStatementParser合并?
 public class SQLParser {
     
     @Getter
@@ -90,7 +89,7 @@ public class SQLParser {
         sqlContext.getTables().add(tableContext);
     }
     
-    protected final boolean isJoin() {
+    public final boolean isJoin() {
         if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
             getLexer().skipIfEqual(Token.OUTER);
             getLexer().accept(Token.JOIN);

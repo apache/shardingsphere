@@ -35,24 +35,24 @@ public class MySqlSelectParser extends AbstractSelectParser {
     
     @Override
     public SQLSelectQuery query(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
+            getExprParser().getLexer().nextToken();
             SQLSelectQuery select = query(sqlContext);
-            getLexer().accept(Token.RIGHT_PAREN);
+            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
         MySqlSelectQueryBlock queryBlock = new MySqlSelectQueryBlock();
-        if (getLexer().equalToken(Token.SELECT)) {
-            getLexer().nextToken();
-            while (getLexer().equalToken(Token.HINT) || getLexer().equalToken(Token.COMMENT)) {
-                getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.SELECT)) {
+            getExprParser().getLexer().nextToken();
+            while (getExprParser().getLexer().equalToken(Token.HINT) || getExprParser().getLexer().equalToken(Token.COMMENT)) {
+                getExprParser().getLexer().nextToken();
             }
             parseDistinct(sqlContext);
-            while (getLexer().equalToken(Token.HIGH_PRIORITY) || getLexer().equalToken(Token.STRAIGHT_JOIN) || getLexer().equalToken(Token.SQL_SMALL_RESULT)
-                    || getLexer().equalToken(Token.SQL_BIG_RESULT) || getLexer().equalToken(Token.SQL_BUFFER_RESULT) || getLexer().equalToken(Token.SQL_CACHE)
-                    || getLexer().equalToken(Token.SQL_NO_CACHE) || getLexer().equalToken(Token.SQL_CALC_FOUND_ROWS)) {
-                getLexer().nextToken();
+            while (getExprParser().getLexer().equalToken(Token.HIGH_PRIORITY) || getExprParser().getLexer().equalToken(Token.STRAIGHT_JOIN) || getExprParser().getLexer().equalToken(Token.SQL_SMALL_RESULT)
+                    || getExprParser().getLexer().equalToken(Token.SQL_BIG_RESULT) || getExprParser().getLexer().equalToken(Token.SQL_BUFFER_RESULT) || getExprParser().getLexer().equalToken(Token.SQL_CACHE)
+                    || getExprParser().getLexer().equalToken(Token.SQL_NO_CACHE) || getExprParser().getLexer().equalToken(Token.SQL_CALC_FOUND_ROWS)) {
+                getExprParser().getLexer().nextToken();
             }
             parseSelectList(sqlContext);
             skipToFrom();
@@ -61,60 +61,60 @@ public class MySqlSelectParser extends AbstractSelectParser {
         parseWhere(sqlContext);
         parseGroupBy(sqlContext);
         sqlContext.getOrderByContexts().addAll(getExprParser().parseOrderBy());
-        if (getLexer().equalToken(Token.LIMIT)) {
+        if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
             sqlContext.setLimitContext(((MySqlExprParser) getExprParser()).parseLimit(getParametersIndex(), sqlContext));
         }
-        if (getLexer().equalToken(Token.PROCEDURE)) {
-            throw new ParserUnsupportedException(getLexer().getToken());
+        if (getExprParser().getLexer().equalToken(Token.PROCEDURE)) {
+            throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
         queryRest();
         return queryBlock;
     }
     
     private void skipToFrom() {
-        while (!getLexer().equalToken(Token.FROM) && !getLexer().equalToken(Token.EOF)) {
-            getLexer().nextToken();
+        while (!getExprParser().getLexer().equalToken(Token.FROM) && !getExprParser().getLexer().equalToken(Token.EOF)) {
+            getExprParser().getLexer().nextToken();
         }
     }
     
     @Override
     protected void parseJoinTable(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.USING)) {
+        if (getExprParser().getLexer().equalToken(Token.USING)) {
             return;
         }
-        if (getLexer().equalToken(Token.USE)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.USE)) {
+            getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getLexer().identifierEquals("IGNORE")) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().identifierEquals("IGNORE")) {
+            getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getLexer().identifierEquals("FORCE")) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().identifierEquals("FORCE")) {
+            getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
         super.parseJoinTable(sqlContext);
     }
 
     private void parseIndexHint() {
-        if (getLexer().equalToken(Token.INDEX)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.INDEX)) {
+            getExprParser().getLexer().nextToken();
         } else {
-            getLexer().accept(Token.KEY);
+            getExprParser().getLexer().accept(Token.KEY);
         }
-        if (getLexer().equalToken(Token.FOR)) {
-            getLexer().nextToken();
-            if (getLexer().equalToken(Token.JOIN)) {
-                getLexer().nextToken();
-            } else if (getLexer().equalToken(Token.ORDER)) {
-                getLexer().nextToken();
-                getLexer().accept(Token.BY);
+        if (getExprParser().getLexer().equalToken(Token.FOR)) {
+            getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().equalToken(Token.JOIN)) {
+                getExprParser().getLexer().nextToken();
+            } else if (getExprParser().getLexer().equalToken(Token.ORDER)) {
+                getExprParser().getLexer().nextToken();
+                getExprParser().getLexer().accept(Token.BY);
             } else {
-                getLexer().accept(Token.GROUP);
-                getLexer().accept(Token.BY);
+                getExprParser().getLexer().accept(Token.GROUP);
+                getExprParser().getLexer().accept(Token.BY);
             }
         }
-        getLexer().skipParentheses();
+        getExprParser().getLexer().skipParentheses();
     }
 }

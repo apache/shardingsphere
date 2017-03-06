@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public abstract class AbstractDeleteParser extends SQLParser {
+public abstract class AbstractDeleteParser {
     
     @Getter
     private final SQLExprParser exprParser;
@@ -24,7 +24,6 @@ public abstract class AbstractDeleteParser extends SQLParser {
     private final List<Object> parameters;
     
     public AbstractDeleteParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer());
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
@@ -36,11 +35,11 @@ public abstract class AbstractDeleteParser extends SQLParser {
      * @return 解析结果
      */
     public DeleteSQLContext parse() {
-        DeleteSQLContext result = new DeleteSQLContext(getLexer().getInput());
-        getLexer().nextToken();
+        DeleteSQLContext result = new DeleteSQLContext(exprParser.getLexer().getInput());
+        exprParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
-        parseSingleTable(result);
-        getLexer().skipUntil(Token.WHERE);
+        exprParser.parseSingleTable(result);
+        exprParser.getLexer().skipUntil(Token.WHERE);
         Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, result, 0).parseWhere();
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());

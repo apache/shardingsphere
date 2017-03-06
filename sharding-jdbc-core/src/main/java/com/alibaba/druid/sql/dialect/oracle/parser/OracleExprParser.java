@@ -62,6 +62,7 @@ import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.google.common.base.Optional;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -76,6 +77,14 @@ public class OracleExprParser extends SQLExprParser {
     public OracleExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
         super(shardingRule, parameters, new OracleLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
+    }
+    
+    @Override
+    protected Optional<String> as() {
+        if (getLexer().equalToken(Token.CONNECT)) {
+            return null;
+        }
+        return super.as();
     }
     
     protected boolean isCharType(final String dataTypeName) {

@@ -39,7 +39,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-public abstract class AbstractSelectParser extends SQLParser {
+public abstract class AbstractSelectParser {
     
     @Getter
     private SQLExprParser exprParser;
@@ -55,7 +55,6 @@ public abstract class AbstractSelectParser extends SQLParser {
     private int parametersIndex;
     
     public AbstractSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer());
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.exprParser = exprParser;
@@ -67,7 +66,7 @@ public abstract class AbstractSelectParser extends SQLParser {
      * @return 解析结果
      */
     public final SelectSQLContext parse() {
-        SelectSQLContext result = new SelectSQLContext(getLexer().getInput());
+        SelectSQLContext result = new SelectSQLContext(getExprParser().getLexer().getInput());
         query(result);
         result.getOrderByContexts().addAll(exprParser.parseOrderBy());
         customizedSelect(result);
@@ -78,16 +77,16 @@ public abstract class AbstractSelectParser extends SQLParser {
     }
     
     protected SQLSelectQuery query(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
+            getExprParser().getLexer().nextToken();
             SQLSelectQuery select = query(sqlContext);
-            getLexer().accept(Token.RIGHT_PAREN);
+            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
         }
         SQLSelectQueryBlock queryBlock = new SQLSelectQueryBlock();
-        getLexer().accept(Token.SELECT);
-        getLexer().skipIfEqual(Token.COMMENT);
+        getExprParser().getLexer().accept(Token.SELECT);
+        getExprParser().getLexer().skipIfEqual(Token.COMMENT);
         parseDistinct(sqlContext);
         parseSelectList(sqlContext);
         parseFrom(sqlContext);
@@ -98,15 +97,15 @@ public abstract class AbstractSelectParser extends SQLParser {
     }
     
     protected final void parseDistinct(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.DISTINCT, Token.DISTINCTROW, Token.UNION)) {
+        if (getExprParser().getLexer().equalToken(Token.DISTINCT, Token.DISTINCTROW, Token.UNION)) {
             sqlContext.setDistinct(true);
-            getLexer().nextToken();
-            if (hasDistinctOn() && getLexer().equalToken(Token.ON)) {
-                getLexer().nextToken();
-                getLexer().skipParentheses();
+            getExprParser().getLexer().nextToken();
+            if (hasDistinctOn() && getExprParser().getLexer().equalToken(Token.ON)) {
+                getExprParser().getLexer().nextToken();
+                getExprParser().getLexer().skipParentheses();
             }
-        } else if (getLexer().equalToken(Token.ALL)) {
-            getLexer().nextToken();
+        } else if (getExprParser().getLexer().equalToken(Token.ALL)) {
+            getExprParser().getLexer().nextToken();
         }
     }
     
@@ -125,13 +124,13 @@ public abstract class AbstractSelectParser extends SQLParser {
                     sqlContext.setContainStar(true);
                 }
             }
-        } while (getLexer().skipIfEqual(Token.COMMA));
-        sqlContext.setSelectListLastPosition(getLexer().getCurrentPosition() - getLexer().getLiterals().length());
+        } while (getExprParser().getLexer().skipIfEqual(Token.COMMA));
+        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getCurrentPosition() - getExprParser().getLexer().getLiterals().length());
     }
     
     protected void queryRest() {
-        if (getLexer().equalToken(Token.UNION) || getLexer().equalToken(Token.EXCEPT) || getLexer().equalToken(Token.INTERSECT) || getLexer().equalToken(Token.MINUS)) {
-            throw new ParserUnsupportedException(getLexer().getToken());
+        if (getExprParser().getLexer().equalToken(Token.UNION, Token.EXCEPT, Token.INTERSECT, Token.MINUS)) {
+            throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
     }
     
@@ -148,35 +147,31 @@ public abstract class AbstractSelectParser extends SQLParser {
     }
     
     protected void parseGroupBy(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.GROUP)) {
-            getLexer().nextToken();
-            getLexer().accept(Token.BY);
+        if (getExprParser().getLexer().skipIfEqual(Token.GROUP)) {
+            getExprParser().getLexer().accept(Token.BY);
             while (true) {
                 addGroupByItem(exprParser.expr(), sqlContext);
-                if (!getLexer().equalToken(Token.COMMA)) {
+                if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
-                getLexer().nextToken();
+                getExprParser().getLexer().nextToken();
             }
-            while (getLexer().equalToken(Token.WITH) || getLexer().getLiterals().equalsIgnoreCase("ROLLUP")) {
-                getLexer().nextToken();
+            while (getExprParser().getLexer().equalToken(Token.WITH) || getExprParser().getLexer().getLiterals().equalsIgnoreCase("ROLLUP")) {
+                getExprParser().getLexer().nextToken();
             }
-            if (getLexer().equalToken(Token.HAVING)) {
-                getLexer().nextToken();
+            if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
                 exprParser.expr();
             }
-        } else if (getLexer().equalToken(Token.HAVING)) {
-            getLexer().nextToken();
+        } else if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
             exprParser.expr();
         }
     }
     
     protected final void addGroupByItem(final SQLExpr sqlExpr, final SelectSQLContext sqlContext) {
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
-        if (getLexer().equalToken(Token.ASC)) {
-            getLexer().nextToken();
-        } else if (getLexer().equalToken(Token.DESC)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().equalToken(Token.ASC)) {
+            getExprParser().getLexer().nextToken();
+        } else if (getExprParser().getLexer().skipIfEqual(Token.DESC)) {
             orderByType = OrderByColumn.OrderByType.DESC;
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
@@ -189,14 +184,13 @@ public abstract class AbstractSelectParser extends SQLParser {
     }
     
     public final void parseFrom(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.FROM)) {
-            getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.FROM)) {
             parseTableSource(sqlContext);
         }
     }
     
     public List<TableContext> parseTableSource(final SelectSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
+        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         parseTableFactor(sqlContext);
@@ -205,25 +199,24 @@ public abstract class AbstractSelectParser extends SQLParser {
     }
     
     protected final void parseTableFactor(final SelectSQLContext sqlContext) {
-        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        String literals = getLexer().getLiterals();
-        getLexer().nextToken();
-        if (getLexer().skipIfEqual(Token.DOT)) {
-            getLexer().nextToken();
-            as();
+        int beginPosition = getExprParser().getLexer().getCurrentPosition() - getExprParser().getLexer().getLiterals().length();
+        String literals = getExprParser().getLexer().getLiterals();
+        getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.DOT)) {
+            getExprParser().getLexer().nextToken();
+            getExprParser().as();
             return;
         }
         // FIXME 根据shardingRule过滤table
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
-        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), as()));
+        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getExprParser().as()));
     }
     
     protected void parseJoinTable(final SelectSQLContext sqlContext) {
-        if (isJoin()) {
+        if (getExprParser().isJoin()) {
             parseTableSource(sqlContext);
-            if (getLexer().equalToken(Token.ON)) {
-                getLexer().nextToken();
-                int leftStartPosition = getLexer().getCurrentPosition();
+            if (getExprParser().getLexer().skipIfEqual(Token.ON)) {
+                int leftStartPosition = getExprParser().getLexer().getCurrentPosition();
                 SQLExpr sqlExpr = exprParser.expr();
                 if (sqlExpr instanceof SQLBinaryOpExpr) {
                     SQLBinaryOpExpr binaryOpExpr = (SQLBinaryOpExpr) sqlExpr;
@@ -245,8 +238,8 @@ public abstract class AbstractSelectParser extends SQLParser {
                         }
                     }
                 }
-            } else if (getLexer().skipIfEqual(Token.USING)) {
-                getLexer().skipParentheses();
+            } else if (getExprParser().getLexer().skipIfEqual(Token.USING)) {
+                getExprParser().getLexer().skipParentheses();
             }
             parseJoinTable(sqlContext);
         }

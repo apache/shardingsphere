@@ -36,13 +36,13 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         ParseContext parseContext = getParseContext(sqlContext);
         Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         do {
-            getLexer().nextToken();
+            getExprParser().getLexer().nextToken();
             Condition.Column column = getColumn(sqlContext, autoIncrementColumns);
-            getLexer().nextToken();
-            getLexer().accept(Token.EQ);
+            getExprParser().getLexer().nextToken();
+            getExprParser().getLexer().accept(Token.EQ);
             SQLExpr value = getExprParser().expr();
             parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, value, getParameters());
-        } while (getLexer().equalToken(Token.COMMA));
+        } while (getExprParser().getLexer().equalToken(Token.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
