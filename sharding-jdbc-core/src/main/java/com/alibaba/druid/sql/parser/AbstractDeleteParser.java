@@ -1,12 +1,9 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.DeleteSQLContext;
-import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
@@ -44,18 +41,9 @@ public abstract class AbstractDeleteParser extends SQLParser {
         skipBetweenDeleteAndTable();
         parseSingleTable(result);
         getLexer().skipUntil(Token.WHERE);
-        Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, parameters, result, 0).parseWhere(getParseContext(result));
+        Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, result, 0).parseWhere();
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
-        }
-        return result;
-    }
-    
-    private ParseContext getParseContext(final SQLContext sqlContext) {
-        ParseContext result = new ParseContext(1);
-        result.setShardingRule(shardingRule);
-        for (TableContext each : sqlContext.getTables()) {
-            result.setCurrentTable(each.getName(), each.getAlias());
         }
         return result;
     }

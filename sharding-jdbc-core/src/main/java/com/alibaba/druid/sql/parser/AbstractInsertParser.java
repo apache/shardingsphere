@@ -142,7 +142,7 @@ public abstract class AbstractInsertParser extends SQLParser {
             int parameterCount = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {
-                    Number autoIncrementedValue = (Number) parseContext.getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
+                    Number autoIncrementedValue = (Number) getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
                     if (parameters.isEmpty()) {
                         itemsToken.getItems().add(autoIncrementedValue.toString());
                         sqlExprs.add(new SQLNumberExpr(autoIncrementedValue));

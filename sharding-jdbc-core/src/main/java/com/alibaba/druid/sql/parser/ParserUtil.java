@@ -10,8 +10,10 @@ import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.SQLContext;
+import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
@@ -35,6 +37,8 @@ public class ParserUtil {
     @Getter
     private final SQLExprParser exprParser;
     
+    private final ShardingRule shardingRule;
+    
     private final List<Object> parameters;
     
     private final SQLContext sqlContext;
@@ -42,12 +46,22 @@ public class ParserUtil {
     @Getter
     private int parametersIndex;
     
-    public Optional<ConditionContext> parseWhere(final ParseContext parseContext) {
+    public Optional<ConditionContext> parseWhere() {
         if (exprParser.getLexer().skipIfEqual(Token.WHERE)) {
+            ParseContext parseContext = getParseContext();
             parseConditions(parseContext);
             return Optional.of(parseContext.getCurrentConditionContext());
         }
         return Optional.absent();
+    }
+    
+    private ParseContext getParseContext() {
+        ParseContext result = new ParseContext(1);
+        result.setShardingRule(shardingRule);
+        for (TableContext each : sqlContext.getTables()) {
+            result.setCurrentTable(each.getName(), each.getAlias());
+        }
+        return result;
     }
     
     private void parseConditions(final ParseContext parseContext) {
@@ -76,7 +90,7 @@ public class ParserUtil {
     private void parseEqualCondition(final ParseContext parseContext, final SQLExpr left) {
         exprParser.getLexer().nextToken();
         SQLExpr right = getSqlExprWithVariant();
-        // TODO 如果有多表,且找不到cloumn是哪个表的,则不加入condition,以后需要解析binding table
+        // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if (1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) {
             parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
         }
