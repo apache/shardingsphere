@@ -20,8 +20,8 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        while (getLexer().equalToken(Token.LOW_PRIORITY) || getLexer().equalToken(Token.IGNORE)) {
-            getLexer().nextToken();
+        while (getExprParser().getLexer().equalToken(Token.LOW_PRIORITY) || getExprParser().getLexer().equalToken(Token.IGNORE)) {
+            getExprParser().getLexer().nextToken();
         }
     }
 }

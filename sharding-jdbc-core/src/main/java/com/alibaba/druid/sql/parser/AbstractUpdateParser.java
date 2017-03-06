@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public abstract class AbstractUpdateParser extends SQLParser {
+public abstract class AbstractUpdateParser {
     
     @Getter
     private final SQLExprParser exprParser;
@@ -34,7 +34,6 @@ public abstract class AbstractUpdateParser extends SQLParser {
     private int parametersIndex;
     
     public AbstractUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(exprParser.getLexer());
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
@@ -46,12 +45,12 @@ public abstract class AbstractUpdateParser extends SQLParser {
      * @return 解析结果
      */
     public UpdateSQLContext parse() {
-        UpdateSQLContext result = new UpdateSQLContext(getLexer().getInput());
-        getLexer().nextToken();
+        UpdateSQLContext result = new UpdateSQLContext(exprParser.getLexer().getInput());
+        exprParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
-        parseSingleTable(result);
+        exprParser.parseSingleTable(result);
         parseSetItems(result);
-        getLexer().skipUntil(Token.WHERE);
+        exprParser.getLexer().skipUntil(Token.WHERE);
         Optional<ConditionContext> conditionContext = new ParserUtil(exprParser, shardingRule, parameters, result, parametersIndex).parseWhere();
         if (conditionContext.isPresent()) {
             result.getConditionContexts().add(conditionContext.get());
@@ -62,26 +61,26 @@ public abstract class AbstractUpdateParser extends SQLParser {
     protected abstract void skipBetweenUpdateAndTable();
     
     private void parseSetItems(final UpdateSQLContext sqlContext) {
-        getLexer().accept(Token.SET);
+        exprParser.getLexer().accept(Token.SET);
         do {
             parseSetItem(sqlContext);
-        } while (getLexer().skipIfEqual(Token.COMMA));
+        } while (exprParser.getLexer().skipIfEqual(Token.COMMA));
     }
     
     private void parseSetItem(final UpdateSQLContext sqlContext) {
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().skipParentheses();
+        if (exprParser.getLexer().equalToken(Token.LEFT_PAREN)) {
+            exprParser.getLexer().skipParentheses();
         } else {
-            int beginPosition = getLexer().getCurrentPosition();
-            String literals = getLexer().getLiterals();
-            getLexer().nextToken();
+            int beginPosition = exprParser.getLexer().getCurrentPosition();
+            String literals = exprParser.getLexer().getLiterals();
+            exprParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();
-            if (getLexer().skipIfEqual(Token.DOT) && tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+            if (exprParser.getLexer().skipIfEqual(Token.DOT) && tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
                 sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
-                getLexer().nextToken();
+                exprParser.getLexer().nextToken();
             }
         }
-        getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
+        exprParser.getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
         SQLExpr value = exprParser.expr();
         if (value instanceof SQLBinaryOpExpr) {
             if (((SQLBinaryOpExpr) value).getLeft() instanceof SQLVariantRefExpr) {

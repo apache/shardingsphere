@@ -20,6 +20,6 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getLexer().skipIfEqual(Token.ONLY);
+        getExprParser().getLexer().skipIfEqual(Token.ONLY);
     }
 }
