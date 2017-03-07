@@ -7,14 +7,11 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-
-import java.util.List;
 
 /**
  * Update语句解析器.
@@ -26,18 +23,12 @@ public abstract class AbstractUpdateParser {
     
     private final SQLExprParser exprParser;
     
-    private final ShardingRule shardingRule;
-    
-    private final List<Object> parameters;
-    
     private final UpdateSQLContext sqlContext;
     
     private int parametersIndex;
     
-    public AbstractUpdateParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public AbstractUpdateParser(final SQLExprParser exprParser) {
         this.exprParser = exprParser;
-        this.shardingRule = shardingRule;
-        this.parameters = parameters;
         sqlContext = new UpdateSQLContext(exprParser.getLexer().getInput());
     }
     
