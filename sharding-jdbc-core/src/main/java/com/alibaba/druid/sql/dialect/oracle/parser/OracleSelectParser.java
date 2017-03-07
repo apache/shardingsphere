@@ -20,6 +20,7 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
@@ -27,18 +28,17 @@ import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
 public class OracleSelectParser extends AbstractSelectParser {
     
-    public OracleSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public OracleSelectParser(final SQLExprParser exprParser) {
+        super(exprParser);
     }
     
     @Override
-    protected void customizedSelect() {
+    protected void customizedSelect(final SelectSQLContext sqlContext) {
         if (getExprParser().getLexer().equalToken(Token.FOR)) {
             skipForUpdate();
         }

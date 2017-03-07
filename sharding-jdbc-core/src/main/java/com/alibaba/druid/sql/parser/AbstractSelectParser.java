@@ -29,7 +29,6 @@ import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.lexer.Token;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -45,18 +44,12 @@ public abstract class AbstractSelectParser {
     
     private SQLExprParser exprParser;
     
-    private final ShardingRule shardingRule;
-    
-    private final List<Object> parameters;
-    
     private final SelectSQLContext sqlContext;
     
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        this.shardingRule = shardingRule;
-        this.parameters = parameters;
+    public AbstractSelectParser(final SQLExprParser exprParser) {
         this.exprParser = exprParser;
         sqlContext = new SelectSQLContext(getExprParser().getLexer().getInput());
     }
@@ -69,11 +62,11 @@ public abstract class AbstractSelectParser {
     public final SelectSQLContext parse() {
         query();
         sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
-        customizedSelect();
+        customizedSelect(sqlContext);
         return sqlContext;
     }
     
-    protected void customizedSelect() {
+    protected void customizedSelect(final SelectSQLContext sqlContext) {
     }
     
     protected SQLSelectQuery query() {

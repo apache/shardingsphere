@@ -23,18 +23,11 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLi
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
 
 public class PGSelectParser extends AbstractSelectParser {
     
-    public PGSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(shardingRule, parameters, exprParser);
-    }
-    
-    protected SQLExprParser createExprParser() {
-        return new PGExprParser(getShardingRule(), getParameters(), getExprParser().getLexer());
+    public PGSelectParser(final SQLExprParser exprParser) {
+        super(exprParser);
     }
     
     @Override
@@ -55,7 +48,7 @@ public class PGSelectParser extends AbstractSelectParser {
             if (getExprParser().getLexer().skipIfEqual(Token.INTO)) {
                 getExprParser().getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
                 getExprParser().getLexer().skipIfEqual(Token.TABLE);
-                createExprParser().name();
+                getExprParser().name();
             }
         }
         parseFrom();
@@ -65,7 +58,7 @@ public class PGSelectParser extends AbstractSelectParser {
             getExprParser().expr();
             getExprParser().getLexer().accept(Token.AS);
             while (true) {
-                createExprParser().expr();
+                getExprParser().expr();
                 if (getExprParser().getLexer().equalToken(Token.COMMA)) {
                     getExprParser().getLexer().nextToken();
                 } else {
@@ -73,7 +66,7 @@ public class PGSelectParser extends AbstractSelectParser {
                 }
             }
         }
-        getSqlContext().getOrderByContexts().addAll(createExprParser().parseOrderBy());
+        getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
         while (true) {
             if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
                 PGLimit limit = new PGLimit();
@@ -109,7 +102,7 @@ public class PGSelectParser extends AbstractSelectParser {
             getExprParser().getLexer().skipIfEqual(Token.UPDATE, Token.SHARE);
             if (getExprParser().getLexer().equalToken(Token.OF)) {
                 while (true) {
-                    createExprParser().expr();
+                    getExprParser().expr();
                     if (getExprParser().getLexer().equalToken(Token.COMMA)) {
                         getExprParser().getLexer().nextToken();
                     } else {

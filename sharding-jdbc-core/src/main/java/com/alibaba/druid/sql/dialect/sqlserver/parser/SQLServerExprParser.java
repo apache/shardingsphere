@@ -18,7 +18,11 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
+import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.context.LimitContext;
+import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
 import com.alibaba.druid.sql.lexer.Lexer;
@@ -138,5 +142,44 @@ public class SQLServerExprParser extends SQLExprParser {
         if (getLexer().equalToken(Token.OUTPUT)) {
             throw new ParserUnsupportedException(Token.OUTPUT);
         }
+    }
+    
+    public void parseOffset(final SelectSQLContext sqlContext) {
+        getLexer().nextToken();
+        SQLExpr offsetExpr = expr();
+        int offset;
+        int offsetIndex = -1;
+        if (offsetExpr instanceof SQLNumericLiteralExpr) {
+            offset = ((SQLNumericLiteralExpr) offsetExpr).getNumber().intValue();
+        } else if (offsetExpr instanceof SQLVariantRefExpr) {
+            offsetIndex = getParametersIndex();
+            offset = (int) getParameters().get(offsetIndex);
+            setParametersIndex(offsetIndex + 1);
+        } else {
+            throw new UnsupportedOperationException("Cannot support offset for: " + offsetExpr.getClass().getCanonicalName());
+        }
+        getLexer().nextToken();
+        LimitContext limitContext;
+        if (getLexer().skipIfEqual(Token.FETCH)) {
+            getLexer().nextToken();
+            int rowCount;
+            int rowCountIndex = -1;
+            SQLExpr rowCountExpr = expr();
+            if (rowCountExpr instanceof SQLNumericLiteralExpr) {
+                rowCount = ((SQLNumericLiteralExpr) rowCountExpr).getNumber().intValue();
+            } else if (rowCountExpr instanceof SQLVariantRefExpr) {
+                rowCountIndex = getParametersIndex();
+                rowCount = (int) getParameters().get(rowCountIndex);
+                setParametersIndex(rowCountIndex + 1);
+            } else {
+                throw new UnsupportedOperationException("Cannot support rowCount for: " + rowCountExpr.getClass().getCanonicalName());
+            }
+            getLexer().nextToken();
+            getLexer().nextToken();
+            limitContext = new LimitContext(offset, rowCount, offsetIndex, rowCountIndex);
+        } else {
+            limitContext = new LimitContext(offset, offsetIndex);
+        }
+        sqlContext.setLimitContext(limitContext);
     }
 }

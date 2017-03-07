@@ -22,14 +22,11 @@ import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
 
 public class MySqlSelectParser extends AbstractSelectParser {
     
-    public MySqlSelectParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public MySqlSelectParser(final SQLExprParser exprParser) {
+        super(exprParser);
     }
     
     @Override
