@@ -18,12 +18,11 @@ package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.lexer.Token;
-import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
+import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -39,10 +38,10 @@ public class PGSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
+    public SQLSelectQuery query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query(sqlContext);
+            SQLSelectQuery select = query();
             getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -51,17 +50,17 @@ public class PGSelectParser extends AbstractSelectParser {
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().skipIfEqual(Token.COMMENT);
-            parseDistinct(sqlContext);
-            parseSelectList(sqlContext);
+            parseDistinct();
+            parseSelectList();
             if (getExprParser().getLexer().skipIfEqual(Token.INTO)) {
                 getExprParser().getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
                 getExprParser().getLexer().skipIfEqual(Token.TABLE);
                 createExprParser().name();
             }
         }
-        parseFrom(sqlContext);
-        parseWhere(sqlContext);
-        parseGroupBy(sqlContext);
+        parseFrom();
+        parseWhere();
+        parseGroupBy();
         if (getExprParser().getLexer().skipIfEqual(Token.WINDOW)) {
             getExprParser().expr();
             getExprParser().getLexer().accept(Token.AS);
@@ -74,7 +73,7 @@ public class PGSelectParser extends AbstractSelectParser {
                 }
             }
         }
-        sqlContext.getOrderByContexts().addAll(createExprParser().parseOrderBy());
+        getSqlContext().getOrderByContexts().addAll(createExprParser().parseOrderBy());
         while (true) {
             if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
                 PGLimit limit = new PGLimit();

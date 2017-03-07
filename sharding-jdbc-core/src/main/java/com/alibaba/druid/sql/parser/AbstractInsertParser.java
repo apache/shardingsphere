@@ -7,7 +7,6 @@ import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
-import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -15,6 +14,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author zhangliang
  */
-@Getter
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractInsertParser {
     
     private final SQLExprParser exprParser;
@@ -37,10 +37,13 @@ public abstract class AbstractInsertParser {
     
     private final List<Object> parameters;
     
+    private final InsertSQLContext sqlContext;
+    
     public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
+        sqlContext = new InsertSQLContext(exprParser.getLexer().getInput());
     }
     
     /**
@@ -49,26 +52,25 @@ public abstract class AbstractInsertParser {
      * @return 解析结果
      */
     public final InsertSQLContext parse() {
-        InsertSQLContext result = new InsertSQLContext(exprParser.getLexer().getInput());
         exprParser.getLexer().nextToken();
-        parseInto(result);
-        Collection<Condition.Column> columns = parseColumns(result);
+        parseInto();
+        Collection<Condition.Column> columns = parseColumns();
         if (exprParser.getLexer().equalToken(Token.SELECT, Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getValuesTokens().contains(exprParser.getLexer().getToken())) {
-            parseValues(columns, result);
+            parseValues(columns);
         } else if (getCustomizedInsertTokens().contains(exprParser.getLexer().getToken())) {
-            parseCustomizedInsert(result);
+            parseCustomizedInsert();
         }
-        return result;
+        return sqlContext;
     }
     
     protected Set<Token> getUnsupportedTokens() {
         return Collections.emptySet();
     }
     
-    private void parseInto(final InsertSQLContext sqlContext) {
+    private void parseInto() {
         exprParser.getLexer().skipIfEqual(Token.HINT);
         if (getUnsupportedTokens().contains(exprParser.getLexer().getToken())) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken());
@@ -92,13 +94,13 @@ public abstract class AbstractInsertParser {
         return Collections.emptySet();
     }
     
-    private Collection<Condition.Column> parseColumns(final InsertSQLContext sqlContext) {
+    private Collection<Condition.Column> parseColumns() {
         Collection<Condition.Column> result = new LinkedList<>();
         Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         if (exprParser.getLexer().equalToken(Token.LEFT_PAREN)) {
             do {
                 exprParser.getLexer().nextToken();
-                result.add(getColumn(sqlContext, autoIncrementColumns));
+                result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
             } while (!exprParser.getLexer().equalToken(Token.RIGHT_PAREN) && !exprParser.getLexer().equalToken(Token.EOF));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentPosition() - exprParser.getLexer().getLiterals().length());
@@ -114,7 +116,7 @@ public abstract class AbstractInsertParser {
         return result;
     }
     
-    protected final Condition.Column getColumn(final InsertSQLContext sqlContext, final Collection<String> autoIncrementColumns) {
+    protected final Condition.Column getColumn(final Collection<String> autoIncrementColumns) {
         String columnName = SQLUtil.getExactlyValue(exprParser.getLexer().getLiterals());
         if (autoIncrementColumns.contains(columnName)) {
             autoIncrementColumns.remove(columnName);
@@ -126,8 +128,8 @@ public abstract class AbstractInsertParser {
         return Sets.newHashSet(Token.VALUES);
     }
     
-    private void parseValues(final Collection<Condition.Column> columns, final InsertSQLContext sqlContext) {
-        ParseContext parseContext = getParseContext(sqlContext);
+    private void parseValues(final Collection<Condition.Column> columns) {
+        ParseContext parseContext = getParseContext();
         boolean parsed = false;
         do {
             if (parsed) {
@@ -174,7 +176,7 @@ public abstract class AbstractInsertParser {
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
-    private ParseContext getParseContext(final SQLContext sqlContext) {
+    protected final ParseContext getParseContext() {
         ParseContext result = new ParseContext(1);
         result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
@@ -187,6 +189,6 @@ public abstract class AbstractInsertParser {
         return Collections.emptySet();
     }
     
-    protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
+    protected void parseCustomizedInsert() {
     }
 }

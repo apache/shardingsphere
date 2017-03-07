@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.context.DeleteSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +16,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class AbstractDeleteParser {
     
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private final SQLExprParser exprParser;
+    
+    private final DeleteSQLContext sqlContext;
+    
+    public AbstractDeleteParser(final SQLExprParser exprParser) {
+        this.exprParser = exprParser;
+        sqlContext = new DeleteSQLContext(exprParser.getLexer().getInput());
+    }
     
     /**
      * 解析Delete语句.
@@ -24,16 +32,15 @@ public abstract class AbstractDeleteParser {
      * @return 解析结果
      */
     public DeleteSQLContext parse() {
-        DeleteSQLContext result = new DeleteSQLContext(exprParser.getLexer().getInput());
         exprParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
-        exprParser.parseSingleTable(result);
+        exprParser.parseSingleTable(sqlContext);
         exprParser.getLexer().skipUntil(Token.WHERE);
-        Optional<ConditionContext> conditionContext = exprParser.parseWhere(result);
+        Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
-            result.getConditionContexts().add(conditionContext.get());
+            sqlContext.getConditionContexts().add(conditionContext.get());
         }
-        return result;
+        return sqlContext;
     }
     
     protected abstract void skipBetweenDeleteAndTable();

@@ -21,12 +21,11 @@ import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.context.LimitContext;
-import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -38,20 +37,20 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectSQLContext sqlContext) {
+    protected void customizedSelect() {
         if (getExprParser().getLexer().equalToken(Token.FOR)) {
             parseFor();
         }
         if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
-            parseOffset(sqlContext);
+            parseOffset();
         }
     }
     
     @Override
-    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
+    public SQLSelectQuery query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query(sqlContext);
+            SQLSelectQuery select = query();
             getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -62,28 +61,28 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             if (getExprParser().getLexer().equalToken(Token.COMMENT)) {
                 getExprParser().getLexer().nextToken();
             }
-            parseDistinct(sqlContext);
+            parseDistinct();
             if (getExprParser().getLexer().equalToken(Token.TOP)) {
                 queryBlock.setTop(new SQLServerExprParser(getShardingRule(), getParameters(), getExprParser().getLexer()).parseTop());
             }
-            parseSelectList(sqlContext);
+            parseSelectList();
         }
         if (getExprParser().getLexer().equalToken(Token.INTO)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
-        parseFrom(sqlContext);
-        parseWhere(sqlContext);
-        parseGroupBy(sqlContext);
+        parseFrom();
+        parseWhere();
+        parseGroupBy();
         queryRest();
         return queryBlock;
     }
     
     @Override
-    protected void parseJoinTable(final SelectSQLContext sqlContext) {
+    protected void parseJoinTable() {
         if (getExprParser().getLexer().skipIfEqual(Token.WITH)) {
             getExprParser().getLexer().skipParentheses();
         }
-        super.parseJoinTable(sqlContext);
+        super.parseJoinTable();
     }
     
     private void parseFor() {
@@ -114,7 +113,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void parseOffset(final SelectSQLContext sqlContext) {
+    private void parseOffset() {
         getExprParser().getLexer().nextToken();
         SQLExpr offsetExpr = getExprParser().expr();
         int offset;
@@ -150,6 +149,6 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         } else {
             limitContext = new LimitContext(offset, offsetIndex);
         }
-        sqlContext.setLimitContext(limitContext);
+        getSqlContext().setLimitContext(limitContext);
     }
 }

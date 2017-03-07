@@ -11,6 +11,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.List;
@@ -20,16 +21,16 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractUpdateParser {
     
-    @Getter
     private final SQLExprParser exprParser;
     
-    @Getter
     private final ShardingRule shardingRule;
     
-    @Getter
     private final List<Object> parameters;
+    
+    private final UpdateSQLContext sqlContext;
     
     private int parametersIndex;
     
@@ -37,6 +38,7 @@ public abstract class AbstractUpdateParser {
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
+        sqlContext = new UpdateSQLContext(exprParser.getLexer().getInput());
     }
     
     /**
@@ -45,30 +47,30 @@ public abstract class AbstractUpdateParser {
      * @return 解析结果
      */
     public UpdateSQLContext parse() {
-        UpdateSQLContext result = new UpdateSQLContext(exprParser.getLexer().getInput());
+        
         exprParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
-        exprParser.parseSingleTable(result);
-        parseSetItems(result);
+        exprParser.parseSingleTable(sqlContext);
+        parseSetItems();
         exprParser.getLexer().skipUntil(Token.WHERE);
         exprParser.setParametersIndex(parametersIndex);
-        Optional<ConditionContext> conditionContext = exprParser.parseWhere(result);
+        Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
-            result.getConditionContexts().add(conditionContext.get());
+            sqlContext.getConditionContexts().add(conditionContext.get());
         }
-        return result;
+        return sqlContext;
     }
     
     protected abstract void skipBetweenUpdateAndTable();
     
-    private void parseSetItems(final UpdateSQLContext sqlContext) {
+    private void parseSetItems() {
         exprParser.getLexer().accept(Token.SET);
         do {
-            parseSetItem(sqlContext);
+            parseSetItem();
         } while (exprParser.getLexer().skipIfEqual(Token.COMMA));
     }
     
-    private void parseSetItem(final UpdateSQLContext sqlContext) {
+    private void parseSetItem() {
         if (exprParser.getLexer().equalToken(Token.LEFT_PAREN)) {
             exprParser.getLexer().skipParentheses();
         } else {

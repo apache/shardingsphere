@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
@@ -39,20 +38,20 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectSQLContext sqlContext) {
+    protected void customizedSelect() {
         if (getExprParser().getLexer().equalToken(Token.FOR)) {
             skipForUpdate();
         }
-        if (sqlContext.getOrderByContexts().isEmpty()) {
-            sqlContext.getOrderByContexts().addAll(getExprParser().parseOrderBy());
+        if (getSqlContext().getOrderByContexts().isEmpty()) {
+            getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
         }
     }
     
     @Override
-    public SQLSelectQuery query(final SelectSQLContext sqlContext) {
+    public SQLSelectQuery query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query(sqlContext);
+            SQLSelectQuery select = query();
             getExprParser().getLexer().accept(Token.RIGHT_PAREN);
             queryRest();
             return select;
@@ -63,15 +62,15 @@ public class OracleSelectParser extends AbstractSelectParser {
             while (getExprParser().getLexer().equalToken(Token.HINT) || getExprParser().getLexer().equalToken(Token.COMMENT)) {
                 getExprParser().getLexer().nextToken();
             }
-            parseDistinct(sqlContext);
+            parseDistinct();
             getExprParser().getLexer().skipIfEqual(Token.HINT);
-            parseSelectList(sqlContext);
+            parseSelectList();
         }
         skipInto();
-        parseFrom(sqlContext);
-        parseWhere(sqlContext);
+        parseFrom();
+        parseWhere();
         skipHierarchicalQueryClause();
-        parseGroupBy(sqlContext);
+        parseGroupBy();
         skipModelClause();
         queryRest();
         return queryBlock;
@@ -203,7 +202,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseGroupBy(final SelectSQLContext sqlContext) {
+    protected void parseGroupBy() {
         if (getExprParser().getLexer().equalToken(Token.GROUP)) {
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Token.BY);
@@ -211,7 +210,7 @@ public class OracleSelectParser extends AbstractSelectParser {
                 if (getExprParser().getLexer().identifierEquals("GROUPING")) {
                     throw new UnsupportedOperationException("Cannot support GROUPING SETS");
                 } 
-                addGroupByItem(getExprParser().expr(), sqlContext);
+                addGroupByItem(getExprParser().expr());
                 if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
@@ -229,7 +228,7 @@ public class OracleSelectParser extends AbstractSelectParser {
                     if (getExprParser().getLexer().identifierEquals("GROUPING")) {
                         throw new UnsupportedOperationException("Cannot support GROUPING SETS");
                     }
-                    addGroupByItem(getExprParser().expr(), sqlContext);
+                    addGroupByItem(getExprParser().expr());
                     if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
                         break;
                     }
@@ -240,7 +239,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public final List<TableContext> parseTableSource(final SelectSQLContext sqlContext) {
+    public final List<TableContext> parseTableSource() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
@@ -249,20 +248,20 @@ public class OracleSelectParser extends AbstractSelectParser {
         }
         if (getExprParser().getLexer().identifierEquals("ONLY")) {
             getExprParser().getLexer().skipIfEqual(Token.LEFT_PAREN);
-            parseQueryTableExpression(sqlContext);
+            parseQueryTableExpression();
             getExprParser().getLexer().skipIfEqual(Token.RIGHT_PAREN);
             parseFlashbackQueryClause();
         } else {
-            parseQueryTableExpression(sqlContext);
+            parseQueryTableExpression();
             parsePivotClause();
             parseFlashbackQueryClause();
         }
-        parseJoinTable(sqlContext);
-        return sqlContext.getTables();
+        parseJoinTable();
+        return getSqlContext().getTables();
     }
     
-    private void parseQueryTableExpression(final SelectSQLContext sqlContext) {
-        parseTableFactor(sqlContext);
+    private void parseQueryTableExpression() {
+        parseTableFactor();
         parseSample();
         parsePartition();
     }
@@ -339,17 +338,17 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void parseJoinTable(final SelectSQLContext sqlContext) {
+    protected void parseJoinTable() {
         getExprParser().getLexer().skipIfEqual(Token.HINT);
         if (getExprParser().isJoin()) {
-            parseTableSource(sqlContext);
+            parseTableSource();
             if (getExprParser().getLexer().equalToken(Token.ON)) {
                 getExprParser().getLexer().nextToken();
                 getExprParser().expr();
             } else if (getExprParser().getLexer().skipIfEqual(Token.USING)) {
                 getExprParser().getLexer().skipParentheses();
             }
-            parseJoinTable(sqlContext);
+            parseJoinTable();
         }
     }
     

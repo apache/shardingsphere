@@ -1,9 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.context.InsertSQLContext;
-import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -28,31 +25,22 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected void parseCustomizedInsert(final InsertSQLContext sqlContext) {
-        parseInsertSet(sqlContext);
+    protected void parseCustomizedInsert() {
+        parseInsertSet();
     }
     
-    private void parseInsertSet(final InsertSQLContext sqlContext) {
-        ParseContext parseContext = getParseContext(sqlContext);
-        Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
+    private void parseInsertSet() {
+        ParseContext parseContext = getParseContext();
+        Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(getSqlContext().getTables().get(0).getName());
         do {
             getExprParser().getLexer().nextToken();
-            Condition.Column column = getColumn(sqlContext, autoIncrementColumns);
+            Condition.Column column = getColumn(autoIncrementColumns);
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Token.EQ);
             SQLExpr value = getExprParser().expr();
             parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, value, getParameters());
         } while (getExprParser().getLexer().equalToken(Token.COMMA));
-        sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
-    }
-    
-    private ParseContext getParseContext(final SQLContext sqlContext) {
-        ParseContext result = new ParseContext(1);
-        result.setShardingRule(getShardingRule());
-        for (TableContext each : sqlContext.getTables()) {
-            result.setCurrentTable(each.getName(), each.getAlias());
-        }
-        return result;
+        getSqlContext().getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
     @Override
