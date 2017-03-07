@@ -62,11 +62,11 @@ public abstract class AbstractSelectParser {
     public final SelectSQLContext parse() {
         query();
         sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
-        customizedSelect(sqlContext);
+        customizedSelect();
         return sqlContext;
     }
     
-    protected void customizedSelect(final SelectSQLContext sqlContext) {
+    protected void customizedSelect() {
     }
     
     protected SQLSelectQuery query() {

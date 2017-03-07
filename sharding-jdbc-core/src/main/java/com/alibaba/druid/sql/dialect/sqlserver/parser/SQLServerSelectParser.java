@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
@@ -31,12 +30,12 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected void customizedSelect(final SelectSQLContext sqlContext) {
+    protected void customizedSelect() {
         if (getExprParser().getLexer().equalToken(Token.FOR)) {
             parseFor();
         }
         if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
-            ((SQLServerExprParser) getExprParser()).parseOffset(sqlContext);
+            ((SQLServerExprParser) getExprParser()).parseOffset(getSqlContext());
         }
     }
     
