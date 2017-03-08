@@ -29,5 +29,4 @@ public class SQLServerSelectQueryBlock extends SQLSelectQueryBlock {
         }
         this.top = top;
     }
-    
 }

@@ -21,8 +21,6 @@ import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
@@ -69,15 +67,10 @@ public abstract class AbstractSelectParser {
     protected void customizedSelect() {
     }
     
-    protected SQLSelectQuery query() {
+    protected void query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query();
-            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
-            queryRest();
-            return select;
+            throw new UnsupportedOperationException("Cannot support subquery");
         }
-        SQLSelectQueryBlock queryBlock = new SQLSelectQueryBlock();
         getExprParser().getLexer().accept(Token.SELECT);
         getExprParser().getLexer().skipIfEqual(Token.COMMENT);
         parseDistinct();
@@ -86,7 +79,6 @@ public abstract class AbstractSelectParser {
         parseWhere();
         parseGroupBy();
         queryRest();
-        return queryBlock;
     }
     
     protected final void parseDistinct() {

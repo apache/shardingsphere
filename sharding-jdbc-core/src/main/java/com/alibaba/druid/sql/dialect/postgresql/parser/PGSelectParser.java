@@ -17,9 +17,6 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.postgresql.ast.stmt.PGSelectQueryBlock.PGLimit;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -31,17 +28,11 @@ public class PGSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public void query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query();
-            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
-            queryRest();
-            return select;
+            throw new UnsupportedOperationException("Cannot support subquery");
         }
-        PGSelectQueryBlock queryBlock = new PGSelectQueryBlock();
-        if (getExprParser().getLexer().equalToken(Token.SELECT)) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.SELECT)) {
             getExprParser().getLexer().skipIfEqual(Token.COMMENT);
             parseDistinct();
             parseSelectList();
@@ -67,31 +58,7 @@ public class PGSelectParser extends AbstractSelectParser {
             }
         }
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
-        while (true) {
-            if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
-                PGLimit limit = new PGLimit();
-                getExprParser().getLexer().nextToken();
-                if (getExprParser().getLexer().equalToken(Token.ALL)) {
-                    limit.setRowCount(new SQLIdentifierExpr("ALL"));
-                    getExprParser().getLexer().nextToken();
-                } else {
-                    limit.setRowCount(getExprParser().expr());
-                }
-
-                queryBlock.setLimit(limit);
-            } else if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
-                PGLimit limit = queryBlock.getLimit();
-                if (limit == null) {
-                    limit = new PGLimit();
-                    queryBlock.setLimit(limit);
-                }
-                getExprParser().getLexer().nextToken();
-                limit.setOffset(getExprParser().expr());
-                getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
-            } else {
-                break;
-            }
-        }
+        parseLimit();
         if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
             getExprParser().getLexer().skipIfEqual(Token.FIRST, Token.NEXT);
             getExprParser().expr();
@@ -113,7 +80,30 @@ public class PGSelectParser extends AbstractSelectParser {
             getExprParser().getLexer().skipIfEqual(Token.NOWAIT);
         }
         queryRest();
-        return queryBlock;
+    }
+    
+    // TODO 解析和改写limit
+    private void parseLimit() {
+        while (true) {
+            if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
+                
+                getExprParser().getLexer().nextToken();
+                if (getExprParser().getLexer().equalToken(Token.ALL)) {
+                    new SQLIdentifierExpr("ALL");
+                    getExprParser().getLexer().nextToken();
+                } else {
+                    // rowCount
+                    getExprParser().expr();
+                }
+            } else if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
+                getExprParser().getLexer().nextToken();
+                // offset
+                getExprParser().expr();
+                getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
+            } else {
+                break;
+            }
+        }
     }
     
     protected boolean hasDistinctOn() {

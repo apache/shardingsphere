@@ -38,7 +38,6 @@ import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGMacAddrExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPointExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPolygonExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
-import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -52,10 +51,6 @@ public class PGExprParser extends SQLExprParser {
     public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
         super(shardingRule, parameters, new PGLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
-    }
-    
-    public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
-        super(shardingRule, parameters, lexer, AGGREGATE_FUNCTIONS);
     }
     
     @Override

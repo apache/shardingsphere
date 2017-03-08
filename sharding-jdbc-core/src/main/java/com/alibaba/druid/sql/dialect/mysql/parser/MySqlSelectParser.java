@@ -16,8 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -30,15 +28,10 @@ public class MySqlSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public void query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query();
-            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
-            queryRest();
-            return select;
+            throw new UnsupportedOperationException("Cannot support subquery");
         }
-        MySqlSelectQueryBlock queryBlock = new MySqlSelectQueryBlock();
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             getExprParser().getLexer().nextToken();
             while (getExprParser().getLexer().equalToken(Token.HINT) || getExprParser().getLexer().equalToken(Token.COMMENT)) {
@@ -64,7 +57,6 @@ public class MySqlSelectParser extends AbstractSelectParser {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
         queryRest();
-        return queryBlock;
     }
     
     private void skipToFrom() {

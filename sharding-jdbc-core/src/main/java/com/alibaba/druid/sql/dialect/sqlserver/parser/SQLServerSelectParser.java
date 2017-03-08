@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
@@ -40,13 +39,9 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public void query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query();
-            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
-            queryRest();
-            return select;
+            throw new UnsupportedOperationException("Cannot support subquery");
         }
         SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
@@ -67,7 +62,6 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         parseWhere();
         parseGroupBy();
         queryRest();
-        return queryBlock;
     }
     
     @Override

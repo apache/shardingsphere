@@ -102,8 +102,6 @@ public final class ParseContext {
     
     private List<ParseContext> subParseContext = new LinkedList<>();
     
-    private int itemIndex;
-    
     private final Multimap<String, String> tableShardingColumnsMap = Multimaps.newSetMultimap(new TreeMap<String, Collection<String>>(String.CASE_INSENSITIVE_ORDER), new Supplier<Set<String>>() {
         @Override
         public Set<String> get() {
@@ -114,13 +112,6 @@ public final class ParseContext {
     public ParseContext(final int parseContextIndex) {
         this.parseContextIndex = parseContextIndex;
         autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
-    }
-    
-    /**
-     * 增加查询投射项数量.
-     */
-    public void increaseItemIndex() {
-        itemIndex++;
     }
     
     /**

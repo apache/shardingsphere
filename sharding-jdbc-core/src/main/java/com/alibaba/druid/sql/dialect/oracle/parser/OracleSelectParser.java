@@ -19,9 +19,7 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.context.TableContext;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserException;
@@ -47,15 +45,10 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public SQLSelectQuery query() {
+    public void query() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            getExprParser().getLexer().nextToken();
-            SQLSelectQuery select = query();
-            getExprParser().getLexer().accept(Token.RIGHT_PAREN);
-            queryRest();
-            return select;
+            throw new UnsupportedOperationException("Cannot support subquery");
         }
-        OracleSelectQueryBlock queryBlock = new OracleSelectQueryBlock();
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             getExprParser().getLexer().nextToken();
             while (getExprParser().getLexer().equalToken(Token.HINT) || getExprParser().getLexer().equalToken(Token.COMMENT)) {
@@ -72,7 +65,6 @@ public class OracleSelectParser extends AbstractSelectParser {
         parseGroupBy();
         skipModelClause();
         queryRest();
-        return queryBlock;
     }
     
     private void skipInto() {
