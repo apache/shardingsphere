@@ -366,9 +366,9 @@ public final class ParseContext {
         String rawName = SQLUtil.getExactlyValue(name);
         for (SelectItemContext each : selectItems) {
             if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
-                return Optional.fromNullable(SQLUtil.getExactlyValue(each.getAlias()));
+                return each.getAlias();
             }
-            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getAlias()))) {
+            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
                 return Optional.of(rawName);
             }
         }
@@ -429,8 +429,6 @@ public final class ParseContext {
      *
      * @param selectItem SELECT语句中声明的列名称或别名
      */
-    @Deprecated
-    // TODO remove
     public void registerSelectItem(final String selectItem) {
         String rawItemExpr = SQLUtil.getExactlyValue(selectItem);
         if ("*".equals(rawItemExpr)) {

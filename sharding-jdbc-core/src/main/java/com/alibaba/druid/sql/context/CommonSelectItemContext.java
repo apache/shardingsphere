@@ -1,5 +1,6 @@
 package com.alibaba.druid.sql.context;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +15,7 @@ public final class CommonSelectItemContext implements SelectItemContext {
     
     private final String expression;
     
-    private final String alias;
+    private final Optional<String> alias;
     
     private final int index;
     

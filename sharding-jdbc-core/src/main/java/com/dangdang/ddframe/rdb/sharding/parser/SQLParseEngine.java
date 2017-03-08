@@ -102,8 +102,8 @@ public final class SQLParseEngine {
             if (each instanceof AggregationSelectItemContext) {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
                 // TODO index获取不准，考虑使用别名替换
-                AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(), 
-                        Optional.fromNullable(aggregationSelectItemContext.getAlias()), Optional.<String>absent(), aggregationSelectItemContext.getIndex());
+                AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(),
+                        aggregationSelectItemContext.getAlias(), Optional.<String>absent(), aggregationSelectItemContext.getIndex());
                 sqlParsedResult.getMergeContext().getAggregationColumns().add(column);
                 if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     List<AggregationColumn> aggregationColumns = parseContext.addDerivedColumnsForAvgColumn(column);
@@ -121,7 +121,8 @@ public final class SQLParseEngine {
                 boolean found = false;
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() :each.getName();
                 for (SelectItemContext context : sqlContext.getItemContexts()) {
-                    if ((null == context.getAlias() && context.getExpression().equalsIgnoreCase(groupByExpression)) || (null != context.getAlias() && context.getAlias().equalsIgnoreCase(groupByExpression))) {
+                    if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
+                            || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {
                         found = true;
                         break;
                     }
@@ -133,7 +134,6 @@ public final class SQLParseEngine {
             }
         }
         
-        
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
@@ -143,7 +143,7 @@ public final class SQLParseEngine {
                     boolean found = false;
                     String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                     for (SelectItemContext context : sqlContext.getItemContexts()) {
-                        if (context.getExpression().equalsIgnoreCase(orderByExpression) || (null != context.getAlias() && context.getAlias().equalsIgnoreCase(orderByExpression))) {
+                        if (context.getExpression().equalsIgnoreCase(orderByExpression) || orderByExpression.equalsIgnoreCase(context.getAlias().orNull())) {
                             found = true;
                             break;
                         }

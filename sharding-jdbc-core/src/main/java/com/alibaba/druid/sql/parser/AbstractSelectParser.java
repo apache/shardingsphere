@@ -99,13 +99,11 @@ public abstract class AbstractSelectParser {
         int index = 1;
         do {
             SelectItemContext selectItemContext = exprParser.parseSelectItem(index, sqlContext);
-            index++;
             sqlContext.getItemContexts().add(selectItemContext);
-            if (selectItemContext instanceof CommonSelectItemContext) {
-                if (((CommonSelectItemContext) selectItemContext).isStar()) {
-                    sqlContext.setContainStar(true);
-                }
+            if (selectItemContext instanceof CommonSelectItemContext && ((CommonSelectItemContext) selectItemContext).isStar()) {
+                sqlContext.setContainStar(true);
             }
+            index++;
         } while (getExprParser().getLexer().skipIfEqual(Token.COMMA));
         sqlContext.setSelectListLastPosition(getExprParser().getLexer().getCurrentPosition() - getExprParser().getLexer().getLiterals().length());
     }

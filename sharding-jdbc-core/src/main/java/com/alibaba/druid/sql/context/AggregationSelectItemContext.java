@@ -1,6 +1,7 @@
 package com.alibaba.druid.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,11 +14,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class AggregationSelectItemContext implements SelectItemContext {
     
-    private final String expression;
+    private final String innerExpression;
     
-    private final String alias;
+    private final Optional<String> alias;
     
     private final int index;
     
     private final AggregationColumn.AggregationType aggregationType;
+    
+    @Override
+    public String getExpression() {
+        return aggregationType.name() + innerExpression;
+    }
 }

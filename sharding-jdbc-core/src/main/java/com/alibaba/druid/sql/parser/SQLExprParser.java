@@ -121,13 +121,13 @@ public class SQLExprParser {
             if (lexer.equalToken(Token.LEFT_PAREN)) {
                 return Optional.absent();
             }
-            String result = lexer.getLiterals();
+            String result = SQLUtil.getExactlyValue(lexer.getLiterals());
             lexer.nextToken();
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
         if (lexer.equalToken(Token.IDENTIFIER, Token.LITERAL_ALIAS, Token.LITERAL_CHARS, Token.USER, Token.END, Token.CASE, Token.KEY, Token.INTERVAL, Token.CONSTRAINT)) {
-            String result = lexer.getLiterals();
+            String result = SQLUtil.getExactlyValue(lexer.getLiterals());
             lexer.nextToken();
             return Optional.of(result);
         }
@@ -1302,14 +1302,14 @@ public class SQLExprParser {
         getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
         String literals = getLexer().getLiterals();
         if (getLexer().skipIfEqual(Token.MAX, Token.MIN, Token.SUM, Token.AVG, Token.COUNT)) {
-            return new AggregationSelectItemContext(
-                    literals + getLexer().skipParentheses(), SQLUtil.getExactlyValue(as().orNull()), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
+            return new AggregationSelectItemContext(getLexer().skipParentheses(), as(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
         boolean isStar = false;
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME *解析不完全正确,乘号也会解析为star
         while (!getLexer().equalToken(Token.AS) && !getLexer().equalToken(Token.COMMA) && !getLexer().equalToken(Token.FROM) && !getLexer().equalToken(Token.EOF)) {
+            // TODO 解析expr
             String value = getLexer().getLiterals();
             int position = getLexer().getCurrentPosition() - value.length();
             expression.append(value);
@@ -1321,7 +1321,7 @@ public class SQLExprParser {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(as().orNull()), index, isStar);
+        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), as(), index, isStar);
     }
     
     public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
