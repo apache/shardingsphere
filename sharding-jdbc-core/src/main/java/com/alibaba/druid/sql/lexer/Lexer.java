@@ -86,11 +86,15 @@ public class Lexer {
     
     /**
      * 跳过小括号内所有的语言符号.
+     * 
+     * @return 小括号内所有的语言符号
      */
-    // TODO 返回跳过的内容
-    public final void skipParentheses() {
+    public final String skipParentheses() {
+        StringBuilder result = new StringBuilder("");
         int count = 0;
         if (Token.LEFT_PAREN == token) {
+            int beginPosition = currentPosition;
+            result.append(Token.LEFT_PAREN.getName());
             nextToken();
             while (true) {
                 if (Token.EOF == token || (Token.RIGHT_PAREN == token && 0 == count)) {
@@ -103,8 +107,10 @@ public class Lexer {
                 }
                 nextToken();
             }
+            result.append(input.substring(beginPosition, currentPosition));
         }
         nextToken();
+        return result.toString();
     }
     
     /**

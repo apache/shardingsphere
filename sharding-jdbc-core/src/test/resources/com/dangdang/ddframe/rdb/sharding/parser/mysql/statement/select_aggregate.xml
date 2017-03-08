@@ -8,13 +8,13 @@
             <condition-context />
         </condition-contexts>
         <aggregation-columns>
-            <aggregation-column expression="COUNT ( MAX ( * ) )" aggregation-type="COUNT" alias="c" index="1" />
-            <aggregation-column expression="MAX ( MIN ( date ) )" aggregation-type="MAX" index="3" />
-            <aggregation-column expression="MIN ( time )" aggregation-type="MIN" alias="Time" index="4" />
+            <aggregation-column expression="COUNT(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
+            <aggregation-column expression="MAX(MIN(date))" aggregation-type="MAX" index="3" />
+            <aggregation-column expression="MIN(time)" aggregation-type="MIN" alias="Time" index="4" />
         </aggregation-columns>
     </assert>
 
-    <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order" expected-sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id , COUNT ( MAX ( date ) ) AS sharding_gen_1 , SUM ( MAX ( date ) ) AS sharding_gen_2 , COUNT ( DISTINCT time ) AS sharding_gen_3 , SUM ( DISTINCT time ) AS sharding_gen_4 FROM [Token(order)]">
+    <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order" expected-sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id , COUNT(MAX(date)) AS sharding_gen_1 , SUM(MAX(date)) AS sharding_gen_2 , COUNT(DISTINCT time) AS sharding_gen_3 , SUM(DISTINCT time) AS sharding_gen_4 FROM [Token(order)]">
         <tables>
             <table name="order"/>
         </tables>
@@ -22,18 +22,18 @@
             <condition-context />
         </condition-contexts>
         <aggregation-columns>
-            <aggregation-column expression="AVG ( MAX ( date ) )" aggregation-type="AVG" alias="date" index="1">
-                <derived-column expression="COUNT ( MAX ( date ) )" aggregation-type="COUNT" alias="sharding_gen_1"/>
-                <derived-column expression="SUM ( MAX ( date ) )" aggregation-type="SUM" alias="sharding_gen_2" />
+            <aggregation-column expression="AVG(MAX(date))" aggregation-type="AVG" alias="date" index="1">
+                <derived-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1"/>
+                <derived-column expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
             </aggregation-column>
-            <aggregation-column expression="COUNT ( MAX ( date ) )" aggregation-type="COUNT" alias="sharding_gen_1" />
-            <aggregation-column expression="SUM ( MAX ( date ) )" aggregation-type="SUM" alias="sharding_gen_2" />
-            <aggregation-column expression="AVG ( DISTINCT time )" aggregation-type="AVG" index="2">
-                <derived-column expression="COUNT ( DISTINCT time )" aggregation-type="COUNT" alias="sharding_gen_3" />
-                <derived-column expression="SUM ( DISTINCT time )" aggregation-type="SUM" alias="sharding_gen_4" />
+            <aggregation-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1" />
+            <aggregation-column expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
+            <aggregation-column expression="AVG(DISTINCT time)" aggregation-type="AVG" index="2">
+                <derived-column expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
+                <derived-column expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
             </aggregation-column>
-            <aggregation-column expression="COUNT ( DISTINCT time )" aggregation-type="COUNT" alias="sharding_gen_3" />
-            <aggregation-column expression="SUM ( DISTINCT time )" aggregation-type="SUM" alias="sharding_gen_4" />
+            <aggregation-column expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
+            <aggregation-column expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
         </aggregation-columns>
     </assert>
     
@@ -48,7 +48,7 @@
             <group-by-column name="order_id" order-by-type="ASC" />
         </group-by-columns>
         <aggregation-columns>
-            <aggregation-column expression="MAX ( date )" aggregation-type="MAX" index="2" />
+            <aggregation-column expression="MAX(date)" aggregation-type="MAX" index="2" />
         </aggregation-columns>
     </assert>
     
@@ -70,7 +70,7 @@
             <condition-context />
         </condition-contexts>
         <aggregation-columns>
-            <aggregation-column expression="COUNT ( time )" aggregation-type="COUNT" index="2" />
+            <aggregation-column expression="COUNT(time)" aggregation-type="COUNT" index="2" />
         </aggregation-columns>
     </assert>
 </asserts>

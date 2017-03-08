@@ -80,7 +80,6 @@ import lombok.Setter;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -734,22 +733,6 @@ public class SQLExprParser {
         return expr;
     }
     
-    public final void names(final Collection<SQLName> exprCol) {
-        if (getLexer().equalToken(Token.RIGHT_BRACE)) {
-            return;
-        }
-        if (getLexer().equalToken(Token.EOF)) {
-            return;
-        }
-        SQLName name = name();
-        exprCol.add(name);
-        while (getLexer().equalToken(Token.COMMA)) {
-            getLexer().nextToken();
-            name = name();
-            exprCol.add(name);
-        }
-    }
-    
     public final List<SQLExpr> exprList(final SQLObject parent) {
         List<SQLExpr> result = new LinkedList<>();
         if (getLexer().equalToken(Token.RIGHT_PAREN) || getLexer().equalToken(Token.RIGHT_BRACKET) || getLexer().equalToken(Token.EOF)) {
@@ -1326,28 +1309,10 @@ public class SQLExprParser {
             AggregationColumn.AggregationType aggregationType = AggregationColumn.AggregationType.valueOf(literals.toUpperCase());
             getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                StringBuilder expression = new StringBuilder(literals);
-                int parenthesesDeep = 0;
-                while (true) {
-                    if (getLexer().equalToken(Token.EOF)) {
-                        break;
-                    }
-                    if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                        parenthesesDeep++;
-                    }
-                    if (getLexer().equalToken(Token.RIGHT_PAREN)) {
-                        parenthesesDeep--;
-                    }
-                    expression.append(" " + getLexer().getLiterals());
-                    if (0 == parenthesesDeep && getLexer().equalToken(Token.RIGHT_PAREN)) {
-                        getLexer().nextToken();
-                        break;
-                    }
-                    getLexer().nextToken();
-                }
+                String expression = literals + getLexer().skipParentheses();
                 String alias = as().orNull();
-                SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
-                SelectItemContext selectItemContext = new AggregationSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, aggregationType);
+                SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression), alias);
+                SelectItemContext selectItemContext = new AggregationSelectItemContext(SQLUtil.getExactlyValue(expression), SQLUtil.getExactlyValue(alias), index, aggregationType);
                 result.setSelectItemContext(selectItemContext);
                 return result;
             }
