@@ -40,9 +40,6 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
-        }
         SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             getExprParser().getLexer().nextToken();

@@ -29,9 +29,6 @@ public class PGSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
-        }
         if (getExprParser().getLexer().skipIfEqual(Token.SELECT)) {
             getExprParser().getLexer().skipIfEqual(Token.COMMENT);
             parseDistinct();

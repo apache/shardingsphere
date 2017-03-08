@@ -68,9 +68,6 @@ public abstract class AbstractSelectParser {
     }
     
     protected void query() {
-        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
-        }
         getExprParser().getLexer().accept(Token.SELECT);
         getExprParser().getLexer().skipIfEqual(Token.COMMENT);
         parseDistinct();

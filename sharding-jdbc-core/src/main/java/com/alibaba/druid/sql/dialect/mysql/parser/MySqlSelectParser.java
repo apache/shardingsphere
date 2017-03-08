@@ -29,9 +29,6 @@ public class MySqlSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
-        }
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             getExprParser().getLexer().nextToken();
             while (getExprParser().getLexer().equalToken(Token.HINT) || getExprParser().getLexer().equalToken(Token.COMMENT)) {
