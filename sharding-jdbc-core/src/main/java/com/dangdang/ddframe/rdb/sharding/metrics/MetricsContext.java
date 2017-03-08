@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.ai.raptor.dal.metrics;
+package com.dangdang.ddframe.rdb.sharding.metrics;
 
-import com.ai.raptor.dal.config.ShardingProperties;
-import com.ai.raptor.dal.config.ShardingPropertiesConstant;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.LoggerFactory;
 
@@ -38,67 +38,67 @@ import org.slf4j.LoggerFactory;
  */
 public final class MetricsContext {
 
-  private MetricsContext() {
-  }
-
-  private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
-  private static ScheduledReporter reporter = null;
-  private static final Object LOCK = new Object();
-
-  /**
-   * 初始化度量上下文持有者.
-   *
-   * @param shardingProperties Sharding-JDBC的配置属性
-   */
-  public static void init(final ShardingProperties shardingProperties) {
-    boolean metricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
-    if (!metricsEnabled) {
-      return;
+    private MetricsContext() {
     }
-    long period = shardingProperties
-        .getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-    String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
-    // build a static reporter (only need one)
-    if (null == reporter) {
-      synchronized (LOCK) {
-        if (null == reporter) {
-          reporter = Slf4jReporter.forRegistry(METRIC_REGISTRY)
-              .outputTo(LoggerFactory.getLogger(loggerName))
-              .convertRatesTo(TimeUnit.SECONDS)
-              .convertDurationsTo(TimeUnit.MILLISECONDS)
-              .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG)
-              .build();
-          reporter.start(period, TimeUnit.MILLISECONDS);
+
+    private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
+    private static ScheduledReporter reporter = null;
+    private static final Object LOCK = new Object();
+
+    /**
+     * 初始化度量上下文持有者.
+     *
+     * @param shardingProperties Sharding-JDBC的配置属性
+     */
+    public static void init(final ShardingProperties shardingProperties) {
+        boolean metricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
+        if (!metricsEnabled) {
+            return;
         }
-      }
+        long period = shardingProperties
+            .getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
+        String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
+        // build a static reporter (only need one)
+        if (null == reporter) {
+            synchronized (LOCK) {
+                if (null == reporter) {
+                    reporter = Slf4jReporter.forRegistry(METRIC_REGISTRY)
+                        .outputTo(LoggerFactory.getLogger(loggerName))
+                        .convertRatesTo(TimeUnit.SECONDS)
+                        .convertDurationsTo(TimeUnit.MILLISECONDS)
+                        .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG)
+                        .build();
+                    reporter.start(period, TimeUnit.MILLISECONDS);
+                }
+            }
+        }
     }
-  }
 
-  /**
-   * 开始计时.
-   *
-   * @param name 度量目标名称
-   * @return 计时上下文
-   */
-  public static Timer.Context start(final String name) {
-    return METRIC_REGISTRY.timer(MetricRegistry.name(name)).time();
-  }
-
-  /**
-   * 停止计时.
-   *
-   * @param context 计时上下文
-   */
-  public static void stop(final Timer.Context context) {
-    if (null != context) {
-      context.stop();
+    /**
+     * 开始计时.
+     *
+     * @param name 度量目标名称
+     * @return 计时上下文
+     */
+    public static Timer.Context start(final String name) {
+        return METRIC_REGISTRY.timer(MetricRegistry.name(name)).time();
     }
-  }
 
-  /**
-   * 清理数据.
-   */
-  public static void clear() {
-    // do nothing
-  }
+    /**
+     * 停止计时.
+     *
+     * @param context 计时上下文
+     */
+    public static void stop(final Timer.Context context) {
+        if (null != context) {
+            context.stop();
+        }
+    }
+
+    /**
+     * 清理数据.
+     */
+    public static void clear() {
+        // do nothing
+    }
 }
