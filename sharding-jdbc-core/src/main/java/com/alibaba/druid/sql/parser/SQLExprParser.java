@@ -56,7 +56,6 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.OrderByContext;
@@ -1299,19 +1298,12 @@ public class SQLExprParser {
         return charType;
     }
     
-    public final SQLSelectItem parseSelectItem(final int index, final SelectSQLContext sqlContext) {
+    public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
         String literals = getLexer().getLiterals();
         if (getLexer().skipIfEqual(Token.MAX, Token.MIN, Token.SUM, Token.AVG, Token.COUNT)) {
-            AggregationColumn.AggregationType aggregationType = AggregationColumn.AggregationType.valueOf(literals.toUpperCase());
-            if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                String expression = literals + getLexer().skipParentheses();
-                String alias = as().orNull();
-                SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression), alias);
-                SelectItemContext selectItemContext = new AggregationSelectItemContext(SQLUtil.getExactlyValue(expression), SQLUtil.getExactlyValue(alias), index, aggregationType);
-                result.setSelectItemContext(selectItemContext);
-                return result;
-            }
+            return new AggregationSelectItemContext(
+                    literals + getLexer().skipParentheses(), SQLUtil.getExactlyValue(as().orNull()), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
         boolean isStar = false;
@@ -1329,11 +1321,7 @@ public class SQLExprParser {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        String alias = as().orNull();
-        SQLSelectItem result = new SQLSelectItem(new SQLIdentifierExpr(expression.toString()), alias);
-        SelectItemContext selectItemContext = new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(alias), index, isStar);
-        result.setSelectItemContext(selectItemContext);
-        return result;
+        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), SQLUtil.getExactlyValue(as().orNull()), index, isStar);
     }
     
     public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {

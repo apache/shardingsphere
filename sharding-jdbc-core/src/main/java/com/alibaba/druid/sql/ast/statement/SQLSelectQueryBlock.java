@@ -22,9 +22,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -39,8 +36,6 @@ public class SQLSelectQueryBlock extends SQLObjectImpl implements SQLSelectQuery
     private SQLExpr where;
     
     private SQLSelectGroupByClause groupBy;
-    
-    private final List<SQLSelectItem> selectList = new ArrayList<>();
     
     public void setInto(final SQLExpr into) {
         setInto(new SQLExprTableSource(into));

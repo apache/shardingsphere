@@ -20,9 +20,9 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
+import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
@@ -98,11 +98,11 @@ public abstract class AbstractSelectParser {
     protected final void parseSelectList() {
         int index = 1;
         do {
-            SQLSelectItem selectItem = exprParser.parseSelectItem(index, sqlContext);
+            SelectItemContext selectItemContext = exprParser.parseSelectItem(index, sqlContext);
             index++;
-            sqlContext.getItemContexts().add(selectItem.getSelectItemContext());
-            if (selectItem.getSelectItemContext() instanceof CommonSelectItemContext) {
-                if (((CommonSelectItemContext) selectItem.getSelectItemContext()).isStar()) {
+            sqlContext.getItemContexts().add(selectItemContext);
+            if (selectItemContext instanceof CommonSelectItemContext) {
+                if (((CommonSelectItemContext) selectItemContext).isStar()) {
                     sqlContext.setContainStar(true);
                 }
             }
