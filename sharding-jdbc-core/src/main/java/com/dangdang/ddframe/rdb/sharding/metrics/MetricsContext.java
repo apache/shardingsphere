@@ -17,37 +17,38 @@
 
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
+import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
-import java.util.concurrent.TimeUnit;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 度量上下文持有者.
- *
+ * 
  * <p>
  * 多个ShardingDataSource使用静态度量上下文会造成数据污染, 所以将度量上下文对象绑定到ThreadLocal中.
  * </p>
- *
+ * 
  * @author gaohongtao
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsContext {
-
-    private MetricsContext() {
-    }
-
+    
     private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
     private static ScheduledReporter reporter = null;
     private static final Object LOCK = new Object();
-
+    
     /**
      * 初始化度量上下文持有者.
-     *
+     * 
      * @param shardingProperties Sharding-JDBC的配置属性
      */
     public static void init(final ShardingProperties shardingProperties) {
@@ -73,17 +74,18 @@ public final class MetricsContext {
             }
         }
     }
-
+    
     /**
      * 开始计时.
      *
      * @param name 度量目标名称
+     *
      * @return 计时上下文
      */
     public static Timer.Context start(final String name) {
-        return METRIC_REGISTRY.timer(MetricRegistry.name(name)).time();
+      return METRIC_REGISTRY.timer(MetricRegistry.name(name)).time();
     }
-
+    
     /**
      * 停止计时.
      *
@@ -94,11 +96,11 @@ public final class MetricsContext {
             context.stop();
         }
     }
-
+    
     /**
      * 清理数据.
      */
     public static void clear() {
-        // do nothing
+      // do nothing
     }
 }
