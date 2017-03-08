@@ -25,7 +25,6 @@ import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOver;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateOption;
-import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAllExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAnyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBetweenExpr;
@@ -195,16 +194,6 @@ public class SQLExprParser {
     }
     
     public SQLExpr expr() {
-        if (getLexer().equalToken(Token.STAR)) {
-            getLexer().nextToken();
-            SQLExpr sqlExpr = new SQLAllColumnExpr();
-            if (getLexer().equalToken(Token.DOT)) {
-                getLexer().nextToken();
-                getLexer().accept(Token.STAR);
-                return new SQLPropertyExpr(sqlExpr, "*");
-            }
-            return sqlExpr;
-        }
         SQLExpr expr = primary();
         if (getLexer().equalToken(Token.COMMA)) {
             return expr;
@@ -1301,27 +1290,26 @@ public class SQLExprParser {
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
         String literals = getLexer().getLiterals();
+        if (getLexer().equalToken(Token.STAR) || Token.STAR.getName().equals(SQLUtil.getExactlyValue(literals))) {
+            getLexer().nextToken();
+            return new CommonSelectItemContext(Token.STAR.getName(), as(), index, true);
+        }
         if (getLexer().skipIfEqual(Token.MAX, Token.MIN, Token.SUM, Token.AVG, Token.COUNT)) {
             return new AggregationSelectItemContext(getLexer().skipParentheses(), as(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
-        boolean isStar = false;
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
-        // FIXME *解析不完全正确,乘号也会解析为star
+        // FIXME 解析xxx.*
         while (!getLexer().equalToken(Token.AS) && !getLexer().equalToken(Token.COMMA) && !getLexer().equalToken(Token.FROM) && !getLexer().equalToken(Token.EOF)) {
-            // TODO 解析expr
             String value = getLexer().getLiterals();
             int position = getLexer().getCurrentPosition() - value.length();
             expression.append(value);
-            if (getLexer().equalToken(Token.STAR)) {
-                isStar = true;
-            }
             getLexer().nextToken();
             if (getLexer().equalToken(Token.DOT)) {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), as(), index, isStar);
+        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), as(), index, false);
     }
     
     public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
