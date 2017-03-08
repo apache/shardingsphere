@@ -244,6 +244,11 @@ public enum Token {
     UPSERT("UPSERT", false, false, false, true, false),
     NULLS("NULLS", false, false, false, true, false),
     SIBLINGS("SIBLINGS", false, false, true, true, false),
+    MAX("MAX", true, false, false, false, false),
+    MIN("MIN", true, false, false, false, false),
+    SUM("SUM", true, false, false, false, false),
+    AVG("AVG", true, false, false, false, false),
+    COUNT("COUNT", true, false, false, false, false),
     
     
     EOF, 

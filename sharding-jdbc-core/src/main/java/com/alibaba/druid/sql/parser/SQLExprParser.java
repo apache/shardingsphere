@@ -43,6 +43,7 @@ import com.alibaba.druid.sql.ast.expr.SQLInListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLInSubQueryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
+import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNotExpr;
@@ -1301,13 +1302,8 @@ public class SQLExprParser {
     public final SQLSelectItem parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(Token.CONNECT_BY_ROOT);
         String literals = getLexer().getLiterals();
-        if (literals.equalsIgnoreCase(AggregationColumn.AggregationType.MAX.name())
-                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.MIN.name())
-                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.SUM.name())
-                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.COUNT.name())
-                || getLexer().getLiterals().equalsIgnoreCase(AggregationColumn.AggregationType.AVG.name())) {
+        if (getLexer().skipIfEqual(Token.MAX, Token.MIN, Token.SUM, Token.AVG, Token.COUNT)) {
             AggregationColumn.AggregationType aggregationType = AggregationColumn.AggregationType.valueOf(literals.toUpperCase());
-            getLexer().nextToken();
             if (getLexer().equalToken(Token.LEFT_PAREN)) {
                 String expression = literals + getLexer().skipParentheses();
                 String alias = as().orNull();
@@ -1368,6 +1364,7 @@ public class SQLExprParser {
     }
     
     private void parseCondition(final SQLContext sqlContext, final ParseContext parseContext) {
+        getLexer().skipIfEqual(Token.LEFT_PAREN);
         SQLExpr left = getSqlExprWithVariant(sqlContext);
         if (lexer.equalToken(Token.EQ)) {
             parseEqualCondition(sqlContext, parseContext, left);
@@ -1379,13 +1376,14 @@ public class SQLExprParser {
                 || lexer.equalToken(Token.LT_EQ) || lexer.equalToken(Token.GT_EQ)) {
             parserOtherCondition(sqlContext);
         }
+        getLexer().skipIfEqual(Token.RIGHT);
     }
     
     private void parseEqualCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
         lexer.nextToken();
         SQLExpr right = getSqlExprWithVariant(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if (1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) {
+        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLVariantRefExpr)) {
             parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
         }
     }
@@ -1468,6 +1466,6 @@ public class SQLExprParser {
         if (lexer.equalToken(Token.LITERAL_HEX)) {
             return new SQLNumberExpr(Integer.parseInt(literals, 16));
         }
-        throw new ParserUnsupportedException(lexer.getToken());
+        return new SQLIdentifierExpr(literals);
     }
 }
