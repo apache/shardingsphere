@@ -16,12 +16,12 @@
 
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             skipForUpdate();
         }
         if (getSqlContext().getOrderByContexts().isEmpty()) {
-            getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
+            getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
         }
     }
     
@@ -75,23 +75,21 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipStart() {
-        if (getExprParser().getLexer().equalToken(Token.START)) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.START)) {
             getExprParser().getLexer().accept(Token.WITH);
-            getExprParser().expr();
+            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext(0));
         }
     }
     
     private void skipConnect() {
-        if (getExprParser().getLexer().equalToken(Token.CONNECT)) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.CONNECT)) {
             getExprParser().getLexer().accept(Token.BY);
             getExprParser().getLexer().skipIfEqual(Token.PRIOR);
             if (getExprParser().getLexer().identifierEquals("NOCYCLE")) {
                 getExprParser().getLexer().nextToken();
                 getExprParser().getLexer().skipIfEqual(Token.PRIOR);
             }
-            getExprParser().expr();
+            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext(1));
         }
     }
     
@@ -105,7 +103,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         getExprParser().getLexer().skipIfEqual(Token.UPDATED);
         getExprParser().getLexer().skipIfEqual(Token.ROWS);
         while (getExprParser().getLexer().skipIfEqual(Token.REFERENCE)) {
-            getExprParser().expr();
+            getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Token.ON);
             getExprParser().getLexer().skipParentheses();
             skipModelColumnClause();
@@ -135,7 +133,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipMainModelClause() {
         if (getExprParser().getLexer().identifierEquals("MAIN")) {
             getExprParser().getLexer().nextToken();
-            getExprParser().expr();
+            getExprParser().getLexer().nextToken();
         }
         skipQueryPartitionClause();
         getExprParser().getLexer().accept("DIMENSION");
@@ -188,39 +186,40 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseGroupBy() {
-        if (getExprParser().getLexer().equalToken(Token.GROUP)) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().getLexer().accept(Token.BY);
-            while (true) {
-                if (getExprParser().getLexer().identifierEquals("GROUPING")) {
-                    throw new UnsupportedOperationException("Cannot support GROUPING SETS");
-                } 
-                addGroupByItem(getExprParser().expr());
-                if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
-                    break;
-                }
-                getExprParser().getLexer().nextToken();
-            }
-            if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-                getExprParser().expr();
-            }
-        } else if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-            SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
-            groupBy.setHaving(getExprParser().expr());
-            if (getExprParser().getLexer().skipIfEqual(Token.GROUP)) {
-                getExprParser().getLexer().accept(Token.BY);
-                while (true) {
-                    if (getExprParser().getLexer().identifierEquals("GROUPING")) {
-                        throw new UnsupportedOperationException("Cannot support GROUPING SETS");
-                    }
-                    addGroupByItem(getExprParser().expr());
-                    if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
-                        break;
-                    }
-                    getExprParser().getLexer().nextToken();
-                }
-            }
-        }
+        // TODO
+//        if (getExprParser().getLexer().equalToken(Token.GROUP)) {
+//            getExprParser().getLexer().nextToken();
+//            getExprParser().getLexer().accept(Token.BY);
+//            while (true) {
+//                if (getExprParser().getLexer().identifierEquals("GROUPING")) {
+//                    throw new UnsupportedOperationException("Cannot support GROUPING SETS");
+//                } 
+//                addGroupByItem(getExprParser().expr());
+//                if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
+//                    break;
+//                }
+//                getExprParser().getLexer().nextToken();
+//            }
+//            if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
+//                getExprParser().expr();
+//            }
+//        } else if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
+//            SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
+//            groupBy.setHaving(getExprParser().expr());
+//            if (getExprParser().getLexer().skipIfEqual(Token.GROUP)) {
+//                getExprParser().getLexer().accept(Token.BY);
+//                while (true) {
+//                    if (getExprParser().getLexer().identifierEquals("GROUPING")) {
+//                        throw new UnsupportedOperationException("Cannot support GROUPING SETS");
+//                    }
+//                    addGroupByItem(getExprParser().expr());
+//                    if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
+//                        break;
+//                    }
+//                    getExprParser().getLexer().nextToken();
+//                }
+//            }
+//        }
     }
     
     @Override
@@ -307,21 +306,6 @@ public class OracleSelectParser extends AbstractSelectParser {
                     throw new UnsupportedOperationException("Cannot support Flashback Query");
                 }
             }
-        }
-    }
-    
-    @Override
-    protected void parseJoinTable() {
-        getExprParser().getLexer().skipIfEqual(Token.HINT);
-        if (getExprParser().isJoin()) {
-            parseTableSource();
-            if (getExprParser().getLexer().equalToken(Token.ON)) {
-                getExprParser().getLexer().nextToken();
-                getExprParser().expr();
-            } else if (getExprParser().getLexer().skipIfEqual(Token.USING)) {
-                getExprParser().getLexer().skipParentheses();
-            }
-            parseJoinTable();
         }
     }
     

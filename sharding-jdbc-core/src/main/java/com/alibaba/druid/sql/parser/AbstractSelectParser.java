@@ -59,7 +59,7 @@ public abstract class AbstractSelectParser {
      */
     public final SelectSQLContext parse() {
         query();
-        sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy());
+        sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy(getSqlContext()));
         customizedSelect();
         return sqlContext;
     }
@@ -129,7 +129,7 @@ public abstract class AbstractSelectParser {
         if (getExprParser().getLexer().skipIfEqual(Token.GROUP)) {
             getExprParser().getLexer().accept(Token.BY);
             while (true) {
-                addGroupByItem(exprParser.expr());
+                addGroupByItem(exprParser.getSqlExprWithVariant(sqlContext));
                 if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
@@ -139,10 +139,10 @@ public abstract class AbstractSelectParser {
                 getExprParser().getLexer().nextToken();
             }
             if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-                exprParser.expr();
+                exprParser.getSqlExprWithVariant(sqlContext);
             }
         } else if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-            exprParser.expr();
+            exprParser.getSqlExprWithVariant(sqlContext);
         }
     }
     
@@ -192,6 +192,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseJoinTable() {
+        getExprParser().getLexer().skipIfEqual(Token.HINT);
         if (getExprParser().isJoin()) {
             parseTableSource();
             if (getExprParser().getLexer().skipIfEqual(Token.ON)) {

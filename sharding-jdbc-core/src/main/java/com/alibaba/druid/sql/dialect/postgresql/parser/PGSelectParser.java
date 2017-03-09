@@ -47,7 +47,7 @@ public class PGSelectParser extends AbstractSelectParser {
         if (getExprParser().getLexer().equalToken(Token.WINDOW)) {
             throw new ParserUnsupportedException(Token.WINDOW);
         }
-        getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
+        getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
         parseLimit();
         if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
             throw new ParserUnsupportedException(Token.FETCH);

@@ -830,20 +830,20 @@ public class SQLExprParser {
         return aggregateExpr;
     }
     
-    public List<OrderByContext> parseOrderBy() {
+    public List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
         if (!getLexer().skipIfEqual(Token.ORDER)) {
             return Collections.emptyList();
         }
         List<OrderByContext> result = new LinkedList<>();
         getLexer().skipIfEqual(Token.SIBLINGS);
         getLexer().accept(Token.BY);
-        OrderByContext orderByContext = parseSelectOrderByItem();
+        OrderByContext orderByContext = parseSelectOrderByItem(sqlContext);
         if (null != orderByContext) {
             result.add(orderByContext);
         }
         while (getLexer().equalToken(Token.COMMA)) {
             getLexer().nextToken();
-            orderByContext = parseSelectOrderByItem();
+            orderByContext = parseSelectOrderByItem(sqlContext);
             if (null != orderByContext) {
                 result.add(orderByContext);
             }
@@ -851,8 +851,8 @@ public class SQLExprParser {
         return result;
     }
     
-    public OrderByContext parseSelectOrderByItem() {
-        SQLExpr expr = expr();
+    public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
+        SQLExpr expr = getSqlExprWithVariant(sqlContext);
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
@@ -1337,14 +1337,15 @@ public class SQLExprParser {
     
     private void parseConditions(final SQLContext sqlContext, final ParseContext parseContext) {
         do {
-            parseCondition(sqlContext, parseContext);
+            parseComparisonCondition(sqlContext, parseContext);
         } while (lexer.skipIfEqual(Token.AND));
         if (lexer.equalToken(Token.OR)) {
             throw new ParserUnsupportedException(lexer.getToken());
         }
     }
     
-    private void parseCondition(final SQLContext sqlContext, final ParseContext parseContext) {
+    // TODO 解析组合expr
+    public void parseComparisonCondition(final SQLContext sqlContext, final ParseContext parseContext) {
         getLexer().skipIfEqual(Token.LEFT_PAREN);
         SQLExpr left = getSqlExprWithVariant(sqlContext);
         if (lexer.equalToken(Token.EQ)) {
@@ -1397,7 +1398,7 @@ public class SQLExprParser {
         getSqlExprWithVariant(sqlContext);
     }
     
-    private SQLExpr getSqlExprWithVariant(final SQLContext sqlContext) {
+    public SQLExpr getSqlExprWithVariant(final SQLContext sqlContext) {
         SQLExpr result = parseSQLExpr(sqlContext);
         if (result instanceof SQLVariantRefExpr) {
             ((SQLVariantRefExpr) result).setIndex(++parametersIndex);

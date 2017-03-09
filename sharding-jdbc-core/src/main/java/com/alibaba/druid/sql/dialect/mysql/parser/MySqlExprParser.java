@@ -612,7 +612,7 @@ public class MySqlExprParser extends SQLExprParser {
     
     protected SQLAggregateExpr parseAggregateExprRest(final SQLAggregateExpr aggregateExpr) {
         if (getLexer().equalToken(Token.ORDER)) {
-            aggregateExpr.putAttribute("ORDER BY", parseOrderBy());
+//            aggregateExpr.putAttribute("ORDER BY", parseOrderBy());
         }
         if (getLexer().identifierEquals("SEPARATOR")) {
             getLexer().nextToken();

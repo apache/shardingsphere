@@ -18,15 +18,13 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.LimitContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.expr.SQLServerObjectReferenceExpr;
-import com.alibaba.druid.sql.lexer.Lexer;
 import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -40,10 +38,6 @@ public class SQLServerExprParser extends SQLExprParser {
     public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
         super(shardingRule, parameters, new SQLServerLexer(sql), AGGREGATE_FUNCTIONS);
         getLexer().nextToken();
-    }
-    
-    public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
-        super(shardingRule, parameters, lexer, AGGREGATE_FUNCTIONS);
     }
     
     public SQLServerTop parseTop() {
@@ -146,17 +140,16 @@ public class SQLServerExprParser extends SQLExprParser {
     
     public void parseOffset(final SelectSQLContext sqlContext) {
         getLexer().nextToken();
-        SQLExpr offsetExpr = expr();
         int offset;
         int offsetIndex = -1;
-        if (offsetExpr instanceof SQLNumericLiteralExpr) {
-            offset = ((SQLNumericLiteralExpr) offsetExpr).getNumber().intValue();
-        } else if (offsetExpr instanceof SQLVariantRefExpr) {
+        if (getLexer().equalToken(Token.LITERAL_INT)) {
+            offset = Integer.parseInt(getLexer().getLiterals());
+        } else if (getLexer().equalToken(Token.QUESTION)) {
             offsetIndex = getParametersIndex();
             offset = (int) getParameters().get(offsetIndex);
             setParametersIndex(offsetIndex + 1);
         } else {
-            throw new UnsupportedOperationException("Cannot support offset for: " + offsetExpr.getClass().getCanonicalName());
+            throw new ParserException(getLexer());
         }
         getLexer().nextToken();
         LimitContext limitContext;
@@ -164,15 +157,15 @@ public class SQLServerExprParser extends SQLExprParser {
             getLexer().nextToken();
             int rowCount;
             int rowCountIndex = -1;
-            SQLExpr rowCountExpr = expr();
-            if (rowCountExpr instanceof SQLNumericLiteralExpr) {
-                rowCount = ((SQLNumericLiteralExpr) rowCountExpr).getNumber().intValue();
-            } else if (rowCountExpr instanceof SQLVariantRefExpr) {
+            getLexer().nextToken();
+            if (getLexer().equalToken(Token.LITERAL_INT)) {
+                rowCount = Integer.parseInt(getLexer().getLiterals());
+            } else if (getLexer().equalToken(Token.QUESTION)) {
                 rowCountIndex = getParametersIndex();
                 rowCount = (int) getParameters().get(rowCountIndex);
                 setParametersIndex(rowCountIndex + 1);
             } else {
-                throw new UnsupportedOperationException("Cannot support rowCount for: " + rowCountExpr.getClass().getCanonicalName());
+                throw new ParserException(getLexer());
             }
             getLexer().nextToken();
             getLexer().nextToken();

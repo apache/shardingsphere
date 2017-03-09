@@ -36,6 +36,7 @@ import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.context.OrderByContext;
+import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeTimestamp;
@@ -722,8 +723,8 @@ public class OracleExprParser extends SQLExprParser {
     }
     
     @Override
-    public OrderByContext parseSelectOrderByItem() {
-        OrderByContext result = super.parseSelectOrderByItem();
+    public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
+        OrderByContext result = super.parseSelectOrderByItem(sqlContext);
         if (getLexer().skipIfEqual(Token.NULLS)) {
             getLexer().nextToken();
             if (getLexer().identifierEquals("FIRST")) {
