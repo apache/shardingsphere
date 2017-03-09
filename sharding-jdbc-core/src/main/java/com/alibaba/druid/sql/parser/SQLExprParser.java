@@ -133,60 +133,6 @@ public class SQLExprParser {
         return Optional.absent();
     }
     
-    protected final void parseSingleTable(final SQLContext sqlContext) {
-        boolean hasParentheses = false;
-        if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
-            if (getLexer().equalToken(Token.SELECT)) {
-                throw new UnsupportedOperationException("Cannot support subquery");
-            }
-            hasParentheses = true;
-        }
-        TableContext tableContext;
-        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
-        String literals = getLexer().getLiterals();
-        getLexer().nextToken();
-        if (getLexer().skipIfEqual(Token.DOT)) {
-            String tableName = getLexer().getLiterals();
-            getLexer().nextToken();
-            if (hasParentheses) {
-                getLexer().accept(Token.RIGHT_PAREN);
-            }
-            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
-        } else {
-            if (hasParentheses) {
-                getLexer().accept(Token.RIGHT_PAREN);
-            }
-            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
-        }
-        if (isJoin()) {
-            throw new UnsupportedOperationException("Cannot support Multiple-Table.");
-        }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
-        sqlContext.getTables().add(tableContext);
-    }
-    
-    public final boolean isJoin() {
-        if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
-            getLexer().skipIfEqual(Token.OUTER);
-            getLexer().accept(Token.JOIN);
-            return true;
-        } else if (getLexer().skipIfEqual(Token.INNER)) {
-            getLexer().accept(Token.JOIN);
-            return true;
-        } else if (getLexer().skipIfEqual(Token.JOIN, Token.COMMA, Token.STRAIGHT_JOIN)) {
-            return true;
-        } else if (getLexer().skipIfEqual(Token.CROSS)) {
-            if (getLexer().skipIfEqual(Token.JOIN, Token.APPLY)) {
-                return true;
-            }
-        } else if (getLexer().skipIfEqual(Token.OUTER)) {
-            if (getLexer().skipIfEqual(Token.APPLY)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     public final SQLExpr expr(final SQLObject parent) {
         SQLExpr result = expr();
         result.setParent(parent);
@@ -201,24 +147,29 @@ public class SQLExprParser {
         return exprRest(expr);
     }
     
-    public SQLExpr primary() {
+    protected SQLExpr primary() {
         SQLExpr sqlExpr = null;
         Token token = getLexer().getToken();
+        
+        
+        if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
+            sqlExpr = expr();
+            if (getLexer().equalToken(Token.COMMA)) {
+                SQLListExpr listExpr = new SQLListExpr();
+                listExpr.getItems().add(sqlExpr);
+                do {
+                    getLexer().nextToken();
+                    listExpr.getItems().add(expr());
+                } while (getLexer().equalToken(Token.COMMA));
+                sqlExpr = listExpr;
+            }
+            getLexer().accept(Token.RIGHT_PAREN);
+            return primaryRest(sqlExpr);
+        }
+        
+        
+        
         switch (token) {
-            case LEFT_PAREN:
-                getLexer().nextToken();
-                sqlExpr = expr();
-                if (getLexer().equalToken(Token.COMMA)) {
-                    SQLListExpr listExpr = new SQLListExpr();
-                    listExpr.getItems().add(sqlExpr);
-                    do {
-                        getLexer().nextToken();
-                        listExpr.getItems().add(expr());
-                    } while (getLexer().equalToken(Token.COMMA));
-                    sqlExpr = listExpr;
-                }
-                getLexer().accept(Token.RIGHT_PAREN);
-                break;
             case INSERT:
                 getLexer().nextToken();
                 if (!getLexer().equalToken(Token.LEFT_PAREN)) {
@@ -1285,6 +1236,60 @@ public class SQLExprParser {
             }
         }
         return charType;
+    }
+    
+    protected final void parseSingleTable(final SQLContext sqlContext) {
+        boolean hasParentheses = false;
+        if (getLexer().skipIfEqual(Token.LEFT_PAREN)) {
+            if (getLexer().equalToken(Token.SELECT)) {
+                throw new UnsupportedOperationException("Cannot support subquery");
+            }
+            hasParentheses = true;
+        }
+        TableContext tableContext;
+        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
+        String literals = getLexer().getLiterals();
+        getLexer().nextToken();
+        if (getLexer().skipIfEqual(Token.DOT)) {
+            String tableName = getLexer().getLiterals();
+            getLexer().nextToken();
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
+        } else {
+            if (hasParentheses) {
+                getLexer().accept(Token.RIGHT_PAREN);
+            }
+            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
+        }
+        if (isJoin()) {
+            throw new UnsupportedOperationException("Cannot support Multiple-Table.");
+        }
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlContext.getTables().add(tableContext);
+    }
+    
+    public final boolean isJoin() {
+        if (getLexer().skipIfEqual(Token.LEFT, Token.RIGHT, Token.FULL)) {
+            getLexer().skipIfEqual(Token.OUTER);
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.INNER)) {
+            getLexer().accept(Token.JOIN);
+            return true;
+        } else if (getLexer().skipIfEqual(Token.JOIN, Token.COMMA, Token.STRAIGHT_JOIN)) {
+            return true;
+        } else if (getLexer().skipIfEqual(Token.CROSS)) {
+            if (getLexer().skipIfEqual(Token.JOIN, Token.APPLY)) {
+                return true;
+            }
+        } else if (getLexer().skipIfEqual(Token.OUTER)) {
+            if (getLexer().skipIfEqual(Token.APPLY)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {

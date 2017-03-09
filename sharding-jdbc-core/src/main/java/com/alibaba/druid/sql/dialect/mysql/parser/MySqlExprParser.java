@@ -28,7 +28,6 @@ import com.alibaba.druid.sql.ast.expr.SQLHexExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
 import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
@@ -38,7 +37,6 @@ import com.alibaba.druid.sql.context.RowCountLimitToken;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlExtractExpr;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlIntervalUnit;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlMatchAgainstExpr.SearchModifier;
@@ -453,35 +451,6 @@ public class MySqlExprParser extends SQLExprParser {
         return super.primaryRest(expr);
     }
 
-    protected SQLExpr parseInterval() {
-        getLexer().accept(Token.INTERVAL);
-
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            SQLMethodInvokeExpr methodInvokeExpr = new SQLMethodInvokeExpr("INTERVAL");
-            if (!getLexer().equalToken(Token.RIGHT_PAREN)) {
-                methodInvokeExpr.getParameters().addAll(exprList(methodInvokeExpr));
-            }
-            getLexer().accept(Token.RIGHT_PAREN);
-            return primaryRest(methodInvokeExpr);
-        } else {
-            SQLExpr value = expr();
-
-            if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                throw new ParserException(getLexer());
-            }
-
-            String unit = getLexer().getLiterals();
-            getLexer().nextToken();
-
-            MySqlIntervalExpr intervalExpr = new MySqlIntervalExpr();
-            intervalExpr.setValue(value);
-            intervalExpr.setUnit(MySqlIntervalUnit.valueOf(unit.toUpperCase()));
-
-            return intervalExpr;
-        }
-    }
-
     protected SQLDataType parseDataTypeRest(SQLDataType dataType) {
         super.parseDataTypeRest(dataType);
         if (getLexer().identifierEquals("UNSIGNED")) {
@@ -554,69 +523,25 @@ public class MySqlExprParser extends SQLExprParser {
         getLexer().skipIfEqual(Token.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentPosition();
-        SQLExpr expr = expr();
         int value;
         boolean isParameterForValue = false;
-        if (expr instanceof SQLNumericLiteralExpr) {
-            value = ((SQLNumericLiteralExpr) expr).getNumber().intValue();
+        if (getLexer().equalToken(Token.LITERAL_INT)) {
+            value = Integer.parseInt(getLexer().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
-        } else {
+        } else if (getLexer().equalToken(Token.QUESTION)) {
             valueIndex = parametersIndex;
             value = (int) getParameters().get(valueIndex);
             valueBeginPosition--;
             isParameterForValue = true;
+        } else {
+            throw new ParserException(getLexer());
         }
+        getLexer().nextToken();
         if (getLexer().skipIfEqual(Token.COMMA)) {
-            int rowCountBeginPosition = getLexer().getCurrentPosition();
-            SQLExpr rowCountExpr = expr();
-            int rowCount;
-            int rowCountIndex = -1;
-            boolean isParameterForRowCount = false;
-            if (rowCountExpr instanceof SQLNumericLiteralExpr) {
-                rowCount = ((SQLNumericLiteralExpr) rowCountExpr).getNumber().intValue();
-                rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
-            } else {
-                rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-                rowCount = (int) getParameters().get(rowCountIndex);
-                rowCountBeginPosition--;
-                isParameterForRowCount = true;
-            }
-            if (!isParameterForValue) {
-                sqlContext.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
-            }
-            if (!isParameterForRowCount) {
-                sqlContext.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
-            }
-            if (value < 0 || rowCount < 0) {
-                throw new SQLParserException("LIMIT offset and row count can not be a negative value");
-            }
-            return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
+            return getLimitContextWithComma(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (getLexer().skipIfEqual(Token.OFFSET)) {
-            int offsetBeginPosition = getLexer().getCurrentPosition();
-            SQLExpr offsetExpr = expr();
-            int offset;
-            int offsetIndex = -1;
-            boolean isParameterForOffset = false;
-            if (offsetExpr instanceof SQLNumericLiteralExpr) {
-                offset = ((SQLNumericLiteralExpr) offsetExpr).getNumber().intValue();
-                offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-            } else {
-                offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-                offset = (int) getParameters().get(offsetIndex);
-                offsetBeginPosition--;
-                isParameterForOffset = true;
-            }
-            if (!isParameterForOffset) {
-                sqlContext.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
-            }
-            if (!isParameterForValue) {
-                sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value)); 
-            }
-            if (value < 0 || offset < 0) {
-                throw new SQLParserException("LIMIT offset and row count can not be a negative value");
-            }
-            return new LimitContext(offset, value, offsetIndex, valueIndex);
+            return getLimitContextWithOffset(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
             sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
@@ -625,6 +550,64 @@ public class MySqlExprParser extends SQLExprParser {
             throw new SQLParserException("LIMIT offset and row count can not be a negative value");
         }
         return new LimitContext(value, valueIndex);
+    }
+    
+    private LimitContext getLimitContextWithComma(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+        int rowCountBeginPosition = getLexer().getCurrentPosition();
+        int rowCount;
+        int rowCountIndex = -1;
+        boolean isParameterForRowCount = false;
+        if (getLexer().equalToken(Token.LITERAL_INT)) {
+            rowCount = Integer.parseInt(getLexer().getLiterals());
+            rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
+        } else if (getLexer().equalToken(Token.QUESTION)) {
+            rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
+            rowCount = (int) getParameters().get(rowCountIndex);
+            rowCountBeginPosition--;
+            isParameterForRowCount = true;
+        } else {
+            throw new ParserException(getLexer());
+        }
+        getLexer().nextToken();
+        if (!isParameterForValue) {
+            sqlContext.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
+        }
+        if (!isParameterForRowCount) {
+            sqlContext.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
+        }
+        if (value < 0 || rowCount < 0) {
+            throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+        }
+        return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
+    }
+    
+    private LimitContext getLimitContextWithOffset(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+        int offsetBeginPosition = getLexer().getCurrentPosition();
+        int offset;
+        int offsetIndex = -1;
+        boolean isParameterForOffset = false;
+        if (getLexer().equalToken(Token.LITERAL_INT)) {
+            offset = Integer.parseInt(getLexer().getLiterals());
+            offsetBeginPosition = offsetBeginPosition - (offset + "").length();
+        } else if (getLexer().equalToken(Token.QUESTION)) {
+            offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
+            offset = (int) getParameters().get(offsetIndex);
+            offsetBeginPosition--;
+            isParameterForOffset = true;
+        } else {
+            throw new ParserException(getLexer());
+        }
+        getLexer().nextToken();
+        if (!isParameterForOffset) {
+            sqlContext.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+        }
+        if (!isParameterForValue) {
+            sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+        }
+        if (value < 0 || offset < 0) {
+            throw new SQLParserException("LIMIT offset and row count can not be a negative value");
+        }
+        return new LimitContext(offset, value, offsetIndex, valueIndex);
     }
     
     protected SQLAggregateExpr parseAggregateExprRest(final SQLAggregateExpr aggregateExpr) {

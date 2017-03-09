@@ -24,7 +24,6 @@ import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateOption;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
@@ -738,63 +737,6 @@ public class OracleExprParser extends SQLExprParser {
         return result;
     }
 
-    protected SQLExpr parseInterval() {
-        getLexer().accept(Token.INTERVAL);
-        
-        OracleIntervalExpr interval = new OracleIntervalExpr();
-        if (!getLexer().equalToken(Token.LITERAL_CHARS)) {
-            return new SQLIdentifierExpr("INTERVAL");
-        }
-        interval.setValue(new SQLCharExpr(getLexer().getLiterals()));
-        getLexer().nextToken();
-
-        
-        OracleIntervalType type = OracleIntervalType.valueOf(getLexer().getLiterals());
-        interval.setType(type);
-        getLexer().nextToken();
-        
-        if (getLexer().equalToken(Token.LEFT_PAREN)) {
-            getLexer().nextToken();
-            if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                throw new ParserException(getLexer());
-            }
-            interval.setPrecision(getLexer().integerValue().intValue());
-            getLexer().nextToken();
-            
-            if (getLexer().equalToken(Token.COMMA)) {
-                getLexer().nextToken();
-                if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                    throw new ParserException(getLexer());
-                }
-                interval.setFactionalSecondsPrecision(getLexer().integerValue().intValue());
-                getLexer().nextToken();
-            }
-            getLexer().accept(Token.RIGHT_PAREN);
-        }
-        
-        if (getLexer().equalToken(Token.TO)) {
-            getLexer().nextToken();
-            if (getLexer().identifierEquals("SECOND")) {
-                getLexer().nextToken();
-                interval.setToType(OracleIntervalType.SECOND);
-                if (getLexer().equalToken(Token.LEFT_PAREN)) {
-                    getLexer().nextToken();
-                    if (!getLexer().equalToken(Token.LITERAL_INT)) {
-                        throw new ParserException(getLexer());
-                    }
-                    interval.setToFactionalSecondsPrecision(getLexer().integerValue().intValue());
-                    getLexer().nextToken();
-                    getLexer().accept(Token.RIGHT_PAREN);
-                }
-            } else {
-                interval.setToType(OracleIntervalType.MONTH);
-                getLexer().nextToken();
-            }
-        }
-        
-        return interval;    
-    }
-    
     public SQLExpr relationalRest(SQLExpr expr) {
         if (getLexer().equalToken(Token.IS)) {
             getLexer().nextToken();

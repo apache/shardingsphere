@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
+import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
@@ -47,7 +48,7 @@ public final class UnsupportedParseTest {
         SQLParserFactory.create(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", Collections.emptyList(), new ShardingRuleMockBuilder().build());
     }
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = ParserException.class)
     public void assertNegativeLimitRowCount() throws SQLParserException {
         SQLParserFactory.create(DatabaseType.MySQL, "select * from order limit -2,-1", Collections.emptyList(), new ShardingRuleMockBuilder().build()).parse();
     }

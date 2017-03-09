@@ -16,13 +16,10 @@
 
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
-import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -238,11 +235,11 @@ public class OracleSelectParser extends AbstractSelectParser {
             getExprParser().getLexer().skipIfEqual(Token.LEFT_PAREN);
             parseQueryTableExpression();
             getExprParser().getLexer().skipIfEqual(Token.RIGHT_PAREN);
-            parseFlashbackQueryClause();
+            skipFlashbackQueryClause();
         } else {
             parseQueryTableExpression();
-            parsePivotClause();
-            parseFlashbackQueryClause();
+            skipPivotClause();
+            skipFlashbackQueryClause();
         }
         parseJoinTable();
         return getSqlContext().getTables();
@@ -281,7 +278,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void parsePivotClause() {
+    private void skipPivotClause() {
         if (getExprParser().getLexer().identifierEquals("PIVOT")) {
             getExprParser().getLexer().nextToken();
             if (getExprParser().getLexer().identifierEquals("XML")) {
@@ -301,25 +298,13 @@ public class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
-    private void parseFlashbackQueryClause() {
+    private void skipFlashbackQueryClause() {
         if (getExprParser().getLexer().identifierEquals("VERSIONS")) {
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().skipIfEqual(Token.BETWEEN)) {
-                if (getExprParser().getLexer().identifierEquals("SCN") || getExprParser().getLexer().identifierEquals("TIMESTAMP")) {
-                    getExprParser().getLexer().nextToken();
-                }
-                SQLBinaryOpExpr binaryExpr = (SQLBinaryOpExpr) getExprParser().expr();
-                if (binaryExpr.getOperator() != SQLBinaryOperator.BooleanAnd) {
-                    throw new ParserException("syntax error : " + binaryExpr.getOperator());
-                }
-            } else {
-                throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
-            }
+            throw new UnsupportedOperationException("Cannot support Flashback Query");
         } else if (getExprParser().getLexer().skipIfEqual(Token.AS)) {
             if (getExprParser().getLexer().skipIfEqual(Token.OF)) {
                 if (getExprParser().getLexer().identifierEquals("SCN") || getExprParser().getLexer().identifierEquals("TIMESTAMP")) {
-                    getExprParser().getLexer().nextToken();
-                    getExprParser().expr();
+                    throw new UnsupportedOperationException("Cannot support Flashback Query");
                 }
             }
         }
