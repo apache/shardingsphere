@@ -58,9 +58,8 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             if (getExprParser().getLexer().equalToken(Token.COMMA, Token.ON, Token.EOF)) {
                 parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr, getParameters());
-                // TODO 如果是表达式,跳至结束符号 COMMA ON 或 EOF    
             } else {
-                // getExprParser().getLexer().skipUntil(Token.COMMA, Token.ON);
+                getExprParser().getLexer().skipUntil(Token.COMMA, Token.ON);
             }
         } while (getExprParser().getLexer().equalToken(Token.COMMA));
         getSqlContext().getConditionContexts().add(parseContext.getCurrentConditionContext());

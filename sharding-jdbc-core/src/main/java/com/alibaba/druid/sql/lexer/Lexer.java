@@ -18,12 +18,14 @@
 package com.alibaba.druid.sql.lexer;
 
 import com.alibaba.druid.sql.parser.ParserException;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 词法解析器.
@@ -76,10 +78,12 @@ public class Lexer {
     /**
      * 直接跳转至传入的语言符号.
      *
-     * @param token 跳转至的语言符号
+     * @param tokens 跳转至的语言符号
      */
-    public final void skipUntil(final Token token) {
-        while (this.token != token && this.token != Token.EOF) {
+    public final void skipUntil(final Token... tokens) {
+        Set<Token> tokenSet = Sets.newHashSet(tokens);
+        tokenSet.add(Token.EOF);
+        while (!tokenSet.contains(token)) {
             nextToken();
         }
     }
