@@ -19,6 +19,8 @@ package com.alibaba.druid.sql.dialect.postgresql.parser;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
+import com.alibaba.druid.sql.parser.ParserException;
+import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
 public class PGSelectParser extends AbstractSelectParser {
@@ -42,37 +44,18 @@ public class PGSelectParser extends AbstractSelectParser {
         parseFrom();
         parseWhere();
         parseGroupBy();
-        if (getExprParser().getLexer().skipIfEqual(Token.WINDOW)) {
-            getExprParser().expr();
-            getExprParser().getLexer().accept(Token.AS);
-            while (true) {
-                getExprParser().expr();
-                if (getExprParser().getLexer().equalToken(Token.COMMA)) {
-                    getExprParser().getLexer().nextToken();
-                } else {
-                    break;
-                }
-            }
+        if (getExprParser().getLexer().equalToken(Token.WINDOW)) {
+            throw new ParserUnsupportedException(Token.WINDOW);
         }
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy());
         parseLimit();
         if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
-            getExprParser().getLexer().skipIfEqual(Token.FIRST, Token.NEXT);
-            getExprParser().expr();
-            getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
-            getExprParser().getLexer().skipIfEqual(Token.ONLY);
+            throw new ParserUnsupportedException(Token.FETCH);
         }
         if (getExprParser().getLexer().skipIfEqual(Token.FOR)) {
             getExprParser().getLexer().skipIfEqual(Token.UPDATE, Token.SHARE);
             if (getExprParser().getLexer().equalToken(Token.OF)) {
-                while (true) {
-                    getExprParser().expr();
-                    if (getExprParser().getLexer().equalToken(Token.COMMA)) {
-                        getExprParser().getLexer().nextToken();
-                    } else {
-                        break;
-                    }
-                }
+                throw new ParserUnsupportedException(Token.OF);
             }
             getExprParser().getLexer().skipIfEqual(Token.NOWAIT);
         }
@@ -90,12 +73,22 @@ public class PGSelectParser extends AbstractSelectParser {
                     getExprParser().getLexer().nextToken();
                 } else {
                     // rowCount
-                    getExprParser().expr();
+                    if (getExprParser().getLexer().equalToken(Token.LITERAL_INT)) {
+                    } else if (getExprParser().getLexer().equalToken(Token.QUESTION)) {
+                    } else {
+                        throw new ParserException(getExprParser().getLexer());
+                    }
+                    getExprParser().getLexer().nextToken();
                 }
             } else if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
                 getExprParser().getLexer().nextToken();
                 // offset
-                getExprParser().expr();
+                if (getExprParser().getLexer().equalToken(Token.LITERAL_INT)) {
+                } else if (getExprParser().getLexer().equalToken(Token.QUESTION)) {
+                } else {
+                    throw new ParserException(getExprParser().getLexer());
+                }
+                getExprParser().getLexer().nextToken();
                 getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
             } else {
                 break;

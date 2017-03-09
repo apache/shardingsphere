@@ -1,6 +1,10 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.lexer.Token;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -37,8 +41,27 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             Condition.Column column = getColumn(autoIncrementColumns);
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Token.EQ);
-            SQLExpr value = getExprParser().expr();
-            parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, value, getParameters());
+            SQLExpr sqlExpr;
+            if (getExprParser().getLexer().equalToken(Token.LITERAL_INT)) {
+                sqlExpr = new SQLIntegerExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
+            } else if (getExprParser().getLexer().equalToken(Token.LITERAL_FLOAT)) {
+                sqlExpr = new SQLIntegerExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
+            } else if (getExprParser().getLexer().equalToken(Token.LITERAL_CHARS)) {
+                sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
+            } else if (getExprParser().getLexer().equalToken(Token.NULL)) {
+                sqlExpr = new SQLNullExpr();
+            } else if (getExprParser().getLexer().equalToken(Token.VARIANT)) {
+                sqlExpr = new SQLVariantRefExpr("?");
+            } else {
+                throw new UnsupportedOperationException("");
+            }
+            getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().equalToken(Token.COMMA, Token.ON, Token.EOF)) {
+                parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr, getParameters());
+                // TODO 如果是表达式,跳至结束符号 COMMA ON 或 EOF    
+            } else {
+                // getExprParser().getLexer().skipUntil(Token.COMMA, Token.ON);
+            }
         } while (getExprParser().getLexer().equalToken(Token.COMMA));
         getSqlContext().getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
