@@ -41,22 +41,12 @@ public class OracleExprParser extends SQLExprParser {
         return super.as();
     }
     
-    protected boolean isCharType(final String dataTypeName) {
-        return "varchar2".equalsIgnoreCase(dataTypeName) || "nvarchar2".equalsIgnoreCase(dataTypeName)
-                || "char".equalsIgnoreCase(dataTypeName) || "varchar".equalsIgnoreCase(dataTypeName) 
-                || "nchar".equalsIgnoreCase(dataTypeName) || "nvarchar".equalsIgnoreCase(dataTypeName);
-    }
-    
     @Override
     public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
         OrderByContext result = super.parseSelectOrderByItem(sqlContext);
         if (getLexer().skipIfEqual(Token.NULLS)) {
             getLexer().nextToken();
-            if (getLexer().identifierEquals("FIRST")) {
-                getLexer().nextToken();
-            } else if (getLexer().identifierEquals("LAST")) {
-                getLexer().nextToken();
-            } else {
+            if (!getLexer().skipIfEqual(Token.FIRST, Token.LAST)) {
                 throw new ParserUnsupportedException(getLexer().getToken());
             }
         }

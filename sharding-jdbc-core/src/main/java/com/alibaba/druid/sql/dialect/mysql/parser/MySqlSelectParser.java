@@ -71,11 +71,11 @@ public class MySqlSelectParser extends AbstractSelectParser {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getExprParser().getLexer().identifierEquals("IGNORE")) {
+        if (getExprParser().getLexer().equalToken(Token.IGNORE)) {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getExprParser().getLexer().identifierEquals("FORCE")) {
+        if (getExprParser().getLexer().equalToken(Token.FORCE)) {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }

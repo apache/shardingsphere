@@ -71,18 +71,14 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     private void parseFor() {
         getExprParser().getLexer().nextToken();
-        if (getExprParser().getLexer().identifierEquals("BROWSE")) {
+        if (getExprParser().getLexer().equalToken(Token.BROWSE)) {
             getExprParser().getLexer().nextToken();
-        } else if (getExprParser().getLexer().identifierEquals("XML")) {
-            getExprParser().getLexer().nextToken();
+        } else if (getExprParser().getLexer().skipIfEqual(Token.XML)) {
             while (true) {
-                if (getExprParser().getLexer().identifierEquals("AUTO") || getExprParser().getLexer().identifierEquals("TYPE") || getExprParser().getLexer().identifierEquals("XMLSCHEMA")) {
+                if (getExprParser().getLexer().equalToken(Token.AUTO, Token.TYPE, Token.XMLSCHEMA)) {
                     getExprParser().getLexer().nextToken();
-                } else if (getExprParser().getLexer().identifierEquals("ELEMENTS")) {
-                    getExprParser().getLexer().nextToken();
-                    if (getExprParser().getLexer().identifierEquals("XSINIL")) {
-                        getExprParser().getLexer().nextToken();
-                    }
+                } else if (getExprParser().getLexer().skipIfEqual(Token.ELEMENTS)) {
+                    getExprParser().getLexer().skipIfEqual(Token.XSINIL);
                 } else {
                     break;
                 }

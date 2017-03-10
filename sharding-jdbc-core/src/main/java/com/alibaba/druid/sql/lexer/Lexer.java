@@ -50,67 +50,9 @@ public class Lexer {
     @Setter
     private String literals;
     
-    public Lexer(final String input, final Map<String, Token> tokenDictionary) {
+    public Lexer(final String input, final Map<String, Token> dictionary) {
         this.input = input;
-        term = new Term(input, tokenDictionary);
-    }
-    
-    /**
-     * 如果当前语言符号等于传入值, 则跳过.
-     * 
-     * @param tokens 待跳过的语言符号
-     * @return 是否跳过(或可理解为是否相等)
-     */
-    public final boolean skipIfEqual(final Token... tokens) {
-        for (Token each : tokens) {
-            if (equalToken(each)) {
-                nextToken();
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 直接跳转至传入的语言符号.
-     *
-     * @param tokens 跳转至的语言符号
-     */
-    public final void skipUntil(final Token... tokens) {
-        Set<Token> tokenSet = Sets.newHashSet(tokens);
-        tokenSet.add(Token.EOF);
-        while (!tokenSet.contains(token)) {
-            nextToken();
-        }
-    }
-    
-    /**
-     * 跳过小括号内所有的语言符号.
-     * 
-     * @return 小括号内所有的语言符号
-     */
-    public final String skipParentheses() {
-        StringBuilder result = new StringBuilder("");
-        int count = 0;
-        if (Token.LEFT_PAREN == token) {
-            int beginPosition = currentPosition;
-            result.append(Token.LEFT_PAREN.getName());
-            nextToken();
-            while (true) {
-                if (Token.EOF == token || (Token.RIGHT_PAREN == token && 0 == count)) {
-                    break;
-                }
-                if (Token.LEFT_PAREN == token) {
-                    count++;
-                } else if (Token.RIGHT_PAREN == token) {
-                    count--;
-                }
-                nextToken();
-            }
-            result.append(input.substring(beginPosition, currentPosition));
-            nextToken();
-        }
-        return result.toString();
+        term = new Term(input, dictionary);
     }
     
     /**
@@ -339,14 +281,6 @@ public class Lexer {
         throw new ParserException(this, token);
     }
     
-    public final void accept(final String text) {
-        if (identifierEquals(text)) {
-            nextToken();
-            return;
-        }
-        throw new ParserException(this);
-    }
-    
     /**
      * 判断当前语言标记是否和其中一个传入的标记相等.
      * 
@@ -362,7 +296,62 @@ public class Lexer {
         return false;
     }
     
-    public final boolean identifierEquals(final String text) {
-        return Token.IDENTIFIER == token && literals.equalsIgnoreCase(text);
+    
+    /**
+     * 如果当前语言符号等于传入值, 则跳过.
+     *
+     * @param tokens 待跳过的语言符号
+     * @return 是否跳过(或可理解为是否相等)
+     */
+    public final boolean skipIfEqual(final Token... tokens) {
+        for (Token each : tokens) {
+            if (equalToken(each)) {
+                nextToken();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 直接跳转至传入的语言符号.
+     *
+     * @param tokens 跳转至的语言符号
+     */
+    public final void skipUntil(final Token... tokens) {
+        Set<Token> tokenSet = Sets.newHashSet(tokens);
+        tokenSet.add(Token.EOF);
+        while (!tokenSet.contains(token)) {
+            nextToken();
+        }
+    }
+    
+    /**
+     * 跳过小括号内所有的语言符号.
+     *
+     * @return 小括号内所有的语言符号
+     */
+    public final String skipParentheses() {
+        StringBuilder result = new StringBuilder("");
+        int count = 0;
+        if (Token.LEFT_PAREN == token) {
+            int beginPosition = currentPosition;
+            result.append(Token.LEFT_PAREN.getName());
+            nextToken();
+            while (true) {
+                if (Token.EOF == token || (Token.RIGHT_PAREN == token && 0 == count)) {
+                    break;
+                }
+                if (Token.LEFT_PAREN == token) {
+                    count++;
+                } else if (Token.RIGHT_PAREN == token) {
+                    count--;
+                }
+                nextToken();
+            }
+            result.append(input.substring(beginPosition, currentPosition));
+            nextToken();
+        }
+        return result.toString();
     }
 }

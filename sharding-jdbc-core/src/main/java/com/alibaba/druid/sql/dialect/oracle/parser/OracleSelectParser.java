@@ -85,8 +85,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getExprParser().getLexer().skipIfEqual(Token.CONNECT)) {
             getExprParser().getLexer().accept(Token.BY);
             getExprParser().getLexer().skipIfEqual(Token.PRIOR);
-            if (getExprParser().getLexer().identifierEquals("NOCYCLE")) {
-                getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().skipIfEqual(Token.NOCYCLE)) {
                 getExprParser().getLexer().skipIfEqual(Token.PRIOR);
             }
             getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext(1));
@@ -113,56 +112,44 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipCellReferenceOptions() {
-        if (getExprParser().getLexer().identifierEquals("IGNORE")) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().getLexer().accept("NAV");
-        } else if (getExprParser().getLexer().identifierEquals("KEEP")) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().getLexer().accept("NAV");
+        if (getExprParser().getLexer().skipIfEqual(Token.IGNORE)) {
+            getExprParser().getLexer().accept(Token.NAV);
+        } else if (getExprParser().getLexer().skipIfEqual(Token.KEEP)) {
+            getExprParser().getLexer().accept(Token.NAV);
         }
         if (getExprParser().getLexer().skipIfEqual(Token.UNIQUE)) {
-            if (getExprParser().getLexer().identifierEquals("DIMENSION")) {
-                getExprParser().getLexer().nextToken();
-            } else {
-                getExprParser().getLexer().accept("SINGLE");
-                getExprParser().getLexer().accept("REFERENCE");
-            }
+            getExprParser().getLexer().skipIfEqual(Token.DIMENSION, Token.SINGLE);
+            getExprParser().getLexer().skipIfEqual(Token.REFERENCE);
         }
     }
     
     private void skipMainModelClause() {
-        if (getExprParser().getLexer().identifierEquals("MAIN")) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.MAIN)) {
             getExprParser().getLexer().nextToken();
         }
         skipQueryPartitionClause();
-        getExprParser().getLexer().accept("DIMENSION");
+        getExprParser().getLexer().accept(Token.DIMENSION);
         getExprParser().getLexer().accept(Token.BY);
         getExprParser().getLexer().skipParentheses();
-        getExprParser().getLexer().accept("MEASURES");
+        getExprParser().getLexer().accept(Token.MEASURES);
         getExprParser().getLexer().skipParentheses();
         skipCellReferenceOptions();
         skipModelRulesClause();
     }
 
     private void skipModelRulesClause() {
-        if (getExprParser().getLexer().identifierEquals("RULES")) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.RULES)) {
             getExprParser().getLexer().skipIfEqual(Token.UPDATE);
             getExprParser().getLexer().skipIfEqual(Token.UPSERT);
-            if (getExprParser().getLexer().identifierEquals("AUTOMATIC")) {
-                getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().skipIfEqual(Token.AUTOMATIC)) {
                 getExprParser().getLexer().accept(Token.ORDER);
-            } else if (getExprParser().getLexer().identifierEquals("SEQUENTIAL")) {
-                getExprParser().getLexer().nextToken();
+            } else if (getExprParser().getLexer().skipIfEqual(Token.SEQUENTIAL)) {
                 getExprParser().getLexer().accept(Token.ORDER);
             }
         }
-        if (getExprParser().getLexer().identifierEquals("ITERATE")) {
-            getExprParser().getLexer().nextToken();
+        if (getExprParser().getLexer().skipIfEqual(Token.ITERATE)) {
             getExprParser().getLexer().skipParentheses();
-            if (getExprParser().getLexer().identifierEquals("UNTIL")) {
-                getExprParser().getLexer().nextToken();
+            if (getExprParser().getLexer().skipIfEqual(Token.UNTIL)) {
                 getExprParser().getLexer().skipParentheses();
             }
         }
@@ -230,7 +217,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getExprParser().getLexer().equalToken(Token.SELECT)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
-        if (getExprParser().getLexer().identifierEquals("ONLY")) {
+        if (getExprParser().getLexer().skipIfEqual(Token.ONLY)) {
             getExprParser().getLexer().skipIfEqual(Token.LEFT_PAREN);
             parseQueryTableExpression();
             getExprParser().getLexer().skipIfEqual(Token.RIGHT_PAREN);
@@ -251,13 +238,10 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void parseSample() {
-        if (getExprParser().getLexer().identifierEquals("SAMPLE")) {
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().identifierEquals("BLOCK")) {
-                getExprParser().getLexer().nextToken();
-            }
+        if (getExprParser().getLexer().skipIfEqual(Token.SAMPLE)) {
+            getExprParser().getLexer().skipIfEqual(Token.BLOCK);
             getExprParser().getLexer().skipParentheses();
-            if (getExprParser().getLexer().identifierEquals("SEED")) {
+            if (getExprParser().getLexer().skipIfEqual(Token.SEED)) {
                 getExprParser().getLexer().skipParentheses();
             }
         }
@@ -278,19 +262,13 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipPivotClause() {
-        if (getExprParser().getLexer().identifierEquals("PIVOT")) {
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().identifierEquals("XML")) {
-                getExprParser().getLexer().nextToken();
-            }
+        if (getExprParser().getLexer().skipIfEqual(Token.PIVOT)) {
+            getExprParser().getLexer().skipIfEqual(Token.XML);
             getExprParser().getLexer().skipParentheses();
-        } else if (getExprParser().getLexer().identifierEquals("UNPIVOT")) {
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().identifierEquals("INCLUDE")) {
-                getExprParser().getLexer().nextToken();
+        } else if (getExprParser().getLexer().skipIfEqual(Token.UNPIVOT)) {
+            if (getExprParser().getLexer().skipIfEqual(Token.INCLUDE)) {
                 getExprParser().getLexer().accept(Token.NULLS);
-            } else if (getExprParser().getLexer().identifierEquals("EXCLUDE")) {
-                getExprParser().getLexer().nextToken();
+            } else if (getExprParser().getLexer().skipIfEqual(Token.EXCLUDE)) {
                 getExprParser().getLexer().accept(Token.NULLS);
             }
             getExprParser().getLexer().skipParentheses();
@@ -298,11 +276,11 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipFlashbackQueryClause() {
-        if (getExprParser().getLexer().identifierEquals("VERSIONS")) {
+        if (getExprParser().getLexer().equalToken(Token.VERSIONS)) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
         } else if (getExprParser().getLexer().skipIfEqual(Token.AS)) {
             if (getExprParser().getLexer().skipIfEqual(Token.OF)) {
-                if (getExprParser().getLexer().identifierEquals("SCN") || getExprParser().getLexer().identifierEquals("TIMESTAMP")) {
+                if (getExprParser().getLexer().skipIfEqual(Token.SCN) || getExprParser().getLexer().skipIfEqual(Token.TIMESTAMP)) {
                     throw new UnsupportedOperationException("Cannot support Flashback Query");
                 }
             }
@@ -317,13 +295,10 @@ public class OracleSelectParser extends AbstractSelectParser {
                 getExprParser().parseExpr();
             } while (getExprParser().getLexer().skipIfEqual(Token.COMMA));
         }
-        if (getExprParser().getLexer().equalToken(Token.NOWAIT)) {
+        if (getExprParser().getLexer().equalToken(Token.NOWAIT, Token.WAIT)) {
             getExprParser().getLexer().nextToken();
-        } else if (getExprParser().getLexer().equalToken(Token.WAIT)) {
-            getExprParser().getLexer().nextToken();
-        } else if (getExprParser().getLexer().identifierEquals("SKIP")) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().getLexer().accept("LOCKED");
+        } else if (getExprParser().getLexer().skipIfEqual(Token.SKIP)) {
+            getExprParser().getLexer().accept(Token.LOCKED);
         }
     }
 }

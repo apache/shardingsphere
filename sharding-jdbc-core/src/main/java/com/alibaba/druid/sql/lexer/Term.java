@@ -33,7 +33,7 @@ public final class Term {
     
     private final String input;
     
-    private final Map<String, Token> tokenDictionary;
+    private final Map<String, Token> dictionary;
     
     @Getter(AccessLevel.PACKAGE)
     private int offset;
@@ -67,7 +67,7 @@ public final class Term {
         }
         length++;
         literals = contentOnly ? input.substring(offset + 1, offset + length - 1) : input.substring(offset, offset + length);
-        token = null == tokenDictionary.get(literals.toUpperCase()) ? defaultToken : tokenDictionary.get(literals.toUpperCase());
+        token = null == dictionary.get(literals.toUpperCase()) ? defaultToken : dictionary.get(literals.toUpperCase());
     }
     
     void scanVariable(final int currentPosition) {
@@ -100,12 +100,12 @@ public final class Term {
                 i++;
             }
             if (Token.BY.getName().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
-                token = tokenDictionary.get(literals.toUpperCase());
+                token = dictionary.get(literals.toUpperCase());
             } else {
                 token = Token.IDENTIFIER;
             }
         } else {
-            token = tokenDictionary.containsKey(upperCaseLiterals) ? tokenDictionary.get(upperCaseLiterals) : Token.IDENTIFIER;
+            token = dictionary.containsKey(upperCaseLiterals) ? dictionary.get(upperCaseLiterals) : Token.IDENTIFIER;
         }
     }
     
@@ -277,7 +277,7 @@ public final class Term {
             length++;
         }
         literals = String.valueOf(symbolChars);
-        token = tokenDictionary.get(literals);
+        token = dictionary.get(literals);
     }
     
     private char charAt(final int index) {
