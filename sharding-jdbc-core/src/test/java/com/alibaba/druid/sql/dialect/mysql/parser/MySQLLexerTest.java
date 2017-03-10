@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public final class MySql1LexerTest {
+public final class MySQLLexerTest {
     
     private MySQLLexer lexer;
     
