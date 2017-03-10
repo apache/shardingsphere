@@ -2,7 +2,7 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlSelectParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleSelectParser;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PGSelectParser;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLSelectParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerSelectParser;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
@@ -30,7 +30,7 @@ public class SQLSelectParserFactory {
             case SQLServer :
                 return new SQLServerSelectParser(exprParser);
             case PostgreSQL :
-                return new PGSelectParser(exprParser);
+                return new PostgreSQLSelectParser(exprParser);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
         }

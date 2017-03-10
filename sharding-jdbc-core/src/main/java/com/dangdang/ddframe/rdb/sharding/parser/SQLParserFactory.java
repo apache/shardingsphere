@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.alibaba.druid.sql.context.SQLContext;
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PGExprParser;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLExprParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerExprParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
@@ -74,7 +74,7 @@ public final class SQLParserFactory {
                 sqlExprParser = new SQLServerExprParser(shardingRule, parameters, sql);
                 break;
             case PostgreSQL:
-                sqlExprParser = new PGExprParser(shardingRule, parameters, sql);
+                sqlExprParser = new PostgreSQLExprParser(shardingRule, parameters, sql);
                 break;
             default:
                 throw new UnsupportedOperationException(dbType.name());

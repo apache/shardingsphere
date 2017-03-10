@@ -2,7 +2,7 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PGExprParser;
+import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLExprParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -42,7 +42,7 @@ public abstract class AbstractStatementParserTest {
                 sqlExprParser = new SQLServerExprParser(shardingRule, parameters, actualSQL);
                 break;
             case PostgreSQL:
-                sqlExprParser = new PGExprParser(shardingRule, parameters, actualSQL);
+                sqlExprParser = new PostgreSQLExprParser(shardingRule, parameters, actualSQL);
                 break;
             default:
                 throw new UnsupportedOperationException(dbType.name());

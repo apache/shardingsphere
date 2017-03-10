@@ -22,9 +22,9 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class PGExprParser extends SQLExprParser {
+public class PostgreSQLExprParser extends SQLExprParser {
     
-    public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+    public PostgreSQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
         super(shardingRule, parameters, new PostgreSQLLexer(sql));
         getLexer().nextToken();
     }
