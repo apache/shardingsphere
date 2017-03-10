@@ -19,7 +19,7 @@ package com.alibaba.druid.sql.dialect.mysql.lexer;
 import com.alibaba.druid.sql.lexer.Dictionary;
 import com.alibaba.druid.sql.lexer.Lexer;
 
-public final class MySqlLexer extends Lexer {
+public final class MySql1Lexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary();
     
@@ -27,7 +27,7 @@ public final class MySqlLexer extends Lexer {
         dictionary.fill(MySQLKeyword.values());
     }
     
-    public MySqlLexer(final String input) {
+    public MySql1Lexer(final String input) {
         super(input, dictionary);
     }
     

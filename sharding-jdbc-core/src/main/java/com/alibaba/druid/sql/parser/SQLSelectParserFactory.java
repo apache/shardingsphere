@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlSelectParser;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySql1SelectParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleSelectParser;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLSelectParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerSelectParser;
@@ -24,7 +24,7 @@ public class SQLSelectParserFactory {
         switch (dbType) {
             case H2 :
             case MySQL :
-                return new MySqlSelectParser(exprParser);
+                return new MySql1SelectParser(exprParser);
             case Oracle:
                 return new OracleSelectParser(exprParser);
             case SQLServer :

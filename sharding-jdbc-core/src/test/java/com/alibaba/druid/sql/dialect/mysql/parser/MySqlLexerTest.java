@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.dialect.mysql.lexer.MySqlLexer;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySql1Lexer;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Symbol;
@@ -12,11 +12,11 @@ import static org.hamcrest.core.Is.is;
 
 public final class MySqlLexerTest {
     
-    private MySqlLexer lexer;
+    private MySql1Lexer lexer;
     
     @Test
     public void assertNextTokenForComments() {
-        lexer = new MySqlLexer("SELECT * FROM TABLE_XXX # xxx ");
+        lexer = new MySql1Lexer("SELECT * FROM TABLE_XXX # xxx ");
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -38,7 +38,7 @@ public final class MySqlLexerTest {
     
     @Test
     public void assertNextTokenForCommentsAndMultplieLines() {
-        lexer = new MySqlLexer("SELECT * FROM TABLE_XXX # comment 1 \n #comment 2 \r\n WHERE XXX=1");
+        lexer = new MySql1Lexer("SELECT * FROM TABLE_XXX # comment 1 \n #comment 2 \r\n WHERE XXX=1");
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -75,7 +75,7 @@ public final class MySqlLexerTest {
     
     @Test
     public void assertNextTokenForHint() {
-        lexer = new MySqlLexer("SELECT * FROM TABLE_XXX /*! hint 1 \n xxx */ WHERE XXX=1 /*!hint 2*/");
+        lexer = new MySql1Lexer("SELECT * FROM TABLE_XXX /*! hint 1 \n xxx */ WHERE XXX=1 /*!hint 2*/");
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));

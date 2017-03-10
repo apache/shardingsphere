@@ -24,9 +24,9 @@ import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
-public class MySqlSelectParser extends AbstractSelectParser {
+public class MySql1SelectParser extends AbstractSelectParser {
     
-    public MySqlSelectParser(final SQLExprParser exprParser) {
+    public MySql1SelectParser(final SQLExprParser exprParser) {
         super(exprParser);
     }
     
@@ -53,7 +53,7 @@ public class MySqlSelectParser extends AbstractSelectParser {
         parseGroupBy();
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
         if (getExprParser().getLexer().equalToken(MySQLKeyword.LIMIT)) {
-            getSqlContext().setLimitContext(((MySqlExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
+            getSqlContext().setLimitContext(((MySql1ExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
         }
         if (getExprParser().getLexer().equalToken(DefaultKeyword.PROCEDURE)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken());

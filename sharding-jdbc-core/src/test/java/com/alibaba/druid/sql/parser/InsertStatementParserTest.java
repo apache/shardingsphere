@@ -1,7 +1,7 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.InsertSQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySql1ExprParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -37,7 +37,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySql1ExprParser(shardingRule, parameters,
                 "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
@@ -48,7 +48,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Lists.<Object>newArrayList(10, 1);
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySql1ExprParser(shardingRule, parameters,
                 "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
@@ -59,7 +59,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySql1ExprParser(shardingRule, parameters,
                 "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
@@ -70,7 +70,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
         List<Object> parameters = Lists.<Object>newArrayList(10);
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySqlExprParser(shardingRule, parameters,
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySql1ExprParser(shardingRule, parameters,
                 "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)"));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
