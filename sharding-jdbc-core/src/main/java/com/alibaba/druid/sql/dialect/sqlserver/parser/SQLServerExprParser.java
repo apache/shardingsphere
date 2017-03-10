@@ -19,7 +19,11 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 import com.alibaba.druid.sql.context.LimitContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerKeyword;
+import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerLexer;
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -41,7 +45,7 @@ public class SQLServerExprParser extends SQLExprParser {
 //            getLexer().nextToken();
 //            
 //            boolean paren = false;
-//            if (getLexer().equalToken(Token.LEFT_PAREN)) {
+//            if (getLexer().equalToken(Symbol.LEFT_PAREN)) {
 //                paren = true;
 //                getLexer().nextToken();
 //            }
@@ -49,7 +53,7 @@ public class SQLServerExprParser extends SQLExprParser {
 //            top.setExpr(primary());
 //            
 //            if (paren) {
-//                getLexer().accept(Token.RIGHT_PAREN);
+//                getLexer().accept(Symbol.RIGHT_PAREN);
 //            }
 //            
 //            if (getLexer().equalToken(Token.PERCENT)) {
@@ -63,8 +67,8 @@ public class SQLServerExprParser extends SQLExprParser {
     }
     
     protected void skipOutput() {
-        if (getLexer().equalToken(Token.OUTPUT)) {
-            throw new ParserUnsupportedException(Token.OUTPUT);
+        if (getLexer().equalToken(SQLServerKeyword.OUTPUT)) {
+            throw new ParserUnsupportedException(SQLServerKeyword.OUTPUT);
         }
     }
     
@@ -72,9 +76,9 @@ public class SQLServerExprParser extends SQLExprParser {
         getLexer().nextToken();
         int offset;
         int offsetIndex = -1;
-        if (getLexer().equalToken(Token.LITERAL_INT)) {
+        if (getLexer().equalToken(DataType.LITERAL_INT)) {
             offset = Integer.parseInt(getLexer().getLiterals());
-        } else if (getLexer().equalToken(Token.QUESTION)) {
+        } else if (getLexer().equalToken(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
             offset = (int) getParameters().get(offsetIndex);
             setParametersIndex(offsetIndex + 1);
@@ -83,14 +87,14 @@ public class SQLServerExprParser extends SQLExprParser {
         }
         getLexer().nextToken();
         LimitContext limitContext;
-        if (getLexer().skipIfEqual(Token.FETCH)) {
+        if (getLexer().skipIfEqual(DefaultKeyword.FETCH)) {
             getLexer().nextToken();
             int rowCount;
             int rowCountIndex = -1;
             getLexer().nextToken();
-            if (getLexer().equalToken(Token.LITERAL_INT)) {
+            if (getLexer().equalToken(DataType.LITERAL_INT)) {
                 rowCount = Integer.parseInt(getLexer().getLiterals());
-            } else if (getLexer().equalToken(Token.QUESTION)) {
+            } else if (getLexer().equalToken(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
                 rowCount = (int) getParameters().get(rowCountIndex);
                 setParametersIndex(rowCountIndex + 1);

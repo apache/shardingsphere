@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 /**
  * 处理词.
  *
@@ -33,7 +31,7 @@ public final class Term {
     
     private final String input;
     
-    private final Map<String, Token> dictionary;
+    private final Dictionary dictionary;
     
     @Getter(AccessLevel.PACKAGE)
     private int offset;
@@ -67,7 +65,7 @@ public final class Term {
         }
         length++;
         literals = contentOnly ? input.substring(offset + 1, offset + length - 1) : input.substring(offset, offset + length);
-        token = null == dictionary.get(literals.toUpperCase()) ? defaultToken : dictionary.get(literals.toUpperCase());
+        token = null == dictionary.getTokens().get(literals.toUpperCase()) ? defaultToken : dictionary.getTokens().get(literals.toUpperCase());
     }
     
     void scanVariable(final int currentPosition) {
@@ -82,7 +80,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = Token.VARIANT;
+        token = DataType.VARIANT;
     }
     
     void scanIdentifier(final int currentPosition) {
@@ -94,18 +92,18 @@ public final class Term {
         }
         literals = input.substring(offset, offset + length);
         String upperCaseLiterals = literals.toUpperCase();
-        if (Token.ORDER.getName().equals(upperCaseLiterals) || Token.GROUP.getName().equals(upperCaseLiterals)) {
+        if (DefaultKeyword.ORDER.toString().equals(upperCaseLiterals) || DefaultKeyword.GROUP.toString().equals(upperCaseLiterals)) {
             int i = 0;
             while (CharTypes.isWhitespace(charAt(position + i))) {
                 i++;
             }
-            if (Token.BY.getName().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
-                token = dictionary.get(literals.toUpperCase());
+            if (DefaultKeyword.BY.toString().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
+                token = dictionary.getTokens().get(literals.toUpperCase());
             } else {
-                token = Token.IDENTIFIER;
+                token = DataType.IDENTIFIER;
             }
         } else {
-            token = dictionary.containsKey(upperCaseLiterals) ? dictionary.get(upperCaseLiterals) : Token.IDENTIFIER;
+            token = dictionary.getTokens().containsKey(upperCaseLiterals) ? dictionary.getTokens().get(upperCaseLiterals) : DataType.IDENTIFIER;
         }
     }
     
@@ -125,7 +123,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = Token.LITERAL_HEX;
+        token = DataType.LITERAL_HEX;
     }
     
     private boolean isHex(final char ch) {
@@ -150,7 +148,7 @@ public final class Term {
             if ('.' == charAt(position + 1)) {
                 length++;
                 literals = input.substring(offset, offset + length);
-                token = Token.LITERAL_INT;
+                token = DataType.LITERAL_INT;
                 return;
             }
             isFloat = true;
@@ -182,17 +180,17 @@ public final class Term {
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = Token.BINARY_FLOAT;
+            token = DataType.BINARY_FLOAT;
             return;
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = Token.BINARY_DOUBLE;
+            token = DataType.BINARY_DOUBLE;
             return;
         }
         literals = input.substring(offset, offset + length);
-        token = isFloat ? Token.LITERAL_FLOAT : Token.LITERAL_INT;
+        token = isFloat ? DataType.LITERAL_FLOAT : DataType.LITERAL_INT;
     }
     
     private boolean isDigital(final char ch) {
@@ -216,7 +214,7 @@ public final class Term {
         }
         length++;
         literals = input.substring(offset + 1, offset + length - 1);
-        token = Token.LITERAL_CHARS;
+        token = DataType.LITERAL_CHARS;
     }
     
     private boolean hasEscapeChar(final int position) {
@@ -236,7 +234,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset + 4, offset + length - 2);
-        token = Token.HINT;
+        token = DataType.HINT;
     }
     
     void scanSingleLineComment(final int currentPosition, final int commentFlagLength) {
@@ -248,7 +246,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = Token.LINE_COMMENT;
+        token = DataType.LINE_COMMENT;
     }
     
     void scanMultiLineComment(final int currentPosition) {
@@ -264,7 +262,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        token = Token.MULTI_LINE_COMMENT;
+        token = DataType.MULTI_LINE_COMMENT;
     }
     
     void scanSymbol(final int currentPosition, final int charLength) {
@@ -277,7 +275,7 @@ public final class Term {
             length++;
         }
         literals = String.valueOf(symbolChars);
-        token = dictionary.get(literals);
+        token = dictionary.getTokens().get(literals);
     }
     
     private char charAt(final int index) {

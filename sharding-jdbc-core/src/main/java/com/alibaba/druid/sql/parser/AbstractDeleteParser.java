@@ -1,7 +1,7 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.DeleteSQLContext;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public abstract class AbstractDeleteParser {
         exprParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
         exprParser.parseSingleTable(sqlContext);
-        exprParser.getLexer().skipUntil(Token.WHERE);
+        exprParser.getLexer().skipUntil(DefaultKeyword.WHERE);
         Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
             sqlContext.getConditionContexts().add(conditionContext.get());

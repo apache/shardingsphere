@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -17,6 +17,6 @@ public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().getLexer().skipIfEqual(Token.ONLY);
+        getExprParser().getLexer().skipIfEqual(PostgreSQLKeyword.ONLY);
     }
 }

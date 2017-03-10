@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -17,7 +17,7 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        while (getExprParser().getLexer().equalToken(Token.LOW_PRIORITY) || getExprParser().getLexer().equalToken(Token.IGNORE)) {
+        while (getExprParser().getLexer().equalToken(MySQLKeyword.LOW_PRIORITY) || getExprParser().getLexer().equalToken(MySQLKeyword.IGNORE)) {
             getExprParser().getLexer().nextToken();
         }
     }

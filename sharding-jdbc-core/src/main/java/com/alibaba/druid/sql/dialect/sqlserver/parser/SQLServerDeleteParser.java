@@ -1,6 +1,6 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.parser.AbstractDeleteParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -19,6 +19,6 @@ public final class SQLServerDeleteParser extends AbstractDeleteParser {
     protected void skipBetweenDeleteAndTable() {
         ((SQLServerExprParser) getExprParser()).parseTop();
         ((SQLServerExprParser) getExprParser()).skipOutput();
-        getExprParser().getLexer().skipIfEqual(Token.FROM);
+        getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM);
     }
 }

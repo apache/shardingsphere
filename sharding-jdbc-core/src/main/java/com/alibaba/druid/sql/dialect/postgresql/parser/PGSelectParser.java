@@ -17,7 +17,10 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
@@ -31,13 +34,13 @@ public class PGSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().skipIfEqual(Token.SELECT)) {
-            getExprParser().getLexer().skipIfEqual(Token.COMMENT);
+        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.SELECT)) {
+            getExprParser().getLexer().skipIfEqual(DataType.COMMENT);
             parseDistinct();
             parseSelectList();
-            if (getExprParser().getLexer().skipIfEqual(Token.INTO)) {
-                getExprParser().getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
-                getExprParser().getLexer().skipIfEqual(Token.TABLE);
+            if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.INTO)) {
+                getExprParser().getLexer().skipIfEqual(PostgreSQLKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
+                getExprParser().getLexer().skipIfEqual(DefaultKeyword.TABLE);
                 // TODO
                 // getExprParser().name();
             }
@@ -45,20 +48,20 @@ public class PGSelectParser extends AbstractSelectParser {
         parseFrom();
         parseWhere();
         parseGroupBy();
-        if (getExprParser().getLexer().equalToken(Token.WINDOW)) {
-            throw new ParserUnsupportedException(Token.WINDOW);
+        if (getExprParser().getLexer().equalToken(PostgreSQLKeyword.WINDOW)) {
+            throw new ParserUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
         parseLimit();
-        if (getExprParser().getLexer().skipIfEqual(Token.FETCH)) {
-            throw new ParserUnsupportedException(Token.FETCH);
+        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.FETCH)) {
+            throw new ParserUnsupportedException(DefaultKeyword.FETCH);
         }
-        if (getExprParser().getLexer().skipIfEqual(Token.FOR)) {
-            getExprParser().getLexer().skipIfEqual(Token.UPDATE, Token.SHARE);
-            if (getExprParser().getLexer().equalToken(Token.OF)) {
-                throw new ParserUnsupportedException(Token.OF);
+        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.FOR)) {
+            getExprParser().getLexer().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
+            if (getExprParser().getLexer().equalToken(PostgreSQLKeyword.OF)) {
+                throw new ParserUnsupportedException(PostgreSQLKeyword.OF);
             }
-            getExprParser().getLexer().skipIfEqual(Token.NOWAIT);
+            getExprParser().getLexer().skipIfEqual(PostgreSQLKeyword.NOWAIT);
         }
         queryRest();
     }
@@ -66,31 +69,31 @@ public class PGSelectParser extends AbstractSelectParser {
     // TODO 解析和改写limit
     private void parseLimit() {
         while (true) {
-            if (getExprParser().getLexer().equalToken(Token.LIMIT)) {
+            if (getExprParser().getLexer().equalToken(PostgreSQLKeyword.LIMIT)) {
                 
                 getExprParser().getLexer().nextToken();
-                if (getExprParser().getLexer().equalToken(Token.ALL)) {
+                if (getExprParser().getLexer().equalToken(DefaultKeyword.ALL)) {
                     new SQLIdentifierExpr("ALL");
                     getExprParser().getLexer().nextToken();
                 } else {
                     // rowCount
-                    if (getExprParser().getLexer().equalToken(Token.LITERAL_INT)) {
-                    } else if (getExprParser().getLexer().equalToken(Token.QUESTION)) {
+                    if (getExprParser().getLexer().equalToken(DataType.LITERAL_INT)) {
+                    } else if (getExprParser().getLexer().equalToken(Symbol.QUESTION)) {
                     } else {
                         throw new ParserException(getExprParser().getLexer());
                     }
                     getExprParser().getLexer().nextToken();
                 }
-            } else if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
+            } else if (getExprParser().getLexer().equalToken(PostgreSQLKeyword.OFFSET)) {
                 getExprParser().getLexer().nextToken();
                 // offset
-                if (getExprParser().getLexer().equalToken(Token.LITERAL_INT)) {
-                } else if (getExprParser().getLexer().equalToken(Token.QUESTION)) {
+                if (getExprParser().getLexer().equalToken(DataType.LITERAL_INT)) {
+                } else if (getExprParser().getLexer().equalToken(Symbol.QUESTION)) {
                 } else {
                     throw new ParserException(getExprParser().getLexer());
                 }
                 getExprParser().getLexer().nextToken();
-                getExprParser().getLexer().skipIfEqual(Token.ROW, Token.ROWS);
+                getExprParser().getLexer().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
             } else {
                 break;
             }

@@ -2,7 +2,8 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -38,7 +39,7 @@ public abstract class AbstractUpdateParser {
         skipBetweenUpdateAndTable();
         exprParser.parseSingleTable(sqlContext);
         parseSetItems();
-        exprParser.getLexer().skipUntil(Token.WHERE);
+        exprParser.getLexer().skipUntil(DefaultKeyword.WHERE);
         exprParser.setParametersIndex(parametersIndex);
         Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
@@ -50,28 +51,28 @@ public abstract class AbstractUpdateParser {
     protected abstract void skipBetweenUpdateAndTable();
     
     private void parseSetItems() {
-        exprParser.getLexer().accept(Token.SET);
+        exprParser.getLexer().accept(DefaultKeyword.SET);
         do {
             parseSetItem();
-        } while (exprParser.getLexer().skipIfEqual(Token.COMMA));
+        } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
     }
     
     private void parseSetItem() {
-        if (exprParser.getLexer().equalToken(Token.LEFT_PAREN)) {
+        if (exprParser.getLexer().equalToken(Symbol.LEFT_PAREN)) {
             exprParser.getLexer().skipParentheses();
         } else {
             int beginPosition = exprParser.getLexer().getCurrentPosition();
             String literals = exprParser.getLexer().getLiterals();
             exprParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();
-            if (exprParser.getLexer().skipIfEqual(Token.DOT)) {
+            if (exprParser.getLexer().skipIfEqual(Symbol.DOT)) {
                 if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
                     sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 }
                 exprParser.getLexer().nextToken();
             }
         }
-        exprParser.getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
+        exprParser.getLexer().skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
         exprParser.parseExpr(sqlContext);
         parametersIndex = exprParser.getParametersIndex();
     }

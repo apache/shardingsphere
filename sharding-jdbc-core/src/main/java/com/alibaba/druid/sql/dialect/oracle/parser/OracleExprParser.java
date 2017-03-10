@@ -18,7 +18,8 @@ package com.alibaba.druid.sql.dialect.oracle.parser;
 
 import com.alibaba.druid.sql.context.OrderByContext;
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.oracle.lexer.OracleKeyword;
+import com.alibaba.druid.sql.dialect.oracle.lexer.OracleLexer;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -35,7 +36,7 @@ public class OracleExprParser extends SQLExprParser {
     
     @Override
     protected Optional<String> as() {
-        if (getLexer().equalToken(Token.CONNECT)) {
+        if (getLexer().equalToken(OracleKeyword.CONNECT)) {
             return null;
         }
         return super.as();
@@ -44,9 +45,9 @@ public class OracleExprParser extends SQLExprParser {
     @Override
     public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
         OrderByContext result = super.parseSelectOrderByItem(sqlContext);
-        if (getLexer().skipIfEqual(Token.NULLS)) {
+        if (getLexer().skipIfEqual(OracleKeyword.NULLS)) {
             getLexer().nextToken();
-            if (!getLexer().skipIfEqual(Token.FIRST, Token.LAST)) {
+            if (!getLexer().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
                 throw new ParserUnsupportedException(getLexer().getToken());
             }
         }

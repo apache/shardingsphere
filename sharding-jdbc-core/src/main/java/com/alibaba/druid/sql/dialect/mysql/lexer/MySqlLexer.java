@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.dialect.mysql.parser;
 
+package com.alibaba.druid.sql.dialect.mysql.lexer;
+
+import com.alibaba.druid.sql.lexer.Dictionary;
 import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.lexer.Token;
 
 public final class MySqlLexer extends Lexer {
     
+    private static Dictionary dictionary = new Dictionary();
+    
+    static {
+        dictionary.fill(MySQLKeyword.values());
+    }
+    
     public MySqlLexer(final String input) {
-        super(input, Token.getMysqlKeywords());
+        super(input, dictionary);
     }
     
     @Override
@@ -35,7 +42,7 @@ public final class MySqlLexer extends Lexer {
     
     @Override
     protected boolean isHint() {
-        return ('/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2));
+        return '/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2);
     }
     
     @Override

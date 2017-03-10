@@ -20,7 +20,10 @@ import com.alibaba.druid.sql.context.LimitContext;
 import com.alibaba.druid.sql.context.OffsetLimitToken;
 import com.alibaba.druid.sql.context.RowCountLimitToken;
 import com.alibaba.druid.sql.context.SelectSQLContext;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySqlLexer;
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -36,15 +39,15 @@ public class MySqlExprParser extends SQLExprParser {
     }
     
     public LimitContext parseLimit(final int parametersIndex, final SelectSQLContext sqlContext) {
-        getLexer().skipIfEqual(Token.LIMIT);
+        getLexer().skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentPosition();
         int value;
         boolean isParameterForValue = false;
-        if (getLexer().equalToken(Token.LITERAL_INT)) {
+        if (getLexer().equalToken(DataType.LITERAL_INT)) {
             value = Integer.parseInt(getLexer().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
-        } else if (getLexer().equalToken(Token.QUESTION)) {
+        } else if (getLexer().equalToken(Symbol.QUESTION)) {
             valueIndex = parametersIndex;
             value = (int) getParameters().get(valueIndex);
             valueBeginPosition--;
@@ -53,10 +56,10 @@ public class MySqlExprParser extends SQLExprParser {
             throw new ParserException(getLexer());
         }
         getLexer().nextToken();
-        if (getLexer().skipIfEqual(Token.COMMA)) {
+        if (getLexer().skipIfEqual(Symbol.COMMA)) {
             return getLimitContextWithComma(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
-        if (getLexer().skipIfEqual(Token.OFFSET)) {
+        if (getLexer().skipIfEqual(MySQLKeyword.OFFSET)) {
             return getLimitContextWithOffset(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
@@ -73,10 +76,10 @@ public class MySqlExprParser extends SQLExprParser {
         int rowCount;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
-        if (getLexer().equalToken(Token.LITERAL_INT)) {
+        if (getLexer().equalToken(DataType.LITERAL_INT)) {
             rowCount = Integer.parseInt(getLexer().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
-        } else if (getLexer().equalToken(Token.QUESTION)) {
+        } else if (getLexer().equalToken(Symbol.QUESTION)) {
             rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
             rowCount = (int) getParameters().get(rowCountIndex);
             rowCountBeginPosition--;
@@ -102,10 +105,10 @@ public class MySqlExprParser extends SQLExprParser {
         int offset;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
-        if (getLexer().equalToken(Token.LITERAL_INT)) {
+        if (getLexer().equalToken(DataType.LITERAL_INT)) {
             offset = Integer.parseInt(getLexer().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-        } else if (getLexer().equalToken(Token.QUESTION)) {
+        } else if (getLexer().equalToken(Symbol.QUESTION)) {
             offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
             offset = (int) getParameters().get(offsetIndex);
             offsetBeginPosition--;

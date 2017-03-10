@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
+package com.alibaba.druid.sql.dialect.sqlserver.lexer;
+
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.Dictionary;
 import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.lexer.Token;
 
 public class SQLServerLexer extends Lexer {
     
+    private static Dictionary dictionary = new Dictionary();
+    
+    static {
+        dictionary.fill(SQLServerKeyword.values());
+    }
+    
     public SQLServerLexer(final String input) {
-        super(input, Token.getSqlserverKeywords());
+        super(input, dictionary);
     }
     
     @Override
@@ -40,12 +48,12 @@ public class SQLServerLexer extends Lexer {
     private void scanNChar() {
         increaseCurrentPosition();
         scanString();
-        setToken(Token.LITERAL_NCHARS);
+        setToken(DataType.LITERAL_NCHARS);
         scanString();
     }
     
     @Override
     protected boolean isHint() {
-        return ('/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2));
+        return '/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2);
     }
 }

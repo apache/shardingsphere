@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package com.alibaba.druid.sql.dialect.postgresql.parser;
+package com.alibaba.druid.sql.dialect.postgresql.lexer;
 
-import com.alibaba.druid.sql.dialect.postgresql.lexer.PostgreSQLLexer;
-import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.alibaba.druid.sql.lexer.Dictionary;
+import com.alibaba.druid.sql.lexer.Lexer;
 
-import java.util.List;
-
-public class PGExprParser extends SQLExprParser {
+public class PostgreSQLLexer extends Lexer {
     
-    public PGExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new PostgreSQLLexer(sql));
-        getLexer().nextToken();
+    private static Dictionary dictionary = new Dictionary();
+    
+    static {
+        dictionary.fill(PostgreSQLKeyword.values());
+    }
+    
+    public PostgreSQLLexer(final String input) {
+        super(input, dictionary);
     }
 }

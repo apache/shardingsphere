@@ -1,6 +1,8 @@
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.oracle.lexer.OracleKeyword;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Keyword;
 import com.alibaba.druid.sql.parser.AbstractInsertParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -21,7 +23,7 @@ public final class OracleInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected Set<Token> getUnsupportedTokens() {
-        return Sets.newHashSet(Token.ALL, Token.FIRST);
+    protected Set<Keyword> getUnsupportedKeywords() {
+        return Sets.<Keyword>newHashSet(DefaultKeyword.ALL, OracleKeyword.FIRST);
     }
 }

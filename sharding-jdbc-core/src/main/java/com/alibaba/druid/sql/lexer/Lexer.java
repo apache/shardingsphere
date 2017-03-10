@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +49,7 @@ public class Lexer {
     @Setter
     private String literals;
     
-    public Lexer(final String input, final Map<String, Token> dictionary) {
+    public Lexer(final String input, final Dictionary dictionary) {
         this.input = input;
         term = new Term(input, dictionary);
     }
@@ -107,9 +106,9 @@ public class Lexer {
             return;
         }
         if (isEOF()) {
-            token = Token.EOF;
+            token = DataType.EOF;
         } else {
-            token = Token.ERROR;
+            token = DataType.ERROR;
         }
         literals = "";
     }
@@ -130,11 +129,11 @@ public class Lexer {
     protected void scanVariable() {
         char nextChar = charAt(currentPosition + 1);
         if ('{' == nextChar) {
-            term.scanContentUntil(currentPosition, '}', Token.VARIANT, false);
+            term.scanContentUntil(currentPosition, '}', DataType.VARIANT, false);
         } else if ('`' == nextChar) {
-            term.scanContentUntil(currentPosition, '`', Token.VARIANT, false);
+            term.scanContentUntil(currentPosition, '`', DataType.VARIANT, false);
         } else if ('"' == nextChar) {
-            term.scanContentUntil(currentPosition, '"', Token.VARIANT, false);
+            term.scanContentUntil(currentPosition, '"', DataType.VARIANT, false);
         } else {
             term.scanVariable(currentPosition);
         }
@@ -147,7 +146,7 @@ public class Lexer {
     
     protected void scanIdentifier() {
         if ('`' == charAt(currentPosition)) {
-            term.scanContentUntil(currentPosition, '`', Token.IDENTIFIER, false);
+            term.scanContentUntil(currentPosition, '`', DataType.IDENTIFIER, false);
         } else {
             term.scanIdentifier(currentPosition);
         }
@@ -251,7 +250,7 @@ public class Lexer {
     }
     
     private void scanAlias() {
-        term.scanContentUntil(currentPosition, '\"', Token.LITERAL_ALIAS, true);
+        term.scanContentUntil(currentPosition, '\"', DataType.LITERAL_ALIAS, true);
         setTermResult();
     }
     
@@ -320,7 +319,7 @@ public class Lexer {
      */
     public final void skipUntil(final Token... tokens) {
         Set<Token> tokenSet = Sets.newHashSet(tokens);
-        tokenSet.add(Token.EOF);
+        tokenSet.add(DataType.EOF);
         while (!tokenSet.contains(token)) {
             nextToken();
         }
@@ -334,17 +333,17 @@ public class Lexer {
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;
-        if (Token.LEFT_PAREN == token) {
+        if (Symbol.LEFT_PAREN == token) {
             int beginPosition = currentPosition;
-            result.append(Token.LEFT_PAREN.getName());
+            result.append(Symbol.LEFT_PAREN.getLiterals());
             nextToken();
             while (true) {
-                if (Token.EOF == token || (Token.RIGHT_PAREN == token && 0 == count)) {
+                if (DataType.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
                     break;
                 }
-                if (Token.LEFT_PAREN == token) {
+                if (Symbol.LEFT_PAREN == token) {
                     count++;
-                } else if (Token.RIGHT_PAREN == token) {
+                } else if (Symbol.RIGHT_PAREN == token) {
                     count--;
                 }
                 nextToken();

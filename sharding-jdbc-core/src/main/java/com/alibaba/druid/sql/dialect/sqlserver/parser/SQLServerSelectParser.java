@@ -17,7 +17,10 @@
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerKeyword;
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.alibaba.druid.sql.parser.AbstractSelectParser;
 import com.alibaba.druid.sql.parser.ParserUnsupportedException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
@@ -30,10 +33,10 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void customizedSelect() {
-        if (getExprParser().getLexer().equalToken(Token.FOR)) {
+        if (getExprParser().getLexer().equalToken(DefaultKeyword.FOR)) {
             parseFor();
         }
-        if (getExprParser().getLexer().equalToken(Token.OFFSET)) {
+        if (getExprParser().getLexer().equalToken(SQLServerKeyword.OFFSET)) {
             ((SQLServerExprParser) getExprParser()).parseOffset(getSqlContext());
         }
     }
@@ -41,18 +44,18 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     @Override
     public void query() {
         SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
-        if (getExprParser().getLexer().equalToken(Token.SELECT)) {
+        if (getExprParser().getLexer().equalToken(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equalToken(Token.COMMENT)) {
+            if (getExprParser().getLexer().equalToken(DataType.COMMENT)) {
                 getExprParser().getLexer().nextToken();
             }
             parseDistinct();
-            if (getExprParser().getLexer().equalToken(Token.TOP)) {
+            if (getExprParser().getLexer().equalToken(SQLServerKeyword.TOP)) {
                 queryBlock.setTop(((SQLServerExprParser) getExprParser()).parseTop());
             }
             parseSelectList();
         }
-        if (getExprParser().getLexer().equalToken(Token.INTO)) {
+        if (getExprParser().getLexer().equalToken(DefaultKeyword.INTO)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
         }
         parseFrom();
@@ -63,7 +66,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseJoinTable() {
-        if (getExprParser().getLexer().skipIfEqual(Token.WITH)) {
+        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.WITH)) {
             getExprParser().getLexer().skipParentheses();
         }
         super.parseJoinTable();
@@ -71,18 +74,18 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     private void parseFor() {
         getExprParser().getLexer().nextToken();
-        if (getExprParser().getLexer().equalToken(Token.BROWSE)) {
+        if (getExprParser().getLexer().equalToken(SQLServerKeyword.BROWSE)) {
             getExprParser().getLexer().nextToken();
-        } else if (getExprParser().getLexer().skipIfEqual(Token.XML)) {
+        } else if (getExprParser().getLexer().skipIfEqual(SQLServerKeyword.XML)) {
             while (true) {
-                if (getExprParser().getLexer().equalToken(Token.AUTO, Token.TYPE, Token.XMLSCHEMA)) {
+                if (getExprParser().getLexer().equalToken(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
                     getExprParser().getLexer().nextToken();
-                } else if (getExprParser().getLexer().skipIfEqual(Token.ELEMENTS)) {
-                    getExprParser().getLexer().skipIfEqual(Token.XSINIL);
+                } else if (getExprParser().getLexer().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
+                    getExprParser().getLexer().skipIfEqual(SQLServerKeyword.XSINIL);
                 } else {
                     break;
                 }
-                if (getExprParser().getLexer().equalToken(Token.COMMA)) {
+                if (getExprParser().getLexer().equalToken(Symbol.COMMA)) {
                     getExprParser().getLexer().nextToken();
                 } else {
                     break;

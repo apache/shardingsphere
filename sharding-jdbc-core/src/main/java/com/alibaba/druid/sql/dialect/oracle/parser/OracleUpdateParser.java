@@ -16,7 +16,8 @@
 
 package com.alibaba.druid.sql.dialect.oracle.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.oracle.lexer.OracleKeyword;
+import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.parser.AbstractUpdateParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -28,7 +29,7 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().getLexer().skipIfEqual(Token.HINT);
-        getExprParser().getLexer().skipIfEqual(Token.ONLY);
+        getExprParser().getLexer().skipIfEqual(DataType.HINT);
+        getExprParser().getLexer().skipIfEqual(OracleKeyword.ONLY);
     }
 }

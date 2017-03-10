@@ -17,7 +17,9 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.lexer.DataType;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
+import com.alibaba.druid.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 
@@ -51,22 +53,22 @@ public final class SQLStatementParser {
      * @return SQL解析对象
      */
     public SQLContext parseStatement() {
-        if (exprParser.getLexer().equalToken(Token.SEMI)) {
+        if (exprParser.getLexer().equalToken(Symbol.SEMI)) {
             exprParser.getLexer().nextToken();
         }
-        if (exprParser.getLexer().equalToken(Token.WITH)) {
+        if (exprParser.getLexer().equalToken(DefaultKeyword.WITH)) {
             parseWith();
         }
-        if (exprParser.getLexer().equalToken(Token.SELECT)) {
+        if (exprParser.getLexer().equalToken(DefaultKeyword.SELECT)) {
             return SQLSelectParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(Token.INSERT)) {
+        if (exprParser.getLexer().equalToken(DefaultKeyword.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(Token.UPDATE)) {
+        if (exprParser.getLexer().equalToken(DefaultKeyword.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(Token.DELETE)) {
+        if (exprParser.getLexer().equalToken(DefaultKeyword.DELETE)) {
             return SQLDeleteParserFactory.newInstance(exprParser, dbType).parse();
         }
         throw new ParserUnsupportedException(exprParser.getLexer().getToken());
@@ -76,27 +78,27 @@ public final class SQLStatementParser {
         exprParser.getLexer().nextToken();
         do {
             parseWithQuery();
-            if (exprParser.getLexer().equalToken(Token.EOF)) {
+            if (exprParser.getLexer().equalToken(DataType.EOF)) {
                 return;
             }
-        } while (exprParser.getLexer().equalToken(Token.COMMA));
+        } while (exprParser.getLexer().equalToken(Symbol.COMMA));
     }
     
     private void parseWithQuery() {
-        while (!exprParser.getLexer().equalToken(Token.AS)) {
+        while (!exprParser.getLexer().equalToken(DefaultKeyword.AS)) {
             exprParser.getLexer().nextToken();
-            if (exprParser.getLexer().equalToken(Token.EOF)) {
+            if (exprParser.getLexer().equalToken(DataType.EOF)) {
                 return;
             }
         }
-        exprParser.getLexer().accept(Token.AS);
-        exprParser.getLexer().accept(Token.LEFT_PAREN);
-        while (!exprParser.getLexer().equalToken(Token.RIGHT_PAREN)) {
+        exprParser.getLexer().accept(DefaultKeyword.AS);
+        exprParser.getLexer().accept(Symbol.LEFT_PAREN);
+        while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN)) {
             exprParser.getLexer().nextToken();
-            if (exprParser.getLexer().equalToken(Token.EOF)) {
+            if (exprParser.getLexer().equalToken(DataType.EOF)) {
                 return;
             }
         }
-        exprParser.getLexer().accept(Token.RIGHT_PAREN);
+        exprParser.getLexer().accept(Symbol.RIGHT_PAREN);
     }
 }

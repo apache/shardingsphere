@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.dialect.oracle.parser;
 
+package com.alibaba.druid.sql.dialect.oracle.lexer;
+
+import com.alibaba.druid.sql.lexer.Dictionary;
 import com.alibaba.druid.sql.lexer.Lexer;
-import com.alibaba.druid.sql.lexer.Token;
 
 public class OracleLexer extends Lexer {
     
+    private static Dictionary dictionary = new Dictionary();
+    
+    static {
+        dictionary.fill(OracleKeyword.values());
+    }
+    
     public OracleLexer(final String input) {
-        super(input, Token.getOracleKeywords());
+        super(input, dictionary);
     }
     
     @Override
     public void scanVariable() {
         if ('@' == charAt(getCurrentPosition())) {
             increaseCurrentPosition();
-            setToken(Token.MONKEYS_AT);
             return;
         }
         super.scanVariable();
@@ -36,6 +42,6 @@ public class OracleLexer extends Lexer {
     
     @Override
     protected boolean isHint() {
-        return ('/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '+' == charAt(getCurrentPosition() + 2));
+        return '/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '+' == charAt(getCurrentPosition() + 2);
     }
 }

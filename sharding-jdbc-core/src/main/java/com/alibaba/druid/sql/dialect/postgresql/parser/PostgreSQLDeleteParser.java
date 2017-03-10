@@ -1,6 +1,7 @@
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.lexer.Token;
+import com.alibaba.druid.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
+import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.parser.AbstractDeleteParser;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 
@@ -17,7 +18,7 @@ public final class PostgreSQLDeleteParser extends AbstractDeleteParser {
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().getLexer().skipIfEqual(Token.FROM);
-        getExprParser().getLexer().skipIfEqual(Token.ONLY);
+        getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM);
+        getExprParser().getLexer().skipIfEqual(PostgreSQLKeyword.ONLY);
     }
 }
