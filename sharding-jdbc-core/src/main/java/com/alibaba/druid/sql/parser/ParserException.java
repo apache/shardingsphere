@@ -33,8 +33,4 @@ public class ParserException extends RuntimeException {
     public ParserException(final Lexer lexer) {
         super(String.format(TOKEN_ERROR_MESSAGE, lexer.getToken(), lexer.getLiterals()));
     }
-    
-    public ParserException(final String message) {
-        super(message);
-    }
 }

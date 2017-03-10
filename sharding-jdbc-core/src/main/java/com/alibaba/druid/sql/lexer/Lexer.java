@@ -22,8 +22,6 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,8 +49,6 @@ public class Lexer {
     @Getter
     @Setter
     private String literals;
-    
-    private int varIndex = -1;
     
     public Lexer(final String input, final Map<String, Token> tokenDictionary) {
         this.input = input;
@@ -364,76 +360,6 @@ public class Lexer {
             }
         }
         return false;
-    }
-    
-    public int nextVarIndex() {
-        return ++varIndex;
-    }
-    
-    private static final long  MULTMIN_RADIX_TEN   = Long.MIN_VALUE / 10;
-    private static final long  N_MULTMAX_RADIX_TEN = -Long.MAX_VALUE / 10;
-
-    private final static int[] digits              = new int[(int) '9' + 1];
-
-    static {
-        for (int i = '0'; i <= '9'; ++i) {
-            digits[i] = i - '0';
-        }
-    }
-    
-    // QS_TODO negative number is invisible for lexer
-    public Number integerValue() {
-        long result = 0;
-        boolean negative = false;
-        int i = term.getOffset(), max = term.getOffset() + term.getLength();
-        long limit;
-        long multmin;
-        int digit;
-
-        if (charAt(term.getOffset()) == '-') {
-            negative = true;
-            limit = Long.MIN_VALUE;
-            i++;
-        } else {
-            limit = -Long.MAX_VALUE;
-        }
-        multmin = negative ? MULTMIN_RADIX_TEN : N_MULTMAX_RADIX_TEN;
-        if (i < max) {
-            digit = digits[charAt(i++)];
-            result = -digit;
-        }
-        while (i < max) {
-            // Accumulating negatively avoids surprises near MAX_VALUE
-            digit = digits[charAt(i++)];
-            if (result < multmin) {
-                return new BigInteger(term.getValue());
-            }
-            result *= 10;
-            if (result < limit + digit) {
-                return new BigInteger(term.getValue());
-            }
-            result -= digit;
-        }
-        if (negative) {
-            if (i > term.getOffset() + 1) {
-                if (result >= Integer.MIN_VALUE) {
-                    return (int) result;
-                }
-                return result;
-            } else { /* Only got "-" */
-                throw new NumberFormatException(term.getValue());
-            }
-        } else {
-            result = -result;
-            if (result <= Integer.MAX_VALUE) {
-                return (int) result;
-            }
-            return result;
-        }
-    }
-    
-    public BigDecimal decimalValue() {
-        return new BigDecimal(term.getValue().toCharArray());
     }
     
     public final boolean identifierEquals(final String text) {

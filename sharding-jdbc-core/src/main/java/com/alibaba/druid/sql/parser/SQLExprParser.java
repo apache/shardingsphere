@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLIgnoreExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
@@ -28,7 +27,6 @@ import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLCharacterDataType;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.OrderByContext;
@@ -140,48 +138,6 @@ public class SQLExprParser {
             return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()), SQLUtil.getExactlyValue(sqlPropertyExpr.getSimpleName()), orderByType);
         }
         return null;
-    }
-    
-    protected boolean isCharType(final String dataTypeName) {
-        return "char".equalsIgnoreCase(dataTypeName)
-               || "varchar".equalsIgnoreCase(dataTypeName)
-               || "nchar".equalsIgnoreCase(dataTypeName)
-               || "nvarchar".equalsIgnoreCase(dataTypeName)
-               || "tinytext".equalsIgnoreCase(dataTypeName)
-               || "text".equalsIgnoreCase(dataTypeName)
-               || "mediumtext".equalsIgnoreCase(dataTypeName)
-               || "longtext".equalsIgnoreCase(dataTypeName);
-    }
-    
-    protected SQLDataType parseCharTypeRest(final SQLCharacterDataType charType) {
-        if (getLexer().equalToken(Token.BINARY)) {
-            charType.setHasBinary(true);
-            getLexer().nextToken();
-        }
-        if (getLexer().identifierEquals("CHARACTER")) {
-            getLexer().nextToken();
-            getLexer().accept(Token.SET);
-            if (!getLexer().equalToken(Token.IDENTIFIER) && !getLexer().equalToken(Token.LITERAL_CHARS)) {
-                throw new ParserException(getLexer());
-            }
-            charType.setCharSetName(getLexer().getLiterals());
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.BINARY)) {
-            charType.setHasBinary(true);
-            getLexer().nextToken();
-        }
-        if (getLexer().equalToken(Token.IDENTIFIER)) {
-            if (getLexer().getLiterals().equalsIgnoreCase("COLLATE")) {
-                getLexer().nextToken();
-                if (!getLexer().equalToken(Token.IDENTIFIER)) {
-                    throw new ParserException(getLexer());
-                }
-                charType.setCollate(getLexer().getLiterals());
-                getLexer().nextToken();
-            }
-        }
-        return charType;
     }
     
     protected final void parseSingleTable(final SQLContext sqlContext) {

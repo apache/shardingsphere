@@ -26,9 +26,6 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     
     private SQLExpr expr;
     
-    public SQLExprTableSource() {
-    }
-
     public SQLExprTableSource(final SQLExpr expr) {
         this(expr, null);
     }

@@ -31,15 +31,6 @@ public abstract class SQLObjectImpl implements SQLObject {
     }
     
     @Override
-    public Object getAttribute(final String name) {
-        return attributes.get(name);
-    }
-
-    public void putAttribute(final String name, final Object value) {
-        attributes.put(name, value);
-    }
-    
-    @Override
     public SQLObject getParent() {
         return parent;
     }

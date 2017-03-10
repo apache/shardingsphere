@@ -30,11 +30,4 @@ public class SQLSelectGroupByClause extends SQLObjectImpl {
     private SQLExpr having;
     
     private final List<SQLExpr> items = new ArrayList<>();
-    
-    public void addItem(final SQLExpr sqlExpr) {
-        if (null != sqlExpr) {
-            sqlExpr.setParent(this);
-            items.add(sqlExpr);
-        }
-    }
 }

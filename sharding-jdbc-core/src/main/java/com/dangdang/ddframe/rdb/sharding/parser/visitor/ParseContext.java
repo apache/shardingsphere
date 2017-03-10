@@ -17,11 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
+import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
@@ -30,7 +29,6 @@ import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
-import com.alibaba.druid.sql.SQLEvalConstants;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -213,10 +211,6 @@ public final class ParseContext {
     }
     
     private ValuePair evalExpression(final SQLObject sqlObject, final List<Object> parameters) {
-        if (sqlObject instanceof SQLMethodInvokeExpr) {
-            // TODO 解析函数中的sharingValue不支持
-            return null;
-        }
         if (sqlObject instanceof SQLVariantRefExpr) {
             SQLVariantRefExpr x = (SQLVariantRefExpr) sqlObject;
             Map<String, Object> attributes = x.getAttributes();
@@ -264,17 +258,6 @@ public final class ParseContext {
     private Optional<Table> findTable(final String tableNameOrAlias) {
         Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
         return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
-    }
-    
-    /**
-     * 判断SQL表达式是否为二元操作且带有别名.
-     * 
-     * @param x 待判断的SQL表达式
-     * @param tableOrAliasName 表名称或别名
-     * @return 是否为二元操作且带有别名
-     */
-    public boolean isBinaryOperateWithAlias(final SQLPropertyExpr x, final String tableOrAliasName) {
-        return x.getParent() instanceof SQLBinaryOpExpr && findTableFromAlias(SQLUtil.getExactlyValue(tableOrAliasName)).isPresent();
     }
     
     private Optional<Table> findTableFromName(final String name) {
