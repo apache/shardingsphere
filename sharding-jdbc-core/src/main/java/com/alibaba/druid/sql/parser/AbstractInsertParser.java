@@ -2,7 +2,6 @@ package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
@@ -137,7 +136,20 @@ public abstract class AbstractInsertParser {
             }
             exprParser.getLexer().nextToken();
             exprParser.getLexer().accept(Token.LEFT_PAREN);
-            List<SQLExpr> sqlExprs = getExprParser().exprList(new SQLIdentifierExpr(""));
+            
+            
+            
+//            List<SQLExpr> sqlExprs = getExprParser().exprList(new SQLIdentifierExpr(""));
+    
+    
+            List<SQLExpr> sqlExprs = new LinkedList<>();
+            do {
+                sqlExprs.add(exprParser.parseExpr());
+            } while (exprParser.getLexer().skipIfEqual(Token.COMMA));
+            
+            
+            
+            
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentPosition() - exprParser.getLexer().getLiterals().length());
             int count = 0;
             int parameterCount = 0;

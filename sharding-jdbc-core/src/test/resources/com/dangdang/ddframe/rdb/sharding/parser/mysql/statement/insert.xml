@@ -70,9 +70,6 @@
         </tables>
         <condition-contexts>
             <condition-context>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="" type="java.lang.String" />
-                </condition>
                 <condition column-name="state" table-name="order" operator="EQUAL">
                     <value value="" type="java.lang.String" />
                 </condition>
