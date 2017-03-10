@@ -17,7 +17,7 @@
 
 package com.alibaba.druid.sql;
 
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlLexerTest;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySql1LexerTest;
 import com.alibaba.druid.sql.lexer.LexerTest;
 import com.alibaba.druid.sql.parser.DeleteStatementParserTest;
 import com.alibaba.druid.sql.parser.InsertStatementParserTest;
@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         LexerTest.class, 
-        MySqlLexerTest.class,
+        MySql1LexerTest.class,
         InsertStatementParserTest.class, 
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class
