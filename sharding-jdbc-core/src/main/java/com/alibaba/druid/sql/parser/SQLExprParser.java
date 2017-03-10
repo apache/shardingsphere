@@ -20,6 +20,7 @@ import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLDataTypeImpl;
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLIgnoreExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOver;
@@ -852,7 +853,7 @@ public class SQLExprParser {
     }
     
     public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
-        SQLExpr expr = getSqlExprWithVariant(sqlContext);
+        SQLExpr expr = parseExpr(sqlContext);
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
         if (getLexer().equalToken(Token.ASC)) {
             getLexer().nextToken();
@@ -1347,7 +1348,7 @@ public class SQLExprParser {
     // TODO 解析组合expr
     public void parseComparisonCondition(final SQLContext sqlContext, final ParseContext parseContext) {
         getLexer().skipIfEqual(Token.LEFT_PAREN);
-        SQLExpr left = getSqlExprWithVariant(sqlContext);
+        SQLExpr left = parseExpr(sqlContext);
         if (lexer.equalToken(Token.EQ)) {
             parseEqualCondition(sqlContext, parseContext, left);
         } else if (lexer.equalToken(Token.IN)) {
@@ -1358,12 +1359,12 @@ public class SQLExprParser {
                 || lexer.equalToken(Token.LT_EQ) || lexer.equalToken(Token.GT_EQ)) {
             parserOtherCondition(sqlContext);
         }
-        getLexer().skipIfEqual(Token.RIGHT);
+        getLexer().skipIfEqual(Token.LEFT_PAREN);
     }
     
     private void parseEqualCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
         lexer.nextToken();
-        SQLExpr right = getSqlExprWithVariant(sqlContext);
+        SQLExpr right = parseExpr(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLVariantRefExpr)) {
             parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
@@ -1378,7 +1379,7 @@ public class SQLExprParser {
             if (lexer.equalToken(Token.COMMA)) {
                 lexer.nextToken();
             }
-            rights.add(getSqlExprWithVariant(sqlContext));
+            rights.add(parseExpr(sqlContext));
         } while (!lexer.equalToken(Token.RIGHT_PAREN));
         parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, parameters);
         lexer.nextToken();
@@ -1387,51 +1388,82 @@ public class SQLExprParser {
     private void parseBetweenCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
         lexer.nextToken();
         List<SQLExpr> rights = new LinkedList<>();
-        rights.add(getSqlExprWithVariant(sqlContext));
+        rights.add(parseExpr(sqlContext));
         lexer.accept(Token.AND);
-        rights.add(getSqlExprWithVariant(sqlContext));
+        rights.add(parseExpr(sqlContext));
         parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, parameters);
     }
     
     private void parserOtherCondition(final SQLContext sqlContext) {
         lexer.nextToken();
-        getSqlExprWithVariant(sqlContext);
+        parseExpr(sqlContext);
     }
     
-    public SQLExpr getSqlExprWithVariant(final SQLContext sqlContext) {
-        SQLExpr result = parseSQLExpr(sqlContext);
-        if (result instanceof SQLVariantRefExpr) {
-            ((SQLVariantRefExpr) result).setIndex(++parametersIndex);
-            result.getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parametersIndex - 1));
-            result.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parametersIndex - 1);
+    public SQLExpr parseExpr(final SQLContext sqlContext) {
+        int beginPosition = lexer.getCurrentPosition();
+        SQLExpr result = parseExpr();
+        if (result instanceof SQLPropertyExpr) {
+            String tableName = sqlContext.getTables().get(0).getName();
+            String owner = ((SQLIdentifierExpr) ((SQLPropertyExpr) result).getOwner()).getSimpleName();
+            if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+                sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+            }
         }
         return result;
     }
     
-    private SQLExpr parseSQLExpr(final SQLContext sqlContext) {
+    public SQLExpr parseExpr() {
         String literals = lexer.getLiterals();
         if (lexer.equalToken(Token.IDENTIFIER)) {
-            String tableName = sqlContext.getTables().get(0).getName();
-            if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new TableToken(lexer.getCurrentPosition() - literals.length(), literals, tableName));
+            SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
+            getLexer().nextToken();
+            if (lexer.skipIfEqual(Token.DOT)) {
+                String property = lexer.getLiterals();
+                getLexer().nextToken();
+                if (!lexer.equalToken(Token.PLUS, Token.MINUS, Token.STAR, Token.SLASH)) {
+                    return new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);
+                }
+                skipRest();
+                return new SQLIgnoreExpr();
             }
-            lexer.nextToken();
-            if (lexer.equalToken(Token.DOT)) {
-                lexer.nextToken();
-                SQLExpr result = new SQLPropertyExpr(new SQLIdentifierExpr(literals), lexer.getLiterals());
-                lexer.nextToken();
+            if (lexer.equalToken(Token.LEFT_PAREN)) {
+                getLexer().skipParentheses();
+                skipRest();
+                return new SQLIgnoreExpr();
+            }
+            if (!lexer.equalToken(Token.PLUS, Token.MINUS, Token.STAR, Token.SLASH)) {
                 return result;
             }
-            return new SQLIdentifierExpr(literals);
+            skipRest();
+            return new SQLIgnoreExpr();
         }
         SQLExpr result = getSQLExpr(literals);
-        lexer.nextToken();
-        return result;
+        getLexer().nextToken();
+        if (!lexer.equalToken(Token.PLUS, Token.MINUS, Token.STAR, Token.SLASH)) {
+            return result;
+        }
+        getLexer().skipParentheses();
+        skipRest();
+        return new SQLIgnoreExpr();
+    }
+    
+    private void skipRest() {
+        while (lexer.skipIfEqual(Token.PLUS, Token.MINUS, Token.STAR, Token.SLASH)) {
+            getLexer().nextToken();
+            if (lexer.skipIfEqual(Token.DOT)) {
+                getLexer().nextToken();
+            }
+            getLexer().skipParentheses();
+        }
     }
     
     private SQLExpr getSQLExpr(final String literals) {
         if (lexer.equalToken(Token.VARIANT) || lexer.equalToken(Token.QUESTION)) {
-            return new SQLVariantRefExpr("?");
+            SQLVariantRefExpr result = new SQLVariantRefExpr("?");
+            result.setIndex(++parametersIndex);
+            result.getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parametersIndex - 1));
+            result.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parametersIndex - 1);
+            return result;
         }
         if (lexer.equalToken(Token.LITERAL_CHARS)) {
             return new SQLCharExpr(literals);
@@ -1448,6 +1480,9 @@ public class SQLExprParser {
         if (lexer.equalToken(Token.LITERAL_HEX)) {
             return new SQLNumberExpr(Integer.parseInt(literals, 16));
         }
-        return new SQLIdentifierExpr(literals);
+        if (lexer.equalToken(Token.IDENTIFIER)) {
+            return new SQLIdentifierExpr(literals);
+        }
+        return new SQLIgnoreExpr();
     }
 }

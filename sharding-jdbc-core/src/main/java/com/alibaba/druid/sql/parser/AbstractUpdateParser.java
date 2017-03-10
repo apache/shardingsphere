@@ -38,7 +38,6 @@ public abstract class AbstractUpdateParser {
      * @return 解析结果
      */
     public UpdateSQLContext parse() {
-        
         exprParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
         exprParser.parseSingleTable(sqlContext);
@@ -75,6 +74,13 @@ public abstract class AbstractUpdateParser {
             }
         }
         exprParser.getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
+        
+        // TODO 解析condition expr
+//        exprParser.parseComparisonCondition(sqlContext, new ParseContext(0));
+//        parametersIndex = exprParser.getParametersIndex();
+        
+        
+        
         SQLExpr value = exprParser.expr();
         if (value instanceof SQLBinaryOpExpr) {
             if (((SQLBinaryOpExpr) value).getLeft() instanceof SQLVariantRefExpr) {

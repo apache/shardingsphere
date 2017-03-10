@@ -129,7 +129,7 @@ public abstract class AbstractSelectParser {
         if (getExprParser().getLexer().skipIfEqual(Token.GROUP)) {
             getExprParser().getLexer().accept(Token.BY);
             while (true) {
-                addGroupByItem(exprParser.getSqlExprWithVariant(sqlContext));
+                addGroupByItem(exprParser.parseExpr(sqlContext));
                 if (!getExprParser().getLexer().equalToken(Token.COMMA)) {
                     break;
                 }
@@ -139,10 +139,10 @@ public abstract class AbstractSelectParser {
                 getExprParser().getLexer().nextToken();
             }
             if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-                exprParser.getSqlExprWithVariant(sqlContext);
+                exprParser.parseExpr(sqlContext);
             }
         } else if (getExprParser().getLexer().skipIfEqual(Token.HAVING)) {
-            exprParser.getSqlExprWithVariant(sqlContext);
+            exprParser.parseExpr(sqlContext);
         }
     }
     
