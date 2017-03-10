@@ -312,9 +312,10 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipForUpdate() {
         getExprParser().getLexer().nextToken();
         getExprParser().getLexer().accept(Token.UPDATE);
-        if (getExprParser().getLexer().equalToken(Token.OF)) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().exprList(null);
+        if (getExprParser().getLexer().skipIfEqual(Token.OF)) {
+            do {
+                getExprParser().parseExpr();
+            } while (getExprParser().getLexer().skipIfEqual(Token.COMMA));
         }
         if (getExprParser().getLexer().equalToken(Token.NOWAIT)) {
             getExprParser().getLexer().nextToken();
