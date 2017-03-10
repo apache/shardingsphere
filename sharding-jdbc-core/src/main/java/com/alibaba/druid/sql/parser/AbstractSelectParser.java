@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
@@ -164,11 +163,11 @@ public abstract class AbstractSelectParser {
     
     public final void parseFrom() {
         if (getExprParser().getLexer().skipIfEqual(Token.FROM)) {
-            parseTableSource();
+            parseTable();
         }
     }
     
-    public List<TableContext> parseTableSource() {
+    public List<TableContext> parseTable() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
@@ -194,34 +193,29 @@ public abstract class AbstractSelectParser {
     protected void parseJoinTable() {
         getExprParser().getLexer().skipIfEqual(Token.HINT);
         if (getExprParser().isJoin()) {
-            parseTableSource();
+            parseTable();
             if (getExprParser().getLexer().skipIfEqual(Token.ON)) {
-                int leftStartPosition = getExprParser().getLexer().getCurrentPosition();
-                SQLExpr sqlExpr = exprParser.expr();
-                if (sqlExpr instanceof SQLBinaryOpExpr) {
-                    SQLBinaryOpExpr binaryOpExpr = (SQLBinaryOpExpr) sqlExpr;
-                    if (binaryOpExpr.getLeft() instanceof SQLPropertyExpr) {
-                        SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) binaryOpExpr.getLeft();
-                        for (TableContext each : sqlContext.getTables()) {
-                            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()))) {
-                                sqlContext.getSqlTokens().add(new TableToken(leftStartPosition, sqlPropertyExpr.getOwner().toString(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString())));
-                            }
-                        }
-                    }
-                    if (binaryOpExpr.getRight() instanceof SQLPropertyExpr) {
-                        SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) binaryOpExpr.getRight();
-                        for (TableContext each : sqlContext.getTables()) {
-                            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()))) {
-                                sqlContext.getSqlTokens().add(
-                                        new TableToken(binaryOpExpr.getRightStartPosition(), sqlPropertyExpr.getOwner().toString(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString())));
-                            }
-                        }
-                    }
-                }
+                do {
+                    parseTableCondition(getExprParser().getLexer().getCurrentPosition());
+                    getExprParser().getLexer().accept(Token.EQ);
+                    parseTableCondition(getExprParser().getLexer().getCurrentPosition() - getExprParser().getLexer().getLiterals().length());
+                } while (getExprParser().getLexer().skipIfEqual(Token.AND));
             } else if (getExprParser().getLexer().skipIfEqual(Token.USING)) {
                 getExprParser().getLexer().skipParentheses();
             }
             parseJoinTable();
+        }
+    }
+    
+    private void parseTableCondition(final int startPosition) {
+        SQLExpr sqlExpr = exprParser.parseExpr();
+        if (sqlExpr instanceof SQLPropertyExpr) {
+            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
+            for (TableContext each : sqlContext.getTables()) {
+                if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()))) {
+                    sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().toString(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString())));
+                }
+            }
         }
     }
 }

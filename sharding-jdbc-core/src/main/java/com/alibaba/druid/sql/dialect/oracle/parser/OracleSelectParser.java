@@ -223,7 +223,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    public final List<TableContext> parseTableSource() {
+    public final List<TableContext> parseTable() {
         if (getExprParser().getLexer().equalToken(Token.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
