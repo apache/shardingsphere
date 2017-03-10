@@ -21,7 +21,7 @@ import com.alibaba.druid.sql.context.OffsetLimitToken;
 import com.alibaba.druid.sql.context.RowCountLimitToken;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
-import com.alibaba.druid.sql.dialect.mysql.lexer.MySql1Lexer;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLLexer;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.Symbol;
 import com.alibaba.druid.sql.parser.ParserException;
@@ -31,10 +31,10 @@ import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
 import java.util.List;
 
-public class MySql1ExprParser extends SQLExprParser {
+public class MySQLExprParser extends SQLExprParser {
     
-    public MySql1ExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new MySql1Lexer(sql));
+    public MySQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
+        super(shardingRule, parameters, new MySQLLexer(sql));
         getLexer().nextToken();
     }
     

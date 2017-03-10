@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySql1ExprParser;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySQLExprParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
 import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLExprParser;
 import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerExprParser;
@@ -65,7 +65,7 @@ public final class SQLParserFactory {
         switch (dbType) {
             case H2:
             case MySQL:
-                sqlExprParser = new MySql1ExprParser(shardingRule, parameters, sql);
+                sqlExprParser = new MySQLExprParser(shardingRule, parameters, sql);
                 break;
             case Oracle:
                 sqlExprParser = new OracleExprParser(shardingRule, parameters, sql);
