@@ -38,7 +38,8 @@ public class PGSelectParser extends AbstractSelectParser {
             if (getExprParser().getLexer().skipIfEqual(Token.INTO)) {
                 getExprParser().getLexer().skipIfEqual(Token.TEMPORARY, Token.TEMP, Token.UNLOGGED);
                 getExprParser().getLexer().skipIfEqual(Token.TABLE);
-                getExprParser().name();
+                // TODO
+                // getExprParser().name();
             }
         }
         parseFrom();
