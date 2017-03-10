@@ -17,7 +17,7 @@
 
 package com.alibaba.druid.sql;
 
-import com.alibaba.druid.sql.dialect.mysql.parser.MySQLLexerTest;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLLexerTest;
 import com.alibaba.druid.sql.lexer.LexerTest;
 import com.alibaba.druid.sql.parser.DeleteStatementParserTest;
 import com.alibaba.druid.sql.parser.InsertStatementParserTest;

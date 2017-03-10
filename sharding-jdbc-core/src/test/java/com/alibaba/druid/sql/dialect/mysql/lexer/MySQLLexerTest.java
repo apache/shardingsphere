@@ -1,6 +1,5 @@
-package com.alibaba.druid.sql.dialect.mysql.parser;
+package com.alibaba.druid.sql.dialect.mysql.lexer;
 
-import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLLexer;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Symbol;
