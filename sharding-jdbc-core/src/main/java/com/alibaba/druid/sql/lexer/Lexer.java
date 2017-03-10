@@ -112,8 +112,8 @@ public class Lexer {
                 nextToken();
             }
             result.append(input.substring(beginPosition, currentPosition));
+            nextToken();
         }
-        nextToken();
         return result.toString();
     }
     

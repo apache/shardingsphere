@@ -1,9 +1,5 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
-import com.alibaba.druid.sql.ast.expr.SQLListExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.TableToken;
 import com.alibaba.druid.sql.context.UpdateSQLContext;
 import com.alibaba.druid.sql.lexer.Token;
@@ -68,36 +64,15 @@ public abstract class AbstractUpdateParser {
             String literals = exprParser.getLexer().getLiterals();
             exprParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();
-            if (exprParser.getLexer().skipIfEqual(Token.DOT) && tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+            if (exprParser.getLexer().skipIfEqual(Token.DOT)) {
+                if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                    sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+                }
                 exprParser.getLexer().nextToken();
             }
         }
         exprParser.getLexer().skipIfEqual(Token.EQ, Token.COLON_EQ);
-        
-        // TODO 解析condition expr
-//        exprParser.parseComparisonCondition(sqlContext, new ParseContext(0));
-//        parametersIndex = exprParser.getParametersIndex();
-        
-        
-        
-        SQLExpr value = exprParser.expr();
-        if (value instanceof SQLBinaryOpExpr) {
-            if (((SQLBinaryOpExpr) value).getLeft() instanceof SQLVariantRefExpr) {
-                parametersIndex++;
-            }
-            if (((SQLBinaryOpExpr) value).getRight() instanceof SQLVariantRefExpr) {
-                parametersIndex++;
-            }
-            // TODO 二元操作替换table token
-        } else if (value instanceof SQLListExpr) {
-            for (SQLExpr each : ((SQLListExpr) value).getItems()) {
-                if (each instanceof SQLVariantRefExpr) {
-                    parametersIndex++;
-                }
-            }
-        } else if (value instanceof SQLVariantRefExpr) {
-            parametersIndex++;
-        }
+        exprParser.parseExpr(sqlContext);
+        parametersIndex = exprParser.getParametersIndex();
     }
 }

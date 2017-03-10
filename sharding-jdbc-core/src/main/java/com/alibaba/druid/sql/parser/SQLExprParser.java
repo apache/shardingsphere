@@ -1449,6 +1449,9 @@ public class SQLExprParser {
     
     private void skipRest() {
         while (lexer.skipIfEqual(Token.PLUS, Token.MINUS, Token.STAR, Token.SLASH)) {
+            if (getLexer().equalToken(Token.QUESTION)) {
+                ++parametersIndex;
+            }
             getLexer().nextToken();
             if (lexer.skipIfEqual(Token.DOT)) {
                 getLexer().nextToken();
