@@ -25,8 +25,6 @@ import lombok.Setter;
 @Setter
 public class SQLVariantRefExpr implements SQLExpr {
     
-    private final String name;
-    
     private int index  = -1;
     
     private Object value;

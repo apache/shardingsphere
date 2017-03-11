@@ -55,7 +55,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
             } else if (getExprParser().getLexer().equalToken(DataType.VARIANT)) {
-                sqlExpr = new SQLVariantRefExpr("?");
+                sqlExpr = new SQLVariantRefExpr();
             } else {
                 throw new UnsupportedOperationException("");
             }

@@ -306,7 +306,7 @@ public class SQLExprParser {
         SQLExpr result = parseExpr();
         if (result instanceof SQLPropertyExpr) {
             String tableName = sqlContext.getTables().get(0).getName();
-            String owner = ((SQLIdentifierExpr) ((SQLPropertyExpr) result).getOwner()).getName();
+            String owner = (((SQLPropertyExpr) result).getOwner()).getName();
             if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
                 sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
             }
@@ -364,7 +364,7 @@ public class SQLExprParser {
     
     private SQLExpr getSQLExpr(final String literals) {
         if (lexer.equalToken(DataType.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
-            SQLVariantRefExpr result = new SQLVariantRefExpr("?");
+            SQLVariantRefExpr result = new SQLVariantRefExpr();
             ++parametersIndex;
             result.setValue(parameters.get(parametersIndex - 1));
             result.setIndex(parametersIndex - 1);

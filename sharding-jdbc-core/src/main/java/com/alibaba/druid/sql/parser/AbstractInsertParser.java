@@ -154,7 +154,7 @@ public abstract class AbstractInsertParser {
                     } else {
                         itemsToken.getItems().add("?");
                         parameters.add(autoIncrementedValue);
-                        SQLVariantRefExpr variantRefExpr = new SQLVariantRefExpr("?");
+                        SQLVariantRefExpr variantRefExpr = new SQLVariantRefExpr();
                         variantRefExpr.setValue(autoIncrementedValue);
                         variantRefExpr.setIndex(parameters.size() - 1);
                         sqlExprs.add(variantRefExpr);
@@ -162,7 +162,7 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
-                    SQLVariantRefExpr variantRefExpr = ((SQLVariantRefExpr) sqlExprs.get(count));
+                    SQLVariantRefExpr variantRefExpr = (SQLVariantRefExpr) sqlExprs.get(count);
                     variantRefExpr.setValue(parameters.get(parameterCount));
                     variantRefExpr.setIndex(parameterCount);
                     parameterCount++;
