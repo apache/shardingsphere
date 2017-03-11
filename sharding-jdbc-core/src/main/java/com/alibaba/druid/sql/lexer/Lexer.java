@@ -19,6 +19,7 @@ package com.alibaba.druid.sql.lexer;
 
 import com.alibaba.druid.sql.parser.ParserException;
 import com.google.common.collect.Sets;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,19 +35,16 @@ public class Lexer {
     @Getter
     private final String input;
     
-    @Getter
     private final Term term;
     
     @Getter
-    @Setter
     private int currentPosition;
     
     @Getter
-    @Setter
+    @Setter(AccessLevel.PROTECTED)
     private Token token;
     
     @Getter
-    @Setter
     private String literals;
     
     public Lexer(final String input, final Dictionary dictionary) {
@@ -58,9 +56,7 @@ public class Lexer {
      * 跳至下一个语言符号.
      */
     public final void nextToken() {
-        while (isWhitespace()) {
-            increaseCurrentPosition();
-        }
+        skipWhitespace();
         if (isVariable()) {
             scanVariable();
             return;
@@ -113,8 +109,10 @@ public class Lexer {
         literals = "";
     }
     
-    private boolean isWhitespace() {
-        return CharTypes.isWhitespace(charAt(currentPosition));
+    private void skipWhitespace() {
+        while (CharTypes.isWhitespace(charAt(currentPosition))) {
+            currentPosition++;
+        }
     }
     
     protected boolean isVariable() {

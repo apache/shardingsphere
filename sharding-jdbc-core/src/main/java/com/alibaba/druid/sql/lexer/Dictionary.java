@@ -1,8 +1,6 @@
 package com.alibaba.druid.sql.lexer;
 
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +9,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@Getter
 public class Dictionary {
     
     private final Map<String, Token> tokens = new HashMap<>(1024);
@@ -34,5 +31,18 @@ public class Dictionary {
         for (Keyword each : dialectKeywords) {
             tokens.put(each.toString(), each);
         }
+    }
+    
+    Token getToken(final String literals, final Token defaultToken) {
+        String key = null == literals ? null : literals.toUpperCase();
+        return tokens.containsKey(key) ? tokens.get(key) : defaultToken;
+    }
+    
+    Token getToken(final String literals) {
+        String key = null == literals ? null : literals.toUpperCase();
+        if (tokens.containsKey(key)) {
+            return tokens.get(key);
+        }
+        throw new IllegalArgumentException();
     }
 }
