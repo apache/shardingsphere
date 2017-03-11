@@ -21,7 +21,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLIgnoreExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
@@ -130,15 +129,15 @@ public class SQLExprParser {
             getLexer().nextToken();
             orderByType = OrderByColumn.OrderByType.DESC;
         }
-        if (expr instanceof SQLIntegerExpr) {
-            return new OrderByContext(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
+        if (expr instanceof SQLNumberExpr) {
+            return new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
         }
         if (expr instanceof SQLIdentifierExpr) {
             return new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType);
         }
         if (expr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType);
+            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType);
         }
         return null;
     }
@@ -379,7 +378,7 @@ public class SQLExprParser {
             return new SQLNCharExpr(literals);
         }
         if (lexer.equalToken(DataType.LITERAL_INT)) {
-            return new SQLIntegerExpr(Integer.parseInt(literals));
+            return new SQLNumberExpr(Integer.parseInt(literals));
         }
         if (lexer.equalToken(DataType.LITERAL_FLOAT)) {
             return new SQLNumberExpr(Double.parseDouble(literals));

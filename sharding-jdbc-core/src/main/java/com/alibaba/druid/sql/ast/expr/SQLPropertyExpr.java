@@ -15,21 +15,17 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Getter
 public class SQLPropertyExpr extends SQLExprImpl {
     
-    private final SQLExpr owner;
+    private final SQLIdentifierExpr owner;
     
     private final String name;
-    
-    public SQLPropertyExpr(final SQLExpr owner, final String name) {
-        this.owner = owner;
-        this.name = name;
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

@@ -22,7 +22,7 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.expr.SQLTextLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
@@ -223,8 +223,8 @@ public final class ParseContext {
         if (sqlObject instanceof SQLTextLiteralExpr) {
             return new ValuePair(((SQLTextLiteralExpr) sqlObject).getText(), -1);
         }
-        if (sqlObject instanceof SQLNumericLiteralExpr) {
-            return new ValuePair((Comparable) ((SQLNumericLiteralExpr) sqlObject).getNumber(), -1);
+        if (sqlObject instanceof SQLNumberExpr) {
+            return new ValuePair((Comparable) ((SQLNumberExpr) sqlObject).getNumber(), -1);
         }
         if (sqlObject instanceof SQLNullExpr) {
             return new ValuePair("", -1);

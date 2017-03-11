@@ -2,8 +2,8 @@ package com.alibaba.druid.sql.dialect.mysql.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.alibaba.druid.sql.lexer.DataType;
@@ -47,9 +47,9 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().accept(Symbol.EQ);
             SQLExpr sqlExpr;
             if (getExprParser().getLexer().equalToken(DataType.LITERAL_INT)) {
-                sqlExpr = new SQLIntegerExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
+                sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
             } else if (getExprParser().getLexer().equalToken(DataType.LITERAL_FLOAT)) {
-                sqlExpr = new SQLIntegerExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
+                sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
             } else if (getExprParser().getLexer().equalToken(DataType.LITERAL_CHARS)) {
                 sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {

@@ -156,7 +156,7 @@ public abstract class AbstractSelectParser {
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().toString())), SQLUtil.getExactlyValue(expr.getName()), orderByType));
+            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType));
         } else if (sqlExpr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
             sqlContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType));
@@ -214,8 +214,8 @@ public abstract class AbstractSelectParser {
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
             for (TableContext each : sqlContext.getTables()) {
-                if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()))) {
-                    sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().toString(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString())));
+                if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
+                    sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
                 }
             }
         }

@@ -29,9 +29,4 @@ public class SQLIdentifierExpr extends SQLExprImpl {
     public void output(final StringBuffer buffer) {
         buffer.append(name);
     }
-    
-    @Override
-    public String toString() {
-        return this.name;
-    }
 }
