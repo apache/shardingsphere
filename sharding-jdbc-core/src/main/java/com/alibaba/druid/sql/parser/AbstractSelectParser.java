@@ -16,9 +16,9 @@
 
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.GroupByContext;
 import com.alibaba.druid.sql.context.SelectItemContext;

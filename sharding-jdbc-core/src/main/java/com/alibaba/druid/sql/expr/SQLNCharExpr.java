@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.context;
+package com.alibaba.druid.sql.expr;
 
-import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLExprImpl;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class SQLServerTop extends SQLExprImpl {
+public class SQLNCharExpr extends SQLTextLiteralExpr {
     
-    private SQLExpr expr;
-    
-    private boolean percent;
+    public SQLNCharExpr(final String text) {
+        super(text);
+    }
 }

@@ -1,9 +1,9 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableContext;

@@ -16,7 +16,7 @@
 
 package com.alibaba.druid.sql.dialect.postgresql.parser;
 
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;

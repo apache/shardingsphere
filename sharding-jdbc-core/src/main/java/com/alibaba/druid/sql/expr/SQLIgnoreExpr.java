@@ -1,4 +1,4 @@
-package com.alibaba.druid.sql.ast;
+package com.alibaba.druid.sql.expr;
 
 /**
  * 分片中无需关注的SQL表达式.

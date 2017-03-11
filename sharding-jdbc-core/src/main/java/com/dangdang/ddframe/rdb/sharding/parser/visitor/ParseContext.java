@@ -18,14 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.expr.SQLTextLiteralExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.expr.SQLNullExpr;
+import com.alibaba.druid.sql.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.expr.SQLTextLiteralExpr;
+import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -121,18 +120,6 @@ public final class ParseContext {
         Table table = new Table(SQLUtil.getExactlyValue(currentTableName), currentAlias.isPresent() ? Optional.of(SQLUtil.getExactlyValue(currentAlias.get())) : currentAlias);
         parsedResult.getRouteContext().getTables().add(table);
         currentTable = table;
-    }
-    
-    /**
-     * 将表对象加入解析上下文.
-     * 
-     * @param x 表名表达式, 来源于FROM, INSERT ,UPDATE, DELETE等语句
-     */
-    @Deprecated
-    public Table addTable(final SQLExprTableSource x) {
-        Table result = new Table(SQLUtil.getExactlyValue(x.getExpr().toString()), SQLUtil.getExactlyValue(x.getAlias()));
-        parsedResult.getRouteContext().getTables().add(result);
-        return result;
     }
     
     /**

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.alibaba.druid.sql.expr;
 
-package com.alibaba.druid.sql.ast.statement;
-
-import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class SQLTableSourceImpl extends SQLExprImpl implements SQLTableSource {
+public class SQLPropertyExpr extends SQLExprImpl {
     
-    private String alias;
+    private final SQLIdentifierExpr owner;
+    
+    private final String name;
 }

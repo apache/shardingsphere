@@ -17,15 +17,15 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLIgnoreExpr;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNCharExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLIgnoreExpr;
+import com.alibaba.druid.sql.expr.SQLCharExpr;
+import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.expr.SQLLiteralExpr;
+import com.alibaba.druid.sql.expr.SQLNCharExpr;
+import com.alibaba.druid.sql.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.OrderByContext;

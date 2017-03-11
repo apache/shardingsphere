@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.druid.sql.context;
+package com.alibaba.druid.sql.expr;
 
-import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLExprImpl;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.HashMap;
+import java.util.Map;
 
-@Getter
-@Setter
-public class SQLServerTop extends SQLExprImpl {
+public abstract class SQLExprImpl implements SQLExpr {
     
-    private SQLExpr expr;
+    private final Map<String, Object> attributes = new HashMap<>();
     
-    private boolean percent;
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 }
