@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.ast.expr;
 
 import com.google.common.base.Strings;
 
 public class SQLCharExpr extends SQLTextLiteralExpr {
     
-    public SQLCharExpr(final String text){
+    public SQLCharExpr(final String text) {
         super(text);
     }
     
