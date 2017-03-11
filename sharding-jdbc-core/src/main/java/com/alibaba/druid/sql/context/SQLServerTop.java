@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.context;
 
 import com.alibaba.druid.sql.expr.SQLExpr;

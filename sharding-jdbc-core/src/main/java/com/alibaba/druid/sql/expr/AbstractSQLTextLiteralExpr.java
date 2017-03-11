@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.expr;
 
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public abstract class SQLTextLiteralExpr implements SQLLiteralExpr {
+public abstract class AbstractSQLTextLiteralExpr implements SQLLiteralExpr {
     
     private final String text;
 }

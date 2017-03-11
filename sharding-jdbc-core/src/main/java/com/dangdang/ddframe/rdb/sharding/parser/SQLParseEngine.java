@@ -119,7 +119,7 @@ public final class SQLParseEngine {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
                 GroupByColumn groupByColumn = parseContext.addGroupByColumns(each.getOwner(), each.getName(), each.getOrderByType());
                 boolean found = false;
-                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() :each.getName();
+                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 for (SelectItemContext context : sqlContext.getItemContexts()) {
                     if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
                             || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {

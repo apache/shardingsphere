@@ -36,7 +36,7 @@ public final class MySQLLexerTest {
     }
     
     @Test
-    public void assertNextTokenForCommentsAndMultplieLines() {
+    public void assertNextTokenForCommentsAndMultipleLines() {
         lexer = new MySQLLexer("SELECT * FROM TABLE_XXX # comment 1 \n #comment 2 \r\n WHERE XXX=1");
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));

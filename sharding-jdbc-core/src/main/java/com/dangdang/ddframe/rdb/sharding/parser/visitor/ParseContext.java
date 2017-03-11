@@ -23,7 +23,7 @@ import com.alibaba.druid.sql.expr.SQLExpr;
 import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.expr.SQLTextLiteralExpr;
+import com.alibaba.druid.sql.expr.AbstractSQLTextLiteralExpr;
 import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
@@ -193,8 +193,8 @@ public final class ParseContext {
             SQLVariantRefExpr variantRefExpr = (SQLVariantRefExpr) sqlExpr;
             return new ValuePair((Comparable) variantRefExpr.getValue(), variantRefExpr.getIndex());
         }
-        if (sqlExpr instanceof SQLTextLiteralExpr) {
-            return new ValuePair(((SQLTextLiteralExpr) sqlExpr).getText(), -1);
+        if (sqlExpr instanceof AbstractSQLTextLiteralExpr) {
+            return new ValuePair(((AbstractSQLTextLiteralExpr) sqlExpr).getText(), -1);
         }
         if (sqlExpr instanceof SQLNumberExpr) {
             return new ValuePair((Comparable) ((SQLNumberExpr) sqlExpr).getNumber(), -1);

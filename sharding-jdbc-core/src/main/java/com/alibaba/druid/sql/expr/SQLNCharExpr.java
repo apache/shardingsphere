@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.alibaba.druid.sql.expr;
 
-public class SQLNCharExpr extends SQLTextLiteralExpr {
+public class SQLNCharExpr extends AbstractSQLTextLiteralExpr {
     
     public SQLNCharExpr(final String text) {
         super(text);

@@ -16,7 +16,7 @@
 
 package com.alibaba.druid.sql.expr;
 
-public class SQLCharExpr extends SQLTextLiteralExpr {
+public class SQLCharExpr extends AbstractSQLTextLiteralExpr {
     
     public SQLCharExpr(final String text) {
         super(text);
