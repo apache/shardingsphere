@@ -16,16 +16,6 @@
 
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLIgnoreExpr;
-import com.alibaba.druid.sql.expr.SQLCharExpr;
-import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.expr.SQLLiteralExpr;
-import com.alibaba.druid.sql.expr.SQLNCharExpr;
-import com.alibaba.druid.sql.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.AggregationSelectItemContext;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.OrderByContext;
@@ -34,6 +24,15 @@ import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
 import com.alibaba.druid.sql.context.TableContext;
 import com.alibaba.druid.sql.context.TableToken;
+import com.alibaba.druid.sql.expr.SQLCharExpr;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.expr.SQLIgnoreExpr;
+import com.alibaba.druid.sql.expr.SQLLiteralExpr;
+import com.alibaba.druid.sql.expr.SQLNCharExpr;
+import com.alibaba.druid.sql.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Lexer;
@@ -270,7 +269,7 @@ public class SQLExprParser {
         SQLExpr right = parseExpr(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLVariantRefExpr)) {
-            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right), parameters);
+            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
         }
     }
     
@@ -284,7 +283,7 @@ public class SQLExprParser {
             }
             rights.add(parseExpr(sqlContext));
         } while (!lexer.equalToken(Symbol.RIGHT_PAREN));
-        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights, parameters);
+        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights);
         lexer.nextToken();
     }
     
@@ -294,7 +293,7 @@ public class SQLExprParser {
         rights.add(parseExpr(sqlContext));
         lexer.accept(DefaultKeyword.AND);
         rights.add(parseExpr(sqlContext));
-        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights, parameters);
+        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights);
     }
     
     private void parserOtherCondition(final SQLContext sqlContext) {
@@ -366,9 +365,9 @@ public class SQLExprParser {
     private SQLExpr getSQLExpr(final String literals) {
         if (lexer.equalToken(DataType.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
             SQLVariantRefExpr result = new SQLVariantRefExpr("?");
-            result.setIndex(++parametersIndex);
-            result.getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parametersIndex - 1));
-            result.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parametersIndex - 1);
+            ++parametersIndex;
+            result.setValue(parameters.get(parametersIndex - 1));
+            result.setIndex(parametersIndex - 1);
             return result;
         }
         if (lexer.equalToken(DataType.LITERAL_CHARS)) {

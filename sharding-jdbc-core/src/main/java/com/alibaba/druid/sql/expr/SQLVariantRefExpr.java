@@ -20,9 +20,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -32,9 +29,5 @@ public class SQLVariantRefExpr implements SQLExpr {
     
     private int index  = -1;
     
-    private final Map<String, Object> attributes = new HashMap<>();
-    
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
+    private Object value;
 }

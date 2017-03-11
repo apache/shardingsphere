@@ -1,12 +1,11 @@
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.SQLEvalConstants;
-import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.context.InsertSQLContext;
 import com.alibaba.druid.sql.context.ItemsToken;
 import com.alibaba.druid.sql.context.TableContext;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Keyword;
@@ -155,20 +154,20 @@ public abstract class AbstractInsertParser {
                     } else {
                         itemsToken.getItems().add("?");
                         parameters.add(autoIncrementedValue);
-                        SQLVariantRefExpr sqlVariantRefExpr = new SQLVariantRefExpr("?");
-                        sqlVariantRefExpr.setIndex(parameters.size());
-                        sqlVariantRefExpr.getAttributes().put(SQLEvalConstants.EVAL_VALUE, autoIncrementedValue);
-                        sqlVariantRefExpr.getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameters.size() - 1);
-                        sqlExprs.add(sqlVariantRefExpr);
+                        SQLVariantRefExpr variantRefExpr = new SQLVariantRefExpr("?");
+                        variantRefExpr.setValue(autoIncrementedValue);
+                        variantRefExpr.setIndex(parameters.size() - 1);
+                        sqlExprs.add(variantRefExpr);
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
-                    ((SQLVariantRefExpr) sqlExprs.get(count)).getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parameterCount));
-                    ((SQLVariantRefExpr) sqlExprs.get(count)).getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameterCount);
+                    SQLVariantRefExpr variantRefExpr = ((SQLVariantRefExpr) sqlExprs.get(count));
+                    variantRefExpr.setValue(parameters.get(parameterCount));
+                    variantRefExpr.setIndex(parameterCount);
                     parameterCount++;
                 }
-                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), parameters);
+                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count));
                 count++;
             }
             if (!itemsToken.getItems().isEmpty()) {

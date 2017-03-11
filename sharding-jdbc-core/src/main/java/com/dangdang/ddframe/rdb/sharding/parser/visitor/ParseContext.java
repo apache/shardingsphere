@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.context.CommonSelectItemContext;
 import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.expr.SQLExpr;
@@ -53,7 +52,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -78,9 +76,6 @@ public final class ParseContext {
     
     @Setter
     private ShardingRule shardingRule;
-    
-    @Setter
-    private boolean hasOrCondition;
     
     private final ConditionContext currentConditionContext = new ConditionContext();
     
@@ -127,9 +122,8 @@ public final class ParseContext {
      * @param expr SQL表达式
      * @param operator 操作符
      * @param valueExprList 值对象表达式集合
-     * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList, final List<Object> parameters) {
+    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList) {
         Optional<Column> column = getColumn(expr);
         if (!column.isPresent()) {
             return;
@@ -139,7 +133,7 @@ public final class ParseContext {
         }
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
         for (SQLExpr each : valueExprList) {
-            ValuePair evalValue = evalExpression(each, parameters);
+            ValuePair evalValue = evalExpression(each);
             if (null != evalValue) {
                 values.add(evalValue);
             }
@@ -157,14 +151,13 @@ public final class ParseContext {
      * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
-     * @param parameters 通过占位符传进来的参数
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final List<Object> parameters) {
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr) {
         Column column = createColumn(columnName, tableName);
         if (notShardingColumns(column)) {
             return; 
         }
-        ValuePair value = evalExpression(valueExpr, parameters);
+        ValuePair value = evalExpression(valueExpr);
         if (null != value) {
             addCondition(column, operator, Collections.singletonList(value));
         }
@@ -195,15 +188,10 @@ public final class ParseContext {
         return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
-    private ValuePair evalExpression(final SQLExpr sqlExpr, final List<Object> parameters) {
+    private ValuePair evalExpression(final SQLExpr sqlExpr) {
         if (sqlExpr instanceof SQLVariantRefExpr) {
-            SQLVariantRefExpr x = (SQLVariantRefExpr) sqlExpr;
-            Map<String, Object> attributes = x.getAttributes();
-            if ("?".equals(x.getName()) && -1 != x.getIndex() && x.getIndex() - 1 < parameters.size()) {
-                Comparable value = null == attributes.get(SQLEvalConstants.EVAL_VALUE) ? "" : (Comparable) attributes.get(SQLEvalConstants.EVAL_VALUE);
-                int index = null == attributes.get(SQLEvalConstants.EVAL_VAR_INDEX) ? -1 : (int) attributes.get(SQLEvalConstants.EVAL_VAR_INDEX);
-                return new ValuePair(value, index);
-            }
+            SQLVariantRefExpr variantRefExpr = (SQLVariantRefExpr) sqlExpr;
+            return new ValuePair((Comparable) variantRefExpr.getValue(), variantRefExpr.getIndex());
         }
         if (sqlExpr instanceof SQLTextLiteralExpr) {
             return new ValuePair(((SQLTextLiteralExpr) sqlExpr).getText(), -1);
@@ -225,7 +213,7 @@ public final class ParseContext {
     }
     
     private Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getName());
+        Optional<Table> table = findTable((expr.getOwner()).getName());
         return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
