@@ -17,7 +17,7 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.google.common.base.Strings;
 
-public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr {
+public class SQLCharExpr extends SQLTextLiteralExpr {
     
     public SQLCharExpr(final String text){
         super(text);
@@ -32,10 +32,5 @@ public class SQLCharExpr extends SQLTextLiteralExpr implements SQLValuableExpr {
             buffer.append(getText().replaceAll("'", "''"));
             buffer.append("'");
         }
-    }
-    
-    @Override
-    public Object getValue() {
-        return getText();
     }
 }

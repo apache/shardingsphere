@@ -17,27 +17,10 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 
-import static com.alibaba.druid.sql.SQLEvalConstants.EVAL_VALUE_NULL;
-
-public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr, SQLValuableExpr {
-    
-    @Override
-    public Object getValue() {
-        return EVAL_VALUE_NULL;
-    }
+public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     @Override
     public void output(final StringBuffer buffer) {
         buffer.append("NULL");
-    }
-    
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-    
-    @Override
-    public boolean equals(final Object o) {
-        return o instanceof SQLNullExpr;
     }
 }

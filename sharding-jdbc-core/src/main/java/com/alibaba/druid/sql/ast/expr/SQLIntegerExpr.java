@@ -20,14 +20,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuableExpr {
+public class SQLIntegerExpr extends SQLNumericLiteralExpr {
     
     private final Number number;
-    
-    @Override
-    public Object getValue() {
-        return number;
-    }
     
     @Override
     public void output(final StringBuffer buffer) {
