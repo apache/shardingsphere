@@ -16,9 +16,5 @@
 
 package com.alibaba.druid.sql.expr;
 
-import java.util.Map;
-
 public interface SQLExpr {
-    
-    Map<String, Object> getAttributes();
 }

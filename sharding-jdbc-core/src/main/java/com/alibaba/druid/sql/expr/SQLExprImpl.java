@@ -15,15 +15,5 @@
  */
 package com.alibaba.druid.sql.expr;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class SQLExprImpl implements SQLExpr {
-    
-    private final Map<String, Object> attributes = new HashMap<>();
-    
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
 }

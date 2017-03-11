@@ -164,8 +164,8 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
-                    sqlExprs.get(count).getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parameterCount));
-                    sqlExprs.get(count).getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameterCount);
+                    ((SQLVariantRefExpr) sqlExprs.get(count)).getAttributes().put(SQLEvalConstants.EVAL_VALUE, parameters.get(parameterCount));
+                    ((SQLVariantRefExpr) sqlExprs.get(count)).getAttributes().put(SQLEvalConstants.EVAL_VAR_INDEX, parameterCount);
                     parameterCount++;
                 }
                 parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), parameters);
