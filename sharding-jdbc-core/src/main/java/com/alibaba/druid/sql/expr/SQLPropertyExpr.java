@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SQLPropertyExpr extends SQLExprImpl {
+public class SQLPropertyExpr implements SQLExpr {
     
     private final SQLIdentifierExpr owner;
     

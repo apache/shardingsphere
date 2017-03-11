@@ -16,13 +16,12 @@
 package com.alibaba.druid.sql.context;
 
 import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLExprImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerTop extends SQLExprImpl {
+public class SQLServerTop implements SQLExpr {
     
     private SQLExpr expr;
     

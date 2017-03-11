@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SQLIdentifierExpr extends SQLExprImpl {
+public class SQLIdentifierExpr implements SQLExpr {
     
     private final String name;
 }

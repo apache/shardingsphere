@@ -26,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class SQLVariantRefExpr extends SQLExprImpl {
+public class SQLVariantRefExpr implements SQLExpr {
     
     private final String name;
     

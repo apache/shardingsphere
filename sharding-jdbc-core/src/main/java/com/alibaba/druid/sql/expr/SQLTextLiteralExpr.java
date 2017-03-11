@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public abstract class SQLTextLiteralExpr extends SQLExprImpl implements SQLLiteralExpr {
+public abstract class SQLTextLiteralExpr implements SQLLiteralExpr {
     
     private final String text;
 }

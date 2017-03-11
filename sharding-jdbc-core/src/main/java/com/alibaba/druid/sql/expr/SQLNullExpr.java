@@ -15,5 +15,5 @@
  */
 package com.alibaba.druid.sql.expr;
 
-public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr {
+public class SQLNullExpr implements SQLLiteralExpr {
 }

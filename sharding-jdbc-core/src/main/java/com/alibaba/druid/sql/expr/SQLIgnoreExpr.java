@@ -5,5 +5,5 @@ package com.alibaba.druid.sql.expr;
  *
  * @author zhangliang
  */
-public class SQLIgnoreExpr extends SQLExprImpl {
+public class SQLIgnoreExpr implements SQLExpr {
 }
