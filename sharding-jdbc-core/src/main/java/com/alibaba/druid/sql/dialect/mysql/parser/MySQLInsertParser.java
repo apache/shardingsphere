@@ -1,11 +1,11 @@
 package com.alibaba.druid.sql.dialect.mysql.parser;
 
-import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.alibaba.druid.sql.expr.SQLCharExpr;
-import com.alibaba.druid.sql.expr.SQLNullExpr;
+import com.alibaba.druid.sql.expr.SQLExpr;
+import com.alibaba.druid.sql.expr.SQLIgnoreExpr;
 import com.alibaba.druid.sql.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Keyword;
@@ -53,7 +53,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             } else if (getExprParser().getLexer().equalToken(DataType.LITERAL_CHARS)) {
                 sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {
-                sqlExpr = new SQLNullExpr();
+                sqlExpr = new SQLIgnoreExpr();
             } else if (getExprParser().getLexer().equalToken(DataType.VARIANT)) {
                 sqlExpr = new SQLVariantRefExpr("?");
             } else {

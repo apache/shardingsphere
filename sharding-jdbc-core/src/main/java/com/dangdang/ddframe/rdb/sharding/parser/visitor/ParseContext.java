@@ -18,15 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
+import com.alibaba.druid.sql.context.CommonSelectItemContext;
+import com.alibaba.druid.sql.context.SelectItemContext;
 import com.alibaba.druid.sql.expr.SQLExpr;
 import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.expr.SQLNullExpr;
 import com.alibaba.druid.sql.expr.SQLNumberExpr;
 import com.alibaba.druid.sql.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.expr.SQLTextLiteralExpr;
 import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
-import com.alibaba.druid.sql.context.CommonSelectItemContext;
-import com.alibaba.druid.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -211,9 +210,6 @@ public final class ParseContext {
         }
         if (sqlExpr instanceof SQLNumberExpr) {
             return new ValuePair((Comparable) ((SQLNumberExpr) sqlExpr).getNumber(), -1);
-        }
-        if (sqlExpr instanceof SQLNullExpr) {
-            return new ValuePair("", -1);
         }
         return null;
     }
