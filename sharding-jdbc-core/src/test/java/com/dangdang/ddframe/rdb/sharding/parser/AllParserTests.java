@@ -22,11 +22,21 @@ import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForT
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.OrParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResultTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.LexerTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.DeleteStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.InsertStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.UpdateStatementParserTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        LexerTest.class,
+        MySQLLexerTest.class,
+        InsertStatementParserTest.class,
+        UpdateStatementParserTest.class,
+        DeleteStatementParserTest.class,
         SQLParsedResultTest.class, 
         MySQLStatementTest.class, 
         MySQLPreparedStatementForOneParameterTest.class, 

@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import com.alibaba.druid.sql.context.CommonSelectItemContext;
-import com.alibaba.druid.sql.context.SelectItemContext;
-import com.alibaba.druid.sql.expr.SQLExpr;
-import com.alibaba.druid.sql.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.expr.AbstractSQLTextLiteralExpr;
-import com.alibaba.druid.sql.expr.SQLVariantRefExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLVariantRefExpr;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;

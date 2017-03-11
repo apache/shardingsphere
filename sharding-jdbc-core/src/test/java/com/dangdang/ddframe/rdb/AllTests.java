@@ -36,7 +36,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        com.alibaba.druid.sql.AllParserTests.class, 
         AllConstantsTests.class, 
         AllApiTests.class,
         AllConfigTests.class, 

@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.alibaba.druid.sql.context.AggregationSelectItemContext;
-import com.alibaba.druid.sql.context.GroupByContext;
-import com.alibaba.druid.sql.context.InsertSQLContext;
-import com.alibaba.druid.sql.context.ItemsToken;
-import com.alibaba.druid.sql.context.OrderByContext;
-import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.context.SelectItemContext;
-import com.alibaba.druid.sql.context.SelectSQLContext;
-import com.alibaba.druid.sql.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;

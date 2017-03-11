@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySQLExprParser;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleExprParser;
-import com.alibaba.druid.sql.dialect.postgresql.parser.PostgreSQLExprParser;
-import com.alibaba.druid.sql.dialect.sqlserver.parser.SQLServerExprParser;
-import com.alibaba.druid.sql.parser.SQLExprParser;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
