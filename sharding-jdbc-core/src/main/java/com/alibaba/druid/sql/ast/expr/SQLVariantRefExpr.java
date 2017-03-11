@@ -17,13 +17,11 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(of = "name")
 public class SQLVariantRefExpr extends SQLExprImpl {
     
     private String name;

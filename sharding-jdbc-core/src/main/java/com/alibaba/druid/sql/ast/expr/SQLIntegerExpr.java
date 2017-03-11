@@ -15,13 +15,11 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 public class SQLIntegerExpr extends SQLNumericLiteralExpr implements SQLValuableExpr {
     
     private final Number number;
