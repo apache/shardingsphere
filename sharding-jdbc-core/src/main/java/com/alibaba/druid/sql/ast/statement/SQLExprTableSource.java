@@ -26,19 +26,12 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     
     private SQLExpr expr;
     
-    public SQLExprTableSource(final SQLExpr expr) {
-        this(expr, null);
-    }
-    
     public SQLExprTableSource(final SQLExpr expr, final String alias) {
         setExpr(expr);
         setAlias(alias);
     }
     
     public void setExpr(final SQLExpr expr) {
-        if (null != expr) {
-            expr.setParent(this);
-        }
         this.expr = expr;
     }
 

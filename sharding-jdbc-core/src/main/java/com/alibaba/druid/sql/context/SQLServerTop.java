@@ -29,9 +29,6 @@ public class SQLServerTop extends SQLObjectImpl {
     private boolean percent;
     
     public void setExpr(final SQLExpr expr) {
-        if (null != expr) {
-            expr.setParent(this);
-        }
         this.expr = expr;
     }
 }

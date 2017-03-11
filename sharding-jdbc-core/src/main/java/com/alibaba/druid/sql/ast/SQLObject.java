@@ -21,9 +21,5 @@ public interface SQLObject {
     
     Map<String, Object> getAttributes();
     
-    SQLObject getParent();
-    
-    void setParent(SQLObject parent);
-    
     void output(StringBuffer buf);
 }

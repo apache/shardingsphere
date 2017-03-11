@@ -23,21 +23,9 @@ public abstract class SQLObjectImpl implements SQLObject {
     
     private final Map<String, Object> attributes = new HashMap<>();
     
-    private SQLObject parent;
-    
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
-    
-    @Override
-    public SQLObject getParent() {
-        return parent;
-    }
-    
-    @Override
-    public void setParent(final SQLObject parent) {
-        this.parent = parent;
     }
     
     @Override

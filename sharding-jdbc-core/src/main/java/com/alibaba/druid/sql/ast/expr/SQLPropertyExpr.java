@@ -30,9 +30,6 @@ public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
     private final String name;
     
     public SQLPropertyExpr(final SQLExpr owner, final String name) {
-        if (null != owner) {
-            owner.setParent(this);
-        }
         this.owner = owner;
         this.name = name;
     }
