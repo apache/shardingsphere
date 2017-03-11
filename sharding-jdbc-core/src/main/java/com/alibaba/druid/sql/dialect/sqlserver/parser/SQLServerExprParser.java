@@ -18,7 +18,7 @@ package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
 import com.alibaba.druid.sql.context.LimitContext;
 import com.alibaba.druid.sql.context.SelectSQLContext;
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerTop;
+import com.alibaba.druid.sql.context.SQLServerTop;
 import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerKeyword;
 import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerLexer;
 import com.alibaba.druid.sql.lexer.DataType;
@@ -40,7 +40,7 @@ public class SQLServerExprParser extends SQLExprParser {
     
     public SQLServerTop parseTop() {
         // TODO
-//        if (getLexer().equalToken(Token.TOP)) {
+//        if (getLexer().equalToken(SQLServerKeyword.TOP)) {
 //            SQLServerTop top = new SQLServerTop();
 //            getLexer().nextToken();
 //            
@@ -56,7 +56,7 @@ public class SQLServerExprParser extends SQLExprParser {
 //                getLexer().accept(Symbol.RIGHT_PAREN);
 //            }
 //            
-//            if (getLexer().equalToken(Token.PERCENT)) {
+//            if (getLexer().equalToken(SQLServerKeyword.PERCENT)) {
 //                getLexer().nextToken();
 //                top.setPercent(true);
 //            }

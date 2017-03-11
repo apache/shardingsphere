@@ -28,6 +28,7 @@ public enum SQLServerKeyword implements Keyword {
     
     TOP,
     OFFSET,
+    PERCENT,
     ONLY,
     IF,
     OUTPUT,

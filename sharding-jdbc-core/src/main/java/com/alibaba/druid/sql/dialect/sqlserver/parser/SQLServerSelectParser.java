@@ -16,7 +16,6 @@
 
 package com.alibaba.druid.sql.dialect.sqlserver.parser;
 
-import com.alibaba.druid.sql.dialect.sqlserver.ast.SQLServerSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.sqlserver.lexer.SQLServerKeyword;
 import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
@@ -43,7 +42,6 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        SQLServerSelectQueryBlock queryBlock = new SQLServerSelectQueryBlock();
         if (getExprParser().getLexer().equalToken(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
             if (getExprParser().getLexer().equalToken(DataType.COMMENT)) {
@@ -51,7 +49,8 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             }
             parseDistinct();
             if (getExprParser().getLexer().equalToken(SQLServerKeyword.TOP)) {
-                queryBlock.setTop(((SQLServerExprParser) getExprParser()).parseTop());
+                // TODO save topContext
+                ((SQLServerExprParser) getExprParser()).parseTop();
             }
             parseSelectList();
         }
