@@ -364,11 +364,8 @@ public class SQLExprParser {
     
     private SQLExpr getSQLExpr(final String literals) {
         if (lexer.equalToken(DataType.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
-            SQLVariantRefExpr result = new SQLVariantRefExpr();
-            ++parametersIndex;
-            result.setValue(parameters.get(parametersIndex - 1));
-            result.setIndex(parametersIndex - 1);
-            return result;
+            parametersIndex++;
+            return new SQLVariantRefExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
         if (lexer.equalToken(DataType.LITERAL_CHARS)) {
             return new SQLCharExpr(literals);

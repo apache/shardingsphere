@@ -144,7 +144,6 @@ public abstract class AbstractInsertParser {
             } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentPosition() - exprParser.getLexer().getLiterals().length());
             int count = 0;
-            int parameterCount = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {
                     Number autoIncrementedValue = (Number) getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
@@ -154,18 +153,10 @@ public abstract class AbstractInsertParser {
                     } else {
                         itemsToken.getItems().add("?");
                         parameters.add(autoIncrementedValue);
-                        SQLVariantRefExpr variantRefExpr = new SQLVariantRefExpr();
-                        variantRefExpr.setValue(autoIncrementedValue);
-                        variantRefExpr.setIndex(parameters.size() - 1);
-                        sqlExprs.add(variantRefExpr);
+                        sqlExprs.add(new SQLVariantRefExpr(parameters.size() - 1, autoIncrementedValue));
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
-                } else if (sqlExprs.get(count) instanceof SQLVariantRefExpr) {
-                    SQLVariantRefExpr variantRefExpr = (SQLVariantRefExpr) sqlExprs.get(count);
-                    variantRefExpr.setValue(parameters.get(parameterCount));
-                    variantRefExpr.setIndex(parameterCount);
-                    parameterCount++;
                 }
                 parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count));
                 count++;

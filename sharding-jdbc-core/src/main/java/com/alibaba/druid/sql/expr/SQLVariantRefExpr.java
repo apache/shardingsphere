@@ -18,14 +18,12 @@ package com.alibaba.druid.sql.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor
 @Getter
-@Setter
 public class SQLVariantRefExpr implements SQLExpr {
     
-    private int index  = -1;
+    private final int index;
     
-    private Object value;
+    private final Object value;
 }
