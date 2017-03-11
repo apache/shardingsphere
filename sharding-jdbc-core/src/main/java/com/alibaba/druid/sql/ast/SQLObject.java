@@ -20,6 +20,4 @@ import java.util.Map;
 public interface SQLObject {
     
     Map<String, Object> getAttributes();
-    
-    void output(StringBuffer buf);
 }

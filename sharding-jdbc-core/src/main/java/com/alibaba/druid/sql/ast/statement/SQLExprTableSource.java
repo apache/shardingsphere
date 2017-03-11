@@ -34,9 +34,4 @@ public class SQLExprTableSource extends SQLTableSourceImpl {
     public void setExpr(final SQLExpr expr) {
         this.expr = expr;
     }
-
-    @Override
-    public void output(final StringBuffer buffer) {
-        expr.output(buffer);
-    }
 }

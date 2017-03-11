@@ -18,9 +18,4 @@ package com.alibaba.druid.sql.ast.expr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 
 public class SQLNullExpr extends SQLExprImpl implements SQLLiteralExpr {
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        buffer.append("NULL");
-    }
 }

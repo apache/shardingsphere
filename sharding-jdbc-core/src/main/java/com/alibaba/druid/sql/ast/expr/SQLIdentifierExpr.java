@@ -24,9 +24,4 @@ import lombok.RequiredArgsConstructor;
 public class SQLIdentifierExpr extends SQLExprImpl {
     
     private final String name;
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        buffer.append(name);
-    }
 }

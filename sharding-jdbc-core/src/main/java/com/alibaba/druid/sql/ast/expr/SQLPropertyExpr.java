@@ -26,11 +26,4 @@ public class SQLPropertyExpr extends SQLExprImpl {
     private final SQLIdentifierExpr owner;
     
     private final String name;
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        owner.output(buffer);
-        buffer.append(".");
-        buffer.append(name);
-    }
 }

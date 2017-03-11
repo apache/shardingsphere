@@ -15,22 +15,9 @@
  */
 package com.alibaba.druid.sql.ast.expr;
 
-import com.google.common.base.Strings;
-
 public class SQLNCharExpr extends SQLTextLiteralExpr {
     
     public SQLNCharExpr(final String text) {
         super(text);
-    }
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        if (Strings.isNullOrEmpty(getText())) {
-            buffer.append("NULL");
-            return;
-        }
-        buffer.append("N'");
-        buffer.append(getText().replaceAll("'", "''"));
-        buffer.append("'");
     }
 }

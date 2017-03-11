@@ -24,9 +24,4 @@ import lombok.RequiredArgsConstructor;
 public class SQLNumberExpr extends SQLExprImpl implements SQLLiteralExpr {
     
     private final Number number;
-    
-    @Override
-    public void output(final StringBuffer buf) {
-        buf.append(number.toString());
-    }
 }

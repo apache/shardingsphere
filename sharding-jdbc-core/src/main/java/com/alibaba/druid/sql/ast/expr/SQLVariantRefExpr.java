@@ -18,24 +18,15 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class SQLVariantRefExpr extends SQLExprImpl {
     
-    private String name;
-    
-    private boolean global;
+    private final String name;
     
     private int index  = -1;
-    
-    public SQLVariantRefExpr(final String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        buffer.append(this.name);
-    }
 }

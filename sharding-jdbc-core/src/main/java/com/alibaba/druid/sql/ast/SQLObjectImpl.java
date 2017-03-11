@@ -27,9 +27,4 @@ public abstract class SQLObjectImpl implements SQLObject {
     public Map<String, Object> getAttributes() {
         return attributes;
     }
-    
-    @Override
-    public void output(final StringBuffer buffer) {
-        buffer.append(super.toString());
-    }
 }
