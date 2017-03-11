@@ -243,12 +243,12 @@ public final class ParseContext {
     }
     
     private Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getSimpleName());
-        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getSimpleName(), table.get().getName()) : null;
+        Optional<Table> table = findTable(((SQLIdentifierExpr) expr.getOwner()).getName());
+        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
     private Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
-        return null != currentTable ? createColumn(expr.getSimpleName(), currentTable.getName()) : null;
+        return null != currentTable ? createColumn(expr.getName(), currentTable.getName()) : null;
     }
     
     private Column createColumn(final String columnName, final String tableName) {

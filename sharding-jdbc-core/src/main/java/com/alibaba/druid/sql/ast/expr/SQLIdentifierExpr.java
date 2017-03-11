@@ -16,20 +16,16 @@
 package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.ast.SQLName;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 @EqualsAndHashCode
-public class SQLIdentifierExpr extends SQLExprImpl implements SQLName {
+public class SQLIdentifierExpr extends SQLExprImpl {
     
     private final String name;
-    
-    @Override
-    public String getSimpleName() {
-        return name;
-    }
     
     @Override
     public void output(final StringBuffer buffer) {

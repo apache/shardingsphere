@@ -17,14 +17,13 @@ package com.alibaba.druid.sql.ast.expr;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLExprImpl;
-import com.alibaba.druid.sql.ast.SQLName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@Getter
 @EqualsAndHashCode
-public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
+public class SQLPropertyExpr extends SQLExprImpl {
     
-    @Getter
     private final SQLExpr owner;
     
     private final String name;
@@ -32,11 +31,6 @@ public class SQLPropertyExpr extends SQLExprImpl implements SQLName {
     public SQLPropertyExpr(final SQLExpr owner, final String name) {
         this.owner = owner;
         this.name = name;
-    }
-    
-    @Override
-    public String getSimpleName() {
-        return name;
     }
     
     @Override

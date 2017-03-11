@@ -134,11 +134,11 @@ public class SQLExprParser {
             return new OrderByContext(((SQLIntegerExpr) expr).getNumber().intValue(), orderByType);
         }
         if (expr instanceof SQLIdentifierExpr) {
-            return new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getSimpleName()), orderByType);
+            return new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType);
         }
         if (expr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()), SQLUtil.getExactlyValue(sqlPropertyExpr.getSimpleName()), orderByType);
+            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().toString()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType);
         }
         return null;
     }
@@ -308,7 +308,7 @@ public class SQLExprParser {
         SQLExpr result = parseExpr();
         if (result instanceof SQLPropertyExpr) {
             String tableName = sqlContext.getTables().get(0).getName();
-            String owner = ((SQLIdentifierExpr) ((SQLPropertyExpr) result).getOwner()).getSimpleName();
+            String owner = ((SQLIdentifierExpr) ((SQLPropertyExpr) result).getOwner()).getName();
             if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
                 sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
             }
