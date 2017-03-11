@@ -17,7 +17,6 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.context.SQLContext;
-import com.alibaba.druid.sql.lexer.DataType;
 import com.alibaba.druid.sql.lexer.DefaultKeyword;
 import com.alibaba.druid.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -53,11 +52,9 @@ public final class SQLStatementParser {
      * @return SQL解析对象
      */
     public SQLContext parseStatement() {
-        if (exprParser.getLexer().equalToken(Symbol.SEMI)) {
-            exprParser.getLexer().nextToken();
-        }
+        exprParser.getLexer().skipIfEqual(Symbol.SEMI);
         if (exprParser.getLexer().equalToken(DefaultKeyword.WITH)) {
-            parseWith();
+            skipWith();
         }
         if (exprParser.getLexer().equalToken(DefaultKeyword.SELECT)) {
             return SQLSelectParserFactory.newInstance(exprParser, dbType).parse();
@@ -74,31 +71,12 @@ public final class SQLStatementParser {
         throw new ParserUnsupportedException(exprParser.getLexer().getToken());
     }
     
-    private void parseWith() {
+    private void skipWith() {
         exprParser.getLexer().nextToken();
         do {
-            parseWithQuery();
-            if (exprParser.getLexer().equalToken(DataType.EOF)) {
-                return;
-            }
-        } while (exprParser.getLexer().equalToken(Symbol.COMMA));
-    }
-    
-    private void parseWithQuery() {
-        while (!exprParser.getLexer().equalToken(DefaultKeyword.AS)) {
-            exprParser.getLexer().nextToken();
-            if (exprParser.getLexer().equalToken(DataType.EOF)) {
-                return;
-            }
-        }
-        exprParser.getLexer().accept(DefaultKeyword.AS);
-        exprParser.getLexer().accept(Symbol.LEFT_PAREN);
-        while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN)) {
-            exprParser.getLexer().nextToken();
-            if (exprParser.getLexer().equalToken(DataType.EOF)) {
-                return;
-            }
-        }
-        exprParser.getLexer().accept(Symbol.RIGHT_PAREN);
+            exprParser.getLexer().skipUntil(DefaultKeyword.AS);
+            exprParser.getLexer().accept(DefaultKeyword.AS);
+            exprParser.getLexer().skipParentheses();
+        } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
     }
 }
