@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
-import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -76,18 +75,7 @@ public final class OrderByColumn extends AbstractSortableColumn implements Index
      * @author gaohongtao, zhangliang
      */
     public enum OrderByType {
-        ASC, 
-        DESC;
-        
-        /**
-         * 适配Druid的枚举类型.
-         * 
-         * @param sqlOrderingSpecification Druid的枚举类型
-         * @return 排序类型
-         */
-        public static OrderByType valueOf(final SQLOrderingSpecification sqlOrderingSpecification) {
-            return OrderByType.valueOf(sqlOrderingSpecification.name());
-        }
+        ASC, DESC
     }
     
     @Override
