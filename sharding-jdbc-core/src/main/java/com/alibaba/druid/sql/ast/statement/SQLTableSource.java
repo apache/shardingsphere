@@ -16,9 +16,9 @@
 
 package com.alibaba.druid.sql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLObject;
+import com.alibaba.druid.sql.ast.SQLExpr;
 
-public interface SQLTableSource extends SQLObject {
+public interface SQLTableSource extends SQLExpr {
     
     String getAlias();
     

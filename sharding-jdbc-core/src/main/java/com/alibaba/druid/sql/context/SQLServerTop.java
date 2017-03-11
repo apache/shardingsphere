@@ -16,19 +16,15 @@
 package com.alibaba.druid.sql.context;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerTop extends SQLObjectImpl {
+public class SQLServerTop extends SQLExprImpl {
     
     private SQLExpr expr;
     
     private boolean percent;
-    
-    public void setExpr(final SQLExpr expr) {
-        this.expr = expr;
-    }
 }

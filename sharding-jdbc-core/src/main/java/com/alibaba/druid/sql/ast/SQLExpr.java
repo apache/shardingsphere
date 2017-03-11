@@ -16,5 +16,9 @@
 
 package com.alibaba.druid.sql.ast;
 
-public interface SQLExpr extends SQLObject {
+import java.util.Map;
+
+public interface SQLExpr {
+    
+    Map<String, Object> getAttributes();
 }

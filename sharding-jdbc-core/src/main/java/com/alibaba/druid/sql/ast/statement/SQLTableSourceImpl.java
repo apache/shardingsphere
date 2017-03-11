@@ -16,13 +16,13 @@
 
 package com.alibaba.druid.sql.ast.statement;
 
-import com.alibaba.druid.sql.ast.SQLObjectImpl;
+import com.alibaba.druid.sql.ast.SQLExprImpl;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class SQLTableSourceImpl extends SQLObjectImpl implements SQLTableSource {
+public abstract class SQLTableSourceImpl extends SQLExprImpl implements SQLTableSource {
     
     private String alias;
 }

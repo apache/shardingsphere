@@ -17,11 +17,9 @@
 package com.alibaba.druid.sql.ast.statement;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode
 public class SQLExprTableSource extends SQLTableSourceImpl {
     
     private SQLExpr expr;

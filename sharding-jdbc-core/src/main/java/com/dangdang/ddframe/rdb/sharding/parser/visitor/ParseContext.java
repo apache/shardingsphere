@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
 import com.alibaba.druid.sql.SQLEvalConstants;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
 import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
@@ -210,9 +209,9 @@ public final class ParseContext {
         return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
-    private ValuePair evalExpression(final SQLObject sqlObject, final List<Object> parameters) {
-        if (sqlObject instanceof SQLVariantRefExpr) {
-            SQLVariantRefExpr x = (SQLVariantRefExpr) sqlObject;
+    private ValuePair evalExpression(final SQLExpr sqlExpr, final List<Object> parameters) {
+        if (sqlExpr instanceof SQLVariantRefExpr) {
+            SQLVariantRefExpr x = (SQLVariantRefExpr) sqlExpr;
             Map<String, Object> attributes = x.getAttributes();
             if ("?".equals(x.getName()) && -1 != x.getIndex() && x.getIndex() - 1 < parameters.size()) {
                 Comparable value = null == attributes.get(SQLEvalConstants.EVAL_VALUE) ? "" : (Comparable) attributes.get(SQLEvalConstants.EVAL_VALUE);
@@ -220,13 +219,13 @@ public final class ParseContext {
                 return new ValuePair(value, index);
             }
         }
-        if (sqlObject instanceof SQLTextLiteralExpr) {
-            return new ValuePair(((SQLTextLiteralExpr) sqlObject).getText(), -1);
+        if (sqlExpr instanceof SQLTextLiteralExpr) {
+            return new ValuePair(((SQLTextLiteralExpr) sqlExpr).getText(), -1);
         }
-        if (sqlObject instanceof SQLNumberExpr) {
-            return new ValuePair((Comparable) ((SQLNumberExpr) sqlObject).getNumber(), -1);
+        if (sqlExpr instanceof SQLNumberExpr) {
+            return new ValuePair((Comparable) ((SQLNumberExpr) sqlExpr).getNumber(), -1);
         }
-        if (sqlObject instanceof SQLNullExpr) {
+        if (sqlExpr instanceof SQLNullExpr) {
             return new ValuePair("", -1);
         }
         return null;
