@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
 
-public final class MySQLLexer extends Lexer {
+public final class MySQLLexer extends AbstractLexer {
     
     private static Dictionary dictionary = new Dictionary();
     
@@ -33,12 +33,8 @@ public final class MySQLLexer extends Lexer {
     }
     
     @Override
-    protected boolean isVariable() {
-        char currentChar = charAt(getPosition());
-        char nextChar = charAt(getPosition() + 1);
-        return ('$' == currentChar && '{' == nextChar)
-                || '@' == currentChar
-                || (':' == currentChar && '=' != nextChar && ':' != nextChar);
+    protected boolean isVariable(final char currentChar) {
+        return '@' == currentChar;
     }
     
     @Override

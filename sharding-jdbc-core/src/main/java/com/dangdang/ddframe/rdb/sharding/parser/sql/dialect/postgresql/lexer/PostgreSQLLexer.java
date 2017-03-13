@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
 
-public class PostgreSQLLexer extends Lexer {
+public final class PostgreSQLLexer extends AbstractLexer {
     
     private static Dictionary dictionary = new Dictionary();
     
@@ -30,5 +30,10 @@ public class PostgreSQLLexer extends Lexer {
     
     public PostgreSQLLexer(final String input) {
         super(input, dictionary);
+    }
+    
+    @Override
+    protected boolean isVariable(final char currentChar) {
+        return false;
     }
 }

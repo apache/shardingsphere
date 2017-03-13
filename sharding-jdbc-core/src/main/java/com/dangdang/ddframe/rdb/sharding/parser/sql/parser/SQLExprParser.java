@@ -36,7 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -61,7 +61,7 @@ import java.util.List;
 public class SQLExprParser {
     
     @Getter
-    private final Lexer lexer;
+    private final AbstractLexer lexer;
     
     @Getter
     private final ShardingRule shardingRule;
@@ -73,7 +73,7 @@ public class SQLExprParser {
     @Setter
     private int parametersIndex;
     
-    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
+    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final AbstractLexer lexer) {
         this.lexer = lexer;
         this.shardingRule = shardingRule;
         this.parameters = parameters;

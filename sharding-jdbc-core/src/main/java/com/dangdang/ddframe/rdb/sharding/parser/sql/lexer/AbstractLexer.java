@@ -30,7 +30,7 @@ import java.util.Set;
  * 
  * @author zhangliang 
  */
-public class Lexer {
+public abstract class AbstractLexer {
     
     @Getter
     private final String input;
@@ -47,7 +47,7 @@ public class Lexer {
     @Getter
     private String literals;
     
-    public Lexer(final String input, final Dictionary dictionary) {
+    public AbstractLexer(final String input, final Dictionary dictionary) {
         this.input = input;
         term = new Term(input, dictionary);
     }
@@ -57,7 +57,7 @@ public class Lexer {
      */
     public final void nextToken() {
         skipWhitespace();
-        if (isVariable()) {
+        if (isVariable(charAt(position))) {
             scanVariable();
             return;
         }
@@ -115,26 +115,10 @@ public class Lexer {
         }
     }
     
-    protected boolean isVariable() {
-        char currentChar = charAt(position);
-        char nextChar = charAt(position + 1);
-        return ('$' == currentChar && '{' == nextChar)
-                || '@' == currentChar
-                || '#' == currentChar
-                || (':' == currentChar && '=' != nextChar && nextChar != ':');
-    }
+    protected abstract boolean isVariable(final char currentChar);
     
-    protected void scanVariable() {
-        char nextChar = charAt(position + 1);
-        if ('{' == nextChar) {
-            term.scanContentUntil(position, '}', Literals.VARIANT, false);
-        } else if ('`' == nextChar) {
-            term.scanContentUntil(position, '`', Literals.VARIANT, false);
-        } else if ('"' == nextChar) {
-            term.scanContentUntil(position, '"', Literals.VARIANT, false);
-        } else {
-            term.scanVariable(position);
-        }
+    private void scanVariable() {
+        term.scanVariable(position);
         setTermResult();
     }
     

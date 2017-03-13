@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
 
-public class SQLServerLexer extends Lexer {
+public final class SQLServerLexer extends AbstractLexer {
     
     private static Dictionary dictionary = new Dictionary();
     
@@ -31,6 +31,11 @@ public class SQLServerLexer extends Lexer {
     
     public SQLServerLexer(final String input) {
         super(input, dictionary);
+    }
+    
+    @Override
+    protected boolean isVariable(final char currentChar) {
+        return '@' == currentChar;
     }
     
     @Override

@@ -70,11 +70,15 @@ public final class Term {
             position++;
             length++;
         }
-        while (isIdentifierChar(charAt(++position))) {
+        while (isVariableChar(charAt(++position))) {
             length++;
         }
         literals = input.substring(offset, offset + length);
         token = Literals.VARIANT;
+    }
+    
+    private boolean isVariableChar(final char ch) {
+        return isIdentifierChar(ch) || '.' == ch;
     }
     
     void scanIdentifier(final int currentPosition) {

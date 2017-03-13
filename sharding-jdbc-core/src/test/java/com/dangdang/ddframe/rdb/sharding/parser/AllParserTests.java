@@ -23,6 +23,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.OrParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResultTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.LexerTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.DeleteStatementParserTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.InsertStatementParserTest;
@@ -34,6 +37,9 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         LexerTest.class,
         MySQLLexerTest.class,
+        OracleLexerTest.class,
+        SQLServerLexerTest.class,
+        PostgreSQLLexerTest.class,
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class,

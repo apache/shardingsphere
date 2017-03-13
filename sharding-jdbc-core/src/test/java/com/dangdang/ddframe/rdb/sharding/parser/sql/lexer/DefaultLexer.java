@@ -15,30 +15,22 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
-
-public final class OracleLexer extends AbstractLexer {
+public final class DefaultLexer extends AbstractLexer {
     
     private static Dictionary dictionary = new Dictionary();
     
     static {
-        dictionary.fill(OracleKeyword.values());
+        dictionary.fill();
     }
     
-    public OracleLexer(final String input) {
+    public DefaultLexer(final String input) {
         super(input, dictionary);
     }
     
     @Override
     protected boolean isVariable(final char currentChar) {
         return false;
-    }
-    
-    @Override
-    protected boolean isHint() {
-        return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '+' == charAt(getPosition() + 2);
     }
 }

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
 
 public class ParserException extends RuntimeException {
@@ -28,11 +28,11 @@ public class ParserException extends RuntimeException {
     
     private static final String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
     
-    public ParserException(final Lexer lexer, final Token expectedToken) {
+    public ParserException(final AbstractLexer lexer, final Token expectedToken) {
         super(String.format(UNMATCH_MESSAGE, expectedToken, lexer.getToken(), lexer.getLiterals()));
     }
     
-    public ParserException(final Lexer lexer) {
+    public ParserException(final AbstractLexer lexer) {
         super(String.format(TOKEN_ERROR_MESSAGE, lexer.getToken(), lexer.getLiterals()));
     }
 }
