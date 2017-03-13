@@ -21,28 +21,28 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 数据类型标记.
+ * 字面量标记.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public enum DataType implements Token {
+public enum Literals implements Token {
     
-    IDENTIFIER,
-    LITERAL_INT,
-    LITERAL_FLOAT,
-    LITERAL_HEX,
-    LITERAL_CHARS,
-    LITERAL_NCHARS,
-    LITERAL_ALIAS,
+    INT,
+    FLOAT,
+    HEX,
+    CHARS,
+    NCHARS,
     BINARY_FLOAT,
     BINARY_DOUBLE,
+    ALIAS,
+    IDENTIFIER,
     VARIANT,
     HINT,
     COMMENT,
     LINE_COMMENT,
     MULTI_LINE_COMMENT,
     ERROR,
-    EOF,
+    EOF
 }

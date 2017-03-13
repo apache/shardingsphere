@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
@@ -63,22 +63,22 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Symbol.EQ);
             SQLExpr sqlExpr;
-            if (getExprParser().getLexer().equalToken(DataType.LITERAL_INT)) {
+            if (getExprParser().getLexer().equalToken(Literals.INT)) {
                 sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
-            } else if (getExprParser().getLexer().equalToken(DataType.LITERAL_FLOAT)) {
+            } else if (getExprParser().getLexer().equalToken(Literals.FLOAT)) {
                 sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
-            } else if (getExprParser().getLexer().equalToken(DataType.LITERAL_CHARS)) {
+            } else if (getExprParser().getLexer().equalToken(Literals.CHARS)) {
                 sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
-            } else if (getExprParser().getLexer().equalToken(DataType.VARIANT)) {
+            } else if (getExprParser().getLexer().equalToken(Literals.VARIANT)) {
                 sqlExpr = new SQLPlaceholderExpr(getExprParser().getParametersIndex(), getExprParser().getParameters().get(getExprParser().getParametersIndex()));
                 getExprParser().setParametersIndex(getExprParser().getParametersIndex() + 1);
             } else {
                 throw new UnsupportedOperationException("");
             }
             getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equalToken(Symbol.COMMA, DefaultKeyword.ON, DataType.EOF)) {
+            if (getExprParser().getLexer().equalToken(Symbol.COMMA, DefaultKeyword.ON, Literals.EOF)) {
                 parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr);
             } else {
                 getExprParser().getLexer().skipUntil(Symbol.COMMA, DefaultKeyword.ON);

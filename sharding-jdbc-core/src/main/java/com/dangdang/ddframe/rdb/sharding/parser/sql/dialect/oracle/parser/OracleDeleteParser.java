@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
@@ -31,9 +31,9 @@ public class OracleDeleteParser extends AbstractDeleteParser {
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().getLexer().skipIfEqual(DataType.HINT);
+        getExprParser().getLexer().skipIfEqual(Literals.HINT);
         getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM);
-        getExprParser().getLexer().skipIfEqual(DataType.COMMENT);
+        getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
         getExprParser().getLexer().skipIfEqual(OracleKeyword.ONLY);
     }
 }

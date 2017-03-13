@@ -74,7 +74,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = DataType.VARIANT;
+        token = Literals.VARIANT;
     }
     
     void scanIdentifier(final int currentPosition) {
@@ -94,10 +94,10 @@ public final class Term {
             if (DefaultKeyword.BY.toString().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
                 token = dictionary.getToken(literals);
             } else {
-                token = DataType.IDENTIFIER;
+                token = Literals.IDENTIFIER;
             }
         } else {
-            token = dictionary.getToken(literals, DataType.IDENTIFIER);
+            token = dictionary.getToken(literals, Literals.IDENTIFIER);
         }
     }
     
@@ -117,7 +117,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = DataType.LITERAL_HEX;
+        token = Literals.HEX;
     }
     
     private boolean isHex(final char ch) {
@@ -142,7 +142,7 @@ public final class Term {
             if ('.' == charAt(position + 1)) {
                 length++;
                 literals = input.substring(offset, offset + length);
-                token = DataType.LITERAL_INT;
+                token = Literals.INT;
                 return;
             }
             isFloat = true;
@@ -174,17 +174,17 @@ public final class Term {
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = DataType.BINARY_FLOAT;
+            token = Literals.BINARY_FLOAT;
             return;
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = DataType.BINARY_DOUBLE;
+            token = Literals.BINARY_DOUBLE;
             return;
         }
         literals = input.substring(offset, offset + length);
-        token = isFloat ? DataType.LITERAL_FLOAT : DataType.LITERAL_INT;
+        token = isFloat ? Literals.FLOAT : Literals.INT;
     }
     
     private boolean isDigital(final char ch) {
@@ -208,7 +208,7 @@ public final class Term {
         }
         length++;
         literals = input.substring(offset + 1, offset + length - 1);
-        token = DataType.LITERAL_CHARS;
+        token = Literals.CHARS;
     }
     
     private boolean hasEscapeChar(final int position) {
@@ -228,7 +228,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset + 4, offset + length - 2);
-        token = DataType.HINT;
+        token = Literals.HINT;
     }
     
     void scanSingleLineComment(final int currentPosition, final int commentFlagLength) {
@@ -240,7 +240,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = DataType.LINE_COMMENT;
+        token = Literals.LINE_COMMENT;
     }
     
     void scanMultiLineComment(final int currentPosition) {
@@ -256,7 +256,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        token = DataType.MULTI_LINE_COMMENT;
+        token = Literals.MULTI_LINE_COMMENT;
     }
     
     void scanSymbol(final int currentPosition, final int charLength) {

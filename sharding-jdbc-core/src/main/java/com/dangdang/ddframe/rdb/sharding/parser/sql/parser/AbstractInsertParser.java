@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
@@ -89,7 +89,7 @@ public abstract class AbstractInsertParser {
     }
     
     private void parseInto() {
-        exprParser.getLexer().skipIfEqual(DataType.HINT);
+        exprParser.getLexer().skipIfEqual(Literals.HINT);
         if (getUnsupportedKeywords().contains(exprParser.getLexer().getToken())) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken());
         }
@@ -120,7 +120,7 @@ public abstract class AbstractInsertParser {
                 exprParser.getLexer().nextToken();
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
-            } while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equalToken(DataType.EOF));
+            } while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equalToken(Literals.EOF));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getPosition() - exprParser.getLexer().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);

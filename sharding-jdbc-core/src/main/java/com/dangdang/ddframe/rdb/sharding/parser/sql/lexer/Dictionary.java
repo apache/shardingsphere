@@ -38,7 +38,7 @@ public final class Dictionary {
         for (Symbol each : Symbol.values()) {
             tokens.put(each.getLiterals(), each);
         }
-        for (DataType each : DataType.values()) {
+        for (Literals each : Literals.values()) {
             tokens.put(each.name(), each);
         }
         for (DefaultKeyword each : DefaultKeyword.values()) {

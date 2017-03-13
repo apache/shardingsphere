@@ -102,9 +102,9 @@ public class Lexer {
             return;
         }
         if (isEOF()) {
-            token = DataType.EOF;
+            token = Literals.EOF;
         } else {
-            token = DataType.ERROR;
+            token = Literals.ERROR;
         }
         literals = "";
     }
@@ -127,11 +127,11 @@ public class Lexer {
     protected void scanVariable() {
         char nextChar = charAt(position + 1);
         if ('{' == nextChar) {
-            term.scanContentUntil(position, '}', DataType.VARIANT, false);
+            term.scanContentUntil(position, '}', Literals.VARIANT, false);
         } else if ('`' == nextChar) {
-            term.scanContentUntil(position, '`', DataType.VARIANT, false);
+            term.scanContentUntil(position, '`', Literals.VARIANT, false);
         } else if ('"' == nextChar) {
-            term.scanContentUntil(position, '"', DataType.VARIANT, false);
+            term.scanContentUntil(position, '"', Literals.VARIANT, false);
         } else {
             term.scanVariable(position);
         }
@@ -144,7 +144,7 @@ public class Lexer {
     
     protected void scanIdentifier() {
         if ('`' == charAt(position)) {
-            term.scanContentUntil(position, '`', DataType.IDENTIFIER, false);
+            term.scanContentUntil(position, '`', Literals.IDENTIFIER, false);
         } else {
             term.scanIdentifier(position);
         }
@@ -248,7 +248,7 @@ public class Lexer {
     }
     
     private void scanAlias() {
-        term.scanContentUntil(position, '\"', DataType.LITERAL_ALIAS, true);
+        term.scanContentUntil(position, '\"', Literals.ALIAS, true);
         setTermResult();
     }
     
@@ -317,7 +317,7 @@ public class Lexer {
      */
     public final void skipUntil(final Token... tokens) {
         Set<Token> tokenSet = Sets.newHashSet(tokens);
-        tokenSet.add(DataType.EOF);
+        tokenSet.add(Literals.EOF);
         while (!tokenSet.contains(token)) {
             nextToken();
         }
@@ -336,7 +336,7 @@ public class Lexer {
             result.append(Symbol.LEFT_PAREN.getLiterals());
             nextToken();
             while (true) {
-                if (DataType.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
+                if (Literals.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
                     break;
                 }
                 if (Symbol.LEFT_PAREN == token) {

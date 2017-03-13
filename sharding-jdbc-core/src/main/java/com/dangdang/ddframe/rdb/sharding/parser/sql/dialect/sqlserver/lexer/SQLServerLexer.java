@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
@@ -49,7 +49,7 @@ public class SQLServerLexer extends Lexer {
     private void scanNChar() {
         increaseCurrentPosition();
         scanString();
-        setToken(DataType.LITERAL_NCHARS);
+        setToken(Literals.NCHARS);
         scanString();
     }
     

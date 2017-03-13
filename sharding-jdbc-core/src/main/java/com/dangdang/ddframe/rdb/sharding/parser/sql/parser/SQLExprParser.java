@@ -34,7 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
@@ -90,7 +90,7 @@ public class SQLExprParser {
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (lexer.equalToken(DataType.IDENTIFIER, DataType.LITERAL_ALIAS, DataType.LITERAL_CHARS, 
+        if (lexer.equalToken(Literals.IDENTIFIER, Literals.ALIAS, Literals.CHARS, 
                 DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
             String result = SQLUtil.getExactlyValue(lexer.getLiterals());
             lexer.nextToken();
@@ -209,7 +209,7 @@ public class SQLExprParser {
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME 解析xxx.*
-        while (!getLexer().equalToken(DefaultKeyword.AS) && !getLexer().equalToken(Symbol.COMMA) && !getLexer().equalToken(DefaultKeyword.FROM) && !getLexer().equalToken(DataType.EOF)) {
+        while (!getLexer().equalToken(DefaultKeyword.AS) && !getLexer().equalToken(Symbol.COMMA) && !getLexer().equalToken(DefaultKeyword.FROM) && !getLexer().equalToken(Literals.EOF)) {
             String value = getLexer().getLiterals();
             int position = getLexer().getPosition() - value.length();
             expression.append(value);
@@ -317,7 +317,7 @@ public class SQLExprParser {
     
     public SQLExpr parseExpr() {
         String literals = lexer.getLiterals();
-        if (lexer.equalToken(DataType.IDENTIFIER)) {
+        if (lexer.equalToken(Literals.IDENTIFIER)) {
             SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
             getLexer().nextToken();
             if (lexer.skipIfEqual(Symbol.DOT)) {
@@ -364,26 +364,26 @@ public class SQLExprParser {
     }
     
     private SQLExpr getSQLExpr(final String literals) {
-        if (lexer.equalToken(DataType.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
+        if (lexer.equalToken(Literals.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
             parametersIndex++;
             return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
-        if (lexer.equalToken(DataType.LITERAL_CHARS)) {
+        if (lexer.equalToken(Literals.CHARS)) {
             return new SQLCharExpr(literals);
         }
-        if (lexer.equalToken(DataType.LITERAL_NCHARS)) {
+        if (lexer.equalToken(Literals.NCHARS)) {
             return new SQLNCharExpr(literals);
         }
-        if (lexer.equalToken(DataType.LITERAL_INT)) {
+        if (lexer.equalToken(Literals.INT)) {
             return new SQLNumberExpr(Integer.parseInt(literals));
         }
-        if (lexer.equalToken(DataType.LITERAL_FLOAT)) {
+        if (lexer.equalToken(Literals.FLOAT)) {
             return new SQLNumberExpr(Double.parseDouble(literals));
         }
-        if (lexer.equalToken(DataType.LITERAL_HEX)) {
+        if (lexer.equalToken(Literals.HEX)) {
             return new SQLNumberExpr(Integer.parseInt(literals, 16));
         }
-        if (lexer.equalToken(DataType.IDENTIFIER)) {
+        if (lexer.equalToken(Literals.IDENTIFIER)) {
             return new SQLIdentifierExpr(literals);
         }
         return new SQLIgnoreExpr();

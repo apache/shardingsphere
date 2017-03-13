@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
@@ -43,13 +43,13 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.FROM));
         assertThat(lexer.getLiterals(), is("FROM"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.IDENTIFIER));
+        assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
         assertThat(lexer.getLiterals(), is(" # xxx "));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.EOF));
+        assertThat(lexer.getToken(), is((Token) Literals.EOF));
     }
     
     @Test
@@ -65,28 +65,28 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.FROM));
         assertThat(lexer.getLiterals(), is("FROM"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.IDENTIFIER));
+        assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
         assertThat(lexer.getLiterals(), is(" # comment 1 "));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
         assertThat(lexer.getLiterals(), is(" #comment 2 \r"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
         assertThat(lexer.getLiterals(), is("WHERE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.IDENTIFIER));
+        assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Symbol.EQ));
         assertThat(lexer.getLiterals(), is("="));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.LITERAL_INT));
+        assertThat(lexer.getToken(), is((Token) Literals.INT));
         assertThat(lexer.getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.EOF));
+        assertThat(lexer.getToken(), is((Token) Literals.EOF));
     }
     
     @Test
@@ -102,27 +102,27 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.FROM));
         assertThat(lexer.getLiterals(), is("FROM"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.IDENTIFIER));
+        assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.HINT));
+        assertThat(lexer.getToken(), is((Token) Literals.HINT));
         assertThat(lexer.getLiterals(), is(" hint 1 \n xxx "));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
         assertThat(lexer.getLiterals(), is("WHERE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.IDENTIFIER));
+        assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Symbol.EQ));
         assertThat(lexer.getLiterals(), is("="));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.LITERAL_INT));
+        assertThat(lexer.getToken(), is((Token) Literals.INT));
         assertThat(lexer.getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.HINT));
+        assertThat(lexer.getToken(), is((Token) Literals.HINT));
         assertThat(lexer.getLiterals(), is("hint 2"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DataType.EOF));
+        assertThat(lexer.getToken(), is((Token) Literals.EOF));
     }
 }
