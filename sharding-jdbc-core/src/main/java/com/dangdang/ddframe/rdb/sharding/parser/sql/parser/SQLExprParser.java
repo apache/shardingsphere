@@ -33,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLVariantRefExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
@@ -151,7 +151,7 @@ public class SQLExprParser {
             hasParentheses = true;
         }
         TableContext tableContext;
-        int beginPosition = getLexer().getCurrentPosition() - getLexer().getLiterals().length();
+        int beginPosition = getLexer().getPosition() - getLexer().getLiterals().length();
         String literals = getLexer().getLiterals();
         getLexer().nextToken();
         if (getLexer().skipIfEqual(Symbol.DOT)) {
@@ -211,7 +211,7 @@ public class SQLExprParser {
         // FIXME 解析xxx.*
         while (!getLexer().equalToken(DefaultKeyword.AS) && !getLexer().equalToken(Symbol.COMMA) && !getLexer().equalToken(DefaultKeyword.FROM) && !getLexer().equalToken(DataType.EOF)) {
             String value = getLexer().getLiterals();
-            int position = getLexer().getCurrentPosition() - value.length();
+            int position = getLexer().getPosition() - value.length();
             expression.append(value);
             getLexer().nextToken();
             if (getLexer().equalToken(Symbol.DOT)) {
@@ -269,7 +269,7 @@ public class SQLExprParser {
         lexer.nextToken();
         SQLExpr right = parseExpr(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLVariantRefExpr)) {
+        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
             parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
         }
     }
@@ -303,7 +303,7 @@ public class SQLExprParser {
     }
     
     public SQLExpr parseExpr(final SQLContext sqlContext) {
-        int beginPosition = lexer.getCurrentPosition();
+        int beginPosition = lexer.getPosition();
         SQLExpr result = parseExpr();
         if (result instanceof SQLPropertyExpr) {
             String tableName = sqlContext.getTables().get(0).getName();
@@ -366,7 +366,7 @@ public class SQLExprParser {
     private SQLExpr getSQLExpr(final String literals) {
         if (lexer.equalToken(DataType.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
             parametersIndex++;
-            return new SQLVariantRefExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
+            return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
         if (lexer.equalToken(DataType.LITERAL_CHARS)) {
             return new SQLCharExpr(literals);

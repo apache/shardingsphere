@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLVariantRefExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
@@ -189,9 +189,9 @@ public final class ParseContext {
     }
     
     private ValuePair evalExpression(final SQLExpr sqlExpr) {
-        if (sqlExpr instanceof SQLVariantRefExpr) {
-            SQLVariantRefExpr variantRefExpr = (SQLVariantRefExpr) sqlExpr;
-            return new ValuePair((Comparable) variantRefExpr.getValue(), variantRefExpr.getIndex());
+        if (sqlExpr instanceof SQLPlaceholderExpr) {
+            SQLPlaceholderExpr placeholderExpr = (SQLPlaceholderExpr) sqlExpr;
+            return new ValuePair((Comparable) placeholderExpr.getValue(), placeholderExpr.getIndex());
         }
         if (sqlExpr instanceof AbstractSQLTextLiteralExpr) {
             return new ValuePair(((AbstractSQLTextLiteralExpr) sqlExpr).getText(), -1);

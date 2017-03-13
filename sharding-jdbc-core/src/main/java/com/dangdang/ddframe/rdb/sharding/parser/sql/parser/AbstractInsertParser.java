@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLVariantRefExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DataType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
@@ -121,7 +121,7 @@ public abstract class AbstractInsertParser {
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
             } while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equalToken(DataType.EOF));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentPosition() - exprParser.getLexer().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getPosition() - exprParser.getLexer().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
                 result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
@@ -159,7 +159,7 @@ public abstract class AbstractInsertParser {
             do {
                 sqlExprs.add(exprParser.parseExpr());
             } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentPosition() - exprParser.getLexer().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getPosition() - exprParser.getLexer().getLiterals().length());
             int count = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {
@@ -170,7 +170,7 @@ public abstract class AbstractInsertParser {
                     } else {
                         itemsToken.getItems().add("?");
                         parameters.add(autoIncrementedValue);
-                        sqlExprs.add(new SQLVariantRefExpr(parameters.size() - 1, autoIncrementedValue));
+                        sqlExprs.add(new SQLPlaceholderExpr(parameters.size() - 1, autoIncrementedValue));
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);

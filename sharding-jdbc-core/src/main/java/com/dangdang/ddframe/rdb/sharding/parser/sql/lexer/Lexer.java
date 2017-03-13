@@ -38,7 +38,7 @@ public class Lexer {
     private final Term term;
     
     @Getter
-    private int currentPosition;
+    private int position;
     
     @Getter
     @Setter(AccessLevel.PROTECTED)
@@ -110,14 +110,14 @@ public class Lexer {
     }
     
     private void skipWhitespace() {
-        while (CharTypes.isWhitespace(charAt(currentPosition))) {
-            currentPosition++;
+        while (CharTypes.isWhitespace(charAt(position))) {
+            position++;
         }
     }
     
     protected boolean isVariable() {
-        char currentChar = charAt(currentPosition);
-        char nextChar = charAt(currentPosition + 1);
+        char currentChar = charAt(position);
+        char nextChar = charAt(position + 1);
         return ('$' == currentChar && '{' == nextChar)
                 || '@' == currentChar
                 || '#' == currentChar
@@ -125,28 +125,28 @@ public class Lexer {
     }
     
     protected void scanVariable() {
-        char nextChar = charAt(currentPosition + 1);
+        char nextChar = charAt(position + 1);
         if ('{' == nextChar) {
-            term.scanContentUntil(currentPosition, '}', DataType.VARIANT, false);
+            term.scanContentUntil(position, '}', DataType.VARIANT, false);
         } else if ('`' == nextChar) {
-            term.scanContentUntil(currentPosition, '`', DataType.VARIANT, false);
+            term.scanContentUntil(position, '`', DataType.VARIANT, false);
         } else if ('"' == nextChar) {
-            term.scanContentUntil(currentPosition, '"', DataType.VARIANT, false);
+            term.scanContentUntil(position, '"', DataType.VARIANT, false);
         } else {
-            term.scanVariable(currentPosition);
+            term.scanVariable(position);
         }
         setTermResult();
     }
     
     private boolean isIdentifier() {
-        return isFirstIdentifierChar(charAt(currentPosition));
+        return isFirstIdentifierChar(charAt(position));
     }
     
     protected void scanIdentifier() {
-        if ('`' == charAt(currentPosition)) {
-            term.scanContentUntil(currentPosition, '`', DataType.IDENTIFIER, false);
+        if ('`' == charAt(position)) {
+            term.scanContentUntil(position, '`', DataType.IDENTIFIER, false);
         } else {
-            term.scanIdentifier(currentPosition);
+            term.scanIdentifier(position);
         }
         setTermResult();
     }
@@ -156,16 +156,16 @@ public class Lexer {
     }
     
     private boolean isHexDecimal() {
-        return '0' == charAt(currentPosition) && 'x' == charAt(currentPosition + 1);
+        return '0' == charAt(position) && 'x' == charAt(position + 1);
     }
     
     private void scanHexDecimal() {
-        term.scanHexDecimal(currentPosition);
+        term.scanHexDecimal(position);
         setTermResult();
     }
     
     private boolean isNumber() {
-        return isDigital(charAt(currentPosition)) || ('.' == charAt(currentPosition) && isDigital(charAt(currentPosition + 1)) && !isFirstIdentifierChar(charAt(currentPosition - 1)));
+        return isDigital(charAt(position)) || ('.' == charAt(position) && isDigital(charAt(position + 1)) && !isFirstIdentifierChar(charAt(position - 1)));
     }
     
     private boolean isDigital(final char ch) {
@@ -173,7 +173,7 @@ public class Lexer {
     }
     
     private void scanNumber() {
-        term.scanNumber(currentPosition);
+        term.scanNumber(position);
         setTermResult();
     }
     
@@ -182,23 +182,23 @@ public class Lexer {
     }
     
     private void scanHint() {
-        term.scanHint(currentPosition);
+        term.scanHint(position);
         setTermResult();
     }
     
     protected boolean isComment() {
-        char currentChar = charAt(currentPosition);
-        char nextChar = charAt(currentPosition + 1);
+        char currentChar = charAt(position);
+        char nextChar = charAt(position + 1);
         return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
     }
     
     private void scanComment() {
-        if (('/' == charAt(currentPosition) && '/' == charAt(currentPosition + 1)) || ('-' == charAt(currentPosition) && '-' == charAt(currentPosition + 1))) {
-            term.scanSingleLineComment(currentPosition, 2);
-        } else if ('#' == charAt(currentPosition)) {
-            term.scanSingleLineComment(currentPosition, 1);
-        } else if (charAt(currentPosition) == '/' && charAt(currentPosition + 1) == '*') {
-            term.scanMultiLineComment(currentPosition);
+        if (('/' == charAt(position) && '/' == charAt(position + 1)) || ('-' == charAt(position) && '-' == charAt(position + 1))) {
+            term.scanSingleLineComment(position, 2);
+        } else if ('#' == charAt(position)) {
+            term.scanSingleLineComment(position, 1);
+        } else if (charAt(position) == '/' && charAt(position + 1) == '*') {
+            term.scanMultiLineComment(position);
         }
         setTermResult();
     }
@@ -222,7 +222,7 @@ public class Lexer {
     
     private boolean isSymbol(final String symbol) {
         for (int i = 0; i < symbol.length(); i++) {
-            if (symbol.charAt(i) != charAt(currentPosition + i)) {
+            if (symbol.charAt(i) != charAt(position + i)) {
                 return false;
             }
         }
@@ -230,36 +230,36 @@ public class Lexer {
     }
     
     private void scanSymbol(final int symbolLength) {
-        term.scanSymbol(currentPosition, symbolLength);
+        term.scanSymbol(position, symbolLength);
         setTermResult();
     }
     
     private boolean isString() {
-        return '\'' == charAt(currentPosition);
+        return '\'' == charAt(position);
     }
     
     protected void scanString() {
-        term.scanString(currentPosition);
+        term.scanString(position);
         setTermResult();
     }
     
     private boolean isAlias() {
-        return '\"' == charAt(currentPosition);
+        return '\"' == charAt(position);
     }
     
     private void scanAlias() {
-        term.scanContentUntil(currentPosition, '\"', DataType.LITERAL_ALIAS, true);
+        term.scanContentUntil(position, '\"', DataType.LITERAL_ALIAS, true);
         setTermResult();
     }
     
     private void setTermResult() {
         literals = term.getLiterals();
         token = term.getToken();
-        currentPosition = term.getCurrentPosition();
+        position = term.getCurrentPosition();
     }
     
     private boolean isEOF() {
-        return currentPosition >= input.length();
+        return position >= input.length();
     }
     
     protected final char charAt(final int index) {
@@ -267,7 +267,7 @@ public class Lexer {
     }
     
     protected final int increaseCurrentPosition() {
-        return ++currentPosition;
+        return ++position;
     }
     
     public final void accept(final Token token) {
@@ -332,7 +332,7 @@ public class Lexer {
         StringBuilder result = new StringBuilder("");
         int count = 0;
         if (Symbol.LEFT_PAREN == token) {
-            int beginPosition = currentPosition;
+            int beginPosition = position;
             result.append(Symbol.LEFT_PAREN.getLiterals());
             nextToken();
             while (true) {
@@ -346,7 +346,7 @@ public class Lexer {
                 }
                 nextToken();
             }
-            result.append(input.substring(beginPosition, currentPosition));
+            result.append(input.substring(beginPosition, position));
             nextToken();
         }
         return result.toString();

@@ -43,7 +43,7 @@ public class SQLServerLexer extends Lexer {
     }
     
     private boolean isNChar() {
-        return 'N' == charAt(getCurrentPosition()) && '\'' == charAt(getCurrentPosition() + 1);
+        return 'N' == charAt(getPosition()) && '\'' == charAt(getPosition() + 1);
     }
     
     private void scanNChar() {
@@ -55,6 +55,6 @@ public class SQLServerLexer extends Lexer {
     
     @Override
     protected boolean isHint() {
-        return '/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2);
+        return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '!' == charAt(getPosition() + 2);
     }
 }

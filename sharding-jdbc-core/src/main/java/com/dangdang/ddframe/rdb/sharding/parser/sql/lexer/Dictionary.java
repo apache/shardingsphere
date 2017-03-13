@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-public class Dictionary {
+public final class Dictionary {
     
     private final Map<String, Token> tokens = new HashMap<>(1024);
     

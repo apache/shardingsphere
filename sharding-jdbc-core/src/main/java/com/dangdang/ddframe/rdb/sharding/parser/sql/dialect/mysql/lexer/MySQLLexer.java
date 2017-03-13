@@ -34,8 +34,8 @@ public final class MySQLLexer extends Lexer {
     
     @Override
     protected boolean isVariable() {
-        char currentChar = charAt(getCurrentPosition());
-        char nextChar = charAt(getCurrentPosition() + 1);
+        char currentChar = charAt(getPosition());
+        char nextChar = charAt(getPosition() + 1);
         return ('$' == currentChar && '{' == nextChar)
                 || '@' == currentChar
                 || (':' == currentChar && '=' != nextChar && ':' != nextChar);
@@ -43,11 +43,11 @@ public final class MySQLLexer extends Lexer {
     
     @Override
     protected boolean isHint() {
-        return '/' == charAt(getCurrentPosition()) && '*' == charAt(getCurrentPosition() + 1) && '!' == charAt(getCurrentPosition() + 2);
+        return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '!' == charAt(getPosition() + 2);
     }
     
     @Override
     protected boolean isComment() {
-        return '#' == charAt(getCurrentPosition()) || super.isComment();
+        return '#' == charAt(getPosition()) || super.isComment();
     }
 }

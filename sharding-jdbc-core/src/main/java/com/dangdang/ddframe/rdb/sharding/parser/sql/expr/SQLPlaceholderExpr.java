@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SQLVariantRefExpr implements SQLExpr {
+public class SQLPlaceholderExpr implements SQLExpr {
     
     private final int index;
     
