@@ -195,7 +195,7 @@ public final class Term {
         return ch >= '0' && ch <= '9';
     }
     
-    void scanString(final int currentPosition) {
+    void scanChars(final int currentPosition) {
         offset = currentPosition;
         int position = currentPosition + 1;
         length = 1;

@@ -30,7 +30,7 @@ public final class DefaultLexer extends AbstractLexer {
     }
     
     @Override
-    protected boolean isVariable(final char currentChar) {
+    protected boolean isVariableBegin() {
         return false;
     }
 }

@@ -33,12 +33,12 @@ public final class OracleLexer extends AbstractLexer {
     }
     
     @Override
-    protected boolean isVariable(final char currentChar) {
+    protected boolean isVariableBegin() {
         return false;
     }
     
     @Override
-    protected boolean isHint() {
+    protected boolean isHintBegin() {
         return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '+' == charAt(getPosition() + 2);
     }
 }

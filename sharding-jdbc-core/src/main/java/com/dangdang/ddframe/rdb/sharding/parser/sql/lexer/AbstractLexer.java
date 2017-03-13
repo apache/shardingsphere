@@ -57,27 +57,27 @@ public abstract class AbstractLexer {
      */
     public final void nextToken() {
         skipWhitespace();
-        if (isVariable(charAt(position))) {
+        if (isVariableBegin()) {
             scanVariable();
             return;
         }
-        if (isIdentifier()) {
+        if (isIdentifierBegin()) {
             scanIdentifier();
             return;
         }
-        if (isHexDecimal()) {
+        if (isHexDecimalBegin()) {
             scanHexDecimal();
             return;
         }
-        if (isNumber()) {
+        if (isNumberBegin()) {
             scanNumber();
             return;
         }
-        if (isHint()) {
+        if (isHintBegin()) {
             scanHint();
             return;
         }
-        if (isComment()) {
+        if (isCommentBegin()) {
             scanComment();
             return;
         }
@@ -93,11 +93,11 @@ public abstract class AbstractLexer {
             scanSymbol(1);
             return;
         }
-        if (isString()) {
-            scanString();
+        if (isCharsBegin()) {
+            scanChars();
             return;
         }
-        if (isAlias()) {
+        if (isAliasBegin()) {
             scanAlias();
             return;
         }
@@ -115,15 +115,19 @@ public abstract class AbstractLexer {
         }
     }
     
-    protected abstract boolean isVariable(final char currentChar);
+    protected abstract boolean isVariableBegin();
     
     private void scanVariable() {
         term.scanVariable(position);
         setTermResult();
     }
     
-    private boolean isIdentifier() {
-        return isFirstIdentifierChar(charAt(position));
+    private boolean isIdentifierBegin() {
+        return isIdentifierBegin(charAt(position));
+    }
+    
+    private boolean isIdentifierBegin(final char ch) {
+        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || '`' == ch || '_' == ch || '$' == ch;
     }
     
     protected void scanIdentifier() {
@@ -135,11 +139,7 @@ public abstract class AbstractLexer {
         setTermResult();
     }
     
-    private boolean isFirstIdentifierChar(final char ch) {
-        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || '`' == ch || '_' == ch || '$' == ch;
-    }
-    
-    private boolean isHexDecimal() {
+    private boolean isHexDecimalBegin() {
         return '0' == charAt(position) && 'x' == charAt(position + 1);
     }
     
@@ -148,8 +148,8 @@ public abstract class AbstractLexer {
         setTermResult();
     }
     
-    private boolean isNumber() {
-        return isDigital(charAt(position)) || ('.' == charAt(position) && isDigital(charAt(position + 1)) && !isFirstIdentifierChar(charAt(position - 1)));
+    private boolean isNumberBegin() {
+        return isDigital(charAt(position)) || ('.' == charAt(position) && isDigital(charAt(position + 1)) && !isIdentifierBegin(charAt(position - 1)));
     }
     
     private boolean isDigital(final char ch) {
@@ -161,7 +161,7 @@ public abstract class AbstractLexer {
         setTermResult();
     }
     
-    protected boolean isHint() {
+    protected boolean isHintBegin() {
         return false;
     }
     
@@ -170,7 +170,7 @@ public abstract class AbstractLexer {
         setTermResult();
     }
     
-    protected boolean isComment() {
+    protected boolean isCommentBegin() {
         char currentChar = charAt(position);
         char nextChar = charAt(position + 1);
         return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
@@ -218,16 +218,16 @@ public abstract class AbstractLexer {
         setTermResult();
     }
     
-    private boolean isString() {
+    private boolean isCharsBegin() {
         return '\'' == charAt(position);
     }
     
-    protected void scanString() {
-        term.scanString(position);
+    protected void scanChars() {
+        term.scanChars(position);
         setTermResult();
     }
     
-    private boolean isAlias() {
+    private boolean isAliasBegin() {
         return '\"' == charAt(position);
     }
     

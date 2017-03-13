@@ -34,8 +34,8 @@ public final class SQLServerLexer extends AbstractLexer {
     }
     
     @Override
-    protected boolean isVariable(final char currentChar) {
-        return '@' == currentChar;
+    protected boolean isVariableBegin() {
+        return '@' == charAt(getPosition());
     }
     
     @Override
@@ -53,13 +53,13 @@ public final class SQLServerLexer extends AbstractLexer {
     
     private void scanNChar() {
         increaseCurrentPosition();
-        scanString();
+        scanChars();
         setToken(Literals.NCHARS);
-        scanString();
+        scanChars();
     }
     
     @Override
-    protected boolean isHint() {
+    protected boolean isHintBegin() {
         return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '!' == charAt(getPosition() + 2);
     }
 }

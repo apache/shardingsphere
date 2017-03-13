@@ -33,7 +33,7 @@ public final class PostgreSQLLexer extends AbstractLexer {
     }
     
     @Override
-    protected boolean isVariable(final char currentChar) {
+    protected boolean isVariableBegin() {
         return false;
     }
 }

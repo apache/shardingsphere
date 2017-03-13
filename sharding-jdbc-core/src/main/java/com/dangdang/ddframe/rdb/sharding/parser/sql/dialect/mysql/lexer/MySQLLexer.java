@@ -33,17 +33,17 @@ public final class MySQLLexer extends AbstractLexer {
     }
     
     @Override
-    protected boolean isVariable(final char currentChar) {
-        return '@' == currentChar;
+    protected boolean isVariableBegin() {
+        return '@' == charAt(getPosition());
     }
     
     @Override
-    protected boolean isHint() {
+    protected boolean isHintBegin() {
         return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '!' == charAt(getPosition() + 2);
     }
     
     @Override
-    protected boolean isComment() {
-        return '#' == charAt(getPosition()) || super.isComment();
+    protected boolean isCommentBegin() {
+        return '#' == charAt(getPosition()) || super.isCommentBegin();
     }
 }
