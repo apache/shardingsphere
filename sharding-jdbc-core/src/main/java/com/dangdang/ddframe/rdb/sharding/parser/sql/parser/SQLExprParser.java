@@ -364,7 +364,7 @@ public class SQLExprParser {
     }
     
     private SQLExpr getSQLExpr(final String literals) {
-        if (lexer.equalToken(Literals.VARIANT) || lexer.equalToken(Symbol.QUESTION)) {
+        if (lexer.equalToken(Symbol.QUESTION)) {
             parametersIndex++;
             return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
