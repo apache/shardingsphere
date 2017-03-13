@@ -46,7 +46,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals(), is(" # xxx "));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Literals.EOF));
@@ -68,10 +68,10 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals(), is(" # comment 1 "));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals(), is(" #comment 2 \r"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));

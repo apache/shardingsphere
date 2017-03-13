@@ -41,8 +41,6 @@ public enum Literals implements Token {
     VARIANT,
     HINT,
     COMMENT,
-    LINE_COMMENT,
-    MULTI_LINE_COMMENT,
     ERROR,
     EOF
 }

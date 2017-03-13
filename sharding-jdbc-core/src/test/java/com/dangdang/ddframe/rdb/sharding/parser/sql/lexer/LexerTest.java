@@ -318,7 +318,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(comment));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
@@ -333,7 +333,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.INT));
         assertThat(lexer.getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(comment));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Literals.EOF));
@@ -359,7 +359,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.MULTI_LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(commentStart + " \n WHERE XX=1 " + commentEnd));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
@@ -374,7 +374,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.INT));
         assertThat(lexer.getLiterals(), is("2"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.MULTI_LINE_COMMENT));
+        assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(commentStart + " " + commentEnd));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Literals.EOF));

@@ -240,7 +240,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = Literals.LINE_COMMENT;
+        token = Literals.COMMENT;
     }
     
     void scanMultiLineComment(final int currentPosition) {
@@ -256,7 +256,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        token = Literals.MULTI_LINE_COMMENT;
+        token = Literals.COMMENT;
     }
     
     void scanSymbol(final int currentPosition, final int charLength) {
