@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
 
 public final class SQLServerLexer extends Lexer {
     
@@ -35,22 +34,8 @@ public final class SQLServerLexer extends Lexer {
     }
     
     @Override
-    protected void scanIdentifier() {
-        if (isNChar()) {
-            scanNChar();
-        } else {
-            super.scanIdentifier();
-        }
-    }
-    
-    private boolean isNChar() {
-        return 'N' == currentChar() && '\'' == currentCharAt(1);
-    }
-    
-    private void scanNChar() {
-        increaseCurrentPosition();
-        scanChars();
-        setToken(new Token(SQLServerLiterals.NCHARS, getToken().getLiterals(), getToken().getBeginPosition()));
+    protected boolean isSupportNChars() {
+        return true;
     }
     
     @Override

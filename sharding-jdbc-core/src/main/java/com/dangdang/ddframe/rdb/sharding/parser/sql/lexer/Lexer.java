@@ -51,54 +51,35 @@ public class Lexer {
     public final void nextToken() {
         skipWhitespace();
         if (isVariableBegin()) {
-            scanVariable();
-            return;
-        }
-        if (isIdentifierBegin()) {
-            scanIdentifier();
-            return;
-        }
-        if (isHexDecimalBegin()) {
-            scanHexDecimal();
-            return;
-        }
-        if (isNumberBegin()) {
-            scanNumber();
-            return;
-        }
-        if (isHintBegin()) {
-            scanHint();
-            return;
-        }
-        if (isCommentBegin()) {
-            scanComment();
-            return;
-        }
-        if (isTernarySymbol()) {
-            scanSymbol(3);
-            return;
-        }
-        if (isBinarySymbol()) {
-            scanSymbol(2);
-            return;
-        }
-        if (isUnarySymbol()) {
-            scanSymbol(1);
-            return;
-        }
-        if (isCharsBegin()) {
-            scanChars();
-            return;
-        }
-        if (isAliasBegin()) {
-            scanAlias();
-            return;
-        }
-        if (isEOF()) {
+            token = scanVariable();
+        } else if (isSupportNChars() && isNCharBegin()) {
+            token = scanNChars();
+        } else if (isIdentifierBegin()) {
+            token = scanIdentifier();
+        } else if (isHexDecimalBegin()) {
+            token = scanHexDecimal();
+        } else if (isNumberBegin()) {
+            token = scanNumber();
+        } else if (isHintBegin()) {
+            token = scanHint();
+        } else if (isCommentBegin()) {
+            token = scanComment();
+        } else if (isTernarySymbol()) {
+            token = scanSymbol(3);
+        } else if (isBinarySymbol()) {
+            token = scanSymbol(2);
+        } else if (isUnarySymbol()) {
+            token = scanSymbol(1);
+        } else if (isCharsBegin()) {
+            token = scanChars();
+        } else if (isAliasBegin()) {
+            token = scanAlias();
+        } else if (isEOF()) {
             token = new Token(Assist.EOF, "", position);
         } else {
             token = new Token(Assist.ERROR, "", position);
         }
+        position = token.getBeginPosition();
     }
     
     private void skipWhitespace() {
@@ -111,10 +92,24 @@ public class Lexer {
         return false;
     }
     
-    private void scanVariable() {
+    private Token scanVariable() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanVariable();
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
+    }
+    
+    protected boolean isSupportNChars() {
+        return false;
+    }
+    
+    private boolean isNCharBegin() {
+        return 'N' == currentChar() && '\'' == currentCharAt(1);
+    }
+    
+    private Token scanNChars() {
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanNChars();
+        return new Token(tokenizer);
     }
     
     private boolean isIdentifierBegin() {
@@ -125,24 +120,24 @@ public class Lexer {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || '`' == ch || '_' == ch || '$' == ch;
     }
     
-    protected void scanIdentifier() {
+    private Token scanIdentifier() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         if ('`' == currentChar()) {
             tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER);
         } else {
             tokenizer.scanIdentifier();
         }
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     private boolean isHexDecimalBegin() {
         return '0' == currentChar() && 'x' == currentCharAt(1);
     }
     
-    private void scanHexDecimal() {
+    private Token scanHexDecimal() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanHexDecimal();
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     private boolean isNumberBegin() {
@@ -153,20 +148,20 @@ public class Lexer {
         return ch >= '0' && ch <= '9';
     }
     
-    private void scanNumber() {
+    private Token scanNumber() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanNumber();
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     protected boolean isHintBegin() {
         return false;
     }
     
-    private void scanHint() {
+    private Token scanHint() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
         tokenizer.scanHint();
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     protected boolean isCommentBegin() {
@@ -175,7 +170,7 @@ public class Lexer {
         return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
     }
     
-    private void scanComment() {
+    private Token scanComment() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
         if (('/' == currentChar() && '/' == currentCharAt(1)) || ('-' == currentChar() && '-' == currentCharAt(1))) {
             tokenizer.scanSingleLineComment(2);
@@ -184,7 +179,7 @@ public class Lexer {
         } else if ('/' == currentChar() && '*' == currentCharAt(1)) {
             tokenizer.scanMultiLineComment();
         }
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     private boolean isTernarySymbol() {
@@ -213,35 +208,30 @@ public class Lexer {
         return true;
     }
     
-    private void scanSymbol(final int symbolLength) {
+    private Token scanSymbol(final int symbolLength) {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanSymbol(symbolLength);
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     private boolean isCharsBegin() {
         return '\'' == currentChar();
     }
     
-    protected void scanChars() {
+    private Token scanChars() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanChars();
-        setTokenizerResult(tokenizer);
+        return new Token(tokenizer);
     }
     
     private boolean isAliasBegin() {
         return '\"' == currentChar();
     }
     
-    private void scanAlias() {
+    private Token scanAlias() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanContentUntil('\"', GeneralLiterals.ALIAS);
-        setTokenizerResult(tokenizer);
-    }
-    
-    private void setTokenizerResult(final Tokenizer tokenizer) {
-        token = new Token(tokenizer.getTokenType(), tokenizer.getLiterals(), tokenizer.getCurrentPosition());
-        position = tokenizer.getCurrentPosition();
+        return new Token(tokenizer);
     }
     
     private boolean isEOF() {
@@ -254,10 +244,6 @@ public class Lexer {
     
     protected final char currentCharAt(final int offset) {
         return position + offset >= input.length() ? (char) CharTypes.EOI : input.charAt(position + offset);
-    }
-    
-    protected final int increaseCurrentPosition() {
-        return ++position;
     }
     
     public final void accept(final TokenType tokenType) {
