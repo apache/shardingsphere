@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
@@ -30,12 +31,13 @@ import java.util.Set;
  * 
  * @author zhangliang 
  */
+@RequiredArgsConstructor
 public class Lexer {
     
     @Getter
     private final String input;
     
-    private final Term term;
+    private final Dictionary dictionary;
     
     @Getter
     private int position;
@@ -46,11 +48,6 @@ public class Lexer {
     
     @Getter
     private String literals;
-    
-    public Lexer(final String input, final Dictionary dictionary) {
-        this.input = input;
-        term = new Term(input, dictionary);
-    }
     
     /**
      * 跳至下一个语言符号.
@@ -120,8 +117,9 @@ public class Lexer {
     }
     
     private void scanVariable() {
-        term.scanVariable(position);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanVariable();
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isIdentifierBegin() {
@@ -133,12 +131,13 @@ public class Lexer {
     }
     
     protected void scanIdentifier() {
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         if ('`' == charAt(position)) {
-            term.scanContentUntil(position, '`', GeneralLiterals.IDENTIFIER, false);
+            tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER, false);
         } else {
-            term.scanIdentifier(position);
+            tokenizer.scanIdentifier();
         }
-        setTermResult();
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isHexDecimalBegin() {
@@ -146,8 +145,9 @@ public class Lexer {
     }
     
     private void scanHexDecimal() {
-        term.scanHexDecimal(position);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanHexDecimal();
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isNumberBegin() {
@@ -159,8 +159,9 @@ public class Lexer {
     }
     
     private void scanNumber() {
-        term.scanNumber(position);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanNumber();
+        setTokenizerResult(tokenizer);
     }
     
     protected boolean isHintBegin() {
@@ -168,8 +169,9 @@ public class Lexer {
     }
     
     private void scanHint() {
-        term.scanHint(position);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
+        tokenizer.scanHint();
+        setTokenizerResult(tokenizer);
     }
     
     protected boolean isCommentBegin() {
@@ -179,14 +181,15 @@ public class Lexer {
     }
     
     private void scanComment() {
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
         if (('/' == charAt(position) && '/' == charAt(position + 1)) || ('-' == charAt(position) && '-' == charAt(position + 1))) {
-            term.scanSingleLineComment(position, 2);
+            tokenizer.scanSingleLineComment(2);
         } else if ('#' == charAt(position)) {
-            term.scanSingleLineComment(position, 1);
+            tokenizer.scanSingleLineComment(1);
         } else if (charAt(position) == '/' && charAt(position + 1) == '*') {
-            term.scanMultiLineComment(position);
+            tokenizer.scanMultiLineComment();
         }
-        setTermResult();
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isTernarySymbol() {
@@ -216,8 +219,9 @@ public class Lexer {
     }
     
     private void scanSymbol(final int symbolLength) {
-        term.scanSymbol(position, symbolLength);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanSymbol(symbolLength);
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isCharsBegin() {
@@ -225,8 +229,9 @@ public class Lexer {
     }
     
     protected void scanChars() {
-        term.scanChars(position);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanChars();
+        setTokenizerResult(tokenizer);
     }
     
     private boolean isAliasBegin() {
@@ -234,14 +239,15 @@ public class Lexer {
     }
     
     private void scanAlias() {
-        term.scanContentUntil(position, '\"', GeneralLiterals.ALIAS, true);
-        setTermResult();
+        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
+        tokenizer.scanContentUntil('\"', GeneralLiterals.ALIAS, true);
+        setTokenizerResult(tokenizer);
     }
     
-    private void setTermResult() {
-        literals = term.getLiterals();
-        token = term.getToken();
-        position = term.getCurrentPosition();
+    private void setTokenizerResult(final Tokenizer tokenizer) {
+        literals = tokenizer.getLiterals();
+        token = tokenizer.getToken();
+        position = tokenizer.getCurrentPosition();
     }
     
     private boolean isEOF() {

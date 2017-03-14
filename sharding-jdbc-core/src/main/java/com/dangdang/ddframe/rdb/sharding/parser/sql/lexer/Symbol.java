@@ -20,6 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 符号标记.
  *
@@ -70,5 +73,23 @@ public enum Symbol implements Token {
     MONKEYS_AT("@"),
     POUND("#");
     
+    private static Map<String, Symbol> symbols = new HashMap<>(128);
+    
+    static {
+        for (Symbol each : Symbol.values()) {
+            symbols.put(each.getLiterals(), each);
+        }
+    }
+    
     private final String literals;
+    
+    /**
+     * 通过字面量查找符号.
+     * 
+     * @param literals 字面量
+     * @return 符号标记
+     */
+    public static Symbol literalsOf(final String literals) {
+        return symbols.get(literals);
+    }
 }

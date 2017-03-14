@@ -28,13 +28,13 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class Term {
+public final class Tokenizer {
     
     private final String input;
     
     private final Dictionary dictionary;
     
-    private int offset;
+    private final int offset;
     
     private int length;
     
@@ -48,9 +48,8 @@ public final class Term {
         return offset + length;
     }
     
-    void scanContentUntil(final int currentPosition, final char terminatedSign, final Token defaultToken, final boolean contentOnly) {
-        offset = currentPosition;
-        int position = currentPosition + 1;
+    void scanContentUntil(final char terminatedSign, final Token defaultToken, final boolean contentOnly) {
+        int position = offset + 1;
         length = 2;
         while (terminatedSign != charAt(++position)) {
             if (CharTypes.EOI == charAt(position)) {
@@ -63,9 +62,8 @@ public final class Term {
         token = dictionary.getToken(literals, defaultToken);
     }
     
-    void scanVariable(final int currentPosition) {
-        offset = currentPosition;
-        int position = currentPosition;
+    void scanVariable() {
+        int position = offset;
         length = 1;
         if ('@' == charAt(position + 1)) {
             position++;
@@ -82,9 +80,8 @@ public final class Term {
         return isIdentifierChar(ch) || '.' == ch;
     }
     
-    void scanIdentifier(final int currentPosition) {
-        offset = currentPosition;
-        int position = currentPosition;
+    void scanIdentifier() {
+        int position = offset;
         length = 1;
         while (isIdentifierChar(charAt(++position))) {
             length++;
@@ -110,9 +107,8 @@ public final class Term {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || '_' == ch || '$' == ch || '#' == ch;
     }
     
-    void scanHexDecimal(final int currentPosition) {
-        offset = currentPosition;
-        int position = currentPosition + 2;
+    void scanHexDecimal() {
+        int position = offset + 2;
         length = 3;
         if ('-' == charAt(position)) {
             position++;
@@ -129,9 +125,8 @@ public final class Term {
         return (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f') || (ch >= '0' && ch <= '9');
     }
     
-    void scanNumber(final int currentPosition) {
-        offset = currentPosition;
-        int position = currentPosition;
+    void scanNumber() {
+        int position = offset;
         length = 0;
         if ('-' == charAt(position)) {
             position++;
@@ -196,9 +191,8 @@ public final class Term {
         return ch >= '0' && ch <= '9';
     }
     
-    void scanChars(final int currentPosition) {
-        offset = currentPosition;
-        int position = currentPosition + 1;
+    void scanChars() {
+        int position = offset + 1;
         length = 1;
         while ('\'' != charAt(position) || hasEscapeChar(position)) {
             if (position >= input.length()) {
@@ -220,9 +214,8 @@ public final class Term {
         return '\'' == charAt(position) && '\'' == charAt(position + 1);
     }
     
-    void scanHint(final int currentPosition) {
-        offset = currentPosition - 1;
-        int position = currentPosition + 3;
+    void scanHint() {
+        int position = offset + 4;
         length = 4;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
@@ -236,9 +229,8 @@ public final class Term {
         token = GeneralLiterals.HINT;
     }
     
-    void scanSingleLineComment(final int currentPosition, final int commentFlagLength) {
-        offset = currentPosition - 1;
-        int position = currentPosition + commentFlagLength;
+    void scanSingleLineComment(final int commentFlagLength) {
+        int position = offset + commentFlagLength + 1;
         length = commentFlagLength + 1;
         while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
             position++;
@@ -248,9 +240,8 @@ public final class Term {
         token = GeneralLiterals.COMMENT;
     }
     
-    void scanMultiLineComment(final int currentPosition) {
-        offset = currentPosition - 1;
-        int position = currentPosition + 2;
+    void scanMultiLineComment() {
+        int position = offset + 3;
         length = 3;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
@@ -264,9 +255,8 @@ public final class Term {
         token = GeneralLiterals.COMMENT;
     }
     
-    void scanSymbol(final int currentPosition, final int charLength) {
-        offset = currentPosition;
-        int position = currentPosition;
+    void scanSymbol(final int charLength) {
+        int position = offset;
         length = 0;
         char[] symbolChars = new char[charLength];
         for (int i = 0; i < charLength; i++) {
@@ -274,7 +264,7 @@ public final class Term {
             length++;
         }
         literals = String.valueOf(symbolChars);
-        token = dictionary.getToken(literals);
+        token = Symbol.literalsOf(literals);
     }
     
     private char charAt(final int index) {
