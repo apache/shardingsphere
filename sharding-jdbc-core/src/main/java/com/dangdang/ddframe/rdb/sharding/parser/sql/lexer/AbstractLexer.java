@@ -132,7 +132,7 @@ public abstract class AbstractLexer {
     
     protected void scanIdentifier() {
         if ('`' == charAt(position)) {
-            term.scanContentUntil(position, '`', Literals.IDENTIFIER, false);
+            term.scanContentUntil(position, '`', GeneralLiterals.IDENTIFIER, false);
         } else {
             term.scanIdentifier(position);
         }
@@ -232,7 +232,7 @@ public abstract class AbstractLexer {
     }
     
     private void scanAlias() {
-        term.scanContentUntil(position, '\"', Literals.ALIAS, true);
+        term.scanContentUntil(position, '\"', GeneralLiterals.ALIAS, true);
         setTermResult();
     }
     

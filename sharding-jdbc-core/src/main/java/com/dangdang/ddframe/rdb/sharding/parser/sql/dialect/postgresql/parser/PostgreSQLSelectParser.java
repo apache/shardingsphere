@@ -17,10 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.SpecialLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
@@ -36,7 +37,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     @Override
     public void query() {
         if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.SELECT)) {
-            getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
+            getExprParser().getLexer().skipIfEqual(SpecialLiterals.COMMENT);
             parseDistinct();
             parseSelectList();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.INTO)) {
@@ -78,7 +79,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                     getExprParser().getLexer().nextToken();
                 } else {
                     // rowCount
-                    if (getExprParser().getLexer().equalToken(Literals.INT)) {
+                    if (getExprParser().getLexer().equalToken(GeneralLiterals.INT)) {
                     } else if (getExprParser().getLexer().equalToken(Symbol.QUESTION)) {
                     } else {
                         throw new ParserException(getExprParser().getLexer());
@@ -88,7 +89,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             } else if (getExprParser().getLexer().equalToken(PostgreSQLKeyword.OFFSET)) {
                 getExprParser().getLexer().nextToken();
                 // offset
-                if (getExprParser().getLexer().equalToken(Literals.INT)) {
+                if (getExprParser().getLexer().equalToken(GeneralLiterals.INT)) {
                 } else if (getExprParser().getLexer().equalToken(Symbol.QUESTION)) {
                 } else {
                     throw new ParserException(getExprParser().getLexer());

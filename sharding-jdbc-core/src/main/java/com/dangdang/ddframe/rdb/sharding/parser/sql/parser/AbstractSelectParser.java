@@ -17,20 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.SpecialLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -71,7 +71,7 @@ public abstract class AbstractSelectParser {
     
     protected void query() {
         getExprParser().getLexer().accept(DefaultKeyword.SELECT);
-        getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
+        getExprParser().getLexer().skipIfEqual(SpecialLiterals.COMMENT);
         parseDistinct();
         parseSelectList();
         parseFrom();
@@ -194,7 +194,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseJoinTable() {
-        getExprParser().getLexer().skipIfEqual(Literals.HINT);
+        getExprParser().getLexer().skipIfEqual(SpecialLiterals.HINT);
         if (getExprParser().isJoin()) {
             parseTable();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.ON)) {

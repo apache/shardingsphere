@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLServerTop;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
@@ -77,7 +77,7 @@ public class SQLServerExprParser extends SQLExprParser {
         getLexer().nextToken();
         int offset;
         int offsetIndex = -1;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equalToken(GeneralLiterals.INT)) {
             offset = Integer.parseInt(getLexer().getLiterals());
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
@@ -93,7 +93,7 @@ public class SQLServerExprParser extends SQLExprParser {
             int rowCount;
             int rowCountIndex = -1;
             getLexer().nextToken();
-            if (getLexer().equalToken(Literals.INT)) {
+            if (getLexer().equalToken(GeneralLiterals.INT)) {
                 rowCount = Integer.parseInt(getLexer().getLiterals());
             } else if (getLexer().equalToken(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();

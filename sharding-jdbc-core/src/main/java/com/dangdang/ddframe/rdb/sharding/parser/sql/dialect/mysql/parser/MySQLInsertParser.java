@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
@@ -64,11 +64,11 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(Symbol.EQ);
             SQLExpr sqlExpr;
-            if (getExprParser().getLexer().equalToken(Literals.INT)) {
+            if (getExprParser().getLexer().equalToken(GeneralLiterals.INT)) {
                 sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
-            } else if (getExprParser().getLexer().equalToken(Literals.FLOAT)) {
+            } else if (getExprParser().getLexer().equalToken(GeneralLiterals.FLOAT)) {
                 sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
-            } else if (getExprParser().getLexer().equalToken(Literals.CHARS)) {
+            } else if (getExprParser().getLexer().equalToken(GeneralLiterals.CHARS)) {
                 sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();

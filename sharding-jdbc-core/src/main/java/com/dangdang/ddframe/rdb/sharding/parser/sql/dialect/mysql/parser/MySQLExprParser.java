@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
@@ -45,7 +45,7 @@ public class MySQLExprParser extends SQLExprParser {
         int valueBeginPosition = getLexer().getPosition();
         int value;
         boolean isParameterForValue = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equalToken(GeneralLiterals.INT)) {
             value = Integer.parseInt(getLexer().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
@@ -77,7 +77,7 @@ public class MySQLExprParser extends SQLExprParser {
         int rowCount;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equalToken(GeneralLiterals.INT)) {
             rowCount = Integer.parseInt(getLexer().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
@@ -106,7 +106,7 @@ public class MySQLExprParser extends SQLExprParser {
         int offset;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equalToken(GeneralLiterals.INT)) {
             offset = Integer.parseInt(getLexer().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
