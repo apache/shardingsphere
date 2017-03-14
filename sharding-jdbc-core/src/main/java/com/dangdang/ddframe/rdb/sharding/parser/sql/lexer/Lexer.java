@@ -39,7 +39,6 @@ public class Lexer {
     
     private final Dictionary dictionary;
     
-    @Getter
     private int position;
     
     @Getter
@@ -103,7 +102,7 @@ public class Lexer {
     }
     
     private void skipWhitespace() {
-        while (CharTypes.isWhitespace(charAt(position))) {
+        while (CharTypes.isWhitespace(currentChar())) {
             position++;
         }
     }
@@ -119,7 +118,7 @@ public class Lexer {
     }
     
     private boolean isIdentifierBegin() {
-        return isIdentifierBegin(charAt(position));
+        return isIdentifierBegin(currentChar());
     }
     
     private boolean isIdentifierBegin(final char ch) {
@@ -128,7 +127,7 @@ public class Lexer {
     
     protected void scanIdentifier() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        if ('`' == charAt(position)) {
+        if ('`' == currentChar()) {
             tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER);
         } else {
             tokenizer.scanIdentifier();
@@ -137,7 +136,7 @@ public class Lexer {
     }
     
     private boolean isHexDecimalBegin() {
-        return '0' == charAt(position) && 'x' == charAt(position + 1);
+        return '0' == currentChar() && 'x' == currentCharAt(1);
     }
     
     private void scanHexDecimal() {
@@ -147,7 +146,7 @@ public class Lexer {
     }
     
     private boolean isNumberBegin() {
-        return isDigital(charAt(position)) || ('.' == charAt(position) && isDigital(charAt(position + 1)) && !isIdentifierBegin(charAt(position - 1)));
+        return isDigital(currentChar()) || ('.' == currentChar() && isDigital(currentCharAt(1)) && !isIdentifierBegin(currentCharAt(-1)));
     }
     
     private boolean isDigital(final char ch) {
@@ -171,18 +170,18 @@ public class Lexer {
     }
     
     protected boolean isCommentBegin() {
-        char currentChar = charAt(position);
-        char nextChar = charAt(position + 1);
+        char currentChar = currentChar();
+        char nextChar = currentCharAt(1);
         return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
     }
     
     private void scanComment() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
-        if (('/' == charAt(position) && '/' == charAt(position + 1)) || ('-' == charAt(position) && '-' == charAt(position + 1))) {
+        if (('/' == currentChar() && '/' == currentCharAt(1)) || ('-' == currentChar() && '-' == currentCharAt(1))) {
             tokenizer.scanSingleLineComment(2);
-        } else if ('#' == charAt(position)) {
+        } else if ('#' == currentChar()) {
             tokenizer.scanSingleLineComment(1);
-        } else if (charAt(position) == '/' && charAt(position + 1) == '*') {
+        } else if ('/' == currentChar() && '*' == currentCharAt(1)) {
             tokenizer.scanMultiLineComment();
         }
         setTokenizerResult(tokenizer);
@@ -207,7 +206,7 @@ public class Lexer {
     
     private boolean isSymbol(final String symbol) {
         for (int i = 0; i < symbol.length(); i++) {
-            if (symbol.charAt(i) != charAt(position + i)) {
+            if (symbol.charAt(i) != currentCharAt(i)) {
                 return false;
             }
         }
@@ -221,7 +220,7 @@ public class Lexer {
     }
     
     private boolean isCharsBegin() {
-        return '\'' == charAt(position);
+        return '\'' == currentChar();
     }
     
     protected void scanChars() {
@@ -231,7 +230,7 @@ public class Lexer {
     }
     
     private boolean isAliasBegin() {
-        return '\"' == charAt(position);
+        return '\"' == currentChar();
     }
     
     private void scanAlias() {
@@ -249,8 +248,12 @@ public class Lexer {
         return position >= input.length();
     }
     
-    protected final char charAt(final int index) {
-        return index >= input.length() ? (char) CharTypes.EOI : input.charAt(index);
+    protected final char currentChar() {
+        return currentCharAt(0);
+    }
+    
+    protected final char currentCharAt(final int offset) {
+        return position + offset >= input.length() ? (char) CharTypes.EOI : input.charAt(position + offset);
     }
     
     protected final int increaseCurrentPosition() {

@@ -31,7 +31,7 @@ public final class SQLServerLexer extends Lexer {
     
     @Override
     protected boolean isVariableBegin() {
-        return '@' == charAt(getPosition());
+        return '@' == currentChar();
     }
     
     @Override
@@ -44,17 +44,17 @@ public final class SQLServerLexer extends Lexer {
     }
     
     private boolean isNChar() {
-        return 'N' == charAt(getPosition()) && '\'' == charAt(getPosition() + 1);
+        return 'N' == currentChar() && '\'' == currentCharAt(1);
     }
     
     private void scanNChar() {
         increaseCurrentPosition();
         scanChars();
-        setToken(new Token(SQLServerLiterals.NCHARS, getToken().getLiterals(), getToken().getStartPosition()));
+        setToken(new Token(SQLServerLiterals.NCHARS, getToken().getLiterals(), getToken().getBeginPosition()));
     }
     
     @Override
     protected boolean isHintBegin() {
-        return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '!' == charAt(getPosition() + 2);
+        return '/' == currentChar() && '*' == currentCharAt(1) && '!' == currentCharAt(2);
     }
 }

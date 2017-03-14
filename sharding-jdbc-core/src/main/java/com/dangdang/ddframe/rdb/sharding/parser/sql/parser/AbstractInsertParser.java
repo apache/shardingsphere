@@ -122,7 +122,7 @@ public abstract class AbstractInsertParser {
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
             } while (!exprParser.getLexer().equalToken(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equalToken(Assist.EOF));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getPosition() - exprParser.getLexer().getToken().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getBeginPosition() - exprParser.getLexer().getToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
                 result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
@@ -160,7 +160,7 @@ public abstract class AbstractInsertParser {
             do {
                 sqlExprs.add(exprParser.parseExpr());
             } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getPosition() - exprParser.getLexer().getToken().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getBeginPosition() - exprParser.getLexer().getToken().getLiterals().length());
             int count = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {

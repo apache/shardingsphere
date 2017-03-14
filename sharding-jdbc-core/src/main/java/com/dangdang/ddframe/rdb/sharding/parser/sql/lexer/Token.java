@@ -16,5 +16,5 @@ public final class Token {
     
     private final String literals;
     
-    private final int startPosition;
+    private final int beginPosition;
 }

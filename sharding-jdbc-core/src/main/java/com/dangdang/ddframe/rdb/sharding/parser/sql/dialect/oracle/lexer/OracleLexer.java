@@ -30,6 +30,6 @@ public final class OracleLexer extends Lexer {
     
     @Override
     protected boolean isHintBegin() {
-        return '/' == charAt(getPosition()) && '*' == charAt(getPosition() + 1) && '+' == charAt(getPosition() + 2);
+        return '/' == currentChar() && '*' == currentCharAt(1) && '+' == currentCharAt(2);
     }
 }

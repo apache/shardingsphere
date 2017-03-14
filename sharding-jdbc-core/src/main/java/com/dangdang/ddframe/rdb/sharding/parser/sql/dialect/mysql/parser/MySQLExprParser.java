@@ -42,7 +42,7 @@ public class MySQLExprParser extends SQLExprParser {
     public LimitContext parseLimit(final int parametersIndex, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
-        int valueBeginPosition = getLexer().getPosition();
+        int valueBeginPosition = getLexer().getToken().getBeginPosition();
         int value;
         boolean isParameterForValue = false;
         if (getLexer().equalToken(GeneralLiterals.INT)) {
@@ -73,7 +73,7 @@ public class MySQLExprParser extends SQLExprParser {
     }
     
     private LimitContext getLimitContextWithComma(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
-        int rowCountBeginPosition = getLexer().getPosition();
+        int rowCountBeginPosition = getLexer().getToken().getBeginPosition();
         int rowCount;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
@@ -102,7 +102,7 @@ public class MySQLExprParser extends SQLExprParser {
     }
     
     private LimitContext getLimitContextWithOffset(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
-        int offsetBeginPosition = getLexer().getPosition();
+        int offsetBeginPosition = getLexer().getToken().getBeginPosition();
         int offset;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
