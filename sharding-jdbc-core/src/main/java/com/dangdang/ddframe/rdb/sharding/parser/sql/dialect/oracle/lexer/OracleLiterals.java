@@ -15,14 +15,16 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
+
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 
 /**
- * 特殊字面量标记.
+ * Oracle自定义字面量标记.
  *
  * @author zhangliang
  */
-public enum SpecialLiterals implements Token {
+public enum OracleLiterals implements Literals {
     
-    VARIANT, HINT, COMMENT
+    BINARY_FLOAT, BINARY_DOUBLE
 }

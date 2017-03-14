@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
@@ -39,7 +40,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
@@ -62,7 +63,7 @@ import java.util.List;
 public class SQLExprParser {
     
     @Getter
-    private final AbstractLexer lexer;
+    private final Lexer lexer;
     
     @Getter
     private final ShardingRule shardingRule;
@@ -74,7 +75,7 @@ public class SQLExprParser {
     @Setter
     private int parametersIndex;
     
-    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final AbstractLexer lexer) {
+    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
         this.lexer = lexer;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
@@ -372,7 +373,7 @@ public class SQLExprParser {
         if (lexer.equalToken(GeneralLiterals.CHARS)) {
             return new SQLCharExpr(literals);
         }
-        if (lexer.equalToken(GeneralLiterals.NCHARS)) {
+        if (lexer.equalToken(SQLServerLiterals.NCHARS)) {
             return new SQLNCharExpr(literals);
         }
         if (lexer.equalToken(GeneralLiterals.INT)) {

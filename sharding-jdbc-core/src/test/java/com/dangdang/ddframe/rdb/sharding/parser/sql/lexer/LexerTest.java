@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLiterals;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,9 +25,15 @@ import static org.hamcrest.core.Is.is;
 
 public final class LexerTest {
     
+    private static Dictionary dictionary = new Dictionary();
+    
+    static {
+        dictionary.fill(new Keyword[0]);
+    }
+    
     @Test
     public void assertNextTokenForWhitespace() {
-        AbstractLexer lexer = new DefaultLexer("Select  \t \n * from \r\n TABLE_XXX \t");
+        Lexer lexer = new Lexer("Select  \t \n * from \r\n TABLE_XXX \t", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("Select"));
@@ -45,7 +52,7 @@ public final class LexerTest {
     
     @Test
     public void assertNextTokenForOrderBy() {
-        AbstractLexer lexer = new DefaultLexer("SELECT * FROM ORDER  ORDER \t  BY XX DESC");
+        Lexer lexer = new Lexer("SELECT * FROM ORDER  ORDER \t  BY XX DESC", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -76,7 +83,7 @@ public final class LexerTest {
     
     @Test
     public void assertNextTokenForGroupBy() {
-        AbstractLexer lexer = new DefaultLexer("SELECT * FROM GROUP  Group \n  By XX DESC");
+        Lexer lexer = new Lexer("SELECT * FROM GROUP  Group \n  By XX DESC", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -118,15 +125,15 @@ public final class LexerTest {
         assertNextTokenForNumber("123e-4", GeneralLiterals.FLOAT);
         assertNextTokenForNumber("123E-4", GeneralLiterals.FLOAT);
         assertNextTokenForNumber(".5", GeneralLiterals.FLOAT);
-        assertNextTokenForNumber("123f", GeneralLiterals.BINARY_FLOAT);
-        assertNextTokenForNumber("123F", GeneralLiterals.BINARY_FLOAT);
-        assertNextTokenForNumber(".5F", GeneralLiterals.BINARY_FLOAT);
-        assertNextTokenForNumber("123d", GeneralLiterals.BINARY_DOUBLE);
-        assertNextTokenForNumber("123D", GeneralLiterals.BINARY_DOUBLE);
+        assertNextTokenForNumber("123f", OracleLiterals.BINARY_FLOAT);
+        assertNextTokenForNumber("123F", OracleLiterals.BINARY_FLOAT);
+        assertNextTokenForNumber(".5F", OracleLiterals.BINARY_FLOAT);
+        assertNextTokenForNumber("123d", OracleLiterals.BINARY_DOUBLE);
+        assertNextTokenForNumber("123D", OracleLiterals.BINARY_DOUBLE);
     }
     
     private void assertNextTokenForNumber(final String number, final Token expectedToken) {
-        AbstractLexer lexer = new DefaultLexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", number, number));
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", number, number), dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -174,7 +181,7 @@ public final class LexerTest {
     }
     
     private void assertNextTokenForString(final String str) {
-        AbstractLexer lexer = new DefaultLexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", str, str));
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", str, str), dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -221,7 +228,7 @@ public final class LexerTest {
     }
     
     private void assertNextTokenForAlias(final String str) {
-        AbstractLexer lexer = new DefaultLexer(String.format("SELECT * FROM XXX_TABLE AS \"%s\"", str));
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE AS \"%s\"", str), dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -251,7 +258,7 @@ public final class LexerTest {
     }
     
     private void assertNextTokenForSingleLineComment(final String comment) {
-        AbstractLexer lexer = new DefaultLexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s", comment, comment));
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s", comment, comment), dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -265,7 +272,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) GeneralLiterals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.COMMENT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(comment));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
@@ -280,7 +287,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) GeneralLiterals.INT));
         assertThat(lexer.getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.COMMENT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(comment));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Assist.EOF));
@@ -292,7 +299,7 @@ public final class LexerTest {
     }
     
     private void assertNextTokenForMultipleLineComment(final String commentStart, final String commentEnd) {
-        AbstractLexer lexer = new DefaultLexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s WHERE YY>2 %s %s", commentStart, commentEnd, commentStart, commentEnd));
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s WHERE YY>2 %s %s", commentStart, commentEnd, commentStart, commentEnd), dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -306,7 +313,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) GeneralLiterals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.COMMENT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(commentStart + " \n WHERE XX=1 " + commentEnd));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.WHERE));
@@ -321,7 +328,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) GeneralLiterals.INT));
         assertThat(lexer.getLiterals(), is("2"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.COMMENT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(commentStart + " " + commentEnd));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Assist.EOF));

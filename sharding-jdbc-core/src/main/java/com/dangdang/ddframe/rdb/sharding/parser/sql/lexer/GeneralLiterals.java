@@ -17,25 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * 常规字面量标记.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public enum GeneralLiterals implements Token {
+public enum GeneralLiterals implements Literals {
     
-    INT,
-    FLOAT,
-    HEX,
-    CHARS,
-    NCHARS,
-    BINARY_FLOAT,
-    BINARY_DOUBLE,
-    IDENTIFIER,
-    ALIAS
+    INT, FLOAT, HEX, CHARS, IDENTIFIER, ALIAS, VARIANT, HINT, COMMENT
 }

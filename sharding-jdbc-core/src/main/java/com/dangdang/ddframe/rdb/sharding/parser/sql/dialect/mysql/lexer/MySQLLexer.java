@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
-public final class MySQLLexer extends AbstractLexer {
+public final class MySQLLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary();
     

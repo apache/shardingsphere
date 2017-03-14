@@ -30,7 +30,7 @@ import java.util.Set;
  * 
  * @author zhangliang 
  */
-public abstract class AbstractLexer {
+public class Lexer {
     
     @Getter
     private final String input;
@@ -47,7 +47,7 @@ public abstract class AbstractLexer {
     @Getter
     private String literals;
     
-    public AbstractLexer(final String input, final Dictionary dictionary) {
+    public Lexer(final String input, final Dictionary dictionary) {
         this.input = input;
         term = new Term(input, dictionary);
     }
@@ -115,7 +115,9 @@ public abstract class AbstractLexer {
         }
     }
     
-    protected abstract boolean isVariableBegin();
+    protected boolean isVariableBegin() {
+        return false;
+    }
     
     private void scanVariable() {
         term.scanVariable(position);

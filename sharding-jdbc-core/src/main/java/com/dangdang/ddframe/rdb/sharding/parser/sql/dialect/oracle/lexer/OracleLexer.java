@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.AbstractLexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
-public final class OracleLexer extends AbstractLexer {
+public final class OracleLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary();
     
@@ -30,11 +30,6 @@ public final class OracleLexer extends AbstractLexer {
     
     public OracleLexer(final String input) {
         super(input, dictionary);
-    }
-    
-    @Override
-    protected boolean isVariableBegin() {
-        return false;
     }
     
     @Override

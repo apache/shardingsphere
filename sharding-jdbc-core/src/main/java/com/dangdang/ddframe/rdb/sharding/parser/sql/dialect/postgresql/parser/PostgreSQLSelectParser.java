@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.Pos
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.SpecialLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
@@ -37,7 +36,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     @Override
     public void query() {
         if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.SELECT)) {
-            getExprParser().getLexer().skipIfEqual(SpecialLiterals.COMMENT);
+            getExprParser().getLexer().skipIfEqual(GeneralLiterals.COMMENT);
             parseDistinct();
             parseSelectList();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.INTO)) {

@@ -3,7 +3,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.SpecialLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public final class SQLServerLexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.VARIANT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.VARIANT));
         assertThat(lexer.getLiterals(), is("@x1"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Symbol.COLON_EQ));
@@ -32,7 +31,7 @@ public final class SQLServerLexerTest {
         assertThat(lexer.getToken(), is((Token) Symbol.COMMA));
         assertThat(lexer.getLiterals(), is(","));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) SpecialLiterals.VARIANT));
+        assertThat(lexer.getToken(), is((Token) GeneralLiterals.VARIANT));
         assertThat(lexer.getLiterals(), is("@@global.x1"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.FROM));

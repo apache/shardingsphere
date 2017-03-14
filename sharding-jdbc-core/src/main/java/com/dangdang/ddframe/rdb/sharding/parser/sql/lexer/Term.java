@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLiterals;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +75,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = SpecialLiterals.VARIANT;
+        token = GeneralLiterals.VARIANT;
     }
     
     private boolean isVariableChar(final char ch) {
@@ -178,13 +179,13 @@ public final class Term {
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = GeneralLiterals.BINARY_FLOAT;
+            token = OracleLiterals.BINARY_FLOAT;
             return;
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = GeneralLiterals.BINARY_DOUBLE;
+            token = OracleLiterals.BINARY_DOUBLE;
             return;
         }
         literals = input.substring(offset, offset + length);
@@ -232,7 +233,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset + 4, offset + length - 2);
-        token = SpecialLiterals.HINT;
+        token = GeneralLiterals.HINT;
     }
     
     void scanSingleLineComment(final int currentPosition, final int commentFlagLength) {
@@ -244,7 +245,7 @@ public final class Term {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = SpecialLiterals.COMMENT;
+        token = GeneralLiterals.COMMENT;
     }
     
     void scanMultiLineComment(final int currentPosition) {
@@ -260,7 +261,7 @@ public final class Term {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        token = SpecialLiterals.COMMENT;
+        token = GeneralLiterals.COMMENT;
     }
     
     void scanSymbol(final int currentPosition, final int charLength) {

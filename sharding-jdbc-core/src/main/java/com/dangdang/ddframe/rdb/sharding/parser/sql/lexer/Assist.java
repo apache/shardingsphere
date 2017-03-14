@@ -17,16 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * 辅助标记.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
 public enum Assist implements Token {
     
     ERROR, EOF

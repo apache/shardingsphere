@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.SpecialLiterals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
@@ -49,11 +49,11 @@ public class OracleSelectParser extends AbstractSelectParser {
     public void query() {
         if (getExprParser().getLexer().equalToken(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
-            while (getExprParser().getLexer().equalToken(SpecialLiterals.HINT) || getExprParser().getLexer().equalToken(SpecialLiterals.COMMENT)) {
+            while (getExprParser().getLexer().equalToken(GeneralLiterals.HINT) || getExprParser().getLexer().equalToken(GeneralLiterals.COMMENT)) {
                 getExprParser().getLexer().nextToken();
             }
             parseDistinct();
-            getExprParser().getLexer().skipIfEqual(SpecialLiterals.HINT);
+            getExprParser().getLexer().skipIfEqual(GeneralLiterals.HINT);
             parseSelectList();
         }
         skipInto();

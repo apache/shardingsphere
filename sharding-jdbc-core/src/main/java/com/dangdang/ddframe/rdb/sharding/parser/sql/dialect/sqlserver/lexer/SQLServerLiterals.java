@@ -15,22 +15,16 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 
-public final class DefaultLexer extends AbstractLexer {
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+
+/**
+ * SQLServer自定义字面量标记.
+ *
+ * @author zhangliang
+ */
+public enum SQLServerLiterals implements Literals {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill();
-    }
-    
-    public DefaultLexer(final String input) {
-        super(input, dictionary);
-    }
-    
-    @Override
-    protected boolean isVariableBegin() {
-        return false;
-    }
+    NCHARS
 }
