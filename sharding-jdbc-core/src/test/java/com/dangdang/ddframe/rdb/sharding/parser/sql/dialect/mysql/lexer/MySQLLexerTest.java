@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
@@ -63,7 +64,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.VARIANT));
         assertThat(lexer.getLiterals(), is("@@global.x1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -85,7 +86,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals(), is(" # xxx "));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -122,7 +123,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.INT));
         assertThat(lexer.getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -159,6 +160,6 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.HINT));
         assertThat(lexer.getLiterals(), is("hint 2"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
 }

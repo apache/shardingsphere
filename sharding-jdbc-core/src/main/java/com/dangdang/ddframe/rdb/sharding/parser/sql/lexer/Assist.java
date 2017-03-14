@@ -21,24 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 字面量标记.
+ * 辅助标记.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public enum Literals implements Token {
+public enum Assist implements Token {
     
-    INT,
-    FLOAT,
-    HEX,
-    CHARS,
-    NCHARS,
-    BINARY_FLOAT,
-    BINARY_DOUBLE,
-    ALIAS,
-    IDENTIFIER,
-    VARIANT,
-    HINT,
-    COMMENT
+    ERROR, EOF
 }

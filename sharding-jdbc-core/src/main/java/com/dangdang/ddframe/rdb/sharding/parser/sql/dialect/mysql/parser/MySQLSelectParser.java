@@ -19,8 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
@@ -63,7 +64,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private void skipToFrom() {
-        while (!getExprParser().getLexer().equalToken(DefaultKeyword.FROM) && !getExprParser().getLexer().equalToken(Literals.EOF)) {
+        while (!getExprParser().getLexer().equalToken(DefaultKeyword.FROM) && !getExprParser().getLexer().equalToken(Assist.EOF)) {
             getExprParser().getLexer().nextToken();
         }
     }

@@ -40,7 +40,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.IDENTIFIER));
         assertThat(lexer.getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.DESC));
         assertThat(lexer.getLiterals(), is("DESC"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -102,7 +102,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.DESC));
         assertThat(lexer.getLiterals(), is("DESC"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -164,7 +164,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is(expectedToken));
         assertThat(lexer.getLiterals(), is(number));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -212,7 +212,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.CHARS));
         assertThat(lexer.getLiterals(), is(str.substring(1, str.length() - 1)));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -241,7 +241,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.ALIAS));
         assertThat(lexer.getLiterals(), is(str));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -283,7 +283,7 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(comment));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
     
     @Test
@@ -324,6 +324,6 @@ public final class LexerTest {
         assertThat(lexer.getToken(), is((Token) Literals.COMMENT));
         assertThat(lexer.getLiterals().trim(), is(commentStart + " " + commentEnd));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.EOF));
+        assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }
 }

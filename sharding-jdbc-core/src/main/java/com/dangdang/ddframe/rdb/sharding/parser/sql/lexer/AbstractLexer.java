@@ -102,9 +102,9 @@ public abstract class AbstractLexer {
             return;
         }
         if (isEOF()) {
-            token = Literals.EOF;
+            token = Assist.EOF;
         } else {
-            token = Literals.ERROR;
+            token = Assist.ERROR;
         }
         literals = "";
     }
@@ -301,7 +301,7 @@ public abstract class AbstractLexer {
      */
     public final void skipUntil(final Token... tokens) {
         Set<Token> tokenSet = Sets.newHashSet(tokens);
-        tokenSet.add(Literals.EOF);
+        tokenSet.add(Assist.EOF);
         while (!tokenSet.contains(token)) {
             nextToken();
         }
@@ -320,7 +320,7 @@ public abstract class AbstractLexer {
             result.append(Symbol.LEFT_PAREN.getLiterals());
             nextToken();
             while (true) {
-                if (Literals.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
+                if (Assist.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
                     break;
                 }
                 if (Symbol.LEFT_PAREN == token) {

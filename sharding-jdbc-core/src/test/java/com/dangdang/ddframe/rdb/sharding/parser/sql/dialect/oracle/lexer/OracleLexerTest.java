@@ -1,7 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
 import org.junit.Test;
 
@@ -17,6 +17,6 @@ public final class OracleLexerTest {
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Literals.ERROR));
+        assertThat(lexer.getToken(), is((Token) Assist.ERROR));
     }
 }
