@@ -72,7 +72,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        tokenType = Literals.VARIANT;
+        tokenType = Literals.VARIABLE;
     }
     
     private boolean isVariableChar(final char ch) {

@@ -36,7 +36,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
         assertThat(lexer.getToken().getLiterals(), is("SELECT"));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.VARIANT));
+        assertThat(lexer.getToken().getType(), is((TokenType) Literals.VARIABLE));
         assertThat(lexer.getToken().getLiterals(), is("@x1"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Symbol.COLON_EQ));
@@ -61,7 +61,7 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
         assertThat(lexer.getToken().getLiterals(), is("="));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.VARIANT));
+        assertThat(lexer.getToken().getType(), is((TokenType) Literals.VARIABLE));
         assertThat(lexer.getToken().getLiterals(), is("@@global.x1"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
