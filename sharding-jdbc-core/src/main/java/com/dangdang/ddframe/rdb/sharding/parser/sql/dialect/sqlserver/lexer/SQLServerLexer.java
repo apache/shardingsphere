@@ -22,11 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
 public final class SQLServerLexer extends Lexer {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill(SQLServerKeyword.values());
-    }
+    private static Dictionary dictionary = new Dictionary(SQLServerKeyword.values());
     
     public SQLServerLexer(final String input) {
         super(input, dictionary);

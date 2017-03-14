@@ -48,9 +48,9 @@ public final class Tokenizer {
         return offset + length;
     }
     
-    void scanContentUntil(final char terminatedSign, final Token defaultToken, final boolean contentOnly) {
-        int position = offset + 1;
+    void scanContentUntil(final char terminatedSign, final Token defaultToken) {
         length = 2;
+        int position = offset + 1;
         while (terminatedSign != charAt(++position)) {
             if (CharTypes.EOI == charAt(position)) {
                 throw new UnterminatedSignException(terminatedSign);
@@ -58,13 +58,13 @@ public final class Tokenizer {
             length++;
         }
         length++;
-        literals = contentOnly ? input.substring(offset + 1, offset + length - 1) : input.substring(offset, offset + length);
+        literals = input.substring(offset, offset + length);
         token = dictionary.getToken(literals, defaultToken);
     }
     
     void scanVariable() {
-        int position = offset;
         length = 1;
+        int position = offset;
         if ('@' == charAt(position + 1)) {
             position++;
             length++;
@@ -81,8 +81,8 @@ public final class Tokenizer {
     }
     
     void scanIdentifier() {
-        int position = offset;
         length = 1;
+        int position = offset;
         while (isIdentifierChar(charAt(++position))) {
             length++;
         }
@@ -108,8 +108,8 @@ public final class Tokenizer {
     }
     
     void scanHexDecimal() {
-        int position = offset + 2;
         length = 3;
+        int position = offset + length - 1;
         if ('-' == charAt(position)) {
             position++;
             length++;
@@ -126,8 +126,8 @@ public final class Tokenizer {
     }
     
     void scanNumber() {
-        int position = offset;
         length = 0;
+        int position = offset;
         if ('-' == charAt(position)) {
             position++;
             length++;
@@ -192,8 +192,8 @@ public final class Tokenizer {
     }
     
     void scanChars() {
-        int position = offset + 1;
         length = 1;
+        int position = offset + length;
         while ('\'' != charAt(position) || hasEscapeChar(position)) {
             if (position >= input.length()) {
                 throw new UnterminatedSignException('\'');
@@ -215,8 +215,8 @@ public final class Tokenizer {
     }
     
     void scanHint() {
-        int position = offset + 4;
         length = 4;
+        int position = offset + length;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
                 throw new UnterminatedSignException("*/");
@@ -241,8 +241,8 @@ public final class Tokenizer {
     }
     
     void scanMultiLineComment() {
-        int position = offset + 3;
         length = 3;
+        int position = offset + length;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
                 throw new UnterminatedSignException("*/");

@@ -133,7 +133,7 @@ public class Lexer {
     protected void scanIdentifier() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         if ('`' == charAt(position)) {
-            tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER, false);
+            tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER);
         } else {
             tokenizer.scanIdentifier();
         }
@@ -240,7 +240,7 @@ public class Lexer {
     
     private void scanAlias() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanContentUntil('\"', GeneralLiterals.ALIAS, true);
+        tokenizer.scanContentUntil('\"', GeneralLiterals.ALIAS);
         setTokenizerResult(tokenizer);
     }
     

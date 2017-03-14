@@ -22,11 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
 public final class MySQLLexer extends Lexer {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill(MySQLKeyword.values());
-    }
+    private static Dictionary dictionary = new Dictionary(MySQLKeyword.values());
     
     public MySQLLexer(final String input) {
         super(input, dictionary);

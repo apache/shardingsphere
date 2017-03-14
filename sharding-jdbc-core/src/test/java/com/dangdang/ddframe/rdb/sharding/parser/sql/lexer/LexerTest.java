@@ -25,11 +25,7 @@ import static org.hamcrest.core.Is.is;
 
 public final class LexerTest {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill(new Keyword[0]);
-    }
+    private final Dictionary dictionary = new Dictionary();
     
     @Test
     public void assertNextTokenForWhitespace() {
@@ -224,11 +220,7 @@ public final class LexerTest {
     
     @Test
     public void assertNextTokenForAlias() {
-        assertNextTokenForAlias("xyz");
-    }
-    
-    private void assertNextTokenForAlias(final String str) {
-        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE AS \"%s\"", str), dictionary);
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE AS \"xyz\"", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
         assertThat(lexer.getLiterals(), is("SELECT"));
@@ -246,7 +238,7 @@ public final class LexerTest {
         assertThat(lexer.getLiterals(), is("AS"));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) GeneralLiterals.ALIAS));
-        assertThat(lexer.getLiterals(), is(str));
+        assertThat(lexer.getLiterals(), is("\"xyz\""));
         lexer.nextToken();
         assertThat(lexer.getToken(), is((Token) Assist.EOF));
     }

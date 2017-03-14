@@ -27,17 +27,13 @@ import java.util.Map;
  */
 public final class Dictionary {
     
-    private final Map<String, Token> tokens = new HashMap<>(1024);
+    private final Map<String, Keyword> tokens = new HashMap<>(1024);
     
-    /**
-     * 填充字典.
-     * 
-     * @param dialectKeywords 方言关键词
-     */
-    public void fill(final Keyword... dialectKeywords) {
-        for (Symbol each : Symbol.values()) {
-            tokens.put(each.getLiterals(), each);
-        }
+    public Dictionary(final Keyword... dialectKeywords) {
+        fill(dialectKeywords);
+    }
+    
+    private void fill(final Keyword... dialectKeywords) {
         for (DefaultKeyword each : DefaultKeyword.values()) {
             tokens.put(each.name(), each);
         }

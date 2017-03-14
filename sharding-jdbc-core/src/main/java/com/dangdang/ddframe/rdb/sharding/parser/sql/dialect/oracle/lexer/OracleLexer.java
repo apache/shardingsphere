@@ -22,11 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
 public final class OracleLexer extends Lexer {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill(OracleKeyword.values());
-    }
+    private static Dictionary dictionary = new Dictionary(OracleKeyword.values());
     
     public OracleLexer(final String input) {
         super(input, dictionary);

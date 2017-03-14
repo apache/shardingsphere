@@ -22,11 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
 public final class PostgreSQLLexer extends Lexer {
     
-    private static Dictionary dictionary = new Dictionary();
-    
-    static {
-        dictionary.fill(PostgreSQLKeyword.values());
-    }
+    private static Dictionary dictionary = new Dictionary(PostgreSQLKeyword.values());
     
     public PostgreSQLLexer(final String input) {
         super(input, dictionary);
