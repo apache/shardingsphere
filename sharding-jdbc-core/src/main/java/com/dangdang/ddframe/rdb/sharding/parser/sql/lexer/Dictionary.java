@@ -42,12 +42,12 @@ public final class Dictionary {
         }
     }
     
-    Token getToken(final String literals, final Token defaultToken) {
+    TokenType getToken(final String literals, final TokenType defaultTokenType) {
         String key = null == literals ? null : literals.toUpperCase();
-        return tokens.containsKey(key) ? tokens.get(key) : defaultToken;
+        return tokens.containsKey(key) ? tokens.get(key) : defaultTokenType;
     }
     
-    Token getToken(final String literals) {
+    TokenType getToken(final String literals) {
         String key = null == literals ? null : literals.toUpperCase();
         if (tokens.containsKey(key)) {
             return tokens.get(key);

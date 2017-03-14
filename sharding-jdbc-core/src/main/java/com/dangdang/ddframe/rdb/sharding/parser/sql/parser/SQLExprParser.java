@@ -87,14 +87,14 @@ public class SQLExprParser {
             if (lexer.equalToken(Symbol.LEFT_PAREN)) {
                 return Optional.absent();
             }
-            String result = SQLUtil.getExactlyValue(lexer.getLiterals());
+            String result = SQLUtil.getExactlyValue(lexer.getToken().getLiterals());
             lexer.nextToken();
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
         if (lexer.equalToken(GeneralLiterals.IDENTIFIER, GeneralLiterals.ALIAS, GeneralLiterals.CHARS, 
                 DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
-            String result = SQLUtil.getExactlyValue(lexer.getLiterals());
+            String result = SQLUtil.getExactlyValue(lexer.getToken().getLiterals());
             lexer.nextToken();
             return Optional.of(result);
         }
@@ -153,11 +153,11 @@ public class SQLExprParser {
             hasParentheses = true;
         }
         TableContext tableContext;
-        int beginPosition = getLexer().getPosition() - getLexer().getLiterals().length();
-        String literals = getLexer().getLiterals();
+        int beginPosition = getLexer().getPosition() - getLexer().getToken().getLiterals().length();
+        String literals = getLexer().getToken().getLiterals();
         getLexer().nextToken();
         if (getLexer().skipIfEqual(Symbol.DOT)) {
-            String tableName = getLexer().getLiterals();
+            String tableName = getLexer().getToken().getLiterals();
             getLexer().nextToken();
             if (hasParentheses) {
                 getLexer().accept(Symbol.RIGHT_PAREN);
@@ -200,7 +200,7 @@ public class SQLExprParser {
     
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         getLexer().skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
-        String literals = getLexer().getLiterals();
+        String literals = getLexer().getToken().getLiterals();
         if (getLexer().equalToken(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             getLexer().nextToken();
             return new CommonSelectItemContext(Symbol.STAR.getLiterals(), as(), index, true);
@@ -212,7 +212,7 @@ public class SQLExprParser {
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME 解析xxx.*
         while (!getLexer().equalToken(DefaultKeyword.AS) && !getLexer().equalToken(Symbol.COMMA) && !getLexer().equalToken(DefaultKeyword.FROM) && !getLexer().equalToken(Assist.EOF)) {
-            String value = getLexer().getLiterals();
+            String value = getLexer().getToken().getLiterals();
             int position = getLexer().getPosition() - value.length();
             expression.append(value);
             getLexer().nextToken();
@@ -246,7 +246,7 @@ public class SQLExprParser {
             parseComparisonCondition(sqlContext, parseContext);
         } while (lexer.skipIfEqual(DefaultKeyword.AND));
         if (lexer.equalToken(DefaultKeyword.OR)) {
-            throw new ParserUnsupportedException(lexer.getToken());
+            throw new ParserUnsupportedException(lexer.getToken().getType());
         }
     }
     
@@ -318,12 +318,12 @@ public class SQLExprParser {
     }
     
     public SQLExpr parseExpr() {
-        String literals = lexer.getLiterals();
+        String literals = lexer.getToken().getLiterals();
         if (lexer.equalToken(GeneralLiterals.IDENTIFIER)) {
             SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
             getLexer().nextToken();
             if (lexer.skipIfEqual(Symbol.DOT)) {
-                String property = lexer.getLiterals();
+                String property = lexer.getToken().getLiterals();
                 getLexer().nextToken();
                 if (!lexer.equalToken(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
                     return new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);

@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public enum Symbol implements Token {
+public enum Symbol implements TokenType {
     
     LEFT_PAREN("("),
     RIGHT_PAREN(")"),

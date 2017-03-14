@@ -4,7 +4,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,31 +16,31 @@ public final class SQLServerLexerTest {
     public void assertNextTokenForVariable() {
         SQLServerLexer lexer = new SQLServerLexer("SELECT @x1:=1, @@global.x1 FROM TABLE_XXX");
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
-        assertThat(lexer.getLiterals(), is("SELECT"));
+        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
+        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) GeneralLiterals.VARIANT));
-        assertThat(lexer.getLiterals(), is("@x1"));
+        assertThat(lexer.getToken().getType(), is((TokenType) GeneralLiterals.VARIANT));
+        assertThat(lexer.getToken().getLiterals(), is("@x1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Symbol.COLON_EQ));
-        assertThat(lexer.getLiterals(), is(":="));
+        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.COLON_EQ));
+        assertThat(lexer.getToken().getLiterals(), is(":="));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) GeneralLiterals.INT));
-        assertThat(lexer.getLiterals(), is("1"));
+        assertThat(lexer.getToken().getType(), is((TokenType) GeneralLiterals.INT));
+        assertThat(lexer.getToken().getLiterals(), is("1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Symbol.COMMA));
-        assertThat(lexer.getLiterals(), is(","));
+        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.COMMA));
+        assertThat(lexer.getToken().getLiterals(), is(","));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) GeneralLiterals.VARIANT));
-        assertThat(lexer.getLiterals(), is("@@global.x1"));
+        assertThat(lexer.getToken().getType(), is((TokenType) GeneralLiterals.VARIANT));
+        assertThat(lexer.getToken().getLiterals(), is("@@global.x1"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DefaultKeyword.FROM));
-        assertThat(lexer.getLiterals(), is("FROM"));
+        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
+        assertThat(lexer.getToken().getLiterals(), is("FROM"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) GeneralLiterals.IDENTIFIER));
-        assertThat(lexer.getLiterals(), is("TABLE_XXX"));
-        assertThat(lexer.getLiterals(), is("TABLE_XXX"));
+        assertThat(lexer.getToken().getType(), is((TokenType) GeneralLiterals.IDENTIFIER));
+        assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
+        assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Assist.EOF));
+        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }
 }

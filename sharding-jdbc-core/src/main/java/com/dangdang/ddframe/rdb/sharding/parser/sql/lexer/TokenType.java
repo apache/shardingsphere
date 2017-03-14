@@ -18,11 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
 /**
- * 辅助标记.
+ * 标记类型.
  *
  * @author zhangliang
  */
-public enum Assist implements TokenType {
-    
-    EOF, ERROR
+public interface TokenType {
 }

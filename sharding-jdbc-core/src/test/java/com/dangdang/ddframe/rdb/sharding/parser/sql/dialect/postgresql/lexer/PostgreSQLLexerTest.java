@@ -2,7 +2,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,9 +14,9 @@ public final class PostgreSQLLexerTest {
     public void assertNextTokenForVariable() {
         PostgreSQLLexer lexer = new PostgreSQLLexer("SELECT @@x1 FROM TABLE_XXX");
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) DefaultKeyword.SELECT));
-        assertThat(lexer.getLiterals(), is("SELECT"));
+        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
+        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
         lexer.nextToken();
-        assertThat(lexer.getToken(), is((Token) Assist.ERROR));
+        assertThat(lexer.getToken().getType(), is((TokenType) Assist.ERROR));
     }
 }

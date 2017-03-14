@@ -42,13 +42,13 @@ public final class Tokenizer {
     private String literals;
     
     @Getter(AccessLevel.PACKAGE)
-    private Token token;
+    private TokenType tokenType;
     
     int getCurrentPosition() {
         return offset + length;
     }
     
-    void scanContentUntil(final char terminatedSign, final Token defaultToken) {
+    void scanContentUntil(final char terminatedSign, final TokenType defaultTokenType) {
         length = 2;
         int position = offset + 1;
         while (terminatedSign != charAt(++position)) {
@@ -59,7 +59,7 @@ public final class Tokenizer {
         }
         length++;
         literals = input.substring(offset, offset + length);
-        token = dictionary.getToken(literals, defaultToken);
+        tokenType = dictionary.getToken(literals, defaultTokenType);
     }
     
     void scanVariable() {
@@ -73,7 +73,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = GeneralLiterals.VARIANT;
+        tokenType = GeneralLiterals.VARIANT;
     }
     
     private boolean isVariableChar(final char ch) {
@@ -94,12 +94,12 @@ public final class Tokenizer {
                 i++;
             }
             if (DefaultKeyword.BY.toString().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
-                token = dictionary.getToken(literals);
+                tokenType = dictionary.getToken(literals);
             } else {
-                token = GeneralLiterals.IDENTIFIER;
+                tokenType = GeneralLiterals.IDENTIFIER;
             }
         } else {
-            token = dictionary.getToken(literals, GeneralLiterals.IDENTIFIER);
+            tokenType = dictionary.getToken(literals, GeneralLiterals.IDENTIFIER);
         }
     }
     
@@ -118,7 +118,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = GeneralLiterals.HEX;
+        tokenType = GeneralLiterals.HEX;
     }
     
     private boolean isHex(final char ch) {
@@ -142,7 +142,7 @@ public final class Tokenizer {
             if ('.' == charAt(position + 1)) {
                 length++;
                 literals = input.substring(offset, offset + length);
-                token = GeneralLiterals.INT;
+                tokenType = GeneralLiterals.INT;
                 return;
             }
             isFloat = true;
@@ -174,17 +174,17 @@ public final class Tokenizer {
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = OracleLiterals.BINARY_FLOAT;
+            tokenType = OracleLiterals.BINARY_FLOAT;
             return;
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            token = OracleLiterals.BINARY_DOUBLE;
+            tokenType = OracleLiterals.BINARY_DOUBLE;
             return;
         }
         literals = input.substring(offset, offset + length);
-        token = isFloat ? GeneralLiterals.FLOAT : GeneralLiterals.INT;
+        tokenType = isFloat ? GeneralLiterals.FLOAT : GeneralLiterals.INT;
     }
     
     private boolean isDigital(final char ch) {
@@ -207,7 +207,7 @@ public final class Tokenizer {
         }
         length++;
         literals = input.substring(offset + 1, offset + length - 1);
-        token = GeneralLiterals.CHARS;
+        tokenType = GeneralLiterals.CHARS;
     }
     
     private boolean hasEscapeChar(final int position) {
@@ -226,7 +226,7 @@ public final class Tokenizer {
         }
         length += 2;
         literals = input.substring(offset + 4, offset + length - 2);
-        token = GeneralLiterals.HINT;
+        tokenType = GeneralLiterals.HINT;
     }
     
     void scanSingleLineComment(final int commentFlagLength) {
@@ -237,7 +237,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        token = GeneralLiterals.COMMENT;
+        tokenType = GeneralLiterals.COMMENT;
     }
     
     void scanMultiLineComment() {
@@ -252,7 +252,7 @@ public final class Tokenizer {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        token = GeneralLiterals.COMMENT;
+        tokenType = GeneralLiterals.COMMENT;
     }
     
     void scanSymbol(final int charLength) {
@@ -264,7 +264,7 @@ public final class Tokenizer {
             length++;
         }
         literals = String.valueOf(symbolChars);
-        token = Symbol.literalsOf(literals);
+        tokenType = Symbol.literalsOf(literals);
     }
     
     private char charAt(final int index) {

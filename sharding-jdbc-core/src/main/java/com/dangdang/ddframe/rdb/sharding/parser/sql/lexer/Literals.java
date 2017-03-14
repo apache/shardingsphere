@@ -5,5 +5,5 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
  *
  * @author zhangliang
  */
-public interface Literals extends Token {
+public interface Literals extends TokenType {
 }

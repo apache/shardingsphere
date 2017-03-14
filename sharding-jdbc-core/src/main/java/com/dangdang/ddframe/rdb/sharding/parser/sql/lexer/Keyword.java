@@ -22,5 +22,5 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
  *
  * @author zhangliang
  */
-public interface Keyword extends Token {
+public interface Keyword extends TokenType {
 }

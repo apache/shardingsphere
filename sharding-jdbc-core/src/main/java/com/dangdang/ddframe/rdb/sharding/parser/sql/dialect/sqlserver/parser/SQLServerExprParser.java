@@ -78,7 +78,7 @@ public class SQLServerExprParser extends SQLExprParser {
         int offset;
         int offsetIndex = -1;
         if (getLexer().equalToken(GeneralLiterals.INT)) {
-            offset = Integer.parseInt(getLexer().getLiterals());
+            offset = Integer.parseInt(getLexer().getToken().getLiterals());
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
             offset = (int) getParameters().get(offsetIndex);
@@ -94,7 +94,7 @@ public class SQLServerExprParser extends SQLExprParser {
             int rowCountIndex = -1;
             getLexer().nextToken();
             if (getLexer().equalToken(GeneralLiterals.INT)) {
-                rowCount = Integer.parseInt(getLexer().getLiterals());
+                rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
             } else if (getLexer().equalToken(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
                 rowCount = (int) getParameters().get(rowCountIndex);

@@ -46,7 +46,7 @@ public class MySQLExprParser extends SQLExprParser {
         int value;
         boolean isParameterForValue = false;
         if (getLexer().equalToken(GeneralLiterals.INT)) {
-            value = Integer.parseInt(getLexer().getLiterals());
+            value = Integer.parseInt(getLexer().getToken().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
             valueIndex = parametersIndex;
@@ -78,7 +78,7 @@ public class MySQLExprParser extends SQLExprParser {
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
         if (getLexer().equalToken(GeneralLiterals.INT)) {
-            rowCount = Integer.parseInt(getLexer().getLiterals());
+            rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
             rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
@@ -107,7 +107,7 @@ public class MySQLExprParser extends SQLExprParser {
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
         if (getLexer().equalToken(GeneralLiterals.INT)) {
-            offset = Integer.parseInt(getLexer().getLiterals());
+            offset = Integer.parseInt(getLexer().getToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
         } else if (getLexer().equalToken(Symbol.QUESTION)) {
             offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;

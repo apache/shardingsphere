@@ -107,12 +107,12 @@ public abstract class AbstractSelectParser {
             }
             index++;
         } while (getExprParser().getLexer().skipIfEqual(Symbol.COMMA));
-        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getPosition() - getExprParser().getLexer().getLiterals().length());
+        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getPosition() - getExprParser().getLexer().getToken().getLiterals().length());
     }
     
     protected void queryRest() {
         if (getExprParser().getLexer().equalToken(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
         }
     }
     
@@ -137,7 +137,7 @@ public abstract class AbstractSelectParser {
                 }
                 getExprParser().getLexer().nextToken();
             }
-            while (getExprParser().getLexer().equalToken(DefaultKeyword.WITH) || getExprParser().getLexer().getLiterals().equalsIgnoreCase("ROLLUP")) {
+            while (getExprParser().getLexer().equalToken(DefaultKeyword.WITH) || getExprParser().getLexer().getToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
                 getExprParser().getLexer().nextToken();
             }
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.HAVING)) {
@@ -180,8 +180,8 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void parseTableFactor() {
-        int beginPosition = getExprParser().getLexer().getPosition() - getExprParser().getLexer().getLiterals().length();
-        String literals = getExprParser().getLexer().getLiterals();
+        int beginPosition = getExprParser().getLexer().getPosition() - getExprParser().getLexer().getToken().getLiterals().length();
+        String literals = getExprParser().getLexer().getToken().getLiterals();
         getExprParser().getLexer().nextToken();
         if (getExprParser().getLexer().skipIfEqual(Symbol.DOT)) {
             getExprParser().getLexer().nextToken();
@@ -201,7 +201,7 @@ public abstract class AbstractSelectParser {
                 do {
                     parseTableCondition(getExprParser().getLexer().getPosition());
                     getExprParser().getLexer().accept(Symbol.EQ);
-                    parseTableCondition(getExprParser().getLexer().getPosition() - getExprParser().getLexer().getLiterals().length());
+                    parseTableCondition(getExprParser().getLexer().getPosition() - getExprParser().getLexer().getToken().getLiterals().length());
                 } while (getExprParser().getLexer().skipIfEqual(DefaultKeyword.AND));
             } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.USING)) {
                 getExprParser().getLexer().skipParentheses();

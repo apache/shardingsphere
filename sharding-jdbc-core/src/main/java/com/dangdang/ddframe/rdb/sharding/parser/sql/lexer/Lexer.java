@@ -46,9 +46,6 @@ public class Lexer {
     @Setter(AccessLevel.PROTECTED)
     private Token token;
     
-    @Getter
-    private String literals;
-    
     /**
      * 跳至下一个语言符号.
      */
@@ -99,11 +96,10 @@ public class Lexer {
             return;
         }
         if (isEOF()) {
-            token = Assist.EOF;
+            token = new Token(Assist.EOF, "", position);
         } else {
-            token = Assist.ERROR;
+            token = new Token(Assist.ERROR, "", position);
         }
-        literals = "";
     }
     
     private void skipWhitespace() {
@@ -245,8 +241,7 @@ public class Lexer {
     }
     
     private void setTokenizerResult(final Tokenizer tokenizer) {
-        literals = tokenizer.getLiterals();
-        token = tokenizer.getToken();
+        token = new Token(tokenizer.getTokenType(), tokenizer.getLiterals(), tokenizer.getCurrentPosition());
         position = tokenizer.getCurrentPosition();
     }
     
@@ -262,23 +257,23 @@ public class Lexer {
         return ++position;
     }
     
-    public final void accept(final Token token) {
-        if (this.token == token) {
+    public final void accept(final TokenType tokenType) {
+        if (this.token.getType() == tokenType) {
             nextToken();
             return;
         }
-        throw new ParserException(this, token);
+        throw new ParserException(this, tokenType);
     }
     
     /**
      * 判断当前语言标记是否和其中一个传入的标记相等.
      * 
-     * @param tokens 待判断的标记
+     * @param tokenTypes 待判断的标记
      * @return 是否有相等的标记
      */
-    public final boolean equalToken(final Token... tokens) {
-        for (Token each : tokens) {
-            if (each == token) {
+    public final boolean equalToken(final TokenType... tokenTypes) {
+        for (TokenType each : tokenTypes) {
+            if (each == token.getType()) {
                 return true;
             }
         }
@@ -289,11 +284,11 @@ public class Lexer {
     /**
      * 如果当前语言符号等于传入值, 则跳过.
      *
-     * @param tokens 待跳过的语言符号
+     * @param tokenTypes 待跳过的语言符号
      * @return 是否跳过(或可理解为是否相等)
      */
-    public final boolean skipIfEqual(final Token... tokens) {
-        for (Token each : tokens) {
+    public final boolean skipIfEqual(final TokenType... tokenTypes) {
+        for (TokenType each : tokenTypes) {
             if (equalToken(each)) {
                 nextToken();
                 return true;
@@ -305,12 +300,12 @@ public class Lexer {
     /**
      * 直接跳转至传入的语言符号.
      *
-     * @param tokens 跳转至的语言符号
+     * @param tokenTypes 跳转至的语言符号
      */
-    public final void skipUntil(final Token... tokens) {
-        Set<Token> tokenSet = Sets.newHashSet(tokens);
-        tokenSet.add(Assist.EOF);
-        while (!tokenSet.contains(token)) {
+    public final void skipUntil(final TokenType... tokenTypes) {
+        Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
+        tokenTypeSet.add(Assist.EOF);
+        while (!tokenTypeSet.contains(token.getType())) {
             nextToken();
         }
     }
@@ -323,17 +318,17 @@ public class Lexer {
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;
-        if (Symbol.LEFT_PAREN == token) {
+        if (Symbol.LEFT_PAREN == token.getType()) {
             int beginPosition = position;
             result.append(Symbol.LEFT_PAREN.getLiterals());
             nextToken();
             while (true) {
-                if (Assist.EOF == token || (Symbol.RIGHT_PAREN == token && 0 == count)) {
+                if (Assist.EOF == token.getType() || (Symbol.RIGHT_PAREN == token.getType() && 0 == count)) {
                     break;
                 }
-                if (Symbol.LEFT_PAREN == token) {
+                if (Symbol.LEFT_PAREN == token.getType()) {
                     count++;
-                } else if (Symbol.RIGHT_PAREN == token) {
+                } else if (Symbol.RIGHT_PAREN == token.getType()) {
                     count--;
                 }
                 nextToken();

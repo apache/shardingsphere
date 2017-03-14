@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Token;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 
 public class ParserUnsupportedException extends RuntimeException {
     
@@ -25,7 +25,7 @@ public class ParserUnsupportedException extends RuntimeException {
     
     private static final String MESSAGE = "Not supported token '%s'.";
     
-    public ParserUnsupportedException(final Token token) {
-        super(String.format(MESSAGE, token.toString()));
+    public ParserUnsupportedException(final TokenType tokenType) {
+        super(String.format(MESSAGE, tokenType.toString()));
     }
 }

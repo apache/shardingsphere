@@ -65,11 +65,11 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().accept(Symbol.EQ);
             SQLExpr sqlExpr;
             if (getExprParser().getLexer().equalToken(GeneralLiterals.INT)) {
-                sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getLiterals()));
+                sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getToken().getLiterals()));
             } else if (getExprParser().getLexer().equalToken(GeneralLiterals.FLOAT)) {
-                sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getLiterals()));
+                sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getToken().getLiterals()));
             } else if (getExprParser().getLexer().equalToken(GeneralLiterals.CHARS)) {
-                sqlExpr = new SQLCharExpr(getExprParser().getLexer().getLiterals());
+                sqlExpr = new SQLCharExpr(getExprParser().getLexer().getToken().getLiterals());
             } else if (getExprParser().getLexer().equalToken(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
             } else if (getExprParser().getLexer().equalToken(Symbol.QUESTION)) {
