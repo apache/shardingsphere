@@ -115,7 +115,7 @@ public class Lexer {
     private Token scanIdentifier() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         if ('`' == currentChar()) {
-            tokenizer.scanContentUntil('`', Literals.IDENTIFIER);
+            tokenizer.scanUntil('`', Literals.IDENTIFIER);
         } else {
             tokenizer.scanIdentifier();
         }
@@ -222,7 +222,7 @@ public class Lexer {
     
     private Token scanAlias() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanContentUntil('\"', Literals.ALIAS);
+        tokenizer.scanUntil('\"', Literals.ALIAS);
         return new Token(tokenizer);
     }
     
@@ -238,21 +238,25 @@ public class Lexer {
         return position + offset >= input.length() ? (char) CharTypes.EOI : input.charAt(position + offset);
     }
     
+    /**
+     * 断言当前标记类型与传入值相等并跳过.
+     * 
+     * @param tokenType 待判断的标记类型
+     */
     public final void accept(final TokenType tokenType) {
-        if (this.token.getType() == tokenType) {
-            nextToken();
-            return;
+        if (token.getType() != tokenType) {
+            throw new ParserException(this, tokenType);
         }
-        throw new ParserException(this, tokenType);
+        nextToken();
     }
     
     /**
      * 判断当前语言标记是否和其中一个传入的标记相等.
      * 
-     * @param tokenTypes 待判断的标记
-     * @return 是否有相等的标记
+     * @param tokenTypes 待判断的标记类型
+     * @return 是否有相等的标记类型
      */
-    public final boolean equalToken(final TokenType... tokenTypes) {
+    public final boolean equal(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
             if (each == token.getType()) {
                 return true;
@@ -260,7 +264,6 @@ public class Lexer {
         }
         return false;
     }
-    
     
     /**
      * 如果当前语言符号等于传入值, 则跳过.
@@ -270,7 +273,7 @@ public class Lexer {
      */
     public final boolean skipIfEqual(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
-            if (equalToken(each)) {
+            if (equal(each)) {
                 nextToken();
                 return true;
             }

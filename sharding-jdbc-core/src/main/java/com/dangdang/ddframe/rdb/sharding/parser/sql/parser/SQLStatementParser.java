@@ -54,19 +54,19 @@ public final class SQLStatementParser {
      */
     public SQLContext parseStatement() {
         exprParser.getLexer().skipIfEqual(Symbol.SEMI);
-        if (exprParser.getLexer().equalToken(DefaultKeyword.WITH)) {
+        if (exprParser.getLexer().equal(DefaultKeyword.WITH)) {
             skipWith();
         }
-        if (exprParser.getLexer().equalToken(DefaultKeyword.SELECT)) {
+        if (exprParser.getLexer().equal(DefaultKeyword.SELECT)) {
             return SQLSelectParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(DefaultKeyword.INSERT)) {
+        if (exprParser.getLexer().equal(DefaultKeyword.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(DefaultKeyword.UPDATE)) {
+        if (exprParser.getLexer().equal(DefaultKeyword.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equalToken(DefaultKeyword.DELETE)) {
+        if (exprParser.getLexer().equal(DefaultKeyword.DELETE)) {
             return SQLDeleteParserFactory.newInstance(exprParser, dbType).parse();
         }
         throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());

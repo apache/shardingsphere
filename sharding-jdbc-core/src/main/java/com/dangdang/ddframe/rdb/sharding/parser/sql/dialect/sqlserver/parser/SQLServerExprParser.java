@@ -41,12 +41,12 @@ public class SQLServerExprParser extends SQLExprParser {
     
     public SQLServerTop parseTop() {
         // TODO
-//        if (getLexer().equalToken(SQLServerKeyword.TOP)) {
+//        if (getLexer().equal(SQLServerKeyword.TOP)) {
 //            SQLServerTop top = new SQLServerTop();
 //            getLexer().nextToken();
 //            
 //            boolean paren = false;
-//            if (getLexer().equalToken(Symbol.LEFT_PAREN)) {
+//            if (getLexer().equal(Symbol.LEFT_PAREN)) {
 //                paren = true;
 //                getLexer().nextToken();
 //            }
@@ -57,7 +57,7 @@ public class SQLServerExprParser extends SQLExprParser {
 //                getLexer().accept(Symbol.RIGHT_PAREN);
 //            }
 //            
-//            if (getLexer().equalToken(SQLServerKeyword.PERCENT)) {
+//            if (getLexer().equal(SQLServerKeyword.PERCENT)) {
 //                getLexer().nextToken();
 //                top.setPercent(true);
 //            }
@@ -68,7 +68,7 @@ public class SQLServerExprParser extends SQLExprParser {
     }
     
     protected void skipOutput() {
-        if (getLexer().equalToken(SQLServerKeyword.OUTPUT)) {
+        if (getLexer().equal(SQLServerKeyword.OUTPUT)) {
             throw new ParserUnsupportedException(SQLServerKeyword.OUTPUT);
         }
     }
@@ -77,9 +77,9 @@ public class SQLServerExprParser extends SQLExprParser {
         getLexer().nextToken();
         int offset;
         int offsetIndex = -1;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equal(Literals.INT)) {
             offset = Integer.parseInt(getLexer().getToken().getLiterals());
-        } else if (getLexer().equalToken(Symbol.QUESTION)) {
+        } else if (getLexer().equal(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
             offset = (int) getParameters().get(offsetIndex);
             setParametersIndex(offsetIndex + 1);
@@ -93,9 +93,9 @@ public class SQLServerExprParser extends SQLExprParser {
             int rowCount;
             int rowCountIndex = -1;
             getLexer().nextToken();
-            if (getLexer().equalToken(Literals.INT)) {
+            if (getLexer().equal(Literals.INT)) {
                 rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
-            } else if (getLexer().equalToken(Symbol.QUESTION)) {
+            } else if (getLexer().equal(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
                 rowCount = (int) getParameters().get(rowCountIndex);
                 setParametersIndex(rowCountIndex + 1);

@@ -47,7 +47,7 @@ public final class Tokenizer {
         return offset + length;
     }
     
-    void scanContentUntil(final char terminatedSign, final TokenType defaultTokenType) {
+    void scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
         length = 2;
         int position = offset + 1;
         while (terminatedSign != charAt(++position)) {
@@ -86,17 +86,8 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        String upperCaseLiterals = literals.toUpperCase();
-        if (DefaultKeyword.ORDER.toString().equals(upperCaseLiterals) || DefaultKeyword.GROUP.toString().equals(upperCaseLiterals)) {
-            int i = 0;
-            while (CharTypes.isWhitespace(charAt(position + i))) {
-                i++;
-            }
-            if (DefaultKeyword.BY.toString().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
-                tokenType = dictionary.getToken(literals);
-            } else {
-                tokenType = Literals.IDENTIFIER;
-            }
+        if (isAmbiguousIdentifier()) {
+            processAmbiguousIdentifier(position);
         } else {
             tokenType = dictionary.getToken(literals, Literals.IDENTIFIER);
         }
@@ -104,6 +95,22 @@ public final class Tokenizer {
     
     private boolean isIdentifierChar(final char ch) {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || '_' == ch || '$' == ch || '#' == ch;
+    }
+    
+    private boolean isAmbiguousIdentifier() {
+        return DefaultKeyword.ORDER.name().equalsIgnoreCase(literals) || DefaultKeyword.GROUP.name().equalsIgnoreCase(literals);
+    }
+    
+    private void processAmbiguousIdentifier(final int position) {
+        int i = 0;
+        while (CharTypes.isWhitespace(charAt(position + i))) {
+            i++;
+        }
+        if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
+            tokenType = dictionary.getToken(literals);
+        } else {
+            tokenType = Literals.IDENTIFIER;
+        }
     }
     
     void scanHexDecimal() {

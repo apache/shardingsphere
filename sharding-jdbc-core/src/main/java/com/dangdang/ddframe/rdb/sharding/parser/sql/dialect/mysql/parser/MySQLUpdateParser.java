@@ -34,7 +34,7 @@ public final class MySQLUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        while (getExprParser().getLexer().equalToken(MySQLKeyword.LOW_PRIORITY) || getExprParser().getLexer().equalToken(MySQLKeyword.IGNORE)) {
+        while (getExprParser().getLexer().equal(MySQLKeyword.LOW_PRIORITY) || getExprParser().getLexer().equal(MySQLKeyword.IGNORE)) {
             getExprParser().getLexer().nextToken();
         }
     }

@@ -33,29 +33,29 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void customizedSelect() {
-        if (getExprParser().getLexer().equalToken(DefaultKeyword.FOR)) {
+        if (getExprParser().getLexer().equal(DefaultKeyword.FOR)) {
             parseFor();
         }
-        if (getExprParser().getLexer().equalToken(SQLServerKeyword.OFFSET)) {
+        if (getExprParser().getLexer().equal(SQLServerKeyword.OFFSET)) {
             ((SQLServerExprParser) getExprParser()).parseOffset(getSqlContext());
         }
     }
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equalToken(DefaultKeyword.SELECT)) {
+        if (getExprParser().getLexer().equal(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equalToken(Literals.COMMENT)) {
+            if (getExprParser().getLexer().equal(Literals.COMMENT)) {
                 getExprParser().getLexer().nextToken();
             }
             parseDistinct();
-            if (getExprParser().getLexer().equalToken(SQLServerKeyword.TOP)) {
+            if (getExprParser().getLexer().equal(SQLServerKeyword.TOP)) {
                 // TODO save topContext
                 ((SQLServerExprParser) getExprParser()).parseTop();
             }
             parseSelectList();
         }
-        if (getExprParser().getLexer().equalToken(DefaultKeyword.INTO)) {
+        if (getExprParser().getLexer().equal(DefaultKeyword.INTO)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
         }
         parseFrom();
@@ -74,18 +74,18 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     private void parseFor() {
         getExprParser().getLexer().nextToken();
-        if (getExprParser().getLexer().equalToken(SQLServerKeyword.BROWSE)) {
+        if (getExprParser().getLexer().equal(SQLServerKeyword.BROWSE)) {
             getExprParser().getLexer().nextToken();
         } else if (getExprParser().getLexer().skipIfEqual(SQLServerKeyword.XML)) {
             while (true) {
-                if (getExprParser().getLexer().equalToken(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
+                if (getExprParser().getLexer().equal(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
                     getExprParser().getLexer().nextToken();
                 } else if (getExprParser().getLexer().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
                     getExprParser().getLexer().skipIfEqual(SQLServerKeyword.XSINIL);
                 } else {
                     break;
                 }
-                if (getExprParser().getLexer().equalToken(Symbol.COMMA)) {
+                if (getExprParser().getLexer().equal(Symbol.COMMA)) {
                     getExprParser().getLexer().nextToken();
                 } else {
                     break;

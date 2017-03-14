@@ -45,10 +45,10 @@ public class MySQLExprParser extends SQLExprParser {
         int valueBeginPosition = getLexer().getToken().getBeginPosition();
         int value;
         boolean isParameterForValue = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equal(Literals.INT)) {
             value = Integer.parseInt(getLexer().getToken().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
-        } else if (getLexer().equalToken(Symbol.QUESTION)) {
+        } else if (getLexer().equal(Symbol.QUESTION)) {
             valueIndex = parametersIndex;
             value = (int) getParameters().get(valueIndex);
             valueBeginPosition--;
@@ -77,10 +77,10 @@ public class MySQLExprParser extends SQLExprParser {
         int rowCount;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equal(Literals.INT)) {
             rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
-        } else if (getLexer().equalToken(Symbol.QUESTION)) {
+        } else if (getLexer().equal(Symbol.QUESTION)) {
             rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
             rowCount = (int) getParameters().get(rowCountIndex);
             rowCountBeginPosition--;
@@ -106,10 +106,10 @@ public class MySQLExprParser extends SQLExprParser {
         int offset;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
-        if (getLexer().equalToken(Literals.INT)) {
+        if (getLexer().equal(Literals.INT)) {
             offset = Integer.parseInt(getLexer().getToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-        } else if (getLexer().equalToken(Symbol.QUESTION)) {
+        } else if (getLexer().equal(Symbol.QUESTION)) {
             offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
             offset = (int) getParameters().get(offsetIndex);
             offsetBeginPosition--;
