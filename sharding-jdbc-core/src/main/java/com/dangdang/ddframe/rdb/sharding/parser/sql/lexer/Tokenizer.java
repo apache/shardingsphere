@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLiterals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerLiterals;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -209,12 +208,6 @@ public final class Tokenizer {
         length++;
         literals = input.substring(offset + 1, offset + length - 1);
         tokenType = GeneralLiterals.CHARS;
-    }
-    
-    void scanNChars() {
-        length = 2;
-        scanChars();
-        tokenType = SQLServerLiterals.NCHARS;
     }
     
     private boolean hasEscapeChar(final int position) {

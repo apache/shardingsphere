@@ -53,7 +53,8 @@ public class Lexer {
         if (isVariableBegin()) {
             token = scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
-            token = scanNChars();
+            position++;
+            token = scanChars();
         } else if (isIdentifierBegin()) {
             token = scanIdentifier();
         } else if (isHexDecimalBegin()) {
@@ -104,12 +105,6 @@ public class Lexer {
     
     private boolean isNCharBegin() {
         return 'N' == currentChar() && '\'' == currentCharAt(1);
-    }
-    
-    private Token scanNChars() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanNChars();
-        return new Token(tokenizer);
     }
     
     private boolean isIdentifierBegin() {
