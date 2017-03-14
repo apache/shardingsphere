@@ -19,10 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
 import com.google.common.collect.Sets;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Set;
 
@@ -42,7 +40,6 @@ public class Lexer {
     private int position;
     
     @Getter
-    @Setter(AccessLevel.PROTECTED)
     private Token token;
     
     /**
