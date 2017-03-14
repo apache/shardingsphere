@@ -118,7 +118,7 @@ public class Lexer {
     private Token scanIdentifier() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         if ('`' == currentChar()) {
-            tokenizer.scanContentUntil('`', GeneralLiterals.IDENTIFIER);
+            tokenizer.scanContentUntil('`', Literals.IDENTIFIER);
         } else {
             tokenizer.scanIdentifier();
         }
@@ -225,7 +225,7 @@ public class Lexer {
     
     private Token scanAlias() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanContentUntil('\"', GeneralLiterals.ALIAS);
+        tokenizer.scanContentUntil('\"', Literals.ALIAS);
         return new Token(tokenizer);
     }
     

@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -71,7 +71,7 @@ public abstract class AbstractSelectParser {
     
     protected void query() {
         getExprParser().getLexer().accept(DefaultKeyword.SELECT);
-        getExprParser().getLexer().skipIfEqual(GeneralLiterals.COMMENT);
+        getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
         parseDistinct();
         parseSelectList();
         parseFrom();
@@ -194,7 +194,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseJoinTable() {
-        getExprParser().getLexer().skipIfEqual(GeneralLiterals.HINT);
+        getExprParser().getLexer().skipIfEqual(Literals.HINT);
         if (getExprParser().isJoin()) {
             parseTable();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.ON)) {

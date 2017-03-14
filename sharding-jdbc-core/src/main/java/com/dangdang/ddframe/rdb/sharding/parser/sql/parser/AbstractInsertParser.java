@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -90,7 +90,7 @@ public abstract class AbstractInsertParser {
     }
     
     private void parseInto() {
-        exprParser.getLexer().skipIfEqual(GeneralLiterals.HINT);
+        exprParser.getLexer().skipIfEqual(Literals.HINT);
         if (getUnsupportedKeywords().contains(exprParser.getLexer().getToken().getType())) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());
         }

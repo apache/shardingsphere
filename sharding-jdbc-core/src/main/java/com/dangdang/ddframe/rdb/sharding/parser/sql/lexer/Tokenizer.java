@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLiterals;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +72,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        tokenType = GeneralLiterals.VARIANT;
+        tokenType = Literals.VARIANT;
     }
     
     private boolean isVariableChar(final char ch) {
@@ -96,10 +95,10 @@ public final class Tokenizer {
             if (DefaultKeyword.BY.toString().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
                 tokenType = dictionary.getToken(literals);
             } else {
-                tokenType = GeneralLiterals.IDENTIFIER;
+                tokenType = Literals.IDENTIFIER;
             }
         } else {
-            tokenType = dictionary.getToken(literals, GeneralLiterals.IDENTIFIER);
+            tokenType = dictionary.getToken(literals, Literals.IDENTIFIER);
         }
     }
     
@@ -118,7 +117,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        tokenType = GeneralLiterals.HEX;
+        tokenType = Literals.HEX;
     }
     
     private boolean isHex(final char ch) {
@@ -142,7 +141,7 @@ public final class Tokenizer {
             if ('.' == charAt(position + 1)) {
                 length++;
                 literals = input.substring(offset, offset + length);
-                tokenType = GeneralLiterals.INT;
+                tokenType = Literals.INT;
                 return;
             }
             isFloat = true;
@@ -170,21 +169,20 @@ public final class Tokenizer {
                 length++;
             }
         }
-        // TODO ORACLE拆分
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            tokenType = OracleLiterals.BINARY_FLOAT;
+            tokenType = Literals.FLOAT;
             return;
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
             literals = input.substring(offset, offset + length);
-            tokenType = OracleLiterals.BINARY_DOUBLE;
+            tokenType = Literals.FLOAT;
             return;
         }
         literals = input.substring(offset, offset + length);
-        tokenType = isFloat ? GeneralLiterals.FLOAT : GeneralLiterals.INT;
+        tokenType = isFloat ? Literals.FLOAT : Literals.INT;
     }
     
     private boolean isDigital(final char ch) {
@@ -207,7 +205,7 @@ public final class Tokenizer {
         }
         length++;
         literals = input.substring(offset + 1, offset + length - 1);
-        tokenType = GeneralLiterals.CHARS;
+        tokenType = Literals.CHARS;
     }
     
     private boolean hasEscapeChar(final int position) {
@@ -226,7 +224,7 @@ public final class Tokenizer {
         }
         length += 2;
         literals = input.substring(offset + 4, offset + length - 2);
-        tokenType = GeneralLiterals.HINT;
+        tokenType = Literals.HINT;
     }
     
     void scanSingleLineComment(final int commentFlagLength) {
@@ -237,7 +235,7 @@ public final class Tokenizer {
             length++;
         }
         literals = input.substring(offset, offset + length);
-        tokenType = GeneralLiterals.COMMENT;
+        tokenType = Literals.COMMENT;
     }
     
     void scanMultiLineComment() {
@@ -252,7 +250,7 @@ public final class Tokenizer {
         }
         length += 2;
         literals = input.substring(offset, offset + length);
-        tokenType = GeneralLiterals.COMMENT;
+        tokenType = Literals.COMMENT;
     }
     
     void scanSymbol(final int charLength) {

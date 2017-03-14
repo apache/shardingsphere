@@ -40,7 +40,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.GeneralLiterals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
@@ -90,7 +90,7 @@ public class SQLExprParser {
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (lexer.equalToken(GeneralLiterals.IDENTIFIER, GeneralLiterals.ALIAS, GeneralLiterals.CHARS, 
+        if (lexer.equalToken(Literals.IDENTIFIER, Literals.ALIAS, Literals.CHARS, 
                 DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
             String result = SQLUtil.getExactlyValue(lexer.getToken().getLiterals());
             lexer.nextToken();
@@ -317,7 +317,7 @@ public class SQLExprParser {
     
     public SQLExpr parseExpr() {
         String literals = lexer.getToken().getLiterals();
-        if (lexer.equalToken(GeneralLiterals.IDENTIFIER)) {
+        if (lexer.equalToken(Literals.IDENTIFIER)) {
             SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
             getLexer().nextToken();
             if (lexer.skipIfEqual(Symbol.DOT)) {
@@ -368,19 +368,19 @@ public class SQLExprParser {
             parametersIndex++;
             return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
-        if (lexer.equalToken(GeneralLiterals.CHARS)) {
+        if (lexer.equalToken(Literals.CHARS)) {
             return new SQLCharExpr(literals);
         }
-        if (lexer.equalToken(GeneralLiterals.INT)) {
+        if (lexer.equalToken(Literals.INT)) {
             return new SQLNumberExpr(Integer.parseInt(literals));
         }
-        if (lexer.equalToken(GeneralLiterals.FLOAT)) {
+        if (lexer.equalToken(Literals.FLOAT)) {
             return new SQLNumberExpr(Double.parseDouble(literals));
         }
-        if (lexer.equalToken(GeneralLiterals.HEX)) {
+        if (lexer.equalToken(Literals.HEX)) {
             return new SQLNumberExpr(Integer.parseInt(literals, 16));
         }
-        if (lexer.equalToken(GeneralLiterals.IDENTIFIER)) {
+        if (lexer.equalToken(Literals.IDENTIFIER)) {
             return new SQLIdentifierExpr(literals);
         }
         return new SQLIgnoreExpr();
