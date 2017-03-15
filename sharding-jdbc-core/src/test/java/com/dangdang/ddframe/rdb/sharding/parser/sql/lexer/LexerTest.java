@@ -171,12 +171,7 @@ public final class LexerTest {
     
     @Test
     public void assertNextTokenForString() {
-        assertNextTokenForString("'xxx'");
-        assertNextTokenForString("'x''x''''x'");
-    }
-    
-    private void assertNextTokenForString(final String str) {
-        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", str, str), dictionary);
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE WHERE XX='xxx' AND YY = 'x''x''''x'", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
         assertThat(lexer.getToken().getLiterals(), is("SELECT"));
@@ -200,7 +195,7 @@ public final class LexerTest {
         assertThat(lexer.getToken().getLiterals(), is("="));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.CHARS));
-        assertThat(lexer.getToken().getLiterals(), is(str.substring(1, str.length() - 1)));
+        assertThat(lexer.getToken().getLiterals(), is("xxx"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.AND));
         assertThat(lexer.getToken().getLiterals(), is("AND"));
@@ -212,7 +207,7 @@ public final class LexerTest {
         assertThat(lexer.getToken().getLiterals(), is("="));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.CHARS));
-        assertThat(lexer.getToken().getLiterals(), is(str.substring(1, str.length() - 1)));
+        assertThat(lexer.getToken().getLiterals(), is("x''x''''x"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }
