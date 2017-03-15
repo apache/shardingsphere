@@ -219,30 +219,38 @@ public final class Tokenizer {
         return '\'' == charAt(position) && '\'' == charAt(position + 1);
     }
     
-    void scanHint() {
-        length = 4;
-        int position = offset + length;
-        while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
-            if (CharTypes.EOI == charAt(position)) {
-                throw new UnterminatedSignException("*/");
-            }
-            position++;
-            length++;
+    int skipComment() {
+        if (('/' == charAt(offset) && '/' ==  charAt(offset + 1) || ('-' == charAt(offset) && '-' == charAt(offset + 1)))) {
+            return skipSingleLineComment(2);
+        } else if ('#' == charAt(offset)) {
+            return skipSingleLineComment(1);
+        } else if ('/' == charAt(offset) && '*' == charAt(offset + 1)) {
+            return skipMultiLineComment();
         }
-        length += 2;
+        return offset;
     }
     
-    void scanSingleLineComment(final int commentFlagLength) {
-        int position = offset + commentFlagLength + 1;
-        length = commentFlagLength + 1;
+    private int skipSingleLineComment(final int commentFlagLength) {
+        int position = offset + commentFlagLength;
+        length = commentFlagLength;
         while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
             position++;
             length++;
         }
+        return offset + length + 1;
     }
     
-    void scanMultiLineComment() {
+    private int skipMultiLineComment() {
+        length = 2;
+        return untilCommentAndHintTerminateSign();
+    }
+    
+    int skipHint() {
         length = 3;
+        return untilCommentAndHintTerminateSign();
+    }
+    
+    private int untilCommentAndHintTerminateSign() {
         int position = offset + length;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
@@ -252,6 +260,7 @@ public final class Tokenizer {
             length++;
         }
         length += 2;
+        return offset + length;
     }
     
     void scanSymbol(final int charLength) {

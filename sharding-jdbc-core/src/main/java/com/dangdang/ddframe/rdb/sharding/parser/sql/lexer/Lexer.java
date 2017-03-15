@@ -47,8 +47,8 @@ public class Lexer {
      */
     public final void nextToken() {
         skipWhitespace();
-        skipComment();
         skipHint();
+        skipComment();
         if (isVariableBegin()) {
             token = scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
@@ -84,18 +84,28 @@ public class Lexer {
         }
     }
     
-    private void skipComment() {
-        while (isCommentBegin()) {
-            position = scanComment().getEndPosition();
+    private void skipHint() {
+        while (isHintBegin()) {
+            position = new Tokenizer(input, dictionary, position).skipHint();
             skipWhitespace();
         }
     }
     
-    private void skipHint() {
-        while (isHintBegin()) {
-            position = scanHint().getEndPosition();
+    protected boolean isHintBegin() {
+        return false;
+    }
+    
+    private void skipComment() {
+        while (isCommentBegin()) {
+            position = new Tokenizer(input, dictionary, position).skipComment();
             skipWhitespace();
         }
+    }
+    
+    protected boolean isCommentBegin() {
+        char currentChar = currentChar();
+        char nextChar = currentCharAt(1);
+        return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
     }
     
     protected boolean isVariableBegin() {
@@ -155,34 +165,6 @@ public class Lexer {
     private Token scanNumber() {
         Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
         tokenizer.scanNumber();
-        return new Token(tokenizer);
-    }
-    
-    protected boolean isHintBegin() {
-        return false;
-    }
-    
-    private Token scanHint() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
-        tokenizer.scanHint();
-        return new Token(tokenizer);
-    }
-    
-    protected boolean isCommentBegin() {
-        char currentChar = currentChar();
-        char nextChar = currentCharAt(1);
-        return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
-    }
-    
-    private Token scanComment() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position - 1);
-        if (('/' == currentChar() && '/' == currentCharAt(1)) || ('-' == currentChar() && '-' == currentCharAt(1))) {
-            tokenizer.scanSingleLineComment(2);
-        } else if ('#' == currentChar()) {
-            tokenizer.scanSingleLineComment(1);
-        } else if ('/' == currentChar() && '*' == currentCharAt(1)) {
-            tokenizer.scanMultiLineComment();
-        }
         return new Token(tokenizer);
     }
     

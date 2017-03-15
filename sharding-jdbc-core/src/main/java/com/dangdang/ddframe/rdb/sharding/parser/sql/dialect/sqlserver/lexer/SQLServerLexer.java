@@ -29,6 +29,11 @@ public final class SQLServerLexer extends Lexer {
     }
     
     @Override
+    protected boolean isHintBegin() {
+        return '/' == currentChar() && '*' == currentCharAt(1) && '!' == currentCharAt(2);
+    }
+    
+    @Override
     protected boolean isVariableBegin() {
         return '@' == currentChar();
     }
@@ -36,10 +41,5 @@ public final class SQLServerLexer extends Lexer {
     @Override
     protected boolean isSupportNChars() {
         return true;
-    }
-    
-    @Override
-    protected boolean isHintBegin() {
-        return '/' == currentChar() && '*' == currentCharAt(1) && '!' == currentCharAt(2);
     }
 }

@@ -280,11 +280,7 @@ public final class LexerTest {
     
     @Test
     public void assertNextTokenForMultipleLineComment() {
-        assertNextTokenForMultipleLineComment("/*--xyz", "//xyz*/");
-    }
-    
-    private void assertNextTokenForMultipleLineComment(final String commentStart, final String commentEnd) {
-        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s WHERE YY>2 %s %s", commentStart, commentEnd, commentStart, commentEnd), dictionary);
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE /*--xyz \n WHERE XX=1 //xyz*/ WHERE YY>2 /*--xyz //xyz*/", dictionary);
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
         assertThat(lexer.getToken().getLiterals(), is("SELECT"));
