@@ -58,8 +58,6 @@ public class Lexer {
             token = new Tokenizer(input, dictionary, position).scanSymbol();
         } else if (isCharsBegin()) {
             token = new Tokenizer(input, dictionary, position).scanChars();
-        } else if (isAliasBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanUntil('\"', Literals.ALIAS);
         } else if (isEOF()) {
             token = new Token(Assist.EOF, "", position);
         } else {
@@ -122,11 +120,7 @@ public class Lexer {
     }
     
     private boolean isCharsBegin() {
-        return '\'' == currentChar();
-    }
-    
-    private boolean isAliasBegin() {
-        return '\"' == currentChar();
+        return '\'' == currentChar() || '\"' == currentChar();
     }
     
     private boolean isEOF() {

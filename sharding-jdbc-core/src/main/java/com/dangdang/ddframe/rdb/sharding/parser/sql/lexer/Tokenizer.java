@@ -132,7 +132,7 @@ final class Tokenizer {
     }
     
     private boolean isIdentifierChar(final char ch) {
-        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || '_' == ch || '$' == ch || '#' == ch;
+        return CharType.isAlphabet(ch) || CharType.isDigital(ch) || '_' == ch || '$' == ch || '#' == ch;
     }
     
     private boolean isAmbiguousIdentifier(final String literals) {
@@ -164,7 +164,7 @@ final class Tokenizer {
     }
     
     private boolean isHex(final char ch) {
-        return (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f') || (ch >= '0' && ch <= '9');
+        return ch >= 'A' && ch <= 'F' || ch >= 'a' && ch <= 'f' || CharType.isDigital(ch);
     }
     
     Token scanNumber() {
@@ -174,7 +174,7 @@ final class Tokenizer {
             position++;
             length++;
         }
-        while (isDigital(charAt(position))) {
+        while (CharType.isDigital(charAt(position))) {
             length++;
             position++;
         }
@@ -188,7 +188,7 @@ final class Tokenizer {
             isFloat = true;
             position++;
             length++;
-            while (isDigital(charAt(position))) {
+            while (CharType.isDigital(charAt(position))) {
                 position++;
                 length++;
             }
@@ -205,7 +205,7 @@ final class Tokenizer {
                 position++;
                 length++;
             }
-            while (isDigital(charAt(position))) {
+            while (CharType.isDigital(charAt(position))) {
                 position++;
                 length++;
             }
@@ -221,18 +221,18 @@ final class Tokenizer {
         return new Token(isFloat ? Literals.FLOAT : Literals.INT, input.substring(offset, offset + length), offset + length);
     }
     
-    private boolean isDigital(final char ch) {
-        return ch >= '0' && ch <= '9';
+    Token scanChars() {
+        return scanChars(charAt(offset));
     }
     
-    Token scanChars() {
+    private Token scanChars(final char charSign) {
         int length = 1;
         int position = offset + length;
-        while ('\'' != charAt(position) || hasEscapeChar(position)) {
+        while (charSign != charAt(position) || hasEscapeChar(charSign, position)) {
             if (position >= input.length()) {
-                throw new UnterminatedSignException('\'');
+                throw new UnterminatedSignException(charSign);
             }
-            if (hasEscapeChar(position)) {
+            if (hasEscapeChar(charSign, position)) {
                 length++;
                 position++;
             }
@@ -243,8 +243,8 @@ final class Tokenizer {
         return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
     }
     
-    private boolean hasEscapeChar(final int position) {
-        return '\'' == charAt(position) && '\'' == charAt(position + 1);
+    private boolean hasEscapeChar(final char charSign, final int position) {
+        return charSign == charAt(position) && charSign == charAt(position + 1);
     }
     
     Token scanSymbol() {

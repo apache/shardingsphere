@@ -87,8 +87,7 @@ public class SQLExprParser extends Parser {
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (equal(Literals.IDENTIFIER, Literals.ALIAS, Literals.CHARS, 
-                DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
+        if (equal(Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
             String result = SQLUtil.getExactlyValue(getLexer().getToken().getLiterals());
             getLexer().nextToken();
             return Optional.of(result);
@@ -148,7 +147,7 @@ public class SQLExprParser extends Parser {
             hasParentheses = true;
         }
         TableContext tableContext;
-        int beginPosition = getLexer().getToken().getEndPosition() - getLexer().getToken().getLiterals().length();
+        final int beginPosition = getLexer().getToken().getEndPosition() - getLexer().getToken().getLiterals().length();
         String literals = getLexer().getToken().getLiterals();
         getLexer().nextToken();
         if (skipIfEqual(Symbol.DOT)) {

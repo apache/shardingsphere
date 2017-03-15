@@ -19,9 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
 public final class LexerTest {
     
     private final Dictionary dictionary = new Dictionary();
@@ -29,82 +26,39 @@ public final class LexerTest {
     @Test
     public void assertNextTokenForWhitespace() {
         Lexer lexer = new Lexer("Select  \t \n * from \r\n TABLE_XXX \t", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("Select"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("from"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "Select");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "from");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "TABLE_XXX");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
     public void assertNextTokenForOrderBy() {
         Lexer lexer = new Lexer("SELECT * FROM ORDER  ORDER \t  BY XX DESC", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("ORDER"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.ORDER));
-        assertThat(lexer.getToken().getLiterals(), is("ORDER"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.BY));
-        assertThat(lexer.getToken().getLiterals(), is("BY"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.DESC));
-        assertThat(lexer.getToken().getLiterals(), is("DESC"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "ORDER");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.ORDER, "ORDER");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.BY, "BY");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.DESC, "DESC");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
     public void assertNextTokenForGroupBy() {
         Lexer lexer = new Lexer("SELECT * FROM GROUP  Group \n  By XX DESC", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("GROUP"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.GROUP));
-        assertThat(lexer.getToken().getLiterals(), is("Group"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.BY));
-        assertThat(lexer.getToken().getLiterals(), is("By"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.DESC));
-        assertThat(lexer.getToken().getLiterals(), is("DESC"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "GROUP");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.GROUP, "Group");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.BY, "By");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.DESC, "DESC");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
@@ -127,180 +81,70 @@ public final class LexerTest {
         assertNextTokenForNumber("123D", Literals.FLOAT);
     }
     
-    private void assertNextTokenForNumber(final String number, final TokenType expectedTokenType) {
-        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", number, number), dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
-        assertThat(lexer.getToken().getLiterals(), is("WHERE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
-        assertThat(lexer.getToken().getLiterals(), is("="));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is(expectedTokenType));
-        assertThat(lexer.getToken().getLiterals(), is(number));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.AND));
-        assertThat(lexer.getToken().getLiterals(), is("AND"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("YY"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
-        assertThat(lexer.getToken().getLiterals(), is("="));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is(expectedTokenType));
-        assertThat(lexer.getToken().getLiterals(), is(number));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+    private void assertNextTokenForNumber(final String expectedNumber, final TokenType expectedTokenType) {
+        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE WHERE XX=%s AND YY=%s", expectedNumber, expectedNumber), dictionary);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, expectedTokenType, expectedNumber);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.AND, "AND");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "YY");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, expectedTokenType, expectedNumber);
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
     public void assertNextTokenForString() {
-        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE WHERE XX='xxx' AND YY = 'x''x''''x'", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
-        assertThat(lexer.getToken().getLiterals(), is("WHERE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
-        assertThat(lexer.getToken().getLiterals(), is("="));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.CHARS));
-        assertThat(lexer.getToken().getLiterals(), is("xxx"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.AND));
-        assertThat(lexer.getToken().getLiterals(), is("AND"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("YY"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
-        assertThat(lexer.getToken().getLiterals(), is("="));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.CHARS));
-        assertThat(lexer.getToken().getLiterals(), is("x''x''''x"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
-    }
-    
-    @Test
-    public void assertNextTokenForAlias() {
-        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE AS \"xyz\"", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.AS));
-        assertThat(lexer.getToken().getLiterals(), is("AS"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.ALIAS));
-        assertThat(lexer.getToken().getLiterals(), is("\"xyz\""));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE WHERE XX IN ('xxx','x''x''''x',\"xyz\",\"x\"\"yz\")", dictionary);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.IN, "IN");
+        LexerAssert.assertNextToken(lexer, Symbol.LEFT_PAREN, "(");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xxx");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "x''x''''x");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xyz");
+        LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "x\"\"yz");
+        LexerAssert.assertNextToken(lexer, Symbol.RIGHT_PAREN, ")");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
     public void assertNextTokenForSingleLineComment() {
-        assertNextTokenForSingleLineComment("--xyz");
-        assertNextTokenForSingleLineComment("//xyz");
-    }
-    
-    private void assertNextTokenForSingleLineComment(final String comment) {
-        Lexer lexer = new Lexer(String.format("SELECT * FROM XXX_TABLE %s \n WHERE XX=1 %s", comment, comment), dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
-        assertThat(lexer.getToken().getLiterals(), is("WHERE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.EQ));
-        assertThat(lexer.getToken().getLiterals(), is("="));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.INT));
-        assertThat(lexer.getToken().getLiterals(), is("1"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE --x\"y`z \n WHERE XX=1 //x\"y'z", dictionary);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "1");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
     
     @Test
     public void assertNextTokenForMultipleLineComment() {
         Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE /*--xyz \n WHERE XX=1 //xyz*/ WHERE YY>2 /*--xyz //xyz*/", dictionary);
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.SELECT));
-        assertThat(lexer.getToken().getLiterals(), is("SELECT"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.STAR));
-        assertThat(lexer.getToken().getLiterals(), is("*"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.FROM));
-        assertThat(lexer.getToken().getLiterals(), is("FROM"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
-        assertThat(lexer.getToken().getLiterals(), is("WHERE"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
-        assertThat(lexer.getToken().getLiterals(), is("YY"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Symbol.GT));
-        assertThat(lexer.getToken().getLiterals(), is(">"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.INT));
-        assertThat(lexer.getToken().getLiterals(), is("2"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "YY");
+        LexerAssert.assertNextToken(lexer, Symbol.GT, ">");
+        LexerAssert.assertNextToken(lexer, Literals.INT, "2");
+        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
     }
 }
