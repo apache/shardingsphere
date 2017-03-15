@@ -59,10 +59,8 @@ final class Tokenizer {
     }
     
     private int skipSingleLineComment(final int commentFlagLength) {
-        int position = offset + commentFlagLength;
         int length = commentFlagLength;
-        while (!CharType.isEndOfInput(charAt(position)) && '\n' != charAt(position)) {
-            position++;
+        while (!CharType.isEndOfInput(charAt(offset + length)) && '\n' != charAt(offset + length)) {
             length++;
         }
         return offset + length + 1;
@@ -82,12 +80,10 @@ final class Tokenizer {
     
     private int untilCommentAndHintTerminateSign(final int beginSignLength) {
         int length = beginSignLength;
-        int position = offset + length;
-        while (!isMultipleLineCommentEnd(charAt(position), charAt(position + 1))) {
-            if (CharType.isEndOfInput(charAt(position))) {
+        while (!isMultipleLineCommentEnd(charAt(offset + length), charAt(offset + length + 1))) {
+            if (CharType.isEndOfInput(charAt(offset + length))) {
                 throw new UnterminatedSignException("*/");
             }
-            position++;
             length++;
         }
         return offset + length + 2;
@@ -113,12 +109,10 @@ final class Tokenizer {
     
     Token scanVariable() {
         int length = 1;
-        int position = offset;
-        if ('@' == charAt(position + 1)) {
-            position++;
+        if ('@' == charAt(offset + 1)) {
             length++;
         }
-        while (isVariableChar(charAt(++position))) {
+        while (isVariableChar(charAt(offset + length))) {
             length++;
         }
         return new Token(Literals.VARIABLE, input.substring(offset, offset + length), offset + length);
