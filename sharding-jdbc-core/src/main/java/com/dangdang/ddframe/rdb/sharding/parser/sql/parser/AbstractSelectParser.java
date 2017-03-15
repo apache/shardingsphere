@@ -29,7 +29,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -71,7 +70,6 @@ public abstract class AbstractSelectParser {
     
     protected void query() {
         getExprParser().getLexer().accept(DefaultKeyword.SELECT);
-        getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
         parseDistinct();
         parseSelectList();
         parseFrom();
@@ -107,7 +105,7 @@ public abstract class AbstractSelectParser {
             }
             index++;
         } while (getExprParser().getLexer().skipIfEqual(Symbol.COMMA));
-        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getToken().getBeginPosition() - getExprParser().getLexer().getToken().getLiterals().length());
+        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length());
     }
     
     protected void queryRest() {
@@ -180,7 +178,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void parseTableFactor() {
-        int beginPosition = getExprParser().getLexer().getToken().getBeginPosition() - getExprParser().getLexer().getToken().getLiterals().length();
+        int beginPosition = getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length();
         String literals = getExprParser().getLexer().getToken().getLiterals();
         getExprParser().getLexer().nextToken();
         if (getExprParser().getLexer().skipIfEqual(Symbol.DOT)) {
@@ -194,14 +192,13 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseJoinTable() {
-        getExprParser().getLexer().skipIfEqual(Literals.HINT);
         if (getExprParser().isJoin()) {
             parseTable();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    parseTableCondition(getExprParser().getLexer().getToken().getBeginPosition());
+                    parseTableCondition(getExprParser().getLexer().getToken().getEndPosition());
                     getExprParser().getLexer().accept(Symbol.EQ);
-                    parseTableCondition(getExprParser().getLexer().getToken().getBeginPosition() - getExprParser().getLexer().getToken().getLiterals().length());
+                    parseTableCondition(getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length());
                 } while (getExprParser().getLexer().skipIfEqual(DefaultKeyword.AND));
             } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.USING)) {
                 getExprParser().getLexer().skipParentheses();

@@ -151,7 +151,7 @@ public class SQLExprParser {
             hasParentheses = true;
         }
         TableContext tableContext;
-        int beginPosition = getLexer().getToken().getBeginPosition() - getLexer().getToken().getLiterals().length();
+        int beginPosition = getLexer().getToken().getEndPosition() - getLexer().getToken().getLiterals().length();
         String literals = getLexer().getToken().getLiterals();
         getLexer().nextToken();
         if (getLexer().skipIfEqual(Symbol.DOT)) {
@@ -211,7 +211,7 @@ public class SQLExprParser {
         // FIXME 解析xxx.*
         while (!getLexer().equal(DefaultKeyword.AS) && !getLexer().equal(Symbol.COMMA) && !getLexer().equal(DefaultKeyword.FROM) && !getLexer().equal(Assist.EOF)) {
             String value = getLexer().getToken().getLiterals();
-            int position = getLexer().getToken().getBeginPosition() - value.length();
+            int position = getLexer().getToken().getEndPosition() - value.length();
             expression.append(value);
             getLexer().nextToken();
             if (getLexer().equal(Symbol.DOT)) {
@@ -303,7 +303,7 @@ public class SQLExprParser {
     }
     
     public SQLExpr parseExpr(final SQLContext sqlContext) {
-        int beginPosition = lexer.getToken().getBeginPosition();
+        int beginPosition = lexer.getToken().getEndPosition();
         SQLExpr result = parseExpr();
         if (result instanceof SQLPropertyExpr) {
             String tableName = sqlContext.getTables().get(0).getName();

@@ -24,5 +24,5 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
  */
 public enum Literals implements TokenType {
     
-    INT, FLOAT, HEX, CHARS, IDENTIFIER, ALIAS, VARIABLE, HINT, COMMENT
+    INT, FLOAT, HEX, CHARS, IDENTIFIER, ALIAS, VARIABLE
 }

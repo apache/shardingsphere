@@ -47,6 +47,8 @@ public class Lexer {
      */
     public final void nextToken() {
         skipWhitespace();
+        skipComment();
+        skipHint();
         if (isVariableBegin()) {
             token = scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
@@ -58,10 +60,6 @@ public class Lexer {
             token = scanHexDecimal();
         } else if (isNumberBegin()) {
             token = scanNumber();
-        } else if (isHintBegin()) {
-            token = scanHint();
-        } else if (isCommentBegin()) {
-            token = scanComment();
         } else if (isTernarySymbol()) {
             token = scanSymbol(3);
         } else if (isBinarySymbol()) {
@@ -77,12 +75,26 @@ public class Lexer {
         } else {
             token = new Token(Assist.ERROR, "", position);
         }
-        position = token.getBeginPosition();
+        position = token.getEndPosition();
     }
     
     private void skipWhitespace() {
         while (CharTypes.isWhitespace(currentChar())) {
             position++;
+        }
+    }
+    
+    private void skipComment() {
+        while (isCommentBegin()) {
+            position = scanComment().getEndPosition();
+            skipWhitespace();
+        }
+    }
+    
+    private void skipHint() {
+        while (isHintBegin()) {
+            position = scanHint().getEndPosition();
+            skipWhitespace();
         }
     }
     

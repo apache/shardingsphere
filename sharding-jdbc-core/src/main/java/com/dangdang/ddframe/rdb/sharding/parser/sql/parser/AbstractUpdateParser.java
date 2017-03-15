@@ -78,7 +78,7 @@ public abstract class AbstractUpdateParser {
         if (exprParser.getLexer().equal(Symbol.LEFT_PAREN)) {
             exprParser.getLexer().skipParentheses();
         } else {
-            int beginPosition = exprParser.getLexer().getToken().getBeginPosition();
+            int beginPosition = exprParser.getLexer().getToken().getEndPosition();
             String literals = exprParser.getLexer().getToken().getLiterals();
             exprParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();

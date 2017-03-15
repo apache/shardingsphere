@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
@@ -43,11 +42,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.SELECT)) {
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equal(Literals.COMMENT)) {
-                getExprParser().getLexer().nextToken();
-            }
+        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.SELECT)) {
             parseDistinct();
             if (getExprParser().getLexer().equal(SQLServerKeyword.TOP)) {
                 // TODO save topContext

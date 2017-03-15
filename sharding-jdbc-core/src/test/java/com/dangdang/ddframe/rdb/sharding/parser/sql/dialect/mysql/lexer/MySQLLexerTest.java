@@ -83,9 +83,6 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
         assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals(), is(" # xxx "));
-        lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }
     
@@ -104,12 +101,6 @@ public final class MySQLLexerTest {
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
         assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals(), is(" # comment 1 "));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals(), is(" #comment 2 \r"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
         assertThat(lexer.getToken().getLiterals(), is("WHERE"));
@@ -142,9 +133,6 @@ public final class MySQLLexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
         assertThat(lexer.getToken().getLiterals(), is("TABLE_XXX"));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.HINT));
-        assertThat(lexer.getToken().getLiterals(), is(" hint 1 \n xxx "));
-        lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
         assertThat(lexer.getToken().getLiterals(), is("WHERE"));
         lexer.nextToken();
@@ -156,9 +144,6 @@ public final class MySQLLexerTest {
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.INT));
         assertThat(lexer.getToken().getLiterals(), is("1"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.HINT));
-        assertThat(lexer.getToken().getLiterals(), is("hint 2"));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }

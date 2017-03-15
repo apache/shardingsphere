@@ -28,7 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -90,7 +89,6 @@ public abstract class AbstractInsertParser {
     }
     
     private void parseInto() {
-        exprParser.getLexer().skipIfEqual(Literals.HINT);
         if (getUnsupportedKeywords().contains(exprParser.getLexer().getToken().getType())) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());
         }
@@ -122,7 +120,7 @@ public abstract class AbstractInsertParser {
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
             } while (!exprParser.getLexer().equal(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equal(Assist.EOF));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getBeginPosition() - exprParser.getLexer().getToken().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getEndPosition() - exprParser.getLexer().getToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
                 result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
@@ -160,7 +158,7 @@ public abstract class AbstractInsertParser {
             do {
                 sqlExprs.add(exprParser.parseExpr());
             } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
-            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getBeginPosition() - exprParser.getLexer().getToken().getLiterals().length());
+            ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getEndPosition() - exprParser.getLexer().getToken().getLiterals().length());
             int count = 0;
             for (Condition.Column each : columns) {
                 if (each.isAutoIncrement()) {

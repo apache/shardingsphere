@@ -36,7 +36,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     @Override
     public void query() {
         if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.SELECT)) {
-            getExprParser().getLexer().skipIfEqual(Literals.COMMENT);
             parseDistinct();
             parseSelectList();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.INTO)) {

@@ -230,8 +230,6 @@ public final class Tokenizer {
             length++;
         }
         length += 2;
-        literals = input.substring(offset + 4, offset + length - 2);
-        tokenType = Literals.HINT;
     }
     
     void scanSingleLineComment(final int commentFlagLength) {
@@ -241,8 +239,6 @@ public final class Tokenizer {
             position++;
             length++;
         }
-        literals = input.substring(offset, offset + length);
-        tokenType = Literals.COMMENT;
     }
     
     void scanMultiLineComment() {
@@ -256,8 +252,6 @@ public final class Tokenizer {
             length++;
         }
         length += 2;
-        literals = input.substring(offset, offset + length);
-        tokenType = Literals.COMMENT;
     }
     
     void scanSymbol(final int charLength) {

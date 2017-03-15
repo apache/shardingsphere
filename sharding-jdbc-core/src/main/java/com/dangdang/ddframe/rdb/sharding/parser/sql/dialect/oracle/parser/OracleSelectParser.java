@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
@@ -49,11 +48,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     public void query() {
         if (getExprParser().getLexer().equal(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
-            while (getExprParser().getLexer().equal(Literals.HINT) || getExprParser().getLexer().equal(Literals.COMMENT)) {
-                getExprParser().getLexer().nextToken();
-            }
             parseDistinct();
-            getExprParser().getLexer().skipIfEqual(Literals.HINT);
             parseSelectList();
         }
         skipInto();

@@ -263,9 +263,6 @@ public final class LexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
         assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals().trim(), is(comment));
-        lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
         assertThat(lexer.getToken().getLiterals(), is("WHERE"));
         lexer.nextToken();
@@ -277,9 +274,6 @@ public final class LexerTest {
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.INT));
         assertThat(lexer.getToken().getLiterals(), is("1"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals().trim(), is(comment));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }
@@ -304,9 +298,6 @@ public final class LexerTest {
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.IDENTIFIER));
         assertThat(lexer.getToken().getLiterals(), is("XXX_TABLE"));
         lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals().trim(), is(commentStart + " \n WHERE XX=1 " + commentEnd));
-        lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) DefaultKeyword.WHERE));
         assertThat(lexer.getToken().getLiterals(), is("WHERE"));
         lexer.nextToken();
@@ -318,9 +309,6 @@ public final class LexerTest {
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Literals.INT));
         assertThat(lexer.getToken().getLiterals(), is("2"));
-        lexer.nextToken();
-        assertThat(lexer.getToken().getType(), is((TokenType) Literals.COMMENT));
-        assertThat(lexer.getToken().getLiterals().trim(), is(commentStart + " " + commentEnd));
         lexer.nextToken();
         assertThat(lexer.getToken().getType(), is((TokenType) Assist.EOF));
     }
