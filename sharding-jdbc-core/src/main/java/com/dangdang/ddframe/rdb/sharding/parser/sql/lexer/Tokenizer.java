@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -35,20 +33,8 @@ public final class Tokenizer {
     
     private final int offset;
     
-    private int length;
-    
-    @Getter(AccessLevel.PACKAGE)
-    private String literals;
-    
-    @Getter(AccessLevel.PACKAGE)
-    private TokenType tokenType;
-    
-    int getCurrentPosition() {
-        return offset + length;
-    }
-    
-    void scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
-        length = 2;
+    Token scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
+        int length = 2;
         int position = offset + 1;
         while (terminatedSign != charAt(++position)) {
             if (CharTypes.EOI == charAt(position)) {
@@ -57,12 +43,12 @@ public final class Tokenizer {
             length++;
         }
         length++;
-        literals = input.substring(offset, offset + length);
-        tokenType = dictionary.getToken(literals, defaultTokenType);
+        String literals = input.substring(offset, offset + length);
+        return new Token(dictionary.getToken(literals, defaultTokenType), literals, offset + length);
     }
     
-    void scanVariable() {
-        length = 1;
+    Token scanVariable() {
+        int length = 1;
         int position = offset;
         if ('@' == charAt(position + 1)) {
             position++;
@@ -71,50 +57,50 @@ public final class Tokenizer {
         while (isVariableChar(charAt(++position))) {
             length++;
         }
-        literals = input.substring(offset, offset + length);
-        tokenType = Literals.VARIABLE;
+        return new Token(Literals.VARIABLE, input.substring(offset, offset + length), offset + length);
     }
     
     private boolean isVariableChar(final char ch) {
         return isIdentifierChar(ch) || '.' == ch;
     }
     
-    void scanIdentifier() {
-        length = 1;
+    Token scanIdentifier() {
+        if ('`' == charAt(offset)) {
+            return scanUntil('`', Literals.IDENTIFIER);
+        }
+        int length = 1;
         int position = offset;
         while (isIdentifierChar(charAt(++position))) {
             length++;
         }
-        literals = input.substring(offset, offset + length);
-        if (isAmbiguousIdentifier()) {
-            processAmbiguousIdentifier(position);
-        } else {
-            tokenType = dictionary.getToken(literals, Literals.IDENTIFIER);
+        String literals = input.substring(offset, offset + length);
+        if (isAmbiguousIdentifier(literals)) {
+            return new Token(processAmbiguousIdentifier(position, literals), literals, offset + length);
         }
+        return new Token(dictionary.getToken(literals, Literals.IDENTIFIER), literals, offset + length);
     }
     
     private boolean isIdentifierChar(final char ch) {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || '_' == ch || '$' == ch || '#' == ch;
     }
     
-    private boolean isAmbiguousIdentifier() {
+    private boolean isAmbiguousIdentifier(final String literals) {
         return DefaultKeyword.ORDER.name().equalsIgnoreCase(literals) || DefaultKeyword.GROUP.name().equalsIgnoreCase(literals);
     }
     
-    private void processAmbiguousIdentifier(final int position) {
+    private TokenType processAmbiguousIdentifier(final int position, final String literals) {
         int i = 0;
         while (CharTypes.isWhitespace(charAt(position + i))) {
             i++;
         }
         if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
-            tokenType = dictionary.getToken(literals);
-        } else {
-            tokenType = Literals.IDENTIFIER;
+            return dictionary.getToken(literals);
         }
+        return Literals.IDENTIFIER;
     }
     
-    void scanHexDecimal() {
-        length = 3;
+    Token scanHexDecimal() {
+        int length = 3;
         int position = offset + length - 1;
         if ('-' == charAt(position)) {
             position++;
@@ -123,16 +109,15 @@ public final class Tokenizer {
         while (isHex(charAt(++position))) {
             length++;
         }
-        literals = input.substring(offset, offset + length);
-        tokenType = Literals.HEX;
+        return new Token(Literals.HEX, input.substring(offset, offset + length), offset + length);
     }
     
     private boolean isHex(final char ch) {
         return (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f') || (ch >= '0' && ch <= '9');
     }
     
-    void scanNumber() {
-        length = 0;
+    Token scanNumber() {
+        int length = 0;
         int position = offset;
         if ('-' == charAt(position)) {
             position++;
@@ -147,9 +132,7 @@ public final class Tokenizer {
             // TODO 待确认 数字后面加两个点表示什么
             if ('.' == charAt(position + 1)) {
                 length++;
-                literals = input.substring(offset, offset + length);
-                tokenType = Literals.INT;
-                return;
+                return new Token(Literals.INT, input.substring(offset, offset + length), offset + length);
             }
             isFloat = true;
             position++;
@@ -178,26 +161,21 @@ public final class Tokenizer {
         }
         if ('f' == charAt(position) || 'F' == charAt(position)) {
             length++;
-            literals = input.substring(offset, offset + length);
-            tokenType = Literals.FLOAT;
-            return;
+            return new Token(Literals.FLOAT, input.substring(offset, offset + length), offset + length);
         }
         if ('d' == charAt(position) || 'D' == charAt(position)) {
             length++;
-            literals = input.substring(offset, offset + length);
-            tokenType = Literals.FLOAT;
-            return;
+            return new Token(Literals.FLOAT, input.substring(offset, offset + length), offset + length);
         }
-        literals = input.substring(offset, offset + length);
-        tokenType = isFloat ? Literals.FLOAT : Literals.INT;
+        return new Token(isFloat ? Literals.FLOAT : Literals.INT, input.substring(offset, offset + length), offset + length);
     }
     
     private boolean isDigital(final char ch) {
         return ch >= '0' && ch <= '9';
     }
     
-    void scanChars() {
-        length = 1;
+    Token scanChars() {
+        int length = 1;
         int position = offset + length;
         while ('\'' != charAt(position) || hasEscapeChar(position)) {
             if (position >= input.length()) {
@@ -211,8 +189,7 @@ public final class Tokenizer {
             position++;
         }
         length++;
-        literals = input.substring(offset + 1, offset + length - 1);
-        tokenType = Literals.CHARS;
+        return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
     }
     
     private boolean hasEscapeChar(final int position) {
@@ -220,7 +197,7 @@ public final class Tokenizer {
     }
     
     int skipComment() {
-        if (('/' == charAt(offset) && '/' ==  charAt(offset + 1) || ('-' == charAt(offset) && '-' == charAt(offset + 1)))) {
+        if ('/' == charAt(offset) && '/' ==  charAt(offset + 1) || '-' == charAt(offset) && '-' == charAt(offset + 1)) {
             return skipSingleLineComment(2);
         } else if ('#' == charAt(offset)) {
             return skipSingleLineComment(1);
@@ -232,7 +209,7 @@ public final class Tokenizer {
     
     private int skipSingleLineComment(final int commentFlagLength) {
         int position = offset + commentFlagLength;
-        length = commentFlagLength;
+        int length = commentFlagLength;
         while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
             position++;
             length++;
@@ -241,16 +218,15 @@ public final class Tokenizer {
     }
     
     private int skipMultiLineComment() {
-        length = 2;
-        return untilCommentAndHintTerminateSign();
+        return untilCommentAndHintTerminateSign(2);
     }
     
     int skipHint() {
-        length = 3;
-        return untilCommentAndHintTerminateSign();
+        return untilCommentAndHintTerminateSign(3);
     }
     
-    private int untilCommentAndHintTerminateSign() {
+    private int untilCommentAndHintTerminateSign(final int beginSignLength) {
+        int length = beginSignLength;
         int position = offset + length;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
             if (CharTypes.EOI == charAt(position)) {
@@ -263,16 +239,16 @@ public final class Tokenizer {
         return offset + length;
     }
     
-    void scanSymbol(final int charLength) {
+    Token scanSymbol(final int charLength) {
         int position = offset;
-        length = 0;
+        int length = 0;
         char[] symbolChars = new char[charLength];
         for (int i = 0; i < charLength; i++) {
             symbolChars[i] = charAt(position++);
             length++;
         }
-        literals = String.valueOf(symbolChars);
-        tokenType = Symbol.literalsOf(literals);
+        String literals = String.valueOf(symbolChars);
+        return new Token(Symbol.literalsOf(literals), literals, offset + length);
     }
     
     private char charAt(final int index) {

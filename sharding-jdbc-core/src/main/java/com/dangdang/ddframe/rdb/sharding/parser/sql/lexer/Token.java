@@ -17,8 +17,4 @@ public final class Token {
     private final String literals;
     
     private final int endPosition;
-    
-    public Token(final Tokenizer tokenizer) {
-        this(tokenizer.getTokenType(), tokenizer.getLiterals(), tokenizer.getCurrentPosition());
-    }
 }

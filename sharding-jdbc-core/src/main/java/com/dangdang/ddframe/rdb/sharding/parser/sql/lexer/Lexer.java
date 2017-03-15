@@ -50,26 +50,26 @@ public class Lexer {
         skipHint();
         skipComment();
         if (isVariableBegin()) {
-            token = scanVariable();
+            token = new Tokenizer(input, dictionary, position).scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
             position++;
-            token = scanChars();
+            token = new Tokenizer(input, dictionary, position).scanChars();
         } else if (isIdentifierBegin()) {
-            token = scanIdentifier();
+            token = new Tokenizer(input, dictionary, position).scanIdentifier();
         } else if (isHexDecimalBegin()) {
-            token = scanHexDecimal();
+            token = new Tokenizer(input, dictionary, position).scanHexDecimal();
         } else if (isNumberBegin()) {
-            token = scanNumber();
+            token = new Tokenizer(input, dictionary, position).scanNumber();
         } else if (isTernarySymbol()) {
-            token = scanSymbol(3);
+            token = new Tokenizer(input, dictionary, position).scanSymbol(3);
         } else if (isBinarySymbol()) {
-            token = scanSymbol(2);
+            token = new Tokenizer(input, dictionary, position).scanSymbol(2);
         } else if (isUnarySymbol()) {
-            token = scanSymbol(1);
+            token = new Tokenizer(input, dictionary, position).scanSymbol(1);
         } else if (isCharsBegin()) {
-            token = scanChars();
+            token = new Tokenizer(input, dictionary, position).scanChars();
         } else if (isAliasBegin()) {
-            token = scanAlias();
+            token = new Tokenizer(input, dictionary, position).scanUntil('\"', Literals.ALIAS);
         } else if (isEOF()) {
             token = new Token(Assist.EOF, "", position);
         } else {
@@ -112,12 +112,6 @@ public class Lexer {
         return false;
     }
     
-    private Token scanVariable() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanVariable();
-        return new Token(tokenizer);
-    }
-    
     protected boolean isSupportNChars() {
         return false;
     }
@@ -134,24 +128,8 @@ public class Lexer {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || '`' == ch || '_' == ch || '$' == ch;
     }
     
-    private Token scanIdentifier() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        if ('`' == currentChar()) {
-            tokenizer.scanUntil('`', Literals.IDENTIFIER);
-        } else {
-            tokenizer.scanIdentifier();
-        }
-        return new Token(tokenizer);
-    }
-    
     private boolean isHexDecimalBegin() {
         return '0' == currentChar() && 'x' == currentCharAt(1);
-    }
-    
-    private Token scanHexDecimal() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanHexDecimal();
-        return new Token(tokenizer);
     }
     
     private boolean isNumberBegin() {
@@ -160,12 +138,6 @@ public class Lexer {
     
     private boolean isDigital(final char ch) {
         return ch >= '0' && ch <= '9';
-    }
-    
-    private Token scanNumber() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanNumber();
-        return new Token(tokenizer);
     }
     
     private boolean isTernarySymbol() {
@@ -194,30 +166,12 @@ public class Lexer {
         return true;
     }
     
-    private Token scanSymbol(final int symbolLength) {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanSymbol(symbolLength);
-        return new Token(tokenizer);
-    }
-    
     private boolean isCharsBegin() {
         return '\'' == currentChar();
     }
     
-    private Token scanChars() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanChars();
-        return new Token(tokenizer);
-    }
-    
     private boolean isAliasBegin() {
         return '\"' == currentChar();
-    }
-    
-    private Token scanAlias() {
-        Tokenizer tokenizer = new Tokenizer(input, dictionary, position);
-        tokenizer.scanUntil('\"', Literals.ALIAS);
-        return new Token(tokenizer);
     }
     
     private boolean isEOF() {
