@@ -46,9 +46,7 @@ public class Lexer {
      * 跳至下一个语言符号.
      */
     public final void nextToken() {
-        skipWhitespace();
-        skipHint();
-        skipComment();
+        skipIgnoredToken();
         if (isVariableBegin()) {
             token = new Tokenizer(input, dictionary, position).scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
@@ -78,16 +76,15 @@ public class Lexer {
         position = token.getEndPosition();
     }
     
-    private void skipWhitespace() {
-        while (CharTypes.isWhitespace(currentChar())) {
-            position++;
-        }
-    }
-    
-    private void skipHint() {
+    private void skipIgnoredToken() {
+        position = new Tokenizer(input, dictionary, position).skipWhitespace();
         while (isHintBegin()) {
             position = new Tokenizer(input, dictionary, position).skipHint();
-            skipWhitespace();
+            position = new Tokenizer(input, dictionary, position).skipWhitespace();
+        }
+        while (isCommentBegin()) {
+            position = new Tokenizer(input, dictionary, position).skipComment();
+            position = new Tokenizer(input, dictionary, position).skipWhitespace();
         }
     }
     
@@ -95,17 +92,9 @@ public class Lexer {
         return false;
     }
     
-    private void skipComment() {
-        while (isCommentBegin()) {
-            position = new Tokenizer(input, dictionary, position).skipComment();
-            skipWhitespace();
-        }
-    }
-    
     protected boolean isCommentBegin() {
-        char currentChar = currentChar();
-        char nextChar = currentCharAt(1);
-        return ('-' == currentChar && '-' == nextChar) || (('/' == currentChar && '/' == nextChar) || (currentChar == '/' && nextChar == '*'));
+        String chars = String.valueOf(new char[] {currentChar(), currentCharAt(1)});
+        return "--".equals(chars) || "//".equals(chars) || "/*".equals(chars);
     }
     
     protected boolean isVariableBegin() {

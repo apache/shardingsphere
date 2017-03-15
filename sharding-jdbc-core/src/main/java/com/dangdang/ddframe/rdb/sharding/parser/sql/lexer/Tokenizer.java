@@ -33,6 +33,57 @@ public final class Tokenizer {
     
     private final int offset;
     
+    int skipWhitespace() {
+        int length = 0;
+        while (CharTypes.isWhitespace(charAt(offset + length))) {
+            length++;
+        }
+        return offset + length;
+    }
+    
+    int skipComment() {
+        if ('/' == charAt(offset) && '/' ==  charAt(offset + 1) || '-' == charAt(offset) && '-' == charAt(offset + 1)) {
+            return skipSingleLineComment(2);
+        } else if ('#' == charAt(offset)) {
+            return skipSingleLineComment(1);
+        } else if ('/' == charAt(offset) && '*' == charAt(offset + 1)) {
+            return skipMultiLineComment();
+        }
+        return offset;
+    }
+    
+    private int skipSingleLineComment(final int commentFlagLength) {
+        int position = offset + commentFlagLength;
+        int length = commentFlagLength;
+        while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
+            position++;
+            length++;
+        }
+        return offset + length + 1;
+    }
+    
+    private int skipMultiLineComment() {
+        return untilCommentAndHintTerminateSign(2);
+    }
+    
+    int skipHint() {
+        return untilCommentAndHintTerminateSign(3);
+    }
+    
+    private int untilCommentAndHintTerminateSign(final int beginSignLength) {
+        int length = beginSignLength;
+        int position = offset + length;
+        while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
+            if (CharTypes.EOI == charAt(position)) {
+                throw new UnterminatedSignException("*/");
+            }
+            position++;
+            length++;
+        }
+        length += 2;
+        return offset + length;
+    }
+    
     Token scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
         int length = 2;
         int position = offset + 1;
@@ -194,49 +245,6 @@ public final class Tokenizer {
     
     private boolean hasEscapeChar(final int position) {
         return '\'' == charAt(position) && '\'' == charAt(position + 1);
-    }
-    
-    int skipComment() {
-        if ('/' == charAt(offset) && '/' ==  charAt(offset + 1) || '-' == charAt(offset) && '-' == charAt(offset + 1)) {
-            return skipSingleLineComment(2);
-        } else if ('#' == charAt(offset)) {
-            return skipSingleLineComment(1);
-        } else if ('/' == charAt(offset) && '*' == charAt(offset + 1)) {
-            return skipMultiLineComment();
-        }
-        return offset;
-    }
-    
-    private int skipSingleLineComment(final int commentFlagLength) {
-        int position = offset + commentFlagLength;
-        int length = commentFlagLength;
-        while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
-            position++;
-            length++;
-        }
-        return offset + length + 1;
-    }
-    
-    private int skipMultiLineComment() {
-        return untilCommentAndHintTerminateSign(2);
-    }
-    
-    int skipHint() {
-        return untilCommentAndHintTerminateSign(3);
-    }
-    
-    private int untilCommentAndHintTerminateSign(final int beginSignLength) {
-        int length = beginSignLength;
-        int position = offset + length;
-        while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
-            if (CharTypes.EOI == charAt(position)) {
-                throw new UnterminatedSignException("*/");
-            }
-            position++;
-            length++;
-        }
-        length += 2;
-        return offset + length;
     }
     
     Token scanSymbol(final int charLength) {
