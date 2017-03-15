@@ -33,14 +33,14 @@ public class MySQLSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.SELECT)) {
+        if (getExprParser().equal(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
             parseDistinct();
-            while (getExprParser().getLexer().equal(MySQLKeyword.HIGH_PRIORITY) || getExprParser().getLexer().equal(DefaultKeyword.STRAIGHT_JOIN)
-                    || getExprParser().getLexer().equal(MySQLKeyword.SQL_SMALL_RESULT)
-                    || getExprParser().getLexer().equal(MySQLKeyword.SQL_BIG_RESULT) || getExprParser().getLexer().equal(MySQLKeyword.SQL_BUFFER_RESULT)
-                    || getExprParser().getLexer().equal(MySQLKeyword.SQL_CACHE)
-                    || getExprParser().getLexer().equal(MySQLKeyword.SQL_NO_CACHE) || getExprParser().getLexer().equal(MySQLKeyword.SQL_CALC_FOUND_ROWS)) {
+            while (getExprParser().equal(MySQLKeyword.HIGH_PRIORITY) || getExprParser().equal(DefaultKeyword.STRAIGHT_JOIN)
+                    || getExprParser().equal(MySQLKeyword.SQL_SMALL_RESULT)
+                    || getExprParser().equal(MySQLKeyword.SQL_BIG_RESULT) || getExprParser().equal(MySQLKeyword.SQL_BUFFER_RESULT)
+                    || getExprParser().equal(MySQLKeyword.SQL_CACHE)
+                    || getExprParser().equal(MySQLKeyword.SQL_NO_CACHE) || getExprParser().equal(MySQLKeyword.SQL_CALC_FOUND_ROWS)) {
                 getExprParser().getLexer().nextToken();
             }
             parseSelectList();
@@ -50,35 +50,35 @@ public class MySQLSelectParser extends AbstractSelectParser {
         parseWhere();
         parseGroupBy();
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
-        if (getExprParser().getLexer().equal(MySQLKeyword.LIMIT)) {
+        if (getExprParser().equal(MySQLKeyword.LIMIT)) {
             getSqlContext().setLimitContext(((MySQLExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
         }
-        if (getExprParser().getLexer().equal(DefaultKeyword.PROCEDURE)) {
+        if (getExprParser().equal(DefaultKeyword.PROCEDURE)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
         }
         queryRest();
     }
     
     private void skipToFrom() {
-        while (!getExprParser().getLexer().equal(DefaultKeyword.FROM) && !getExprParser().getLexer().equal(Assist.EOF)) {
+        while (!getExprParser().equal(DefaultKeyword.FROM) && !getExprParser().equal(Assist.EOF)) {
             getExprParser().getLexer().nextToken();
         }
     }
     
     @Override
     protected void parseJoinTable() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.USING)) {
+        if (getExprParser().equal(DefaultKeyword.USING)) {
             return;
         }
-        if (getExprParser().getLexer().equal(DefaultKeyword.USE)) {
+        if (getExprParser().equal(DefaultKeyword.USE)) {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getExprParser().getLexer().equal(OracleKeyword.IGNORE)) {
+        if (getExprParser().equal(OracleKeyword.IGNORE)) {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
-        if (getExprParser().getLexer().equal(OracleKeyword.FORCE)) {
+        if (getExprParser().equal(OracleKeyword.FORCE)) {
             getExprParser().getLexer().nextToken();
             parseIndexHint();
         }
@@ -86,21 +86,21 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
 
     private void parseIndexHint() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.INDEX)) {
+        if (getExprParser().equal(DefaultKeyword.INDEX)) {
             getExprParser().getLexer().nextToken();
         } else {
-            getExprParser().getLexer().accept(DefaultKeyword.KEY);
+            getExprParser().accept(DefaultKeyword.KEY);
         }
-        if (getExprParser().getLexer().equal(DefaultKeyword.FOR)) {
+        if (getExprParser().equal(DefaultKeyword.FOR)) {
             getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equal(DefaultKeyword.JOIN)) {
+            if (getExprParser().equal(DefaultKeyword.JOIN)) {
                 getExprParser().getLexer().nextToken();
-            } else if (getExprParser().getLexer().equal(DefaultKeyword.ORDER)) {
+            } else if (getExprParser().equal(DefaultKeyword.ORDER)) {
                 getExprParser().getLexer().nextToken();
-                getExprParser().getLexer().accept(DefaultKeyword.BY);
+                getExprParser().accept(DefaultKeyword.BY);
             } else {
-                getExprParser().getLexer().accept(DefaultKeyword.GROUP);
-                getExprParser().getLexer().accept(DefaultKeyword.BY);
+                getExprParser().accept(DefaultKeyword.GROUP);
+                getExprParser().accept(DefaultKeyword.BY);
             }
         }
         getExprParser().skipParentheses();

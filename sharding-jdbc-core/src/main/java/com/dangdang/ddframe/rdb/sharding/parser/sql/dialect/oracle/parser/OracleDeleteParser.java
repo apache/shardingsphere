@@ -30,7 +30,7 @@ public class OracleDeleteParser extends AbstractDeleteParser {
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM);
-        getExprParser().getLexer().skipIfEqual(OracleKeyword.ONLY);
+        getExprParser().skipIfEqual(DefaultKeyword.FROM);
+        getExprParser().skipIfEqual(OracleKeyword.ONLY);
     }
 }

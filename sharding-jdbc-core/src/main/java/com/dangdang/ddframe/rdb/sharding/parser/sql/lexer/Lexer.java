@@ -17,12 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Set;
 
 /**
  * 词法解析器.
@@ -147,61 +143,5 @@ public class Lexer {
     
     protected final char currentCharAt(final int offset) {
         return position + offset >= input.length() ? (char) CharTypes.EOI : input.charAt(position + offset);
-    }
-    
-    /**
-     * 断言当前标记类型与传入值相等并跳过.
-     * 
-     * @param tokenType 待判断的标记类型
-     */
-    public final void accept(final TokenType tokenType) {
-        if (token.getType() != tokenType) {
-            throw new ParserException(this, tokenType);
-        }
-        nextToken();
-    }
-    
-    /**
-     * 判断当前语言标记是否和其中一个传入的标记相等.
-     * 
-     * @param tokenTypes 待判断的标记类型
-     * @return 是否有相等的标记类型
-     */
-    public final boolean equal(final TokenType... tokenTypes) {
-        for (TokenType each : tokenTypes) {
-            if (each == token.getType()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 如果当前语言符号等于传入值, 则跳过.
-     *
-     * @param tokenTypes 待跳过的语言符号
-     * @return 是否跳过(或可理解为是否相等)
-     */
-    public final boolean skipIfEqual(final TokenType... tokenTypes) {
-        for (TokenType each : tokenTypes) {
-            if (equal(each)) {
-                nextToken();
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * 直接跳转至传入的语言符号.
-     *
-     * @param tokenTypes 跳转至的语言符号
-     */
-    public final void skipUntil(final TokenType... tokenTypes) {
-        Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
-        tokenTypeSet.add(Assist.EOF);
-        while (!tokenTypeSet.contains(token.getType())) {
-            nextToken();
-        }
     }
 }

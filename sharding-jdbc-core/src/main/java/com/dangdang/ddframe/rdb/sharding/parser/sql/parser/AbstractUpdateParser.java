@@ -56,7 +56,7 @@ public abstract class AbstractUpdateParser {
         skipBetweenUpdateAndTable();
         exprParser.parseSingleTable(sqlContext);
         parseSetItems();
-        exprParser.getLexer().skipUntil(DefaultKeyword.WHERE);
+        exprParser.skipUntil(DefaultKeyword.WHERE);
         exprParser.setParametersIndex(parametersIndex);
         Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
@@ -68,28 +68,28 @@ public abstract class AbstractUpdateParser {
     protected abstract void skipBetweenUpdateAndTable();
     
     private void parseSetItems() {
-        exprParser.getLexer().accept(DefaultKeyword.SET);
+        exprParser.accept(DefaultKeyword.SET);
         do {
             parseSetItem();
-        } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
+        } while (exprParser.skipIfEqual(Symbol.COMMA));
     }
     
     private void parseSetItem() {
-        if (exprParser.getLexer().equal(Symbol.LEFT_PAREN)) {
+        if (exprParser.equal(Symbol.LEFT_PAREN)) {
             exprParser.skipParentheses();
         } else {
             int beginPosition = exprParser.getLexer().getToken().getEndPosition();
             String literals = exprParser.getLexer().getToken().getLiterals();
             exprParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();
-            if (exprParser.getLexer().skipIfEqual(Symbol.DOT)) {
+            if (exprParser.skipIfEqual(Symbol.DOT)) {
                 if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
                     sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 }
                 exprParser.getLexer().nextToken();
             }
         }
-        exprParser.getLexer().skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
+        exprParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
         exprParser.parseExpr(sqlContext);
         parametersIndex = exprParser.getParametersIndex();
     }

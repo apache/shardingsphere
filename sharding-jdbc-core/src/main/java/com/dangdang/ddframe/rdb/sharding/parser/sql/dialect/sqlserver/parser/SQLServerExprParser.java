@@ -68,7 +68,7 @@ public class SQLServerExprParser extends SQLExprParser {
     }
     
     protected void skipOutput() {
-        if (getLexer().equal(SQLServerKeyword.OUTPUT)) {
+        if (equal(SQLServerKeyword.OUTPUT)) {
             throw new ParserUnsupportedException(SQLServerKeyword.OUTPUT);
         }
     }
@@ -77,9 +77,9 @@ public class SQLServerExprParser extends SQLExprParser {
         getLexer().nextToken();
         int offset;
         int offsetIndex = -1;
-        if (getLexer().equal(Literals.INT)) {
+        if (equal(Literals.INT)) {
             offset = Integer.parseInt(getLexer().getToken().getLiterals());
-        } else if (getLexer().equal(Symbol.QUESTION)) {
+        } else if (equal(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
             offset = (int) getParameters().get(offsetIndex);
             setParametersIndex(offsetIndex + 1);
@@ -88,14 +88,14 @@ public class SQLServerExprParser extends SQLExprParser {
         }
         getLexer().nextToken();
         LimitContext limitContext;
-        if (getLexer().skipIfEqual(DefaultKeyword.FETCH)) {
+        if (skipIfEqual(DefaultKeyword.FETCH)) {
             getLexer().nextToken();
             int rowCount;
             int rowCountIndex = -1;
             getLexer().nextToken();
-            if (getLexer().equal(Literals.INT)) {
+            if (equal(Literals.INT)) {
                 rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
-            } else if (getLexer().equal(Symbol.QUESTION)) {
+            } else if (equal(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
                 rowCount = (int) getParameters().get(rowCountIndex);
                 setParametersIndex(rowCountIndex + 1);

@@ -36,6 +36,6 @@ public final class SQLServerDeleteParser extends AbstractDeleteParser {
     protected void skipBetweenDeleteAndTable() {
         ((SQLServerExprParser) getExprParser()).parseTop();
         ((SQLServerExprParser) getExprParser()).skipOutput();
-        getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM);
+        getExprParser().skipIfEqual(DefaultKeyword.FROM);
     }
 }

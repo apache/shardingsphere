@@ -52,7 +52,7 @@ public abstract class AbstractDeleteParser {
         exprParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
         exprParser.parseSingleTable(sqlContext);
-        exprParser.getLexer().skipUntil(DefaultKeyword.WHERE);
+        exprParser.skipUntil(DefaultKeyword.WHERE);
         Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
         if (conditionContext.isPresent()) {
             sqlContext.getConditionContexts().add(conditionContext.get());

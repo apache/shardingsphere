@@ -73,7 +73,7 @@ public abstract class AbstractInsertParser {
         exprParser.getLexer().nextToken();
         parseInto();
         Collection<Condition.Column> columns = parseColumns();
-        if (exprParser.getLexer().equal(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
+        if (exprParser.equal(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getValuesKeywords().contains(exprParser.getLexer().getToken().getType())) {
@@ -92,7 +92,7 @@ public abstract class AbstractInsertParser {
         if (getUnsupportedKeywords().contains(exprParser.getLexer().getToken().getType())) {
             throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());
         }
-        exprParser.getLexer().skipUntil(DefaultKeyword.INTO);
+        exprParser.skipUntil(DefaultKeyword.INTO);
         exprParser.getLexer().nextToken();
         exprParser.parseSingleTable(sqlContext);
         skipBetweenTableAndValues();
@@ -101,7 +101,7 @@ public abstract class AbstractInsertParser {
     private void skipBetweenTableAndValues() {
         while (getSkippedTokensBetweenTableAndValues().contains(exprParser.getLexer().getToken().getType())) {
             exprParser.getLexer().nextToken();
-            if (exprParser.getLexer().equal(Symbol.LEFT_PAREN)) {
+            if (exprParser.equal(Symbol.LEFT_PAREN)) {
                 exprParser.skipParentheses();
             }
         }
@@ -114,12 +114,12 @@ public abstract class AbstractInsertParser {
     private Collection<Condition.Column> parseColumns() {
         Collection<Condition.Column> result = new LinkedList<>();
         Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
-        if (exprParser.getLexer().equal(Symbol.LEFT_PAREN)) {
+        if (exprParser.equal(Symbol.LEFT_PAREN)) {
             do {
                 exprParser.getLexer().nextToken();
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
-            } while (!exprParser.getLexer().equal(Symbol.RIGHT_PAREN) && !exprParser.getLexer().equal(Assist.EOF));
+            } while (!exprParser.equal(Symbol.RIGHT_PAREN) && !exprParser.equal(Assist.EOF));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getEndPosition() - exprParser.getLexer().getToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
@@ -153,11 +153,11 @@ public abstract class AbstractInsertParser {
                 throw new UnsupportedOperationException("Cannot support multiple insert");
             }
             exprParser.getLexer().nextToken();
-            exprParser.getLexer().accept(Symbol.LEFT_PAREN);
+            exprParser.accept(Symbol.LEFT_PAREN);
             List<SQLExpr> sqlExprs = new LinkedList<>();
             do {
                 sqlExprs.add(exprParser.parseExpr());
-            } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
+            } while (exprParser.skipIfEqual(Symbol.COMMA));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getEndPosition() - exprParser.getLexer().getToken().getLiterals().length());
             int count = 0;
             for (Condition.Column each : columns) {
@@ -180,10 +180,10 @@ public abstract class AbstractInsertParser {
             if (!itemsToken.getItems().isEmpty()) {
                 sqlContext.getSqlTokens().add(itemsToken);
             }
-            exprParser.getLexer().accept(Symbol.RIGHT_PAREN);
+            exprParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
         }
-        while (exprParser.getLexer().equal(Symbol.COMMA));
+        while (exprParser.equal(Symbol.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     

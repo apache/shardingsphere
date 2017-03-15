@@ -62,29 +62,29 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             Condition.Column column = getColumn(autoIncrementColumns);
             getExprParser().getLexer().nextToken();
-            getExprParser().getLexer().accept(Symbol.EQ);
+            getExprParser().accept(Symbol.EQ);
             SQLExpr sqlExpr;
-            if (getExprParser().getLexer().equal(Literals.INT)) {
+            if (getExprParser().equal(Literals.INT)) {
                 sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getToken().getLiterals()));
-            } else if (getExprParser().getLexer().equal(Literals.FLOAT)) {
+            } else if (getExprParser().equal(Literals.FLOAT)) {
                 sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getToken().getLiterals()));
-            } else if (getExprParser().getLexer().equal(Literals.CHARS)) {
+            } else if (getExprParser().equal(Literals.CHARS)) {
                 sqlExpr = new SQLCharExpr(getExprParser().getLexer().getToken().getLiterals());
-            } else if (getExprParser().getLexer().equal(DefaultKeyword.NULL)) {
+            } else if (getExprParser().equal(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
-            } else if (getExprParser().getLexer().equal(Symbol.QUESTION)) {
+            } else if (getExprParser().equal(Symbol.QUESTION)) {
                 sqlExpr = new SQLPlaceholderExpr(getExprParser().getParametersIndex(), getExprParser().getParameters().get(getExprParser().getParametersIndex()));
                 getExprParser().setParametersIndex(getExprParser().getParametersIndex() + 1);
             } else {
                 throw new UnsupportedOperationException("");
             }
             getExprParser().getLexer().nextToken();
-            if (getExprParser().getLexer().equal(Symbol.COMMA, DefaultKeyword.ON, Assist.EOF)) {
+            if (getExprParser().equal(Symbol.COMMA, DefaultKeyword.ON, Assist.EOF)) {
                 parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr);
             } else {
-                getExprParser().getLexer().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
+                getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
-        } while (getExprParser().getLexer().equal(Symbol.COMMA));
+        } while (getExprParser().equal(Symbol.COMMA));
         getSqlContext().getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     

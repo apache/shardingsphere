@@ -37,7 +37,7 @@ public class OracleExprParser extends SQLExprParser {
     
     @Override
     protected Optional<String> as() {
-        if (getLexer().equal(OracleKeyword.CONNECT)) {
+        if (equal(OracleKeyword.CONNECT)) {
             return null;
         }
         return super.as();
@@ -46,9 +46,9 @@ public class OracleExprParser extends SQLExprParser {
     @Override
     public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
         OrderByContext result = super.parseSelectOrderByItem(sqlContext);
-        if (getLexer().skipIfEqual(OracleKeyword.NULLS)) {
+        if (skipIfEqual(OracleKeyword.NULLS)) {
             getLexer().nextToken();
-            if (!getLexer().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
+            if (!skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
                 throw new ParserUnsupportedException(getLexer().getToken().getType());
             }
         }

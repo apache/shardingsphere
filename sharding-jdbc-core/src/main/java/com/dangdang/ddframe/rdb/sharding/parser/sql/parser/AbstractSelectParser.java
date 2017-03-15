@@ -69,7 +69,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void query() {
-        getExprParser().getLexer().accept(DefaultKeyword.SELECT);
+        getExprParser().accept(DefaultKeyword.SELECT);
         parseDistinct();
         parseSelectList();
         parseFrom();
@@ -79,14 +79,14 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void parseDistinct() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
+        if (getExprParser().equal(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
             sqlContext.setDistinct(true);
             getExprParser().getLexer().nextToken();
-            if (hasDistinctOn() && getExprParser().getLexer().equal(DefaultKeyword.ON)) {
+            if (hasDistinctOn() && getExprParser().equal(DefaultKeyword.ON)) {
                 getExprParser().getLexer().nextToken();
                 getExprParser().skipParentheses();
             }
-        } else if (getExprParser().getLexer().equal(DefaultKeyword.ALL)) {
+        } else if (getExprParser().equal(DefaultKeyword.ALL)) {
             getExprParser().getLexer().nextToken();
         }
     }
@@ -104,12 +104,12 @@ public abstract class AbstractSelectParser {
                 sqlContext.setContainStar(true);
             }
             index++;
-        } while (getExprParser().getLexer().skipIfEqual(Symbol.COMMA));
+        } while (getExprParser().skipIfEqual(Symbol.COMMA));
         sqlContext.setSelectListLastPosition(getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length());
     }
     
     protected void queryRest() {
-        if (getExprParser().getLexer().equal(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
+        if (getExprParser().equal(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
         }
     }
@@ -126,31 +126,31 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseGroupBy() {
-        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.GROUP)) {
-            getExprParser().getLexer().accept(DefaultKeyword.BY);
+        if (getExprParser().skipIfEqual(DefaultKeyword.GROUP)) {
+            getExprParser().accept(DefaultKeyword.BY);
             while (true) {
                 addGroupByItem(exprParser.parseExpr(sqlContext));
-                if (!getExprParser().getLexer().equal(Symbol.COMMA)) {
+                if (!getExprParser().equal(Symbol.COMMA)) {
                     break;
                 }
                 getExprParser().getLexer().nextToken();
             }
-            while (getExprParser().getLexer().equal(DefaultKeyword.WITH) || getExprParser().getLexer().getToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
+            while (getExprParser().equal(DefaultKeyword.WITH) || getExprParser().getLexer().getToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
                 getExprParser().getLexer().nextToken();
             }
-            if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.HAVING)) {
+            if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
                 exprParser.parseExpr(sqlContext);
             }
-        } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.HAVING)) {
+        } else if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
             exprParser.parseExpr(sqlContext);
         }
     }
     
     protected final void addGroupByItem(final SQLExpr sqlExpr) {
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
-        if (getExprParser().getLexer().equal(DefaultKeyword.ASC)) {
+        if (getExprParser().equal(DefaultKeyword.ASC)) {
             getExprParser().getLexer().nextToken();
-        } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.DESC)) {
+        } else if (getExprParser().skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderByColumn.OrderByType.DESC;
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
@@ -163,13 +163,13 @@ public abstract class AbstractSelectParser {
     }
     
     public final void parseFrom() {
-        if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.FROM)) {
+        if (getExprParser().skipIfEqual(DefaultKeyword.FROM)) {
             parseTable();
         }
     }
     
     public List<TableContext> parseTable() {
-        if (getExprParser().getLexer().equal(Symbol.LEFT_PAREN)) {
+        if (getExprParser().equal(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         parseTableFactor();
@@ -181,7 +181,7 @@ public abstract class AbstractSelectParser {
         int beginPosition = getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length();
         String literals = getExprParser().getLexer().getToken().getLiterals();
         getExprParser().getLexer().nextToken();
-        if (getExprParser().getLexer().skipIfEqual(Symbol.DOT)) {
+        if (getExprParser().skipIfEqual(Symbol.DOT)) {
             getExprParser().getLexer().nextToken();
             getExprParser().as();
             return;
@@ -194,13 +194,13 @@ public abstract class AbstractSelectParser {
     protected void parseJoinTable() {
         if (getExprParser().isJoin()) {
             parseTable();
-            if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.ON)) {
+            if (getExprParser().skipIfEqual(DefaultKeyword.ON)) {
                 do {
                     parseTableCondition(getExprParser().getLexer().getToken().getEndPosition());
-                    getExprParser().getLexer().accept(Symbol.EQ);
+                    getExprParser().accept(Symbol.EQ);
                     parseTableCondition(getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length());
-                } while (getExprParser().getLexer().skipIfEqual(DefaultKeyword.AND));
-            } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.USING)) {
+                } while (getExprParser().skipIfEqual(DefaultKeyword.AND));
+            } else if (getExprParser().skipIfEqual(DefaultKeyword.USING)) {
                 getExprParser().skipParentheses();
             }
             parseJoinTable();

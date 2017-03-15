@@ -29,6 +29,6 @@ public class OracleUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().getLexer().skipIfEqual(OracleKeyword.ONLY);
+        getExprParser().skipIfEqual(OracleKeyword.ONLY);
     }
 }

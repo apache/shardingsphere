@@ -53,20 +53,20 @@ public final class SQLStatementParser {
      * @return SQL解析对象
      */
     public SQLContext parseStatement() {
-        exprParser.getLexer().skipIfEqual(Symbol.SEMI);
-        if (exprParser.getLexer().equal(DefaultKeyword.WITH)) {
+        exprParser.skipIfEqual(Symbol.SEMI);
+        if (exprParser.equal(DefaultKeyword.WITH)) {
             skipWith();
         }
-        if (exprParser.getLexer().equal(DefaultKeyword.SELECT)) {
+        if (exprParser.equal(DefaultKeyword.SELECT)) {
             return SQLSelectParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equal(DefaultKeyword.INSERT)) {
+        if (exprParser.equal(DefaultKeyword.INSERT)) {
             return SQLInsertParserFactory.newInstance(shardingRule, parameters, exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equal(DefaultKeyword.UPDATE)) {
+        if (exprParser.equal(DefaultKeyword.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(exprParser, dbType).parse();
         }
-        if (exprParser.getLexer().equal(DefaultKeyword.DELETE)) {
+        if (exprParser.equal(DefaultKeyword.DELETE)) {
             return SQLDeleteParserFactory.newInstance(exprParser, dbType).parse();
         }
         throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());
@@ -75,9 +75,9 @@ public final class SQLStatementParser {
     private void skipWith() {
         exprParser.getLexer().nextToken();
         do {
-            exprParser.getLexer().skipUntil(DefaultKeyword.AS);
-            exprParser.getLexer().accept(DefaultKeyword.AS);
+            exprParser.skipUntil(DefaultKeyword.AS);
+            exprParser.accept(DefaultKeyword.AS);
             exprParser.skipParentheses();
-        } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
+        } while (exprParser.skipIfEqual(Symbol.COMMA));
     }
 }
