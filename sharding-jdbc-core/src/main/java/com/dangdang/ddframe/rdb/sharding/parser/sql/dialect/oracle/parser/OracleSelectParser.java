@@ -103,7 +103,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         while (getExprParser().getLexer().skipIfEqual(OracleKeyword.REFERENCE)) {
             getExprParser().getLexer().nextToken();
             getExprParser().getLexer().accept(DefaultKeyword.ON);
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
             skipModelColumnClause();
             skipCellReferenceOptions();
         }
@@ -129,9 +129,9 @@ public class OracleSelectParser extends AbstractSelectParser {
         skipQueryPartitionClause();
         getExprParser().getLexer().accept(OracleKeyword.DIMENSION);
         getExprParser().getLexer().accept(DefaultKeyword.BY);
-        getExprParser().getLexer().skipParentheses();
+        getExprParser().skipParentheses();
         getExprParser().getLexer().accept(OracleKeyword.MEASURES);
-        getExprParser().getLexer().skipParentheses();
+        getExprParser().skipParentheses();
         skipCellReferenceOptions();
         skipModelRulesClause();
     }
@@ -147,19 +147,19 @@ public class OracleSelectParser extends AbstractSelectParser {
             }
         }
         if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.ITERATE)) {
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.UNTIL)) {
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             }
         }
-        getExprParser().getLexer().skipParentheses();
+        getExprParser().skipParentheses();
     }
     
     private void skipQueryPartitionClause() {
         if (getExprParser().getLexer().skipIfEqual(OracleKeyword.PARTITION)) {
             getExprParser().getLexer().accept(DefaultKeyword.BY);
             if (getExprParser().getLexer().equal(Symbol.LEFT_PAREN)) {
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             } else {
                 throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
             }
@@ -239,9 +239,9 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void parseSample() {
         if (getExprParser().getLexer().skipIfEqual(OracleKeyword.SAMPLE)) {
             getExprParser().getLexer().skipIfEqual(OracleKeyword.BLOCK);
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
             if (getExprParser().getLexer().skipIfEqual(OracleKeyword.SEED)) {
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             }
         }
     }
@@ -253,9 +253,9 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     private void skipPartition(final OracleKeyword keyword) {
         if (getExprParser().getLexer().skipIfEqual(keyword)) {
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
             if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.FOR)) {
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             }
         }
     }
@@ -263,14 +263,14 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipPivotClause() {
         if (getExprParser().getLexer().skipIfEqual(OracleKeyword.PIVOT)) {
             getExprParser().getLexer().skipIfEqual(OracleKeyword.XML);
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
         } else if (getExprParser().getLexer().skipIfEqual(OracleKeyword.UNPIVOT)) {
             if (getExprParser().getLexer().skipIfEqual(OracleKeyword.INCLUDE)) {
                 getExprParser().getLexer().accept(OracleKeyword.NULLS);
             } else if (getExprParser().getLexer().skipIfEqual(OracleKeyword.EXCLUDE)) {
                 getExprParser().getLexer().accept(OracleKeyword.NULLS);
             }
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
         }
     }
     

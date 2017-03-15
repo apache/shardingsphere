@@ -84,7 +84,7 @@ public abstract class AbstractSelectParser {
             getExprParser().getLexer().nextToken();
             if (hasDistinctOn() && getExprParser().getLexer().equal(DefaultKeyword.ON)) {
                 getExprParser().getLexer().nextToken();
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             }
         } else if (getExprParser().getLexer().equal(DefaultKeyword.ALL)) {
             getExprParser().getLexer().nextToken();
@@ -201,7 +201,7 @@ public abstract class AbstractSelectParser {
                     parseTableCondition(getExprParser().getLexer().getToken().getEndPosition() - getExprParser().getLexer().getToken().getLiterals().length());
                 } while (getExprParser().getLexer().skipIfEqual(DefaultKeyword.AND));
             } else if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.USING)) {
-                getExprParser().getLexer().skipParentheses();
+                getExprParser().skipParentheses();
             }
             parseJoinTable();
         }

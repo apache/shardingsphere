@@ -204,7 +204,7 @@ public class SQLExprParser {
             return new CommonSelectItemContext(Symbol.STAR.getLiterals(), as(), index, true);
         }
         if (getLexer().skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItemContext(getLexer().skipParentheses(), as(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
+            return new AggregationSelectItemContext(skipParentheses(), as(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
@@ -330,7 +330,7 @@ public class SQLExprParser {
                 return new SQLIgnoreExpr();
             }
             if (lexer.equal(Symbol.LEFT_PAREN)) {
-                getLexer().skipParentheses();
+                skipParentheses();
                 skipRest();
                 return new SQLIgnoreExpr();
             }
@@ -345,7 +345,7 @@ public class SQLExprParser {
         if (!lexer.equal(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
             return result;
         }
-        getLexer().skipParentheses();
+        skipParentheses();
         skipRest();
         return new SQLIgnoreExpr();
     }
@@ -359,7 +359,7 @@ public class SQLExprParser {
             if (lexer.skipIfEqual(Symbol.DOT)) {
                 getLexer().nextToken();
             }
-            getLexer().skipParentheses();
+            skipParentheses();
         }
     }
     
@@ -384,5 +384,34 @@ public class SQLExprParser {
             return new SQLIdentifierExpr(literals);
         }
         return new SQLIgnoreExpr();
+    }
+    
+    /**
+     * 跳过小括号内所有的语言符号.
+     *
+     * @return 小括号内所有的语言符号
+     */
+    public final String skipParentheses() {
+        StringBuilder result = new StringBuilder("");
+        int count = 0;
+        if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
+            int beginPosition = getLexer().getToken().getEndPosition();
+            result.append(Symbol.LEFT_PAREN.getLiterals());
+            getLexer().nextToken();
+            while (true) {
+                if (Assist.EOF == getLexer().getToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getToken().getType() && 0 == count)) {
+                    break;
+                }
+                if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
+                    count++;
+                } else if (Symbol.RIGHT_PAREN == getLexer().getToken().getType()) {
+                    count--;
+                }
+                getLexer().nextToken();
+            }
+            result.append(getLexer().getInput().substring(beginPosition, getLexer().getToken().getEndPosition()));
+            getLexer().nextToken();
+        }
+        return result.toString();
     }
 }

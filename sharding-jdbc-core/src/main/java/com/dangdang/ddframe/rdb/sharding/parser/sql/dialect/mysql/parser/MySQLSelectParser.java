@@ -103,6 +103,6 @@ public class MySQLSelectParser extends AbstractSelectParser {
                 getExprParser().getLexer().accept(DefaultKeyword.BY);
             }
         }
-        getExprParser().getLexer().skipParentheses();
+        getExprParser().skipParentheses();
     }
 }

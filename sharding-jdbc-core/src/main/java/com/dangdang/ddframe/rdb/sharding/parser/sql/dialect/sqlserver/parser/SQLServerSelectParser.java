@@ -62,7 +62,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     @Override
     protected void parseJoinTable() {
         if (getExprParser().getLexer().skipIfEqual(DefaultKeyword.WITH)) {
-            getExprParser().getLexer().skipParentheses();
+            getExprParser().skipParentheses();
         }
         super.parseJoinTable();
     }

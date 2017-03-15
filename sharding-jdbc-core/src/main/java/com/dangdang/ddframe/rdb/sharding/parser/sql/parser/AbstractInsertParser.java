@@ -102,7 +102,7 @@ public abstract class AbstractInsertParser {
         while (getSkippedTokensBetweenTableAndValues().contains(exprParser.getLexer().getToken().getType())) {
             exprParser.getLexer().nextToken();
             if (exprParser.getLexer().equal(Symbol.LEFT_PAREN)) {
-                exprParser.getLexer().skipParentheses();
+                exprParser.skipParentheses();
             }
         }
     }

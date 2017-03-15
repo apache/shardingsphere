@@ -77,7 +77,7 @@ public final class SQLStatementParser {
         do {
             exprParser.getLexer().skipUntil(DefaultKeyword.AS);
             exprParser.getLexer().accept(DefaultKeyword.AS);
-            exprParser.getLexer().skipParentheses();
+            exprParser.skipParentheses();
         } while (exprParser.getLexer().skipIfEqual(Symbol.COMMA));
     }
 }

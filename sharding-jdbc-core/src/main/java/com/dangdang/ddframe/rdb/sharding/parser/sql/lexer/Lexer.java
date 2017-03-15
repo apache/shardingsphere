@@ -204,33 +204,4 @@ public class Lexer {
             nextToken();
         }
     }
-    
-    /**
-     * 跳过小括号内所有的语言符号.
-     *
-     * @return 小括号内所有的语言符号
-     */
-    public final String skipParentheses() {
-        StringBuilder result = new StringBuilder("");
-        int count = 0;
-        if (Symbol.LEFT_PAREN == token.getType()) {
-            int beginPosition = position;
-            result.append(Symbol.LEFT_PAREN.getLiterals());
-            nextToken();
-            while (true) {
-                if (Assist.EOF == token.getType() || (Symbol.RIGHT_PAREN == token.getType() && 0 == count)) {
-                    break;
-                }
-                if (Symbol.LEFT_PAREN == token.getType()) {
-                    count++;
-                } else if (Symbol.RIGHT_PAREN == token.getType()) {
-                    count--;
-                }
-                nextToken();
-            }
-            result.append(input.substring(beginPosition, position));
-            nextToken();
-        }
-        return result.toString();
-    }
 }
