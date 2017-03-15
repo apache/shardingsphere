@@ -247,16 +247,17 @@ public final class Tokenizer {
         return '\'' == charAt(position) && '\'' == charAt(position + 1);
     }
     
-    Token scanSymbol(final int charLength) {
-        int position = offset;
+    Token scanSymbol() {
         int length = 0;
-        char[] symbolChars = new char[charLength];
-        for (int i = 0; i < charLength; i++) {
-            symbolChars[i] = charAt(position++);
+        while (Symbol.isSymbol(charAt(offset + length))) {
             length++;
         }
-        String literals = String.valueOf(symbolChars);
-        return new Token(Symbol.literalsOf(literals), literals, offset + length);
+        String literals = input.substring(offset, offset + length);
+        Symbol symbol;
+        while (null == (symbol = Symbol.literalsOf(literals))) {
+            literals = input.substring(offset, offset + --length);
+        }
+        return new Token(symbol, literals, offset + length);
     }
     
     private char charAt(final int index) {

@@ -58,12 +58,8 @@ public class Lexer {
             token = new Tokenizer(input, dictionary, position).scanHexDecimal();
         } else if (isNumberBegin()) {
             token = new Tokenizer(input, dictionary, position).scanNumber();
-        } else if (isTernarySymbol()) {
-            token = new Tokenizer(input, dictionary, position).scanSymbol(3);
-        } else if (isBinarySymbol()) {
-            token = new Tokenizer(input, dictionary, position).scanSymbol(2);
-        } else if (isUnarySymbol()) {
-            token = new Tokenizer(input, dictionary, position).scanSymbol(1);
+        } else if (isSymbolBegin()) {
+            token = new Tokenizer(input, dictionary, position).scanSymbol();
         } else if (isCharsBegin()) {
             token = new Tokenizer(input, dictionary, position).scanChars();
         } else if (isAliasBegin()) {
@@ -129,30 +125,8 @@ public class Lexer {
         return ch >= '0' && ch <= '9';
     }
     
-    private boolean isTernarySymbol() {
-        return isSymbol(":=:") || isSymbol("<=>");
-    }
-    
-    private boolean isBinarySymbol() {
-        return isSymbol(":=") || isSymbol("..") || isSymbol("&&") || isSymbol("||")
-                || isSymbol(">=") || isSymbol("<=") || isSymbol("<>") || isSymbol(">>") || isSymbol("<<")
-                || isSymbol("!=") || isSymbol("!>") || isSymbol("!<");
-    }
-    
-    private boolean isUnarySymbol() {
-        return isSymbol("(") || isSymbol(")") || isSymbol("[") || isSymbol("]") || isSymbol("{") || isSymbol("}")
-                || isSymbol("+") || isSymbol("-") || isSymbol("*") || isSymbol("/") || isSymbol("%") || isSymbol("^")
-                || isSymbol("=") || isSymbol(">") || isSymbol("<") || isSymbol("~") || isSymbol("!") || isSymbol("?")
-                || isSymbol("&") || isSymbol("|") || isSymbol(".") || isSymbol(":") || isSymbol("#") || isSymbol(",") || isSymbol(";");
-    }
-    
-    private boolean isSymbol(final String symbol) {
-        for (int i = 0; i < symbol.length(); i++) {
-            if (symbol.charAt(i) != currentCharAt(i)) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isSymbolBegin() {
+        return Symbol.isSymbol(currentChar());
     }
     
     private boolean isCharsBegin() {
