@@ -60,7 +60,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
     }
     
     private void skipToFrom() {
-        while (!getExprParser().equal(DefaultKeyword.FROM) && !getExprParser().equal(Assist.EOF)) {
+        while (!getExprParser().equal(DefaultKeyword.FROM) && !getExprParser().equal(Assist.END)) {
             getExprParser().getLexer().nextToken();
         }
     }

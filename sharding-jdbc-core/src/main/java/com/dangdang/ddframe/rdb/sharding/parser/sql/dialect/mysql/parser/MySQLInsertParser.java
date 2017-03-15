@@ -27,9 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
@@ -79,7 +79,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                 throw new UnsupportedOperationException("");
             }
             getExprParser().getLexer().nextToken();
-            if (getExprParser().equal(Symbol.COMMA, DefaultKeyword.ON, Assist.EOF)) {
+            if (getExprParser().equal(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr);
             } else {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
@@ -89,17 +89,17 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected Set<Keyword> getSkippedTokensBetweenTableAndValues() {
-        return Sets.<Keyword>newHashSet(MySQLKeyword.PARTITION);
+    protected Set<TokenType> getSkippedKeywordsBetweenTableAndValues() {
+        return Sets.<TokenType>newHashSet(MySQLKeyword.PARTITION);
     }
     
     @Override
-    protected Set<Keyword> getValuesKeywords() {
-        return Sets.<Keyword>newHashSet(DefaultKeyword.VALUES, MySQLKeyword.VALUE);
+    protected Set<TokenType> getValuesKeywords() {
+        return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES, MySQLKeyword.VALUE);
     }
     
     @Override
-    protected Set<Keyword> getCustomizedInsertTokens() {
-        return Sets.<Keyword>newHashSet(DefaultKeyword.SET);
+    protected Set<TokenType> getCustomizedInsertKeywords() {
+        return Sets.<TokenType>newHashSet(DefaultKeyword.SET);
     }
 }

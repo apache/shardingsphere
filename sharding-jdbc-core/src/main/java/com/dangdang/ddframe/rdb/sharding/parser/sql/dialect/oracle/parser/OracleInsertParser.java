@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.google.common.collect.Sets;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public final class OracleInsertParser extends AbstractInsertParser {
     }
     
     @Override
-    protected Set<Keyword> getUnsupportedKeywords() {
-        return Sets.<Keyword>newHashSet(DefaultKeyword.ALL, OracleKeyword.FIRST);
+    protected Set<TokenType> getUnsupportedKeywords() {
+        return Sets.<TokenType>newHashSet(DefaultKeyword.ALL, OracleKeyword.FIRST);
     }
 }

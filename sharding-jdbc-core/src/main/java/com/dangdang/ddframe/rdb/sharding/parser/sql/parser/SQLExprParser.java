@@ -205,7 +205,7 @@ public class SQLExprParser extends Parser {
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME 解析xxx.*
-        while (!equal(DefaultKeyword.AS) && !equal(Symbol.COMMA) && !equal(DefaultKeyword.FROM) && !equal(Assist.EOF)) {
+        while (!equal(DefaultKeyword.AS) && !equal(Symbol.COMMA) && !equal(DefaultKeyword.FROM) && !equal(Assist.END)) {
             String value = getLexer().getToken().getLiterals();
             int position = getLexer().getToken().getEndPosition() - value.length();
             expression.append(value);

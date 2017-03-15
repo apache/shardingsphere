@@ -24,5 +24,5 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
  */
 public enum Assist implements TokenType {
     
-    EOF, ERROR
+    END, ERROR
 }

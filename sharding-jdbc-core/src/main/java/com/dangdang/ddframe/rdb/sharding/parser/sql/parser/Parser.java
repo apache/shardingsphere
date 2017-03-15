@@ -47,11 +47,11 @@ public class Parser {
         StringBuilder result = new StringBuilder("");
         int count = 0;
         if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
-            int beginPosition = getLexer().getToken().getEndPosition();
+            final int beginPosition = getLexer().getToken().getEndPosition();
             result.append(Symbol.LEFT_PAREN.getLiterals());
             getLexer().nextToken();
             while (true) {
-                if (Assist.EOF == getLexer().getToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getToken().getType() && 0 == count)) {
+                if (Assist.END == getLexer().getToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getToken().getType() && 0 == count)) {
                     break;
                 }
                 if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
@@ -118,7 +118,7 @@ public class Parser {
      */
     public final void skipUntil(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
-        tokenTypeSet.add(Assist.EOF);
+        tokenTypeSet.add(Assist.END);
         while (!tokenTypeSet.contains(lexer.getToken().getType())) {
             lexer.nextToken();
         }

@@ -46,8 +46,7 @@ public class Lexer {
         if (isVariableBegin()) {
             token = new Tokenizer(input, dictionary, position).scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
-            position++;
-            token = new Tokenizer(input, dictionary, position).scanChars();
+            token = new Tokenizer(input, dictionary, ++position).scanChars();
         } else if (isIdentifierBegin()) {
             token = new Tokenizer(input, dictionary, position).scanIdentifier();
         } else if (isHexDecimalBegin()) {
@@ -58,8 +57,8 @@ public class Lexer {
             token = new Tokenizer(input, dictionary, position).scanSymbol();
         } else if (isCharsBegin()) {
             token = new Tokenizer(input, dictionary, position).scanChars();
-        } else if (isEOF()) {
-            token = new Token(Assist.EOF, "", position);
+        } else if (isEnd()) {
+            token = new Token(Assist.END, "", position);
         } else {
             token = new Token(Assist.ERROR, "", position);
         }
@@ -83,8 +82,9 @@ public class Lexer {
     }
     
     protected boolean isCommentBegin() {
-        String chars = String.valueOf(new char[] {currentChar(), currentCharAt(1)});
-        return "--".equals(chars) || "//".equals(chars) || "/*".equals(chars);
+        char current = currentChar();
+        char next = currentCharAt(1);
+        return '/' == current && '/' == next || '-' == current && '-' == next || '/' == current && '*' == next;
     }
     
     protected boolean isVariableBegin() {
@@ -123,7 +123,7 @@ public class Lexer {
         return '\'' == currentChar() || '\"' == currentChar();
     }
     
-    private boolean isEOF() {
+    private boolean isEnd() {
         return position >= input.length();
     }
     

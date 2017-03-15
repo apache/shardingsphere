@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 处理词.
+ * 语言标记截取器.
  *
  * @author zhangliang
  */
@@ -42,14 +42,20 @@ final class Tokenizer {
     }
     
     int skipComment() {
-        if ('/' == charAt(offset) && '/' ==  charAt(offset + 1) || '-' == charAt(offset) && '-' == charAt(offset + 1)) {
+        char currentChar = charAt(offset);
+        char nextChar = charAt(offset + 1);
+        if (isSingleLineCommentBegin(currentChar, nextChar)) {
             return skipSingleLineComment(2);
-        } else if ('#' == charAt(offset)) {
+        } else if ('#' == currentChar) {
             return skipSingleLineComment(1);
-        } else if ('/' == charAt(offset) && '*' == charAt(offset + 1)) {
+        } else if (isMultipleLineCommentBegin(currentChar, nextChar)) {
             return skipMultiLineComment();
         }
         return offset;
+    }
+    
+    private boolean isSingleLineCommentBegin(final char ch, final char next) {
+        return '/' == ch && '/' == next || '-' == ch && '-' == next;
     }
     
     private int skipSingleLineComment(final int commentFlagLength) {
@@ -60,6 +66,10 @@ final class Tokenizer {
             length++;
         }
         return offset + length + 1;
+    }
+    
+    private boolean isMultipleLineCommentBegin(final char ch, final char next) {
+        return '/' == ch && '*' == next;
     }
     
     private int skipMultiLineComment() {
@@ -73,15 +83,18 @@ final class Tokenizer {
     private int untilCommentAndHintTerminateSign(final int beginSignLength) {
         int length = beginSignLength;
         int position = offset + length;
-        while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
+        while (!isMultipleLineCommentEnd(charAt(position), charAt(position + 1))) {
             if (CharType.isEndOfInput(charAt(position))) {
                 throw new UnterminatedSignException("*/");
             }
             position++;
             length++;
         }
-        length += 2;
-        return offset + length;
+        return offset + length + 2;
+    }
+    
+    private boolean isMultipleLineCommentEnd(final char ch, final char next) {
+        return '*' == ch && '/' == next;
     }
     
     Token scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
@@ -169,82 +182,75 @@ final class Tokenizer {
     
     Token scanNumber() {
         int length = 0;
-        int position = offset;
-        if ('-' == charAt(position)) {
-            position++;
+        if ('-' == charAt(offset + length)) {
             length++;
         }
-        while (CharType.isDigital(charAt(position))) {
-            length++;
-            position++;
-        }
+        length += getDigitalLength(offset + length);
         boolean isFloat = false;
-        if ('.' == charAt(position)) {
+        if ('.' == charAt(offset + length)) {
             // TODO 待确认 数字后面加两个点表示什么
-            if ('.' == charAt(position + 1)) {
+            if ('.' == charAt(offset + length + 1)) {
                 length++;
                 return new Token(Literals.INT, input.substring(offset, offset + length), offset + length);
             }
             isFloat = true;
-            position++;
             length++;
-            while (CharType.isDigital(charAt(position))) {
-                position++;
-                length++;
-            }
+            length += getDigitalLength(offset + length);
         }
-        if ('e' == charAt(position) || 'E' == charAt(position)) {
+        if (isScientificNotation(offset + length)) {
             isFloat = true;
-            position++;
             length++;
-            if ('+' == charAt(position)) {
-                position++;
+            if ('+' == charAt(offset + length) || '-' == charAt(offset + length)) {
                 length++;
             }
-            if ('-' == charAt(position)) {
-                position++;
-                length++;
-            }
-            while (CharType.isDigital(charAt(position))) {
-                position++;
-                length++;
-            }
+            length += getDigitalLength(offset + length);
         }
-        if ('f' == charAt(position) || 'F' == charAt(position)) {
+        if (isBinaryNumber(offset + length)) {
+            isFloat = true;
             length++;
-            return new Token(Literals.FLOAT, input.substring(offset, offset + length), offset + length);
-        }
-        if ('d' == charAt(position) || 'D' == charAt(position)) {
-            length++;
-            return new Token(Literals.FLOAT, input.substring(offset, offset + length), offset + length);
         }
         return new Token(isFloat ? Literals.FLOAT : Literals.INT, input.substring(offset, offset + length), offset + length);
+    }
+    
+    private int getDigitalLength(final int offset) {
+        int result = 0;
+        while (CharType.isDigital(charAt(offset + result))) {
+            result++;
+        }
+        return result;
+    }
+    
+    private boolean isScientificNotation(final int position) {
+        char current = charAt(position);
+        return 'e' == current || 'E' == current;
+    }
+    
+    private boolean isBinaryNumber(final int position) {
+        char current = charAt(position);
+        return 'f' == current || 'F' == current || 'd' == current || 'D' == current;
     }
     
     Token scanChars() {
         return scanChars(charAt(offset));
     }
     
-    private Token scanChars(final char charSign) {
+    private Token scanChars(final char charIdentifier) {
         int length = 1;
-        int position = offset + length;
-        while (charSign != charAt(position) || hasEscapeChar(charSign, position)) {
-            if (position >= input.length()) {
-                throw new UnterminatedSignException(charSign);
+        while (charIdentifier != charAt(offset + length) || hasEscapeChar(charIdentifier, offset + length)) {
+            if (offset + length >= input.length()) {
+                throw new UnterminatedSignException(charIdentifier);
             }
-            if (hasEscapeChar(charSign, position)) {
+            if (hasEscapeChar(charIdentifier, offset + length)) {
                 length++;
-                position++;
             }
             length++;
-            position++;
         }
         length++;
         return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
     }
     
-    private boolean hasEscapeChar(final char charSign, final int position) {
-        return charSign == charAt(position) && charSign == charAt(position + 1);
+    private boolean hasEscapeChar(final char charIdentifier, final int position) {
+        return charIdentifier == charAt(position) && charIdentifier == charAt(position + 1);
     }
     
     Token scanSymbol() {

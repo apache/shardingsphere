@@ -27,8 +27,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
@@ -78,13 +78,13 @@ public abstract class AbstractInsertParser {
         }
         if (getValuesKeywords().contains(exprParser.getLexer().getToken().getType())) {
             parseValues(columns);
-        } else if (getCustomizedInsertTokens().contains(exprParser.getLexer().getToken().getType())) {
+        } else if (getCustomizedInsertKeywords().contains(exprParser.getLexer().getToken().getType())) {
             parseCustomizedInsert();
         }
         return sqlContext;
     }
     
-    protected Set<Keyword> getUnsupportedKeywords() {
+    protected Set<TokenType> getUnsupportedKeywords() {
         return Collections.emptySet();
     }
     
@@ -99,7 +99,7 @@ public abstract class AbstractInsertParser {
     }
     
     private void skipBetweenTableAndValues() {
-        while (getSkippedTokensBetweenTableAndValues().contains(exprParser.getLexer().getToken().getType())) {
+        while (getSkippedKeywordsBetweenTableAndValues().contains(exprParser.getLexer().getToken().getType())) {
             exprParser.getLexer().nextToken();
             if (exprParser.equal(Symbol.LEFT_PAREN)) {
                 exprParser.skipParentheses();
@@ -107,7 +107,7 @@ public abstract class AbstractInsertParser {
         }
     }
     
-    protected Set<Keyword> getSkippedTokensBetweenTableAndValues() {
+    protected Set<TokenType> getSkippedKeywordsBetweenTableAndValues() {
         return Collections.emptySet();
     }
     
@@ -119,7 +119,7 @@ public abstract class AbstractInsertParser {
                 exprParser.getLexer().nextToken();
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
-            } while (!exprParser.equal(Symbol.RIGHT_PAREN) && !exprParser.equal(Assist.EOF));
+            } while (!exprParser.equal(Symbol.RIGHT_PAREN) && !exprParser.equal(Assist.END));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getToken().getEndPosition() - exprParser.getLexer().getToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
@@ -141,8 +141,8 @@ public abstract class AbstractInsertParser {
         return new Condition.Column(columnName, sqlContext.getTables().get(0).getName());
     }
     
-    protected Set<Keyword> getValuesKeywords() {
-        return Sets.<Keyword>newHashSet(DefaultKeyword.VALUES);
+    protected Set<TokenType> getValuesKeywords() {
+        return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES);
     }
     
     private void parseValues(final Collection<Condition.Column> columns) {
@@ -196,7 +196,7 @@ public abstract class AbstractInsertParser {
         return result;
     }
     
-    protected Set<Keyword> getCustomizedInsertTokens() {
+    protected Set<TokenType> getCustomizedInsertKeywords() {
         return Collections.emptySet();
     }
     

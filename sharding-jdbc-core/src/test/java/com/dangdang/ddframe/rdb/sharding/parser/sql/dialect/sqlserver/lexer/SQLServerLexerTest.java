@@ -20,6 +20,6 @@ public final class SQLServerLexerTest {
         LexerAssert.assertNextToken(lexer, Literals.VARIABLE, "@@global.x1");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
 }

@@ -37,7 +37,7 @@ public final class MySQLLexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.GT, ">");
         LexerAssert.assertNextToken(lexer, Literals.INT, "1");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -47,7 +47,7 @@ public final class MySQLLexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -61,7 +61,7 @@ public final class MySQLLexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.LT_EQ, "<=");
         LexerAssert.assertNextToken(lexer, Literals.INT, "1");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -77,6 +77,6 @@ public final class MySQLLexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
         LexerAssert.assertNextToken(lexer, Literals.VARIABLE, "@@global.x1");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
 }

@@ -30,7 +30,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "from");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "TABLE_XXX");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -44,7 +44,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, DefaultKeyword.BY, "BY");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.DESC, "DESC");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, DefaultKeyword.BY, "By");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, DefaultKeyword.DESC, "DESC");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -95,7 +95,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "YY");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
         LexerAssert.assertNextToken(lexer, expectedTokenType, expectedNumber);
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -117,7 +117,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.COMMA, ",");
         LexerAssert.assertNextToken(lexer, Literals.CHARS, "x\"\"yz");
         LexerAssert.assertNextToken(lexer, Symbol.RIGHT_PAREN, ")");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -131,7 +131,7 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
         LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
         LexerAssert.assertNextToken(lexer, Literals.INT, "1");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
     
     @Test
@@ -145,6 +145,6 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "YY");
         LexerAssert.assertNextToken(lexer, Symbol.GT, ">");
         LexerAssert.assertNextToken(lexer, Literals.INT, "2");
-        LexerAssert.assertNextToken(lexer, Assist.EOF, "");
+        LexerAssert.assertNextToken(lexer, Assist.END, "");
     }
 }
