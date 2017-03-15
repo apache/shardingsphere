@@ -106,7 +106,7 @@ public class Lexer {
     }
     
     private boolean isIdentifierBegin(final char ch) {
-        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || '`' == ch || '_' == ch || '$' == ch;
+        return CharType.isAlphabet(ch) || '`' == ch || '_' == ch || '$' == ch;
     }
     
     private boolean isHexDecimalBegin() {
@@ -114,11 +114,7 @@ public class Lexer {
     }
     
     private boolean isNumberBegin() {
-        return isDigital(currentChar()) || ('.' == currentChar() && isDigital(currentCharAt(1)) && !isIdentifierBegin(currentCharAt(-1)));
-    }
-    
-    private boolean isDigital(final char ch) {
-        return ch >= '0' && ch <= '9';
+        return CharType.isDigital(currentChar()) || ('.' == currentChar() && CharType.isDigital(currentCharAt(1)) && !isIdentifierBegin(currentCharAt(-1)));
     }
     
     private boolean isSymbolBegin() {
@@ -142,6 +138,6 @@ public class Lexer {
     }
     
     protected final char currentCharAt(final int offset) {
-        return position + offset >= input.length() ? (char) CharTypes.EOI : input.charAt(position + offset);
+        return position + offset >= input.length() ? (char) CharType.EOI : input.charAt(position + offset);
     }
 }

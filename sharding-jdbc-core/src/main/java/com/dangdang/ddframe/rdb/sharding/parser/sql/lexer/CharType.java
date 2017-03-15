@@ -20,25 +20,28 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 import lombok.NoArgsConstructor;
 
 /**
- * 字符类型工具类.
+ * 字符常量.
  * 
  * @author zhangliang 
  */
 @NoArgsConstructor
-final class CharTypes {
+final class CharType {
     
-    /**
-     * 输入结束标记.
-     */
     static final byte EOI = 0x1A;
     
-    /**
-     * 判断是否为空格.
-     *
-     * @param ch 待判断的字符
-     * @return 是否为空格
-     */
     static boolean isWhitespace(final char ch) {
-        return (ch <= 32 && EOI != ch) || 160 == ch || (ch >= 0x7F && ch <= 0xA0);
+        return ch <= 32 && EOI != ch || 160 == ch || ch >= 0x7F && ch <= 0xA0;
+    }
+    
+    static boolean isEndOfInput(final char ch) {
+        return ch == 0x1A;
+    }
+    
+    static boolean isAlphabet(final char ch) {
+        return ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z';
+    }
+    
+    static boolean isDigital(final char ch) {
+        return ch >= '0' && ch <= '9';
     }
 }

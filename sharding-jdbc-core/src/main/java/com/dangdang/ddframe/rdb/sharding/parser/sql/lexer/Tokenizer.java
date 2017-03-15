@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class Tokenizer {
+final class Tokenizer {
     
     private final String input;
     
@@ -35,7 +35,7 @@ public final class Tokenizer {
     
     int skipWhitespace() {
         int length = 0;
-        while (CharTypes.isWhitespace(charAt(offset + length))) {
+        while (CharType.isWhitespace(charAt(offset + length))) {
             length++;
         }
         return offset + length;
@@ -55,7 +55,7 @@ public final class Tokenizer {
     private int skipSingleLineComment(final int commentFlagLength) {
         int position = offset + commentFlagLength;
         int length = commentFlagLength;
-        while (CharTypes.EOI != charAt(position) && '\n' != charAt(position)) {
+        while (!CharType.isEndOfInput(charAt(position)) && '\n' != charAt(position)) {
             position++;
             length++;
         }
@@ -74,7 +74,7 @@ public final class Tokenizer {
         int length = beginSignLength;
         int position = offset + length;
         while (!('*' == charAt(position) && '/' == charAt(position + 1))) {
-            if (CharTypes.EOI == charAt(position)) {
+            if (CharType.isEndOfInput(charAt(position))) {
                 throw new UnterminatedSignException("*/");
             }
             position++;
@@ -88,7 +88,7 @@ public final class Tokenizer {
         int length = 2;
         int position = offset + 1;
         while (terminatedSign != charAt(++position)) {
-            if (CharTypes.EOI == charAt(position)) {
+            if (CharType.isEndOfInput(charAt(position))) {
                 throw new UnterminatedSignException(terminatedSign);
             }
             length++;
@@ -141,7 +141,7 @@ public final class Tokenizer {
     
     private TokenType processAmbiguousIdentifier(final int position, final String literals) {
         int i = 0;
-        while (CharTypes.isWhitespace(charAt(position + i))) {
+        while (CharType.isWhitespace(charAt(position + i))) {
             i++;
         }
         if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
@@ -261,6 +261,6 @@ public final class Tokenizer {
     }
     
     private char charAt(final int index) {
-        return index >= input.length() ? (char) CharTypes.EOI : input.charAt(index);
+        return index >= input.length() ? (char) CharType.EOI : input.charAt(index);
     }
 }
