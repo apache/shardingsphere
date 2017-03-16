@@ -91,7 +91,7 @@ public abstract class AbstractUpdateParser {
             }
         }
         exprParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
-        exprParser.parseExpr(sqlContext);
+        exprParser.parseExpression(sqlContext);
         parametersIndex = exprParser.getParametersIndex();
     }
 }

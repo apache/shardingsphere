@@ -158,7 +158,7 @@ public abstract class AbstractInsertParser {
             exprParser.accept(Symbol.LEFT_PAREN);
             List<SQLExpr> sqlExprs = new LinkedList<>();
             do {
-                sqlExprs.add(exprParser.parseExpr());
+                sqlExprs.add(exprParser.parseExpression());
             } while (exprParser.skipIfEqual(Symbol.COMMA));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentToken().getEndPosition() - exprParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;

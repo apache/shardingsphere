@@ -77,6 +77,98 @@ public class SQLParser extends Parser {
     }
     
     /**
+     * 解析表达式.
+     * 
+     * @param sqlContext SQL上下文
+     * @return 表达式
+     */
+    public final SQLExpr parseExpression(final SQLContext sqlContext) {
+        int beginPosition = getLexer().getCurrentToken().getEndPosition();
+        SQLExpr result = parseExpression();
+        if (result instanceof SQLPropertyExpr) {
+            setTableToken(sqlContext, beginPosition, (SQLPropertyExpr) result);
+        }
+        return result;
+    }
+    
+    /**
+     * 解析表达式.
+     *
+     * @return 表达式
+     */
+    public final SQLExpr parseExpression() {
+        String literals = getLexer().getCurrentToken().getLiterals();
+        final SQLExpr expression = getExpression(literals);
+        if (skipIfEqual(Literals.IDENTIFIER)) {
+            if (skipIfEqual(Symbol.DOT)) {
+                String property = getLexer().getCurrentToken().getLiterals();
+                getLexer().nextToken();
+                return skipIfCompositeExpression() ? new SQLIgnoreExpr() : new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);
+            }
+            if (equalAny(Symbol.LEFT_PAREN)) {
+                skipParentheses();
+                skipRestCompositeExpression();
+                return new SQLIgnoreExpr();
+            }
+            return skipIfCompositeExpression() ? new SQLIgnoreExpr() : expression;
+        }
+        getLexer().nextToken();
+        return skipIfCompositeExpression() ? new SQLIgnoreExpr() : expression;
+    }
+    
+    private SQLExpr getExpression(final String literals) {
+        if (equalAny(Symbol.QUESTION)) {
+            parametersIndex++;
+            return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
+        }
+        if (equalAny(Literals.CHARS)) {
+            return new SQLCharExpr(literals);
+        }
+        // TODO 考虑long的情况
+        if (equalAny(Literals.INT)) {
+            return new SQLNumberExpr(Integer.parseInt(literals));
+        }
+        if (equalAny(Literals.FLOAT)) {
+            return new SQLNumberExpr(Double.parseDouble(literals));
+        }
+        // TODO 考虑long的情况
+        if (equalAny(Literals.HEX)) {
+            return new SQLNumberExpr(Integer.parseInt(literals, 16));
+        }
+        if (equalAny(Literals.IDENTIFIER)) {
+            return new SQLIdentifierExpr(SQLUtil.getExactlyValue(literals));
+        }
+        return new SQLIgnoreExpr();
+    }
+    
+    private boolean skipIfCompositeExpression() {
+        if (equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT, Symbol.LEFT_PAREN)) {
+            skipParentheses();
+            skipRestCompositeExpression();
+            return true;
+        }
+        return false;
+    }
+    
+    private void skipRestCompositeExpression() {
+        while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
+            if (equalAny(Symbol.QUESTION)) {
+                parametersIndex++;
+            }
+            getLexer().nextToken();
+            skipParentheses();
+        }
+    }
+    
+    private void setTableToken(final SQLContext sqlContext, final int beginPosition, final SQLPropertyExpr propertyExpr) {
+        String tableName = sqlContext.getTables().get(0).getName();
+        String owner = propertyExpr.getOwner().getName();
+        if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+        }
+    }
+    
+    /**
      * 解析别名.
      *
      * @return 别名
@@ -99,49 +191,55 @@ public class SQLParser extends Parser {
         return Optional.absent();
     }
     
-    public List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
+    /**
+     * 解析排序.
+     * 
+     * @param sqlContext SQL上下文
+     * @return 排序上下文
+     */
+    public final List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
         if (!skipIfEqual(DefaultKeyword.ORDER)) {
             return Collections.emptyList();
         }
         List<OrderByContext> result = new LinkedList<>();
         skipIfEqual(DefaultKeyword.SIBLINGS);
         accept(DefaultKeyword.BY);
-        OrderByContext orderByContext = parseSelectOrderByItem(sqlContext);
-        if (null != orderByContext) {
-            result.add(orderByContext);
-        }
-        while (equalAny(Symbol.COMMA)) {
-            getLexer().nextToken();
-            orderByContext = parseSelectOrderByItem(sqlContext);
-            if (null != orderByContext) {
-                result.add(orderByContext);
+        do {
+            Optional<OrderByContext> orderByContext = parseSelectOrderByItem(sqlContext);
+            if (orderByContext.isPresent()) {
+                result.add(orderByContext.get());
             }
         }
+        while (skipIfEqual(Symbol.COMMA));
         return result;
     }
     
-    public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
-        SQLExpr expr = parseExpr(sqlContext);
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+        SQLExpr expr = parseExpression(sqlContext);
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
-        if (equalAny(DefaultKeyword.ASC)) {
-            getLexer().nextToken();
-        } else if (equalAny(DefaultKeyword.DESC)) {
-            getLexer().nextToken();
+        if (skipIfEqual(DefaultKeyword.ASC)) {
+            orderByType = OrderByColumn.OrderByType.ASC;
+        } else if (skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderByColumn.OrderByType.DESC;
         }
         if (expr instanceof SQLNumberExpr) {
-            return new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
+            return Optional.of(new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType));
         }
         if (expr instanceof SQLIdentifierExpr) {
-            return new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType);
+            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType));
         }
         if (expr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            return new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType);
+            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType));
         }
-        return null;
+        return Optional.absent();
     }
     
+    /**
+     * 解析单表.
+     * 
+     * @param sqlContext SQL上下文
+     */
     public final void parseSingleTable(final SQLContext sqlContext) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
@@ -167,14 +265,19 @@ public class SQLParser extends Parser {
             }
             tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), parseAlias());
         }
-        if (isJoin()) {
+        if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
         sqlContext.getTables().add(tableContext);
     }
     
-    public final boolean isJoin() {
+    /**
+     * 跳过表关联.
+     * 
+     * @return 是否表关联.
+     */
+    public final boolean skipJoin() {
         if (skipIfEqual(DefaultKeyword.LEFT, DefaultKeyword.RIGHT, DefaultKeyword.FULL)) {
             skipIfEqual(DefaultKeyword.OUTER);
             accept(DefaultKeyword.JOIN);
@@ -196,6 +299,13 @@ public class SQLParser extends Parser {
         return false;
     }
     
+    /**
+     * 解析查询列.
+     * 
+     * @param index 参数索引
+     * @param sqlContext SQL上下文
+     * @return 查询列上下文 
+     */
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = getLexer().getCurrentToken().getLiterals();
@@ -221,7 +331,13 @@ public class SQLParser extends Parser {
         return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), index, false);
     }
     
-    public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
+    /**
+     * 解析查询条件.
+     * 
+     * @param sqlContext SQL上下文
+     * @return 条件上下文
+     */
+    public final Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
         if (skipIfEqual(DefaultKeyword.WHERE)) {
             ParseContext parseContext = getParseContext(sqlContext);
             parseConditions(sqlContext, parseContext);
@@ -249,9 +365,9 @@ public class SQLParser extends Parser {
     }
     
     // TODO 解析组合expr
-    public void parseComparisonCondition(final SQLContext sqlContext, final ParseContext parseContext) {
+    public final void parseComparisonCondition(final SQLContext sqlContext, final ParseContext parseContext) {
         skipIfEqual(Symbol.LEFT_PAREN);
-        SQLExpr left = parseExpr(sqlContext);
+        SQLExpr left = parseExpression(sqlContext);
         if (equalAny(Symbol.EQ)) {
             parseEqualCondition(sqlContext, parseContext, left);
         } else if (equalAny(DefaultKeyword.IN)) {
@@ -267,7 +383,7 @@ public class SQLParser extends Parser {
     
     private void parseEqualCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
         getLexer().nextToken();
-        SQLExpr right = parseExpr(sqlContext);
+        SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
             parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
@@ -282,7 +398,7 @@ public class SQLParser extends Parser {
             if (equalAny(Symbol.COMMA)) {
                 getLexer().nextToken();
             }
-            rights.add(parseExpr(sqlContext));
+            rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
         parseContext.addCondition(left, Condition.BinaryOperator.IN, rights);
         getLexer().nextToken();
@@ -291,98 +407,14 @@ public class SQLParser extends Parser {
     private void parseBetweenCondition(final SQLContext sqlContext, final ParseContext parseContext, final SQLExpr left) {
         getLexer().nextToken();
         List<SQLExpr> rights = new LinkedList<>();
-        rights.add(parseExpr(sqlContext));
+        rights.add(parseExpression(sqlContext));
         accept(DefaultKeyword.AND);
-        rights.add(parseExpr(sqlContext));
+        rights.add(parseExpression(sqlContext));
         parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights);
     }
     
     private void parserOtherCondition(final SQLContext sqlContext) {
         getLexer().nextToken();
-        parseExpr(sqlContext);
-    }
-    
-    public SQLExpr parseExpr(final SQLContext sqlContext) {
-        int beginPosition = getLexer().getCurrentToken().getEndPosition();
-        SQLExpr result = parseExpr();
-        if (result instanceof SQLPropertyExpr) {
-            String tableName = sqlContext.getTables().get(0).getName();
-            String owner = (((SQLPropertyExpr) result).getOwner()).getName();
-            if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-                sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
-            }
-        }
-        return result;
-    }
-    
-    public SQLExpr parseExpr() {
-        String literals = getLexer().getCurrentToken().getLiterals();
-        if (equalAny(Literals.IDENTIFIER)) {
-            SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
-            getLexer().nextToken();
-            if (skipIfEqual(Symbol.DOT)) {
-                String property = getLexer().getCurrentToken().getLiterals();
-                getLexer().nextToken();
-                if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
-                    return new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);
-                }
-                skipRest();
-                return new SQLIgnoreExpr();
-            }
-            if (equalAny(Symbol.LEFT_PAREN)) {
-                skipParentheses();
-                skipRest();
-                return new SQLIgnoreExpr();
-            }
-            if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
-                return result;
-            }
-            skipRest();
-            return new SQLIgnoreExpr();
-        }
-        SQLExpr result = getSQLExpr(literals);
-        getLexer().nextToken();
-        if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
-            return result;
-        }
-        skipParentheses();
-        skipRest();
-        return new SQLIgnoreExpr();
-    }
-    
-    private void skipRest() {
-        while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
-            if (equalAny(Symbol.QUESTION)) {
-                ++parametersIndex;
-            }
-            getLexer().nextToken();
-            if (skipIfEqual(Symbol.DOT)) {
-                getLexer().nextToken();
-            }
-            skipParentheses();
-        }
-    }
-    
-    private SQLExpr getSQLExpr(final String literals) {
-        if (equalAny(Symbol.QUESTION)) {
-            parametersIndex++;
-            return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
-        }
-        if (equalAny(Literals.CHARS)) {
-            return new SQLCharExpr(literals);
-        }
-        if (equalAny(Literals.INT)) {
-            return new SQLNumberExpr(Integer.parseInt(literals));
-        }
-        if (equalAny(Literals.FLOAT)) {
-            return new SQLNumberExpr(Double.parseDouble(literals));
-        }
-        if (equalAny(Literals.HEX)) {
-            return new SQLNumberExpr(Integer.parseInt(literals, 16));
-        }
-        if (equalAny(Literals.IDENTIFIER)) {
-            return new SQLIdentifierExpr(literals);
-        }
-        return new SQLIgnoreExpr();
+        parseExpression(sqlContext);
     }
 }

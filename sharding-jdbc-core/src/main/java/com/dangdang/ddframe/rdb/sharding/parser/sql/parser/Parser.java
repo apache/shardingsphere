@@ -43,6 +43,7 @@ public class Parser {
      *
      * @return 小括号内所有的词法标记
      */
+    // TODO 判断? 增加param index
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;

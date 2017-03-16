@@ -291,7 +291,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         getExprParser().accept(DefaultKeyword.UPDATE);
         if (getExprParser().skipIfEqual(OracleKeyword.OF)) {
             do {
-                getExprParser().parseExpr();
+                getExprParser().parseExpression();
             } while (getExprParser().skipIfEqual(Symbol.COMMA));
         }
         if (getExprParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {

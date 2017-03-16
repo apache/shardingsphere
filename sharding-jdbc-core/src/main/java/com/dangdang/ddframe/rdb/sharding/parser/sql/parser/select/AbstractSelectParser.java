@@ -131,7 +131,7 @@ public abstract class AbstractSelectParser {
         if (getExprParser().skipIfEqual(DefaultKeyword.GROUP)) {
             getExprParser().accept(DefaultKeyword.BY);
             while (true) {
-                addGroupByItem(exprParser.parseExpr(sqlContext));
+                addGroupByItem(exprParser.parseExpression(sqlContext));
                 if (!getExprParser().equalAny(Symbol.COMMA)) {
                     break;
                 }
@@ -141,10 +141,10 @@ public abstract class AbstractSelectParser {
                 getExprParser().getLexer().nextToken();
             }
             if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
-                exprParser.parseExpr(sqlContext);
+                exprParser.parseExpression(sqlContext);
             }
         } else if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
-            exprParser.parseExpr(sqlContext);
+            exprParser.parseExpression(sqlContext);
         }
     }
     
@@ -194,7 +194,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseJoinTable() {
-        if (getExprParser().isJoin()) {
+        if (getExprParser().skipJoin()) {
             parseTable();
             if (getExprParser().skipIfEqual(DefaultKeyword.ON)) {
                 do {
@@ -210,7 +210,7 @@ public abstract class AbstractSelectParser {
     }
     
     private void parseTableCondition(final int startPosition) {
-        SQLExpr sqlExpr = exprParser.parseExpr();
+        SQLExpr sqlExpr = exprParser.parseExpression();
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
             for (TableContext each : sqlContext.getTables()) {

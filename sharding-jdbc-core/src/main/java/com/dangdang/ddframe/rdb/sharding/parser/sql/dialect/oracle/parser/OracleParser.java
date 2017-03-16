@@ -44,14 +44,18 @@ public class OracleParser extends SQLParser {
     }
     
     @Override
-    public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
-        OrderByContext result = super.parseSelectOrderByItem(sqlContext);
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+        Optional<OrderByContext> result = super.parseSelectOrderByItem(sqlContext);
+        skipAfterOrderByItem();
+        return result;
+    }
+    
+    private void skipAfterOrderByItem() {
         if (skipIfEqual(OracleKeyword.NULLS)) {
             getLexer().nextToken();
             if (!skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
                 throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
             }
         }
-        return result;
     }
 }
