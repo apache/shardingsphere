@@ -33,7 +33,7 @@ public class Lexer {
     
     private final Dictionary dictionary;
     
-    private int position;
+    private int offset;
     
     @Getter
     private Token token;
@@ -44,36 +44,36 @@ public class Lexer {
     public final void nextToken() {
         skipIgnoredToken();
         if (isVariableBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanVariable();
+            token = new Tokenizer(input, dictionary, offset).scanVariable();
         } else if (isSupportNChars() && isNCharBegin()) {
-            token = new Tokenizer(input, dictionary, ++position).scanChars();
+            token = new Tokenizer(input, dictionary, ++offset).scanChars();
         } else if (isIdentifierBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanIdentifier();
+            token = new Tokenizer(input, dictionary, offset).scanIdentifier();
         } else if (isHexDecimalBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanHexDecimal();
+            token = new Tokenizer(input, dictionary, offset).scanHexDecimal();
         } else if (isNumberBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanNumber();
+            token = new Tokenizer(input, dictionary, offset).scanNumber();
         } else if (isSymbolBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanSymbol();
+            token = new Tokenizer(input, dictionary, offset).scanSymbol();
         } else if (isCharsBegin()) {
-            token = new Tokenizer(input, dictionary, position).scanChars();
+            token = new Tokenizer(input, dictionary, offset).scanChars();
         } else if (isEnd()) {
-            token = new Token(Assist.END, "", position);
+            token = new Token(Assist.END, "", offset);
         } else {
-            token = new Token(Assist.ERROR, "", position);
+            token = new Token(Assist.ERROR, "", offset);
         }
-        position = token.getEndPosition();
+        offset = token.getEndPosition();
     }
     
     private void skipIgnoredToken() {
-        position = new Tokenizer(input, dictionary, position).skipWhitespace();
+        offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
         while (isHintBegin()) {
-            position = new Tokenizer(input, dictionary, position).skipHint();
-            position = new Tokenizer(input, dictionary, position).skipWhitespace();
+            offset = new Tokenizer(input, dictionary, offset).skipHint();
+            offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
         }
         while (isCommentBegin()) {
-            position = new Tokenizer(input, dictionary, position).skipComment();
-            position = new Tokenizer(input, dictionary, position).skipWhitespace();
+            offset = new Tokenizer(input, dictionary, offset).skipComment();
+            offset = new Tokenizer(input, dictionary, offset).skipWhitespace();
         }
     }
     
@@ -124,7 +124,7 @@ public class Lexer {
     }
     
     private boolean isEnd() {
-        return position >= input.length();
+        return offset >= input.length();
     }
     
     protected final char currentChar() {
@@ -132,6 +132,6 @@ public class Lexer {
     }
     
     protected final char currentCharAt(final int offset) {
-        return position + offset >= input.length() ? (char) CharType.EOI : input.charAt(position + offset);
+        return this.offset + offset >= input.length() ? (char) CharType.EOI : input.charAt(this.offset + offset);
     }
 }

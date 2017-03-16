@@ -82,7 +82,7 @@ final class Tokenizer {
         int length = beginSignLength;
         while (!isMultipleLineCommentEnd(charAt(offset + length), charAt(offset + length + 1))) {
             if (CharType.isEndOfInput(charAt(offset + length))) {
-                throw new UnterminatedSignException("*/");
+                throw new UnterminatedCharException("*/");
             }
             length++;
         }
@@ -91,20 +91,6 @@ final class Tokenizer {
     
     private boolean isMultipleLineCommentEnd(final char ch, final char next) {
         return '*' == ch && '/' == next;
-    }
-    
-    Token scanUntil(final char terminatedSign, final TokenType defaultTokenType) {
-        int length = 2;
-        int position = offset + 1;
-        while (terminatedSign != charAt(++position)) {
-            if (CharType.isEndOfInput(charAt(position))) {
-                throw new UnterminatedSignException(terminatedSign);
-            }
-            length++;
-        }
-        length++;
-        String literals = input.substring(offset, offset + length);
-        return new Token(dictionary.getToken(literals, defaultTokenType), literals, offset + length);
     }
     
     Token scanVariable() {
@@ -124,18 +110,37 @@ final class Tokenizer {
     
     Token scanIdentifier() {
         if ('`' == charAt(offset)) {
-            return scanUntil('`', Literals.IDENTIFIER);
+            int length = getLengthUntilTerminatedChar('`');
+            return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
         }
-        int length = 1;
-        int position = offset;
-        while (isIdentifierChar(charAt(++position))) {
+        int length = 0;
+        while (isIdentifierChar(charAt(offset + length))) {
             length++;
         }
         String literals = input.substring(offset, offset + length);
         if (isAmbiguousIdentifier(literals)) {
-            return new Token(processAmbiguousIdentifier(position, literals), literals, offset + length);
+            return new Token(processAmbiguousIdentifier(offset + length, literals), literals, offset + length);
         }
         return new Token(dictionary.getToken(literals, Literals.IDENTIFIER), literals, offset + length);
+    }
+    
+    private int getLengthUntilTerminatedChar(final char terminatedChar) {
+        int length = 1;
+        while (terminatedChar != charAt(offset + length) || hasEscapeChar(terminatedChar, offset + length)) {
+            if (offset + length >= input.length()) {
+                throw new UnterminatedCharException(terminatedChar);
+            }
+            if (hasEscapeChar(terminatedChar, offset + length)) {
+                length++;
+            }
+            length++;
+        }
+        length++;
+        return length;
+    }
+    
+    private boolean hasEscapeChar(final char charIdentifier, final int offset) {
+        return charIdentifier == charAt(offset) && charIdentifier == charAt(offset + 1);
     }
     
     private boolean isIdentifierChar(final char ch) {
@@ -146,25 +151,23 @@ final class Tokenizer {
         return DefaultKeyword.ORDER.name().equalsIgnoreCase(literals) || DefaultKeyword.GROUP.name().equalsIgnoreCase(literals);
     }
     
-    private TokenType processAmbiguousIdentifier(final int position, final String literals) {
+    private TokenType processAmbiguousIdentifier(final int offset, final String literals) {
         int i = 0;
-        while (CharType.isWhitespace(charAt(position + i))) {
+        while (CharType.isWhitespace(charAt(offset + i))) {
             i++;
         }
-        if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(position + i), charAt(position + i + 1)}))) {
+        if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(offset + i), charAt(offset + i + 1)}))) {
             return dictionary.getToken(literals);
         }
         return Literals.IDENTIFIER;
     }
     
     Token scanHexDecimal() {
-        int length = 3;
-        int position = offset + length - 1;
-        if ('-' == charAt(position)) {
-            position++;
+        int length = 2;
+        if ('-' == charAt(offset + length)) {
             length++;
         }
-        while (isHex(charAt(++position))) {
+        while (isHex(charAt(offset + length))) {
             length++;
         }
         return new Token(Literals.HEX, input.substring(offset, offset + length), offset + length);
@@ -214,13 +217,13 @@ final class Tokenizer {
         return result;
     }
     
-    private boolean isScientificNotation(final int position) {
-        char current = charAt(position);
+    private boolean isScientificNotation(final int offset) {
+        char current = charAt(offset);
         return 'e' == current || 'E' == current;
     }
     
-    private boolean isBinaryNumber(final int position) {
-        char current = charAt(position);
+    private boolean isBinaryNumber(final int offset) {
+        char current = charAt(offset);
         return 'f' == current || 'F' == current || 'd' == current || 'D' == current;
     }
     
@@ -228,23 +231,9 @@ final class Tokenizer {
         return scanChars(charAt(offset));
     }
     
-    private Token scanChars(final char charIdentifier) {
-        int length = 1;
-        while (charIdentifier != charAt(offset + length) || hasEscapeChar(charIdentifier, offset + length)) {
-            if (offset + length >= input.length()) {
-                throw new UnterminatedSignException(charIdentifier);
-            }
-            if (hasEscapeChar(charIdentifier, offset + length)) {
-                length++;
-            }
-            length++;
-        }
-        length++;
+    private Token scanChars(final char terminatedChar) {
+        int length = getLengthUntilTerminatedChar(terminatedChar);
         return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
-    }
-    
-    private boolean hasEscapeChar(final char charIdentifier, final int position) {
-        return charIdentifier == charAt(position) && charIdentifier == charAt(position + 1);
     }
     
     Token scanSymbol() {

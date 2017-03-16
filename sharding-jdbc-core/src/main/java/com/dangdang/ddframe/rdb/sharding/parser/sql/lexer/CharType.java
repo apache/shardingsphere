@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
  * 
  * @author zhangliang 
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class CharType {
     
     static final byte EOI = 0x1A;
