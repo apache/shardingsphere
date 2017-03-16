@@ -62,7 +62,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     private void skipInto() {
         if (getExprParser().equal(DefaultKeyword.INTO)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
     }
     
@@ -167,7 +167,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
 
     private void skipModelColumnClause() {
-        throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+        throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
     }
     
     @Override
@@ -214,7 +214,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getExprParser().equal(DefaultKeyword.SELECT)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         if (getExprParser().skipIfEqual(OracleKeyword.ONLY)) {
             getExprParser().skipIfEqual(Symbol.LEFT_PAREN);

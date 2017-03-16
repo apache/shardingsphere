@@ -82,13 +82,13 @@ public class SQLExprParser extends Parser {
             if (equal(Symbol.LEFT_PAREN)) {
                 return Optional.absent();
             }
-            String result = SQLUtil.getExactlyValue(getLexer().getToken().getLiterals());
+            String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
             getLexer().nextToken();
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
         if (equal(Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
-            String result = SQLUtil.getExactlyValue(getLexer().getToken().getLiterals());
+            String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
             getLexer().nextToken();
             return Optional.of(result);
         }
@@ -147,11 +147,11 @@ public class SQLExprParser extends Parser {
             hasParentheses = true;
         }
         TableContext tableContext;
-        final int beginPosition = getLexer().getToken().getEndPosition() - getLexer().getToken().getLiterals().length();
-        String literals = getLexer().getToken().getLiterals();
+        final int beginPosition = getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length();
+        String literals = getLexer().getCurrentToken().getLiterals();
         getLexer().nextToken();
         if (skipIfEqual(Symbol.DOT)) {
-            String tableName = getLexer().getToken().getLiterals();
+            String tableName = getLexer().getCurrentToken().getLiterals();
             getLexer().nextToken();
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
@@ -194,7 +194,7 @@ public class SQLExprParser extends Parser {
     
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
-        String literals = getLexer().getToken().getLiterals();
+        String literals = getLexer().getCurrentToken().getLiterals();
         if (equal(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             getLexer().nextToken();
             return new CommonSelectItemContext(Symbol.STAR.getLiterals(), as(), index, true);
@@ -206,8 +206,8 @@ public class SQLExprParser extends Parser {
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME 解析xxx.*
         while (!equal(DefaultKeyword.AS) && !equal(Symbol.COMMA) && !equal(DefaultKeyword.FROM) && !equal(Assist.END)) {
-            String value = getLexer().getToken().getLiterals();
-            int position = getLexer().getToken().getEndPosition() - value.length();
+            String value = getLexer().getCurrentToken().getLiterals();
+            int position = getLexer().getCurrentToken().getEndPosition() - value.length();
             expression.append(value);
             getLexer().nextToken();
             if (equal(Symbol.DOT)) {
@@ -240,7 +240,7 @@ public class SQLExprParser extends Parser {
             parseComparisonCondition(sqlContext, parseContext);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equal(DefaultKeyword.OR)) {
-            throw new ParserUnsupportedException(getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
         }
     }
     
@@ -299,7 +299,7 @@ public class SQLExprParser extends Parser {
     }
     
     public SQLExpr parseExpr(final SQLContext sqlContext) {
-        int beginPosition = getLexer().getToken().getEndPosition();
+        int beginPosition = getLexer().getCurrentToken().getEndPosition();
         SQLExpr result = parseExpr();
         if (result instanceof SQLPropertyExpr) {
             String tableName = sqlContext.getTables().get(0).getName();
@@ -312,12 +312,12 @@ public class SQLExprParser extends Parser {
     }
     
     public SQLExpr parseExpr() {
-        String literals = getLexer().getToken().getLiterals();
+        String literals = getLexer().getCurrentToken().getLiterals();
         if (equal(Literals.IDENTIFIER)) {
             SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
             getLexer().nextToken();
             if (skipIfEqual(Symbol.DOT)) {
-                String property = getLexer().getToken().getLiterals();
+                String property = getLexer().getCurrentToken().getLiterals();
                 getLexer().nextToken();
                 if (!equal(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
                     return new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);

@@ -69,7 +69,7 @@ public final class SQLStatementParser {
         if (exprParser.equal(DefaultKeyword.DELETE)) {
             return SQLDeleteParserFactory.newInstance(exprParser, dbType).parse();
         }
-        throw new ParserUnsupportedException(exprParser.getLexer().getToken().getType());
+        throw new ParserUnsupportedException(exprParser.getLexer().getCurrentToken().getType());
     }
     
     private void skipWith() {

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 
 /**
- * SQLServer关键词.
+ * SQLServer词法关键词.
  * 
  * @author zhangliang 
  */

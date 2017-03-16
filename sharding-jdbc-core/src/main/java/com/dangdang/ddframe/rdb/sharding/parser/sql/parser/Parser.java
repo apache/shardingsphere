@@ -46,22 +46,22 @@ public class Parser {
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;
-        if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
-            final int beginPosition = getLexer().getToken().getEndPosition();
+        if (Symbol.LEFT_PAREN == getLexer().getCurrentToken().getType()) {
+            final int beginPosition = getLexer().getCurrentToken().getEndPosition();
             result.append(Symbol.LEFT_PAREN.getLiterals());
             getLexer().nextToken();
             while (true) {
-                if (Assist.END == getLexer().getToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getToken().getType() && 0 == count)) {
+                if (Assist.END == getLexer().getCurrentToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getCurrentToken().getType() && 0 == count)) {
                     break;
                 }
-                if (Symbol.LEFT_PAREN == getLexer().getToken().getType()) {
+                if (Symbol.LEFT_PAREN == getLexer().getCurrentToken().getType()) {
                     count++;
-                } else if (Symbol.RIGHT_PAREN == getLexer().getToken().getType()) {
+                } else if (Symbol.RIGHT_PAREN == getLexer().getCurrentToken().getType()) {
                     count--;
                 }
                 getLexer().nextToken();
             }
-            result.append(getLexer().getInput().substring(beginPosition, getLexer().getToken().getEndPosition()));
+            result.append(getLexer().getInput().substring(beginPosition, getLexer().getCurrentToken().getEndPosition()));
             getLexer().nextToken();
         }
         return result.toString();
@@ -74,7 +74,7 @@ public class Parser {
      * @param tokenType 待判断的标记类型
      */
     public final void accept(final TokenType tokenType) {
-        if (lexer.getToken().getType() != tokenType) {
+        if (lexer.getCurrentToken().getType() != tokenType) {
             throw new ParserException(lexer, tokenType);
         }
         lexer.nextToken();
@@ -88,7 +88,7 @@ public class Parser {
      */
     public final boolean equal(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
-            if (each == lexer.getToken().getType()) {
+            if (each == lexer.getCurrentToken().getType()) {
                 return true;
             }
         }
@@ -119,7 +119,7 @@ public class Parser {
     public final void skipUntil(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
         tokenTypeSet.add(Assist.END);
-        while (!tokenTypeSet.contains(lexer.getToken().getType())) {
+        while (!tokenTypeSet.contains(lexer.getCurrentToken().getType())) {
             lexer.nextToken();
         }
     }

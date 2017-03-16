@@ -35,16 +35,16 @@ public final class MySQLLexer extends Lexer {
     
     @Override
     protected boolean isHintBegin() {
-        return '/' == currentChar() && '*' == currentCharAt(1) && '!' == currentCharAt(2);
+        return '/' == getCurrentChar(0) && '*' == getCurrentChar(1) && '!' == getCurrentChar(2);
     }
     
     @Override
     protected boolean isCommentBegin() {
-        return '#' == currentChar() || super.isCommentBegin();
+        return '#' == getCurrentChar(0) || super.isCommentBegin();
     }
     
     @Override
     protected boolean isVariableBegin() {
-        return '@' == currentChar();
+        return '@' == getCurrentChar(0);
     }
 }

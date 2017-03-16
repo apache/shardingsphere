@@ -54,7 +54,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
             getSqlContext().setLimitContext(((MySQLExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
         }
         if (getExprParser().equal(DefaultKeyword.PROCEDURE)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         queryRest();
     }

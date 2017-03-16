@@ -17,13 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 词法符号标记.
@@ -77,13 +75,10 @@ public enum Symbol implements TokenType {
     
     private static Map<String, Symbol> symbols = new HashMap<>(128);
     
-    private static Set<Character> symbolChars;
-    
     static {
         for (Symbol each : Symbol.values()) {
             symbols.put(each.getLiterals(), each);
         }
-        symbolChars = Sets.newHashSet('(', ')', '[', ']', '{', '}', '+', '-', '*', '/', '%', '^', '=', '>', '<', '~', '!', '?', '&', '|', '.', ':', '#', ',', ';');
     }
     
     private final String literals;
@@ -96,15 +91,5 @@ public enum Symbol implements TokenType {
      */
     public static Symbol literalsOf(final String literals) {
         return symbols.get(literals);
-    }
-    
-    /**
-     * 判断字符是否是词法符号.
-     *
-     * @param ch 待判断的字符
-     * @return 是否为词法符号
-     */
-    public static boolean isSymbol(final char ch) {
-        return symbolChars.contains(ch);
     }
 }

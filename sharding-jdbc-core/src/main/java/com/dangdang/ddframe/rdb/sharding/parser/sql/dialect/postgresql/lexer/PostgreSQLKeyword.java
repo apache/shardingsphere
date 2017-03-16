@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 
 /**
- * PostgreSQL关键词.
+ * PostgreSQL词法关键词.
  * 
  * @author zhangliang 
  */

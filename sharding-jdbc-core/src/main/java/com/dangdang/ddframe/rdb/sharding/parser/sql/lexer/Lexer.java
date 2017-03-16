@@ -36,7 +36,7 @@ public class Lexer {
     private int offset;
     
     @Getter
-    private Token token;
+    private Token currentToken;
     
     /**
      * 分析下一个词法标记.
@@ -44,25 +44,25 @@ public class Lexer {
     public final void nextToken() {
         skipIgnoredToken();
         if (isVariableBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanVariable();
-        } else if (isSupportNChars() && isNCharBegin()) {
-            token = new Tokenizer(input, dictionary, ++offset).scanChars();
+            currentToken = new Tokenizer(input, dictionary, offset).scanVariable();
+        } else if (isNCharBegin()) {
+            currentToken = new Tokenizer(input, dictionary, ++offset).scanChars();
         } else if (isIdentifierBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanIdentifier();
+            currentToken = new Tokenizer(input, dictionary, offset).scanIdentifier();
         } else if (isHexDecimalBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanHexDecimal();
+            currentToken = new Tokenizer(input, dictionary, offset).scanHexDecimal();
         } else if (isNumberBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanNumber();
+            currentToken = new Tokenizer(input, dictionary, offset).scanNumber();
         } else if (isSymbolBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanSymbol();
+            currentToken = new Tokenizer(input, dictionary, offset).scanSymbol();
         } else if (isCharsBegin()) {
-            token = new Tokenizer(input, dictionary, offset).scanChars();
+            currentToken = new Tokenizer(input, dictionary, offset).scanChars();
         } else if (isEnd()) {
-            token = new Token(Assist.END, "", offset);
+            currentToken = new Token(Assist.END, "", offset);
         } else {
-            token = new Token(Assist.ERROR, "", offset);
+            currentToken = new Token(Assist.ERROR, "", offset);
         }
-        offset = token.getEndPosition();
+        offset = currentToken.getEndPosition();
     }
     
     private void skipIgnoredToken() {
@@ -82,8 +82,8 @@ public class Lexer {
     }
     
     protected boolean isCommentBegin() {
-        char current = currentChar();
-        char next = currentCharAt(1);
+        char current = getCurrentChar(0);
+        char next = getCurrentChar(1);
         return '/' == current && '/' == next || '-' == current && '-' == next || '/' == current && '*' == next;
     }
     
@@ -96,11 +96,11 @@ public class Lexer {
     }
     
     private boolean isNCharBegin() {
-        return 'N' == currentChar() && '\'' == currentCharAt(1);
+        return isSupportNChars() && 'N' == getCurrentChar(0) && '\'' == getCurrentChar(1);
     }
     
     private boolean isIdentifierBegin() {
-        return isIdentifierBegin(currentChar());
+        return isIdentifierBegin(getCurrentChar(0));
     }
     
     private boolean isIdentifierBegin(final char ch) {
@@ -108,30 +108,26 @@ public class Lexer {
     }
     
     private boolean isHexDecimalBegin() {
-        return '0' == currentChar() && 'x' == currentCharAt(1);
+        return '0' == getCurrentChar(0) && 'x' == getCurrentChar(1);
     }
     
     private boolean isNumberBegin() {
-        return CharType.isDigital(currentChar()) || ('.' == currentChar() && CharType.isDigital(currentCharAt(1)) && !isIdentifierBegin(currentCharAt(-1)));
+        return CharType.isDigital(getCurrentChar(0)) || ('.' == getCurrentChar(0) && CharType.isDigital(getCurrentChar(1)) && !isIdentifierBegin(getCurrentChar(-1)));
     }
     
     private boolean isSymbolBegin() {
-        return Symbol.isSymbol(currentChar());
+        return CharType.isSymbol(getCurrentChar(0));
     }
     
     private boolean isCharsBegin() {
-        return '\'' == currentChar() || '\"' == currentChar();
+        return '\'' == getCurrentChar(0) || '\"' == getCurrentChar(0);
     }
     
     private boolean isEnd() {
         return offset >= input.length();
     }
     
-    protected final char currentChar() {
-        return currentCharAt(0);
-    }
-    
-    protected final char currentCharAt(final int offset) {
+    protected final char getCurrentChar(final int offset) {
         return this.offset + offset >= input.length() ? (char) CharType.EOI : input.charAt(this.offset + offset);
     }
 }

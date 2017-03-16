@@ -29,10 +29,10 @@ public class ParserException extends RuntimeException {
     private static final String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
     
     public ParserException(final Lexer lexer, final TokenType expectedTokenType) {
-        super(String.format(UNMATCH_MESSAGE, expectedTokenType, lexer.getToken().getType(), lexer.getToken().getLiterals()));
+        super(String.format(UNMATCH_MESSAGE, expectedTokenType, lexer.getCurrentToken().getType(), lexer.getCurrentToken().getLiterals()));
     }
     
     public ParserException(final Lexer lexer) {
-        super(String.format(TOKEN_ERROR_MESSAGE, lexer.getToken().getType(), lexer.getToken().getLiterals()));
+        super(String.format(TOKEN_ERROR_MESSAGE, lexer.getCurrentToken().getType(), lexer.getCurrentToken().getLiterals()));
     }
 }

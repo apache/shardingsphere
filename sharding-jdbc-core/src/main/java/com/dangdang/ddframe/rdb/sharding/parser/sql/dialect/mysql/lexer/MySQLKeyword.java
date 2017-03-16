@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
 
 /**
- * MySQL关键词.
+ * MySQL词法关键词.
  * 
  * @author zhangliang 
  */

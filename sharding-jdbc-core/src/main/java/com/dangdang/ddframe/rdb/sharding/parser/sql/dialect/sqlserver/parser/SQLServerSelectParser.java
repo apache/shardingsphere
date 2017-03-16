@@ -51,7 +51,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             parseSelectList();
         }
         if (getExprParser().equal(DefaultKeyword.INTO)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         parseFrom();
         parseWhere();
@@ -87,7 +87,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
                 }
             }
         } else {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getToken().getType());
+            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
     }
 }

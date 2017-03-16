@@ -27,6 +27,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 final class Tokenizer {
     
+    private static final int MYSQL_SPECIAL_COMMENT_BEGIN_SYMBOL_LENGTH = 1;
+    
+    private static final int COMMENT_BEGIN_SYMBOL_LENGTH = 2;
+    
+    private static final int HINT_BEGIN_SYMBOL_LENGTH = 3;
+    
+    private static final int COMMENT_AND_HINT_END_SYMBOL_LENGTH = 2;
+    
+    private static final int HEX_BEGIN_SYMBOL_LENGTH = 2;
+    
     private final String input;
     
     private final Dictionary dictionary;
@@ -42,13 +52,13 @@ final class Tokenizer {
     }
     
     int skipComment() {
-        char currentChar = charAt(offset);
-        char nextChar = charAt(offset + 1);
-        if (isSingleLineCommentBegin(currentChar, nextChar)) {
-            return skipSingleLineComment(2);
-        } else if ('#' == currentChar) {
-            return skipSingleLineComment(1);
-        } else if (isMultipleLineCommentBegin(currentChar, nextChar)) {
+        char current = charAt(offset);
+        char next = charAt(offset + 1);
+        if (isSingleLineCommentBegin(current, next)) {
+            return skipSingleLineComment(COMMENT_BEGIN_SYMBOL_LENGTH);
+        } else if ('#' == current) {
+            return skipSingleLineComment(MYSQL_SPECIAL_COMMENT_BEGIN_SYMBOL_LENGTH);
+        } else if (isMultipleLineCommentBegin(current, next)) {
             return skipMultiLineComment();
         }
         return offset;
@@ -58,8 +68,8 @@ final class Tokenizer {
         return '/' == ch && '/' == next || '-' == ch && '-' == next;
     }
     
-    private int skipSingleLineComment(final int commentFlagLength) {
-        int length = commentFlagLength;
+    private int skipSingleLineComment(final int commentSymbolLength) {
+        int length = commentSymbolLength;
         while (!CharType.isEndOfInput(charAt(offset + length)) && '\n' != charAt(offset + length)) {
             length++;
         }
@@ -71,22 +81,22 @@ final class Tokenizer {
     }
     
     private int skipMultiLineComment() {
-        return untilCommentAndHintTerminateSign(2);
+        return untilCommentAndHintTerminateSign(COMMENT_BEGIN_SYMBOL_LENGTH);
     }
     
     int skipHint() {
-        return untilCommentAndHintTerminateSign(3);
+        return untilCommentAndHintTerminateSign(HINT_BEGIN_SYMBOL_LENGTH);
     }
     
-    private int untilCommentAndHintTerminateSign(final int beginSignLength) {
-        int length = beginSignLength;
+    private int untilCommentAndHintTerminateSign(final int beginSymbolLength) {
+        int length = beginSymbolLength;
         while (!isMultipleLineCommentEnd(charAt(offset + length), charAt(offset + length + 1))) {
             if (CharType.isEndOfInput(charAt(offset + length))) {
                 throw new UnterminatedCharException("*/");
             }
             length++;
         }
-        return offset + length + 2;
+        return offset + length + COMMENT_AND_HINT_END_SYMBOL_LENGTH;
     }
     
     private boolean isMultipleLineCommentEnd(final char ch, final char next) {
@@ -121,7 +131,7 @@ final class Tokenizer {
         if (isAmbiguousIdentifier(literals)) {
             return new Token(processAmbiguousIdentifier(offset + length, literals), literals, offset + length);
         }
-        return new Token(dictionary.getToken(literals, Literals.IDENTIFIER), literals, offset + length);
+        return new Token(dictionary.findTokenType(literals, Literals.IDENTIFIER), literals, offset + length);
     }
     
     private int getLengthUntilTerminatedChar(final char terminatedChar) {
@@ -135,8 +145,7 @@ final class Tokenizer {
             }
             length++;
         }
-        length++;
-        return length;
+        return length + 1;
     }
     
     private boolean hasEscapeChar(final char charIdentifier, final int offset) {
@@ -157,13 +166,13 @@ final class Tokenizer {
             i++;
         }
         if (DefaultKeyword.BY.name().equalsIgnoreCase(String.valueOf(new char[] {charAt(offset + i), charAt(offset + i + 1)}))) {
-            return dictionary.getToken(literals);
+            return dictionary.findTokenType(literals);
         }
         return Literals.IDENTIFIER;
     }
     
     Token scanHexDecimal() {
-        int length = 2;
+        int length = HEX_BEGIN_SYMBOL_LENGTH;
         if ('-' == charAt(offset + length)) {
             length++;
         }
@@ -185,11 +194,6 @@ final class Tokenizer {
         length += getDigitalLength(offset + length);
         boolean isFloat = false;
         if ('.' == charAt(offset + length)) {
-            // TODO 待确认 数字后面加两个点表示什么
-            if ('.' == charAt(offset + length + 1)) {
-                length++;
-                return new Token(Literals.INT, input.substring(offset, offset + length), offset + length);
-            }
             isFloat = true;
             length++;
             length += getDigitalLength(offset + length);
@@ -238,7 +242,7 @@ final class Tokenizer {
     
     Token scanSymbol() {
         int length = 0;
-        while (Symbol.isSymbol(charAt(offset + length))) {
+        while (CharType.isSymbol(charAt(offset + length))) {
             length++;
         }
         String literals = input.substring(offset, offset + length);

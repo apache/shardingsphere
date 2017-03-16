@@ -45,4 +45,9 @@ final class CharType {
     static boolean isDigital(final char ch) {
         return ch >= '0' && ch <= '9';
     }
+    
+    static boolean isSymbol(final char ch) {
+        return '(' == ch || ')' == ch || '[' == ch || ']' == ch || '{' == ch || '}' == ch || '+' == ch || '-' == ch || '*' == ch || '/' == ch || '%' == ch || '^' == ch || '=' == ch
+                || '>' == ch || '<' == ch || '~' == ch || '!' == ch || '?' == ch || '&' == ch || '|' == ch || '.' == ch || ':' == ch || '#' == ch || ',' == ch || ';' == ch;
+    }
 }

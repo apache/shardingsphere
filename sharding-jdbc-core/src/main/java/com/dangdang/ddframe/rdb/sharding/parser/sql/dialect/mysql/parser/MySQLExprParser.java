@@ -42,11 +42,11 @@ public class MySQLExprParser extends SQLExprParser {
     public LimitContext parseLimit(final int parametersIndex, final SelectSQLContext sqlContext) {
         skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
-        int valueBeginPosition = getLexer().getToken().getEndPosition();
+        int valueBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int value;
         boolean isParameterForValue = false;
         if (equal(Literals.INT)) {
-            value = Integer.parseInt(getLexer().getToken().getLiterals());
+            value = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             valueBeginPosition = valueBeginPosition - (value + "").length();
         } else if (equal(Symbol.QUESTION)) {
             valueIndex = parametersIndex;
@@ -73,12 +73,12 @@ public class MySQLExprParser extends SQLExprParser {
     }
     
     private LimitContext getLimitContextWithComma(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
-        int rowCountBeginPosition = getLexer().getToken().getEndPosition();
+        int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int rowCount;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
         if (equal(Literals.INT)) {
-            rowCount = Integer.parseInt(getLexer().getToken().getLiterals());
+            rowCount = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
         } else if (equal(Symbol.QUESTION)) {
             rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
@@ -102,12 +102,12 @@ public class MySQLExprParser extends SQLExprParser {
     }
     
     private LimitContext getLimitContextWithOffset(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
-        int offsetBeginPosition = getLexer().getToken().getEndPosition();
+        int offsetBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int offset;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
         if (equal(Literals.INT)) {
-            offset = Integer.parseInt(getLexer().getToken().getLiterals());
+            offset = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
         } else if (equal(Symbol.QUESTION)) {
             offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;

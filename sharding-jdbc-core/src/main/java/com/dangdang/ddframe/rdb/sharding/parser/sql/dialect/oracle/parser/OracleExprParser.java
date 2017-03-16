@@ -49,7 +49,7 @@ public class OracleExprParser extends SQLExprParser {
         if (skipIfEqual(OracleKeyword.NULLS)) {
             getLexer().nextToken();
             if (!skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
-                throw new ParserUnsupportedException(getLexer().getToken().getType());
+                throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
             }
         }
         return result;
