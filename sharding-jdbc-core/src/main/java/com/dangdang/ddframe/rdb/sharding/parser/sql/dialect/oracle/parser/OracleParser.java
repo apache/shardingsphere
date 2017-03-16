@@ -36,11 +36,11 @@ public class OracleParser extends SQLParser {
     }
     
     @Override
-    public Optional<String> as() {
+    public Optional<String> parseAlias() {
         if (equalAny(OracleKeyword.CONNECT)) {
             return Optional.absent();
         }
-        return super.as();
+        return super.parseAlias();
     }
     
     @Override

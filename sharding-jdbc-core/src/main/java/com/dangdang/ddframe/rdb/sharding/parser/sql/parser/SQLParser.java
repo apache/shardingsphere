@@ -76,7 +76,12 @@ public class SQLParser extends Parser {
         this.parameters = parameters;
     }
     
-    public Optional<String> as() {
+    /**
+     * 解析别名.
+     *
+     * @return 别名
+     */
+    public Optional<String> parseAlias() {
         if (skipIfEqual(DefaultKeyword.AS)) {
             if (equalAny(Symbol.values())) {
                 return Optional.absent();
@@ -155,12 +160,12 @@ public class SQLParser extends Parser {
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), as());
+            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), parseAlias());
         } else {
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), as());
+            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), parseAlias());
         }
         if (isJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
@@ -196,10 +201,10 @@ public class SQLParser extends Parser {
         String literals = getLexer().getCurrentToken().getLiterals();
         if (equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             getLexer().nextToken();
-            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), as(), index, true);
+            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), parseAlias(), index, true);
         }
         if (skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItemContext(skipParentheses(), as(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
+            return new AggregationSelectItemContext(skipParentheses(), parseAlias(), index, AggregationColumn.AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
@@ -213,7 +218,7 @@ public class SQLParser extends Parser {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), as(), index, false);
+        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), index, false);
     }
     
     public Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {

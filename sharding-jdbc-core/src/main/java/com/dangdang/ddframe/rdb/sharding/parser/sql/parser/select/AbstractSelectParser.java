@@ -185,12 +185,12 @@ public abstract class AbstractSelectParser {
         getExprParser().getLexer().nextToken();
         if (getExprParser().skipIfEqual(Symbol.DOT)) {
             getExprParser().getLexer().nextToken();
-            getExprParser().as();
+            getExprParser().parseAlias();
             return;
         }
         // FIXME 根据shardingRule过滤table
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
-        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getExprParser().as()));
+        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getExprParser().parseAlias()));
     }
     
     protected void parseJoinTable() {
