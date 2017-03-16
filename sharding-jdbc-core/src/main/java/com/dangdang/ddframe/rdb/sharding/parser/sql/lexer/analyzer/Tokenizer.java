@@ -15,8 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Token;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-final class Tokenizer {
+public final class Tokenizer {
     
     private static final int MYSQL_SPECIAL_COMMENT_BEGIN_SYMBOL_LENGTH = 1;
     
@@ -43,7 +48,12 @@ final class Tokenizer {
     
     private final int offset;
     
-    int skipWhitespace() {
+    /**
+     * 跳过空格.
+     * 
+     * @return 跳过空格后的偏移量
+     */
+    public int skipWhitespace() {
         int length = 0;
         while (CharType.isWhitespace(charAt(offset + length))) {
             length++;
@@ -51,7 +61,12 @@ final class Tokenizer {
         return offset + length;
     }
     
-    int skipComment() {
+    /**
+     * 跳过注释.
+     * 
+     * @return 跳过注释后的偏移量
+     */
+    public int skipComment() {
         char current = charAt(offset);
         char next = charAt(offset + 1);
         if (isSingleLineCommentBegin(current, next)) {
@@ -84,7 +99,12 @@ final class Tokenizer {
         return untilCommentAndHintTerminateSign(COMMENT_BEGIN_SYMBOL_LENGTH);
     }
     
-    int skipHint() {
+    /**
+     * 跳过查询提示.
+     *
+     * @return 跳过查询提示后的偏移量
+     */
+    public int skipHint() {
         return untilCommentAndHintTerminateSign(HINT_BEGIN_SYMBOL_LENGTH);
     }
     
@@ -103,7 +123,12 @@ final class Tokenizer {
         return '*' == ch && '/' == next;
     }
     
-    Token scanVariable() {
+    /**
+     * 扫描变量.
+     *
+     * @return 变量标记
+     */
+    public Token scanVariable() {
         int length = 1;
         if ('@' == charAt(offset + 1)) {
             length++;
@@ -118,7 +143,12 @@ final class Tokenizer {
         return isIdentifierChar(ch) || '.' == ch;
     }
     
-    Token scanIdentifier() {
+    /**
+     * 扫描标识符.
+     *
+     * @return 标识符标记
+     */
+    public Token scanIdentifier() {
         if ('`' == charAt(offset)) {
             int length = getLengthUntilTerminatedChar('`');
             return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
@@ -171,7 +201,12 @@ final class Tokenizer {
         return Literals.IDENTIFIER;
     }
     
-    Token scanHexDecimal() {
+    /**
+     * 扫描十六进制数.
+     *
+     * @return 十六进制数标记
+     */
+    public Token scanHexDecimal() {
         int length = HEX_BEGIN_SYMBOL_LENGTH;
         if ('-' == charAt(offset + length)) {
             length++;
@@ -186,7 +221,12 @@ final class Tokenizer {
         return ch >= 'A' && ch <= 'F' || ch >= 'a' && ch <= 'f' || CharType.isDigital(ch);
     }
     
-    Token scanNumber() {
+    /**
+     * 扫描数字.
+     *
+     * @return 数字标记
+     */
+    public Token scanNumber() {
         int length = 0;
         if ('-' == charAt(offset + length)) {
             length++;
@@ -231,7 +271,12 @@ final class Tokenizer {
         return 'f' == current || 'F' == current || 'd' == current || 'D' == current;
     }
     
-    Token scanChars() {
+    /**
+     * 扫描字符串.
+     *
+     * @return 字符串标记
+     */
+    public Token scanChars() {
         return scanChars(charAt(offset));
     }
     
@@ -240,7 +285,12 @@ final class Tokenizer {
         return new Token(Literals.CHARS, input.substring(offset + 1, offset + length - 1), offset + length);
     }
     
-    Token scanSymbol() {
+    /**
+     * 扫描符号.
+     *
+     * @return 符号标记
+     */
+    public Token scanSymbol() {
         int length = 0;
         while (CharType.isSymbol(charAt(offset + length))) {
             length++;

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
 /**

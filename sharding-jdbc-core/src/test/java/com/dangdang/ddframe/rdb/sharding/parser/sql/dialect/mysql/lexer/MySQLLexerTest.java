@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.LexerAssert;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import org.junit.Test;
 
 public final class MySQLLexerTest {

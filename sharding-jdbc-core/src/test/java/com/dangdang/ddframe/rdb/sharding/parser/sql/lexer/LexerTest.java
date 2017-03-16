@@ -17,6 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import org.junit.Test;
 
 public final class LexerTest {
@@ -66,6 +72,7 @@ public final class LexerTest {
         assertNextTokenForNumber("0x1e", Literals.HEX);
         assertNextTokenForNumber("0x-1e", Literals.HEX);
         assertNextTokenForNumber("123", Literals.INT);
+        assertNextTokenForNumber("-123", Literals.INT);
         assertNextTokenForNumber("123.0", Literals.FLOAT);
         assertNextTokenForNumber("123e4", Literals.FLOAT);
         assertNextTokenForNumber("123E4", Literals.FLOAT);
@@ -146,5 +153,19 @@ public final class LexerTest {
         LexerAssert.assertNextToken(lexer, Symbol.GT, ">");
         LexerAssert.assertNextToken(lexer, Literals.INT, "2");
         LexerAssert.assertNextToken(lexer, Assist.END, "");
+    }
+    
+    @Test
+    public void assertNChar() {
+        Lexer lexer = new Lexer("SELECT * FROM XXX_TABLE WHERE XX=N'xx'", dictionary);
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "N");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
     }
 }

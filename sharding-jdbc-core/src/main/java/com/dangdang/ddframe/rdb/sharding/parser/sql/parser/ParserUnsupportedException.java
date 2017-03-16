@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 
 public class ParserUnsupportedException extends RuntimeException {
     

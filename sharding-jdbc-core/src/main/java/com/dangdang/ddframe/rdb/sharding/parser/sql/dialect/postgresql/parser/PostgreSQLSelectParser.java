@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;

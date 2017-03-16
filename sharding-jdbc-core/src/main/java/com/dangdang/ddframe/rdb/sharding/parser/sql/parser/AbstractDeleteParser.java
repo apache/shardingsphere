@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;

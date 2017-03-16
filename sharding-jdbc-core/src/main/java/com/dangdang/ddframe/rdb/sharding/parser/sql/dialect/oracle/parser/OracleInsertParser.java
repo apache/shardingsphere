@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
 import com.google.common.collect.Sets;

@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -17,6 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.CharType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Tokenizer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Token;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -112,7 +117,8 @@ public class Lexer {
     }
     
     private boolean isNumberBegin() {
-        return CharType.isDigital(getCurrentChar(0)) || ('.' == getCurrentChar(0) && CharType.isDigital(getCurrentChar(1)) && !isIdentifierBegin(getCurrentChar(-1)));
+        return CharType.isDigital(getCurrentChar(0)) || ('.' == getCurrentChar(0) && CharType.isDigital(getCurrentChar(1)) && !isIdentifierBegin(getCurrentChar(-1))
+                || ('-' == getCurrentChar(0) && ('.' == getCurrentChar(0) || CharType.isDigital(getCurrentChar(1)))));
     }
     
     private boolean isSymbolBegin() {

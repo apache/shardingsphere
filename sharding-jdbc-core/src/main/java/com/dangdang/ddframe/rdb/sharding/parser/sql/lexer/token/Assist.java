@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token;
 
 /**
- * 词法字面量标记.
+ * 词法辅助标记.
  *
  * @author zhangliang
  */
-public enum Literals implements TokenType {
+public enum Assist implements TokenType {
     
-    INT, FLOAT, HEX, CHARS, IDENTIFIER, VARIABLE
+    END, ERROR
 }

@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
 

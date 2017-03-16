@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token;
 
 /**
  * 标记类型.

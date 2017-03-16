@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer;
 
 /**
  * 符号未正确结束的异常.

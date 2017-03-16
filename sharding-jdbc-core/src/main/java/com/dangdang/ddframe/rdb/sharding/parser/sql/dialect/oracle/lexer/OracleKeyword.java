@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Keyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Keyword;
 
 /**
  * Oracle词法关键词.

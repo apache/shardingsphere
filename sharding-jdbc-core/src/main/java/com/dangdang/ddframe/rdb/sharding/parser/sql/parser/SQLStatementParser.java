@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 

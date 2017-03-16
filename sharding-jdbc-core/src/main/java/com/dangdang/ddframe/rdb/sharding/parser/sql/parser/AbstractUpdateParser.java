@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;

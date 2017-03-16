@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

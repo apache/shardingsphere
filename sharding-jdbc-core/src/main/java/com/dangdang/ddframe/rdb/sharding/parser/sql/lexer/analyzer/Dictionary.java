@@ -15,7 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer;
+
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Keyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 
 import java.util.HashMap;
 import java.util.Map;

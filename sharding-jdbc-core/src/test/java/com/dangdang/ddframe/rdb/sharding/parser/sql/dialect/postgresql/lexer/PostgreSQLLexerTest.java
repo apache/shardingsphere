@@ -1,7 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.LexerAssert;
 import org.junit.Test;
 

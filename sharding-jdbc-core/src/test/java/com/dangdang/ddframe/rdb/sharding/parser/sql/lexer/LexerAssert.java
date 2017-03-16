@@ -1,5 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Token;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import lombok.NoArgsConstructor;
 
 import static org.hamcrest.MatcherAssert.assertThat;

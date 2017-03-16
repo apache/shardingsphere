@@ -1,10 +1,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Assist;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.LexerAssert;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Literals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import org.junit.Test;
 
 public final class SQLServerLexerTest {
@@ -21,5 +21,18 @@ public final class SQLServerLexerTest {
         LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
         LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
         LexerAssert.assertNextToken(lexer, Assist.END, "");
+    }
+    
+    @Test
+    public void assertNChar() {
+        SQLServerLexer lexer = new SQLServerLexer("SELECT * FROM XXX_TABLE WHERE XX=N'xx'");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.SELECT, "SELECT");
+        LexerAssert.assertNextToken(lexer, Symbol.STAR, "*");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.FROM, "FROM");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XXX_TABLE");
+        LexerAssert.assertNextToken(lexer, DefaultKeyword.WHERE, "WHERE");
+        LexerAssert.assertNextToken(lexer, Literals.IDENTIFIER, "XX");
+        LexerAssert.assertNextToken(lexer, Symbol.EQ, "=");
+        LexerAssert.assertNextToken(lexer, Literals.CHARS, "xx");
     }
 }
