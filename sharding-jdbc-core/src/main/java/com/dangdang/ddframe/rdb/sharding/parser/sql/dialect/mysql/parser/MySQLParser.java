@@ -26,16 +26,16 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLLex
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
 import java.util.List;
 
-public class MySQLExprParser extends SQLExprParser {
+public class MySQLParser extends SQLParser {
     
-    public MySQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new MySQLLexer(sql));
+    public MySQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+        super( new MySQLLexer(sql), shardingRule, parameters);
         getLexer().nextToken();
     }
     

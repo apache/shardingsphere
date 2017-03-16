@@ -21,16 +21,16 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 
 import java.util.List;
 
 public class OracleSelectParser extends AbstractSelectParser {
     
-    public OracleSelectParser(final SQLExprParser exprParser) {
+    public OracleSelectParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

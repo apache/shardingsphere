@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * MySQL Update语句解析器.
@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
  */
 public final class MySQLUpdateParser extends AbstractUpdateParser {
     
-    public MySQLUpdateParser(final SQLExprParser exprParser) {
+    public MySQLUpdateParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

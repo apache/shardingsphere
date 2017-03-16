@@ -21,13 +21,13 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKey
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 public class MySQLSelectParser extends AbstractSelectParser {
     
-    public MySQLSelectParser(final SQLExprParser exprParser) {
+    public MySQLSelectParser(final SQLParser exprParser) {
         super(exprParser);
     }
     
@@ -46,7 +46,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
         parseGroupBy();
         getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
         if (getExprParser().equalAny(MySQLKeyword.LIMIT)) {
-            getSqlContext().setLimitContext(((MySQLExprParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
+            getSqlContext().setLimitContext(((MySQLParser) getExprParser()).parseLimit(getParametersIndex(), getSqlContext()));
         }
         if (getExprParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());

@@ -15,13 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * Update语句解析器工厂.
@@ -37,7 +38,7 @@ public class SQLUpdateParserFactory {
      * @param dbType 数据库类型
      * @return Update语句解析器
      */
-    public static AbstractUpdateParser newInstance(final SQLExprParser exprParser, final DatabaseType dbType) {
+    public static AbstractUpdateParser newInstance(final SQLParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
             case H2 :
             case MySQL :

@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.delete.AbstractDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * MySQL Delete语句解析器.
@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
  */
 public final class MySQLDeleteParser extends AbstractDeleteParser {
     
-    public MySQLDeleteParser(final SQLExprParser exprParser) {
+    public MySQLDeleteParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

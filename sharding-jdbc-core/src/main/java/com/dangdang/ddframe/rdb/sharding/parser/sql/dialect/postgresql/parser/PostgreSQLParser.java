@@ -18,15 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLLexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class PostgreSQLExprParser extends SQLExprParser {
+public class PostgreSQLParser extends SQLParser {
     
-    public PostgreSQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new PostgreSQLLexer(sql));
+    public PostgreSQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+        super(new PostgreSQLLexer(sql), shardingRule, parameters);
         getLexer().nextToken();
     }
 }

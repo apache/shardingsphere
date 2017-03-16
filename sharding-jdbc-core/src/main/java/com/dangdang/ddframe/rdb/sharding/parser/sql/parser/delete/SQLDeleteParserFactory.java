@@ -15,13 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * Delete语句解析器工厂.
@@ -37,7 +38,7 @@ public class SQLDeleteParserFactory {
      * @param dbType 数据库类型
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final SQLExprParser exprParser, final DatabaseType dbType) {
+    public static AbstractDeleteParser newInstance(final SQLParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
             case H2 :
             case MySQL :

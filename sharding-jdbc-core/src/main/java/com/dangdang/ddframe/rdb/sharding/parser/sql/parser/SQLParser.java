@@ -58,7 +58,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public class SQLExprParser extends Parser {
+public class SQLParser extends Parser {
     
     @Getter
     private final ShardingRule shardingRule;
@@ -70,16 +70,15 @@ public class SQLExprParser extends Parser {
     @Setter
     private int parametersIndex;
     
-    public SQLExprParser(final ShardingRule shardingRule, final List<Object> parameters, final Lexer lexer) {
+    public SQLParser(final Lexer lexer, final ShardingRule shardingRule, final List<Object> parameters) {
         super(lexer);
         this.shardingRule = shardingRule;
         this.parameters = parameters;
     }
     
-    protected Optional<String> as() {
+    public Optional<String> as() {
         if (skipIfEqual(DefaultKeyword.AS)) {
-            // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN
-            if (equalAny(Symbol.LEFT_PAREN)) {
+            if (equalAny(Symbol.values())) {
                 return Optional.absent();
             }
             String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
@@ -138,7 +137,7 @@ public class SQLExprParser extends Parser {
         return null;
     }
     
-    protected final void parseSingleTable(final SQLContext sqlContext) {
+    public final void parseSingleTable(final SQLContext sqlContext) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
             if (equalAny(DefaultKeyword.SELECT)) {

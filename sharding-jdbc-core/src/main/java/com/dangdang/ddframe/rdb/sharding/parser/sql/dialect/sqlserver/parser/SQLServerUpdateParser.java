@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * SQLServer Update语句解析器.
@@ -27,12 +27,12 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
  */
 public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
-    public SQLServerUpdateParser(final SQLExprParser exprParser) {
+    public SQLServerUpdateParser(final SQLParser exprParser) {
         super(exprParser);
     }
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        ((SQLServerExprParser) getExprParser()).parseTop();
+        ((SQLServerParser) getExprParser()).parseTop();
     }
 }

@@ -20,13 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 public class SQLServerSelectParser extends AbstractSelectParser {
     
-    public SQLServerSelectParser(final SQLExprParser exprParser) {
+    public SQLServerSelectParser(final SQLParser exprParser) {
         super(exprParser);
     }
     
@@ -36,7 +36,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             parseFor();
         }
         if (getExprParser().equalAny(SQLServerKeyword.OFFSET)) {
-            ((SQLServerExprParser) getExprParser()).parseOffset(getSqlContext());
+            ((SQLServerParser) getExprParser()).parseOffset(getSqlContext());
         }
     }
     
@@ -46,7 +46,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             parseDistinct();
             if (getExprParser().equalAny(SQLServerKeyword.TOP)) {
                 // TODO save topContext
-                ((SQLServerExprParser) getExprParser()).parseTop();
+                ((SQLServerParser) getExprParser()).parseTop();
             }
             parseSelectList();
         }

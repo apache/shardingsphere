@@ -15,13 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -35,13 +36,13 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractUpdateParser {
     
-    private final SQLExprParser exprParser;
+    private final SQLParser exprParser;
     
     private final UpdateSQLContext sqlContext;
     
     private int parametersIndex;
     
-    public AbstractUpdateParser(final SQLExprParser exprParser) {
+    public AbstractUpdateParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
         sqlContext = new UpdateSQLContext(exprParser.getLexer().getInput());
     }

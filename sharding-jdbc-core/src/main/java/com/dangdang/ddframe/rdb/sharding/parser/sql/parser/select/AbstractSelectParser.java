@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
@@ -30,6 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -41,14 +43,14 @@ import java.util.List;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser {
     
-    private SQLExprParser exprParser;
+    private SQLParser exprParser;
     
     private final SelectSQLContext sqlContext;
     
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final SQLExprParser exprParser) {
+    public AbstractSelectParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
         sqlContext = new SelectSQLContext(getExprParser().getLexer().getInput());
     }

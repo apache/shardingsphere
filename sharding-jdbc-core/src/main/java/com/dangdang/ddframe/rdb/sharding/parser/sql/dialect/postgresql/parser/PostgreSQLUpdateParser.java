@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * PostgreSQL Update语句解析器.
@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
  */
 public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     
-    public PostgreSQLUpdateParser(final SQLExprParser exprParser) {
+    public PostgreSQLUpdateParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

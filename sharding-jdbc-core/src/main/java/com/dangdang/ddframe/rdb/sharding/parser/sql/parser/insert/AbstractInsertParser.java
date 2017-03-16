@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
@@ -29,6 +29,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
@@ -49,7 +51,7 @@ import java.util.Set;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractInsertParser {
     
-    private final SQLExprParser exprParser;
+    private final SQLParser exprParser;
     
     private final ShardingRule shardingRule;
     
@@ -57,7 +59,7 @@ public abstract class AbstractInsertParser {
     
     private final InsertSQLContext sqlContext;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;

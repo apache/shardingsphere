@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -54,8 +54,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLExprParser(shardingRule, parameters,
-                "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)"));
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
+                "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule, parameters));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
@@ -65,8 +65,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Lists.<Object>newArrayList(10, 1);
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLExprParser(shardingRule, parameters,
-                "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)"));
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
+                "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, parameters));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
@@ -76,8 +76,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLExprParser(shardingRule, parameters,
-                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)"));
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
+                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, parameters));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
@@ -87,8 +87,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
         List<Object> parameters = Lists.<Object>newArrayList(10);
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLExprParser(shardingRule, parameters,
-                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)"));
+        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
+                "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule, parameters));
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
@@ -175,23 +175,23 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     public void parseMultipleInsertForMySQL() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters,
-                "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')")).parseStatement();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleParser(
+                "INSERT INTO TABLE_XXX (`field1`, `field2`) VALUES (1, 'value_char'), (2, 'value_char')", shardingRule, parameters)).parseStatement();
     }
     
     @Test(expected = ParserUnsupportedException.class)
     public void parseInsertAllForOracle() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters, 
-                "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2")).parseStatement();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleParser(
+                "INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, parameters)).parseStatement();
     }
     
     @Test(expected = ParserUnsupportedException.class)
     public void parseInsertFirstForOracle() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleExprParser(shardingRule, parameters,
-                "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2")).parseStatement();
+        new SQLStatementParser(DatabaseType.Oracle, shardingRule, parameters, new OracleParser(
+                "INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2", shardingRule, parameters)).parseStatement();
     }
 }

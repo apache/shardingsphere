@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleExprParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLExprParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerExprParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
@@ -61,24 +61,24 @@ public final class SQLParserFactory {
     }
     
     private static SQLStatementParser getSQLStatementParser(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        SQLExprParser sqlExprParser;
+        SQLParser sqlParser;
         switch (dbType) {
             case H2:
             case MySQL:
-                sqlExprParser = new MySQLExprParser(shardingRule, parameters, sql);
+                sqlParser = new MySQLParser(sql, shardingRule, parameters);
                 break;
             case Oracle:
-                sqlExprParser = new OracleExprParser(shardingRule, parameters, sql);
+                sqlParser = new OracleParser(sql, shardingRule, parameters);
                 break;
             case SQLServer:
-                sqlExprParser = new SQLServerExprParser(shardingRule, parameters, sql);
+                sqlParser = new SQLServerParser(sql, shardingRule, parameters);
                 break;
             case PostgreSQL:
-                sqlExprParser = new PostgreSQLExprParser(shardingRule, parameters, sql);
+                sqlParser = new PostgreSQLParser(sql, shardingRule, parameters);
                 break;
             default:
                 throw new UnsupportedOperationException(dbType.name());
         }
-        return new SQLStatementParser(dbType, shardingRule, parameters, sqlExprParser);
+        return new SQLStatementParser(dbType, shardingRule, parameters, sqlParser);
     }
 }

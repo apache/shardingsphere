@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractUpdateParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.AbstractUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
-    public OracleUpdateParser(final SQLExprParser exprParser) {
+    public OracleUpdateParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

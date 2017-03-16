@@ -27,15 +27,15 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class SQLServerExprParser extends SQLExprParser {
+public class SQLServerParser extends SQLParser {
     
-    public SQLServerExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new SQLServerLexer(sql));
+    public SQLServerParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+        super(new SQLServerLexer(sql), shardingRule, parameters);
         getLexer().nextToken();
     }
     

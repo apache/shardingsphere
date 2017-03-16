@@ -22,6 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.delete.SQLDeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.SQLInsertParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.SQLSelectParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.SQLUpdateParserFactory;
 
 import java.util.List;
 
@@ -38,9 +42,9 @@ public final class SQLStatementParser {
     
     private final List<Object> parameters;
     
-    private final SQLExprParser exprParser;
+    private final SQLParser exprParser;
     
-    public SQLStatementParser(final DatabaseType dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public SQLStatementParser(final DatabaseType dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
         this.dbType = dbType;
         this.shardingRule = shardingRule;
         this.parameters = parameters;

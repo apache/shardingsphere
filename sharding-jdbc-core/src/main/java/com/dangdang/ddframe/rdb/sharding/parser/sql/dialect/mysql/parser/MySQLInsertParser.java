@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.google.common.collect.Sets;
 
@@ -46,7 +46,7 @@ import java.util.Set;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public MySQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
         super(shardingRule, parameters, exprParser);
     }
     

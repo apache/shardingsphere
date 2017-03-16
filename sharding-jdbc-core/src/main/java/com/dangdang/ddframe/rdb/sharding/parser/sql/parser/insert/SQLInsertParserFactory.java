@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleInsertParser;
@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.Po
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerInsertParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class SQLInsertParserFactory {
      * @param dbType 数据库类型
      * @return Insert语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser, final DatabaseType dbType) {
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
             case H2 :
             case MySQL :

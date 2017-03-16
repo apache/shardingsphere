@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.delete.AbstractDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * PostgreSQL Delete语句解析器.
@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
  */
 public final class PostgreSQLDeleteParser extends AbstractDeleteParser {
     
-    public PostgreSQLDeleteParser(final SQLExprParser exprParser) {
+    public PostgreSQLDeleteParser(final SQLParser exprParser) {
         super(exprParser);
     }
     

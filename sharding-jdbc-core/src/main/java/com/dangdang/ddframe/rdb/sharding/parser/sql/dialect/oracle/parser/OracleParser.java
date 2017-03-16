@@ -22,21 +22,21 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.google.common.base.Optional;
 
 import java.util.List;
 
-public class OracleExprParser extends SQLExprParser {
+public class OracleParser extends SQLParser {
     
-    public OracleExprParser(final ShardingRule shardingRule, final List<Object> parameters, final String sql) {
-        super(shardingRule, parameters, new OracleLexer(sql));
+    public OracleParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+        super(new OracleLexer(sql), shardingRule, parameters);
         getLexer().nextToken();
     }
     
     @Override
-    protected Optional<String> as() {
+    public Optional<String> as() {
         if (equalAny(OracleKeyword.CONNECT)) {
             return Optional.absent();
         }

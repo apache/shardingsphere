@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.AbstractInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLExprParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 public final class SQLServerInsertParser extends AbstractInsertParser {
     
-    public SQLServerInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLExprParser exprParser) {
+    public SQLServerInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
         super(shardingRule, parameters, exprParser);
     }
 }

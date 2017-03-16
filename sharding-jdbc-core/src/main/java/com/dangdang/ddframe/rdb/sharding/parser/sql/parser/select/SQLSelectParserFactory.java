@@ -15,13 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser.MySQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.OracleSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerSelectParser;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 
 /**
  * Select语句解析器工厂.
@@ -37,7 +38,7 @@ public class SQLSelectParserFactory {
      * @param dbType 数据库类型
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final SQLExprParser exprParser, final DatabaseType dbType) {
+    public static AbstractSelectParser newInstance(final SQLParser exprParser, final DatabaseType dbType) {
         switch (dbType) {
             case H2 :
             case MySQL :
