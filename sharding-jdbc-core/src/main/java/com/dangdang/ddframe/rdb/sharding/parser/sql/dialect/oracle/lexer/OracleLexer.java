@@ -20,6 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
+/**
+ * Oracle词法解析器.
+ *
+ * @author zhangliang
+ */
 public final class OracleLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary(OracleKeyword.values());

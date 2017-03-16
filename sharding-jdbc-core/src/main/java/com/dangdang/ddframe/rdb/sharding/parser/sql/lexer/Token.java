@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 语言标记.
+ * 词法标记.
  *
  * @author zhangliang
  */

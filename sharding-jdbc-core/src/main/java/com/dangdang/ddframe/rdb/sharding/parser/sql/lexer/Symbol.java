@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 符号标记.
+ * 词法符号标记.
  *
  * @author zhangliang
  */
@@ -89,20 +89,20 @@ public enum Symbol implements TokenType {
     private final String literals;
     
     /**
-     * 通过字面量查找符号.
+     * 通过字面量查找词法符号.
      * 
      * @param literals 字面量
-     * @return 符号标记
+     * @return 词法符号
      */
     public static Symbol literalsOf(final String literals) {
         return symbols.get(literals);
     }
     
     /**
-     * 判断字符是否是符号.
+     * 判断字符是否是词法符号.
      *
      * @param ch 待判断的字符
-     * @return 是否是符号
+     * @return 是否为词法符号
      */
     public static boolean isSymbol(final char ch) {
         return symbolChars.contains(ch);

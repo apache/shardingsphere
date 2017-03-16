@@ -20,6 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
+/**
+ * PostgreSQL词法解析器.
+ *
+ * @author zhangliang
+ */
 public final class PostgreSQLLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary(PostgreSQLKeyword.values());

@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 
 /**
- * 辅助标记.
+ * 词法辅助标记.
  *
  * @author zhangliang
  */

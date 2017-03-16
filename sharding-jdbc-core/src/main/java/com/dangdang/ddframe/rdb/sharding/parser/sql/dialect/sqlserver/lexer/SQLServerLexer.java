@@ -20,6 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
+/**
+ * SQLServer词法解析器.
+ *
+ * @author zhangliang
+ */
 public final class SQLServerLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary(SQLServerKeyword.values());

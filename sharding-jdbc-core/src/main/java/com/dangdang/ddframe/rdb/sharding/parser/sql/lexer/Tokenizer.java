@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.lexer;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 语言标记截取器.
+ * 词法标记器.
  *
  * @author zhangliang
  */

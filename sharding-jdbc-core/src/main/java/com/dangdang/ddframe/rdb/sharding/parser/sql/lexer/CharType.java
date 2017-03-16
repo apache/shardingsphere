@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * 字符常量.
+ * 字符类型.
  * 
  * @author zhangliang 
  */

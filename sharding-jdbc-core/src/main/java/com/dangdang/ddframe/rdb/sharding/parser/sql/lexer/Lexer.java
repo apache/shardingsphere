@@ -39,7 +39,7 @@ public class Lexer {
     private Token token;
     
     /**
-     * 跳至下一个语言符号.
+     * 分析下一个词法标记.
      */
     public final void nextToken() {
         skipIgnoredToken();

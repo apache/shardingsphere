@@ -20,6 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 
+/**
+ * MySQL词法解析器.
+ *
+ * @author zhangliang
+ */
 public final class MySQLLexer extends Lexer {
     
     private static Dictionary dictionary = new Dictionary(MySQLKeyword.values());

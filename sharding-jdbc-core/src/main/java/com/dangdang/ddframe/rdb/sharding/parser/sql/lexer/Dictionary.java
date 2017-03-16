@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 词法解析字典.
+ * 词法标记字典.
  *
  * @author zhangliang
  */
