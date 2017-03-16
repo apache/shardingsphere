@@ -37,8 +37,8 @@ public class OracleExprParser extends SQLExprParser {
     
     @Override
     protected Optional<String> as() {
-        if (equal(OracleKeyword.CONNECT)) {
-            return null;
+        if (equalAny(OracleKeyword.CONNECT)) {
+            return Optional.absent();
         }
         return super.as();
     }

@@ -39,9 +39,9 @@ public class Parser {
     private final Lexer lexer;
     
     /**
-     * 跳过小括号内所有的语言符号.
+     * 跳过小括号内所有的词法标记.
      *
-     * @return 小括号内所有的语言符号
+     * @return 小括号内所有的词法标记
      */
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
@@ -67,11 +67,10 @@ public class Parser {
         return result.toString();
     }
     
-    
     /**
-     * 断言当前标记类型与传入值相等并跳过.
+     * 断言当前词法标记类型与传入值相等并跳过.
      *
-     * @param tokenType 待判断的标记类型
+     * @param tokenType 待判断的词法标记类型
      */
     public final void accept(final TokenType tokenType) {
         if (lexer.getCurrentToken().getType() != tokenType) {
@@ -81,12 +80,12 @@ public class Parser {
     }
     
     /**
-     * 判断当前语言标记是否和其中一个传入的标记相等.
+     * 判断当前词法标记类型是否与其中一个传入值相等.
      *
-     * @param tokenTypes 待判断的标记类型
-     * @return 是否有相等的标记类型
+     * @param tokenTypes 待判断的词法标记类型
+     * @return 是否有相等的词法标记类型
      */
-    public final boolean equal(final TokenType... tokenTypes) {
+    public final boolean equalAny(final TokenType... tokenTypes) {
         for (TokenType each : tokenTypes) {
             if (each == lexer.getCurrentToken().getType()) {
                 return true;
@@ -96,25 +95,35 @@ public class Parser {
     }
     
     /**
-     * 如果当前语言符号等于传入值, 则跳过.
+     * 如果当前词法标记类型等于传入值, 则跳过.
      *
-     * @param tokenTypes 待跳过的语言符号
+     * @param tokenTypes 待跳过的词法标记类型
      * @return 是否跳过(或可理解为是否相等)
      */
     public final boolean skipIfEqual(final TokenType... tokenTypes) {
-        for (TokenType each : tokenTypes) {
-            if (equal(each)) {
-                lexer.nextToken();
-                return true;
-            }
+        if (equalAny(tokenTypes)) {
+            lexer.nextToken();
+            return true;
         }
         return false;
     }
     
     /**
-     * 直接跳转至传入的语言符号.
+     * 跳过所有传入的词法标记类型.
      *
-     * @param tokenTypes 跳转至的语言符号
+     * @param tokenTypes 待跳过的词法标记类型
+     */
+    public final void skipAll(final TokenType... tokenTypes) {
+        Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);
+        while (tokenTypeSet.contains(lexer.getCurrentToken().getType())) {
+            lexer.nextToken();
+        }
+    }
+    
+    /**
+     * 直接跳转至传入的词法标记类型.
+     *
+     * @param tokenTypes 跳转至的词法标记类型
      */
     public final void skipUntil(final TokenType... tokenTypes) {
         Set<TokenType> tokenTypeSet = Sets.newHashSet(tokenTypes);

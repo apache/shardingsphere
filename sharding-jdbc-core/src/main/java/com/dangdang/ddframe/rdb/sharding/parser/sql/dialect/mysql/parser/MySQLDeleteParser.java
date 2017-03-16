@@ -35,9 +35,7 @@ public final class MySQLDeleteParser extends AbstractDeleteParser {
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        while (getExprParser().equal(MySQLKeyword.LOW_PRIORITY) || getExprParser().equal(MySQLKeyword.QUICK) || getExprParser().equal(MySQLKeyword.IGNORE)) {
-            getExprParser().getLexer().nextToken();
-        }
+        getExprParser().skipAll(MySQLKeyword.LOW_PRIORITY, MySQLKeyword.QUICK, MySQLKeyword.IGNORE);
         getExprParser().skipIfEqual(DefaultKeyword.FROM);
     }
 }

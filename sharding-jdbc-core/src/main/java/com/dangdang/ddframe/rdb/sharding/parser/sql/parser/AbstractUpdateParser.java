@@ -75,7 +75,7 @@ public abstract class AbstractUpdateParser {
     }
     
     private void parseSetItem() {
-        if (exprParser.equal(Symbol.LEFT_PAREN)) {
+        if (exprParser.equalAny(Symbol.LEFT_PAREN)) {
             exprParser.skipParentheses();
         } else {
             int beginPosition = exprParser.getLexer().getCurrentToken().getEndPosition();

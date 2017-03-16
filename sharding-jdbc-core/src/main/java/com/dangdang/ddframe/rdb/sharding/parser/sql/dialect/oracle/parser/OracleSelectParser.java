@@ -36,7 +36,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void customizedSelect() {
-        if (getExprParser().equal(DefaultKeyword.FOR)) {
+        if (getExprParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
         if (getSqlContext().getOrderByContexts().isEmpty()) {
@@ -46,7 +46,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().equal(DefaultKeyword.SELECT)) {
+        if (getExprParser().equalAny(DefaultKeyword.SELECT)) {
             getExprParser().getLexer().nextToken();
             parseDistinct();
             parseSelectList();
@@ -61,7 +61,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipInto() {
-        if (getExprParser().equal(DefaultKeyword.INTO)) {
+        if (getExprParser().equalAny(DefaultKeyword.INTO)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
     }
@@ -158,7 +158,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipQueryPartitionClause() {
         if (getExprParser().skipIfEqual(OracleKeyword.PARTITION)) {
             getExprParser().accept(DefaultKeyword.BY);
-            if (getExprParser().equal(Symbol.LEFT_PAREN)) {
+            if (getExprParser().equalAny(Symbol.LEFT_PAREN)) {
                 getExprParser().skipParentheses();
             } else {
                 throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
@@ -173,7 +173,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     @Override
     protected void parseGroupBy() {
         // TODO
-//        if (getExprParser().equal(DefaultKeyword.GROUP)) {
+//        if (getExprParser().equalAny(DefaultKeyword.GROUP)) {
 //            getExprParser().getLexer().nextToken();
 //            getExprParser().accept(DefaultKeyword.BY);
 //            while (true) {
@@ -181,7 +181,7 @@ public class OracleSelectParser extends AbstractSelectParser {
 //                    throw new UnsupportedOperationException("Cannot support GROUPING SETS");
 //                } 
 //                addGroupByItem(getExprParser().expr());
-//                if (!getExprParser().equal(Symbol.COMMA)) {
+//                if (!getExprParser().equalAny(Symbol.COMMA)) {
 //                    break;
 //                }
 //                getExprParser().getLexer().nextToken();
@@ -199,7 +199,7 @@ public class OracleSelectParser extends AbstractSelectParser {
 //                        throw new UnsupportedOperationException("Cannot support GROUPING SETS");
 //                    }
 //                    addGroupByItem(getExprParser().expr());
-//                    if (!getExprParser().equal(Symbol.COMMA)) {
+//                    if (!getExprParser().equalAny(Symbol.COMMA)) {
 //                        break;
 //                    }
 //                    getExprParser().getLexer().nextToken();
@@ -210,10 +210,10 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public final List<TableContext> parseTable() {
-        if (getExprParser().equal(Symbol.LEFT_PAREN)) {
+        if (getExprParser().equalAny(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        if (getExprParser().equal(DefaultKeyword.SELECT)) {
+        if (getExprParser().equalAny(DefaultKeyword.SELECT)) {
             throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         if (getExprParser().skipIfEqual(OracleKeyword.ONLY)) {
@@ -275,7 +275,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipFlashbackQueryClause() {
-        if (getExprParser().equal(OracleKeyword.VERSIONS)) {
+        if (getExprParser().equalAny(OracleKeyword.VERSIONS)) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
         } else if (getExprParser().skipIfEqual(DefaultKeyword.AS)) {
             if (getExprParser().skipIfEqual(OracleKeyword.OF)) {
@@ -294,7 +294,7 @@ public class OracleSelectParser extends AbstractSelectParser {
                 getExprParser().parseExpr();
             } while (getExprParser().skipIfEqual(Symbol.COMMA));
         }
-        if (getExprParser().equal(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+        if (getExprParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
             getExprParser().getLexer().nextToken();
         } else if (getExprParser().skipIfEqual(OracleKeyword.SKIP)) {
             getExprParser().accept(OracleKeyword.LOCKED);

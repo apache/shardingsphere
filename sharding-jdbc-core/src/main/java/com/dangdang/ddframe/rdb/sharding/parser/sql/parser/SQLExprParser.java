@@ -79,7 +79,7 @@ public class SQLExprParser extends Parser {
     protected Optional<String> as() {
         if (skipIfEqual(DefaultKeyword.AS)) {
             // TODO 判断Literals是符号则返回null, 目前仅判断为LEFT_PAREN
-            if (equal(Symbol.LEFT_PAREN)) {
+            if (equalAny(Symbol.LEFT_PAREN)) {
                 return Optional.absent();
             }
             String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
@@ -87,7 +87,7 @@ public class SQLExprParser extends Parser {
             return Optional.of(result);
         }
         // TODO 增加哪些数据库识别哪些关键字作为别名的配置
-        if (equal(Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
+        if (equalAny(Literals.IDENTIFIER, Literals.CHARS, DefaultKeyword.USER, DefaultKeyword.END, DefaultKeyword.CASE, DefaultKeyword.KEY, DefaultKeyword.INTERVAL, DefaultKeyword.CONSTRAINT)) {
             String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
             getLexer().nextToken();
             return Optional.of(result);
@@ -106,7 +106,7 @@ public class SQLExprParser extends Parser {
         if (null != orderByContext) {
             result.add(orderByContext);
         }
-        while (equal(Symbol.COMMA)) {
+        while (equalAny(Symbol.COMMA)) {
             getLexer().nextToken();
             orderByContext = parseSelectOrderByItem(sqlContext);
             if (null != orderByContext) {
@@ -119,9 +119,9 @@ public class SQLExprParser extends Parser {
     public OrderByContext parseSelectOrderByItem(final SQLContext sqlContext) {
         SQLExpr expr = parseExpr(sqlContext);
         OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
-        if (equal(DefaultKeyword.ASC)) {
+        if (equalAny(DefaultKeyword.ASC)) {
             getLexer().nextToken();
-        } else if (equal(DefaultKeyword.DESC)) {
+        } else if (equalAny(DefaultKeyword.DESC)) {
             getLexer().nextToken();
             orderByType = OrderByColumn.OrderByType.DESC;
         }
@@ -141,7 +141,7 @@ public class SQLExprParser extends Parser {
     protected final void parseSingleTable(final SQLContext sqlContext) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
-            if (equal(DefaultKeyword.SELECT)) {
+            if (equalAny(DefaultKeyword.SELECT)) {
                 throw new UnsupportedOperationException("Cannot support subquery");
             }
             hasParentheses = true;
@@ -195,7 +195,7 @@ public class SQLExprParser extends Parser {
     public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
         skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = getLexer().getCurrentToken().getLiterals();
-        if (equal(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
+        if (equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             getLexer().nextToken();
             return new CommonSelectItemContext(Symbol.STAR.getLiterals(), as(), index, true);
         }
@@ -205,12 +205,12 @@ public class SQLExprParser extends Parser {
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
         // FIXME 解析xxx.*
-        while (!equal(DefaultKeyword.AS) && !equal(Symbol.COMMA) && !equal(DefaultKeyword.FROM) && !equal(Assist.END)) {
+        while (!equalAny(DefaultKeyword.AS) && !equalAny(Symbol.COMMA) && !equalAny(DefaultKeyword.FROM) && !equalAny(Assist.END)) {
             String value = getLexer().getCurrentToken().getLiterals();
             int position = getLexer().getCurrentToken().getEndPosition() - value.length();
             expression.append(value);
             getLexer().nextToken();
-            if (equal(Symbol.DOT)) {
+            if (equalAny(Symbol.DOT)) {
                 sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
@@ -239,7 +239,7 @@ public class SQLExprParser extends Parser {
         do {
             parseComparisonCondition(sqlContext, parseContext);
         } while (skipIfEqual(DefaultKeyword.AND));
-        if (equal(DefaultKeyword.OR)) {
+        if (equalAny(DefaultKeyword.OR)) {
             throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
         }
     }
@@ -248,14 +248,14 @@ public class SQLExprParser extends Parser {
     public void parseComparisonCondition(final SQLContext sqlContext, final ParseContext parseContext) {
         skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpr left = parseExpr(sqlContext);
-        if (equal(Symbol.EQ)) {
+        if (equalAny(Symbol.EQ)) {
             parseEqualCondition(sqlContext, parseContext, left);
-        } else if (equal(DefaultKeyword.IN)) {
+        } else if (equalAny(DefaultKeyword.IN)) {
             parseInCondition(sqlContext, parseContext, left);
-        } else if (equal(DefaultKeyword.BETWEEN)) {
+        } else if (equalAny(DefaultKeyword.BETWEEN)) {
             parseBetweenCondition(sqlContext, parseContext, left);
-        } else if (equal(Symbol.LT) || equal(Symbol.GT)
-                || equal(Symbol.LT_EQ) || equal(Symbol.GT_EQ)) {
+        } else if (equalAny(Symbol.LT) || equalAny(Symbol.GT)
+                || equalAny(Symbol.LT_EQ) || equalAny(Symbol.GT_EQ)) {
             parserOtherCondition(sqlContext);
         }
         skipIfEqual(Symbol.LEFT_PAREN);
@@ -275,11 +275,11 @@ public class SQLExprParser extends Parser {
         accept(Symbol.LEFT_PAREN);
         List<SQLExpr> rights = new LinkedList<>();
         do {
-            if (equal(Symbol.COMMA)) {
+            if (equalAny(Symbol.COMMA)) {
                 getLexer().nextToken();
             }
             rights.add(parseExpr(sqlContext));
-        } while (!equal(Symbol.RIGHT_PAREN));
+        } while (!equalAny(Symbol.RIGHT_PAREN));
         parseContext.addCondition(left, Condition.BinaryOperator.IN, rights);
         getLexer().nextToken();
     }
@@ -313,24 +313,24 @@ public class SQLExprParser extends Parser {
     
     public SQLExpr parseExpr() {
         String literals = getLexer().getCurrentToken().getLiterals();
-        if (equal(Literals.IDENTIFIER)) {
+        if (equalAny(Literals.IDENTIFIER)) {
             SQLExpr result = getSQLExpr(SQLUtil.getExactlyValue(literals));
             getLexer().nextToken();
             if (skipIfEqual(Symbol.DOT)) {
                 String property = getLexer().getCurrentToken().getLiterals();
                 getLexer().nextToken();
-                if (!equal(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
+                if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
                     return new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);
                 }
                 skipRest();
                 return new SQLIgnoreExpr();
             }
-            if (equal(Symbol.LEFT_PAREN)) {
+            if (equalAny(Symbol.LEFT_PAREN)) {
                 skipParentheses();
                 skipRest();
                 return new SQLIgnoreExpr();
             }
-            if (!equal(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
+            if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
                 return result;
             }
             skipRest();
@@ -338,7 +338,7 @@ public class SQLExprParser extends Parser {
         }
         SQLExpr result = getSQLExpr(literals);
         getLexer().nextToken();
-        if (!equal(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
+        if (!equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
             return result;
         }
         skipParentheses();
@@ -348,7 +348,7 @@ public class SQLExprParser extends Parser {
     
     private void skipRest() {
         while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH)) {
-            if (equal(Symbol.QUESTION)) {
+            if (equalAny(Symbol.QUESTION)) {
                 ++parametersIndex;
             }
             getLexer().nextToken();
@@ -360,23 +360,23 @@ public class SQLExprParser extends Parser {
     }
     
     private SQLExpr getSQLExpr(final String literals) {
-        if (equal(Symbol.QUESTION)) {
+        if (equalAny(Symbol.QUESTION)) {
             parametersIndex++;
             return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
-        if (equal(Literals.CHARS)) {
+        if (equalAny(Literals.CHARS)) {
             return new SQLCharExpr(literals);
         }
-        if (equal(Literals.INT)) {
+        if (equalAny(Literals.INT)) {
             return new SQLNumberExpr(Integer.parseInt(literals));
         }
-        if (equal(Literals.FLOAT)) {
+        if (equalAny(Literals.FLOAT)) {
             return new SQLNumberExpr(Double.parseDouble(literals));
         }
-        if (equal(Literals.HEX)) {
+        if (equalAny(Literals.HEX)) {
             return new SQLNumberExpr(Integer.parseInt(literals, 16));
         }
-        if (equal(Literals.IDENTIFIER)) {
+        if (equalAny(Literals.IDENTIFIER)) {
             return new SQLIdentifierExpr(literals);
         }
         return new SQLIgnoreExpr();

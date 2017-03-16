@@ -73,7 +73,7 @@ public abstract class AbstractInsertParser {
         exprParser.getLexer().nextToken();
         parseInto();
         Collection<Condition.Column> columns = parseColumns();
-        if (exprParser.equal(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
+        if (exprParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getValuesKeywords().contains(exprParser.getLexer().getCurrentToken().getType())) {
@@ -101,7 +101,7 @@ public abstract class AbstractInsertParser {
     private void skipBetweenTableAndValues() {
         while (getSkippedKeywordsBetweenTableAndValues().contains(exprParser.getLexer().getCurrentToken().getType())) {
             exprParser.getLexer().nextToken();
-            if (exprParser.equal(Symbol.LEFT_PAREN)) {
+            if (exprParser.equalAny(Symbol.LEFT_PAREN)) {
                 exprParser.skipParentheses();
             }
         }
@@ -114,12 +114,12 @@ public abstract class AbstractInsertParser {
     private Collection<Condition.Column> parseColumns() {
         Collection<Condition.Column> result = new LinkedList<>();
         Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
-        if (exprParser.equal(Symbol.LEFT_PAREN)) {
+        if (exprParser.equalAny(Symbol.LEFT_PAREN)) {
             do {
                 exprParser.getLexer().nextToken();
                 result.add(getColumn(autoIncrementColumns));
                 exprParser.getLexer().nextToken();
-            } while (!exprParser.equal(Symbol.RIGHT_PAREN) && !exprParser.equal(Assist.END));
+            } while (!exprParser.equalAny(Symbol.RIGHT_PAREN) && !exprParser.equalAny(Assist.END));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentToken().getEndPosition() - exprParser.getLexer().getCurrentToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
@@ -183,7 +183,7 @@ public abstract class AbstractInsertParser {
             exprParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
         }
-        while (exprParser.equal(Symbol.COMMA));
+        while (exprParser.equalAny(Symbol.COMMA));
         sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
     }
     
