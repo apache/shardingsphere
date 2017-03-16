@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser.Oracle
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.parser.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.sqlserver.parser.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -55,12 +55,12 @@ public final class SQLParserFactory {
      */
     public static SQLParseEngine create(final DatabaseType databaseType, final String sql, final List<Object> parameters, final ShardingRule shardingRule) throws SQLParserException {
         log.debug("Logic SQL: {}, {}", sql, parameters);
-        SQLContext sqlContext = getSQLStatementParser(databaseType, sql, shardingRule, parameters).parseStatement();
+        SQLContext sqlContext = getSQLParserEngine(databaseType, sql, shardingRule, parameters).parseStatement();
         log.trace("Get {} SQL Statement", sqlContext.getClass().getName());
         return new SQLParseEngine(sqlContext);
     }
     
-    private static SQLStatementParser getSQLStatementParser(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
+    private static SQLParserEngine getSQLParserEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         SQLParser sqlParser;
         switch (dbType) {
             case H2:
@@ -79,6 +79,6 @@ public final class SQLParserFactory {
             default:
                 throw new UnsupportedOperationException(dbType.name());
         }
-        return new SQLStatementParser(dbType, shardingRule, parameters, sqlParser);
+        return new SQLParserEngine(dbType, sqlParser, shardingRule, parameters);
     }
 }

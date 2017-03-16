@@ -26,30 +26,25 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.delete.SQLDeleteParse
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.SQLInsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.SQLSelectParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.update.SQLUpdateParserFactory;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 /**
- * SQL解析器.
+ * SQL解析引擎.
  *
  * @author zhangliang
  */
-public final class SQLStatementParser {
+@RequiredArgsConstructor
+public final class SQLParserEngine {
     
     private final DatabaseType dbType;
+    
+    private final SQLParser exprParser;
     
     private final ShardingRule shardingRule;
     
     private final List<Object> parameters;
-    
-    private final SQLParser exprParser;
-    
-    public SQLStatementParser(final DatabaseType dbType, final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
-        this.dbType = dbType;
-        this.shardingRule = shardingRule;
-        this.parameters = parameters;
-        this.exprParser = exprParser;
-    }
     
     /**
      * 解析SQL.

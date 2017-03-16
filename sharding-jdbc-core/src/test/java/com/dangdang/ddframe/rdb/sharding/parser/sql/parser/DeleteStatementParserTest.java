@@ -41,7 +41,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutCondition() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser("DELETE FROM TABLE_XXX", shardingRule, parameters));
+        SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, new MySQLParser("DELETE FROM TABLE_XXX", shardingRule, parameters), shardingRule, parameters);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertTrue(sqlContext.getConditionContexts().isEmpty());
@@ -52,9 +52,9 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithoutParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
-                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10", 
-                shardingRule, parameters));
+        SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, new MySQLParser(
+                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10",
+                shardingRule, parameters), shardingRule, parameters);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is(
@@ -65,8 +65,9 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseWithParameter() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10);
-        SQLStatementParser statementParser = new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser(
-                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule, parameters));
+        SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, new MySQLParser(
+                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule, parameters), 
+                shardingRule, parameters);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatement(sqlContext);
         assertThat(sqlContext.toSqlBuilder().toString(), is(
@@ -104,7 +105,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser("DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, parameters))
+        new SQLParserEngine(DatabaseType.MySQL, new MySQLParser("DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, parameters), shardingRule, parameters)
                 .parseStatement();
     }
     
@@ -112,7 +113,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
-        new SQLStatementParser(DatabaseType.MySQL, shardingRule, parameters, new MySQLParser("DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, parameters))
+        new SQLParserEngine(DatabaseType.MySQL, new MySQLParser("DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule, parameters), shardingRule, parameters)
                 .parseStatement();
     }
     

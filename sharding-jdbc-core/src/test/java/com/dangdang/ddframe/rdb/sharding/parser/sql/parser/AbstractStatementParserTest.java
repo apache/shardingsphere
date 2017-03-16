@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractStatementParserTest {
     
-    protected final SQLStatementParser getSqlStatementParser(final DatabaseType dbType, final String actualSQL) {
+    protected final SQLParserEngine getSqlStatementParser(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
         SQLParser sqlParser;
@@ -64,7 +64,7 @@ public abstract class AbstractStatementParserTest {
             default:
                 throw new UnsupportedOperationException(dbType.name());
         }
-        return new SQLStatementParser(dbType, shardingRule, parameters, sqlParser);
+        return new SQLParserEngine(dbType, sqlParser, shardingRule, parameters);
     }
     
     protected final ShardingRule createShardingRule() {
