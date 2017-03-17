@@ -22,11 +22,12 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.SQLParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
@@ -86,7 +87,8 @@ public final class SQLRouteEngine {
     SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
         this.parameters = parameters;
         Context context = MetricsContext.start("Parse SQL");
-        SQLParsedResult result = SQLParserFactory.create(databaseType, logicSql, parameters, shardingRule).parse();
+        log.debug("Logic SQL: {}, {}", logicSql, parameters);
+        SQLParsedResult result = new SQLParseEngine(new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement()).parse();
         MetricsContext.stop(context);
         return result;
     }

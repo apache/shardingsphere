@@ -35,7 +35,7 @@ import java.util.List;
 public class MySQLParser extends SQLParser {
     
     public MySQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        super( new MySQLLexer(sql), shardingRule, parameters);
+        super(new MySQLLexer(sql), shardingRule, parameters);
         getLexer().nextToken();
     }
     
@@ -72,7 +72,8 @@ public class MySQLParser extends SQLParser {
         return new LimitContext(value, valueIndex);
     }
     
-    private LimitContext getLimitContextWithComma(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private LimitContext getLimitContextWithComma(
+            final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int rowCount;
         int rowCountIndex = -1;
@@ -101,7 +102,8 @@ public class MySQLParser extends SQLParser {
         return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
     }
     
-    private LimitContext getLimitContextWithOffset(final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private LimitContext getLimitContextWithOffset(
+            final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int offsetBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int offset;
         int offsetIndex = -1;
