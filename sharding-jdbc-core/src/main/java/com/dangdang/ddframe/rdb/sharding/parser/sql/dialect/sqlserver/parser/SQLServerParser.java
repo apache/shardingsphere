@@ -32,7 +32,12 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class SQLServerParser extends SQLParser {
+/**
+ * SQLServer解析器.
+ *
+ * @author zhangliang
+ */
+public final class SQLServerParser extends SQLParser {
     
     public SQLServerParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         super(new SQLServerLexer(sql), shardingRule, parameters);

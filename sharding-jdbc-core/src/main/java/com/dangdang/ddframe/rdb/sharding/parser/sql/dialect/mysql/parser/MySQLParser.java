@@ -32,7 +32,12 @@ import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
 import java.util.List;
 
-public class MySQLParser extends SQLParser {
+/**
+ * MySQL解析器.
+ *
+ * @author zhangliang
+ */
+public final class MySQLParser extends SQLParser {
     
     public MySQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         super(new MySQLLexer(sql), shardingRule, parameters);

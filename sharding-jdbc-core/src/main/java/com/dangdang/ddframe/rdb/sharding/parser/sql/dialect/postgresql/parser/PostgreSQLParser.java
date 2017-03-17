@@ -23,7 +23,12 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
 import java.util.List;
 
-public class PostgreSQLParser extends SQLParser {
+/**
+ * PostgreSQL解析器.
+ *
+ * @author zhangliang
+ */
+public final class PostgreSQLParser extends SQLParser {
     
     public PostgreSQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         super(new PostgreSQLLexer(sql), shardingRule, parameters);

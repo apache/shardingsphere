@@ -28,7 +28,12 @@ import com.google.common.base.Optional;
 
 import java.util.List;
 
-public class OracleParser extends SQLParser {
+/**
+ * Oracle解析器.
+ *
+ * @author zhangliang
+ */
+public final class OracleParser extends SQLParser {
     
     public OracleParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
         super(new OracleLexer(sql), shardingRule, parameters);
