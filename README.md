@@ -1,4 +1,4 @@
-##Sharding-JDBC - A JDBC driver for shard databases and tables 
+# Sharding-JDBC - A JDBC driver for shard databases and tables 
 
 # [中文主页](README_cn.md)
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
