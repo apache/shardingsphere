@@ -32,6 +32,7 @@
  - **讨论QQ群：** 532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。由于QQ群已接近饱和，我们希望您在申请加群之前仔细阅读文档，并在加群申请中正确回答问题，以及在申请时写上您的姓名和公司名称。并且在入群后及时修改群名片。否则我们将有权拒绝您的入群申请。谢谢合作。）
  - **邮件组 sharding_jdbc@groups.163.com** ，如果在使用上需要帮助，或者疑似的bug，请发邮件到该邮件组中。发邮件之前请先阅读[FAQ](http://dangdangdotcom.github.io/sharding-jdbc/post/faq/)。
  - 报告确定的bug，提交增强功能建议和提交补丁等，请阅读[如何进行贡献](CONTRIBUTING.md)。
+ **使用Sharding-JDBC的公司如果方便请留下公司+网址** https://github.com/dangdangdotcom/sharding-jdbc/issues/234
 
 # 简介
 
