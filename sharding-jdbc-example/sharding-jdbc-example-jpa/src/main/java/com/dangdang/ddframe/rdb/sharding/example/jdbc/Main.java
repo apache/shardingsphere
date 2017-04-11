@@ -43,6 +43,7 @@ public final class Main {
         List<Long> orderIds = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
+            order.setOrderId(i + 1);
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
             orderRepository.create(order);
