@@ -43,8 +43,6 @@ public class PreparedSQLRouter {
     
     private SQLParsedResult sqlParsedResult;
     
-    private Optional<TableRule> tableRuleOptional;
-    
     /**
      * 使用参数进行SQL路由.
      * 当第一次路由时进行SQL解析,之后的路由复用第一次的解析结果.
@@ -55,18 +53,17 @@ public class PreparedSQLRouter {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlParsedResult) {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
-            tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
         } else {
             generateId(parameters);
-            engine.setParameters(parameters);
             for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
                 each.setNewConditionValue(parameters);
             }
         }
-        return engine.routeSQL(sqlParsedResult);
+        return engine.routeSQL(sqlParsedResult, parameters);
     }
     
     private void generateId(final List<Object> parameters) {
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
         if (!tableRuleOptional.isPresent()) {
             return;
         }

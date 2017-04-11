@@ -183,6 +183,7 @@ public abstract class AbstractSelectParser {
         int beginPosition = getExprParser().getLexer().getCurrentToken().getEndPosition() - getExprParser().getLexer().getCurrentToken().getLiterals().length();
         String literals = getExprParser().getLexer().getCurrentToken().getLiterals();
         getExprParser().getLexer().nextToken();
+        // TODO 包含Schema解析
         if (getExprParser().skipIfEqual(Symbol.DOT)) {
             getExprParser().getLexer().nextToken();
             getExprParser().parseAlias();

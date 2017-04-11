@@ -17,12 +17,26 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Keyword;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.Collection;
+
+import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist.END;
+import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.DELETE;
+import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.INSERT;
+import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.SELECT;
+import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.UPDATE;
 
 /**
  * SQL工具类.
@@ -67,6 +81,38 @@ public class SQLUtil {
         }
         if (null != current) {
             throw current;
+        }
+    }
+    
+    /**
+     * 根据SQL第一个单词判断SQL类型.
+     * 
+     * @param sql SQL语句
+     * @return SQL类型
+     */
+    public static SQLStatementType getTypeByStart(final String sql) {
+        // TODO: Use new Lexer Util, only support mysql now.
+        Lexer lexer = new Lexer(sql, new Dictionary(MySQLKeyword.values()));
+        lexer.nextToken();
+        while (true) {
+            TokenType tokenType = lexer.getCurrentToken().getType();
+            if (tokenType instanceof Keyword) {
+                if (tokenType.equals(SELECT)) {
+                    return SQLStatementType.SELECT;
+                } else if (tokenType.equals(UPDATE)) {
+                    return SQLStatementType.UPDATE;
+                } else if (tokenType.equals(INSERT)) {
+                    return SQLStatementType.INSERT;
+                } else if (tokenType.equals(DELETE)) {
+                    return SQLStatementType.DELETE;
+                }
+            }
+            if (tokenType instanceof Assist) {
+                if (tokenType.equals(END)) {
+                    throw new SQLParserException("Unsupported SQL statement: [%s]", sql);
+                }
+            }
+            lexer.nextToken();
         }
     }
 }

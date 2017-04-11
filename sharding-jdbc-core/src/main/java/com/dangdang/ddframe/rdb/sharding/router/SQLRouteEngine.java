@@ -21,23 +21,28 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
+import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +61,6 @@ public final class SQLRouteEngine {
     
     private final DatabaseType databaseType;
     
-    @Setter
-    private List<Object> parameters;
-    
     /**
      * SQL路由.
      *
@@ -71,7 +73,7 @@ public final class SQLRouteEngine {
     }
     
     SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParserException {
-        return routeSQL(parseSQL(logicSql, parameters));
+        return routeSQL(parseSQL(logicSql, parameters), parameters);
     }
     
     /**
@@ -85,7 +87,9 @@ public final class SQLRouteEngine {
     }
     
     SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
-        this.parameters = parameters;
+        if (HintManagerHolder.isDatabaseShardingOnly()) {
+            return buildHintParsedResult(logicSql);
+        }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
         SQLParsedResult result = new SQLParseEngine(new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement()).parse();
@@ -93,19 +97,30 @@ public final class SQLRouteEngine {
         return result;
     }
     
-    SQLRouteResult routeSQL(final SQLParsedResult parsedResult) {
+    private SQLParsedResult buildHintParsedResult(final String logicSql) {
+        SQLParsedResult result = new SQLParsedResult();
+        RouteContext routeContext = result.getRouteContext();
+        routeContext.setSqlStatementType(SQLUtil.getTypeByStart(logicSql));
+        log.trace("Get {} SQL Statement", routeContext.getSqlStatementType());
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        try {
+            sqlBuilder.append(logicSql);
+        } catch (final IOException ignored) {
+        }
+        routeContext.setSqlBuilder(sqlBuilder);
+        result.getConditionContexts().add(new ConditionContext());
+        return result;
+    }
+    
+    SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
             RoutingResult routingResult = routeSQL(each, parsedResult);
             result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getRouteContext().getSqlBuilder()));
         }
+        amendSQLAccordingToRouteResult(parsedResult, parameters, result);
         MetricsContext.stop(context);
-        Limit limit = result.getMergeContext().getLimit();
-        if (null != limit) {
-            limit.replaceSQL(parsedResult.getRouteContext().getSqlBuilder(), result.getExecutionUnits().size() > 1);
-            limit.replaceParameters(parameters, result.getExecutionUnits().size() > 1);
-        }
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
@@ -115,8 +130,11 @@ public final class SQLRouteEngine {
     }
     
     private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLParsedResult parsedResult) {
+        if (HintManagerHolder.isDatabaseShardingOnly()) {
+            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getRouteContext().getSqlStatementType()).route();
+        }
         Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<Table, String>() {
-        
+            
             @Override
             public String apply(final Table input) {
                 return input.getName();
@@ -130,5 +148,18 @@ public final class SQLRouteEngine {
         } 
         // TODO 可配置是否执行笛卡尔积
         return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
+    }
+    
+    private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult result) {
+        boolean isVarious = result.getExecutionUnits().size() > 1;
+        Limit limit = result.getMergeContext().getLimit();
+        SQLBuilder sqlBuilder = parsedResult.getRouteContext().getSqlBuilder();
+        if (null != limit) {
+            limit.replaceSQL(sqlBuilder, isVarious);
+            limit.replaceParameters(parameters, isVarious);
+        }
+        if (!isVarious) {
+            sqlBuilder.removeDerivedSQL();
+        }
     }
 }

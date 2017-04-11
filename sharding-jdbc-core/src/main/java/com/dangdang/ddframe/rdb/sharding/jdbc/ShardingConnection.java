@@ -98,6 +98,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         }
         Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName = dataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
             dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlStatementType);

@@ -122,7 +122,7 @@ public class CommonSelfIdGenerator implements IdGenerator {
         long time = clock.millis();
         Preconditions.checkState(lastTime <= time, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, time);
         if (lastTime == time) {
-            if (0L == (++sequence & SEQUENCE_MASK)) {
+            if (0L == (sequence = ++sequence & SEQUENCE_MASK)) {
                 time = waitUntilNextTime(time);
             }
         } else {

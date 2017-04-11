@@ -337,6 +337,32 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     }
     
     @Test
+    public void assertUpdateBatch() throws SQLException {
+        String sql = "UPDATE `t_order` SET `status` = ? WHERE  `status` = ?";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "batch");
+            preparedStatement.setString(2, "init");
+            preparedStatement.addBatch();
+            preparedStatement.setString(1, "batch");
+            preparedStatement.setString(2, "init");
+            preparedStatement.addBatch();
+            preparedStatement.setString(1, "init");
+            preparedStatement.setString(2, "batch");
+            preparedStatement.addBatch();
+          
+            int[] result = preparedStatement.executeBatch();
+            assertThat(result.length, is(3));
+            assertThat(result[0], is(40));
+            assertThat(result[1], is(0));
+            assertThat(result[2], is(40));
+        } finally {
+            DMLExecutionEventBus.clearListener();
+        }
+    }
+    
+    @Test
     public void assertClearBatch() throws SQLException {
         String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (

@@ -32,6 +32,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
     
+    public static final String DB_TABLE_NAME = "DB_TABLE_NAME";
+    
+    public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
+    
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
@@ -79,6 +83,15 @@ public final class HintManagerHolder {
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
+    }
+    
+    /**
+     * 判断是否当前只分库.
+     * 
+     * @return 是否当前只分库.
+     */
+    public static boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**

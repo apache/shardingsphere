@@ -30,6 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.google.common.collect.Lists;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
 import org.junit.AfterClass;
 
@@ -80,6 +82,10 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
             return shardingDataSource;
         }
         isShutdown = false;
+        return shardingDataSource = initDataSource();
+    }
+    
+    ShardingDataSource initDataSource() {
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap("dataSource_%s"));
         TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
@@ -87,8 +93,7 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
-        shardingDataSource = new ShardingDataSource(shardingRule);
-        return shardingDataSource;
+        return new ShardingDataSource(shardingRule);
     }
     
     @AfterClass
@@ -104,15 +109,9 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
         }
     }
     
-    protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, final Connection connection, final String actualTableName, final String sql)
-            throws SQLException, DatabaseUnitException {
-        try (DynamicShardingValueHelper anotherHelper = helper) {
-            assertDataSet(expectedDataSetFile, connection, actualTableName, sql);
-        }
-    }
-    
     class DynamicShardingValueHelper implements AutoCloseable {
         
+        @Getter(AccessLevel.PROTECTED)
         private final HintManager hintManager;
         
         DynamicShardingValueHelper(final int userId, final int orderId) {
