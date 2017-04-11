@@ -9,6 +9,7 @@
         <module>sharding-jdbc-example-jdbc</module>
         <module>sharding-jdbc-example-mybatis</module>
         <module>sharding-jdbc-example-jpa</module>
+        <module>sharding-jdbc-example-id-generator</module>
         <module>sharding-jdbc-example-config-yaml</module>
         <module>sharding-jdbc-example-config-spring</module>
         <module>sharding-jdbc-example-jdbc-transaction</module>
