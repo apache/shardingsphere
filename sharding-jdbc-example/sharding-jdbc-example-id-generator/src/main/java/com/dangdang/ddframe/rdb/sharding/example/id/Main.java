@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.jdbc;
+package com.dangdang.ddframe.rdb.sharding.example.id;
 
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
+import com.dangdang.ddframe.rdb.sharding.example.id.entity.Order;
+import com.dangdang.ddframe.rdb.sharding.example.id.repository.OrderRepository;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ public final class Main {
         List<Long> orderIds = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
-            order.setOrderId(i + 1);
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
             orderRepository.create(order);

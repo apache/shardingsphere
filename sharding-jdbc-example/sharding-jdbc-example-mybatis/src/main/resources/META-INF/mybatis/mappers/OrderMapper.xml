@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository">
     <resultMap id="baseResultMap" type="com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order">
-        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="INTEGER"/>
         <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="status" property="status" jdbcType="CLOB"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
     </resultMap>
     
     <sql id="baseColumnList">
@@ -13,13 +13,14 @@
         status
     </sql>
     
-    <insert id="insert" keyProperty="orderId" useGeneratedKeys="true" >
-        INSERT INTO `t_order`(
-        `user_id`,`status`
+    <insert id="insert">
+        INSERT INTO `t_order` (
+          <include refid="baseColumnList"/>
         )
         VALUES (
+        #{orderId,jdbcType=INTEGER},
         #{userId,jdbcType=INTEGER},
-        #{status,jdbcType=CLOB}
+        #{status,jdbcType=VARCHAR}
         );
     </insert>
     

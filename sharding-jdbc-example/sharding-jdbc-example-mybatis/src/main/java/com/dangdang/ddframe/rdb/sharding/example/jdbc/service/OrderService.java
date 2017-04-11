@@ -49,6 +49,7 @@ public class OrderService {
     public void fooService() {
         Order criteria = new Order();
         criteria.setOrderId(1);
+        criteria.setUserId(10);
         criteria.setStatus("INSERT");
         orderRepository.insert(criteria);
         System.out.println(criteria.getOrderId());
