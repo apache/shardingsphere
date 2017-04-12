@@ -103,17 +103,6 @@ public final class ParseContext {
     }
     
     /**
-     * 添加表.
-     * 
-     * @param currentTableName 表名称
-     * @param currentAlias 表别名
-     */
-    public void addTable(final String currentTableName, final Optional<String> currentAlias) {
-        Table table = new Table(SQLUtil.getExactlyValue(currentTableName), currentAlias.isPresent() ? Optional.of(SQLUtil.getExactlyValue(currentAlias.get())) : currentAlias);
-        parsedResult.getRouteContext().getTables().add(table);
-    }
-    
-    /**
      * 向解析上下文中添加条件对象.
      * 
      * @param expr SQL表达式

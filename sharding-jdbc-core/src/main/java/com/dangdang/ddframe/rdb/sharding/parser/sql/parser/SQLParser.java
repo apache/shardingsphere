@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
@@ -38,10 +39,10 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -350,7 +351,7 @@ public class SQLParser extends Parser {
         ParseContext result = new ParseContext(1);
         result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
-            result.addTable(each.getName(), each.getAlias());
+            result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
         }
         return result;
     }
