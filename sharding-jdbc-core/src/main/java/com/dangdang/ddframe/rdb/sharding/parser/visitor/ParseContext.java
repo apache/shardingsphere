@@ -64,11 +64,7 @@ import java.util.TreeSet;
 @Getter
 public final class ParseContext {
     
-    private static final String AUTO_GEN_TOKE_KEY_TEMPLATE = "sharding_auto_gen_%d";
-    
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
-    
-    private final String autoGenTokenKey;
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
@@ -96,7 +92,6 @@ public final class ParseContext {
     
     public ParseContext(final int parseContextIndex) {
         this.parseContextIndex = parseContextIndex;
-        autoGenTokenKey = String.format(AUTO_GEN_TOKE_KEY_TEMPLATE, parseContextIndex);
     }
     
     /**
