@@ -191,7 +191,7 @@ public abstract class AbstractInsertParser {
     }
     
     protected final ParseContext getParseContext() {
-        ParseContext result = new ParseContext(1);
+        ParseContext result = new ParseContext();
         result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
             result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));

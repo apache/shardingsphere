@@ -70,7 +70,7 @@ public final class SQLParseEngine {
     }
     
     private ParseContext getParseContext(final SQLContext sqlContext) {
-        ParseContext result = new ParseContext(0);
+        ParseContext result = new ParseContext();
         SQLParsedResult sqlParsedResult = result.getParsedResult();
         if (sqlContext.getConditionContexts().isEmpty()) {
             sqlParsedResult.getConditionContexts().add(new ConditionContext());

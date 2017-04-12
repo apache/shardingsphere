@@ -68,8 +68,6 @@ public final class ParseContext {
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
-    private final int parseContextIndex;
-    
     @Setter
     private ShardingRule shardingRule;
     
@@ -89,10 +87,6 @@ public final class ParseContext {
             return new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         }
     });
-    
-    public ParseContext(final int parseContextIndex) {
-        this.parseContextIndex = parseContextIndex;
-    }
     
     /**
      * 向解析上下文中添加条件对象.

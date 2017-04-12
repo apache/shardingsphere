@@ -348,7 +348,7 @@ public class SQLParser extends Parser {
     }
     
     private ParseContext getParseContext(final SQLContext sqlContext) {
-        ParseContext result = new ParseContext(1);
+        ParseContext result = new ParseContext();
         result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
             result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));

@@ -76,7 +76,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipStart() {
         if (getExprParser().skipIfEqual(OracleKeyword.START)) {
             getExprParser().accept(DefaultKeyword.WITH);
-            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext(0));
+            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext());
         }
     }
     
@@ -87,7 +87,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             if (getExprParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
                 getExprParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext(1));
+            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext());
         }
     }
     
