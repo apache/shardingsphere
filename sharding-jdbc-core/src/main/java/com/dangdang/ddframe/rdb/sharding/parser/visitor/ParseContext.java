@@ -79,8 +79,6 @@ public final class ParseContext {
     
     private final ConditionContext currentConditionContext = new ConditionContext();
     
-    private Table currentTable;
-    
     private int selectItemsCount;
     
     private final Collection<SelectItemContext> selectItems = new HashSet<>();
@@ -105,15 +103,14 @@ public final class ParseContext {
     }
     
     /**
-     * 设置当前正在访问的表.
+     * 添加表.
      * 
      * @param currentTableName 表名称
      * @param currentAlias 表别名
      */
-    public void setCurrentTable(final String currentTableName, final Optional<String> currentAlias) {
+    public void addTable(final String currentTableName, final Optional<String> currentAlias) {
         Table table = new Table(SQLUtil.getExactlyValue(currentTableName), currentAlias.isPresent() ? Optional.of(SQLUtil.getExactlyValue(currentAlias.get())) : currentAlias);
         parsedResult.getRouteContext().getTables().add(table);
-        currentTable = table;
     }
     
     /**
@@ -218,7 +215,7 @@ public final class ParseContext {
     }
     
     private Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
-        return null != currentTable ? createColumn(expr.getName(), currentTable.getName()) : null;
+        return 1 == parsedResult.getRouteContext().getTables().size() ? createColumn(expr.getName(), parsedResult.getRouteContext().getTables().iterator().next().getName()) : null;
     }
     
     private Column createColumn(final String columnName, final String tableName) {

@@ -193,7 +193,7 @@ public abstract class AbstractInsertParser {
         ParseContext result = new ParseContext(1);
         result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
-            result.setCurrentTable(each.getName(), each.getAlias());
+            result.addTable(each.getName(), each.getAlias());
         }
         return result;
     }
