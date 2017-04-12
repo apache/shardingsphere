@@ -85,9 +85,6 @@ public final class ParseContext {
     
     private boolean hasAllColumn;
     
-    @Setter
-    private ParseContext parentParseContext;
-    
     private List<ParseContext> subParseContext = new LinkedList<>();
     
     private final Multimap<String, String> tableShardingColumnsMap = Multimaps.newSetMultimap(new TreeMap<String, Collection<String>>(String.CASE_INSENSITIVE_ORDER), new Supplier<Set<String>>() {
@@ -329,38 +326,6 @@ public final class ParseContext {
         GroupByColumn result = new GroupByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
         parsedResult.getMergeContext().getGroupByColumns().add(result);
         return result;
-    }
-    
-    /**
-     * 将当前解析的条件对象归并入解析结果.
-     */
-    public void mergeCurrentConditionContext() {
-        if (!parsedResult.getRouteContext().getTables().isEmpty()) {
-            if (parsedResult.getConditionContexts().isEmpty()) {
-                parsedResult.getConditionContexts().add(currentConditionContext);
-            }
-            return;
-        }
-        Optional<SQLParsedResult> target = findValidParseResult();
-        if (!target.isPresent()) {
-            if (parsedResult.getConditionContexts().isEmpty()) {
-                parsedResult.getConditionContexts().add(currentConditionContext);
-            }
-            return;
-        }
-        parsedResult.getRouteContext().getTables().addAll(target.get().getRouteContext().getTables());
-        parsedResult.getConditionContexts().addAll(target.get().getConditionContexts());
-    }
-    
-    private Optional<SQLParsedResult> findValidParseResult() {
-        for (ParseContext each : subParseContext) {
-            each.mergeCurrentConditionContext();
-            if (each.getParsedResult().getRouteContext().getTables().isEmpty()) {
-                continue;
-            }
-            return Optional.of(each.getParsedResult()); 
-        }
-        return Optional.absent();
     }
     
     /**
