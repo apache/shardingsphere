@@ -177,7 +177,7 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 }
-                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count));
+                parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count), shardingRule.getAllShardingColumns(each.getTableName()));
                 count++;
             }
             if (!itemsToken.getItems().isEmpty()) {
@@ -192,7 +192,6 @@ public abstract class AbstractInsertParser {
     
     protected final ParseContext getParseContext() {
         ParseContext result = new ParseContext();
-        result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
             result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
         }

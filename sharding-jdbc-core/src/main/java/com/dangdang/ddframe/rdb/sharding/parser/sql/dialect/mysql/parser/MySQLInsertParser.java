@@ -80,7 +80,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             }
             getExprParser().getLexer().nextToken();
             if (getExprParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
-                parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr);
+                parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr, getShardingRule().getAllShardingColumns(column.getTableName()));
             } else {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }

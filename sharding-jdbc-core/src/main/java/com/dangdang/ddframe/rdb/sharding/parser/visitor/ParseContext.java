@@ -17,15 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
@@ -37,6 +28,14 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOp
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -44,13 +43,11 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -68,39 +65,32 @@ public final class ParseContext {
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
-    @Setter
-    private ShardingRule shardingRule;
-    
     private final ConditionContext currentConditionContext = new ConditionContext();
-    
-    private int selectItemsCount;
     
     private final Collection<SelectItemContext> selectItems = new HashSet<>();
     
-    private boolean hasAllColumn;
-    
-    private List<ParseContext> subParseContext = new LinkedList<>();
-    
     private final Multimap<String, String> tableShardingColumnsMap = Multimaps.newSetMultimap(new TreeMap<String, Collection<String>>(String.CASE_INSENSITIVE_ORDER), new Supplier<Set<String>>() {
+        
         @Override
         public Set<String> get() {
             return new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         }
     });
     
+    private boolean hasAllColumn;
+    
+    private int derivedColumnOffset;
+    
     /**
      * 向解析上下文中添加条件对象.
      * 
-     * @param expr SQL表达式
+     * @param column 列对象
      * @param operator 操作符
      * @param valueExprList 值对象表达式集合
+     * @param shardingColumns 全部分片列
      */
-    public void addCondition(final SQLExpr expr, final BinaryOperator operator, final List<SQLExpr> valueExprList) {
-        Optional<Column> column = getColumn(expr);
-        if (!column.isPresent()) {
-            return;
-        }
-        if (notShardingColumns(column.get())) {
+    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> valueExprList, final Collection<String> shardingColumns) {
+        if (notShardingColumns(column, shardingColumns)) {
             return;
         }
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
@@ -113,7 +103,7 @@ public final class ParseContext {
         if (values.isEmpty()) {
             return;
         }
-        addCondition(column.get(), operator, values);
+        addCondition(column, operator, values);
     }
     
     /**
@@ -123,10 +113,11 @@ public final class ParseContext {
      * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
+     * @param shardingColumns 全部分片列
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr) {
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final Collection<String> shardingColumns) {
         Column column = createColumn(columnName, tableName);
-        if (notShardingColumns(column)) {
+        if (notShardingColumns(column, shardingColumns)) {
             return; 
         }
         ValuePair value = evalExpression(valueExpr);
@@ -153,9 +144,9 @@ public final class ParseContext {
         }
     }
     
-    private boolean notShardingColumns(final Column column) {
+    private boolean notShardingColumns(final Column column, final Collection<String> shardingColumns) {
         if (!tableShardingColumnsMap.containsKey(column.getTableName())) {
-            tableShardingColumnsMap.putAll(column.getTableName(), shardingRule.getAllShardingColumns(column.getTableName()));
+            tableShardingColumnsMap.putAll(column.getTableName(), shardingColumns);
         }
         return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
@@ -174,7 +165,7 @@ public final class ParseContext {
         return null;
     }
     
-    private Optional<Column> getColumn(final SQLExpr expr) {
+    public Optional<Column> getColumn(final SQLExpr expr) {
         if (expr instanceof SQLPropertyExpr) {
             return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
         }
@@ -247,7 +238,7 @@ public final class ParseContext {
     }
     
     private String generateDerivedColumnAlias() {
-        return String.format(SHARDING_GEN_ALIAS, ++selectItemsCount);
+        return String.format(SHARDING_GEN_ALIAS, ++derivedColumnOffset);
     }
     
     private AggregationColumn getDerivedSumColumn(final AggregationColumn avgColumn) {

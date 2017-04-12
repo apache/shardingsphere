@@ -349,7 +349,6 @@ public class SQLParser extends Parser {
     
     private ParseContext getParseContext(final SQLContext sqlContext) {
         ParseContext result = new ParseContext();
-        result.setShardingRule(shardingRule);
         for (TableContext each : sqlContext.getTables()) {
             result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
         }
@@ -387,7 +386,10 @@ public class SQLParser extends Parser {
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
-            parseContext.addCondition(left, Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
+            Optional<Condition.Column> column = parseContext.getColumn(left);
+            if (column.isPresent()) {
+                parseContext.addCondition(column.get(), Condition.BinaryOperator.EQUAL, Collections.singletonList(right), shardingRule.getAllShardingColumns(column.get().getTableName()));
+            }
         }
     }
     
@@ -401,7 +403,10 @@ public class SQLParser extends Parser {
             }
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
-        parseContext.addCondition(left, Condition.BinaryOperator.IN, rights);
+        Optional<Condition.Column> column = parseContext.getColumn(left);
+        if (column.isPresent()) {
+            parseContext.addCondition(column.get(), Condition.BinaryOperator.IN, rights, shardingRule.getAllShardingColumns(column.get().getTableName()));
+        }
         getLexer().nextToken();
     }
     
@@ -411,7 +416,10 @@ public class SQLParser extends Parser {
         rights.add(parseExpression(sqlContext));
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlContext));
-        parseContext.addCondition(left, Condition.BinaryOperator.BETWEEN, rights);
+        Optional<Condition.Column> column = parseContext.getColumn(left);
+        if (column.isPresent()) {
+            parseContext.addCondition(column.get(), Condition.BinaryOperator.BETWEEN, rights, shardingRule.getAllShardingColumns(column.get().getTableName()));
+        }
     }
     
     private void parserOtherCondition(final SQLContext sqlContext) {
