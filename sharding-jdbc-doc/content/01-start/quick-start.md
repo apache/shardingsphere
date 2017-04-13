@@ -3,7 +3,7 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "快速入门"
 weight = 1
-prev = "/start"
+prev = "/01-start/index"
 next = "/01-start/faq"
 
 +++
@@ -23,7 +23,7 @@ next = "/01-start/faq"
 
 ## 规则配置
 
-`Sharding-JDBC`的分库分表通过规则配置描述，请简单浏览配置全貌：
+Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全貌：
 
 ```java
 ShardingRule shardingRule = ShardingRule.builder()
@@ -34,14 +34,14 @@ ShardingRule shardingRule = ShardingRule.builder()
         .build();
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和`tableRule`绑定等。
+规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和tableRule绑定等。
 
->详细的规则配置请参考[分库分表](guide/sharding)
+>详细的规则配置请参考[分库分表](/02-guide/sharding)
 
 ## 使用基于ShardingDataSource的JDBC接口
 
-通过`ShardingDataSourceFactory`工厂和规则配置对象获取`ShardingDataSource`，`ShardingDataSource`实现自`JDBC`的标准接口`DataSource`。然后可通过`DataSource`选择使用原生`JDBC`开发，或者使用`JPA`, `MyBatis`等`ORM`工具。
-以`JDBC`原生实现为例：
+通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+以JDBC原生实现为例：
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule);
@@ -115,4 +115,4 @@ try (
     </rdb:data-source>
 </beans>
 ```
->详细的规则配置请参考[Spring配置](guide/spring)
+>详细的规则配置请参考[配置指南](/02-guide/configuration)
