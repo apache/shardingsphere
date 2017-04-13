@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -81,7 +82,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             if (getExprParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 if (getShardingRule().isShardingColumn(column)) {
-                    parseContext.addCondition(column.getColumnName(), column.getTableName(), Condition.BinaryOperator.EQUAL, sqlExpr);
+                    parseContext.addCondition(column, Condition.BinaryOperator.EQUAL, Collections.singletonList(sqlExpr));
                 }
             } else {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);

@@ -178,7 +178,7 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 }
                 if (getShardingRule().isShardingColumn(each)) {
-                    parseContext.addCondition(each.getColumnName(), each.getTableName(), Condition.BinaryOperator.EQUAL, sqlExprs.get(count));
+                    parseContext.addCondition(each, Condition.BinaryOperator.EQUAL, Collections.singletonList(sqlExprs.get(count)));
                 }
                 count++;
             }

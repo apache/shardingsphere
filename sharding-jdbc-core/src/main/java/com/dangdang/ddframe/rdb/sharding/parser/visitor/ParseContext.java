@@ -43,7 +43,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -85,25 +84,6 @@ public final class ParseContext {
         if (values.isEmpty()) {
             return;
         }
-        addConditionInternal(column, operator, values);
-    }
-    
-    /**
-     * 将条件对象加入解析上下文.
-     * 
-     * @param columnName 列名称
-     * @param tableName 表名称
-     * @param operator 操作符
-     * @param valueExpr 值对象表达式
-     */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr) {
-        ValuePair value = evalExpression(valueExpr);
-        if (null != value) {
-            addConditionInternal(createColumn(columnName, tableName), operator, Collections.singletonList(value));
-        }
-    }
-    
-    private void addConditionInternal(final Column column, final BinaryOperator operator, final List<ValuePair> valuePairs) {
         Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
@@ -113,7 +93,7 @@ public final class ParseContext {
             condition = new Condition(column, operator);
             currentConditionContext.add(condition);
         }
-        for (ValuePair each : valuePairs) {
+        for (ValuePair each : values) {
             condition.getValues().add(each.value);
             if (each.paramIndex > -1) {
                 condition.getValueIndices().add(each.paramIndex);
