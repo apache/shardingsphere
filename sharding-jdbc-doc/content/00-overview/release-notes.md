@@ -3,10 +3,11 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "Release Note"
 weight = 2
-prev = "/03-community/architecture"
-next = "/03-community/directory-structure"
+prev = "/00-overview/intro"
+next = "/01-start/index"
 
 +++
+
 ## 1.4.2
 
 ### 功能提升
@@ -177,7 +178,7 @@ next = "/03-community/directory-structure"
 1. [ISSUE #16](https://github.com/dangdangdotcom/sharding-jdbc/issues/16) 改造多线程执行模型
 1. [ISSUE #18](https://github.com/dangdangdotcom/sharding-jdbc/issues/18) 查询Count时，使用getObject()取数会报异常
 1. [ISSUE #19](https://github.com/dangdangdotcom/sharding-jdbc/issues/19) sum和avg函数，不加别名不执行merger，加了空指针异常
-1. [ISSUE #38](https://github.com/dangdangdotcom/sharding-jdbc/issues/38) JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据。
+1. [ISSUE #38](https://github.com/dangdangdotcom/sharding-jdbc/issues/38) JPA与Sharding-JDBC的兼容问题。JPA会自动增加SELECT的列别名，导致ORDER BY只能通过别名，而非列名称获取ResultSet的数据
 
 ## 1.0.0
-1. 初始版本。
+1. 初始版本
