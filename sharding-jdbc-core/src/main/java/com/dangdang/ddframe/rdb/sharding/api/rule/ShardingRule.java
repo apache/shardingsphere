@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -32,8 +33,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * 分库分表规则配置对象.
@@ -208,27 +207,27 @@ public final class ShardingRule {
     }
     
     /**
-     * 获取所有的分片列名.
+     * 判断是否为分片列.
      *
-     * @param tableName 表名
-     * @return 分片列名集合
+     * @param column 表对象
+     * @return 是否为分片列
      */
-    public Collection<String> getAllShardingColumns(final String tableName) {
-        Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(databaseShardingStrategy.getShardingColumns());
-        result.addAll(tableShardingStrategy.getShardingColumns());
+    public boolean isShardingColumn(final Condition.Column column) {
+        if (databaseShardingStrategy.getShardingColumns().contains(column.getColumnName()) || tableShardingStrategy.getShardingColumns().contains(column.getColumnName())) {
+            return true;
+        }
         for (TableRule each : tableRules) {
-            if (!each.getLogicTable().equalsIgnoreCase(tableName)) {
+            if (!each.getLogicTable().equalsIgnoreCase(column.getTableName())) {
                 continue;
             }
-            if (null != each.getDatabaseShardingStrategy()) {
-                result.addAll(each.getDatabaseShardingStrategy().getShardingColumns());
+            if (null != each.getDatabaseShardingStrategy() && each.getDatabaseShardingStrategy().getShardingColumns().contains(column.getColumnName())) {
+                return true;
             }
-            if (null != each.getTableShardingStrategy()) {
-                result.addAll(each.getTableShardingStrategy().getShardingColumns());
+            if (null != each.getTableShardingStrategy() && each.getTableShardingStrategy().getShardingColumns().contains(column.getColumnName())) {
+                return true;
             }
         }
-        return result;
+        return false;
     }
     
     /**

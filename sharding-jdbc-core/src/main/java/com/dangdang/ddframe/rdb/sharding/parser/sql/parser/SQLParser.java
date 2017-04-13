@@ -387,8 +387,8 @@ public class SQLParser extends Parser {
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
             Optional<Condition.Column> column = parseContext.getColumn(left);
-            if (column.isPresent()) {
-                parseContext.addCondition(column.get(), Condition.BinaryOperator.EQUAL, Collections.singletonList(right), shardingRule.getAllShardingColumns(column.get().getTableName()));
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+                parseContext.addCondition(column.get(), Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
             }
         }
     }
@@ -404,8 +404,8 @@ public class SQLParser extends Parser {
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
         Optional<Condition.Column> column = parseContext.getColumn(left);
-        if (column.isPresent()) {
-            parseContext.addCondition(column.get(), Condition.BinaryOperator.IN, rights, shardingRule.getAllShardingColumns(column.get().getTableName()));
+        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+            parseContext.addCondition(column.get(), Condition.BinaryOperator.IN, rights);
         }
         getLexer().nextToken();
     }
@@ -417,8 +417,8 @@ public class SQLParser extends Parser {
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlContext));
         Optional<Condition.Column> column = parseContext.getColumn(left);
-        if (column.isPresent()) {
-            parseContext.addCondition(column.get(), Condition.BinaryOperator.BETWEEN, rights, shardingRule.getAllShardingColumns(column.get().getTableName()));
+        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+            parseContext.addCondition(column.get(), Condition.BinaryOperator.BETWEEN, rights);
         }
     }
     

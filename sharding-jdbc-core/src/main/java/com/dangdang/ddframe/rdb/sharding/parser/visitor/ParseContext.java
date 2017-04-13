@@ -38,9 +38,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-import com.google.common.base.Supplier;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -49,9 +46,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * 解析过程的上下文对象.
@@ -69,14 +63,6 @@ public final class ParseContext {
     
     private final Collection<SelectItemContext> selectItems = new HashSet<>();
     
-    private final Multimap<String, String> tableShardingColumnsMap = Multimaps.newSetMultimap(new TreeMap<String, Collection<String>>(String.CASE_INSENSITIVE_ORDER), new Supplier<Set<String>>() {
-        
-        @Override
-        public Set<String> get() {
-            return new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        }
-    });
-    
     private boolean hasAllColumn;
     
     private int derivedColumnOffset;
@@ -87,12 +73,8 @@ public final class ParseContext {
      * @param column 列对象
      * @param operator 操作符
      * @param valueExprList 值对象表达式集合
-     * @param shardingColumns 全部分片列
      */
-    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> valueExprList, final Collection<String> shardingColumns) {
-        if (notShardingColumns(column, shardingColumns)) {
-            return;
-        }
+    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> valueExprList) {
         List<ValuePair> values = new ArrayList<>(valueExprList.size());
         for (SQLExpr each : valueExprList) {
             ValuePair evalValue = evalExpression(each);
@@ -103,7 +85,7 @@ public final class ParseContext {
         if (values.isEmpty()) {
             return;
         }
-        addCondition(column, operator, values);
+        addConditionInternal(column, operator, values);
     }
     
     /**
@@ -113,20 +95,15 @@ public final class ParseContext {
      * @param tableName 表名称
      * @param operator 操作符
      * @param valueExpr 值对象表达式
-     * @param shardingColumns 全部分片列
      */
-    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr, final Collection<String> shardingColumns) {
-        Column column = createColumn(columnName, tableName);
-        if (notShardingColumns(column, shardingColumns)) {
-            return; 
-        }
+    public void addCondition(final String columnName, final String tableName, final BinaryOperator operator, final SQLExpr valueExpr) {
         ValuePair value = evalExpression(valueExpr);
         if (null != value) {
-            addCondition(column, operator, Collections.singletonList(value));
+            addConditionInternal(createColumn(columnName, tableName), operator, Collections.singletonList(value));
         }
     }
     
-    private void addCondition(final Column column, final BinaryOperator operator, final List<ValuePair> valuePairs) {
+    private void addConditionInternal(final Column column, final BinaryOperator operator, final List<ValuePair> valuePairs) {
         Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
@@ -142,13 +119,6 @@ public final class ParseContext {
                 condition.getValueIndices().add(each.paramIndex);
             }
         }
-    }
-    
-    private boolean notShardingColumns(final Column column, final Collection<String> shardingColumns) {
-        if (!tableShardingColumnsMap.containsKey(column.getTableName())) {
-            tableShardingColumnsMap.putAll(column.getTableName(), shardingColumns);
-        }
-        return !tableShardingColumnsMap.containsEntry(column.getTableName(), column.getColumnName());
     }
     
     private ValuePair evalExpression(final SQLExpr sqlExpr) {

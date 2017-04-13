@@ -21,17 +21,16 @@ import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.TreeSet;
 
 /**
  * 分片策略.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public class ShardingStrategy {
     
     @Getter
@@ -41,6 +40,12 @@ public class ShardingStrategy {
     
     public ShardingStrategy(final String shardingColumn, final ShardingAlgorithm shardingAlgorithm) {
         this(Collections.singletonList(shardingColumn), shardingAlgorithm);
+    }
+    
+    public ShardingStrategy(final Collection<String> shardingColumns, final ShardingAlgorithm shardingAlgorithm) {
+        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        this.shardingColumns.addAll(shardingColumns);
+        this.shardingAlgorithm = shardingAlgorithm;
     }
     
     /**
