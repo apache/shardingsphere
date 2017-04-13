@@ -39,7 +39,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,19 +70,9 @@ public final class ParseContext {
      * 
      * @param column 列对象
      * @param operator 操作符
-     * @param valueExprList 值对象表达式集合
+     * @param sqlExprs SQL表达式集合
      */
-    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> valueExprList) {
-        List<ValuePair> values = new ArrayList<>(valueExprList.size());
-        for (SQLExpr each : valueExprList) {
-            ValuePair evalValue = evalExpression(each);
-            if (null != evalValue) {
-                values.add(evalValue);
-            }
-        }
-        if (values.isEmpty()) {
-            return;
-        }
+    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> sqlExprs) {
         Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
@@ -93,28 +82,25 @@ public final class ParseContext {
             condition = new Condition(column, operator);
             currentConditionContext.add(condition);
         }
-        for (ValuePair each : values) {
-            condition.getValues().add(each.value);
-            if (each.paramIndex > -1) {
-                condition.getValueIndices().add(each.paramIndex);
+        for (SQLExpr each : sqlExprs) {
+            if (each instanceof SQLPlaceholderExpr) {
+                condition.getValues().add((Comparable) ((SQLPlaceholderExpr) each).getValue());
+                condition.getValueIndices().add(((SQLPlaceholderExpr) each).getIndex());
+            } else if (each instanceof AbstractSQLTextLiteralExpr) {
+                condition.getValues().add(((AbstractSQLTextLiteralExpr) each).getText());
+            }
+            if (each instanceof SQLNumberExpr) {
+                condition.getValues().add((Comparable) ((SQLNumberExpr) each).getNumber());
             }
         }
     }
     
-    private ValuePair evalExpression(final SQLExpr sqlExpr) {
-        if (sqlExpr instanceof SQLPlaceholderExpr) {
-            SQLPlaceholderExpr placeholderExpr = (SQLPlaceholderExpr) sqlExpr;
-            return new ValuePair((Comparable) placeholderExpr.getValue(), placeholderExpr.getIndex());
-        }
-        if (sqlExpr instanceof AbstractSQLTextLiteralExpr) {
-            return new ValuePair(((AbstractSQLTextLiteralExpr) sqlExpr).getText(), -1);
-        }
-        if (sqlExpr instanceof SQLNumberExpr) {
-            return new ValuePair((Comparable) ((SQLNumberExpr) sqlExpr).getNumber(), -1);
-        }
-        return null;
-    }
-    
+    /**
+     * 获取列.
+     * 
+     * @param expr SQL表达式
+     * @return 列对象
+     */
     public Optional<Column> getColumn(final SQLExpr expr) {
         if (expr instanceof SQLPropertyExpr) {
             return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
@@ -270,13 +256,5 @@ public final class ParseContext {
             return;
         }
         selectItems.add(new CommonSelectItemContext(rawItemExpr, null, 0, false));
-    }
-    
-    @RequiredArgsConstructor
-    private static class ValuePair {
-        
-        private final Comparable<?> value;
-        
-        private final Integer paramIndex;
     }
 }
