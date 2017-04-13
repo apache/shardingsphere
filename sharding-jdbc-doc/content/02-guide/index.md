@@ -11,8 +11,6 @@ chapter = true
 
 # 本章导航
 
-本章节将详细介绍如何使用Sharding-JDBC
-
  - 想一览基本的概念，请阅读[基本概念](/02-guide/concepts)。
  - 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读[如何分库分表](/02-guide/sharding)章节。
  - 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，同时你可以使用[Hint](/02-guide/hint-sharding-value)方式来编程设置该数据。该模式非常适合存量系统扩容。

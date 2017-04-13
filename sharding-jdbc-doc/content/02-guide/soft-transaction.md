@@ -4,7 +4,7 @@ date = "2016-12-06T22:38:50+08:00"
 title = "柔性事务"
 weight = 8
 prev = "/02-guide/transaction"
-next = "/03-develop"
+next = "/03-design"
 
 +++
 

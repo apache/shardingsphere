@@ -1,8 +1,8 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "基于暗示(Hint)的分片键值注册方法"
-weight = 3
+title = "Hint分片信息"
+weight = 4
 prev = "/02-guide/sharding"
 next = "/02-guide/configuration"
 
