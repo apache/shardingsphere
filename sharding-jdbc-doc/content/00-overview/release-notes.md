@@ -4,7 +4,7 @@ date = "2016-12-06T22:38:50+08:00"
 title = "Release Note"
 weight = 2
 prev = "/00-overview/intro"
-next = "/01-start/index"
+next = "/00-overview/contribution"
 
 +++
 
@@ -48,7 +48,7 @@ next = "/01-start/index"
 1. [ISSUE #162](https://github.com/dangdangdotcom/sharding-jdbc/issues/162) 分布式主键算法实现
 1. [ISSUE #163](https://github.com/dangdangdotcom/sharding-jdbc/issues/163) 获取自增序列jdbc接口实现
 1. [ISSUE #171](https://github.com/dangdangdotcom/sharding-jdbc/issues/171) sharding-jdbc-core配合自动生成序列改造
-1. [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172) Yaml与Spring的配置方式增加对于自增序列的支持
+1. [ISSUE #172](https://github.com/dangdangdotcom/sharding-jdbc/issues/172) YAML与Spring的配置方式增加对于自增序列的支持
 
 ### 缺陷修正
 

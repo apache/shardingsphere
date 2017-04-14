@@ -16,7 +16,7 @@ Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
-[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.png?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
+[![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
 [![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
 [![Hex.pm](http://dangdangdotcom.github.io/elastic-job/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)

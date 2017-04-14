@@ -47,9 +47,9 @@ Sharding-JDBC配置多样：
 
 # 整体架构图
 
-![整体架构图](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture.png)
+![整体架构图](/img/architecture.png)
 
-![柔性事务-最大努力送达型](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture-soft-transaction-bed.png)
+![柔性事务-最大努力送达型]( /img/architecture-soft-transaction-bed.png)
 
 # 快速入门
 
@@ -76,7 +76,7 @@ ShardingRule shardingRule = ShardingRule.builder()
         .build();
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和tableRule绑定等。
+规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
 
 ## 使用原生JDBC接口
 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。

@@ -1,4 +1,12 @@
-# 如何成为贡献者？
++++
+toc = true
+date = "2017-04-12T16:06:17+08:00"
+title = "贡献代码"
+weight = 3
+prev = "/00-overview/release-note"
+next = "/01-start/index"
+
++++
 
 您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
 
@@ -60,7 +68,7 @@
 
 ### 提交一个功能增强建议之前
  
- - 请先检查[详细功能列表](http://dangdangdotcom.github.io/sharding-jdbc/post/features/)。
+ - 请先检查[详细功能列表](/01-start/features/)。
  - 请确定这不是一个重复的功能增强建议。
    查看[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)列表，搜索您要提交的功能增强建议是否已经被提交过。
 
@@ -93,36 +101,7 @@
 
 ## 贡献补丁(patch)
 
-本文档帮助贡献者搭建开发环境并贡献代码，示例和文档。
-
-### 编译代码
-
-Sharding-JDBC的代码编译需要[Maven](http://maven.apache.org/)，请保证IDE中正确配置了它。
-代码用到的所有依赖完全都可以从公网下载，请根据自身的网络情况选择合理的镜像。
-
-代码使用了[Lombok](https://projectlombok.org/download.html)来生成类属性的访问方法，构造器等。
-故请以上从链接内容来获取适合您的IDE的解决方法。
-
-### 文档生成
-
-文档使用博客生成引擎[HUGO](https://gohugo.io/)，请根据文档安装环境。
-文档全部在sharding-jdbc/sharding-jdbc-doc/content/post目录中。
-
-### 贡献方法
-
-请按照下面的步骤贡献代码，示例和文档。
-
- - 所有的问题与新功能请使用[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)进行管理。
- - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明您当前正在这个Issue上工作。
-   并在回复的时候为自己设置一个deadline，并添加的回复内容中。
- - 在核心贡献者找到一个导师(shepherd)，导师会在设计与功能实现上给予即时的反馈。
-   如果您没有熟悉的架构师，请向__sharding_jdbc@groups.163.com__发送邮件。
- - 您应该新建一个分支来开始您的工作，分支的名字为功能名称/issueId。
-   例如，您想完成一个SQL解析(parser)功能中 __Issue 111__，那么您的branch名字应为 __parser/111__。
-   功能名称与导师讨论后确定。
- - 完成后，发送一个pull request到dangdangdotcom/sharding-jdbc，
-   接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，导师会将提交合并到master分支。
- - 最后，恭喜您已经成为了Sharding-JDBC的官方贡献者！
+本章节向贡献者介绍开发规范、环境、示例和文档。
 
 ### 开发理念
 
@@ -173,3 +152,33 @@ Sharding-JDBC的代码编译需要[Maven](http://maven.apache.org/)，请保证I
  - 精确断言, 尽量不使用not, containsString断言。
  - 调用业务方法的变量, 应命名为actualXXX, 期望值应命名为expectedXXX。
  - 只有junit assertXXX, hamcrest, mocktio相关可以使用static import。
+
+### 编译代码
+
+Sharding-JDBC的代码编译需要[Maven](http://maven.apache.org/)，请保证IDE中正确配置了它。
+代码用到的所有依赖完全都可以从公网下载，请根据自身的网络情况选择合理的镜像。
+
+代码使用了[Lombok](https://projectlombok.org/download.html)来生成类属性的访问方法，构造器等。
+故请以上从链接内容来获取适合您的IDE的解决方法。
+
+### 文档生成
+
+文档使用博客生成引擎[HUGO](https://gohugo.io/)，请根据文档安装环境。
+文档全部在sharding-jdbc/sharding-jdbc-doc/public目录中。
+
+### 贡献方法
+
+请按照规范贡献代码，示例和文档。
+
+ - 所有的问题与新功能请使用[Issue Page](https://github.com/dangdangdotcom/sharding-jdbc/issues)进行管理。
+ - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明您当前正在这个Issue上工作。
+   并在回复的时候为自己设置一个deadline，并添加的回复内容中。
+ - 在核心贡献者找到一个导师(shepherd)，导师会在设计与功能实现上给予即时的反馈。
+   如果您没有熟悉的架构师，请向__sharding_jdbc@groups.163.com__发送邮件。
+ - 您应该新建一个分支来开始您的工作，分支的名字为功能名称/issueId。
+   例如，您想完成一个SQL解析(parser)功能中 __Issue 111__，那么您的branch名字应为 __parser/111__。
+   功能名称与导师讨论后确定。
+ - 完成后，发送一个pull request到dangdangdotcom/sharding-jdbc，
+   接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当团队中所有人员对本次修改满意后，导师会将提交合并到master分支。
+ - 最后，恭喜您已经成为了Sharding-JDBC的官方贡献者！
+ 
