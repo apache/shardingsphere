@@ -2,9 +2,9 @@
 toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "读写分离"
-weight = 6
-prev = "/02-guide/id-generator"
-next = "/02-guide/transaction"
+weight = 3
+prev = "/02-guide/sharding"
+next = "/02-guide/configuration"
 
 +++
 

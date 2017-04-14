@@ -1,10 +1,10 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "分布式Id生成器"
-weight = 5
-prev = "/02-guide/configuration"
-next = "/02-guide/master-slave"
+title = "分布式主键"
+weight = 7
+prev = "/02-guide/hint-sharding-value"
+next = "/02-guide/transaction"
 
 +++
 
@@ -58,10 +58,10 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
 
 ### 其他框架配置
 
-关于Spring，Yaml，MyBatis和JPA（Hibernate）的配置请参考
+关于Spring，YAML，MyBatis和JPA（Hibernate）的配置请参考
 [示例工程](https://github.com/dangdangdotcom/sharding-jdbc/tree/master/sharding-jdbc-example)。
 
-# 通用的分布式Id生成器
+# 通用的分布式主键生成器
 
 需要引入以下依赖
 
@@ -79,11 +79,11 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
 
 其二进制表示形式包含四部分，从高位到低位分表为：1bit符号位(为0)，41bit时间位，10bit工作进程位，12bit序列位。
 
-## 时间位(41bit)
+### 时间位(41bit)
 
 从2016年11月1日零点到现在的毫秒数，时间可以使用到2156年，满足大部分系统的要求。
 
-## 工作进程位(10bit)
+### 工作进程位(10bit)
 
 该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个进程的工作进程Id是不同的。该值默认为0，目前可以通过三种方式设置。
 
@@ -91,11 +91,11 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
  1. 设置Java的系统变量，也就是再启动命令行中设置-Dsjdbc.self.id.generator.worker.id=xxx设置。
  1. 设置系统环境变量，通过SJDBC_SELF_ID_GENERATOR_WORKER_ID=xxx设置。
 
-## 序列位(12bit)
+### 序列位(12bit)
 
 该序列是用来在同一个毫秒内生成不同的Id。如果在这个毫秒内生成的数量超过4096(2的12次方)，那么生成器会等待到下个毫秒继续生成。
 
-## 总结
+### 总结
 
 从Id的组成部分看，不同进程的Id肯定是不同的，同一个进程首先是通过时间位保证不重复，如果时间相同则是通过序列位保证。
 同时由于时间位是单调递增的，且各个服务器如果大体做了时间同步，那么生成的Id在分布式环境可以认为是总体有序的。

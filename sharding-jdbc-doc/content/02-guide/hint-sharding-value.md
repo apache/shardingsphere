@@ -1,10 +1,10 @@
 +++
 toc = true
 date = "2016-12-06T22:38:50+08:00"
-title = "Hint分片信息"
-weight = 4
-prev = "/02-guide/sharding"
-next = "/02-guide/configuration"
+title = "强制路由"
+weight = 6
+prev = "/02-guide/configuration"
+next = "/02-guide/id-generator"
 
 +++
 
@@ -15,11 +15,14 @@ next = "/02-guide/configuration"
 例如逻辑表t_order如果其数据源分片键为user_id，
 分片算法是奇数值路由到db1偶数值路由到db2；表分片键为order_id，
 分片算法是奇数值路由到t_order_1偶数值路由到t_order_2，如果执行如下sql语句：
+
 ```sql
 select * from t_order where user_id = 1 and order_id = 2
 ```
+
 那么在数据源分片算法的shardingValue参数将会传入1用于分片计算，结果为路由到db1;
 表分片算法的shardingValue参数将会传入2用于分片计算，结果为路由到t_order_2。最终SQL为：
+
 ```sql
 select * from db1.t_order_2 where user_id = 1 and order_id = 2
 ```
@@ -32,6 +35,7 @@ __现有一个假设，如果WHERE中没有user_id和order_id的条件，那么�
 要解决上面的问题，我们使用com.dangdang.ddframe.rdb.sharding.api.HintManager。
 该管理器是使用ThreadLocal技术管理分片键值的。
 使用例子：
+
 ```java
 String sql = "SELECT * FROM t_order";
         
@@ -50,7 +54,13 @@ try (
 ```
 
 ### 实例化
-使用HintManager hintManager = HintManager.getInstance()实例化后将初始化ThreadLocal中的数据。
+
+```java
+// 初始化ThreadLocal中的数据
+HintManager hintManager = HintManager.getInstance()
+```
+
+
 
 ### 添加分片键值
 - 使用hintManager.addDatabaseShardingValue来添加数据源分片键值
