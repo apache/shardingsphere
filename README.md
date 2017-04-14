@@ -47,6 +47,8 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 
 ![Architecture](http://dangdangdotcom.github.io/sharding-jdbc/img/architecture_en.png)
 
+# [Release Notes](https://github.com/dangdangdotcom/sharding-jdbc/releases)
+
 # [Roadmap](ROADMAP.md)
 
 # Quick Start
