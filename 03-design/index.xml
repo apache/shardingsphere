@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>03-designs on </title>
+    <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/</link>
+    <description>Recent content in 03-designs on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 12 Dec 2016 16:06:17 +0800</lastBuildDate>
+    
+	<atom:link href="http://dangdangdotcom.github.io/sharding-jdbc/03-design/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>设计规划</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</link>
+      <pubDate>Mon, 12 Dec 2016 16:06:17 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</guid>
+      <description> 本章导航  想了解架构设计及项目模块设计的概念，请阅读架构设计及目录结构说明。 Sharding-JDBC未来规划有哪些呢？请阅读未来规划。  </description>
+    </item>
+    
+    <item>
+      <title>架构设计</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/architecture/</link>
+      <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/architecture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>目录结构说明</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/module/</link>
+      <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/module/</guid>
+      <description>sharding-jdbc ├──sharding-jdbc-core 分库分表核心模块，可直接使用 ├──sharding-jdbc-config-parent 配置父模块，不应直接使用 ├ ├──sharding-jdbc-config-common 配置公共模块，不应直接使用 ├ ├──sharding-jdbc-config-spring Spring命名空间支持模块，可直接使用 ├ ├──sharding-jdbc-config-yaml YAML配置，可直接使用 ├──sharding-jdbc-transaction-parent 柔性事务父模块，不应直接使用 ├ ├──sharding-jdbc-transaction 柔性事务核心模块，可直接使用 ├ ├──sharding-jdbc-transaction-storage 柔性事务存储模块，不应直接使用 ├ ├──sharding-jdbc-transaction-async-job 柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可 ├──sharding-jdbc-id-generator-parent 分布式主键父模块，不可直接使用 ├ ├──sharding-jdbc-self-id-generator 分布式自增主键，可直接使用 ├──sharding-jdbc-example 使用示例 ├ ├──sharding-jdbc-example-jdbc 基于JDBC的使用示例 ├ ├──sharding-jdbc-example-jpa 基于JPA的使用示例 ├ ├──sharding-jdbc-example-mybatis 基于MyBatis的使用示例 ├ ├──sharding-jdbc-example-config-spring 基于Spring命名空间配置的使用示例 ├ ├──sharding-jdbc-example-config-yaml 基于YAML配置的使用示例 ├ ├──sharding-jdbc-example-jdbc-transaction 柔性事务的使用示例 ├ ├──sharding-jdbc-example-id-generator 分布式主键生成器的使用示例 ├──sharding-jdbc-doc markdown生成文档的项目，使用方无需关注  </description>
+    </item>
+    
+    <item>
+      <title>未来线路规划</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/roadmap/</link>
+      <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/roadmap/</guid>
+      <description>已完成 分库分表  SQL解析 (完成) SQL改写 (完成) 访问路由 (完成) 结果归并 (完成)  读写分离  一主多从的读写分离，可配合分库分表使用 (完成) 同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 (完成) Spring命名空间 (完成) Hint强制主库路由 (完成)  配置2.0  动态表配置 (完成) 简化只分库配置，无需配置逻辑表和真实表对应关系 (完成) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule (完成)  分布式主键  JDBC接口改写 分布式主键策略接口制定 基于snowflake的分布式主键算法实现 基于groupsequence的分布式主键算法实现 基于数据库的分布式主键算法实现  柔性事务  sharding-jdbc-core发送SQL执行事件 (完成) BED类型事务日志存储设计 (完成) BED类型事务同步尝试 (完成) 基于elastic-job的BED类型事务异步尝试 (完成)  进行中 SQL解析2.0  使用全新的自研SQL解析引擎替换druid的SQL解析引擎 判断不支持SQL并直接报错 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv) 支持通过SQL注释指定SQL Hint SQL重写优化，进一步提升性能  计划中 结果归并2.0  管道化结果归并 (完成) 支持OR语句根据row的唯一标识去重 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv)  访问路由2.</description>
+    </item>
+    
+  </channel>
+</rss>
