@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.dangdang</groupId>
         <artifactId>sharding-jdbc-transaction-parent</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
     <artifactId>sharding-jdbc-transaction-async-job</artifactId>
     <name>${project.artifactId}</name>
@@ -21,6 +21,10 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
     <build>

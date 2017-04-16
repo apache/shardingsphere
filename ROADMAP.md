@@ -50,7 +50,7 @@
 ## Configuration
 - [x] Java API
 - [x] Spring Namespace
-- [x] Yaml
+- [x] YAML
 
 ## Operation Tool
 - [ ] High Availability

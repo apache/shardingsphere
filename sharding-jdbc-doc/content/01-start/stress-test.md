@@ -9,11 +9,11 @@ next = "/02-guide"
 +++
 
 ## 测试目的
-对`Sharding-JDBC`进行性能测试，客观、公正评估系统的性能，目的有三:
+对Sharding-JDBC进行性能测试，客观、公正评估系统的性能，目的有三:
 
-1. 对比`Sharding-JDBC`和`JDBC`的性能。
-1. `Sharding-JDBC`是否通过扩展数据库解决`JDBC`吞吐量不足的问题。
-1. `Sharding-JDBC`的稳定性。
+1. 对比Sharding-JDBC和JDBC的性能。
+1. Sharding-JDBC是否通过扩展数据库解决JDBC吞吐量不足的问题。
+1. Sharding-JDBC的稳定性。
 
 ## 测试数据库配置
 

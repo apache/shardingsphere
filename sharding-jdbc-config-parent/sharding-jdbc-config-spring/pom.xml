@@ -3,7 +3,7 @@
     <parent>
         <artifactId>sharding-jdbc-config-parent</artifactId>
         <groupId>com.dangdang</groupId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
     <artifactId>sharding-jdbc-config-spring</artifactId>
     <dependencies>
@@ -19,6 +19,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -2,9 +2,9 @@
 toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "读写分离"
-weight = 6
-prev = "/02-guide/id-generator"
-next = "/02-guide/transaction"
+weight = 3
+prev = "/02-guide/sharding"
+next = "/02-guide/configuration"
 
 +++
 
@@ -14,8 +14,8 @@ next = "/02-guide/transaction"
 ## 支持项
 1. 提供了一主多从的读写分离配置，可配合分库分表使用。
 1. 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。
-1. `Spring`命名空间。
-1. 基于`Hint`的强制主库路由。
+1. Spring命名空间。
+1. 基于Hint的强制主库路由。
 
 ## 不支持范围
 1. 主库和从库的数据同步。
