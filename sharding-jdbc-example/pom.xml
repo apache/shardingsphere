@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc-example</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>pom</packaging>
     
     <modules>
@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <sharding-jdbc.version>1.4.2-SNAPSHOT</sharding-jdbc.version>
+        <sharding-jdbc.version>1.4.2</sharding-jdbc.version>
         
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
