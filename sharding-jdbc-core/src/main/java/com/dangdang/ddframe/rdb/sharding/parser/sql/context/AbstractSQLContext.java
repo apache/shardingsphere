@@ -17,8 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +53,53 @@ public abstract class AbstractSQLContext implements SQLContext {
     private final Collection<ConditionContext> conditionContexts = new LinkedList<>();
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
+    
+    @Override
+    public Optional<Condition.Column> findColumn(final SQLExpr expr) {
+        if (expr instanceof SQLPropertyExpr) {
+            return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
+        }
+        if (expr instanceof SQLIdentifierExpr) {
+            return Optional.fromNullable(getColumnWithoutAlias((SQLIdentifierExpr) expr));
+        }
+        return Optional.absent();
+    }
+    
+    private Condition.Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
+        Optional<Table> table = findTable((expr.getOwner()).getName());
+        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
+    }
+    
+    private Optional<Table> findTable(final String tableNameOrAlias) {
+        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
+        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
+    }
+    
+    private Optional<Table> findTableFromName(final String name) {
+        for (TableContext each : tables) {
+            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
+                return Optional.of(new Table(each.getName(), each.getAlias()));
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<Table> findTableFromAlias(final String alias) {
+        for (TableContext each : tables) {
+            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
+                return Optional.of(new Table(each.getName(), each.getAlias()));
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private Condition.Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
+        return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
+    }
+    
+    private Condition.Column createColumn(final String columnName, final String tableName) {
+        return new Condition.Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
+    }
     
     @Override
     public SQLBuilder toSqlBuilder() {

@@ -17,9 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.google.common.base.Optional;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,4 +68,12 @@ public interface SQLContext {
      * @return SQL语句类型
      */
     SQLStatementType getType();
+    
+    /**
+     * 获取列对象.
+     * 
+     * @param expr SQL表达式
+     * @return 列对象
+     */
+    Optional<Condition.Column> findColumn(SQLExpr expr);
 }

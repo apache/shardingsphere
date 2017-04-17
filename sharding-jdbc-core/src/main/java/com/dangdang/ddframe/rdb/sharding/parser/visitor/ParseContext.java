@@ -27,15 +27,12 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -73,11 +70,11 @@ public final class ParseContext {
      * @param sqlExprs SQL表达式集合
      */
     public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> sqlExprs) {
-        Optional<Condition> optionalCondition = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
+        Optional<Condition> conditionOptional = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
         Condition condition;
         // TODO 待讨论
-        if (optionalCondition.isPresent()) {
-            condition = optionalCondition.get();
+        if (conditionOptional.isPresent()) {
+            condition = conditionOptional.get();
         } else {
             condition = new Condition(column, operator);
             currentConditionContext.add(condition);
@@ -93,58 +90,6 @@ public final class ParseContext {
                 condition.getValues().add((Comparable) ((SQLNumberExpr) each).getNumber());
             }
         }
-    }
-    
-    /**
-     * 获取列.
-     * 
-     * @param expr SQL表达式
-     * @return 列对象
-     */
-    public Optional<Column> getColumn(final SQLExpr expr) {
-        if (expr instanceof SQLPropertyExpr) {
-            return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
-        }
-        if (expr instanceof SQLIdentifierExpr) {
-            return Optional.fromNullable(getColumnWithoutAlias((SQLIdentifierExpr) expr));
-        }
-        return Optional.absent();
-    }
-    
-    private Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<Table> table = findTable((expr.getOwner()).getName());
-        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
-    }
-    
-    private Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
-        return 1 == parsedResult.getRouteContext().getTables().size() ? createColumn(expr.getName(), parsedResult.getRouteContext().getTables().iterator().next().getName()) : null;
-    }
-    
-    private Column createColumn(final String columnName, final String tableName) {
-        return new Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
-    }
-    
-    private Optional<Table> findTable(final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
-        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
-    }
-    
-    private Optional<Table> findTableFromName(final String name) {
-        for (Table each : parsedResult.getRouteContext().getTables()) {
-            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Table> findTableFromAlias(final String alias) {
-        for (Table each : parsedResult.getRouteContext().getTables()) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
     
     /**

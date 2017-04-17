@@ -386,7 +386,7 @@ public class SQLParser extends Parser {
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
-            Optional<Condition.Column> column = parseContext.getColumn(left);
+            Optional<Condition.Column> column = sqlContext.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 parseContext.addCondition(column.get(), Condition.BinaryOperator.EQUAL, Collections.singletonList(right));
             }
@@ -403,7 +403,7 @@ public class SQLParser extends Parser {
             }
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
-        Optional<Condition.Column> column = parseContext.getColumn(left);
+        Optional<Condition.Column> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             parseContext.addCondition(column.get(), Condition.BinaryOperator.IN, rights);
         }
@@ -416,7 +416,7 @@ public class SQLParser extends Parser {
         rights.add(parseExpression(sqlContext));
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlContext));
-        Optional<Condition.Column> column = parseContext.getColumn(left);
+        Optional<Condition.Column> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             parseContext.addCondition(column.get(), Condition.BinaryOperator.BETWEEN, rights);
         }
