@@ -11,6 +11,11 @@ chapter = true
 
 # 概述
 
+[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg?style=social&label=Release)](https://github.com/dangdangdotcom/sharding-jdbc/releases)&nbsp;
+[![GitHub stars](https://img.shields.io/github/stars/dangdangdotcom/sharding-jdbc.svg?style=social&label=Star)](https://github.com/dangdangdotcom/sharding-jdbc/stargazers)&nbsp;
+[![GitHub forks](https://img.shields.io/github/forks/dangdangdotcom/sharding-jdbc.svg?style=social&label=Fork)](https://github.com/dangdangdotcom/sharding-jdbc/fork)&nbsp;
+[![GitHub watchers](https://img.shields.io/github/watchers/dangdangdotcom/sharding-jdbc.svg?style=social&label=Watch)](https://github.com/dangdangdotcom/sharding-jdbc/watchers)
+
 Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
 
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
@@ -18,7 +23,6 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![GitHub release](https://img.shields.io/github/release/dangdangdotcom/sharding-jdbc.svg)](https://github.com/dangdangdotcom/sharding-jdbc/releases)
 [![Hex.pm](http://dangdangdotcom.github.io/elastic-job/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # 功能列表
