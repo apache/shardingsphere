@@ -71,12 +71,14 @@ Sharding-JDBC功能灵活且全面：
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/faq/</guid>
       <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
-2. 使用Spring命名空间时在网上相应地址找不到xsd? 回答：
+2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
+目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是1.0.12版本。
+3. 使用Spring命名空间时在网上相应地址找不到xsd? 回答：
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，因此我们并未将http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd部署至公网，但不影响正常使用。
 sharding-jdbc-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\rdb.xsd，需确保jar包中该文件存在。
-3. Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;异常的解决方法? 回答：
+4. Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;异常的解决方法? 回答：
 在Spring的配置文件中，由于inline表达式使用了Groovy语法，Groovy语法的变量符与Spring默认占位符同为${}，因此需要在配置文件中增加：
-&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;  4. inline表达式返回结果为何出现浮点数？ 回答：
+&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;  5. inline表达式返回结果为何出现浮点数？ 回答：
 Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。 想获得除法整数结果需要将A/B改为A.intdiv(B)。</description>
     </item>
     
@@ -275,9 +277,10 @@ TableRule.builder(&amp;quot;t_order_item&amp;quot;).autoIncrementColumns(&amp;qu
       <pubDate>Wed, 12 Apr 2017 16:06:17 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/index/</guid>
-      <description>概述 Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
+      <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
-    
+   
 功能列表 1. 分库分表  SQL解析功能完善，支持聚合，分组，排序，LIMIT，OR等查询，并且支持级联表以及笛卡尔积的表查询 支持内、外连接查询 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用，以及自定义分片策略 基于Hint的强制分库分表路由  2. 读写分离  一主多从的读写分离配置，可配合分库分表使用 基于Hint的强制主库路由  3. 分布式事务  最大努力送达型事务 TCC型事务(TBD)  4. 兼容性  可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等 理论上可支持任意实现JDBC规范的数据库。虽然目前仅支持MySQL，但已有支持Oracle，SQLServer，DB2等数据库的计划  5. 灵活多样的配置  Java Spring命名空间 YAML Inline表达式  6. 分布式生成全局主键  统一的分布式基于时间序列的ID生成器  第三方文档  2017-03 开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析 2016-06 InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离 2016-02 CSDN文章：解读分库分表中间件Sharding-JDBC 2016-01 InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件  交流与参与  讨论QQ群： 532576663（不限于Sharding-JDBC，包括分布式，数据库相关以及其他互联网技术交流。由于QQ群已接近饱和，我们希望您在申请加群之前仔细阅读文档，并在加群申请中正确回答问题，以及在申请时写上您的姓名和公司名称。并且在入群后及时修改群名片。否则我们将有权拒绝您的入群申请。谢谢合作。） 邮件组 sharding_jdbc@groups.</description>
     </item>
     

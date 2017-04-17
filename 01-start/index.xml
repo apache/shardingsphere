@@ -40,12 +40,14 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/faq/</guid>
       <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
-2. 使用Spring命名空间时在网上相应地址找不到xsd? 回答：
+2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
+目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是1.0.12版本。
+3. 使用Spring命名空间时在网上相应地址找不到xsd? 回答：
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，因此我们并未将http://www.dangdang.com/schema/ddframe/rdb/rdb.xsd部署至公网，但不影响正常使用。
 sharding-jdbc-config-spring的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\rdb.xsd，需确保jar包中该文件存在。
-3. Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;异常的解决方法? 回答：
+4. Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;异常的解决方法? 回答：
 在Spring的配置文件中，由于inline表达式使用了Groovy语法，Groovy语法的变量符与Spring默认占位符同为${}，因此需要在配置文件中增加：
-&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;  4. inline表达式返回结果为何出现浮点数？ 回答：
+&amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;  5. inline表达式返回结果为何出现浮点数？ 回答：
 Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。 想获得除法整数结果需要将A/B改为A.intdiv(B)。</description>
     </item>
     

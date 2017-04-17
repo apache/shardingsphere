@@ -376,9 +376,10 @@
 <li>
 <ul>
 <li><a href="#1-阅读源码时为什么会出现编译错误">1. 阅读源码时为什么会出现编译错误?</a></li>
-<li><a href="#2-使用spring命名空间时在网上相应地址找不到xsd">2. 使用Spring命名空间时在网上相应地址找不到xsd?</a></li>
-<li><a href="#3-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">3. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</a></li>
-<li><a href="#4-inline表达式返回结果为何出现浮点数">4. inline表达式返回结果为何出现浮点数？</a></li>
+<li><a href="#2-java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</a></li>
+<li><a href="#3-使用spring命名空间时在网上相应地址找不到xsd">3. 使用Spring命名空间时在网上相应地址找不到xsd?</a></li>
+<li><a href="#4-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">4. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</a></li>
+<li><a href="#5-inline表达式返回结果为何出现浮点数">5. inline表达式返回结果为何出现浮点数？</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -403,7 +404,13 @@
 
 <p>Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考<a href="https://projectlombok.org/download.html">lombok官网</a>。</p>
 
-<h3 id="2-使用spring命名空间时在网上相应地址找不到xsd">2. 使用Spring命名空间时在网上相应地址找不到xsd?</h3>
+<h3 id="2-java-lang-nosuchmethoderror-com-alibaba-druid-sql-ast-expr-sqlaggregateexpr-getoption-异常的解决方法">2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&hellip;..异常的解决方法？</h3>
+
+<p>回答：</p>
+
+<p>目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是<code>1.0.12</code>版本。</p>
+
+<h3 id="3-使用spring命名空间时在网上相应地址找不到xsd">3. 使用Spring命名空间时在网上相应地址找不到xsd?</h3>
 
 <p>回答：</p>
 
@@ -411,7 +418,7 @@
 
 <p>sharding-jdbc-config-spring的jar包中<code>META-INF\spring.schemas</code>配置了xsd文件的位置：<code>META-INF\namespace\rdb.xsd</code>，需确保jar包中该文件存在。</p>
 
-<h3 id="3-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">3. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</h3>
+<h3 id="4-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">4. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</h3>
 
 <p>回答：</p>
 
@@ -420,7 +427,7 @@
 <pre><code class="language-xml">&lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot;/&gt;
 </code></pre>
 
-<h3 id="4-inline表达式返回结果为何出现浮点数">4. inline表达式返回结果为何出现浮点数？</h3>
+<h3 id="5-inline表达式返回结果为何出现浮点数">5. inline表达式返回结果为何出现浮点数？</h3>
 
 <p>回答：</p>
 
