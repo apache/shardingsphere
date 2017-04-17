@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
@@ -350,7 +349,7 @@ public class SQLParser extends Parser {
     private ParseContext getParseContext(final SQLContext sqlContext) {
         ParseContext result = new ParseContext();
         for (TableContext each : sqlContext.getTables()) {
-            result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+            result.getParsedResult().getRouteContext().getTables().add(each);
         }
         return result;
     }

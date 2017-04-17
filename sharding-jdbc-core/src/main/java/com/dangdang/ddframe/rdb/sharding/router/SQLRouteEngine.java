@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
@@ -133,10 +133,10 @@ public final class SQLRouteEngine {
         if (HintManagerHolder.isDatabaseShardingOnly()) {
             return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getRouteContext().getSqlStatementType()).route();
         }
-        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<Table, String>() {
+        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<TableContext, String>() {
             
             @Override
-            public String apply(final Table input) {
+            public String apply(final TableContext input) {
                 return input.getName();
             }
         }));

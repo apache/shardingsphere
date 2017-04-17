@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * 表上下文.
@@ -29,11 +30,16 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class TableContext {
+@ToString
+public final class TableContext {
     
     private final String originalLiterals;
     
     private final String name;
     
     private final Optional<String> alias;
+    
+    public TableContext(final String name, final Optional<String> alias) {
+        this(name, name, alias);
+    }
 }

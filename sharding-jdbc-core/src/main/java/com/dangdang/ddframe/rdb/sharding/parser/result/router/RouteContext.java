@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -36,7 +37,7 @@ import java.util.LinkedHashSet;
 @RequiredArgsConstructor
 public final class RouteContext {
     
-    private final Collection<Table> tables = new LinkedHashSet<>();
+    private final Collection<TableContext> tables = new LinkedHashSet<>();
     
     private SQLStatementType sqlStatementType;
     

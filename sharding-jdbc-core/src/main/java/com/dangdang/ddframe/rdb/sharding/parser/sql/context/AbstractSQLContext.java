@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
@@ -66,28 +65,28 @@ public abstract class AbstractSQLContext implements SQLContext {
     }
     
     private Condition.Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<Table> table = findTable((expr.getOwner()).getName());
+        Optional<TableContext> table = findTable((expr.getOwner()).getName());
         return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
-    private Optional<Table> findTable(final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
+    private Optional<TableContext> findTable(final String tableNameOrAlias) {
+        Optional<TableContext> tableFromName = findTableFromName(tableNameOrAlias);
         return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
     }
     
-    private Optional<Table> findTableFromName(final String name) {
+    private Optional<TableContext> findTableFromName(final String name) {
         for (TableContext each : tables) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
-                return Optional.of(new Table(each.getName(), each.getAlias()));
+                return Optional.of(each);
             }
         }
         return Optional.absent();
     }
     
-    private Optional<Table> findTableFromAlias(final String alias) {
+    private Optional<TableContext> findTableFromAlias(final String alias) {
         for (TableContext each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
-                return Optional.of(new Table(each.getName(), each.getAlias()));
+                return Optional.of(each);
             }
         }
         return Optional.absent();

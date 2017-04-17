@@ -17,6 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
@@ -26,13 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +77,7 @@ public final class SQLParseEngine {
             sqlParsedResult.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
         for (TableContext each : sqlContext.getTables()) {
-            sqlParsedResult.getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+            sqlParsedResult.getRouteContext().getTables().add(each);
         }
         sqlParsedResult.getRouteContext().setSqlStatementType(sqlContext.getType());
         return result;

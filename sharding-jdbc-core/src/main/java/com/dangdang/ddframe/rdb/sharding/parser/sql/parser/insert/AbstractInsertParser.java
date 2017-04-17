@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
@@ -195,7 +194,7 @@ public abstract class AbstractInsertParser {
     protected final ParseContext getParseContext() {
         ParseContext result = new ParseContext();
         for (TableContext each : sqlContext.getTables()) {
-            result.getParsedResult().getRouteContext().getTables().add(new Table(each.getName(), each.getAlias()));
+            result.getParsedResult().getRouteContext().getTables().add(each);
         }
         return result;
     }

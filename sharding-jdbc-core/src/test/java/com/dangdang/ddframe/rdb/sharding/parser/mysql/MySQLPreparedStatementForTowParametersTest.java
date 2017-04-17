@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +35,9 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class MySQLPreparedStatementForTowParametersTest extends AbstractBaseParseTest {
     
-    public MySQLPreparedStatementForTowParametersTest(final String testCaseName, final String sql, final String expectedSQL, 
-            final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
+    public MySQLPreparedStatementForTowParametersTest(
+            final String testCaseName, final String sql, final String expectedSQL, 
+            final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedMergeContext);
     }
     

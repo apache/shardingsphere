@@ -32,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Table;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -64,7 +64,7 @@ public abstract class AbstractBaseParseTest {
     
     private final String expectedSQL;
     
-    private final Iterator<Table> expectedTables;
+    private final Iterator<TableContext> expectedTables;
     
     private final Iterator<ConditionContext> expectedConditionContexts;
     
@@ -77,7 +77,7 @@ public abstract class AbstractBaseParseTest {
     private final Limit limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                 final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
+                                 final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final MergeContext expectedMergeContext) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
@@ -119,11 +119,11 @@ public abstract class AbstractBaseParseTest {
         result[0] = assertObj.getId();
         result[1] = assertObj.getSql();
         result[2] = assertObj.getExpectedSQL();
-        result[3] = Lists.transform(assertObj.getTables(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.Table, Table>() {
+        result[3] = Lists.transform(assertObj.getTables(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.Table, TableContext>() {
             
             @Override
-            public Table apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.Table input) {
-                return new Table(input.getName(), input.getAlias());
+            public TableContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.Table input) {
+                return new TableContext(input.getName(), Optional.of(input.getAlias()));
             }
         });
         if (null == assertObj.getConditionContexts()) {
@@ -212,7 +212,7 @@ public abstract class AbstractBaseParseTest {
     
     private void assertRouteContext(final SQLParsedResult actual) {
         assertThat(actual.getRouteContext().getSqlBuilder().toString(), is(expectedSQL));
-        for (Table each : actual.getRouteContext().getTables()) {
+        for (TableContext each : actual.getRouteContext().getTables()) {
             assertThat(each, new ReflectionEquals(expectedTables.next()));
         }
         assertFalse(expectedTables.hasNext());
