@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "事务支持"
 weight = 8
-prev = "/02-guide/master-slave"
-next = "/03-design"
+prev = "/02-guide/id-generator/"
+next = "/03-design/index/"
 
 +++
 
