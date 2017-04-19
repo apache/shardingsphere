@@ -3,8 +3,8 @@ icon = "<b>0. </b>"
 date = "2017-04-12T16:06:17+08:00"
 title = "概览"
 weight = 0
-prev = "/03-design/roadmap"
-next = "/00-overview/intro"
+prev = "/03-design/roadmap/"
+next = "/00-overview/intro/"
 chapter = true
 
 +++
@@ -23,7 +23,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.dangdang/sharding-jdbc)
 [![Build Status](https://secure.travis-ci.org/dangdangdotcom/sharding-jdbc.svg?branch=master)](https://travis-ci.org/dangdangdotcom/sharding-jdbc)
 [![Coverage Status](https://coveralls.io/repos/dangdangdotcom/sharding-jdbc/badge.svg?branch=master&service=github)](https://coveralls.io/github/dangdangdotcom/sharding-jdbc?branch=master)
-[![Hex.pm](http://dangdangdotcom.github.io/elastic-job/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Hex.pm](http://dangdangdotcom.github.io/sharding-jdbc/img/license.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # 功能列表
 

@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "Release Notes"
 weight = 2
-prev = "/00-overview/intro"
-next = "/00-overview/contribution"
+prev = "/00-overview/intro/"
+next = "/00-overview/contribution/"
 
 +++
 

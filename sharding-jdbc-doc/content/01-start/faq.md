@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "FAQ"
 weight = 2
-prev = "/01-start/quick-start"
-next = "/01-start/features"
+prev = "/01-start/quick-start/"
+next = "/01-start/features/"
 
 +++
 
