@@ -17,13 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.google.common.base.Optional;
 
 import java.util.List;
@@ -46,21 +43,5 @@ public final class OracleParser extends SQLParser {
             return Optional.absent();
         }
         return super.parseAlias();
-    }
-    
-    @Override
-    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
-        Optional<OrderByContext> result = super.parseSelectOrderByItem(sqlContext);
-        skipAfterOrderByItem();
-        return result;
-    }
-    
-    private void skipAfterOrderByItem() {
-        if (skipIfEqual(OracleKeyword.NULLS)) {
-            getLexer().nextToken();
-            if (!skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
-                throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
-            }
-        }
     }
 }

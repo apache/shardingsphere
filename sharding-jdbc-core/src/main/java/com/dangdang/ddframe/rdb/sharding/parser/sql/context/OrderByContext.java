@@ -37,18 +37,22 @@ public final class OrderByContext {
     
     private final OrderByColumn.OrderByType orderByType;
     
-    public OrderByContext(final String name, final OrderByColumn.OrderByType orderByType) {
+    private final Optional<String> alias;
+    
+    public OrderByContext(final String name, final OrderByColumn.OrderByType orderByType, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
         index = Optional.absent();
         this.orderByType = orderByType;
+        this.alias = alias;
     }
     
-    public OrderByContext(final String owner, final String name, final OrderByColumn.OrderByType orderByType) {
+    public OrderByContext(final String owner, final String name, final OrderByColumn.OrderByType orderByType, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
         index = Optional.absent();
         this.orderByType = orderByType;
+        this.alias = alias;
     }
     
     public OrderByContext(final int index, final OrderByColumn.OrderByType orderByType) {
@@ -56,5 +60,6 @@ public final class OrderByContext {
         name = Optional.absent();
         this.index = Optional.of(index);
         this.orderByType = orderByType;
+        alias = Optional.absent();
     }
 }

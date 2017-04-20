@@ -20,12 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
@@ -47,8 +42,6 @@ public final class ParseContext {
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
     private final Collection<SelectItemContext> selectItems = new HashSet<>();
-    
-    private boolean hasAllColumn;
     
     private int derivedColumnOffset;
     
@@ -88,77 +81,5 @@ public final class ParseContext {
             expression = expression.replaceFirst(avgColumn.getOption().get() + " ", "");
         }
         return new AggregationColumn(expression, AggregationType.SUM, Optional.of(generateDerivedColumnAlias()), Optional.<String>absent());
-    }
-    
-    /**
-     * 将排序列加入解析上下文.
-     * 
-     * @param index 列顺序索引
-     * @param orderByType 排序类型
-     */
-    public void addOrderByColumn(final int index, final OrderByType orderByType) {
-        parsedResult.getMergeContext().getOrderByColumns().add(new OrderByColumn(index, orderByType));
-    }
-    
-    /**
-     * 将排序列加入解析上下文.
-     * 
-     * @param owner 列拥有者
-     * @param name 列名称
-     * @param orderByType 排序类型
-     * 
-     * @return 排序列
-     */
-    public OrderByColumn addOrderByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
-        String rawName = owner.isPresent() ? SQLUtil.getExactlyValue(owner.get()) + "." + SQLUtil.getExactlyValue(name) : SQLUtil.getExactlyValue(name);
-        OrderByColumn result = new OrderByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
-        parsedResult.getMergeContext().getOrderByColumns().add(result);
-        return result;
-    }
-    
-    private Optional<String> getAlias(final String name) {
-        if (hasAllColumn) {
-            return Optional.absent();
-        }
-        String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItemContext each : selectItems) {
-            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
-                return each.getAlias();
-            }
-            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
-                return Optional.of(rawName);
-            }
-        }
-        return Optional.of(generateDerivedColumnAlias());
-    }
-    
-    /**
-     * 将分组列加入解析上下文.
-     * 
-     * @param owner 列拥有者
-     * @param name 列名称
-     * @param orderByType 排序类型
-     * 
-     * @return 分组列
-     */
-    public GroupByColumn addGroupByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
-        String rawName = owner.isPresent() ? SQLUtil.getExactlyValue(owner.get()) + "." + SQLUtil.getExactlyValue(name) : SQLUtil.getExactlyValue(name);
-        GroupByColumn result = new GroupByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
-        parsedResult.getMergeContext().getGroupByColumns().add(result);
-        return result;
-    }
-    
-    /**
-     * 注册SELECT语句中声明的列名称或别名.
-     *
-     * @param selectItem SELECT语句中声明的列名称或别名
-     */
-    public void registerSelectItem(final String selectItem) {
-        String rawItemExpr = SQLUtil.getExactlyValue(selectItem);
-        if ("*".equals(rawItemExpr)) {
-            hasAllColumn = true;
-            return;
-        }
-        selectItems.add(new CommonSelectItemContext(rawItemExpr, null, 0, false));
     }
 }

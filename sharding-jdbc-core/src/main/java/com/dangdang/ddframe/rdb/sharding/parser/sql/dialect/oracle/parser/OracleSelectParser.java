@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
@@ -24,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -39,7 +42,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             skipForUpdate();
         }
         if (getSqlContext().getOrderByContexts().isEmpty()) {
-            getSqlContext().getOrderByContexts().addAll(getExprParser().parseOrderBy(getSqlContext()));
+            getSqlContext().getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         }
     }
     
@@ -297,6 +300,22 @@ public class OracleSelectParser extends AbstractSelectParser {
             getExprParser().getLexer().nextToken();
         } else if (getExprParser().skipIfEqual(OracleKeyword.SKIP)) {
             getExprParser().accept(OracleKeyword.LOCKED);
+        }
+    }
+    
+    @Override
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+        Optional<OrderByContext> result = super.parseSelectOrderByItem(sqlContext);
+        skipAfterOrderByItem();
+        return result;
+    }
+    
+    private void skipAfterOrderByItem() {
+        if (getExprParser().skipIfEqual(OracleKeyword.NULLS)) {
+            getExprParser().getLexer().nextToken();
+            if (!getExprParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
+                throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            }
         }
     }
 }

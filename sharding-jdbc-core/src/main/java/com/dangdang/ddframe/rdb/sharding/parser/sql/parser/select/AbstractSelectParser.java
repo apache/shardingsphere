@@ -21,12 +21,15 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
@@ -38,10 +41,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser {
+    
+    private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
     
     private SQLParser exprParser;
     
@@ -49,6 +56,8 @@ public abstract class AbstractSelectParser {
     
     @Setter
     private int parametersIndex;
+    
+    private int derivedColumnOffset;
     
     public AbstractSelectParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
@@ -62,7 +71,7 @@ public abstract class AbstractSelectParser {
      */
     public final SelectSQLContext parse() {
         query();
-        sqlContext.getOrderByContexts().addAll(exprParser.parseOrderBy(getSqlContext()));
+        sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         customizedSelect();
         return sqlContext;
     }
@@ -127,6 +136,51 @@ public abstract class AbstractSelectParser {
         parametersIndex = exprParser.getParametersIndex();
     }
     
+    /**
+     * 解析排序.
+     *
+     * @param sqlContext SQL上下文
+     * @return 排序上下文
+     */
+    public final List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
+        if (!exprParser.skipIfEqual(DefaultKeyword.ORDER)) {
+            return Collections.emptyList();
+        }
+        List<OrderByContext> result = new LinkedList<>();
+        exprParser.skipIfEqual(DefaultKeyword.SIBLINGS);
+        exprParser.accept(DefaultKeyword.BY);
+        do {
+            Optional<OrderByContext> orderByContext = parseSelectOrderByItem(sqlContext);
+            if (orderByContext.isPresent()) {
+                result.add(orderByContext.get());
+            }
+        }
+        while (exprParser.skipIfEqual(Symbol.COMMA));
+        return result;
+    }
+    
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+        SQLExpr expr = exprParser.parseExpression(sqlContext);
+        OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
+        if (exprParser.skipIfEqual(DefaultKeyword.ASC)) {
+            orderByType = OrderByColumn.OrderByType.ASC;
+        } else if (exprParser.skipIfEqual(DefaultKeyword.DESC)) {
+            orderByType = OrderByColumn.OrderByType.DESC;
+        }
+        if (expr instanceof SQLNumberExpr) {
+            return Optional.of(new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType));
+        }
+        if (expr instanceof SQLIdentifierExpr) {
+            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()))));
+        }
+        if (expr instanceof SQLPropertyExpr) {
+            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
+            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpr.getName()))));
+        }
+        return Optional.absent();
+    }
+    
     protected void parseGroupBy() {
         if (getExprParser().skipIfEqual(DefaultKeyword.GROUP)) {
             getExprParser().accept(DefaultKeyword.BY);
@@ -157,11 +211,32 @@ public abstract class AbstractSelectParser {
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType));
+            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
+                    getAlias(SQLUtil.getExactlyValue(expr.getOwner() + "." + SQLUtil.getExactlyValue(expr.getName())))));
         } else if (sqlExpr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
-            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType));
+            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName()))));
         }
+    }
+    
+    private Optional<String> getAlias(final String name) {
+        if (sqlContext.isContainStar()) {
+            return Optional.absent();
+        }
+        String rawName = SQLUtil.getExactlyValue(name);
+        for (SelectItemContext each : sqlContext.getItemContexts()) {
+            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+                return each.getAlias();
+            }
+            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
+                return Optional.of(rawName);
+            }
+        }
+        return Optional.of(generateDerivedColumnAlias());
+    }
+    
+    private String generateDerivedColumnAlias() {
+        return String.format(SHARDING_GEN_ALIAS, ++derivedColumnOffset);
     }
     
     public final void parseFrom() {

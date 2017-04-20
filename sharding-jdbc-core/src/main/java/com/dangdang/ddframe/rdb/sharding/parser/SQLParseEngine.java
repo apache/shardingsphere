@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,9 +93,6 @@ public final class SQLParseEngine {
         for (SelectItemContext each : sqlContext.getItemContexts()) {
             parseContext.getSelectItems().add(each);
         }
-        if (sqlContext.isContainStar()) {
-            parseContext.registerSelectItem("*");
-        }
         ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
         
         
@@ -117,7 +115,8 @@ public final class SQLParseEngine {
         
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
-                GroupByColumn groupByColumn = parseContext.addGroupByColumn(each.getOwner(), each.getName(), each.getOrderByType());
+                GroupByColumn groupByColumn = new GroupByColumn(each.getOwner(), each.getName(), each.getAlias(), each.getOrderByType());
+                parseContext.getParsedResult().getMergeContext().getGroupByColumns().add(groupByColumn);
                 boolean found = false;
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 for (SelectItemContext context : sqlContext.getItemContexts()) {
@@ -137,9 +136,10 @@ public final class SQLParseEngine {
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
-                    parseContext.addOrderByColumn(each.getIndex().get(), each.getOrderByType());
+                    parseContext.getParsedResult().getMergeContext().getOrderByColumns().add(new OrderByColumn(each.getIndex().get(), each.getOrderByType()));
                 } else {
-                    OrderByColumn orderByColumn = parseContext.addOrderByColumn(each.getOwner(), each.getName().get(), each.getOrderByType());
+                    OrderByColumn orderByColumn = new OrderByColumn(each.getOwner(), SQLUtil.getExactlyValue(each.getName().get()), each.getAlias(), each.getOrderByType());
+                    parseContext.getParsedResult().getMergeContext().getOrderByColumns().add(orderByColumn);
                     boolean found = false;
                     String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                     for (SelectItemContext context : sqlContext.getItemContexts()) {

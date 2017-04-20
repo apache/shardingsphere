@@ -36,4 +36,6 @@ public final class GroupByContext {
     private final String name;
     
     private final OrderByColumn.OrderByType orderByType;
+    
+    private final Optional<String> alias;
 }

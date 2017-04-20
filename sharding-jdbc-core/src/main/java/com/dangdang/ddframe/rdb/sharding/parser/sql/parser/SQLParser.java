@@ -19,12 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
@@ -48,7 +46,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -186,50 +183,6 @@ public class SQLParser extends Parser {
             String result = SQLUtil.getExactlyValue(getLexer().getCurrentToken().getLiterals());
             getLexer().nextToken();
             return Optional.of(result);
-        }
-        return Optional.absent();
-    }
-    
-    /**
-     * 解析排序.
-     *
-     * @param sqlContext SQL上下文
-     * @return 排序上下文
-     */
-    public final List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
-        if (!skipIfEqual(DefaultKeyword.ORDER)) {
-            return Collections.emptyList();
-        }
-        List<OrderByContext> result = new LinkedList<>();
-        skipIfEqual(DefaultKeyword.SIBLINGS);
-        accept(DefaultKeyword.BY);
-        do {
-            Optional<OrderByContext> orderByContext = parseSelectOrderByItem(sqlContext);
-            if (orderByContext.isPresent()) {
-                result.add(orderByContext.get());
-            }
-        }
-        while (skipIfEqual(Symbol.COMMA));
-        return result;
-    }
-    
-    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
-        SQLExpr expr = parseExpression(sqlContext);
-        OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
-        if (skipIfEqual(DefaultKeyword.ASC)) {
-            orderByType = OrderByColumn.OrderByType.ASC;
-        } else if (skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderByColumn.OrderByType.DESC;
-        }
-        if (expr instanceof SQLNumberExpr) {
-            return Optional.of(new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType));
-        }
-        if (expr instanceof SQLIdentifierExpr) {
-            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType));
-        }
-        if (expr instanceof SQLPropertyExpr) {
-            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType));
         }
         return Optional.absent();
     }
