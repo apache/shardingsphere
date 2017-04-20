@@ -72,7 +72,7 @@ public final class OrderByColumn extends AbstractSortableColumn implements Index
     /**
      * 排序类型.
      * 
-     * @author gaohongtao, zhangliang
+     * @author gaohongtao
      */
     public enum OrderByType {
         ASC, DESC

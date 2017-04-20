@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.google.common.base.Optional;
 import lombok.ToString;
@@ -56,22 +55,6 @@ public final class ConditionContext {
      */
     public Optional<Condition> find(final String table, final String column) {
         return Optional.fromNullable(conditions.get(new Column(column, table)));
-    }
-    
-    /**
-     * 查找条件对象.
-     * 
-     * @param table 表名称
-     * @param column 列名称
-     * @param operator 操作符
-     * @return 条件对象
-     */
-    public Optional<Condition> find(final String table, final String column, final BinaryOperator operator) {
-        Optional<Condition> result = find(table, column);
-        if (!result.isPresent()) {
-            return result;
-        }
-        return result.get().getOperator() == operator ? result : Optional.<Condition>absent();
     }
     
     public boolean isEmpty() {

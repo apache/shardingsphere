@@ -348,6 +348,7 @@ public class SQLParser extends Parser {
         ConditionContext conditionContext = new ConditionContext();
         do {
             Optional<Condition> conditionOptional = parseComparisonCondition(sqlContext);
+            // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
             if (conditionOptional.isPresent()) {
                 conditionContext.add(conditionOptional.get());
             }
