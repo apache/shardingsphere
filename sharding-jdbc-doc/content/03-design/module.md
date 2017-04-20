@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "目录结构说明"
 weight = 3
-prev = "/03-design/architecture"
-next = "/03-design/roadmap"
+prev = "/03-design/architecture/"
+next = "/03-design/roadmap/"
 
 +++
 

@@ -3,8 +3,8 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "详细功能列表"
 weight = 3
-prev = "/01-start/faq"
-next = "/01-start/limitations"
+prev = "/01-start/faq/"
+next = "/01-start/limitations/"
 
 +++
 

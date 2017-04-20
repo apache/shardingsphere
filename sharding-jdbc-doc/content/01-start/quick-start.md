@@ -115,4 +115,4 @@ try (
     </rdb:data-source>
 </beans>
 ```
->详细的规则配置请参考[配置指南](/02-guide/configuration)
+>详细的规则配置请参考[配置手册](/02-guide/configuration)
