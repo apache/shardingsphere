@@ -17,6 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -44,6 +48,35 @@ public final class Condition {
     private final List<Comparable<?>> values = new ArrayList<>();
     
     private final List<Integer> valueIndices = new ArrayList<>();
+    
+    public Condition(final Column column, final SQLExpr sqlExpr) {
+        this(column, Condition.BinaryOperator.EQUAL);
+        initSQLExpr(sqlExpr);
+    }
+    
+    public Condition(final Column column, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
+        this(column, BinaryOperator.BETWEEN);
+        initSQLExpr(beginSqlExpr);
+        initSQLExpr(endSqlExpr);
+    }
+    
+    public Condition(final Column column, final List<SQLExpr> sqlExprs) {
+        this(column, Condition.BinaryOperator.IN);
+        for (SQLExpr each : sqlExprs) {
+            initSQLExpr(each);
+        }
+    }
+    
+    private void initSQLExpr(final SQLExpr sqlExpr) {
+        if (sqlExpr instanceof SQLPlaceholderExpr) {
+            values.add((Comparable) ((SQLPlaceholderExpr) sqlExpr).getValue());
+            valueIndices.add(((SQLPlaceholderExpr) sqlExpr).getIndex());
+        } else if (sqlExpr instanceof AbstractSQLTextLiteralExpr) {
+            values.add(((AbstractSQLTextLiteralExpr) sqlExpr).getText());
+        } else if (sqlExpr instanceof SQLNumberExpr) {
+            values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
+        }
+    }
     
     /**
      * 列对象.

@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
@@ -30,13 +31,11 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert.AbstractInsertParser;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -57,8 +56,8 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     private void parseInsertSet() {
-        ParseContext parseContext = getParseContext();
         Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(getSqlContext().getTables().get(0).getName());
+        ConditionContext conditionContext = new ConditionContext();
         do {
             getExprParser().getLexer().nextToken();
             Condition.Column column = getColumn(autoIncrementColumns);
@@ -82,13 +81,13 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getExprParser().getLexer().nextToken();
             if (getExprParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 if (getShardingRule().isShardingColumn(column)) {
-                    parseContext.addCondition(column, Condition.BinaryOperator.EQUAL, Collections.singletonList(sqlExpr));
+                    conditionContext.add(new Condition(column, sqlExpr));
                 }
             } else {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getExprParser().equalAny(Symbol.COMMA));
-        getSqlContext().getConditionContexts().add(parseContext.getCurrentConditionContext());
+        getSqlContext().getConditionContexts().add(conditionContext);
     }
     
     @Override

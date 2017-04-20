@@ -21,10 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select.AbstractSelectParser;
 
 import java.util.List;
 
@@ -76,7 +75,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipStart() {
         if (getExprParser().skipIfEqual(OracleKeyword.START)) {
             getExprParser().accept(DefaultKeyword.WITH);
-            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext());
+            getExprParser().parseComparisonCondition(getSqlContext());
         }
     }
     
@@ -87,7 +86,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             if (getExprParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
                 getExprParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getExprParser().parseComparisonCondition(getSqlContext(), new ParseContext());
+            getExprParser().parseComparisonCondition(getSqlContext());
         }
     }
     

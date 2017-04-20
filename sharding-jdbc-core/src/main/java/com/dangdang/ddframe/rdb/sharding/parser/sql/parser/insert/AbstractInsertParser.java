@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
@@ -31,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
@@ -148,7 +147,6 @@ public abstract class AbstractInsertParser {
     }
     
     private void parseValues(final Collection<Condition.Column> columns) {
-        ParseContext parseContext = getParseContext();
         boolean parsed = false;
         do {
             if (parsed) {
@@ -157,6 +155,7 @@ public abstract class AbstractInsertParser {
             exprParser.getLexer().nextToken();
             exprParser.accept(Symbol.LEFT_PAREN);
             List<SQLExpr> sqlExprs = new LinkedList<>();
+            ConditionContext conditionContext = new ConditionContext();
             do {
                 sqlExprs.add(exprParser.parseExpression());
             } while (exprParser.skipIfEqual(Symbol.COMMA));
@@ -177,7 +176,7 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 }
                 if (getShardingRule().isShardingColumn(each)) {
-                    parseContext.addCondition(each, Condition.BinaryOperator.EQUAL, Collections.singletonList(sqlExprs.get(count)));
+                    conditionContext.add(new Condition(each, sqlExprs.get(count)));
                 }
                 count++;
             }
@@ -186,17 +185,9 @@ public abstract class AbstractInsertParser {
             }
             exprParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
+            sqlContext.getConditionContexts().add(conditionContext);
         }
         while (exprParser.equalAny(Symbol.COMMA));
-        sqlContext.getConditionContexts().add(parseContext.getCurrentConditionContext());
-    }
-    
-    protected final ParseContext getParseContext() {
-        ParseContext result = new ParseContext();
-        for (TableContext each : sqlContext.getTables()) {
-            result.getParsedResult().getRouteContext().getTables().add(each);
-        }
-        return result;
     }
     
     protected Set<TokenType> getCustomizedInsertKeywords() {

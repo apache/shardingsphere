@@ -23,16 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -54,43 +46,11 @@ public final class ParseContext {
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
     
-    private final ConditionContext currentConditionContext = new ConditionContext();
-    
     private final Collection<SelectItemContext> selectItems = new HashSet<>();
     
     private boolean hasAllColumn;
     
     private int derivedColumnOffset;
-    
-    /**
-     * 向解析上下文中添加条件对象.
-     * 
-     * @param column 列对象
-     * @param operator 操作符
-     * @param sqlExprs SQL表达式集合
-     */
-    public void addCondition(final Column column, final BinaryOperator operator, final List<SQLExpr> sqlExprs) {
-        Optional<Condition> conditionOptional = currentConditionContext.find(column.getTableName(), column.getColumnName(), operator);
-        Condition condition;
-        // TODO 待讨论
-        if (conditionOptional.isPresent()) {
-            condition = conditionOptional.get();
-        } else {
-            condition = new Condition(column, operator);
-            currentConditionContext.add(condition);
-        }
-        for (SQLExpr each : sqlExprs) {
-            if (each instanceof SQLPlaceholderExpr) {
-                condition.getValues().add((Comparable) ((SQLPlaceholderExpr) each).getValue());
-                condition.getValueIndices().add(((SQLPlaceholderExpr) each).getIndex());
-            } else if (each instanceof AbstractSQLTextLiteralExpr) {
-                condition.getValues().add(((AbstractSQLTextLiteralExpr) each).getText());
-            }
-            if (each instanceof SQLNumberExpr) {
-                condition.getValues().add((Comparable) ((SQLNumberExpr) each).getNumber());
-            }
-        }
-    }
     
     /**
      * 将求平均值函数的补列加入解析上下文.
