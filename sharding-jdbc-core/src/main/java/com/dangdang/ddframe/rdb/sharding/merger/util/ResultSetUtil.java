@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

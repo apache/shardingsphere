@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,7 @@ public final class GroupByContext implements IndexColumn {
     
     private final String name;
     
-    private final OrderByColumn.OrderByType orderByType;
+    private final OrderByType orderByType;
     
     private final Optional<String> alias;
     

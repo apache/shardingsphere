@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
@@ -161,11 +161,11 @@ public abstract class AbstractSelectParser {
     
     protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
         SQLExpr expr = exprParser.parseExpression(sqlContext);
-        OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
+        OrderByType orderByType = OrderByType.ASC;
         if (exprParser.skipIfEqual(DefaultKeyword.ASC)) {
-            orderByType = OrderByColumn.OrderByType.ASC;
+            orderByType = OrderByType.ASC;
         } else if (exprParser.skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderByColumn.OrderByType.DESC;
+            orderByType = OrderByType.DESC;
         }
         if (expr instanceof SQLNumberExpr) {
             return Optional.of(new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType));
@@ -203,11 +203,11 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void addGroupByItem(final SQLExpr sqlExpr) {
-        OrderByColumn.OrderByType orderByType = OrderByColumn.OrderByType.ASC;
+        OrderByType orderByType = OrderByType.ASC;
         if (getExprParser().equalAny(DefaultKeyword.ASC)) {
             getExprParser().getLexer().nextToken();
         } else if (getExprParser().skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderByColumn.OrderByType.DESC;
+            orderByType = OrderByType.DESC;
         }
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;

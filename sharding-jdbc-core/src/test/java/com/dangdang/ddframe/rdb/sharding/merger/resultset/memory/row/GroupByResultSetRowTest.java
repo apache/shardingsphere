@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -53,7 +53,7 @@ public final class GroupByResultSetRowTest {
     public void assertToString() throws Exception {
         ResultSet rs = MergerTestUtil.mockResult(Arrays.asList("user_id", "number"), Arrays.<ResultSetRow>asList(new TestResultSetRow(1, 10), new TestResultSetRow(1, 20)));
         assertTrue(rs.next());
-        GroupByContext groupByContext = new GroupByContext(Optional.<String>absent(), "user_id", OrderByColumn.OrderByType.ASC, Optional.<String>absent());
+        GroupByContext groupByContext = new GroupByContext(Optional.<String>absent(), "user_id", OrderByType.ASC, Optional.<String>absent());
         groupByContext.setColumnIndex(1);
         AggregationColumn aggregationColumn = new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent(), Optional.<String>absent());
         aggregationColumn.setColumnIndex(2);
@@ -66,7 +66,7 @@ public final class GroupByResultSetRowTest {
     }
     
     private GroupByContext createGroupByContext(final String columnName, final int columnIndex) {
-        GroupByContext result = new GroupByContext(Optional.<String>absent(), columnName, OrderByColumn.OrderByType.ASC, Optional.<String>absent());
+        GroupByContext result = new GroupByContext(Optional.<String>absent(), columnName, OrderByType.ASC, Optional.<String>absent());
         result.setColumnIndex(columnIndex);
         return result;
     }
