@@ -43,7 +43,7 @@ public final class GroupByResultSetRowTest {
         ResultSet resultSet = MergerTestUtil.mockResult(Arrays.asList("group_col_1", "group_col_2", "other_col"),
                 Collections.<ResultSetRow>singletonList(new TestResultSetRow("group_1", "group_2", "other")));
         List<Object> actual = new GroupByResultSetRow(resultSet, Arrays.asList(createGroupByContext("group_col_1", 1), createGroupByContext("group_col_2", 2)),
-                Collections.singletonList(new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent(), Optional.<String>absent()))).getGroupByValues();
+                Collections.singletonList(new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent()))).getGroupByValues();
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).toString(), is("group_1"));
         assertThat(actual.get(1).toString(), is("group_2"));
@@ -55,7 +55,7 @@ public final class GroupByResultSetRowTest {
         assertTrue(rs.next());
         GroupByContext groupByContext = new GroupByContext(Optional.<String>absent(), "user_id", OrderByType.ASC, Optional.<String>absent());
         groupByContext.setColumnIndex(1);
-        AggregationColumn aggregationColumn = new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent(), Optional.<String>absent());
+        AggregationColumn aggregationColumn = new AggregationColumn("SUM(0)", AggregationColumn.AggregationType.SUM, Optional.<String>absent());
         aggregationColumn.setColumnIndex(2);
         GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(groupByContext), Collections.singletonList(aggregationColumn));
         row.aggregate();

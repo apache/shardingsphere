@@ -44,8 +44,6 @@ public final class AggregationColumn implements IndexColumn {
     
     private final Optional<String> alias;
     
-    private final Optional<String> option;
-    
     private final List<AggregationColumn> derivedColumns = new ArrayList<>(2);
     
     @Setter

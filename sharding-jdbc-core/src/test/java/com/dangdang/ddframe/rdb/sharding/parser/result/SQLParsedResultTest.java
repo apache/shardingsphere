@@ -83,7 +83,7 @@ public final class SQLParsedResultTest {
     }
     
     private void generateMergeContext(final MergeContext mergeContext) {
-        mergeContext.getAggregationColumns().add(new AggregationColumn("COUNT(id)", AggregationType.COUNT, Optional.of("c"), Optional.<String>absent()));
+        mergeContext.getAggregationColumns().add(new AggregationColumn("COUNT(id)", AggregationType.COUNT, Optional.of("c")));
         mergeContext.getOrderByContexts().add(new OrderByContext("id", OrderByType.DESC, Optional.of("a")));
         mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "id", OrderByType.ASC, Optional.of("d")));
         mergeContext.setLimit(new Limit(0, 10, -1, -1));

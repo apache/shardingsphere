@@ -20,13 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.google.common.base.Optional;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -40,8 +37,6 @@ public final class ParseContext {
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
     
     private final SQLParsedResult parsedResult = new SQLParsedResult();
-    
-    private final Collection<SelectItemContext> selectItems = new HashSet<>();
     
     private int derivedColumnOffset;
     
@@ -68,7 +63,7 @@ public final class ParseContext {
     
     private AggregationColumn getDerivedCountColumn(final AggregationColumn avgColumn) {
         String expression = avgColumn.getExpression().replaceFirst("(?i)" + AggregationType.AVG.toString(), AggregationType.COUNT.toString());
-        return new AggregationColumn(expression, AggregationType.COUNT, Optional.of(generateDerivedColumnAlias()), avgColumn.getOption());
+        return new AggregationColumn(expression, AggregationType.COUNT, Optional.of(generateDerivedColumnAlias()));
     }
     
     private String generateDerivedColumnAlias() {
@@ -77,9 +72,6 @@ public final class ParseContext {
     
     private AggregationColumn getDerivedSumColumn(final AggregationColumn avgColumn) {
         String expression = avgColumn.getExpression().replaceFirst("(?i)" + AggregationType.AVG.toString(), AggregationType.SUM.toString());
-        if (avgColumn.getOption().isPresent()) {
-            expression = expression.replaceFirst(avgColumn.getOption().get() + " ", "");
-        }
-        return new AggregationColumn(expression, AggregationType.SUM, Optional.of(generateDerivedColumnAlias()), Optional.<String>absent());
+        return new AggregationColumn(expression, AggregationType.SUM, Optional.of(generateDerivedColumnAlias()));
     }
 }

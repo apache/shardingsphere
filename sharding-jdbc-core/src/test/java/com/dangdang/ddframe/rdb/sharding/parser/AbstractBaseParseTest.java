@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
@@ -39,7 +38,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -49,10 +47,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public abstract class AbstractBaseParseTest {
     
@@ -183,13 +177,13 @@ public abstract class AbstractBaseParseTest {
                         @Override
                         public AggregationColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn input) {
                             AggregationColumn result = new AggregationColumn(input.getExpression(), 
-                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()), Optional.fromNullable(input.getOption()));
+                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn each : input.getDerivedColumns()) {
                                 result.getDerivedColumns().add(new AggregationColumn(each.getExpression(), 
-                                        AggregationType.valueOf(each.getAggregationType().toUpperCase()), Optional.fromNullable(each.getAlias()), Optional.fromNullable(each.getOption())));
+                                        AggregationType.valueOf(each.getAggregationType().toUpperCase()), Optional.fromNullable(each.getAlias())));
                             }
                             return result;
                         }
@@ -201,46 +195,5 @@ public abstract class AbstractBaseParseTest {
         }
         result[5] = mergeContext;
         return result;
-    }
-    
-    protected final void assertSQLParsedResult(final SQLParsedResult actual) {
-        assertRouteContext(actual);
-        assertConditionContexts(actual);
-        assertMergeContext(actual);
-    }
-    
-    private void assertRouteContext(final SQLParsedResult actual) {
-        assertThat(actual.getRouteContext().getSqlBuilder().toString(), is(expectedSQL));
-        for (TableContext each : actual.getRouteContext().getTables()) {
-            assertThat(each, new ReflectionEquals(expectedTables.next()));
-        }
-        assertFalse(expectedTables.hasNext());
-    }
-    
-    private void assertConditionContexts(final SQLParsedResult actual) {
-        for (ConditionContext each : actual.getConditionContexts()) {
-            assertThat(each, is(new ReflectionEquals(expectedConditionContexts.next())));
-        }
-        assertFalse(expectedConditionContexts.hasNext());
-    }
-    
-    private void assertMergeContext(final SQLParsedResult actual) {
-        for (OrderByContext each : actual.getMergeContext().getOrderByContexts()) {
-            assertThat(each, new ReflectionEquals(orderByContexts.next()));
-        }
-        assertFalse(orderByContexts.hasNext());
-        for (GroupByContext each : actual.getMergeContext().getGroupByContexts()) {
-            assertThat(each, new ReflectionEquals(groupByContexts.next()));
-        }
-        assertFalse(groupByContexts.hasNext());
-        for (AggregationColumn each : actual.getMergeContext().getAggregationColumns()) {
-            AggregationColumn expected = aggregationColumns.next();
-            assertThat(each, new ReflectionEquals(expected, "derivedColumns"));
-            for (int i = 0; i < each.getDerivedColumns().size(); i++) {
-                assertThat(each.getDerivedColumns().get(i), new ReflectionEquals(expected.getDerivedColumns().get(i)));
-            }
-        }
-        assertFalse(aggregationColumns.hasNext());
-        assertThat(actual.getMergeContext().getLimit(), new ReflectionEquals(limit));
     }
 }

@@ -31,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -87,9 +86,6 @@ public final class SQLParseEngine {
     
     private void parseSelect(final ParseContext parseContext, final SelectSQLContext sqlContext) {
         SQLParsedResult sqlParsedResult = parseContext.getParsedResult();
-        for (SelectItemContext each : sqlContext.getItemContexts()) {
-            parseContext.getSelectItems().add(each);
-        }
         ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
         
         
@@ -98,7 +94,7 @@ public final class SQLParseEngine {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
                 // TODO index获取不准，考虑使用别名替换
                 AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(),
-                        aggregationSelectItemContext.getAlias(), Optional.<String>absent(), aggregationSelectItemContext.getIndex());
+                        aggregationSelectItemContext.getAlias(), aggregationSelectItemContext.getIndex());
                 sqlParsedResult.getMergeContext().getAggregationColumns().add(column);
                 if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     List<AggregationColumn> aggregationColumns = parseContext.addDerivedColumnsForAvgColumn(column);

@@ -81,12 +81,12 @@ public final class MergerTestUtil {
     }
     
     public static AggregationColumn createAggregationColumn(final AggregationColumn.AggregationType aggregationType, final String name, final String alias, final int index) {
-        AggregationColumn result = new AggregationColumn(name, aggregationType, Optional.fromNullable(alias), Optional.<String>absent(), index);
+        AggregationColumn result = new AggregationColumn(name, aggregationType, Optional.fromNullable(alias), index);
         if (AggregationColumn.AggregationType.AVG.equals(aggregationType)) {
             result.getDerivedColumns().add(
-                    new AggregationColumn(AggregationColumn.AggregationType.COUNT.name(), AggregationColumn.AggregationType.COUNT, Optional.of("sharding_gen_1"), Optional.<String>absent()));
+                    new AggregationColumn(AggregationColumn.AggregationType.COUNT.name(), AggregationColumn.AggregationType.COUNT, Optional.of("sharding_gen_1")));
             result.getDerivedColumns().add(
-                    new AggregationColumn(AggregationColumn.AggregationType.SUM.name(), AggregationColumn.AggregationType.SUM, Optional.of("sharding_gen_2"), Optional.<String>absent()));
+                    new AggregationColumn(AggregationColumn.AggregationType.SUM.name(), AggregationColumn.AggregationType.SUM, Optional.of("sharding_gen_2")));
         }
         return result;
     }
