@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
@@ -304,7 +304,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SelectSQLContext sqlContext) {
         Optional<OrderByContext> result = super.parseSelectOrderByItem(sqlContext);
         skipAfterOrderByItem();
         return result;

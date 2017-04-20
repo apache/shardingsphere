@@ -17,12 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
@@ -59,6 +60,8 @@ public abstract class AbstractSelectParser {
     
     private int derivedColumnOffset;
     
+    private ItemsToken itemsToken;
+    
     public AbstractSelectParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
         sqlContext = new SelectSQLContext(getExprParser().getLexer().getInput());
@@ -73,6 +76,9 @@ public abstract class AbstractSelectParser {
         query();
         sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         customizedSelect();
+        if (!itemsToken.getItems().isEmpty()) {
+            sqlContext.getSqlTokens().add(itemsToken);
+        }
         return sqlContext;
     }
     
@@ -117,6 +123,23 @@ public abstract class AbstractSelectParser {
             index++;
         } while (getExprParser().skipIfEqual(Symbol.COMMA));
         sqlContext.setSelectListLastPosition(getExprParser().getLexer().getCurrentToken().getEndPosition() - getExprParser().getLexer().getCurrentToken().getLiterals().length());
+        itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
+        for (SelectItemContext each : sqlContext.getItemContexts()) {
+            if (each instanceof AggregationSelectItemContext) {
+                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
+                if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
+                    AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
+                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationColumn.AggregationType.COUNT);
+                    AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
+                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationColumn.AggregationType.SUM);
+                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
+                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
+                    // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+                    itemsToken.getItems().add(countSelectItemContext.getExpression() + " AS " + countSelectItemContext.getAlias().get() + " ");
+                    itemsToken.getItems().add(sumSelectItemContext.getExpression() + " AS " + sumSelectItemContext.getAlias().get() + " ");
+                }
+            }
+        }
     }
     
     protected void queryRest() {
@@ -129,10 +152,7 @@ public abstract class AbstractSelectParser {
         if (sqlContext.getTables().isEmpty()) {
             return;
         }
-        Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
-        if (conditionContext.isPresent()) {
-            sqlContext.getConditionContexts().add(conditionContext.get());
-        }
+        exprParser.parseWhere(sqlContext);
         parametersIndex = exprParser.getParametersIndex();
     }
     
@@ -142,7 +162,7 @@ public abstract class AbstractSelectParser {
      * @param sqlContext SQL上下文
      * @return 排序上下文
      */
-    public final List<OrderByContext> parseOrderBy(final SQLContext sqlContext) {
+    public final List<OrderByContext> parseOrderBy(final SelectSQLContext sqlContext) {
         if (!exprParser.skipIfEqual(DefaultKeyword.ORDER)) {
             return Collections.emptyList();
         }
@@ -159,7 +179,7 @@ public abstract class AbstractSelectParser {
         return result;
     }
     
-    protected Optional<OrderByContext> parseSelectOrderByItem(final SQLContext sqlContext) {
+    protected Optional<OrderByContext> parseSelectOrderByItem(final SelectSQLContext sqlContext) {
         SQLExpr expr = exprParser.parseExpression(sqlContext);
         OrderByType orderByType = OrderByType.ASC;
         if (exprParser.skipIfEqual(DefaultKeyword.ASC)) {
@@ -167,18 +187,33 @@ public abstract class AbstractSelectParser {
         } else if (exprParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderByType.DESC;
         }
+        OrderByContext result;
         if (expr instanceof SQLNumberExpr) {
-            return Optional.of(new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType));
-        }
-        if (expr instanceof SQLIdentifierExpr) {
-            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()))));
-        }
-        if (expr instanceof SQLPropertyExpr) {
+            result = new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
+        } else if (expr instanceof SQLIdentifierExpr) {
+            result = new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName())));
+        } else if (expr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            return Optional.of(new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
-                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpr.getName()))));
+            result = new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpr.getName())));
+        } else {
+            return Optional.absent();
         }
-        return Optional.absent();
+        if (!result.getIndex().isPresent()) {
+            boolean found = false;
+            String orderByExpression = result.getOwner().isPresent() ? result.getOwner().get() + "." + result.getName().get() : result.getName().get();
+            for (SelectItemContext context : sqlContext.getItemContexts()) {
+                if (context.getExpression().equalsIgnoreCase(orderByExpression) || orderByExpression.equalsIgnoreCase(context.getAlias().orNull())) {
+                    found = true;
+                    break;
+                }
+            }
+            // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
+            if (!found && result.getAlias().isPresent()) {
+                itemsToken.getItems().add(orderByExpression + " AS " + result.getAlias().get() + " ");
+            }
+        }
+        return Optional.of(result);
     }
     
     protected void parseGroupBy() {
@@ -209,13 +244,31 @@ public abstract class AbstractSelectParser {
         } else if (getExprParser().skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderByType.DESC;
         }
+        GroupByContext groupByContext;
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
-                    getAlias(SQLUtil.getExactlyValue(expr.getOwner() + "." + SQLUtil.getExactlyValue(expr.getName())))));
+            groupByContext = new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
+                    getAlias(SQLUtil.getExactlyValue(expr.getOwner() + "." + SQLUtil.getExactlyValue(expr.getName()))));
         } else if (sqlExpr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
-            sqlContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName()))));
+            groupByContext = new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName())));
+        } else {
+            return;
+        }
+        sqlContext.getGroupByContexts().add(groupByContext);
+    
+        boolean found = false;
+        String groupByExpression = groupByContext.getOwner().isPresent() ? groupByContext.getOwner().get() + "." + groupByContext.getName() : groupByContext.getName();
+        for (SelectItemContext context : sqlContext.getItemContexts()) {
+            if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
+                    || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {
+                found = true;
+                break;
+            }
+        }
+        // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
+        if (!found && groupByContext.getAlias().isPresent()) {
+            itemsToken.getItems().add(groupByExpression + " AS " + groupByContext.getAlias().get() + " ");
         }
     }
     

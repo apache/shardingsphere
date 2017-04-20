@@ -22,6 +22,9 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 聚合Select Item上下文.
  *
@@ -38,6 +41,8 @@ public final class AggregationSelectItemContext implements SelectItemContext {
     private final int index;
     
     private final AggregationColumn.AggregationType aggregationType;
+    
+    private final List<AggregationSelectItemContext> derivedAggregationSelectItemContexts = new ArrayList<>(2);
     
     @Override
     public String getExpression() {

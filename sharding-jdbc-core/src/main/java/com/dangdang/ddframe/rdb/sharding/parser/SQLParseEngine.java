@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
@@ -33,8 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * 不包含OR语句的SQL构建器解析.
@@ -86,7 +83,6 @@ public final class SQLParseEngine {
     
     private void parseSelect(final ParseContext parseContext, final SelectSQLContext sqlContext) {
         SQLParsedResult sqlParsedResult = parseContext.getParsedResult();
-        ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
         
         
         for (SelectItemContext each : sqlContext.getItemContexts()) {
@@ -97,11 +93,16 @@ public final class SQLParseEngine {
                         aggregationSelectItemContext.getAlias(), aggregationSelectItemContext.getIndex());
                 sqlParsedResult.getMergeContext().getAggregationColumns().add(column);
                 if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
-                    List<AggregationColumn> aggregationColumns = parseContext.addDerivedColumnsForAvgColumn(column);
-                    // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
-                    for (AggregationColumn aggregationColumn : aggregationColumns) {
-                        itemsToken.getItems().add(aggregationColumn.getExpression() + " AS " + aggregationColumn.getAlias().get() + " ");
-                    }
+                    AggregationSelectItemContext aggregationSelectItemContext1 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(0);
+                    AggregationColumn column1 = new AggregationColumn(aggregationSelectItemContext1.getExpression(), aggregationSelectItemContext1.getAggregationType(),
+                            aggregationSelectItemContext1.getAlias(), aggregationSelectItemContext1.getIndex());
+                    column.getDerivedColumns().add(column1);
+                    AggregationSelectItemContext aggregationSelectItemContext2 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(1);
+                    AggregationColumn column2 = new AggregationColumn(aggregationSelectItemContext2.getExpression(), aggregationSelectItemContext2.getAggregationType(),
+                            aggregationSelectItemContext2.getAlias(), aggregationSelectItemContext2.getIndex());
+                    column.getDerivedColumns().add(column2);
+                    sqlParsedResult.getMergeContext().getAggregationColumns().add(column1);
+                    sqlParsedResult.getMergeContext().getAggregationColumns().add(column2);
                 }
             }
         }
@@ -109,19 +110,6 @@ public final class SQLParseEngine {
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
                 parseContext.getParsedResult().getMergeContext().getGroupByContexts().add(each);
-                boolean found = false;
-                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
-                for (SelectItemContext context : sqlContext.getItemContexts()) {
-                    if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
-                            || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {
-                        found = true;
-                        break;
-                    }
-                }
-                // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-                if (!found && each.getAlias().isPresent()) {
-                    itemsToken.getItems().add(groupByExpression + " AS " + each.getAlias().get() + " ");
-                }
             }
         }
         
@@ -131,26 +119,9 @@ public final class SQLParseEngine {
                     parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
                 } else {
                     parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(each);
-                    boolean found = false;
-                    String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
-                    for (SelectItemContext context : sqlContext.getItemContexts()) {
-                        if (context.getExpression().equalsIgnoreCase(orderByExpression) || orderByExpression.equalsIgnoreCase(context.getAlias().orNull())) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-                    if (!found && each.getAlias().isPresent()) {
-                        itemsToken.getItems().add(orderByExpression + " AS " + each.getAlias().get() + " ");
-                    }
                 }
             }
         }
-        
-        if (!itemsToken.getItems().isEmpty()) {
-            sqlContext.getSqlTokens().add(itemsToken);
-        }
-        
         
         if (null != sqlContext.getLimitContext()) {
             parseContext.getParsedResult().getMergeContext().setLimit(

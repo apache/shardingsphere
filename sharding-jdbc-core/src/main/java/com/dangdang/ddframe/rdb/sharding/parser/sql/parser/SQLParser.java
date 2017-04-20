@@ -289,12 +289,10 @@ public class SQLParser extends Parser {
      * @param sqlContext SQL上下文
      * @return 条件上下文
      */
-    public final Optional<ConditionContext> parseWhere(final SQLContext sqlContext) {
+    public final void parseWhere(final SQLContext sqlContext) {
         if (skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(sqlContext);
-            return Optional.of(sqlContext.getConditionContexts().iterator().next());
         }
-        return Optional.absent();
     }
     
     private void parseConditions(final SQLContext sqlContext) {

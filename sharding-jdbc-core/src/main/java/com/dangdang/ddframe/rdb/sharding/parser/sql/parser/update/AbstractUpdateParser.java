@@ -21,10 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -59,10 +57,7 @@ public abstract class AbstractUpdateParser {
         parseSetItems();
         exprParser.skipUntil(DefaultKeyword.WHERE);
         exprParser.setParametersIndex(parametersIndex);
-        Optional<ConditionContext> conditionContext = exprParser.parseWhere(sqlContext);
-        if (conditionContext.isPresent()) {
-            sqlContext.getConditionContexts().add(conditionContext.get());
-        }
+        exprParser.parseWhere(sqlContext);
         return sqlContext;
     }
     
