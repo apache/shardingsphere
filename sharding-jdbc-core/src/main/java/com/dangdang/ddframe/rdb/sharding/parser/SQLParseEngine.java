@@ -117,7 +117,7 @@ public final class SQLParseEngine {
         
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
-                GroupByColumn groupByColumn = parseContext.addGroupByColumns(each.getOwner(), each.getName(), each.getOrderByType());
+                GroupByColumn groupByColumn = parseContext.addGroupByColumn(each.getOwner(), each.getName(), each.getOrderByType());
                 boolean found = false;
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 for (SelectItemContext context : sqlContext.getItemContexts()) {

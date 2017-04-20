@@ -141,8 +141,7 @@ public final class ParseContext {
      * 
      * @return 分组列
      */
-    // TODO rename addGroupByColumns => addGroupByColumn
-    public GroupByColumn addGroupByColumns(final Optional<String> owner, final String name, final OrderByType orderByType) {
+    public GroupByColumn addGroupByColumn(final Optional<String> owner, final String name, final OrderByType orderByType) {
         String rawName = owner.isPresent() ? SQLUtil.getExactlyValue(owner.get()) + "." + SQLUtil.getExactlyValue(name) : SQLUtil.getExactlyValue(name);
         GroupByColumn result = new GroupByColumn(owner, SQLUtil.getExactlyValue(name), getAlias(rawName), orderByType);
         parsedResult.getMergeContext().getGroupByColumns().add(result);
