@@ -17,10 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 分组上下文.
@@ -29,7 +32,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class GroupByContext {
+@ToString
+public final class GroupByContext implements IndexColumn {
     
     private final Optional<String> owner;
     
@@ -38,4 +42,17 @@ public final class GroupByContext {
     private final OrderByColumn.OrderByType orderByType;
     
     private final Optional<String> alias;
+    
+    @Setter
+    private int columnIndex;
+    
+    @Override
+    public Optional<String> getColumnLabel() {
+        return alias;
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return Optional.of(name);
+    }
 }

@@ -19,9 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
@@ -33,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,8 +112,7 @@ public final class SQLParseEngine {
         
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
-                GroupByColumn groupByColumn = new GroupByColumn(each.getOwner(), each.getName(), each.getAlias(), each.getOrderByType());
-                parseContext.getParsedResult().getMergeContext().getGroupByColumns().add(groupByColumn);
+                parseContext.getParsedResult().getMergeContext().getGroupByContexts().add(each);
                 boolean found = false;
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 for (SelectItemContext context : sqlContext.getItemContexts()) {
@@ -127,8 +123,8 @@ public final class SQLParseEngine {
                     }
                 }
                 // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-                if (!found && groupByColumn.getAlias().isPresent()) {
-                    itemsToken.getItems().add(groupByExpression + " AS " + groupByColumn.getAlias().get() + " ");
+                if (!found && each.getAlias().isPresent()) {
+                    itemsToken.getItems().add(groupByExpression + " AS " + each.getAlias().get() + " ");
                 }
             }
         }
@@ -136,10 +132,9 @@ public final class SQLParseEngine {
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
-                    parseContext.getParsedResult().getMergeContext().getOrderByColumns().add(new OrderByColumn(each.getIndex().get(), each.getOrderByType()));
+                    parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
                 } else {
-                    OrderByColumn orderByColumn = new OrderByColumn(each.getOwner(), SQLUtil.getExactlyValue(each.getName().get()), each.getAlias(), each.getOrderByType());
-                    parseContext.getParsedResult().getMergeContext().getOrderByColumns().add(orderByColumn);
+                    parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(each);
                     boolean found = false;
                     String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                     for (SelectItemContext context : sqlContext.getItemContexts()) {
@@ -149,8 +144,8 @@ public final class SQLParseEngine {
                         }
                     }
                     // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-                    if (!found && orderByColumn.getAlias().isPresent()) {
-                        itemsToken.getItems().add(orderByExpression + " AS " + orderByColumn.getAlias().get() + " ");
+                    if (!found && each.getAlias().isPresent()) {
+                        itemsToken.getItems().add(orderByExpression + " AS " + each.getAlias().get() + " ");
                     }
                 }
             }

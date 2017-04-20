@@ -17,9 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 排序上下文.
@@ -27,7 +30,9 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
-public final class OrderByContext {
+@EqualsAndHashCode
+@ToString
+public final class OrderByContext implements IndexColumn {
     
     private final Optional<String> owner;
     
@@ -38,6 +43,8 @@ public final class OrderByContext {
     private final OrderByColumn.OrderByType orderByType;
     
     private final Optional<String> alias;
+    
+    private int columnIndex;
     
     public OrderByContext(final String name, final OrderByColumn.OrderByType orderByType, final Optional<String> alias) {
         this.owner = Optional.absent();
@@ -61,5 +68,24 @@ public final class OrderByContext {
         this.index = Optional.of(index);
         this.orderByType = orderByType;
         alias = Optional.absent();
+        columnIndex = index;
+    }
+    
+    @Override
+    public Optional<String> getColumnLabel() {
+        return alias;
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return name;
+    }
+    
+    @Override
+    public void setColumnIndex(final int index) {
+        if (this.index.isPresent()) {
+            return;
+        }
+        columnIndex = index;
     }
 }

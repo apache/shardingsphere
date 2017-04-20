@@ -23,15 +23,15 @@ import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -68,9 +68,9 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<ConditionContext> expectedConditionContexts;
     
-    private final Iterator<OrderByColumn> orderByColumns;
+    private final Iterator<OrderByContext> orderByContexts;
     
-    private final Iterator<GroupByColumn> groupByColumns;
+    private final Iterator<GroupByContext> groupByContexts;
     
     private final Iterator<AggregationColumn> aggregationColumns;
     
@@ -83,8 +83,8 @@ public abstract class AbstractBaseParseTest {
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();
         this.expectedConditionContexts = expectedConditionContext.iterator();
-        this.orderByColumns = expectedMergeContext.getOrderByColumns().iterator();
-        this.groupByColumns = expectedMergeContext.getGroupByColumns().iterator();
+        this.orderByContexts = expectedMergeContext.getOrderByContexts().iterator();
+        this.groupByContexts = expectedMergeContext.getGroupByContexts().iterator();
         this.aggregationColumns = expectedMergeContext.getAggregationColumns().iterator();
         this.limit = expectedMergeContext.getLimit();
     }
@@ -157,23 +157,22 @@ public abstract class AbstractBaseParseTest {
         }
         MergeContext mergeContext = new MergeContext();
         if (null != assertObj.getOrderByColumns()) {
-            mergeContext.getOrderByColumns().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn, OrderByColumn>() {
+            mergeContext.getOrderByContexts().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn, OrderByContext>() {
                 
                 @Override
-                public OrderByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByColumn(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
-                            : new OrderByColumn(Optional.fromNullable(input.getOwner()), input.getName(), 
-                                    Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                public OrderByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByContext(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderByContext(input.getOwner(), input.getName(), OrderByType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }
         if (null != assertObj.getGroupByColumns()) {
-            mergeContext.getGroupByColumns().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn, GroupByColumn>() {
+            mergeContext.getGroupByContexts().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn, GroupByContext>() {
                 
                 @Override
-                public GroupByColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
-                    return new GroupByColumn(
-                            Optional.fromNullable(input.getOwner()), input.getName(), Optional.fromNullable(input.getAlias()), OrderByType.valueOf(input.getOrderByType().toUpperCase()));
+                public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
+                    return new GroupByContext(
+                            Optional.fromNullable(input.getOwner()), input.getName(), OrderByType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }
@@ -226,14 +225,14 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertMergeContext(final SQLParsedResult actual) {
-        for (OrderByColumn each : actual.getMergeContext().getOrderByColumns()) {
-            assertThat(each, new ReflectionEquals(orderByColumns.next()));
+        for (OrderByContext each : actual.getMergeContext().getOrderByContexts()) {
+            assertThat(each, new ReflectionEquals(orderByContexts.next()));
         }
-        assertFalse(orderByColumns.hasNext());
-        for (GroupByColumn each : actual.getMergeContext().getGroupByColumns()) {
-            assertThat(each, new ReflectionEquals(groupByColumns.next()));
+        assertFalse(orderByContexts.hasNext());
+        for (GroupByContext each : actual.getMergeContext().getGroupByContexts()) {
+            assertThat(each, new ReflectionEquals(groupByContexts.next()));
         }
-        assertFalse(groupByColumns.hasNext());
+        assertFalse(groupByContexts.hasNext());
         for (AggregationColumn each : actual.getMergeContext().getAggregationColumns()) {
             AggregationColumn expected = aggregationColumns.next();
             assertThat(each, new ReflectionEquals(expected, "derivedColumns"));

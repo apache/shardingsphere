@@ -17,22 +17,22 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.google.common.base.Optional;
+import org.junit.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import org.junit.Test;
-
-import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class OrderByResultSetTest {
     
@@ -68,7 +68,7 @@ public final class OrderByResultSetTest {
     
     private MergeContext createMergeContext(final OrderByType orderType) {
         MergeContext result = new MergeContext();
-        result.getOrderByColumns().add(new OrderByColumn("name", orderType));
+        result.getOrderByContexts().add(new OrderByContext("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

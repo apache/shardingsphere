@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,14 +42,14 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     
     private final ResultSet resultSet;
     
-    private final List<GroupByColumn> groupByColumns;
+    private final List<GroupByContext> groupByContexts;
     
     private final Map<AggregationColumn, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupByColumn> groupByColumns, final List<AggregationColumn> aggregationColumns) throws SQLException {
+    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupByContext> groupByContexts, final List<AggregationColumn> aggregationColumns) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
-        this.groupByColumns = groupByColumns;
+        this.groupByContexts = groupByContexts;
         aggregationUnitMap = Maps.toMap(aggregationColumns, new Function<AggregationColumn, AggregationUnit>() {
             
             @Override
@@ -94,8 +94,8 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @throws SQLException SQL异常
      */
     public List<Object> getGroupByValues() throws SQLException {
-        List<Object> result = new ArrayList<>(groupByColumns.size());
-        for (GroupByColumn each : groupByColumns) {
+        List<Object> result = new ArrayList<>(groupByContexts.size());
+        for (GroupByContext each : groupByContexts) {
             result.add(resultSet.getObject(each.getColumnIndex()));
         }
         return result;
@@ -104,10 +104,10 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("GroupByKey is: ");
-        result.append(Lists.transform(groupByColumns, new Function<GroupByColumn, Object>() {
+        result.append(Lists.transform(groupByContexts, new Function<GroupByContext, Object>() {
             
             @Override
-            public Object apply(final GroupByColumn input) {
+            public Object apply(final GroupByContext input) {
                 return getCell(input.getColumnIndex());
             }
         }));

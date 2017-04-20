@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.AbstractMemoryR
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.GroupByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
-    private final List<GroupByColumn> groupByColumns;
+    private final List<GroupByContext> groupByContexts;
     
     private final List<AggregationColumn> aggregationColumns;
     
@@ -48,7 +48,7 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
     public GroupByCouplingResultSet(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(Collections.singletonList(resultSet));
-        groupByColumns = resultSetMergeContext.getMergeContext().getGroupByColumns();
+        groupByContexts = resultSetMergeContext.getMergeContext().getGroupByContexts();
         aggregationColumns = resultSetMergeContext.getMergeContext().getAggregationColumns();
     }
     
@@ -63,9 +63,9 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
         if (!hasNext) {
             return Optional.absent();
         }
-        GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByColumns, aggregationColumns);
+        GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByContexts, aggregationColumns);
         List<Object> groupByValues = result.getGroupByValues();
-        while (hasNext && (groupByColumns.isEmpty() || groupByValues.equals(result.getGroupByValues()))) {
+        while (hasNext && (groupByContexts.isEmpty() || groupByValues.equals(result.getGroupByValues()))) {
             result.aggregate();
             hasNext = resultSet.next();
         }

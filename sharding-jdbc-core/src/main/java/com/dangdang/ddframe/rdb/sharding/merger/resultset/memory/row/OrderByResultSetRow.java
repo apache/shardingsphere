@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.google.common.base.Preconditions;
 
 import java.sql.ResultSet;
@@ -34,19 +34,19 @@ import java.util.List;
  */
 public final class OrderByResultSetRow extends AbstractResultSetRow implements Comparable<OrderByResultSetRow> {
     
-    private final List<OrderByColumn> orderByColumns;
+    private final List<OrderByContext> orderByContexts;
     
     private final List<Comparable<?>> orderByValues;
     
-    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderByColumn> orderByColumns) throws SQLException {
+    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderByContext> orderByContexts) throws SQLException {
         super(resultSet);
-        this.orderByColumns = orderByColumns;
+        this.orderByContexts = orderByContexts;
         orderByValues = loadOrderByValues();
     }
     
     private List<Comparable<?>> loadOrderByValues() {
-        List<Comparable<?>> result = new ArrayList<>(orderByColumns.size());
-        for (OrderByColumn each : orderByColumns) {
+        List<Comparable<?>> result = new ArrayList<>(orderByContexts.size());
+        for (OrderByContext each : orderByContexts) {
             Object value = getCell(each.getColumnIndex());
             Preconditions.checkState(value instanceof Comparable, "Sharding-JDBC: order by value must extends Comparable");
             result.add((Comparable<?>) value);
@@ -56,9 +56,9 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     
     @Override
     public int compareTo(final OrderByResultSetRow otherOrderByValue) {
-        for (int i = 0; i < orderByColumns.size(); i++) {
-            OrderByColumn thisOrderByColumn = orderByColumns.get(i);
-            int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderByColumn.getOrderByType());
+        for (int i = 0; i < orderByContexts.size(); i++) {
+            OrderByContext thisOrderByContext = orderByContexts.get(i);
+            int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderByContext.getOrderByType());
             if (0 != result) {
                 return result;
             }

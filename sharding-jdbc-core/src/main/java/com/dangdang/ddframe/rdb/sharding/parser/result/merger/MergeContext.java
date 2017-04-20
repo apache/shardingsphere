@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,9 +35,9 @@ import java.util.List;
 @ToString
 public final class MergeContext {
     
-    private final List<OrderByColumn> orderByColumns = new ArrayList<>();
+    private final List<OrderByContext> orderByContexts = new ArrayList<>();
     
-    private final List<GroupByColumn> groupByColumns = new ArrayList<>();
+    private final List<GroupByContext> groupByContexts = new ArrayList<>();
     
     private final List<AggregationColumn> aggregationColumns = new ArrayList<>();
     
@@ -48,7 +50,7 @@ public final class MergeContext {
      * @return 是否包含分组
      */
     public boolean hasGroupBy() {
-        return !groupByColumns.isEmpty();
+        return !groupByContexts.isEmpty();
     }
     
     /**
@@ -67,7 +69,7 @@ public final class MergeContext {
      * @return 是否包含排序列
      */
     public boolean hasOrderBy() {
-        return !orderByColumns.isEmpty();
+        return !orderByContexts.isEmpty();
     }
     
     /**

@@ -19,10 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -45,7 +45,7 @@ public final class ResultSetMergeContext {
     
     private final MergeContext mergeContext;
     
-    private final List<OrderByColumn> currentOrderByKeys;
+    private final List<OrderByContext> currentOrderByKeys;
     
     public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {
         this.shardingResultSets = shardingResultSets;
@@ -56,7 +56,7 @@ public final class ResultSetMergeContext {
     
     private void init() throws SQLException {
         setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
-        currentOrderByKeys.addAll(mergeContext.getOrderByColumns());
+        currentOrderByKeys.addAll(mergeContext.getOrderByContexts());
     }
     
     private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
@@ -76,8 +76,8 @@ public final class ResultSetMergeContext {
     
     private List<IndexColumn> getAllFocusedColumns() {
         List<IndexColumn> result = new LinkedList<>();
-        result.addAll(mergeContext.getGroupByColumns());
-        result.addAll(mergeContext.getOrderByColumns());
+        result.addAll(mergeContext.getGroupByContexts());
+        result.addAll(mergeContext.getOrderByContexts());
         LinkedList<AggregationColumn> allAggregationColumns = Lists.newLinkedList(mergeContext.getAggregationColumns());
         while (!allAggregationColumns.isEmpty()) {
             AggregationColumn firstElement = allAggregationColumns.poll();
@@ -106,12 +106,13 @@ public final class ResultSetMergeContext {
         currentOrderByKeys.addAll(transformGroupByColumnsToOrderByColumns());
     }
     
-    private List<OrderByColumn> transformGroupByColumnsToOrderByColumns() {
-        return Lists.transform(mergeContext.getGroupByColumns(), new Function<GroupByColumn, OrderByColumn>() {
+    private List<OrderByContext> transformGroupByColumnsToOrderByColumns() {
+        return Lists.transform(mergeContext.getGroupByContexts(), new Function<GroupByContext, OrderByContext>() {
             
             @Override
-            public OrderByColumn apply(final GroupByColumn input) {
-                OrderByColumn result = new OrderByColumn(input.getOwner(), input.getName().get(), input.getAlias(), input.getOrderByType());
+            public OrderByContext apply(final GroupByContext input) {
+                OrderByContext result = input.getOwner().isPresent() ? new OrderByContext(input.getOwner().get(), input.getName(), input.getOrderByType(), input.getAlias())
+                        : new OrderByContext(input.getName(), input.getOrderByType(), input.getAlias());
                 result.setColumnIndex(input.getColumnIndex());
                 return result;
             }
@@ -124,7 +125,7 @@ public final class ResultSetMergeContext {
      * @return 排序归并是否需要内存排序
      */
     public boolean isNeedMemorySortForOrderBy() {
-        return mergeContext.hasOrderBy() && !currentOrderByKeys.equals(mergeContext.getOrderByColumns());
+        return mergeContext.hasOrderBy() && !currentOrderByKeys.equals(mergeContext.getOrderByContexts());
     }
     
     /**
@@ -132,6 +133,6 @@ public final class ResultSetMergeContext {
      */
     public void setOrderByKeysToCurrentOrderByKeys() {
         currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(mergeContext.getOrderByColumns());
+        currentOrderByKeys.addAll(mergeContext.getOrderByContexts());
     }
 }

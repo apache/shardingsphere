@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
@@ -37,13 +37,13 @@ import java.util.List;
  */
 public abstract class AbstractMemoryOrderByResultSet extends AbstractMemoryResultSet {
     
-    private final List<OrderByColumn> orderByColumns;
+    private final List<OrderByContext> orderByContexts;
     
     private Iterator<OrderByResultSetRow> orderByResultSetRowIterator;
     
-    public AbstractMemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderByColumn> orderByColumns) throws SQLException {
+    public AbstractMemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderByContext> orderByContexts) throws SQLException {
         super(resultSets);
-        this.orderByColumns = orderByColumns;
+        this.orderByContexts = orderByContexts;
     }
     
     @Override
@@ -51,7 +51,7 @@ public abstract class AbstractMemoryOrderByResultSet extends AbstractMemoryResul
         List<OrderByResultSetRow> orderByResultSetRows = new LinkedList<>();
         for (ResultSet each : resultSets) {
             while (each.next()) {
-                orderByResultSetRows.add(new OrderByResultSetRow(each, orderByColumns));
+                orderByResultSetRows.add(new OrderByResultSetRow(each, orderByContexts));
             }
         }
         Collections.sort(orderByResultSetRows);
