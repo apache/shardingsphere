@@ -18,9 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +32,9 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class AggregationSelectItemContext implements SelectItemContext {
+@ToString
+public final class AggregationSelectItemContext implements SelectItemContext, IndexColumn {
     
     private final String innerExpression;
     
@@ -40,12 +42,33 @@ public final class AggregationSelectItemContext implements SelectItemContext {
     
     private final int index;
     
+    @Setter
+    private int columnIndex = -1;
+    
     private final AggregationColumn.AggregationType aggregationType;
     
     private final List<AggregationSelectItemContext> derivedAggregationSelectItemContexts = new ArrayList<>(2);
     
+    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int index, final AggregationColumn.AggregationType aggregationType) {
+        this.innerExpression = innerExpression;
+        this.alias = alias;
+        this.index = index;
+        columnIndex = index;
+        this.aggregationType = aggregationType;
+    }
+    
     @Override
     public String getExpression() {
         return aggregationType.name() + innerExpression;
+    }
+    
+    @Override
+    public Optional<String> getColumnLabel() {
+        return alias;
+    }
+    
+    @Override
+    public Optional<String> getColumnName() {
+        return Optional.of(getExpression());
     }
 }

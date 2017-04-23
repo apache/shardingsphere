@@ -89,18 +89,14 @@ public final class SQLParseEngine {
             if (each instanceof AggregationSelectItemContext) {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
                 // TODO index获取不准，考虑使用别名替换
-                AggregationColumn column = new AggregationColumn(aggregationSelectItemContext.getExpression(), aggregationSelectItemContext.getAggregationType(),
-                        aggregationSelectItemContext.getAlias(), aggregationSelectItemContext.getIndex());
-                sqlParsedResult.getMergeContext().getAggregationColumns().add(column);
+                sqlParsedResult.getMergeContext().getAggregationColumns().add(aggregationSelectItemContext);
                 if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     AggregationSelectItemContext aggregationSelectItemContext1 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(0);
-                    AggregationColumn column1 = new AggregationColumn(aggregationSelectItemContext1.getExpression(), aggregationSelectItemContext1.getAggregationType(),
-                            aggregationSelectItemContext1.getAlias(), aggregationSelectItemContext1.getIndex());
-                    column.getDerivedColumns().add(column1);
+                    AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(), 
+                            aggregationSelectItemContext1.getIndex(), aggregationSelectItemContext1.getAggregationType());
                     AggregationSelectItemContext aggregationSelectItemContext2 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(1);
-                    AggregationColumn column2 = new AggregationColumn(aggregationSelectItemContext2.getExpression(), aggregationSelectItemContext2.getAggregationType(),
-                            aggregationSelectItemContext2.getAlias(), aggregationSelectItemContext2.getIndex());
-                    column.getDerivedColumns().add(column2);
+                    AggregationSelectItemContext column2 = new AggregationSelectItemContext(aggregationSelectItemContext2.getInnerExpression(), aggregationSelectItemContext2.getAlias(), 
+                            aggregationSelectItemContext2.getIndex(), aggregationSelectItemContext2.getAggregationType());
                     sqlParsedResult.getMergeContext().getAggregationColumns().add(column1);
                     sqlParsedResult.getMergeContext().getAggregationColumns().add(column2);
                 }

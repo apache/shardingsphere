@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -28,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
@@ -66,7 +66,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<GroupByContext> groupByContexts;
     
-    private final Iterator<AggregationColumn> aggregationColumns;
+    private final Iterator<AggregationSelectItemContext> aggregationColumns;
     
     private final Limit limit;
     
@@ -172,18 +172,18 @@ public abstract class AbstractBaseParseTest {
         }
         if (null != assertObj.getAggregationColumns()) {
             mergeContext.getAggregationColumns().addAll(Lists.transform(assertObj.getAggregationColumns(), 
-                    new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn, AggregationColumn>() {
+                    new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn, AggregationSelectItemContext>() {
                         
                         @Override
-                        public AggregationColumn apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn input) {
-                            AggregationColumn result = new AggregationColumn(input.getExpression(), 
-                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                        public AggregationSelectItemContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn input) {
+                            AggregationSelectItemContext result = new AggregationSelectItemContext(input.getExpression(), Optional.fromNullable(input.getAlias()), -1, 
+                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn each : input.getDerivedColumns()) {
-                                result.getDerivedColumns().add(new AggregationColumn(each.getExpression(), 
-                                        AggregationType.valueOf(each.getAggregationType().toUpperCase()), Optional.fromNullable(each.getAlias())));
+                                result.getDerivedAggregationSelectItemContexts().add(new AggregationSelectItemContext(each.getExpression(), Optional.fromNullable(each.getAlias()), -1, 
+                                        AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
                             return result;
                         }

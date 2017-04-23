@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
@@ -27,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
@@ -83,7 +83,7 @@ public final class SQLParsedResultTest {
     }
     
     private void generateMergeContext(final MergeContext mergeContext) {
-        mergeContext.getAggregationColumns().add(new AggregationColumn("COUNT(id)", AggregationType.COUNT, Optional.of("c")));
+        mergeContext.getAggregationColumns().add(new AggregationSelectItemContext("COUNT(id)", Optional.of("c"), -1, AggregationType.COUNT));
         mergeContext.getOrderByContexts().add(new OrderByContext("id", OrderByType.DESC, Optional.of("a")));
         mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "id", OrderByType.ASC, Optional.of("d")));
         mergeContext.setLimit(new Limit(0, 10, -1, -1));

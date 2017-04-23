@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactory;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -44,16 +44,16 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     
     private final List<GroupByContext> groupByContexts;
     
-    private final Map<AggregationColumn, AggregationUnit> aggregationUnitMap;
+    private final Map<AggregationSelectItemContext, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupByContext> groupByContexts, final List<AggregationColumn> aggregationColumns) throws SQLException {
+    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupByContext> groupByContexts, final List<AggregationSelectItemContext> aggregationColumns) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
         this.groupByContexts = groupByContexts;
-        aggregationUnitMap = Maps.toMap(aggregationColumns, new Function<AggregationColumn, AggregationUnit>() {
+        aggregationUnitMap = Maps.toMap(aggregationColumns, new Function<AggregationSelectItemContext, AggregationUnit>() {
             
             @Override
-            public AggregationUnit apply(final AggregationColumn input) {
+            public AggregationUnit apply(final AggregationSelectItemContext input) {
                 return AggregationUnitFactory.create(input.getAggregationType());
             }
         });
@@ -65,14 +65,15 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @throws SQLException SQL异常
      */
     public void aggregate() throws SQLException {
-        for (Map.Entry<AggregationColumn, AggregationUnit> each : aggregationUnitMap.entrySet()) {
-            each.getValue().merge(getAggregationValues(each.getKey().getDerivedColumns().isEmpty() ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedColumns()));
+        for (Map.Entry<AggregationSelectItemContext, AggregationUnit> each : aggregationUnitMap.entrySet()) {
+            each.getValue().merge(getAggregationValues(each.getKey().getDerivedAggregationSelectItemContexts().isEmpty()
+                    ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedAggregationSelectItemContexts()));
         }
     }
     
-    private List<Comparable<?>> getAggregationValues(final List<AggregationColumn> aggregationColumns) throws SQLException {
+    private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItemContext> aggregationColumns) throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(aggregationColumns.size());
-        for (AggregationColumn each : aggregationColumns) {
+        for (AggregationSelectItemContext each : aggregationColumns) {
             result.add((Comparable<?>) resultSet.getObject(each.getColumnIndex()));
         }
         return result;
@@ -82,7 +83,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * 生成结果.
      */
     public void generateResult() {
-        for (AggregationColumn each : aggregationUnitMap.keySet()) {
+        for (AggregationSelectItemContext each : aggregationUnitMap.keySet()) {
             setCell(each.getColumnIndex(), aggregationUnitMap.get(each).getResult());
         }
     }
@@ -114,10 +115,10 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
         if (aggregationUnitMap.isEmpty()) {
             return result.toString();
         }
-        result.append("; Aggregation result is: ").append(Lists.transform(new ArrayList<>(aggregationUnitMap.keySet()), new Function<AggregationColumn, String>() {
+        result.append("; Aggregation result is: ").append(Lists.transform(new ArrayList<>(aggregationUnitMap.keySet()), new Function<AggregationSelectItemContext, String>() {
             
             @Override
-            public String apply(final AggregationColumn input) {
+            public String apply(final AggregationSelectItemContext input) {
                 Object value = getCell(input.getColumnIndex());
                 value = null == value ? "null" : value;
                 return String.format("{index:%d, type:%s, value:%s}", input.getColumnIndex(), input.getAggregationType(), value);

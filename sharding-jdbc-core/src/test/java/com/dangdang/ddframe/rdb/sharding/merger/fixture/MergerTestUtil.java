@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -80,13 +81,13 @@ public final class MergerTestUtil {
         return result;
     }
     
-    public static AggregationColumn createAggregationColumn(final AggregationColumn.AggregationType aggregationType, final String name, final String alias, final int index) {
-        AggregationColumn result = new AggregationColumn(name, aggregationType, Optional.fromNullable(alias), index);
+    public static AggregationSelectItemContext createAggregationColumn(final AggregationColumn.AggregationType aggregationType, final String name, final String alias, final int index) {
+        AggregationSelectItemContext result = new AggregationSelectItemContext(name, Optional.fromNullable(alias), index, aggregationType);
         if (AggregationColumn.AggregationType.AVG.equals(aggregationType)) {
-            result.getDerivedColumns().add(
-                    new AggregationColumn(AggregationColumn.AggregationType.COUNT.name(), AggregationColumn.AggregationType.COUNT, Optional.of("sharding_gen_1")));
-            result.getDerivedColumns().add(
-                    new AggregationColumn(AggregationColumn.AggregationType.SUM.name(), AggregationColumn.AggregationType.SUM, Optional.of("sharding_gen_2")));
+            result.getDerivedAggregationSelectItemContexts().add(
+                    new AggregationSelectItemContext(AggregationColumn.AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationColumn.AggregationType.COUNT));
+            result.getDerivedAggregationSelectItemContexts().add(
+                    new AggregationSelectItemContext(AggregationColumn.AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationColumn.AggregationType.SUM));
         }
         return result;
     }

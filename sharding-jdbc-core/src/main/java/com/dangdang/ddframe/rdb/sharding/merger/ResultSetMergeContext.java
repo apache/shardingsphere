@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.google.common.base.Function;
@@ -78,12 +78,12 @@ public final class ResultSetMergeContext {
         List<IndexColumn> result = new LinkedList<>();
         result.addAll(mergeContext.getGroupByContexts());
         result.addAll(mergeContext.getOrderByContexts());
-        LinkedList<AggregationColumn> allAggregationColumns = Lists.newLinkedList(mergeContext.getAggregationColumns());
+        LinkedList<AggregationSelectItemContext> allAggregationColumns = Lists.newLinkedList(mergeContext.getAggregationColumns());
         while (!allAggregationColumns.isEmpty()) {
-            AggregationColumn firstElement = allAggregationColumns.poll();
+            AggregationSelectItemContext firstElement = allAggregationColumns.poll();
             result.add(firstElement);
-            if (!firstElement.getDerivedColumns().isEmpty()) {
-                allAggregationColumns.addAll(firstElement.getDerivedColumns());
+            if (!firstElement.getDerivedAggregationSelectItemContexts().isEmpty()) {
+                allAggregationColumns.addAll(firstElement.getDerivedAggregationSelectItemContexts());
             }
         }
         return result;

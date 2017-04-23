@@ -46,8 +46,8 @@ public final class ResultSetMergeContextTest {
         assertThat(actual.getMergeContext().getGroupByContexts().get(0).getColumnIndex(), is(2));
         assertThat(actual.getMergeContext().getAggregationColumns().get(0).getColumnIndex(), is(3));
         assertThat(actual.getMergeContext().getAggregationColumns().get(1).getColumnIndex(), is(4));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedColumns().get(0).getColumnIndex(), is(5));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedColumns().get(1).getColumnIndex(), is(6));
+        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(0).getColumnIndex(), is(5));
+        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(1).getColumnIndex(), is(6));
         assertThat(actual.getCurrentOrderByKeys(), is(actual.getMergeContext().getOrderByContexts()));
     }
     

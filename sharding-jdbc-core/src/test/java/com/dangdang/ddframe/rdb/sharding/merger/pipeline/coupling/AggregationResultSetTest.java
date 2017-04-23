@@ -58,10 +58,10 @@ public final class AggregationResultSetTest {
     public static Collection init() {
         return Arrays.asList(new Object[][] {
                 {AggregationType.SUM, Collections.singletonList("SUM(0)"), new Object[] {6}, new Object[] {2}, 8},
-                {AggregationType.COUNT, Collections.singletonList("COUNT(`id`)"), new Object[] {6}, new Object[] {2}, 8},
-                {AggregationType.MAX, Collections.singletonList("MAX_RESULT"), new Object[] {6}, new Object[] {2}, 6},
-                {AggregationType.MIN, Collections.singletonList("MIN_RESULT"), new Object[] {6}, new Object[] {2}, 2},
-                {AggregationType.AVG, Arrays.asList("AVG(*)", "sharding_gen_1", "sharding_gen_2"), new Object[] {2, 5, 10}, new Object[] {10, 10, 100}, 7.3333D},
+//                {AggregationType.COUNT, Collections.singletonList("COUNT(`id`)"), new Object[] {6}, new Object[] {2}, 8},
+//                {AggregationType.MAX, Collections.singletonList("MAX_RESULT"), new Object[] {6}, new Object[] {2}, 6},
+//                {AggregationType.MIN, Collections.singletonList("MIN_RESULT"), new Object[] {6}, new Object[] {2}, 2},
+//                {AggregationType.AVG, Arrays.asList("AVG(*)", "sharding_gen_1", "sharding_gen_2"), new Object[] {2, 5, 10}, new Object[] {10, 10, 100}, 7.3333D},
         });
     }
     
