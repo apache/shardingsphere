@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,11 +43,11 @@ import static org.mockito.Mockito.when;
 @RequiredArgsConstructor
 public class NullableAggregationResultSetTest {
     
-    private final AggregationColumn.AggregationType aggregationType;
+    private final AggregationType aggregationType;
     
     @Parameterized.Parameters(name = "{index}: aggregation type: {0}")
-    public static Collection<AggregationColumn.AggregationType> init() {
-        return Arrays.asList(AggregationColumn.AggregationType.values());
+    public static Collection<AggregationType> init() {
+        return Arrays.asList(AggregationType.values());
     }
     
     @Test
@@ -56,7 +56,7 @@ public class NullableAggregationResultSetTest {
         mergeContext.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
         ResultSet resultSet1;
         ResultSet resultSet2;
-        if (aggregationType == AggregationColumn.AggregationType.AVG) {
+        if (aggregationType == AggregationType.AVG) {
             resultSet1 = MergerTestUtil.mockResult(Arrays.asList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"));
             resultSet2 = MergerTestUtil.mockResult(Arrays.asList(aggregationType.name(), "sharding_gen_1", "sharding_gen_2"));
         } else {

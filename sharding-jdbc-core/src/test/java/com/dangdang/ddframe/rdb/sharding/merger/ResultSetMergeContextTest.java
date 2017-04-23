@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
@@ -55,8 +55,8 @@ public final class ResultSetMergeContextTest {
         MergeContext result = new MergeContext();
         result.getOrderByContexts().add(new OrderByContext("order_col", OrderByType.ASC, Optional.<String>absent()));
         result.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderByType.ASC, Optional.<String>absent()));
-        result.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(AggregationColumn.AggregationType.COUNT, "count_col", "count_col", -1));
-        result.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(AggregationColumn.AggregationType.AVG, "avg_col", "avg_col", -1));
+        result.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(AggregationType.COUNT, "count_col", "count_col", -1));
+        result.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(AggregationType.AVG, "avg_col", "avg_col", -1));
         return result;
     }
     

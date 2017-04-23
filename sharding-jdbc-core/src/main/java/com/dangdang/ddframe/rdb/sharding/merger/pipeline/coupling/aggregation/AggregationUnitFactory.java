@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

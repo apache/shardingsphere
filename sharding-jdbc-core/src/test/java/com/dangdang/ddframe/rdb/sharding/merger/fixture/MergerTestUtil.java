@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -81,13 +81,13 @@ public final class MergerTestUtil {
         return result;
     }
     
-    public static AggregationSelectItemContext createAggregationColumn(final AggregationColumn.AggregationType aggregationType, final String name, final String alias, final int index) {
+    public static AggregationSelectItemContext createAggregationColumn(final AggregationType aggregationType, final String name, final String alias, final int index) {
         AggregationSelectItemContext result = new AggregationSelectItemContext(name, Optional.fromNullable(alias), index, aggregationType);
-        if (AggregationColumn.AggregationType.AVG.equals(aggregationType)) {
+        if (AggregationType.AVG.equals(aggregationType)) {
             result.getDerivedAggregationSelectItemContexts().add(
-                    new AggregationSelectItemContext(AggregationColumn.AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationColumn.AggregationType.COUNT));
+                    new AggregationSelectItemContext(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationType.COUNT));
             result.getDerivedAggregationSelectItemContexts().add(
-                    new AggregationSelectItemContext(AggregationColumn.AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationColumn.AggregationType.SUM));
+                    new AggregationSelectItemContext(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationType.SUM));
         }
         return result;
     }

@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,11 +43,11 @@ public final class AggregationSelectItemContext implements SelectItemContext, In
     @Setter
     private int columnIndex = -1;
     
-    private final AggregationColumn.AggregationType aggregationType;
+    private final AggregationType aggregationType;
     
     private final List<AggregationSelectItemContext> derivedAggregationSelectItemContexts = new ArrayList<>(2);
     
-    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int index, final AggregationColumn.AggregationType aggregationType) {
+    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int index, final AggregationType aggregationType) {
         this.innerExpression = innerExpression;
         this.alias = alias;
         this.index = index;

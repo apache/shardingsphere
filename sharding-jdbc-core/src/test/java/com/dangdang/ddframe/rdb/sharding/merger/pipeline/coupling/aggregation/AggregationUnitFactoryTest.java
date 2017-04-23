@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -27,18 +27,18 @@ public final class AggregationUnitFactoryTest {
     
     @Test
     public void assertCreateComparableAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationColumn.AggregationType.MIN), instanceOf(ComparableAggregationUnit.class));
-        assertThat(AggregationUnitFactory.create(AggregationColumn.AggregationType.MAX), instanceOf(ComparableAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.MIN), instanceOf(ComparableAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.MAX), instanceOf(ComparableAggregationUnit.class));
     }
     
     @Test
     public void assertCreateAccumulationAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationColumn.AggregationType.SUM), instanceOf(AccumulationAggregationUnit.class));
-        assertThat(AggregationUnitFactory.create(AggregationColumn.AggregationType.COUNT), instanceOf(AccumulationAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.SUM), instanceOf(AccumulationAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.COUNT), instanceOf(AccumulationAggregationUnit.class));
     }
     
     @Test
     public void assertCreateAverageAggregationUnit() {
-        assertThat(AggregationUnitFactory.create(AggregationColumn.AggregationType.AVG), instanceOf(AverageAggregationUnit.class));
+        assertThat(AggregationUnitFactory.create(AggregationType.AVG), instanceOf(AverageAggregationUnit.class));
     }
 }

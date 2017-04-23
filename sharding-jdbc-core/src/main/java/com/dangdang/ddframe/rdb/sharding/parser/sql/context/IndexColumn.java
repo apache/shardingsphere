@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.google.common.base.Optional;
 

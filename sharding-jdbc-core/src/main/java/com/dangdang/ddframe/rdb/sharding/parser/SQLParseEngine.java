@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
@@ -90,7 +90,7 @@ public final class SQLParseEngine {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
                 // TODO index获取不准，考虑使用别名替换
                 sqlParsedResult.getMergeContext().getAggregationColumns().add(aggregationSelectItemContext);
-                if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
+                if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     AggregationSelectItemContext aggregationSelectItemContext1 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(0);
                     AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(), 
                             aggregationSelectItemContext1.getIndex(), aggregationSelectItemContext1.getAggregationType());

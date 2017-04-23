@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.IndexColumn;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

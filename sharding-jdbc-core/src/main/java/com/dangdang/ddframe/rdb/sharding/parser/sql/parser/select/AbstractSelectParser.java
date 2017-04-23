@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.AggregationColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
@@ -127,11 +127,11 @@ public abstract class AbstractSelectParser {
         for (SelectItemContext each : sqlContext.getItemContexts()) {
             if (each instanceof AggregationSelectItemContext) {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-                if (AggregationColumn.AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
+                if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationColumn.AggregationType.COUNT);
+                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationType.COUNT);
                     AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationColumn.AggregationType.SUM);
+                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationType.SUM);
                     aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
                     aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
                     // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
