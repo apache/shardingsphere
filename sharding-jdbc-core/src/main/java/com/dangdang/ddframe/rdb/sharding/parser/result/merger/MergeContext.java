@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.merger;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +44,7 @@ public final class MergeContext {
     private final List<AggregationSelectItemContext> aggregationColumns = new ArrayList<>();
     
     @Setter
-    private Limit limit;
+    private LimitContext limit;
     
     /**
      * 是否包含分组.

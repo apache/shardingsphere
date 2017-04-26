@@ -25,10 +25,10 @@ import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
@@ -150,16 +150,29 @@ public final class SQLRouteEngine {
         return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
     }
     
-    private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult result) {
-        boolean isVarious = result.getExecutionUnits().size() > 1;
-        Limit limit = result.getMergeContext().getLimit();
+    private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        LimitContext limit = sqlRouteResult.getMergeContext().getLimit();
         SQLBuilder sqlBuilder = parsedResult.getRouteContext().getSqlBuilder();
         if (null != limit) {
-            limit.replaceSQL(sqlBuilder, isVarious);
-            limit.replaceParameters(parameters, isVarious);
-        }
-        if (!isVarious) {
-            sqlBuilder.removeDerivedSQL();
+            if (1 == sqlRouteResult.getExecutionUnits().size()) {
+                if (limit.getOffsetParameterIndex() > -1) {
+                    parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
+                }
+                if (limit.getRowCountParameterIndex() > -1) {
+                    parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
+                }
+            } else {
+                int offset = 0;
+                int rowCount = limit.getOffset() + limit.getRowCount();
+                if (limit.getOffsetParameterIndex() > -1) {
+                    parameters.set(limit.getOffsetParameterIndex(), offset);
+                }
+                if (limit.getRowCountParameterIndex() > -1) {
+                    parameters.set(limit.getRowCountParameterIndex(), rowCount);
+                }
+                sqlBuilder.buildSQL(LimitContext.OFFSET_NAME, String.valueOf(offset));
+                sqlBuilder.buildSQL(LimitContext.COUNT_NAME, String.valueOf(rowCount));
+            }
         }
     }
 }

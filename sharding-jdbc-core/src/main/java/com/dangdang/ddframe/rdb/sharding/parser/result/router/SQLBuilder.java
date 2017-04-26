@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
 import com.google.common.base.Joiner;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -47,11 +46,6 @@ public class SQLBuilder implements Appendable {
     
     @Getter
     private boolean changed;
-    
-    @Getter(AccessLevel.PRIVATE)
-    private boolean removeDerivedSQLToken;
-    
-    private boolean hasExistedDerivedSQLToken;
     
     public SQLBuilder() {
         segments = new LinkedList<>();
@@ -96,33 +90,18 @@ public class SQLBuilder implements Appendable {
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
-
-    /**
-     * 用实际的值替代占位符.
-     * 
-     * @param label 占位符
-     * @param token 实际的值
-     */
-    public void buildSQL(final String label, final String token) {
-        buildSQL(label, token, false);
-    }
     
     /**
      * 用实际的值替代占位符,并可以标记该SQL是否为派生SQL.
      * 
      * @param label 占位符
      * @param token 实际的值
-     * @param isDerived 是否是派生的SQL
      */
-    public void buildSQL(final String label, final String token, final boolean isDerived) {
+    public void buildSQL(final String label, final String token) {
         if (!tokenMap.containsKey(label)) {
             return;
         }
-        if (isDerived) {
-            hasExistedDerivedSQLToken = true;
-        }
         StringToken labelSQL = tokenMap.get(label);
-        labelSQL.isDerived = isDerived;
         labelSQL.value = token;
         changeState();
     }
@@ -207,16 +186,6 @@ public class SQLBuilder implements Appendable {
         changed = false;
     }
     
-    /**
-     * 移除衍生的SQL片段.
-     */
-    public void removeDerivedSQL() {
-        if (hasExistedDerivedSQLToken) {
-            removeDerivedSQLToken = true;
-            changeState();
-        }
-    }
-    
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -236,25 +205,19 @@ public class SQLBuilder implements Appendable {
         
         private String value;
 
-        private boolean isDerived;
-        
         private final List<Integer> indices = new LinkedList<>();
         
         String toToken() {
-            if (isEmptyValueOutput()) {
+            if (null == value) {
                 return "";
             }
             Joiner joiner = Joiner.on("");
             return label.equals(value) ? joiner.join("[Token(", value, ")]") : joiner.join("[", label, "(", value, ")]");
         }
-        
-        private boolean isEmptyValueOutput() {
-            return null == value || isDerived && isRemoveDerivedSQLToken();
-        }
     
         @Override
         public String toString() {
-            return isEmptyValueOutput() ? "" : value;
+            return null == value ? "" : value;
         }
     }
 }

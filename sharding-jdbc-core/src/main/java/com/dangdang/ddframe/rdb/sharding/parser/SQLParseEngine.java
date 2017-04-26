@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
@@ -97,13 +96,11 @@ public final class SQLParseEngine {
                 }
             }
         }
-        
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
                 sqlParsedResult.getMergeContext().getGroupByContexts().add(each);
             }
         }
-        
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
@@ -113,11 +110,8 @@ public final class SQLParseEngine {
                 }
             }
         }
-        
         if (null != sqlContext.getLimitContext()) {
-            sqlParsedResult.getMergeContext().setLimit(
-                    new Limit(sqlContext.getLimitContext().getOffset().isPresent() ? sqlContext.getLimitContext().getOffset().get() : 0, sqlContext.getLimitContext().getRowCount(), 
-                            sqlContext.getLimitContext().getOffsetParameterIndex(), sqlContext.getLimitContext().getRowCountParameterIndex()));
+            sqlParsedResult.getMergeContext().setLimit(sqlContext.getLimitContext());
         }
     }
 }
