@@ -47,16 +47,7 @@ public final class SelectSQLContext extends AbstractSQLContext {
     
     private LimitContext limitContext;
     
-    private SelectSQLContext parent;
-    
-    private List<SelectSQLContext> children = new LinkedList<>();
-    
     public SelectSQLContext(final String originalSQL) {
-        super(originalSQL);
-    }
-    
-    @Override
-    public SQLStatementType getType() {
-        return SQLStatementType.SELECT;
+        super(originalSQL, SQLStatementType.SELECT);
     }
 }

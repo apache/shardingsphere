@@ -27,11 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 public final class UpdateSQLContext extends AbstractSQLContext {
     
     public UpdateSQLContext(final String originalSQL) {
-        super(originalSQL);
-    }
-    
-    @Override
-    public SQLStatementType getType() {
-        return SQLStatementType.UPDATE;
+        super(originalSQL, SQLStatementType.UPDATE);
     }
 }

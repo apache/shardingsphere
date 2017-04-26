@@ -29,11 +29,6 @@ import lombok.Getter;
 public final class DeleteSQLContext extends AbstractSQLContext {
     
     public DeleteSQLContext(final String originalSQL) {
-        super(originalSQL);
-    }
-    
-    @Override
-    public SQLStatementType getType() {
-        return SQLStatementType.DELETE;
+        super(originalSQL, SQLStatementType.DELETE);
     }
 }

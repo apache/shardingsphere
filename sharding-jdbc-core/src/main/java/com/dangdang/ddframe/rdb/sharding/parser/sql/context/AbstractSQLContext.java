@@ -20,13 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,17 +41,28 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public abstract class AbstractSQLContext implements SQLContext {
     
     private final String originalSQL;
     
-    private List<TableContext> tables = new ArrayList<>();
+    private final SQLStatementType type;
+    
+    private final List<TableContext> tables = new ArrayList<>();
     
     private final Collection<ConditionContext> conditionContexts = new LinkedList<>();
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
+    
+    public AbstractSQLContext(final String originalSQL, final SQLStatementType type) {
+        this.originalSQL = originalSQL;
+        this.type = type;
+    }
+    
+    @Override
+    public final SQLStatementType getType() {
+        return type;
+    }
     
     @Override
     public Optional<Condition.Column> findColumn(final SQLExpr expr) {

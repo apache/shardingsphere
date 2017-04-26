@@ -32,12 +32,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
     private final GeneratedKeyContext generatedKeyContext;
     
     public InsertSQLContext(final String originalSQL) {
-        super(originalSQL);
+        super(originalSQL, SQLStatementType.INSERT);
         generatedKeyContext = new GeneratedKeyContext();
-    }
-    
-    @Override
-    public SQLStatementType getType() {
-        return SQLStatementType.INSERT;
     }
 }
