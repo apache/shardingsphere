@@ -29,7 +29,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parser.visitor.ParseContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,39 +51,35 @@ public final class SQLParseEngine {
      * @return SQL解析结果
      */
     public SQLParsedResult parse() {
-        ParseContext parseContext = getParseContext(sqlContext);
+        SQLParsedResult result = getSQLParsedResult(sqlContext);
         if (sqlContext instanceof SelectSQLContext) {
-            parseSelect(parseContext, (SelectSQLContext) sqlContext);
+            parseSelect(result, (SelectSQLContext) sqlContext);
         } else if (sqlContext instanceof InsertSQLContext) {
-            parseInsert(parseContext, (InsertSQLContext) sqlContext);
+            parseInsert(result, (InsertSQLContext) sqlContext);
         }
-        parseContext.getParsedResult().getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
-        return parseContext.getParsedResult();
-    }
-    
-    private ParseContext getParseContext(final SQLContext sqlContext) {
-        ParseContext result = new ParseContext();
-        SQLParsedResult sqlParsedResult = result.getParsedResult();
-        if (sqlContext.getConditionContexts().isEmpty()) {
-            sqlParsedResult.getConditionContexts().add(new ConditionContext());
-        } else {
-            sqlParsedResult.getConditionContexts().addAll(sqlContext.getConditionContexts());
-        }
-        for (TableContext each : sqlContext.getTables()) {
-            sqlParsedResult.getRouteContext().getTables().add(each);
-        }
-        sqlParsedResult.getRouteContext().setSqlStatementType(sqlContext.getType());
+        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
         return result;
     }
     
-    private void parseInsert(final ParseContext parseContext, final InsertSQLContext sqlContext) {
-        parseContext.getParsedResult().setGeneratedKeyContext(sqlContext.getGeneratedKeyContext());
+    private SQLParsedResult getSQLParsedResult(final SQLContext sqlContext) {
+        SQLParsedResult result = new SQLParsedResult();
+        if (sqlContext.getConditionContexts().isEmpty()) {
+            result.getConditionContexts().add(new ConditionContext());
+        } else {
+            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
+        }
+        for (TableContext each : sqlContext.getTables()) {
+            result.getRouteContext().getTables().add(each);
+        }
+        result.getRouteContext().setSqlStatementType(sqlContext.getType());
+        return result;
     }
     
-    private void parseSelect(final ParseContext parseContext, final SelectSQLContext sqlContext) {
-        SQLParsedResult sqlParsedResult = parseContext.getParsedResult();
-        
-        
+    private void parseInsert(final SQLParsedResult sqlParsedResult, final InsertSQLContext sqlContext) {
+        sqlParsedResult.setGeneratedKeyContext(sqlContext.getGeneratedKeyContext());
+    }
+    
+    private void parseSelect(final SQLParsedResult sqlParsedResult, final SelectSQLContext sqlContext) {
         for (SelectItemContext each : sqlContext.getItemContexts()) {
             if (each instanceof AggregationSelectItemContext) {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
@@ -105,22 +100,22 @@ public final class SQLParseEngine {
         
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
-                parseContext.getParsedResult().getMergeContext().getGroupByContexts().add(each);
+                sqlParsedResult.getMergeContext().getGroupByContexts().add(each);
             }
         }
         
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
-                    parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
+                    sqlParsedResult.getMergeContext().getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
                 } else {
-                    parseContext.getParsedResult().getMergeContext().getOrderByContexts().add(each);
+                    sqlParsedResult.getMergeContext().getOrderByContexts().add(each);
                 }
             }
         }
         
         if (null != sqlContext.getLimitContext()) {
-            parseContext.getParsedResult().getMergeContext().setLimit(
+            sqlParsedResult.getMergeContext().setLimit(
                     new Limit(sqlContext.getLimitContext().getOffset().isPresent() ? sqlContext.getLimitContext().getOffset().get() : 0, sqlContext.getLimitContext().getRowCount(), 
                             sqlContext.getLimitContext().getOffsetParameterIndex(), sqlContext.getLimitContext().getRowCountParameterIndex()));
         }
