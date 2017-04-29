@@ -56,7 +56,7 @@ public final class SQLParseEngine {
         } else if (sqlContext instanceof InsertSQLContext) {
             parseInsert(result, (InsertSQLContext) sqlContext);
         }
-        result.getRouteContext().setSqlBuilder(sqlContext.toSqlBuilder());
+        result.setSqlBuilder(sqlContext.toSqlBuilder());
         return result;
     }
     
@@ -68,9 +68,9 @@ public final class SQLParseEngine {
             result.getConditionContexts().addAll(sqlContext.getConditionContexts());
         }
         for (TableContext each : sqlContext.getTables()) {
-            result.getRouteContext().getTables().add(each);
+            result.getTables().add(each);
         }
-        result.getRouteContext().setSqlStatementType(sqlContext.getType());
+        result.setSqlStatementType(sqlContext.getType());
         return result;
     }
     

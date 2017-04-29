@@ -26,7 +26,6 @@ import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
@@ -99,25 +98,24 @@ public final class SQLRouteEngine {
     
     private SQLParsedResult buildHintParsedResult(final String logicSql) {
         SQLParsedResult result = new SQLParsedResult();
-        RouteContext routeContext = result.getRouteContext();
-        routeContext.setSqlStatementType(SQLUtil.getTypeByStart(logicSql));
-        log.trace("Get {} SQL Statement", routeContext.getSqlStatementType());
+        result.setSqlStatementType(SQLUtil.getTypeByStart(logicSql));
+        log.trace("Get {} SQL Statement", result.getSqlStatementType());
         SQLBuilder sqlBuilder = new SQLBuilder();
         try {
             sqlBuilder.append(logicSql);
         } catch (final IOException ignored) {
         }
-        routeContext.setSqlBuilder(sqlBuilder);
+        result.setSqlBuilder(sqlBuilder);
         result.getConditionContexts().add(new ConditionContext());
         return result;
     }
     
     SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(parsedResult.getRouteContext().getSqlStatementType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
+        SQLRouteResult result = new SQLRouteResult(parsedResult.getSqlStatementType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
         for (ConditionContext each : parsedResult.getConditionContexts()) {
             RoutingResult routingResult = routeSQL(each, parsedResult);
-            result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getRouteContext().getSqlBuilder()));
+            result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getSqlBuilder()));
         }
         amendSQLAccordingToRouteResult(parsedResult, parameters, result);
         MetricsContext.stop(context);
@@ -131,9 +129,9 @@ public final class SQLRouteEngine {
     
     private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLParsedResult parsedResult) {
         if (HintManagerHolder.isDatabaseShardingOnly()) {
-            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getRouteContext().getSqlStatementType()).route();
+            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getSqlStatementType()).route();
         }
-        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getRouteContext().getTables(), new Function<TableContext, String>() {
+        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getTables(), new Function<TableContext, String>() {
             
             @Override
             public String apply(final TableContext input) {
@@ -141,18 +139,18 @@ public final class SQLRouteEngine {
             }
         }));
         if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
+            return new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, parsedResult.getSqlStatementType()).route();
         } 
         if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
+            return new BindingTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getSqlStatementType()).route();
         } 
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getRouteContext().getSqlStatementType()).route();
+        return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getSqlStatementType()).route();
     }
     
     private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
         LimitContext limit = sqlRouteResult.getMergeContext().getLimit();
-        SQLBuilder sqlBuilder = parsedResult.getRouteContext().getSqlBuilder();
+        SQLBuilder sqlBuilder = parsedResult.getSqlBuilder();
         if (null != limit) {
             if (1 == sqlRouteResult.getExecutionUnits().size()) {
                 if (limit.getOffsetParameterIndex() > -1) {

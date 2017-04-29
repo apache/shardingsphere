@@ -17,14 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -38,7 +42,11 @@ import java.util.List;
 @ToString
 public final class SQLParsedResult {
     
-    private final RouteContext routeContext = new RouteContext();
+    private final Collection<TableContext> tables = new LinkedHashSet<>();
+    
+    private SQLType sqlStatementType;
+    
+    private SQLBuilder sqlBuilder;
     
     private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
     

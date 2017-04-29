@@ -63,7 +63,7 @@ public class PreparedSQLRouter {
     }
     
     private void generateId(final List<Object> parameters) {
-        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getRouteContext().getTables().iterator().next().getName());
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getTables().iterator().next().getName());
         if (!tableRuleOptional.isPresent()) {
             return;
         }

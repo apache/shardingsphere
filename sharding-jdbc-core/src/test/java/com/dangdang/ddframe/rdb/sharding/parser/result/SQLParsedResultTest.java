@@ -17,19 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.RouteContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Optional;
 import org.junit.Ignore;
@@ -47,7 +46,7 @@ public final class SQLParsedResultTest {
     @Ignore
     public void assertToString() throws IOException {
         SQLParsedResult actual = new SQLParsedResult();
-        generateRouteContext(actual.getRouteContext());
+        generateRouteContext(actual);
         actual.getConditionContexts().add(generateConditionContext());
         generateMergeContext(actual.getMergeContext());
         assertThat(actual.toString(), is("SQLParsedResult(routeContext=RouteContext(tables=[TableContext(originalLiterals=order, name=order, alias=Optional.of(o)), "
@@ -61,10 +60,10 @@ public final class SQLParsedResultTest {
                 + "limit=Limit(offset=0, rowCount=10, offsetParameterIndex=-1, rowCountParameterIndex=-1, multiShardingOffset=0, multiShardingRowCount=10)))"));
     }
     
-    private void generateRouteContext(final RouteContext routeContext) throws IOException {
-        routeContext.getTables().add(new TableContext("order", Optional.of("o")));
-        routeContext.getTables().add(new TableContext("order_item", Optional.<String>absent()));
-        routeContext.setSqlBuilder(generateSqlBuilder());
+    private void generateRouteContext(final SQLParsedResult sqlParsedResult) throws IOException {
+        sqlParsedResult.getTables().add(new TableContext("order", Optional.of("o")));
+        sqlParsedResult.getTables().add(new TableContext("order_item", Optional.<String>absent()));
+        sqlParsedResult.setSqlBuilder(generateSqlBuilder());
     }
     
     private SQLBuilder generateSqlBuilder() throws IOException {
