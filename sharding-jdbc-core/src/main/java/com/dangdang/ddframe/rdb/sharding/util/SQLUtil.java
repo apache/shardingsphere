@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
@@ -90,7 +90,7 @@ public class SQLUtil {
      * @param sql SQL语句
      * @return SQL类型
      */
-    public static SQLStatementType getTypeByStart(final String sql) {
+    public static SQLType getTypeByStart(final String sql) {
         // TODO: Use new Lexer Util, only support mysql now.
         Lexer lexer = new Lexer(sql, new Dictionary(MySQLKeyword.values()));
         lexer.nextToken();
@@ -98,13 +98,13 @@ public class SQLUtil {
             TokenType tokenType = lexer.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
                 if (tokenType.equals(SELECT)) {
-                    return SQLStatementType.SELECT;
+                    return SQLType.SELECT;
                 } else if (tokenType.equals(UPDATE)) {
-                    return SQLStatementType.UPDATE;
+                    return SQLType.UPDATE;
                 } else if (tokenType.equals(INSERT)) {
-                    return SQLStatementType.INSERT;
+                    return SQLType.INSERT;
                 } else if (tokenType.equals(DELETE)) {
-                    return SQLStatementType.DELETE;
+                    return SQLType.DELETE;
                 }
             }
             if (tokenType instanceof Assist) {

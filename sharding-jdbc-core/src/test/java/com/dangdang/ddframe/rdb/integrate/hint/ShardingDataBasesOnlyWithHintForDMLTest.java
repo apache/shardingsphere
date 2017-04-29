@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,7 +153,7 @@ public final class ShardingDataBasesOnlyWithHintForDMLTest extends AbstractShard
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLStatementType.SELECT), "t_order", "SELECT * FROM `t_order` WHERE `status`=?", status);
+                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", "SELECT * FROM `t_order` WHERE `status`=?", status);
         }
     }
 }

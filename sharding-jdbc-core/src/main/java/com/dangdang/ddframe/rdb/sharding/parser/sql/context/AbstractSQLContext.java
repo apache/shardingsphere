@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
@@ -46,7 +46,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private final String originalSQL;
     
-    private final SQLStatementType type;
+    private final SQLType type;
     
     private final List<TableContext> tables = new ArrayList<>();
     
@@ -54,13 +54,13 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
-    public AbstractSQLContext(final String originalSQL, final SQLStatementType type) {
+    public AbstractSQLContext(final String originalSQL, final SQLType type) {
         this.originalSQL = originalSQL;
         this.type = type;
     }
     
     @Override
-    public final SQLStatementType getType() {
+    public final SQLType getType() {
         return type;
     }
     

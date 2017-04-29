@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,10 +36,10 @@ public class SQLUtilTest {
     
     @Test
     public void assertSQLType() {
-        assertThat(SQLUtil.getTypeByStart(" /*COMMENT*/  \t \n  \r \fsElecT\t\n  * from table  "), is(SQLStatementType.SELECT));
-        assertThat(SQLUtil.getTypeByStart(" - - COMMENT  \t \n  \r \fInsert\t\n  into table  "), is(SQLStatementType.INSERT));
-        assertThat(SQLUtil.getTypeByStart(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuPdAte\t\n  table  "), is(SQLStatementType.UPDATE));
-        assertThat(SQLUtil.getTypeByStart(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fdelete\t\n  table  "), is(SQLStatementType.DELETE));
+        assertThat(SQLUtil.getTypeByStart(" /*COMMENT*/  \t \n  \r \fsElecT\t\n  * from table  "), is(SQLType.SELECT));
+        assertThat(SQLUtil.getTypeByStart(" - - COMMENT  \t \n  \r \fInsert\t\n  into table  "), is(SQLType.INSERT));
+        assertThat(SQLUtil.getTypeByStart(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fuPdAte\t\n  table  "), is(SQLType.UPDATE));
+        assertThat(SQLUtil.getTypeByStart(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fdelete\t\n  table  "), is(SQLType.DELETE));
     }
     
     @Test(expected = SQLParserException.class)

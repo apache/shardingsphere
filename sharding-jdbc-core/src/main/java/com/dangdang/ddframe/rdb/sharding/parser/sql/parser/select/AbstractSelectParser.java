@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.select;
 
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
@@ -181,11 +181,11 @@ public abstract class AbstractSelectParser {
     
     protected Optional<OrderByContext> parseSelectOrderByItem(final SelectSQLContext sqlContext) {
         SQLExpr expr = exprParser.parseExpression(sqlContext);
-        OrderByType orderByType = OrderByType.ASC;
+        OrderType orderByType = OrderType.ASC;
         if (exprParser.skipIfEqual(DefaultKeyword.ASC)) {
-            orderByType = OrderByType.ASC;
+            orderByType = OrderType.ASC;
         } else if (exprParser.skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderByType.DESC;
+            orderByType = OrderType.DESC;
         }
         OrderByContext result;
         if (expr instanceof SQLNumberExpr) {
@@ -238,11 +238,11 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void addGroupByItem(final SQLExpr sqlExpr) {
-        OrderByType orderByType = OrderByType.ASC;
+        OrderType orderByType = OrderType.ASC;
         if (getExprParser().equalAny(DefaultKeyword.ASC)) {
             getExprParser().getLexer().nextToken();
         } else if (getExprParser().skipIfEqual(DefaultKeyword.DESC)) {
-            orderByType = OrderByType.DESC;
+            orderByType = OrderType.DESC;
         }
         GroupByContext groupByContext;
         if (sqlExpr instanceof SQLPropertyExpr) {

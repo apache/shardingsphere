@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 
 /**
  * Update SQL上下文.
@@ -27,6 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 public final class UpdateSQLContext extends AbstractSQLContext {
     
     public UpdateSQLContext(final String originalSQL) {
-        super(originalSQL, SQLStatementType.UPDATE);
+        super(originalSQL, SQLType.UPDATE);
     }
 }

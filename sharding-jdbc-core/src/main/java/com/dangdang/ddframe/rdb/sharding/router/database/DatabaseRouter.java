@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class DatabaseRouter {
     
     private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private final SQLStatementType sqlStatementType;
+    private final SQLType sqlStatementType;
     
     /**
      * 根据Hint路由到库.

@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -130,7 +130,7 @@ public final class ResultSetUtil {
      * @return 负数，零和正数分别表示小于，等于和大于
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderByType orderByType) {
-        return OrderByType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType orderByType) {
+        return OrderType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

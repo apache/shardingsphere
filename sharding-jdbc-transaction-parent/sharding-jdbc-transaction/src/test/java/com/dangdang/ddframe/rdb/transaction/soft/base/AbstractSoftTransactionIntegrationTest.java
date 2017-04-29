@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -84,7 +84,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
             + "`id` int NOT NULL, "
             + "PRIMARY KEY (`id`));";
         try (
-                Connection conn = shardingDataSource.getConnection().getConnection("db_trans", SQLStatementType.SELECT);
+                Connection conn = shardingDataSource.getConnection().getConnection("db_trans", SQLType.SELECT);
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {

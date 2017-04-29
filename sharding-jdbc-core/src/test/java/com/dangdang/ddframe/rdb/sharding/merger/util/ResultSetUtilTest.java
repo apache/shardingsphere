@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -91,11 +91,11 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertCompareToForAsc() {
-        assertTrue(ResultSetUtil.compareTo(1, 2, OrderByType.ASC) < 0);
+        assertTrue(ResultSetUtil.compareTo(1, 2, OrderType.ASC) < 0);
     }
     
     @Test
     public void assertCompareToForDesc() {
-        assertFalse(ResultSetUtil.compareTo(1, 2, OrderByType.DESC) < 0);
+        assertFalse(ResultSetUtil.compareTo(1, 2, OrderType.DESC) < 0);
     }
 }

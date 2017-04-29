@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
@@ -56,7 +56,7 @@ public class ShardingStrategy {
      * @param shardingValues 分片值集合
      * @return 分库后指向的数据源名称集合
      */
-    public Collection<String> doStaticSharding(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doStaticSharding(final SQLType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
             Preconditions.checkState(!isInsertMultiple(sqlStatementType, availableTargetNames), "INSERT statement should contain sharding value.");
             return availableTargetNames;
@@ -101,7 +101,7 @@ public class ShardingStrategy {
         throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
     }
     
-    private boolean isInsertMultiple(final SQLStatementType sqlStatementType, final Collection<String> availableTargetNames) {
-        return SQLStatementType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1;
+    private boolean isInsertMultiple(final SQLType sqlStatementType, final Collection<String> availableTargetNames) {
+        return SQLType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1;
     }
 }

@@ -30,7 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -60,9 +60,9 @@ public final class SingleTableRouter {
     
     private final TableRule tableRule;
     
-    private final SQLStatementType sqlStatementType;
+    private final SQLType sqlStatementType;
     
-    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLStatementType sqlStatementType) {
+    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLType sqlStatementType) {
         this.shardingRule = shardingRule;
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;

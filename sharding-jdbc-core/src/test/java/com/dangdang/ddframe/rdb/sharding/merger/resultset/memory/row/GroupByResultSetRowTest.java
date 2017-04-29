@@ -20,9 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public final class GroupByResultSetRowTest {
     public void assertToString() throws Exception {
         ResultSet rs = MergerTestUtil.mockResult(Arrays.asList("user_id", "number"), Arrays.<ResultSetRow>asList(new TestResultSetRow(1, 10), new TestResultSetRow(1, 20)));
         assertTrue(rs.next());
-        GroupByContext groupByContext = new GroupByContext(Optional.<String>absent(), "user_id", OrderByType.ASC, Optional.<String>absent());
+        GroupByContext groupByContext = new GroupByContext(Optional.<String>absent(), "user_id", OrderType.ASC, Optional.<String>absent());
         groupByContext.setColumnIndex(1);
         AggregationSelectItemContext aggregationColumn = new AggregationSelectItemContext("SUM(0)",  Optional.<String>absent(), 2, AggregationType.SUM);
         aggregationColumn.setColumnIndex(2);
@@ -67,7 +67,7 @@ public final class GroupByResultSetRowTest {
     }
     
     private GroupByContext createGroupByContext(final String columnName, final int columnIndex) {
-        GroupByContext result = new GroupByContext(Optional.<String>absent(), columnName, OrderByType.ASC, Optional.<String>absent());
+        GroupByContext result = new GroupByContext(Optional.<String>absent(), columnName, OrderType.ASC, Optional.<String>absent());
         result.setColumnIndex(columnIndex);
         return result;
     }

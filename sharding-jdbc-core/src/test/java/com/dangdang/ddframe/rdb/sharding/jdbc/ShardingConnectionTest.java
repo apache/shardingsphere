@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -76,46 +76,46 @@ public class ShardingConnectionTest {
     
     @Test
     public void getConnectionSelectThenUpdate() throws Exception {
-        assertNotSame(connection.getConnection(DS_NAME, SQLStatementType.SELECT), connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+        assertNotSame(connection.getConnection(DS_NAME, SQLType.SELECT), connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
     public void getConnectionUpdateThenSelect() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLStatementType.UPDATE), connection.getConnection(DS_NAME, SQLStatementType.SELECT));
+        assertSame(connection.getConnection(DS_NAME, SQLType.UPDATE), connection.getConnection(DS_NAME, SQLType.SELECT));
     }
     
     @Test
     public void getConnectionBothSelect() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLStatementType.SELECT), connection.getConnection(DS_NAME, SQLStatementType.SELECT));
+        assertSame(connection.getConnection(DS_NAME, SQLType.SELECT), connection.getConnection(DS_NAME, SQLType.SELECT));
     }
     
     @Test
     public void getConnectionBothUpdate() throws Exception {
-        assertSame(connection.getConnection(DS_NAME, SQLStatementType.UPDATE), connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+        assertSame(connection.getConnection(DS_NAME, SQLType.UPDATE), connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
     public void getConnectionMixed() throws Exception {
-        Connection slaveConnection = connection.getConnection(DS_NAME, SQLStatementType.SELECT);
-        Connection masterConnection = connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
+        Connection slaveConnection = connection.getConnection(DS_NAME, SQLType.SELECT);
+        Connection masterConnection = connection.getConnection(DS_NAME, SQLType.UPDATE);
         assertNotSame(slaveConnection, masterConnection);
-        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLStatementType.SELECT));
-        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
-        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLStatementType.SELECT));
-        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLType.SELECT));
+        assertNotSame(slaveConnection, connection.getConnection(DS_NAME, SQLType.UPDATE));
+        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLType.SELECT));
+        assertSame(masterConnection, connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
     public void releaseBrokenConnection() throws Exception {
-        Connection conn = connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
+        Connection conn = connection.getConnection(DS_NAME, SQLType.UPDATE);
         connection.releaseBrokenConnection(conn);
-        assertNotSame(conn, connection.getConnection(DS_NAME, SQLStatementType.UPDATE));
+        assertNotSame(conn, connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
     public void closeExceptionConnection() throws SQLException {
-        connection.getConnection(DS_NAME, SQLStatementType.SELECT);
-        connection.getConnection(DS_NAME, SQLStatementType.UPDATE);
+        connection.getConnection(DS_NAME, SQLType.SELECT);
+        connection.getConnection(DS_NAME, SQLType.UPDATE);
         try {
             connection.close();
         } catch (final SQLException exp) {

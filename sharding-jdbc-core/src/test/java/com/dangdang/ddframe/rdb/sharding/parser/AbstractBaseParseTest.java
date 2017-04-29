@@ -26,11 +26,11 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOp
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -155,8 +155,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public OrderByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByContext(input.getIndex(), OrderByType.valueOf(input.getOrderByType().toUpperCase())) 
-                            : new OrderByContext(input.getOwner(), input.getName(), OrderByType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByContext(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderByContext(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }
@@ -166,7 +166,7 @@ public abstract class AbstractBaseParseTest {
                 @Override
                 public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
                     return new GroupByContext(
-                            Optional.fromNullable(input.getOwner()), input.getName(), OrderByType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                            Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }

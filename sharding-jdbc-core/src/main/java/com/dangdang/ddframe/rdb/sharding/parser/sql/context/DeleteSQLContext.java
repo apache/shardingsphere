@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import lombok.Getter;
 
 /**
@@ -29,6 +29,6 @@ import lombok.Getter;
 public final class DeleteSQLContext extends AbstractSQLContext {
     
     public DeleteSQLContext(final String originalSQL) {
-        super(originalSQL, SQLStatementType.DELETE);
+        super(originalSQL, SQLType.DELETE);
     }
 }

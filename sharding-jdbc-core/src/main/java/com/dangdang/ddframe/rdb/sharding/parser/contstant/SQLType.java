@@ -15,14 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.result.router;
+package com.dangdang.ddframe.rdb.sharding.parser.contstant;
 
 /**
- * SQL语句类型.
+ * SQL类型.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
-public enum SQLStatementType {
+public enum SQLType {
     
-    INSERT, DELETE, UPDATE, SELECT
+    SELECT, INSERT, DELETE, UPDATE
 }

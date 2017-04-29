@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.tbl.statement;
 
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,7 +108,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern),
-                    shardingDataSource.getConnection().getConnection("dataSource_db_single", SQLStatementType.SELECT), 
+                    shardingDataSource.getConnection().getConnection("dataSource_db_single", SQLType.SELECT), 
                     String.format("t_order_%s", i), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", i), status);
         }
     }

@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
+package com.dangdang.ddframe.rdb.sharding.parser.contstant;
 
 /**
  * 聚合函数类型.

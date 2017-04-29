@@ -22,7 +22,7 @@ import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingResult;
@@ -46,7 +46,7 @@ public class MixedTablesRouter {
     
     private final ConditionContext conditionContext;
     
-    private final SQLStatementType sqlStatementType;
+    private final SQLType sqlStatementType;
     
     /**
      * 路由.

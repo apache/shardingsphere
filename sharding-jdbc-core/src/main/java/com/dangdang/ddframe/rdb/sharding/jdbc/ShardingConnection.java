@@ -21,7 +21,7 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -60,7 +60,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param sqlStatementType SQL语句类型
      * @return 数据库连接
      */
-    public Connection getConnection(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
+    public Connection getConnection(final String dataSourceName, final SQLType sqlStatementType) throws SQLException {
         Connection result = getConnectionInternal(dataSourceName, sqlStatementType);
         replayMethodsInvocation(result);
         return result;
@@ -88,10 +88,10 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLStatementType.SELECT).getMetaData();
+        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.SELECT).getMetaData();
     }
     
-    private Connection getConnectionInternal(final String dataSourceName, final SQLStatementType sqlStatementType) throws SQLException {
+    private Connection getConnectionInternal(final String dataSourceName, final SQLType sqlStatementType) throws SQLException {
         Optional<Connection> connectionOptional = fetchCachedConnectionBySqlStatementType(dataSourceName, sqlStatementType);
         if (connectionOptional.isPresent()) {
             return connectionOptional.get();
@@ -110,7 +110,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return result;
     }
     
-    private String getRealDataSourceName(final String dataSourceName, final SQLStatementType sqlStatementType) {
+    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlStatementType) {
         String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
         if (!MasterSlaveDataSource.isDML(sqlStatementType)) {
             return slaveDataSourceName;
@@ -119,7 +119,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return getMasterDataSourceName(dataSourceName);
     }
     
-    private Optional<Connection> fetchCachedConnectionBySqlStatementType(final String dataSourceName, final SQLStatementType sqlStatementType) {
+    private Optional<Connection> fetchCachedConnectionBySqlStatementType(final String dataSourceName, final SQLType sqlStatementType) {
         if (connectionMap.containsKey(dataSourceName)) {
             return Optional.of(connectionMap.get(dataSourceName));
         }

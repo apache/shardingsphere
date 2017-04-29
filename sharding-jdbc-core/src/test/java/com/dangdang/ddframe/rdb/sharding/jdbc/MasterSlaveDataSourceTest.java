@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.MasterSlaveDataSourceFactory;
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,25 +55,25 @@ public final class MasterSlaveDataSourceTest {
     
     @Test
     public void assertGetDataSourceForDML() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.INSERT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.INSERT), is(masterDataSource));
     }
     
     @Test
     public void assertGetDataSourceForDQL() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(slaveDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.SELECT), is(slaveDataSource));
     }
     
     @Test
     public void assertGetDataSourceForDMLAndDQL() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.INSERT), is(masterDataSource));
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.INSERT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.SELECT), is(masterDataSource));
     }
     
     @Test
     public void assertGetDataSourceForHintToMasterOnly() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.setMasterRouteOnly();
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.SELECT), is(masterDataSource));
         hintManager.close();
     }
     
@@ -125,9 +125,9 @@ public final class MasterSlaveDataSourceTest {
     
     @Test
     public void assertResetDMLFlag() {
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.INSERT), is(masterDataSource));
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.INSERT), is(masterDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.SELECT), is(masterDataSource));
         MasterSlaveDataSource.resetDMLFlag();
-        assertThat(masterSlaveDataSource.getDataSource(SQLStatementType.SELECT), is(slaveDataSource));
+        assertThat(masterSlaveDataSource.getDataSource(SQLType.SELECT), is(slaveDataSource));
     }
 }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,13 +39,13 @@ public final class OrderByContext implements IndexColumn {
     
     private final Optional<Integer> index;
     
-    private final OrderByType orderByType;
+    private final OrderType orderByType;
     
     private final Optional<String> alias;
     
     private int columnIndex;
     
-    public OrderByContext(final String name, final OrderByType orderByType, final Optional<String> alias) {
+    public OrderByContext(final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
         index = Optional.absent();
@@ -52,7 +53,7 @@ public final class OrderByContext implements IndexColumn {
         this.alias = alias;
     }
     
-    public OrderByContext(final String owner, final String name, final OrderByType orderByType, final Optional<String> alias) {
+    public OrderByContext(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
         index = Optional.absent();
@@ -60,7 +61,7 @@ public final class OrderByContext implements IndexColumn {
         this.alias = alias;
     }
     
-    public OrderByContext(final int index, final OrderByType orderByType) {
+    public OrderByContext(final int index, final OrderType orderByType) {
         owner = Optional.absent();
         name = Optional.absent();
         this.index = Optional.of(index);

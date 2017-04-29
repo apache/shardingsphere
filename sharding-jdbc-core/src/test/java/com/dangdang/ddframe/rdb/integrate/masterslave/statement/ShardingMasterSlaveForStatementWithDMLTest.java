@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.masterslave.statement;
 
 import com.dangdang.ddframe.rdb.integrate.masterslave.AbstractShardingMasterSlaveDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/masterslave/expect/%s/master_%s.xml", expectedDataSetPattern, i),
-                        shardingDataSource.getConnection().getConnection(String.format("ms_%s", i), SQLStatementType.INSERT),
+                        shardingDataSource.getConnection().getConnection(String.format("ms_%s", i), SQLType.INSERT),
                         String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
             }
         }

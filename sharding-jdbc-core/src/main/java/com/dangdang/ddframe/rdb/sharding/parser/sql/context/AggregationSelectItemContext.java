@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;

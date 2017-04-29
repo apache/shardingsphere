@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadB
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
@@ -55,8 +55,8 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
     
-    static boolean isDML(final SQLStatementType sqlStatementType) {
-        return SQLStatementType.SELECT != sqlStatementType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
+    static boolean isDML(final SQLType sqlStatementType) {
+        return SQLType.SELECT != sqlStatementType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
     /**
@@ -65,7 +65,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @param sqlStatementType SQL类型
      * @return 主或从节点的数据源
      */
-    public DataSource getDataSource(final SQLStatementType sqlStatementType) {
+    public DataSource getDataSource(final SQLType sqlStatementType) {
         if (isDML(sqlStatementType)) {
             DML_FLAG.set(true);
             return masterDataSource;

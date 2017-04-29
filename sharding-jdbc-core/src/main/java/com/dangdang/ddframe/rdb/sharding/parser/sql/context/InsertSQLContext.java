@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import lombok.Getter;
 
 /**
@@ -32,7 +32,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
     private final GeneratedKeyContext generatedKeyContext;
     
     public InsertSQLContext(final String originalSQL) {
-        super(originalSQL, SQLStatementType.INSERT);
+        super(originalSQL, SQLType.INSERT);
         generatedKeyContext = new GeneratedKeyContext();
     }
 }

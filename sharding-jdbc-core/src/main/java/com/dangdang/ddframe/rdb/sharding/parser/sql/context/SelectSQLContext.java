@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,6 +48,6 @@ public final class SelectSQLContext extends AbstractSQLContext {
     private LimitContext limitContext;
     
     public SelectSQLContext(final String originalSQL) {
-        super(originalSQL, SQLStatementType.SELECT);
+        super(originalSQL, SQLType.SELECT);
     }
 }

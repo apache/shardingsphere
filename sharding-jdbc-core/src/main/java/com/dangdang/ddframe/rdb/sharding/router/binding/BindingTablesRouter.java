@@ -22,7 +22,7 @@ import java.util.Collection;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -44,9 +44,9 @@ public class BindingTablesRouter {
     
     private final BindingTableRule bindingTableRule;
     
-    private final SQLStatementType sqlStatementType;
+    private final SQLType sqlStatementType;
     
-    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext, final SQLStatementType sqlStatementType) {
+    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext, final SQLType sqlStatementType) {
         this.shardingRule = shardingRule;
         this.logicTables = logicTables;
         this.conditionContext = conditionContext;
