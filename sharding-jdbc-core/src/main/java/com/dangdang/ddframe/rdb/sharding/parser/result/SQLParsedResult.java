@@ -18,17 +18,22 @@
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * SQL解析结果.
@@ -52,5 +57,11 @@ public final class SQLParsedResult {
     
     private final Collection<TableContext> tables = new LinkedHashSet<>();
     
-    private final MergeContext mergeContext = new MergeContext();
+    private final List<OrderByContext> orderByContexts = new ArrayList<>();
+    
+    private final List<GroupByContext> groupByContexts = new ArrayList<>();
+    
+    private final List<AggregationSelectItemContext> aggregationColumns = new ArrayList<>();
+    
+    private LimitContext limit;
 }

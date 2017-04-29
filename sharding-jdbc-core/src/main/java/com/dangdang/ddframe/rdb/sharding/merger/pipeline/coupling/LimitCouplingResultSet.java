@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.delegate.AbstractDelegateResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 
 import java.sql.ResultSet;
@@ -37,9 +37,9 @@ public final class LimitCouplingResultSet extends AbstractDelegateResultSet {
     
     private int rowNumber;
     
-    public LimitCouplingResultSet(final ResultSet resultSet, final MergeContext mergeContext) throws SQLException {
+    public LimitCouplingResultSet(final ResultSet resultSet, final SQLParsedResult sqlParsedResult) throws SQLException {
         super(Collections.singletonList(resultSet));
-        limit = mergeContext.getLimit();
+        limit = sqlParsedResult.getLimit();
     }
     
     @Override

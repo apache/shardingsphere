@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
@@ -41,18 +42,18 @@ public final class ResultSetMergeContextTest {
     public void assertNewResultSetMergeContext() throws SQLException {
         ResultSetMergeContext actual = new ResultSetMergeContext(
                 new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col", "count_col", "avg_col", "sharding_gen_1", "sharding_gen_2")))), 
-                createMergeContext());
-        assertThat(actual.getMergeContext().getOrderByContexts().get(0).getColumnIndex(), is(1));
-        assertThat(actual.getMergeContext().getGroupByContexts().get(0).getColumnIndex(), is(2));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(0).getColumnIndex(), is(3));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getColumnIndex(), is(4));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(0).getColumnIndex(), is(5));
-        assertThat(actual.getMergeContext().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(1).getColumnIndex(), is(6));
-        assertThat(actual.getCurrentOrderByKeys(), is(actual.getMergeContext().getOrderByContexts()));
+                createSQLParsedResult());
+        assertThat(actual.getSqlParsedResult().getOrderByContexts().get(0).getColumnIndex(), is(1));
+        assertThat(actual.getSqlParsedResult().getGroupByContexts().get(0).getColumnIndex(), is(2));
+        assertThat(actual.getSqlParsedResult().getAggregationColumns().get(0).getColumnIndex(), is(3));
+        assertThat(actual.getSqlParsedResult().getAggregationColumns().get(1).getColumnIndex(), is(4));
+        assertThat(actual.getSqlParsedResult().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(0).getColumnIndex(), is(5));
+        assertThat(actual.getSqlParsedResult().getAggregationColumns().get(1).getDerivedAggregationSelectItemContexts().get(1).getColumnIndex(), is(6));
+        assertThat(actual.getCurrentOrderByKeys(), is(actual.getSqlParsedResult().getOrderByContexts()));
     }
     
-    private MergeContext createMergeContext() {
-        MergeContext result = new MergeContext();
+    private SQLParsedResult createSQLParsedResult() {
+        SQLParsedResult result = new SQLParsedResult(new ConditionContext());
         result.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
         result.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
         result.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(AggregationType.COUNT, "count_col", "count_col", -1));
@@ -62,34 +63,37 @@ public final class ResultSetMergeContextTest {
     
     @Test
     public void assertIsNotNeedMemorySortForGroupByWithoutGroupBy() throws SQLException {
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.<String>emptyList()))), new MergeContext());
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.<String>emptyList()))), new SQLParsedResult(new ConditionContext()));
         assertFalse(actual.isNeedMemorySortForGroupBy());
     }
     
     @Test
     public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderBySame() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.singletonList("col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.singletonList("col")))), sqlParsedResult);
         assertFalse(actual.isNeedMemorySortForGroupBy());
     }
     
     @Test
     public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderByDifferent() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), sqlParsedResult);
         assertTrue(actual.isNeedMemorySortForGroupBy());
     }
     
     @Test
     public void assertSetGroupByKeysToCurrentOrderByKeys() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), sqlParsedResult);
         actual.setGroupByKeysToCurrentOrderByKeys();
         assertThat(actual.getCurrentOrderByKeys().size(), is(1));
         assertThat(actual.getCurrentOrderByKeys().get(0).getColumnName().get(), is("group_col"));
@@ -97,35 +101,38 @@ public final class ResultSetMergeContextTest {
     
     @Test
     public void assertIsNotNeedMemorySortForOrderByWithoutOrderBy() throws SQLException {
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.<String>emptyList()))), new MergeContext());
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.<String>emptyList()))), new SQLParsedResult(new ConditionContext()));
         assertFalse(actual.isNeedMemorySortForOrderBy());
     }
     
     @Test
     public void assertIsNeedMemorySortForOrderByWithGroupByAndOrderBySame() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.singletonList("col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Collections.singletonList("col")))), sqlParsedResult);
         assertFalse(actual.isNeedMemorySortForOrderBy());
     }
     
     @Test
     public void assertIsNeedMemorySortForOrderByWithGroupByAndOrderByDifferent() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), sqlParsedResult);
         actual.setGroupByKeysToCurrentOrderByKeys();
         assertTrue(actual.isNeedMemorySortForOrderBy());
     }
     
     @Test
     public void assertSetOrderByKeysToCurrentOrderByKeys() throws SQLException {
-        MergeContext mergeContext = new MergeContext();
-        mergeContext.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
-        mergeContext.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
-        ResultSetMergeContext actual = new ResultSetMergeContext(new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), mergeContext);
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        sqlParsedResult.getOrderByContexts().add(new OrderByContext("order_col", OrderType.ASC, Optional.<String>absent()));
+        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
+        ResultSetMergeContext actual = new ResultSetMergeContext(
+                new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), sqlParsedResult);
         actual.setGroupByKeysToCurrentOrderByKeys();
         actual.setOrderByKeysToCurrentOrderByKeys();
         assertThat(actual.getCurrentOrderByKeys().size(), is(1));

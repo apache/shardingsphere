@@ -111,7 +111,7 @@ public final class SQLRouteEngine {
     
     SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(parsedResult.getSqlType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
+        SQLRouteResult result = new SQLRouteResult(parsedResult);
         RoutingResult routingResult = routeSQL(parsedResult.getConditionContext(), parsedResult);
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getSqlBuilder()));
         amendSQLAccordingToRouteResult(parsedResult, parameters, result);
@@ -120,7 +120,6 @@ public final class SQLRouteEngine {
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
         }
-        log.debug("merge context:{}", result.getMergeContext());
         return result;
     }
     
@@ -146,7 +145,7 @@ public final class SQLRouteEngine {
     }
     
     private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        LimitContext limit = sqlRouteResult.getMergeContext().getLimit();
+        LimitContext limit = sqlRouteResult.getSqlParsedResult().getLimit();
         SQLBuilder sqlBuilder = parsedResult.getSqlBuilder();
         if (null != limit) {
             if (1 == sqlRouteResult.getExecutionUnits().size()) {

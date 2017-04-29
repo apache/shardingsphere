@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapp
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
 import com.google.common.base.Function;
@@ -77,7 +77,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
-    private MergeContext mergeContext;
+    private SQLParsedResult sqlParsedResult;
     
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
@@ -115,7 +115,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet rs;
         try {
-            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), mergeContext);
+            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlParsedResult);
         } finally {
             clearRouteContext();
         }
@@ -276,10 +276,10 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
         SQLRouteResult sqlRouteResult = shardingConnection.getShardingContext().getSqlRouteEngine().route(sql);
-        generatedKeyContext = sqlRouteResult.getGeneratedKeyContext();
-        mergeContext = sqlRouteResult.getMergeContext();
+        generatedKeyContext = sqlRouteResult.getSqlParsedResult().getGeneratedKeyContext();
+        sqlParsedResult = sqlRouteResult.getSqlParsedResult();
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatementType()), each.getSql());
+            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlType()), each.getSql());
             replayMethodsInvocation(statement);
             result.addStatement(new StatementExecutorWrapper(statement, each));
         }
@@ -325,7 +325,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : getRoutedStatements()) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = ResultSetFactory.getResultSet(resultSets, mergeContext);
+        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlParsedResult);
         return currentResultSet;
     }
     

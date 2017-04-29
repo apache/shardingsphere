@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
 import com.dangdang.ddframe.rdb.sharding.router.PreparedSQLRouter;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
@@ -92,7 +91,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet rs;
         try {
             rs = ResultSetFactory.getResultSet(
-                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getMergeContext());
+                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlParsedResult());
         } finally {
             clearRouteContext();
         }
@@ -160,11 +159,11 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     private List<PreparedStatementExecutorWrapper> routeSQL() throws SQLException {
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = preparedSQLRouter.route(getParameters());
-        MergeContext mergeContext = sqlRouteResult.getMergeContext();
-        setMergeContext(mergeContext);
-        setGeneratedKeyContext(sqlRouteResult.getGeneratedKeyContext());
+        setSqlParsedResult(sqlRouteResult.getSqlParsedResult());
+        setGeneratedKeyContext(sqlRouteResult.getSqlParsedResult().getGeneratedKeyContext());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = (PreparedStatement) getStatement(getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatementType()), each.getSql());
+            PreparedStatement preparedStatement = (PreparedStatement) getStatement(
+                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlType()), each.getSql());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));

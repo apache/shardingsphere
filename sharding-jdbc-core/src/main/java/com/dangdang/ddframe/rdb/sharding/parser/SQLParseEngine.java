@@ -77,7 +77,7 @@ public final class SQLParseEngine {
             if (each instanceof AggregationSelectItemContext) {
                 AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
                 // TODO index获取不准，考虑使用别名替换
-                sqlParsedResult.getMergeContext().getAggregationColumns().add(aggregationSelectItemContext);
+                sqlParsedResult.getAggregationColumns().add(aggregationSelectItemContext);
                 if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
                     AggregationSelectItemContext aggregationSelectItemContext1 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(0);
                     AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(), 
@@ -85,27 +85,27 @@ public final class SQLParseEngine {
                     AggregationSelectItemContext aggregationSelectItemContext2 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(1);
                     AggregationSelectItemContext column2 = new AggregationSelectItemContext(aggregationSelectItemContext2.getInnerExpression(), aggregationSelectItemContext2.getAlias(), 
                             aggregationSelectItemContext2.getIndex(), aggregationSelectItemContext2.getAggregationType());
-                    sqlParsedResult.getMergeContext().getAggregationColumns().add(column1);
-                    sqlParsedResult.getMergeContext().getAggregationColumns().add(column2);
+                    sqlParsedResult.getAggregationColumns().add(column1);
+                    sqlParsedResult.getAggregationColumns().add(column2);
                 }
             }
         }
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
-                sqlParsedResult.getMergeContext().getGroupByContexts().add(each);
+                sqlParsedResult.getGroupByContexts().add(each);
             }
         }
         if (!sqlContext.getOrderByContexts().isEmpty()) {
             for (OrderByContext each : sqlContext.getOrderByContexts()) {
                 if (each.getIndex().isPresent()) {
-                    sqlParsedResult.getMergeContext().getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
+                    sqlParsedResult.getOrderByContexts().add(new OrderByContext(each.getIndex().get(), each.getOrderByType()));
                 } else {
-                    sqlParsedResult.getMergeContext().getOrderByContexts().add(each);
+                    sqlParsedResult.getOrderByContexts().add(each);
                 }
             }
         }
         if (null != sqlContext.getLimitContext()) {
-            sqlParsedResult.getMergeContext().setLimit(sqlContext.getLimitContext());
+            sqlParsedResult.setLimit(sqlContext.getLimitContext());
         }
     }
 }

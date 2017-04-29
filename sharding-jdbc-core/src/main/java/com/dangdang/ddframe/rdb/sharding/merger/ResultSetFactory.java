@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByC
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.MergeContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +46,10 @@ public final class ResultSetFactory {
      * 获取结果集.
      *
      * @param resultSets 结果集列表
-     * @param mergeContext 结果归并上下文
+     * @param sqlParsedResult SQL解析结果上下文
      * @return 结果集包装
      */
-    public static ResultSet getResultSet(final List<ResultSet> resultSets, final MergeContext mergeContext) throws SQLException {
+    public static ResultSet getResultSet(final List<ResultSet> resultSets, final SQLParsedResult sqlParsedResult) throws SQLException {
         ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);
         log.debug("Sharding-JDBC: Sharding result sets type is '{}'", shardingResultSets.getType().toString());
         switch (shardingResultSets.getType()) {
@@ -58,7 +58,7 @@ public final class ResultSetFactory {
             case SINGLE:
                 return buildSingle(shardingResultSets);
             case MULTIPLE:
-                return buildMultiple(shardingResultSets, mergeContext);
+                return buildMultiple(shardingResultSets, sqlParsedResult);
             default:
                 throw new UnsupportedOperationException(shardingResultSets.getType().toString());
         }
@@ -72,8 +72,8 @@ public final class ResultSetFactory {
         return shardingResultSets.getResultSets().get(0);
     }
     
-    private static ResultSet buildMultiple(final ShardingResultSets shardingResultSets, final MergeContext mergeContext) throws SQLException {
-        ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, mergeContext);
+    private static ResultSet buildMultiple(final ShardingResultSets shardingResultSets, final SQLParsedResult sqlParsedResult) throws SQLException {
+        ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlParsedResult);
         return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
     }
     
@@ -82,7 +82,7 @@ public final class ResultSetFactory {
             resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
             return new MemoryOrderByReducerResultSet(resultSetMergeContext);
         }
-        if (resultSetMergeContext.getMergeContext().hasGroupBy() || resultSetMergeContext.getMergeContext().hasOrderBy()) {
+        if (!resultSetMergeContext.getSqlParsedResult().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getOrderByContexts().isEmpty()) {
             return new StreamingOrderByReducerResultSet(resultSetMergeContext);
         }
         return new IteratorReducerResultSet(resultSetMergeContext);
@@ -90,15 +90,15 @@ public final class ResultSetFactory {
     
     private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         ResultSet result = resultSet;
-        if (resultSetMergeContext.getMergeContext().hasGroupByOrAggregation()) {
+        if (!resultSetMergeContext.getSqlParsedResult().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getAggregationColumns().isEmpty()) {
             result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
         if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
             resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
             result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
         }
-        if (resultSetMergeContext.getMergeContext().hasLimit()) {
-            result = new LimitCouplingResultSet(result, resultSetMergeContext.getMergeContext());
+        if (null != resultSetMergeContext.getSqlParsedResult().getLimit()) {
+            result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlParsedResult());
         }
         return result;
     }
