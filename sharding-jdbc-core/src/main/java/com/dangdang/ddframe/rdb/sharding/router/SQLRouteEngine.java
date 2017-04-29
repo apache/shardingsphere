@@ -97,7 +97,7 @@ public final class SQLRouteEngine {
     }
     
     private SQLParsedResult buildHintParsedResult(final String logicSql) {
-        SQLParsedResult result = new SQLParsedResult();
+        SQLParsedResult result = new SQLParsedResult(new ConditionContext());
         result.setSqlType(SQLUtil.getTypeByStart(logicSql));
         log.trace("Get {} SQL Statement", result.getSqlType());
         SQLBuilder sqlBuilder = new SQLBuilder();
@@ -106,17 +106,14 @@ public final class SQLRouteEngine {
         } catch (final IOException ignored) {
         }
         result.setSqlBuilder(sqlBuilder);
-        result.getConditionContexts().add(new ConditionContext());
         return result;
     }
     
     SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(parsedResult.getSqlType(), parsedResult.getMergeContext(), parsedResult.getGeneratedKeyContext());
-        for (ConditionContext each : parsedResult.getConditionContexts()) {
-            RoutingResult routingResult = routeSQL(each, parsedResult);
-            result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getSqlBuilder()));
-        }
+        RoutingResult routingResult = routeSQL(parsedResult.getConditionContext(), parsedResult);
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getSqlBuilder()));
         amendSQLAccordingToRouteResult(parsedResult, parameters, result);
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());

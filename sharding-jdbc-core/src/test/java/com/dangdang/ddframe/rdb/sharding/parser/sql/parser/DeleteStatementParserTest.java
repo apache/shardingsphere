@@ -43,7 +43,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule, parameters);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertTrue(sqlContext.getConditionContexts().isEmpty());
+        assertTrue(sqlContext.getConditionContext().isEmpty());
         assertThat(sqlContext.toSqlBuilder().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
     
@@ -75,7 +75,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     private void assertDeleteStatement(final DeleteSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -143,7 +143,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         DeleteSQLContext sqlContext = (DeleteSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));

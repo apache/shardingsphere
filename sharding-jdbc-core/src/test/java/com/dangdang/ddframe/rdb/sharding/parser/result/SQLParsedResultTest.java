@@ -45,9 +45,8 @@ public final class SQLParsedResultTest {
     @Test
     @Ignore
     public void assertToString() throws IOException {
-        SQLParsedResult actual = new SQLParsedResult();
+        SQLParsedResult actual = new SQLParsedResult(generateConditionContext());
         generateRouteContext(actual);
-        actual.getConditionContexts().add(generateConditionContext());
         generateMergeContext(actual.getMergeContext());
         assertThat(actual.toString(), is("SQLParsedResult(routeContext=RouteContext(tables=[TableContext(originalLiterals=order, name=order, alias=Optional.of(o)), "
                 + "TableContext(originalLiterals=order_item, name=order_item, alias=Optional.absent())], sqlType=null, sqlBuilder=SELECT * FROM [Token(order)]), " 

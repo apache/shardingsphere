@@ -87,7 +87,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getExprParser().equalAny(Symbol.COMMA));
-        getSqlContext().getConditionContexts().add(conditionContext);
+        getSqlContext().setConditionContext(conditionContext);
     }
     
     @Override

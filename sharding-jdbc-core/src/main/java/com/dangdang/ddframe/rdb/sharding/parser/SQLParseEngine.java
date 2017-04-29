@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
@@ -61,12 +60,7 @@ public final class SQLParseEngine {
     }
     
     private SQLParsedResult getSQLParsedResult(final SQLContext sqlContext) {
-        SQLParsedResult result = new SQLParsedResult();
-        if (sqlContext.getConditionContexts().isEmpty()) {
-            result.getConditionContexts().add(new ConditionContext());
-        } else {
-            result.getConditionContexts().addAll(sqlContext.getConditionContexts());
-        }
+        SQLParsedResult result = new SQLParsedResult(sqlContext.getConditionContext());
         for (TableContext each : sqlContext.getTables()) {
             result.getTables().add(each);
         }

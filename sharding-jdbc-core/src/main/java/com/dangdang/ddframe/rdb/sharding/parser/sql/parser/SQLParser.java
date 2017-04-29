@@ -307,7 +307,7 @@ public class SQLParser extends Parser {
         if (equalAny(DefaultKeyword.OR)) {
             throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
         }
-        sqlContext.getConditionContexts().add(conditionContext);
+        sqlContext.setConditionContext(conditionContext);
     }
     
     // TODO 解析组合expr

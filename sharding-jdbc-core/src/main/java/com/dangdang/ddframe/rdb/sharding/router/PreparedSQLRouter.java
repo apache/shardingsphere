@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -55,9 +54,7 @@ public class PreparedSQLRouter {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
         } else {
             generateId(parameters);
-            for (ConditionContext each : sqlParsedResult.getConditionContexts()) {
-                each.setNewConditionValue(parameters);
-            }
+            sqlParsedResult.getConditionContext().setNewConditionValue(parameters);
         }
         return engine.routeSQL(sqlParsedResult, parameters);
     }

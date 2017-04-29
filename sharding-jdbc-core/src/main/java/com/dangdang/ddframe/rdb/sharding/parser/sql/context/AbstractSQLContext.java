@@ -17,20 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -44,13 +44,14 @@ import java.util.List;
 @Getter
 public abstract class AbstractSQLContext implements SQLContext {
     
+    @Setter
+    private ConditionContext conditionContext = new ConditionContext();
+    
     private final String originalSQL;
     
     private final SQLType type;
     
     private final List<TableContext> tables = new ArrayList<>();
-    
-    private final Collection<ConditionContext> conditionContexts = new LinkedList<>();
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     

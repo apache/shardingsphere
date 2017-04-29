@@ -23,13 +23,12 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 /**
  * SQL解析结果.
@@ -37,6 +36,7 @@ import java.util.List;
  * @author gaohongtao
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -48,9 +48,9 @@ public final class SQLParsedResult {
     
     private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
     
-    private final Collection<TableContext> tables = new LinkedHashSet<>();
+    private final ConditionContext conditionContext;
     
-    private final List<ConditionContext> conditionContexts = new ArrayList<>();
+    private final Collection<TableContext> tables = new LinkedHashSet<>();
     
     private final MergeContext mergeContext = new MergeContext();
 }

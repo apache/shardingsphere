@@ -17,14 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.google.common.base.Optional;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,11 +41,18 @@ public interface SQLContext {
     List<TableContext> getTables();
     
     /**
-     * 获取条件对象上下文集合.
+     * 获取条件对象上下文.
      * 
-     * @return 条件对象上下文集合
+     * @return 条件对象上下文
      */
-    Collection<ConditionContext> getConditionContexts();
+    ConditionContext getConditionContext();
+    
+    /**
+     * 设置条件对象上下文.
+     *
+     * @param conditionContext  条件对象上下文
+     */
+    void setConditionContext(ConditionContext conditionContext);
     
     /**
      * 获取SQL语言标记对象集合.

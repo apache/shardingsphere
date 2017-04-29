@@ -90,8 +90,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void assertInsertStatement(final InsertSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(sqlContext.getConditionContexts().size(), is(1));
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition1 = conditions.next();
         assertThat(condition1.getColumn().getColumnName(), is("field1"));
         assertThat(condition1.getColumn().getTableName(), is("TABLE_XXX"));
@@ -154,7 +153,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));

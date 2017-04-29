@@ -43,7 +43,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule, parameters);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertTrue(sqlContext.getConditionContexts().isEmpty());
+        assertTrue(sqlContext.getConditionContext().isEmpty());
         assertThat(sqlContext.toSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
     
@@ -75,7 +75,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     private void assertUpdateStatement(final UpdateSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));
@@ -134,7 +134,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = sqlContext.getConditionContexts().iterator().next().getAllConditions().iterator();
+        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
         Condition condition = conditions.next();
         assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition.getColumn().getColumnName(), is("field1"));

@@ -185,7 +185,7 @@ public abstract class AbstractInsertParser {
             }
             exprParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
-            sqlContext.getConditionContexts().add(conditionContext);
+            sqlContext.setConditionContext(conditionContext);
         }
         while (exprParser.equalAny(Symbol.COMMA));
     }
