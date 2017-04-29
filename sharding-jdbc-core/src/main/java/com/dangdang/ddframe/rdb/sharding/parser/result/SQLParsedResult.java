@@ -42,13 +42,13 @@ import java.util.List;
 @ToString
 public final class SQLParsedResult {
     
-    private final Collection<TableContext> tables = new LinkedHashSet<>();
-    
-    private SQLType sqlStatementType;
+    private SQLType sqlType;
     
     private SQLBuilder sqlBuilder;
     
     private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
+    
+    private final Collection<TableContext> tables = new LinkedHashSet<>();
     
     private final List<ConditionContext> conditionContexts = new ArrayList<>();
     

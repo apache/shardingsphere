@@ -70,7 +70,7 @@ public final class SQLParseEngine {
         for (TableContext each : sqlContext.getTables()) {
             result.getTables().add(each);
         }
-        result.setSqlStatementType(sqlContext.getType());
+        result.setSqlType(sqlContext.getType());
         return result;
     }
     
