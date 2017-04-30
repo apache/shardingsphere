@@ -47,8 +47,8 @@ public final class SelectSQLContext extends AbstractSQLContext {
     
     private LimitContext limitContext;
     
-    public SelectSQLContext(final String originalSQL) {
-        super(originalSQL, SQLType.SELECT);
+    public SelectSQLContext() {
+        super(SQLType.SELECT);
     }
     
     /**

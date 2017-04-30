@@ -64,7 +64,8 @@ public abstract class AbstractSelectParser {
     
     public AbstractSelectParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
-        sqlContext = new SelectSQLContext(getExprParser().getLexer().getInput());
+        sqlContext = new SelectSQLContext();
+        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
     }
     
     /**
@@ -77,7 +78,7 @@ public abstract class AbstractSelectParser {
         sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         customizedSelect();
         if (!itemsToken.getItems().isEmpty()) {
-            sqlContext.getSqlTokens().add(itemsToken);
+            exprParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
         }
         return sqlContext;
     }
@@ -318,7 +319,7 @@ public abstract class AbstractSelectParser {
             return;
         }
         // FIXME 根据shardingRule过滤table
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
+        exprParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
         sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getExprParser().parseAlias()));
     }
     
@@ -340,12 +341,14 @@ public abstract class AbstractSelectParser {
     
     private void parseTableCondition(final int startPosition) {
         SQLExpr sqlExpr = exprParser.parseExpression();
-        if (sqlExpr instanceof SQLPropertyExpr) {
-            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
-            for (TableContext each : sqlContext.getTables()) {
-                if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
-                    sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
-                }
+        if (!(sqlExpr instanceof SQLPropertyExpr)) {
+            return;
+        }
+        SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
+        for (TableContext each : sqlContext.getTables()) {
+            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
+                exprParser.getSqlBuilderContext().getSqlTokens().add(
+                        new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
             }
         }
     }

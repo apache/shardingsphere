@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
  */
 public final class UpdateSQLContext extends AbstractSQLContext {
     
-    public UpdateSQLContext(final String originalSQL) {
-        super(originalSQL, SQLType.UPDATE);
+    public UpdateSQLContext() {
+        super(SQLType.UPDATE);
     }
 }

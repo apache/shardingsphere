@@ -39,7 +39,8 @@ public abstract class AbstractDeleteParser {
     
     public AbstractDeleteParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
-        sqlContext = new DeleteSQLContext(exprParser.getLexer().getInput());
+        sqlContext = new DeleteSQLContext();
+        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
     }
     
     /**

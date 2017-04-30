@@ -62,7 +62,8 @@ public abstract class AbstractInsertParser {
         this.exprParser = exprParser;
         this.shardingRule = shardingRule;
         this.parameters = parameters;
-        sqlContext = new InsertSQLContext(exprParser.getLexer().getInput());
+        sqlContext = new InsertSQLContext();
+        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
     }
     
     /**
@@ -127,7 +128,7 @@ public abstract class AbstractInsertParser {
                 result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
             }
             if (!itemsToken.getItems().isEmpty()) {
-                sqlContext.getSqlTokens().add(itemsToken);
+                exprParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
             }
             exprParser.getLexer().nextToken();
         }
@@ -181,7 +182,7 @@ public abstract class AbstractInsertParser {
                 count++;
             }
             if (!itemsToken.getItems().isEmpty()) {
-                sqlContext.getSqlTokens().add(itemsToken);
+                exprParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
             }
             exprParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;

@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
@@ -54,22 +55,23 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public class SQLParser extends Parser {
     
-    @Getter
     private final ShardingRule shardingRule;
     
-    @Getter
     private final List<Object> parameters;
     
-    @Getter
-    @Setter
+    private final SQLBuilderContext sqlBuilderContext;
+    
     private int parametersIndex;
     
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule, final List<Object> parameters) {
         super(lexer);
         this.shardingRule = shardingRule;
         this.parameters = parameters;
+        sqlBuilderContext = new SQLBuilderContext(lexer.getInput());
     }
     
     /**
@@ -160,7 +162,7 @@ public class SQLParser extends Parser {
         String tableName = sqlContext.getTables().get(0).getName();
         String owner = propertyExpr.getOwner().getName();
         if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+            sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
         }
     }
     
@@ -220,7 +222,7 @@ public class SQLParser extends Parser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
         sqlContext.getTables().add(tableContext);
     }
     
@@ -277,7 +279,7 @@ public class SQLParser extends Parser {
             expression.append(value);
             getLexer().nextToken();
             if (equalAny(Symbol.DOT)) {
-                sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
+                sqlBuilderContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
         return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), index, false);

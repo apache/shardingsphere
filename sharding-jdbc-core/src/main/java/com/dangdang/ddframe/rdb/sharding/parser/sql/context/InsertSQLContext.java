@@ -28,10 +28,9 @@ import lombok.Getter;
 @Getter
 public final class InsertSQLContext extends AbstractSQLContext {
     
-    private final GeneratedKeyContext generatedKeyContext;
+    private final GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
     
-    public InsertSQLContext(final String originalSQL) {
-        super(originalSQL, SQLType.INSERT);
-        generatedKeyContext = new GeneratedKeyContext();
+    public InsertSQLContext() {
+        super(SQLType.INSERT);
     }
 }

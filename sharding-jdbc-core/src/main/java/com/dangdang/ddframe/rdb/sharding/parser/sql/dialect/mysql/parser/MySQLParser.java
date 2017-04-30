@@ -69,7 +69,7 @@ public final class MySQLParser extends SQLParser {
             return getLimitContextWithOffset(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
-            sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         if (value < 0) {
             throw new SQLParserException("LIMIT offset and row count can not be a negative value");
@@ -96,10 +96,10 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForValue) {
-            sqlContext.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
+            getSqlBuilderContext().getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
         }
         if (!isParameterForRowCount) {
-            sqlContext.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
+            getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
         if (value < 0 || rowCount < 0) {
             throw new SQLParserException("LIMIT offset and row count can not be a negative value");
@@ -126,10 +126,10 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForOffset) {
-            sqlContext.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+            getSqlBuilderContext().getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
         }
         if (!isParameterForValue) {
-            sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         if (value < 0 || offset < 0) {
             throw new SQLParserException("LIMIT offset and row count can not be a negative value");

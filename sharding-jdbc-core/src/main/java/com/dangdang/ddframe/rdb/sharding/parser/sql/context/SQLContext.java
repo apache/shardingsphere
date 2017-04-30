@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.google.common.base.Optional;
 
@@ -32,6 +31,13 @@ import java.util.List;
  * @author zhangliang
  */
 public interface SQLContext {
+    
+    /**
+     * 获取SQL语句类型.
+     *
+     * @return SQL语句类型
+     */
+    SQLType getType();
     
     /**
      * 获取表解析对象集合.
@@ -55,31 +61,24 @@ public interface SQLContext {
     void setConditionContext(ConditionContext conditionContext);
     
     /**
-     * 获取SQL语言标记对象集合.
-     * 
-     * @return SQL语言标记对象集合
-     */
-    List<SQLToken> getSqlTokens();
-    
-    /**
-     * 生成SQL构建器.
-     *
-     * @return SQL构建器
-     */
-    SQLBuilder toSqlBuilder();
-    
-    /**
-     * 获取SQL语句类型.
-     * 
-     * @return SQL语句类型
-     */
-    SQLType getType();
-    
-    /**
      * 获取列对象.
      * 
      * @param expr SQL表达式
      * @return 列对象
      */
     Optional<Condition.Column> findColumn(SQLExpr expr);
+    
+    /**
+     * 获取SQL构建器上下文.
+     * 
+     * @return SQL构建器上下文
+     */
+    SQLBuilderContext getSqlBuilderContext();
+    
+    /**
+     * 设置SQL构建器上下文.
+     *
+     * @param sqlBuilderContext SQL构建器上下文
+     */
+    void setSqlBuilderContext(SQLBuilderContext sqlBuilderContext);
 }

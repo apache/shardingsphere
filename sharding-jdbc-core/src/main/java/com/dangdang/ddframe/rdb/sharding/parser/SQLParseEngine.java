@@ -54,7 +54,7 @@ public final class SQLParseEngine {
         } else if (sqlContext instanceof InsertSQLContext) {
             parseInsert(result, (InsertSQLContext) sqlContext);
         }
-        result.setSqlBuilder(sqlContext.toSqlBuilder());
+        result.setSqlBuilder(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()));
         return result;
     }
     

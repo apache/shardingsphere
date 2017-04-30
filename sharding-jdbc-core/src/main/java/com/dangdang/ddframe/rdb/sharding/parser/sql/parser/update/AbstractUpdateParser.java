@@ -42,7 +42,8 @@ public abstract class AbstractUpdateParser {
     
     public AbstractUpdateParser(final SQLParser exprParser) {
         this.exprParser = exprParser;
-        sqlContext = new UpdateSQLContext(exprParser.getLexer().getInput());
+        sqlContext = new UpdateSQLContext();
+        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
     }
     
     /**
@@ -80,7 +81,7 @@ public abstract class AbstractUpdateParser {
             String tableName = sqlContext.getTables().get(0).getName();
             if (exprParser.skipIfEqual(Symbol.DOT)) {
                 if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+                    exprParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 }
                 exprParser.getLexer().nextToken();
             }
