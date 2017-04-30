@@ -51,6 +51,11 @@ public final class SelectSQLContext extends AbstractSQLContext {
         super(originalSQL, SQLType.SELECT);
     }
     
+    /**
+     * 获取聚合列集合.
+     * 
+     * @return 聚合列集合
+     */
     public List<AggregationSelectItemContext> getAggregationSelectItemContexts() {
         List<AggregationSelectItemContext> result = new LinkedList<>();
         for (SelectItemContext each : itemContexts) {
