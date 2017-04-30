@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -510,18 +509,14 @@ public final class StatementExecutorTest {
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDQL(final Statement statement, final String dataSource) {
-        try {
-            return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, (SQLBuilder) new SQLBuilder().append(SELECT_FROM_DUAL)));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.append(SELECT_FROM_DUAL);
+        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder));
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDML(final Statement statement, final String dataSource) {
-        try {
-            return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, (SQLBuilder) new SQLBuilder().append(DELETE_FROM_DUAL)));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.append(DELETE_FROM_DUAL);
+        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder));
     }
 }

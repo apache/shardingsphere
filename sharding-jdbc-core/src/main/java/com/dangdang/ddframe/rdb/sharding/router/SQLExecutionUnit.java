@@ -40,12 +40,17 @@ public class SQLExecutionUnit {
     
     private final SQLBuilder sqlBuilder;
     
-    public String getSql() {
+    /**
+     * 获取执行SQL.
+     * 
+     * @return 执行SQL
+     */
+    public String getSQL() {
         if (null == sql) {
             sql = sqlBuilder.toSQL();
         } else {
             sql = sqlBuilder.isChanged() ? sqlBuilder.toSQL() : sql;
         }
-        return sql;
+        return sqlBuilder.toSQL();
     }
 }

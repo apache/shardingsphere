@@ -98,7 +98,7 @@ public abstract class AbstractBaseRouteSqlTest {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
-                return input.getSql();
+                return input.getSQL();
             }
         });
         assertThat(actualSQLs, hasItems(targetSQLs.toArray(new String[targetSQLs.size()])));

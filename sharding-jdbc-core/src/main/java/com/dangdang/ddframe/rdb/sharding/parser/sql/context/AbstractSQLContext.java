@@ -29,7 +29,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -176,10 +175,6 @@ public abstract class AbstractSQLContext implements SQLContext {
     }
     
     private void append(final SQLBuilder sqlBuilder, final String literals) {
-        try {
-            sqlBuilder.append(literals);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        sqlBuilder.append(literals);
     }
 }

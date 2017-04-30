@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,15 +31,15 @@ import java.util.Map;
  * 
  * @author gaohongtao
  */
-public class SQLBuilder implements Appendable {
-    
-    private final List<SQLBuilder> derivedSQLBuilders = new ArrayList<>();
+public class SQLBuilder {
     
     private final List<Object> segments;
     
     private final Map<String, StringToken> tokenMap;
     
     private final List<StringToken> newTokenList = new LinkedList<>();
+    
+    private final List<SQLBuilder> derivedSQLBuilders = new ArrayList<>();
     
     private StringBuilder currentSegment;
     
@@ -156,23 +155,14 @@ public class SQLBuilder implements Appendable {
         return result.toString();
     }
     
-    @Override
-    public Appendable append(final CharSequence sql) throws IOException {
-        currentSegment.append(sql);
+    /**
+     * 追加字面量.
+     * 
+     * @param literals 字面量
+     */
+    public void append(final String literals) {
+        currentSegment.append(literals);
         changeState();
-        return this;
-    }
-    
-    @Override
-    public Appendable append(final CharSequence sql, final int start, final int end) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public Appendable append(final char c) throws IOException {
-        currentSegment.append(c);
-        changeState();
-        return this;
     }
 
     private void changeState() {

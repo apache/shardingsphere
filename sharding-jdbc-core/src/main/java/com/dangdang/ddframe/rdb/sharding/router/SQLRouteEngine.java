@@ -41,7 +41,6 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -100,10 +99,7 @@ public final class SQLRouteEngine {
         SQLParsedResult result = new SQLParsedResult(SQLUtil.getTypeByStart(logicSql), new ConditionContext());
         log.trace("Get {} SQL Statement", result.getSqlType());
         SQLBuilder sqlBuilder = new SQLBuilder();
-        try {
-            sqlBuilder.append(logicSql);
-        } catch (final IOException ignored) {
-        }
+        sqlBuilder.append(logicSql);
         result.setSqlBuilder(sqlBuilder);
         return result;
     }
@@ -117,7 +113,7 @@ public final class SQLRouteEngine {
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
-            log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
+            log.debug("{}:{} {}", each.getDataSource(), each.getSQL(), parameters);
         }
         return result;
     }

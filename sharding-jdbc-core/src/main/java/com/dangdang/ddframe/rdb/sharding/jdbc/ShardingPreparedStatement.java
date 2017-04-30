@@ -163,7 +163,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         setGeneratedKeyContext(sqlRouteResult.getSqlParsedResult().getGeneratedKeyContext());
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = (PreparedStatement) getStatement(
-                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlType()), each.getSql());
+                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlType()), each.getSQL());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));

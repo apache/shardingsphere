@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -392,10 +391,8 @@ public final class PreparedStatementExecutorTest {
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final String dataSource, final String sql) {
-        try {
-            return new PreparedStatementExecutorWrapper(preparedStatement, Collections.emptyList(), new SQLExecutionUnit(dataSource, (SQLBuilder) new SQLBuilder().append(sql)));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        SQLBuilder sqlBuilder = new SQLBuilder();
+        sqlBuilder.append(sql);
+        return new PreparedStatementExecutorWrapper(preparedStatement, Collections.emptyList(), new SQLExecutionUnit(dataSource, sqlBuilder));
     }
 }

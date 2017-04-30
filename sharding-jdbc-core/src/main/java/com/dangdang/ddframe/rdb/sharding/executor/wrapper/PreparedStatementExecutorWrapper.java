@@ -53,10 +53,10 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
         super(sqlExecutionUnit);
         this.preparedStatement = preparedStatement;
         if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
+            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSQL(), Lists.newArrayList(parameters)));
             dqlExecutionEvent = Optional.absent();
         } else if (isDQL()) {
-            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
+            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSQL(), Lists.newArrayList(parameters)));
             dmlExecutionEvent = Optional.absent();
         } else {
             dmlExecutionEvent = Optional.absent();
