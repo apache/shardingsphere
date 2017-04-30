@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import lombok.RequiredArgsConstructor;
@@ -72,21 +71,18 @@ public final class SQLParseEngine {
     }
     
     private void parseSelect(final SQLParsedResult sqlParsedResult, final SelectSQLContext sqlContext) {
-        for (SelectItemContext each : sqlContext.getItemContexts()) {
-            if (each instanceof AggregationSelectItemContext) {
-                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-                // TODO index获取不准，考虑使用别名替换
-                sqlParsedResult.getAggregationColumns().add(aggregationSelectItemContext);
-                if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
-                    AggregationSelectItemContext aggregationSelectItemContext1 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(0);
-                    AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(), 
-                            aggregationSelectItemContext1.getIndex(), aggregationSelectItemContext1.getAggregationType());
-                    AggregationSelectItemContext aggregationSelectItemContext2 = aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().get(1);
-                    AggregationSelectItemContext column2 = new AggregationSelectItemContext(aggregationSelectItemContext2.getInnerExpression(), aggregationSelectItemContext2.getAlias(), 
-                            aggregationSelectItemContext2.getIndex(), aggregationSelectItemContext2.getAggregationType());
-                    sqlParsedResult.getAggregationColumns().add(column1);
-                    sqlParsedResult.getAggregationColumns().add(column2);
-                }
+        for (AggregationSelectItemContext each : sqlContext.getAggregationSelectItemContexts()) {
+            // TODO index获取不准，考虑使用别名替换
+            sqlParsedResult.getAggregationColumns().add(each);
+            if (AggregationType.AVG.equals(each.getAggregationType())) {
+                AggregationSelectItemContext aggregationSelectItemContext1 = each.getDerivedAggregationSelectItemContexts().get(0);
+                AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(),
+                        aggregationSelectItemContext1.getIndex(), aggregationSelectItemContext1.getAggregationType());
+                AggregationSelectItemContext aggregationSelectItemContext2 = each.getDerivedAggregationSelectItemContexts().get(1);
+                AggregationSelectItemContext column2 = new AggregationSelectItemContext(aggregationSelectItemContext2.getInnerExpression(), aggregationSelectItemContext2.getAlias(),
+                        aggregationSelectItemContext2.getIndex(), aggregationSelectItemContext2.getAggregationType());
+                sqlParsedResult.getAggregationColumns().add(column1);
+                sqlParsedResult.getAggregationColumns().add(column2);
             }
         }
         if (!sqlContext.getGroupByContexts().isEmpty()) {

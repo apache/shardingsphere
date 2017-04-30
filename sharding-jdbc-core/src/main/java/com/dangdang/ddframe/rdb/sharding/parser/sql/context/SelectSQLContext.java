@@ -50,4 +50,14 @@ public final class SelectSQLContext extends AbstractSQLContext {
     public SelectSQLContext(final String originalSQL) {
         super(originalSQL, SQLType.SELECT);
     }
+    
+    public List<AggregationSelectItemContext> getAggregationSelectItemContexts() {
+        List<AggregationSelectItemContext> result = new LinkedList<>();
+        for (SelectItemContext each : itemContexts) {
+            if (each instanceof AggregationSelectItemContext) {
+                result.add((AggregationSelectItemContext) each);
+            }
+        }
+        return result;
+    }
 }
