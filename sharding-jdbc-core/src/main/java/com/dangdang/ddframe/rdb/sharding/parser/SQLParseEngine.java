@@ -60,11 +60,10 @@ public final class SQLParseEngine {
     }
     
     private SQLParsedResult getSQLParsedResult(final SQLContext sqlContext) {
-        SQLParsedResult result = new SQLParsedResult(sqlContext.getConditionContext());
+        SQLParsedResult result = new SQLParsedResult(sqlContext.getType(), sqlContext.getConditionContext());
         for (TableContext each : sqlContext.getTables()) {
             result.getTables().add(each);
         }
-        result.setSqlType(sqlContext.getType());
         return result;
     }
     

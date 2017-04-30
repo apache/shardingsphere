@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
@@ -47,11 +48,13 @@ import java.util.List;
 @ToString
 public final class SQLParsedResult {
     
-    private SQLType sqlType;
+    private final SQLType sqlType;
     
     private SQLBuilder sqlBuilder;
     
     private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
+    
+    private LimitContext limit;
     
     private final ConditionContext conditionContext;
     
@@ -62,6 +65,4 @@ public final class SQLParsedResult {
     private final List<GroupByContext> groupByContexts = new ArrayList<>();
     
     private final List<AggregationSelectItemContext> aggregationColumns = new ArrayList<>();
-    
-    private LimitContext limit;
 }

@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.result;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
@@ -44,7 +45,7 @@ public final class SQLParsedResultTest {
     @Test
     @Ignore
     public void assertToString() throws IOException {
-        SQLParsedResult actual = new SQLParsedResult(generateConditionContext());
+        SQLParsedResult actual = new SQLParsedResult(SQLType.SELECT, generateConditionContext());
         generateRouteContext(actual);
         generateMergeContext(actual);
         assertThat(actual.toString(), is("SQLParsedResult(routeContext=RouteContext(tables=[TableContext(originalLiterals=order, name=order, alias=Optional.of(o)), "

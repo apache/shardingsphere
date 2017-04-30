@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
@@ -149,7 +150,7 @@ public abstract class AbstractBaseParseTest {
                 }
             });
         }
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
         if (null != assertObj.getOrderByColumns()) {
             sqlParsedResult.getOrderByContexts().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn, OrderByContext>() {
                 

@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class NullableAggregationResultSetTest {
     
     @Test
     public void assertNullable() throws SQLException {
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
         sqlParsedResult.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
         ResultSet resultSet1;
         ResultSet resultSet2;

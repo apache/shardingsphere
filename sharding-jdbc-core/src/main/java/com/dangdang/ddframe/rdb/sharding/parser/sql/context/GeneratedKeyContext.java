@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parser.result;
+package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;

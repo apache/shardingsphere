@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +69,7 @@ public final class AggregationResultSetTest {
     
     @Test
     public void assertNext() throws SQLException {
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(new ConditionContext());
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
         sqlParsedResult.getAggregationColumns().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0), null, 1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.asList(
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData1))),

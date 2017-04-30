@@ -97,8 +97,7 @@ public final class SQLRouteEngine {
     }
     
     private SQLParsedResult buildHintParsedResult(final String logicSql) {
-        SQLParsedResult result = new SQLParsedResult(new ConditionContext());
-        result.setSqlType(SQLUtil.getTypeByStart(logicSql));
+        SQLParsedResult result = new SQLParsedResult(SQLUtil.getTypeByStart(logicSql), new ConditionContext());
         log.trace("Get {} SQL Statement", result.getSqlType());
         SQLBuilder sqlBuilder = new SQLBuilder();
         try {
