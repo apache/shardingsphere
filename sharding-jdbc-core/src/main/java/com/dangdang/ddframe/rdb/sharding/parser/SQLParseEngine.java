@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
@@ -72,18 +71,7 @@ public final class SQLParseEngine {
     
     private void parseSelect(final SQLParsedResult sqlParsedResult, final SelectSQLContext sqlContext) {
         for (AggregationSelectItemContext each : sqlContext.getAggregationSelectItemContexts()) {
-            // TODO index获取不准，考虑使用别名替换
             sqlParsedResult.getAggregationColumns().add(each);
-            if (AggregationType.AVG.equals(each.getAggregationType())) {
-                AggregationSelectItemContext aggregationSelectItemContext1 = each.getDerivedAggregationSelectItemContexts().get(0);
-                AggregationSelectItemContext column1 = new AggregationSelectItemContext(aggregationSelectItemContext1.getInnerExpression(), aggregationSelectItemContext1.getAlias(),
-                        aggregationSelectItemContext1.getIndex(), aggregationSelectItemContext1.getAggregationType());
-                AggregationSelectItemContext aggregationSelectItemContext2 = each.getDerivedAggregationSelectItemContexts().get(1);
-                AggregationSelectItemContext column2 = new AggregationSelectItemContext(aggregationSelectItemContext2.getInnerExpression(), aggregationSelectItemContext2.getAlias(),
-                        aggregationSelectItemContext2.getIndex(), aggregationSelectItemContext2.getAggregationType());
-                sqlParsedResult.getAggregationColumns().add(column1);
-                sqlParsedResult.getAggregationColumns().add(column2);
-            }
         }
         if (!sqlContext.getGroupByContexts().isEmpty()) {
             for (GroupByContext each : sqlContext.getGroupByContexts()) {
