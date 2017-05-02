@@ -19,11 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -69,8 +68,8 @@ public final class OrderByResultSetTest {
     }
     
     private SQLParsedResult createSQLParsedResult(final OrderType orderType) {
-        SQLParsedResult result = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
-        result.getOrderByContexts().add(new OrderByContext("name", orderType, Optional.<String>absent()));
+        SQLParsedResult result = new SQLParsedResult(new SelectSQLContext());
+        result.getSqlContext().getOrderByContexts().add(new OrderByContext("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

@@ -20,16 +20,19 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +51,11 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private ConditionContext conditionContext = new ConditionContext();
     
+    @Getter(AccessLevel.NONE)
     private SQLBuilderContext sqlBuilderContext;
+    
+    @Setter(AccessLevel.NONE)
+    private SQLBuilder sqlBuilder;
     
     @Override
     public final SQLType getType() {
@@ -100,5 +107,37 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private Condition.Column createColumn(final String columnName, final String tableName) {
         return new Condition.Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
+    }
+    
+    @Override
+    public List<OrderByContext> getOrderByContexts() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public List<GroupByContext> getGroupByContexts() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public List<AggregationSelectItemContext> getAggregationSelectItemContexts() {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public LimitContext getLimitContext() {
+        return null;
+    }
+    
+    @Override
+    public void setLimitContext(final LimitContext limitContext) {
+    }
+    
+    @Override
+    public SQLBuilder getSqlBuilder() {
+        if (null == sqlBuilder) {
+            sqlBuilder = sqlBuilderContext.toSqlBuilder(tables);  
+        }
+        return sqlBuilder;
     }
 }

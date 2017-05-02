@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.google.common.base.Optional;
 
@@ -69,11 +70,11 @@ public interface SQLContext {
     Optional<Condition.Column> findColumn(SQLExpr expr);
     
     /**
-     * 获取SQL构建器上下文.
+     * 获取SQL构建器.
      * 
-     * @return SQL构建器上下文
+     * @return SQL构建器
      */
-    SQLBuilderContext getSqlBuilderContext();
+    SQLBuilder getSqlBuilder();
     
     /**
      * 设置SQL构建器上下文.
@@ -81,4 +82,39 @@ public interface SQLContext {
      * @param sqlBuilderContext SQL构建器上下文
      */
     void setSqlBuilderContext(SQLBuilderContext sqlBuilderContext);
+    
+    /**
+     * 获取排序上下文集合.
+     * 
+     * @return 排序上下文集合
+     */
+    List<OrderByContext> getOrderByContexts();
+    
+    /**
+     * 获取分组上下文集合.
+     * 
+     * @return 分组上下文集合
+     */
+    List<GroupByContext> getGroupByContexts();
+    
+    /**
+     * 获取聚合上下文集合.
+     * 
+     * @return 聚合上下文集合
+     */
+    List<AggregationSelectItemContext> getAggregationSelectItemContexts();
+    
+    /**
+     * 获取分页上下文.
+     * 
+     * @return 分页上下文
+     */
+    LimitContext getLimitContext();
+    
+    /**
+     * 设置分页上下文.
+     *
+     * @param limitContext  分页上下文
+     */
+    void setLimitContext(LimitContext limitContext);
 }

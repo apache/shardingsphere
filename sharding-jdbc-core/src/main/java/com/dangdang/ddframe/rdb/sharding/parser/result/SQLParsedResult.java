@@ -17,24 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result;
 
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GeneratedKeyContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
 
 /**
  * SQL解析结果.
@@ -48,21 +35,5 @@ import java.util.List;
 @ToString
 public final class SQLParsedResult {
     
-    private final SQLType type;
-    
-    private SQLBuilder sqlBuilder;
-    
-    private GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
-    
-    private LimitContext limit;
-    
-    private final ConditionContext conditionContext;
-    
-    private final Collection<TableContext> tables = new LinkedHashSet<>();
-    
-    private final List<OrderByContext> orderByContexts = new ArrayList<>();
-    
-    private final List<GroupByContext> groupByContexts = new ArrayList<>();
-    
-    private final List<AggregationSelectItemContext> aggregationColumns = new ArrayList<>();
+    private final SQLContext sqlContext;
 }

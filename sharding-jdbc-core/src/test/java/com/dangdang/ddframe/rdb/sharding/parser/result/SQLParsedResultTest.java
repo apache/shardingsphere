@@ -19,16 +19,16 @@ package com.dangdang.ddframe.rdb.sharding.parser.result;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLBuilderContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Optional;
 import org.junit.Ignore;
@@ -45,7 +45,7 @@ public final class SQLParsedResultTest {
     @Test
     @Ignore
     public void assertToString() throws IOException {
-        SQLParsedResult actual = new SQLParsedResult(SQLType.SELECT, generateConditionContext());
+        SQLParsedResult actual = new SQLParsedResult(new SelectSQLContext());
         generateRouteContext(actual);
         generateMergeContext(actual);
         assertThat(actual.toString(), is("SQLParsedResult(routeContext=RouteContext(tables=[TableContext(originalLiterals=order, name=order, alias=Optional.of(o)), "
@@ -59,17 +59,10 @@ public final class SQLParsedResultTest {
                 + "limit=Limit(offset=0, rowCount=10, offsetParameterIndex=-1, rowCountParameterIndex=-1, multiShardingOffset=0, multiShardingRowCount=10)))"));
     }
     
-    private void generateRouteContext(final SQLParsedResult sqlParsedResult) throws IOException {
-        sqlParsedResult.getTables().add(new TableContext("order", Optional.of("o")));
-        sqlParsedResult.getTables().add(new TableContext("order_item", Optional.<String>absent()));
-        sqlParsedResult.setSqlBuilder(generateSqlBuilder());
-    }
-    
-    private SQLBuilder generateSqlBuilder() throws IOException {
-        SQLBuilder result = new SQLBuilder();
-        result.append("SELECT * FROM ");
-        result.appendToken("order");
-        return result;
+    private void generateRouteContext(final SQLParsedResult sqlParsedResult) {
+        sqlParsedResult.getSqlContext().getTables().add(new TableContext("order", Optional.of("o")));
+        sqlParsedResult.getSqlContext().getTables().add(new TableContext("order_item", Optional.<String>absent()));
+        sqlParsedResult.getSqlContext().setSqlBuilderContext(new SQLBuilderContext("SELECT * FROM order"));
     }
     
     private ConditionContext generateConditionContext() {
@@ -81,9 +74,9 @@ public final class SQLParsedResultTest {
     }
     
     private void generateMergeContext(final SQLParsedResult sqlParsedResult) {
-        sqlParsedResult.getAggregationColumns().add(new AggregationSelectItemContext("COUNT(id)", Optional.of("c"), -1, AggregationType.COUNT));
-        sqlParsedResult.getOrderByContexts().add(new OrderByContext("id", OrderType.DESC, Optional.of("a")));
-        sqlParsedResult.getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "id", OrderType.ASC, Optional.of("d")));
-        sqlParsedResult.setLimit(new LimitContext(0, 10, -1, -1));
+        sqlParsedResult.getSqlContext().getAggregationSelectItemContexts().add(new AggregationSelectItemContext("COUNT(id)", Optional.of("c"), -1, AggregationType.COUNT));
+        sqlParsedResult.getSqlContext().getOrderByContexts().add(new OrderByContext("id", OrderType.DESC, Optional.of("a")));
+        sqlParsedResult.getSqlContext().getGroupByContexts().add(new GroupByContext(Optional.<String>absent(), "id", OrderType.ASC, Optional.of("d")));
+        sqlParsedResult.getSqlContext().setLimitContext(new LimitContext(0, 10, -1, -1));
     }
 }

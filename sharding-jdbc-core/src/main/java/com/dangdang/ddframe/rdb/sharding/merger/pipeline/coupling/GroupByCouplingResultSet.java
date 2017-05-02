@@ -48,8 +48,8 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
     public GroupByCouplingResultSet(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(Collections.singletonList(resultSet));
-        groupByContexts = resultSetMergeContext.getSqlParsedResult().getGroupByContexts();
-        aggregationColumns = resultSetMergeContext.getSqlParsedResult().getAggregationColumns();
+        groupByContexts = resultSetMergeContext.getSqlParsedResult().getSqlContext().getGroupByContexts();
+        aggregationColumns = resultSetMergeContext.getSqlParsedResult().getSqlContext().getAggregationSelectItemContexts();
     }
     
     @Override

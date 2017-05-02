@@ -21,6 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.router.PreparedSQLRouter;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
@@ -160,10 +162,14 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = preparedSQLRouter.route(getParameters());
         setSqlParsedResult(sqlRouteResult.getSqlParsedResult());
-        setGeneratedKeyContext(sqlRouteResult.getSqlParsedResult().getGeneratedKeyContext());
+        if (sqlRouteResult.getSqlParsedResult().getSqlContext() instanceof InsertSQLContext) {
+            setGeneratedKeyContext(((InsertSQLContext) sqlRouteResult.getSqlParsedResult().getSqlContext()).getGeneratedKeyContext());
+        } else {
+            setGeneratedKeyContext(new GeneratedKeyContext());
+        }
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = (PreparedStatement) getStatement(
-                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getType()), each.getSQL());
+                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlContext().getType()), each.getSQL());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));

@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -54,18 +55,21 @@ public class PreparedSQLRouter {
             sqlParsedResult = engine.parseSQL(logicSql, parameters);
         } else {
             generateId(parameters);
-            sqlParsedResult.getConditionContext().setNewConditionValue(parameters);
+            sqlParsedResult.getSqlContext().getConditionContext().setNewConditionValue(parameters);
         }
         return engine.routeSQL(sqlParsedResult, parameters);
     }
     
     private void generateId(final List<Object> parameters) {
-        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getTables().iterator().next().getName());
+        if (!(sqlParsedResult.getSqlContext() instanceof InsertSQLContext)) {
+            return;
+        }
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getSqlContext().getTables().iterator().next().getName());
         if (!tableRuleOptional.isPresent()) {
             return;
         }
         TableRule tableRule = tableRuleOptional.get();
-        GeneratedKeyContext generatedKeyContext = sqlParsedResult.getGeneratedKeyContext();
+        GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlParsedResult.getSqlContext()).getGeneratedKeyContext();
         for (String each : generatedKeyContext.getColumns()) {
             Object id = tableRule.generateId(each);
             parameters.add(id);

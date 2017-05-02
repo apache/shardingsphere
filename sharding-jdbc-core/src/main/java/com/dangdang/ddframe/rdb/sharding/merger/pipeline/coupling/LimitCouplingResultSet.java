@@ -39,7 +39,7 @@ public final class LimitCouplingResultSet extends AbstractDelegateResultSet {
     
     public LimitCouplingResultSet(final ResultSet resultSet, final SQLParsedResult sqlParsedResult) throws SQLException {
         super(Collections.singletonList(resultSet));
-        limit = sqlParsedResult.getLimit();
+        limit = sqlParsedResult.getSqlContext().getLimitContext();
     }
     
     @Override

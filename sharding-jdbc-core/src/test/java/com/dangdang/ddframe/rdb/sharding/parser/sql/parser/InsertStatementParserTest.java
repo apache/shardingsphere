@@ -55,7 +55,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
+        assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
     @Test
@@ -65,7 +65,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()).toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
+        assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
     @Test
@@ -75,7 +75,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
+        assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     @Test
@@ -85,7 +85,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
+        assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
     }
     
     private void assertInsertStatement(final InsertSQLContext sqlContext) {
@@ -161,7 +161,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         assertFalse(conditions.hasNext());
-        assertThat(sqlContext.getSqlBuilderContext().toSqlBuilder(sqlContext.getTables()).toString(), is(expectedSQL));
+        assertThat(sqlContext.getSqlBuilder().toString(), is(expectedSQL));
     }
     
     @Test(expected = UnsupportedOperationException.class)

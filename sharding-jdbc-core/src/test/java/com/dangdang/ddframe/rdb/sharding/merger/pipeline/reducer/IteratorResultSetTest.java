@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import org.junit.Test;
 
 import java.sql.ResultSet;
@@ -37,7 +36,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNext() throws SQLException {
         ResultSet resultSet = ResultSetFactory.getResultSet(
-                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SQLParsedResult(SQLType.SELECT, new ConditionContext()));
+                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SQLParsedResult(new SelectSQLContext()));
         int count = 0;
         while (resultSet.next()) {
             count++;
@@ -47,8 +46,8 @@ public final class IteratorResultSetTest {
     
     @Test
     public void assertNextWithLimitForAllData() throws SQLException {
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
-        sqlParsedResult.setLimit(new LimitContext(1, 10, -1, -1));
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new SelectSQLContext());
+        sqlParsedResult.getSqlContext().setLimitContext(new LimitContext(1, 10, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), sqlParsedResult);
         int count = 0;
         while (resultSet.next()) {
@@ -59,8 +58,8 @@ public final class IteratorResultSetTest {
     
     @Test
     public void assertNextWithLimitForPartData() throws SQLException {
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(SQLType.SELECT, new ConditionContext());
-        sqlParsedResult.setLimit(new LimitContext(1, 1, -1, -1));
+        SQLParsedResult sqlParsedResult = new SQLParsedResult(new SelectSQLContext());
+        sqlParsedResult.getSqlContext().setLimitContext(new LimitContext(1, 1, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), sqlParsedResult);
         int count = 0;
         while (resultSet.next()) {

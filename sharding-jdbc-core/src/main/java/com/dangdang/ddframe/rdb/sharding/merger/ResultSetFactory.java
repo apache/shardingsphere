@@ -82,7 +82,7 @@ public final class ResultSetFactory {
             resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
             return new MemoryOrderByReducerResultSet(resultSetMergeContext);
         }
-        if (!resultSetMergeContext.getSqlParsedResult().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getOrderByContexts().isEmpty()) {
+        if (!resultSetMergeContext.getSqlParsedResult().getSqlContext().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getSqlContext().getOrderByContexts().isEmpty()) {
             return new StreamingOrderByReducerResultSet(resultSetMergeContext);
         }
         return new IteratorReducerResultSet(resultSetMergeContext);
@@ -90,14 +90,14 @@ public final class ResultSetFactory {
     
     private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         ResultSet result = resultSet;
-        if (!resultSetMergeContext.getSqlParsedResult().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getAggregationColumns().isEmpty()) {
+        if (!resultSetMergeContext.getSqlParsedResult().getSqlContext().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlParsedResult().getSqlContext().getAggregationSelectItemContexts().isEmpty()) {
             result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
         if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
             resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
             result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
         }
-        if (null != resultSetMergeContext.getSqlParsedResult().getLimit()) {
+        if (null != resultSetMergeContext.getSqlParsedResult().getSqlContext().getLimitContext()) {
             result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlParsedResult());
         }
         return result;
