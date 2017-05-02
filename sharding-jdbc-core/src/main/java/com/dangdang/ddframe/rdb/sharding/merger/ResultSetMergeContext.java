@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -43,20 +43,20 @@ public final class ResultSetMergeContext {
     
     private final ShardingResultSets shardingResultSets;
     
-    private final SQLParsedResult sqlParsedResult;
+    private final SQLContext sqlContext;
     
     private final List<OrderByContext> currentOrderByKeys;
     
-    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLParsedResult sqlParsedResult) throws SQLException {
+    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLContext sqlContext) throws SQLException {
         this.shardingResultSets = shardingResultSets;
-        this.sqlParsedResult = sqlParsedResult;
+        this.sqlContext = sqlContext;
         currentOrderByKeys = new LinkedList<>();
         init();
     }
     
     private void init() throws SQLException {
         setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
-        currentOrderByKeys.addAll(sqlParsedResult.getSqlContext().getOrderByContexts());
+        currentOrderByKeys.addAll(sqlContext.getOrderByContexts());
     }
     
     private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
@@ -76,9 +76,9 @@ public final class ResultSetMergeContext {
     
     private List<IndexColumn> getAllFocusedColumns() {
         List<IndexColumn> result = new LinkedList<>();
-        result.addAll(sqlParsedResult.getSqlContext().getGroupByContexts());
-        result.addAll(sqlParsedResult.getSqlContext().getOrderByContexts());
-        LinkedList<AggregationSelectItemContext> allAggregationColumns = Lists.newLinkedList(sqlParsedResult.getSqlContext().getAggregationSelectItemContexts());
+        result.addAll(sqlContext.getGroupByContexts());
+        result.addAll(sqlContext.getOrderByContexts());
+        LinkedList<AggregationSelectItemContext> allAggregationColumns = Lists.newLinkedList(sqlContext.getAggregationSelectItemContexts());
         while (!allAggregationColumns.isEmpty()) {
             AggregationSelectItemContext firstElement = allAggregationColumns.poll();
             result.add(firstElement);
@@ -95,7 +95,7 @@ public final class ResultSetMergeContext {
      * @return 分组归并是否需要内存排序
      */
     public boolean isNeedMemorySortForGroupBy() {
-        return !sqlParsedResult.getSqlContext().getGroupByContexts().isEmpty() && !currentOrderByKeys.equals(transformGroupByColumnsToOrderByColumns());
+        return !sqlContext.getGroupByContexts().isEmpty() && !currentOrderByKeys.equals(transformGroupByColumnsToOrderByColumns());
     }
     
     /**
@@ -107,7 +107,7 @@ public final class ResultSetMergeContext {
     }
     
     private List<OrderByContext> transformGroupByColumnsToOrderByColumns() {
-        return Lists.transform(sqlParsedResult.getSqlContext().getGroupByContexts(), new Function<GroupByContext, OrderByContext>() {
+        return Lists.transform(sqlContext.getGroupByContexts(), new Function<GroupByContext, OrderByContext>() {
             
             @Override
             public OrderByContext apply(final GroupByContext input) {
@@ -125,7 +125,7 @@ public final class ResultSetMergeContext {
      * @return 排序归并是否需要内存排序
      */
     public boolean isNeedMemorySortForOrderBy() {
-        return !sqlParsedResult.getSqlContext().getOrderByContexts().isEmpty() && !currentOrderByKeys.equals(sqlParsedResult.getSqlContext().getOrderByContexts());
+        return !sqlContext.getOrderByContexts().isEmpty() && !currentOrderByKeys.equals(sqlContext.getOrderByContexts());
     }
     
     /**
@@ -133,6 +133,6 @@ public final class ResultSetMergeContext {
      */
     public void setOrderByKeysToCurrentOrderByKeys() {
         currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(sqlParsedResult.getSqlContext().getOrderByContexts());
+        currentOrderByKeys.addAll(sqlContext.getOrderByContexts());
     }
 }

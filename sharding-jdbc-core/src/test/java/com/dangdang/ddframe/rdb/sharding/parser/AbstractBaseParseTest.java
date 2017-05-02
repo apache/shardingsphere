@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
@@ -31,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectIte
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Function;
@@ -72,16 +72,16 @@ public abstract class AbstractBaseParseTest {
     private final LimitContext limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                 final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLParsedResult expectedSQLParsedResult) {
+                                 final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();
         this.expectedConditionContexts = expectedConditionContext.iterator();
-        this.orderByContexts = expectedSQLParsedResult.getSqlContext().getOrderByContexts().iterator();
-        this.groupByContexts = expectedSQLParsedResult.getSqlContext().getGroupByContexts().iterator();
-        this.aggregationColumns = expectedSQLParsedResult.getSqlContext().getAggregationSelectItemContexts().iterator();
-        this.limit = expectedSQLParsedResult.getSqlContext().getLimitContext();
+        this.orderByContexts = expectedSQLContext.getOrderByContexts().iterator();
+        this.groupByContexts = expectedSQLContext.getGroupByContexts().iterator();
+        this.aggregationColumns = expectedSQLContext.getAggregationSelectItemContexts().iterator();
+        this.limit = expectedSQLContext.getLimitContext();
     }
     
     protected static Collection<Object[]> dataParameters(final String path) {
@@ -150,9 +150,9 @@ public abstract class AbstractBaseParseTest {
                 }
             });
         }
-        SQLParsedResult sqlParsedResult = new SQLParsedResult(new SelectSQLContext());
+        SQLContext sqlContext = new SelectSQLContext();
         if (null != assertObj.getOrderByColumns()) {
-            sqlParsedResult.getSqlContext().getOrderByContexts().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn, OrderByContext>() {
+            sqlContext.getOrderByContexts().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn, OrderByContext>() {
                 
                 @Override
                 public OrderByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.OrderByColumn input) {
@@ -162,7 +162,7 @@ public abstract class AbstractBaseParseTest {
             }));
         }
         if (null != assertObj.getGroupByColumns()) {
-            sqlParsedResult.getSqlContext().getGroupByContexts().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn, GroupByContext>() {
+            sqlContext.getGroupByContexts().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn, GroupByContext>() {
                 
                 @Override
                 public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parser.jaxb.GroupByColumn input) {
@@ -172,7 +172,7 @@ public abstract class AbstractBaseParseTest {
             }));
         }
         if (null != assertObj.getAggregationColumns()) {
-            sqlParsedResult.getSqlContext().getAggregationSelectItemContexts().addAll(Lists.transform(assertObj.getAggregationColumns(), 
+            sqlContext.getAggregationSelectItemContexts().addAll(Lists.transform(assertObj.getAggregationColumns(), 
                     new Function<com.dangdang.ddframe.rdb.sharding.parser.jaxb.AggregationColumn, AggregationSelectItemContext>() {
                         
                         @Override
@@ -191,10 +191,10 @@ public abstract class AbstractBaseParseTest {
                 }));
         }
         if (null != assertObj.getLimit()) {
-            sqlParsedResult.getSqlContext().setLimitContext(new LimitContext(
+            sqlContext.setLimitContext(new LimitContext(
                     assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
         }
-        result[5] = sqlParsedResult;
+        result[5] = sqlContext;
         return result;
     }
 }

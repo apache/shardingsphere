@@ -93,7 +93,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet rs;
         try {
             rs = ResultSetFactory.getResultSet(
-                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlParsedResult());
+                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlContext());
         } finally {
             clearRouteContext();
         }
@@ -161,15 +161,15 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     private List<PreparedStatementExecutorWrapper> routeSQL() throws SQLException {
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = preparedSQLRouter.route(getParameters());
-        setSqlParsedResult(sqlRouteResult.getSqlParsedResult());
-        if (sqlRouteResult.getSqlParsedResult().getSqlContext() instanceof InsertSQLContext) {
-            setGeneratedKeyContext(((InsertSQLContext) sqlRouteResult.getSqlParsedResult().getSqlContext()).getGeneratedKeyContext());
+        setSqlContext(sqlRouteResult.getSqlContext());
+        if (sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
+            setGeneratedKeyContext(((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKeyContext());
         } else {
             setGeneratedKeyContext(new GeneratedKeyContext());
         }
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = (PreparedStatement) getStatement(
-                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlParsedResult().getSqlContext().getType()), each.getSQL());
+                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlContext().getType()), each.getSQL());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));

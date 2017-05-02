@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
 import com.google.common.base.Optional;
 import org.junit.Test;
@@ -39,8 +39,8 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForAsc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), 
-                new MockResultSet<Integer>()), createSQLParsedResult(OrderType.ASC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
+                new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLContext(OrderType.ASC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
         assertTrue(resultSet.next());
@@ -54,8 +54,8 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForDesc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), 
-                new MockResultSet<Integer>()), createSQLParsedResult(OrderType.DESC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), new MockResultSet<Integer>()), createSQLContext(OrderType.DESC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(4));
         assertTrue(resultSet.next());
@@ -67,9 +67,9 @@ public final class OrderByResultSetTest {
         assertFalse(resultSet.next());
     }
     
-    private SQLParsedResult createSQLParsedResult(final OrderType orderType) {
-        SQLParsedResult result = new SQLParsedResult(new SelectSQLContext());
-        result.getSqlContext().getOrderByContexts().add(new OrderByContext("name", orderType, Optional.<String>absent()));
+    private SQLContext createSQLContext(final OrderType orderType) {
+        SQLContext result = new SelectSQLContext();
+        result.getOrderByContexts().add(new OrderByContext("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

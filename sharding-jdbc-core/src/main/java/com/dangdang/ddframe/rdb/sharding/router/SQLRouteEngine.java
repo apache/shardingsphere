@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.DeleteSQLContext;
@@ -90,48 +89,46 @@ public final class SQLRouteEngine {
         return new PreparedSQLRouter(logicSql, this, shardingRule);
     }
     
-    SQLParsedResult parseSQL(final String logicSql, final List<Object> parameters) {
+    SQLContext parseSQL(final String logicSql, final List<Object> parameters) {
         if (HintManagerHolder.isDatabaseShardingOnly()) {
             return buildHintParsedResult(logicSql);
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
-        SQLParsedResult result = new SQLParseEngine(new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement()).parse();
+        SQLContext result = new SQLParseEngine(new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement()).parse();
         MetricsContext.stop(context);
         return result;
     }
     
-    private SQLParsedResult buildHintParsedResult(final String logicSql) {
-        SQLContext sqlContext;
+    private SQLContext buildHintParsedResult(final String logicSql) {
+        SQLContext result;
         switch (SQLUtil.getTypeByStart(logicSql)) {
             case SELECT:
-                sqlContext = new SelectSQLContext();
+                result = new SelectSQLContext();
                 break;
             case INSERT:
-                sqlContext = new InsertSQLContext();
+                result = new InsertSQLContext();
                 break;
             case UPDATE:
-                sqlContext = new UpdateSQLContext();
+                result = new UpdateSQLContext();
                 break;
             case DELETE:
-                sqlContext = new DeleteSQLContext();
+                result = new DeleteSQLContext();
                 break;
             default:
                 throw new UnsupportedOperationException("");
         }
-        SQLParsedResult result = new SQLParsedResult(sqlContext);
-        log.trace("Get {} SQL Statement", result.getSqlContext().getType());
         SQLBuilderContext sqlBuilderContext = new SQLBuilderContext(logicSql);
-        result.getSqlContext().setSqlBuilderContext(sqlBuilderContext);
+        result.setSqlBuilderContext(sqlBuilderContext);
         return result;
     }
     
-    SQLRouteResult routeSQL(final SQLParsedResult parsedResult, final List<Object> parameters) {
+    SQLRouteResult routeSQL(final SQLContext sqlContext, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(parsedResult);
-        RoutingResult routingResult = routeSQL(parsedResult.getSqlContext().getConditionContext(), parsedResult);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(parsedResult.getSqlContext().getSqlBuilder()));
-        amendSQLAccordingToRouteResult(parsedResult, parameters, result);
+        SQLRouteResult result = new SQLRouteResult(sqlContext);
+        RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext);
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlContext.getSqlBuilder()));
+        amendSQLAccordingToRouteResult(sqlContext, parameters, result);
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
@@ -140,11 +137,11 @@ public final class SQLRouteEngine {
         return result;
     }
     
-    private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLParsedResult parsedResult) {
+    private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLContext sqlContext) {
         if (HintManagerHolder.isDatabaseShardingOnly()) {
-            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), parsedResult.getSqlContext().getType()).route();
+            return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlContext.getType()).route();
         }
-        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(parsedResult.getSqlContext().getTables(), new Function<TableContext, String>() {
+        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(sqlContext.getTables(), new Function<TableContext, String>() {
             
             @Override
             public String apply(final TableContext input) {
@@ -152,18 +149,18 @@ public final class SQLRouteEngine {
             }
         }));
         if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, parsedResult.getSqlContext().getType()).route();
+            return new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, sqlContext.getType()).route();
         } 
         if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getSqlContext().getType()).route();
+            return new BindingTablesRouter(shardingRule, logicTables, conditionContext, sqlContext.getType()).route();
         } 
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, logicTables, conditionContext, parsedResult.getSqlContext().getType()).route();
+        return new MixedTablesRouter(shardingRule, logicTables, conditionContext, sqlContext.getType()).route();
     }
     
-    private void amendSQLAccordingToRouteResult(final SQLParsedResult parsedResult, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
-        LimitContext limit = sqlRouteResult.getSqlParsedResult().getSqlContext().getLimitContext();
-        SQLBuilder sqlBuilder = parsedResult.getSqlContext().getSqlBuilder();
+    private void amendSQLAccordingToRouteResult(final SQLContext sqlContext, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+        LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
+        SQLBuilder sqlBuilder = sqlContext.getSqlBuilder();
         if (null != limit) {
             if (1 == sqlRouteResult.getExecutionUnits().size()) {
                 if (limit.getOffsetParameterIndex() > -1) {

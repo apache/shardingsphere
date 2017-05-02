@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ public final class SQLParseEngine {
      * 
      * @return SQL解析结果
      */
-    public SQLParsedResult parse() {
-        return new SQLParsedResult(sqlContext);
+    public SQLContext parse() {
+        return sqlContext;
     }
 }

@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForO
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLPreparedStatementForTowParametersTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parser.mysql.OrParseTest;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResultTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.oracle.lexer.OracleLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.postgresql.lexer.PostgreSQLLexerTest;
@@ -43,7 +42,6 @@ import org.junit.runners.Suite;
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class,
-        SQLParsedResultTest.class, 
         MySQLStatementTest.class, 
         MySQLPreparedStatementForOneParameterTest.class, 
         MySQLPreparedStatementForTowParametersTest.class,  

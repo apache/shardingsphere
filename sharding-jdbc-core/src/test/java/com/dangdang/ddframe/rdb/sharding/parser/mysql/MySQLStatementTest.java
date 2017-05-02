@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.parser.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
 import org.junit.Test;
@@ -37,8 +37,8 @@ public final class MySQLStatementTest extends AbstractBaseParseTest {
     
     public MySQLStatementTest(
             final String testCaseName, final String sql, final String expectedSQL, 
-            final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLParsedResult expectedSQLParsedResult) {
-        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLParsedResult);
+            final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
+        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLContext);
     }
     
     @Parameters(name = "{0}")

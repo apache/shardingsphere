@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.router;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GeneratedKeyContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.SQLParsedResult;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +41,7 @@ public class PreparedSQLRouter {
     
     private final ShardingRule shardingRule;
     
-    private SQLParsedResult sqlParsedResult;
+    private SQLContext sqlContext;
     
     /**
      * 使用参数进行SQL路由.
@@ -51,25 +51,25 @@ public class PreparedSQLRouter {
      * @return 路由结果
      */
     public SQLRouteResult route(final List<Object> parameters) {
-        if (null == sqlParsedResult) {
-            sqlParsedResult = engine.parseSQL(logicSql, parameters);
+        if (null == sqlContext) {
+            sqlContext = engine.parseSQL(logicSql, parameters);
         } else {
             generateId(parameters);
-            sqlParsedResult.getSqlContext().getConditionContext().setNewConditionValue(parameters);
+            sqlContext.getConditionContext().setNewConditionValue(parameters);
         }
-        return engine.routeSQL(sqlParsedResult, parameters);
+        return engine.routeSQL(sqlContext, parameters);
     }
     
     private void generateId(final List<Object> parameters) {
-        if (!(sqlParsedResult.getSqlContext() instanceof InsertSQLContext)) {
+        if (!(sqlContext instanceof InsertSQLContext)) {
             return;
         }
-        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlParsedResult.getSqlContext().getTables().iterator().next().getName());
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlContext.getTables().iterator().next().getName());
         if (!tableRuleOptional.isPresent()) {
             return;
         }
         TableRule tableRule = tableRuleOptional.get();
-        GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlParsedResult.getSqlContext()).getGeneratedKeyContext();
+        GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlContext).getGeneratedKeyContext();
         for (String each : generatedKeyContext.getColumns()) {
             Object id = tableRule.generateId(each);
             parameters.add(id);
