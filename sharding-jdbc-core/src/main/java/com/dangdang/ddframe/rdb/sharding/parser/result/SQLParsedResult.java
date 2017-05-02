@@ -48,7 +48,7 @@ import java.util.List;
 @ToString
 public final class SQLParsedResult {
     
-    private final SQLType sqlType;
+    private final SQLType type;
     
     private SQLBuilder sqlBuilder;
     
