@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.SQLParseEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.DeleteSQLContext;
@@ -95,7 +94,7 @@ public final class SQLRouteEngine {
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
-        SQLContext result = new SQLParseEngine(new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement()).parse();
+        SQLContext result = new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement();
         MetricsContext.stop(context);
         return result;
     }

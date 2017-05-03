@@ -51,6 +51,6 @@ public class SQLExecutionUnit {
         } else {
             sql = sqlBuilder.isChanged() ? sqlBuilder.toSQL() : sql;
         }
-        return sqlBuilder.toSQL();
+        return sql;
     }
 }
