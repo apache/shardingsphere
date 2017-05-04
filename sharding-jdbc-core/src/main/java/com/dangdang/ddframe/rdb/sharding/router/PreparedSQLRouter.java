@@ -25,6 +25,8 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,27 +56,30 @@ public class PreparedSQLRouter {
         if (null == sqlContext) {
             sqlContext = engine.parseSQL(logicSql, parameters);
         } else {
-            generateId(parameters);
+            List<Object> generatedIds = generateId();
+            parameters.addAll(generatedIds);
             sqlContext.getConditionContext().setNewConditionValue(parameters);
         }
         return engine.routeSQL(sqlContext, parameters);
     }
     
-    private void generateId(final List<Object> parameters) {
+    private List<Object> generateId() {
         if (!(sqlContext instanceof InsertSQLContext)) {
-            return;
+            return Collections.emptyList();
         }
         Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(sqlContext.getTables().iterator().next().getName());
         if (!tableRuleOptional.isPresent()) {
-            return;
+            return Collections.emptyList();
         }
         TableRule tableRule = tableRuleOptional.get();
         GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlContext).getGeneratedKeyContext();
+        List<Object> result = new ArrayList<>(generatedKeyContext.getColumns().size());
         for (String each : generatedKeyContext.getColumns()) {
             Object id = tableRule.generateId(each);
-            parameters.add(id);
+            result.add(id);
             generatedKeyContext.putValue(each, id);
         }
+        return result;
     }
 }
 
