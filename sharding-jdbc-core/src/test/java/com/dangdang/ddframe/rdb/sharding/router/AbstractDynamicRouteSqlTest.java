@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,8 +45,8 @@ public abstract class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTe
                                        final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
         try (HintManager hintManager = HintManager.getInstance()) {
             for (ShardingValuePair each : shardingValuePairs) {
-                hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
-                hintManager.addTableShardingValue(each.logicTable, "order_id", each.binaryOperator, each.shardingValue);
+                hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
+                hintManager.addTableShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
             }
             assertMultipleTargets(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
         }
@@ -56,17 +56,17 @@ public abstract class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTe
     
         private final String logicTable;
     
-        private final Condition.BinaryOperator binaryOperator;
+        private final ShardingOperator shardingOperator;
     
         private final Integer[] shardingValue;
         
         protected ShardingValuePair(final String logicTable, final Integer... shardingValue) {
-            this(logicTable, Condition.BinaryOperator.EQUAL, shardingValue);
+            this(logicTable, ShardingOperator.EQUAL, shardingValue);
         }
         
-        protected ShardingValuePair(final String logicTable, final Condition.BinaryOperator binaryOperator, final Integer... shardingValue) {
+        protected ShardingValuePair(final String logicTable, final ShardingOperator shardingOperator, final Integer... shardingValue) {
             this.logicTable = logicTable;
-            this.binaryOperator = binaryOperator;
+            this.shardingOperator = shardingOperator;
             this.shardingValue = shardingValue;
         }
     }

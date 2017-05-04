@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
@@ -63,7 +62,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     }
     
     @Override
-    public Optional<Condition.Column> findColumn(final SQLExpr expr) {
+    public Optional<ShardingColumnContext> findColumn(final SQLExpr expr) {
         if (expr instanceof SQLPropertyExpr) {
             return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
         }
@@ -73,7 +72,7 @@ public abstract class AbstractSQLContext implements SQLContext {
         return Optional.absent();
     }
     
-    private Condition.Column getColumnWithQualifiedName(final SQLPropertyExpr expr) {
+    private ShardingColumnContext getColumnWithQualifiedName(final SQLPropertyExpr expr) {
         Optional<TableContext> table = findTable((expr.getOwner()).getName());
         return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
@@ -101,12 +100,12 @@ public abstract class AbstractSQLContext implements SQLContext {
         return Optional.absent();
     }
     
-    private Condition.Column getColumnWithoutAlias(final SQLIdentifierExpr expr) {
+    private ShardingColumnContext getColumnWithoutAlias(final SQLIdentifierExpr expr) {
         return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
     }
     
-    private Condition.Column createColumn(final String columnName, final String tableName) {
-        return new Condition.Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
+    private ShardingColumnContext createColumn(final String columnName, final String tableName) {
+        return new ShardingColumnContext(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
     @Override

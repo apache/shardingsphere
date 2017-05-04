@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
@@ -86,7 +86,7 @@ public final class HintManager implements AutoCloseable {
      * @param value 分片值
      */
     public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addDatabaseShardingValue(logicTable, shardingColumn, Condition.BinaryOperator.EQUAL, value);
+        addDatabaseShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
     }
     
     /**
@@ -94,12 +94,12 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable 逻辑表名称
      * @param shardingColumn 分片键
-     * @param binaryOperator 分片操作符
+     * @param operator 分片操作符
      * @param values 分片值
      */
-    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
+    public void addDatabaseShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         shardingHint = true;
-        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
+        databaseShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     /**
@@ -112,7 +112,7 @@ public final class HintManager implements AutoCloseable {
      * @param value 分片值
      */
     public void addTableShardingValue(final String logicTable, final String shardingColumn, final Comparable<?> value) {
-        addTableShardingValue(logicTable, shardingColumn, Condition.BinaryOperator.EQUAL, value);
+        addTableShardingValue(logicTable, shardingColumn, ShardingOperator.EQUAL, value);
     }
     
     /**
@@ -120,18 +120,18 @@ public final class HintManager implements AutoCloseable {
      *
      * @param logicTable 逻辑表名称
      * @param shardingColumn 分片键
-     * @param binaryOperator 分片操作符
+     * @param operator 分片操作符
      * @param values 分片值
      */
-    public void addTableShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>... values) {
+    public void addTableShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>... values) {
         shardingHint = true;
-        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, binaryOperator, values));
+        tableShardingValues.put(new ShardingKey(logicTable, shardingColumn), getShardingValue(logicTable, shardingColumn, operator, values));
     }
     
     @SuppressWarnings("unchecked")
-    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final Condition.BinaryOperator binaryOperator, final Comparable<?>[] values) {
+    private ShardingValue getShardingValue(final String logicTable, final String shardingColumn, final ShardingOperator operator, final Comparable<?>[] values) {
         Preconditions.checkArgument(null != values && values.length > 0);
-        switch (binaryOperator) {
+        switch (operator) {
             case EQUAL:
                 return new ShardingValue<Comparable<?>>(logicTable, shardingColumn, values[0]);
             case IN:
@@ -139,7 +139,7 @@ public final class HintManager implements AutoCloseable {
             case BETWEEN:
                 return new ShardingValue(logicTable, shardingColumn, Range.range(values[0], BoundType.CLOSED, values[1], BoundType.CLOSED));
             default:
-                throw new UnsupportedOperationException(binaryOperator.getExpression());
+                throw new UnsupportedOperationException(operator.getExpression());
         }
     }
     

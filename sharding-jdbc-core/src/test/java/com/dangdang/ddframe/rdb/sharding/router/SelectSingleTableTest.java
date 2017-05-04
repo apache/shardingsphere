@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -66,7 +66,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     public void assertSelectWithIn() throws SQLParserException {
         assertMultipleTargets("select * from order where order_id in (?,?,?)", Arrays.<Object>asList(1, 2, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?)", "select * from order_1 where order_id in (?,?,?)"));
-        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", Condition.BinaryOperator.IN, 1, 2, 100)), "select * from order", 4,
+        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.IN, 1, 2, 100)), "select * from order", 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0", "select * from order_1"));
     }
     
@@ -83,7 +83,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     public void assertSelectWithBetween() throws SQLParserException {
         assertMultipleTargets("select * from order where order_id between ? and ?", Arrays.<Object>asList(1, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id between ? and ?", "select * from order_1 where order_id between ? and ?"));
-        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", Condition.BinaryOperator.BETWEEN, 1, 100)), "select * from order", 4,
+        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.BETWEEN, 1, 100)), "select * from order", 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0", "select * from order_1"));
     }
     

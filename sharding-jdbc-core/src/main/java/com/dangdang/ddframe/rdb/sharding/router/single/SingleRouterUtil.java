@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+
+import java.util.List;
 
 /**
  * 路由工具类.
@@ -46,11 +46,11 @@ public class SingleRouterUtil {
             case EQUAL:
             case IN:
                 if (1 == conditionValues.size()) {
-                    return new ShardingValue<Comparable<?>>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), conditionValues.get(0));
+                    return new ShardingValue<Comparable<?>>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), conditionValues.get(0));
                 }
-                return new ShardingValue<>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), conditionValues);
+                return new ShardingValue<>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), conditionValues);
             case BETWEEN:
-                return new ShardingValue<>(condition.getColumn().getTableName(), condition.getColumn().getColumnName(), 
+                return new ShardingValue<>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), 
                         Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(condition.getOperator().getExpression());

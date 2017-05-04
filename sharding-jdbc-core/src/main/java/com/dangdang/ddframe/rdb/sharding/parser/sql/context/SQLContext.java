@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
@@ -67,7 +66,7 @@ public interface SQLContext {
      * @param expr SQL表达式
      * @return 列对象
      */
-    Optional<Condition.Column> findColumn(SQLExpr expr);
+    Optional<ShardingColumnContext> findColumn(SQLExpr expr);
     
     /**
      * 获取SQL构建器.

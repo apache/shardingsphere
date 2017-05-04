@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
@@ -74,12 +75,12 @@ public abstract class AbstractInsertParser {
     public final InsertSQLContext parse() {
         exprParser.getLexer().nextToken();
         parseInto();
-        Collection<Condition.Column> columns = parseColumns();
+        Collection<ShardingColumnContext> shardingColumnContexts = parseColumns();
         if (exprParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getValuesKeywords().contains(exprParser.getLexer().getCurrentToken().getType())) {
-            parseValues(columns);
+            parseValues(shardingColumnContexts);
         } else if (getCustomizedInsertKeywords().contains(exprParser.getLexer().getCurrentToken().getType())) {
             parseCustomizedInsert();
         }
@@ -113,8 +114,8 @@ public abstract class AbstractInsertParser {
         return Collections.emptySet();
     }
     
-    private Collection<Condition.Column> parseColumns() {
-        Collection<Condition.Column> result = new LinkedList<>();
+    private Collection<ShardingColumnContext> parseColumns() {
+        Collection<ShardingColumnContext> result = new LinkedList<>();
         Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         if (exprParser.equalAny(Symbol.LEFT_PAREN)) {
             do {
@@ -125,7 +126,7 @@ public abstract class AbstractInsertParser {
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentToken().getEndPosition() - exprParser.getLexer().getCurrentToken().getLiterals().length());
             for (String each : autoIncrementColumns) {
                 itemsToken.getItems().add(each);
-                result.add(new Condition.Column(each, sqlContext.getTables().get(0).getName(), true));
+                result.add(new ShardingColumnContext(each, sqlContext.getTables().get(0).getName(), true));
             }
             if (!itemsToken.getItems().isEmpty()) {
                 exprParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
@@ -135,19 +136,19 @@ public abstract class AbstractInsertParser {
         return result;
     }
     
-    protected final Condition.Column getColumn(final Collection<String> autoIncrementColumns) {
+    protected final ShardingColumnContext getColumn(final Collection<String> autoIncrementColumns) {
         String columnName = SQLUtil.getExactlyValue(exprParser.getLexer().getCurrentToken().getLiterals());
         if (autoIncrementColumns.contains(columnName)) {
             autoIncrementColumns.remove(columnName);
         }
-        return new Condition.Column(columnName, sqlContext.getTables().get(0).getName());
+        return new ShardingColumnContext(columnName, sqlContext.getTables().get(0).getName());
     }
     
     protected Set<TokenType> getValuesKeywords() {
         return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES);
     }
     
-    private void parseValues(final Collection<Condition.Column> columns) {
+    private void parseValues(final Collection<ShardingColumnContext> shardingColumnContexts) {
         boolean parsed = false;
         do {
             if (parsed) {
@@ -162,7 +163,7 @@ public abstract class AbstractInsertParser {
             } while (exprParser.skipIfEqual(Symbol.COMMA));
             ItemsToken itemsToken = new ItemsToken(exprParser.getLexer().getCurrentToken().getEndPosition() - exprParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
-            for (Condition.Column each : columns) {
+            for (ShardingColumnContext each : shardingColumnContexts) {
                 if (each.isAutoIncrement()) {
                     Number autoIncrementedValue = (Number) getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
                     if (parameters.isEmpty()) {

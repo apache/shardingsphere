@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.google.common.base.Optional;
 import lombok.ToString;
 
@@ -33,7 +33,7 @@ import java.util.Map;
 @ToString
 public final class ConditionContext {
     
-    private final Map<Column, Condition> conditions = new LinkedHashMap<>();
+    private final Map<ShardingColumnContext, Condition> conditions = new LinkedHashMap<>();
     
     /**
      * 添加条件对象.
@@ -42,7 +42,7 @@ public final class ConditionContext {
      */
     public void add(final Condition condition) {
         // TODO 自关联有问题，表名可考虑使用别名对应
-        conditions.put(condition.getColumn(), condition);
+        conditions.put(condition.getShardingColumnContext(), condition);
     }
     
     /**
@@ -53,7 +53,7 @@ public final class ConditionContext {
      * @return 条件对象
      */
     public Optional<Condition> find(final String table, final String column) {
-        return Optional.fromNullable(conditions.get(new Column(column, table)));
+        return Optional.fromNullable(conditions.get(new ShardingColumnContext(column, table)));
     }
     
     /**

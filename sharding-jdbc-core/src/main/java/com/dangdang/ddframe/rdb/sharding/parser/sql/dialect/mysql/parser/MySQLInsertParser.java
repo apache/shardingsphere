@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.parser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
@@ -60,7 +61,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         ConditionContext conditionContext = new ConditionContext();
         do {
             getExprParser().getLexer().nextToken();
-            Condition.Column column = getColumn(autoIncrementColumns);
+            ShardingColumnContext shardingColumnContext = getColumn(autoIncrementColumns);
             getExprParser().getLexer().nextToken();
             getExprParser().accept(Symbol.EQ);
             SQLExpr sqlExpr;
@@ -80,8 +81,8 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             }
             getExprParser().getLexer().nextToken();
             if (getExprParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
-                if (getShardingRule().isShardingColumn(column)) {
-                    conditionContext.add(new Condition(column, sqlExpr));
+                if (getShardingRule().isShardingColumn(shardingColumnContext)) {
+                    conditionContext.add(new Condition(shardingColumnContext, sqlExpr));
                 }
             } else {
                 getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);

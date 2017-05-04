@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;
@@ -43,7 +43,7 @@ public final class HintManagerTest {
     @Test
     public void assertAddDatabaseShardingValueForIn() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", Condition.BinaryOperator.IN, 1, 3, 5);
+            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", ShardingOperator.IN, 1, 3, 5);
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
@@ -55,7 +55,7 @@ public final class HintManagerTest {
     @Test
     public void assertAddDatabaseShardingValueForBetween() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", Condition.BinaryOperator.BETWEEN, 1, 10);
+            hintManager.addDatabaseShardingValue("logicTable", "shardingColumn", ShardingOperator.BETWEEN, 1, 10);
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getDatabaseShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getDatabaseShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
@@ -80,7 +80,7 @@ public final class HintManagerTest {
     @Test
     public void assertAddTableShardingValueForIn() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", "shardingColumn", Condition.BinaryOperator.IN, 1, 3, 5);
+            hintManager.addTableShardingValue("logicTable", "shardingColumn", ShardingOperator.IN, 1, 3, 5);
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));
@@ -92,7 +92,7 @@ public final class HintManagerTest {
     @Test
     public void assertAddTableShardingValueForBetween() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", "shardingColumn", Condition.BinaryOperator.BETWEEN, 1, 10);
+            hintManager.addTableShardingValue("logicTable", "shardingColumn", ShardingOperator.BETWEEN, 1, 10);
             ShardingKey shardingKey = new ShardingKey("logicTable", "shardingColumn");
             assertTrue(HintManagerHolder.getTableShardingValue(shardingKey).isPresent());
             assertThat(hintManager.getTableShardingValue(shardingKey).getColumnName(), is("shardingColumn"));

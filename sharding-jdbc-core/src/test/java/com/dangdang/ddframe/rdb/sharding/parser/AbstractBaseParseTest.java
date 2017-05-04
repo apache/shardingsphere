@@ -19,12 +19,11 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.BinaryOperator;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
@@ -32,6 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -133,7 +133,7 @@ public abstract class AbstractBaseParseTest {
                         return result;
                     }
                     for (com.dangdang.ddframe.rdb.sharding.parser.jaxb.Condition each : input.getConditions()) {
-                        Condition condition = new Condition(new Column(each.getColumnName(), each.getTableName()), BinaryOperator.valueOf(each.getOperator().toUpperCase()));
+                        Condition condition = new Condition(new ShardingColumnContext(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
                         condition.getValues().addAll(Lists.transform(each.getValues(), new Function<Value, Comparable<?>>() {
                             
                             @Override

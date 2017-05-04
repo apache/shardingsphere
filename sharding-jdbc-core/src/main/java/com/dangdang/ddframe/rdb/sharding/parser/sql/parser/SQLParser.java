@@ -18,15 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLCharExpr;
@@ -289,7 +290,6 @@ public class SQLParser extends Parser {
      * 解析查询条件.
      *
      * @param sqlContext SQL上下文
-     * @return 条件上下文
      */
     public final void parseWhere(final SQLContext sqlContext) {
         if (skipIfEqual(DefaultKeyword.WHERE)) {
@@ -337,7 +337,7 @@ public class SQLParser extends Parser {
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
-            Optional<Condition.Column> column = sqlContext.findColumn(left);
+            Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 return Optional.of(new Condition(column.get(), right));
             }
@@ -356,7 +356,7 @@ public class SQLParser extends Parser {
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
         Condition result = null;
-        Optional<Condition.Column> column = sqlContext.findColumn(left);
+        Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             result = new Condition(column.get(), rights);
         }
@@ -370,7 +370,7 @@ public class SQLParser extends Parser {
         rights.add(parseExpression(sqlContext));
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlContext));
-        Optional<Condition.Column> column = sqlContext.findColumn(left);
+        Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             return Optional.of(new Condition(column.get(), rights.get(0), rights.get(1)));
         }

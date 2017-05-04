@@ -17,11 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.result.router;
 
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.AbstractSQLTextLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLPlaceholderExpr;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,27 +42,27 @@ import java.util.List;
 @EqualsAndHashCode
 public final class Condition {
     
-    private final Column column;
+    private final ShardingColumnContext shardingColumnContext;
     
-    private final BinaryOperator operator;
+    private final ShardingOperator operator;
     
     private final List<Comparable<?>> values = new ArrayList<>();
     
     private final List<Integer> valueIndices = new ArrayList<>();
     
-    public Condition(final Column column, final SQLExpr sqlExpr) {
-        this(column, Condition.BinaryOperator.EQUAL);
+    public Condition(final ShardingColumnContext shardingColumnContext, final SQLExpr sqlExpr) {
+        this(shardingColumnContext, ShardingOperator.EQUAL);
         initSQLExpr(sqlExpr);
     }
     
-    public Condition(final Column column, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
-        this(column, BinaryOperator.BETWEEN);
+    public Condition(final ShardingColumnContext shardingColumnContext, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
+        this(shardingColumnContext, ShardingOperator.BETWEEN);
         initSQLExpr(beginSqlExpr);
         initSQLExpr(endSqlExpr);
     }
     
-    public Condition(final Column column, final List<SQLExpr> sqlExprs) {
-        this(column, Condition.BinaryOperator.IN);
+    public Condition(final ShardingColumnContext shardingColumnContext, final List<SQLExpr> sqlExprs) {
+        this(shardingColumnContext, ShardingOperator.IN);
         for (SQLExpr each : sqlExprs) {
             initSQLExpr(each);
         }
@@ -75,49 +76,6 @@ public final class Condition {
             values.add(((AbstractSQLTextLiteralExpr) sqlExpr).getText());
         } else if (sqlExpr instanceof SQLNumberExpr) {
             values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
-        }
-    }
-    
-    /**
-     * 列对象.
-     * 
-     * @author gaohongtao
-     * @author zhangliang
-     */
-    @AllArgsConstructor
-    @Getter
-    @EqualsAndHashCode(exclude = "autoIncrement")
-    @ToString(exclude = "autoIncrement")
-    public static final class Column {
-        
-        private final String columnName;
-        
-        private final String tableName;
-    
-        private final boolean autoIncrement;
-        
-        public Column(final String columnName, final String tableName) {
-            this(columnName, tableName, false);
-        }
-    }
-    
-    /**
-     * 操作符枚举.
-     * 
-     * @author gaohongtao
-     * @author zhangliang
-     */
-    @RequiredArgsConstructor
-    public enum BinaryOperator {
-        
-        EQUAL("="), BETWEEN("BETWEEN"), IN("IN");
-        
-        @Getter
-        private final String expression;
-        
-        @Override
-        public String toString() {
-            return expression;
         }
     }
 }
