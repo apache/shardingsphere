@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition.Column;
 import com.google.common.base.Optional;
 import lombok.ToString;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,18 +54,6 @@ public final class ConditionContext {
      */
     public Optional<Condition> find(final String table, final String column) {
         return Optional.fromNullable(conditions.get(new Column(column, table)));
-    }
-    
-    public boolean isEmpty() {
-        return conditions.isEmpty();
-    }
-    
-    public void clear() {
-        conditions.clear();
-    }
-    
-    public Collection<Condition> getAllConditions() {
-        return conditions.values();
     }
     
     /**

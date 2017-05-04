@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -90,20 +89,16 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void assertInsertStatement(final InsertSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
-        Condition condition1 = conditions.next();
-        assertThat(condition1.getColumn().getColumnName(), is("field1"));
-        assertThat(condition1.getColumn().getTableName(), is("TABLE_XXX"));
+        Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(Condition.BinaryOperator.EQUAL));
         assertThat(condition1.getValues().size(), is(1));
         assertThat(condition1.getValues().get(0), is((Comparable) 10));
-        Condition condition2 = conditions.next();
+        Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
         assertThat(condition2.getColumn().getColumnName(), is("field2"));
         assertThat(condition2.getColumn().getTableName(), is("TABLE_XXX"));
         assertThat(condition2.getOperator(), is(Condition.BinaryOperator.EQUAL));
         assertThat(condition2.getValues().size(), is(1));
         assertThat(condition2.getValues().get(0), is((Comparable) 1));
-        assertFalse(conditions.hasNext());
     }
     
     private ShardingRule createShardingRuleWithAutoIncrementColumns() {
@@ -153,14 +148,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
-        Condition condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field1"));
+        Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(Condition.BinaryOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertFalse(conditions.hasNext());
         assertThat(sqlContext.getSqlBuilder().toString(), is(expectedSQL));
     }
     

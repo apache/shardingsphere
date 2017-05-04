@@ -26,24 +26,21 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void parseWithoutCondition() throws SQLException {
+    public void parseWithoutCondition() throws SQLException, NoSuchFieldException, IllegalAccessException {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();
         SQLParserEngine statementParser = new SQLParserEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule, parameters);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertTrue(sqlContext.getConditionContext().isEmpty());
         assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
     
@@ -76,28 +73,20 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     private void assertUpdateStatement(final UpdateSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
-        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
-        Condition condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field1"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.EQUAL));
-        assertThat(condition.getValues().size(), is(1));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
-        condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field2"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.IN));
-        assertThat(condition.getValues().size(), is(2));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertThat(condition.getValues().get(1), is((Comparable) 3));
-        condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field3"));
-        assertThat(condition.getOperator(), is(Condition.BinaryOperator.BETWEEN));
-        assertThat(condition.getValues().size(), is(2));
-        assertThat(condition.getValues().get(0), is((Comparable) 5));
-        assertThat(condition.getValues().get(1), is((Comparable) 20));
-        assertFalse(conditions.hasNext());
+        Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        assertThat(condition1.getOperator(), is(Condition.BinaryOperator.EQUAL));
+        assertThat(condition1.getValues().size(), is(1));
+        assertThat(condition1.getValues().get(0), is((Comparable) 1));
+        Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        assertThat(condition2.getOperator(), is(Condition.BinaryOperator.IN));
+        assertThat(condition2.getValues().size(), is(2));
+        assertThat(condition2.getValues().get(0), is((Comparable) 1));
+        assertThat(condition2.getValues().get(1), is((Comparable) 3));
+        Condition condition3 = sqlContext.getConditionContext().find("TABLE_XXX", "field3").get();
+        assertThat(condition3.getOperator(), is(Condition.BinaryOperator.BETWEEN));
+        assertThat(condition3.getValues().size(), is(2));
+        assertThat(condition3.getValues().get(0), is((Comparable) 5));
+        assertThat(condition3.getValues().get(1), is((Comparable) 20));
     }
     
     @Test(expected = ParserUnsupportedException.class)
@@ -135,14 +124,10 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Iterator<Condition> conditions = sqlContext.getConditionContext().getAllConditions().iterator();
-        Condition condition = conditions.next();
-        assertThat(condition.getColumn().getTableName(), is("TABLE_XXX"));
-        assertThat(condition.getColumn().getColumnName(), is("field1"));
+        Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(Condition.BinaryOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertFalse(conditions.hasNext());
         assertThat(sqlContext.getSqlBuilder().toString(), is(expectedSQL));
     }
 }
