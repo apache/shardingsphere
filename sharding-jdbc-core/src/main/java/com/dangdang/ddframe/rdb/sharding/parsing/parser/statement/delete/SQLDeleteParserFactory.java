@@ -17,12 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerDeleteParser;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerParser;
 
 /**
  * Delete语句解析器工厂.
@@ -34,23 +37,22 @@ public class SQLDeleteParserFactory {
     /**
      * 创建Delete语句解析器.
      * 
-     * @param exprParser 表达式
-     * @param dbType 数据库类型
+     * @param sqlParser SQL解析器
      * @return Delete语句解析器
      */
-    public static AbstractDeleteParser newInstance(final SQLParser exprParser, final DatabaseType dbType) {
-        switch (dbType) {
-            case H2 :
-            case MySQL :
-                return new MySQLDeleteParser(exprParser);
-            case Oracle:
-                return new OracleDeleteParser(exprParser);
-            case SQLServer:
-                return new SQLServerDeleteParser(exprParser);
-            case PostgreSQL:
-                return new PostgreSQLDeleteParser(exprParser);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
+    public static AbstractDeleteParser newInstance(final SQLParser sqlParser) {
+        if (sqlParser instanceof MySQLParser) {
+            return new MySQLDeleteParser(sqlParser);
         }
+        if (sqlParser instanceof OracleParser) {
+            return new OracleDeleteParser(sqlParser);
+        }
+        if (sqlParser instanceof SQLServerParser) {
+            return new SQLServerDeleteParser(sqlParser);
+        }
+        if (sqlParser instanceof PostgreSQLParser) {
+            return new PostgreSQLDeleteParser(sqlParser);
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 
 }

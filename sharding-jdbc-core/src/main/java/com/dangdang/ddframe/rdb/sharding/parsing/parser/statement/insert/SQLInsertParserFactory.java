@@ -17,13 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerInsertParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerParser;
 
 import java.util.List;
 
@@ -39,23 +42,22 @@ public class SQLInsertParserFactory {
      * 
      * @param shardingRule 分库分表规则配置
      * @param parameters 参数列表
-     * @param exprParser 表达式
-     * @param dbType 数据库类型
+     * @param sqlParser SQL解析器
      * @return Insert语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser, final DatabaseType dbType) {
-        switch (dbType) {
-            case H2 :
-            case MySQL :
-                return new MySQLInsertParser(shardingRule, parameters, exprParser);
-            case Oracle:
-                return new OracleInsertParser(shardingRule, parameters, exprParser);
-            case SQLServer:
-                return new SQLServerInsertParser(shardingRule, parameters, exprParser);
-            case PostgreSQL:
-                return new PostgreSQLInsertParser(shardingRule, parameters, exprParser);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
+        if (sqlParser instanceof MySQLParser) {
+            return new MySQLInsertParser(shardingRule, parameters, sqlParser);
         }
+        if (sqlParser instanceof OracleParser) {
+            return new OracleInsertParser(shardingRule, parameters, sqlParser);
+        }
+        if (sqlParser instanceof SQLServerParser) {
+            return new SQLServerInsertParser(shardingRule, parameters, sqlParser);
+        }
+        if (sqlParser instanceof PostgreSQLParser) {
+            return new PostgreSQLInsertParser(shardingRule, parameters, sqlParser);
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 
 }

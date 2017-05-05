@@ -17,12 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerSelectParser;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerSelectParser;
 
 /**
  * Select语句解析器工厂.
@@ -34,23 +37,22 @@ public class SQLSelectParserFactory {
     /**
      * 创建Select语句解析器.
      * 
-     * @param exprParser 表达式
-     * @param dbType 数据库类型
+     * @param sqlParser SQL解析器
      * @return Select语句解析器
      */
-    public static AbstractSelectParser newInstance(final SQLParser exprParser, final DatabaseType dbType) {
-        switch (dbType) {
-            case H2 :
-            case MySQL :
-                return new MySQLSelectParser(exprParser);
-            case Oracle:
-                return new OracleSelectParser(exprParser);
-            case SQLServer :
-                return new SQLServerSelectParser(exprParser);
-            case PostgreSQL :
-                return new PostgreSQLSelectParser(exprParser);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database '%s'.", dbType));
+    public static AbstractSelectParser newInstance(final SQLParser sqlParser) {
+        if (sqlParser instanceof MySQLParser) {
+            return new MySQLSelectParser(sqlParser);
         }
+        if (sqlParser instanceof OracleParser) {
+            return new OracleSelectParser(sqlParser);
+        }
+        if (sqlParser instanceof SQLServerParser) {
+            return new SQLServerSelectParser(sqlParser);
+        }
+        if (sqlParser instanceof PostgreSQLParser) {
+            return new PostgreSQLSelectParser(sqlParser);
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 
 }

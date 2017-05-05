@@ -64,16 +64,16 @@ public final class SQLParsingEngine {
             skipWith(sqlParser);
         }
         if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
-            return SQLSelectParserFactory.newInstance(sqlParser, dbType).parse();
+            return SQLSelectParserFactory.newInstance(sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.INSERT)) {
-            return SQLInsertParserFactory.newInstance(shardingRule, parameters, sqlParser, dbType).parse();
+            return SQLInsertParserFactory.newInstance(shardingRule, parameters, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(sqlParser, dbType).parse();
+            return SQLUpdateParserFactory.newInstance(sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
-            return SQLDeleteParserFactory.newInstance(sqlParser, dbType).parse();
+            return SQLDeleteParserFactory.newInstance(sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }
