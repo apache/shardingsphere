@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;

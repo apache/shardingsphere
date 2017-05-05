@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;

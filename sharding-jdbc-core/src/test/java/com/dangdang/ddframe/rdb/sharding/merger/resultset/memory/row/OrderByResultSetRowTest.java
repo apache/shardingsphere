@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
 import org.junit.Test;
 
 import java.sql.ResultSet;

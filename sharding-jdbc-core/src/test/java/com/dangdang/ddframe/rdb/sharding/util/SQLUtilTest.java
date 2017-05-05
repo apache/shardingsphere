@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import com.google.common.base.Function;

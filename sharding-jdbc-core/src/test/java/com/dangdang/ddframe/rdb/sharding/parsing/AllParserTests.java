@@ -21,14 +21,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementFor
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForTowParametersTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.OrParseTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.mysql.lexer.MySQLLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.oracle.lexer.OracleLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.postgresql.lexer.PostgreSQLLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.sqlserver.lexer.SQLServerLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.lexer.MySQLLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.lexer.OracleLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.lexer.PostgreSQLLexerTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.lexer.SQLServerLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.DeleteStatementParserTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.InsertStatementParserTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.UpdateStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.DeleteStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.InsertStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.UpdateStatementParserTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

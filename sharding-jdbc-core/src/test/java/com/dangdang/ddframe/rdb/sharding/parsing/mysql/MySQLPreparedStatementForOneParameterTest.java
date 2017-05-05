@@ -20,9 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.google.common.collect.Lists;
 import org.junit.Test;
@@ -35,8 +35,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class MySQLPreparedStatementForOneParameterTest extends AbstractBaseParseTest {
     
-    public MySQLPreparedStatementForOneParameterTest(
-            final String testCaseName, final String sql, final String expectedSQL, final Collection<TableContext> expectedTables, 
+    public MySQLPreparedStatementForOneParameterTest(final String testCaseName, final String sql, final String expectedSQL, final Collection<TableContext> expectedTables, 
             final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLContext);
     }

@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByC
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

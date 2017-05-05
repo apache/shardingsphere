@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

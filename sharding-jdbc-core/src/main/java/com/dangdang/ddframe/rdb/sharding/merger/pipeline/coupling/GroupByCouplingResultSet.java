@@ -21,8 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMergeContext;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.AbstractMemoryResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.GroupByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;

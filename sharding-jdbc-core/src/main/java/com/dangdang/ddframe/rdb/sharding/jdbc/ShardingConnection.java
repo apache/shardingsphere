@@ -21,7 +21,7 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

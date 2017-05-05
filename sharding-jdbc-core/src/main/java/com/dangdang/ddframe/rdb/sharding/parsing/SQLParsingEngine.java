@@ -19,19 +19,19 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.mysql.parser.MySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.oracle.parser.OracleParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.postgresql.parser.PostgreSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.sqlserver.parser.SQLServerParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.delete.SQLDeleteParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.insert.SQLInsertParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.select.SQLSelectParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.update.SQLUpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.SQLDeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.SQLInsertParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SQLSelectParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.SQLUpdateParserFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

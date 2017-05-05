@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.tbl.statement;
 
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;

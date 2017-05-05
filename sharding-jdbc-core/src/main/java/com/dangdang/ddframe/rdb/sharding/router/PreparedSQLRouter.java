@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.GeneratedKeyContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 

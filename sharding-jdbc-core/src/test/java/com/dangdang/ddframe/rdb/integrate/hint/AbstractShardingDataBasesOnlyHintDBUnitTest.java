@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;

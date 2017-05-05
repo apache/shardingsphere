@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.google.common.base.Optional;
 import org.junit.Test;
 

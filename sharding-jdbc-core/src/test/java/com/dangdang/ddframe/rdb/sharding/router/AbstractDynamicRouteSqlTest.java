@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
 
 import java.util.Collection;
 import java.util.Collections;

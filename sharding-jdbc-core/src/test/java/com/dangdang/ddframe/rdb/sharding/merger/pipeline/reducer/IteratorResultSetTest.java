@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import org.junit.Test;
 
 import java.sql.ResultSet;

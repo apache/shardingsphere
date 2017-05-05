@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.dialect.mysql.lexer.MySQLKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.Dictionary;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;

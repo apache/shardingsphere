@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.parsing.contstant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import org.junit.Test;
 
 import java.util.Iterator;
