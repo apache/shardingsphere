@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;

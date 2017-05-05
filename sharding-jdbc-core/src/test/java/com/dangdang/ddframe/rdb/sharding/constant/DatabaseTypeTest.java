@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.constants;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
 import org.junit.Test;
 

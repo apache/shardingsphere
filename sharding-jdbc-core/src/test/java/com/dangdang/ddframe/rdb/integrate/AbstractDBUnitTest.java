@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;

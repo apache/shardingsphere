@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import org.junit.Test;
 
 import java.math.BigDecimal;

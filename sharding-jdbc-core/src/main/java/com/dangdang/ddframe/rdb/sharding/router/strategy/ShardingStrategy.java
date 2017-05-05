@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router.strategy;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 

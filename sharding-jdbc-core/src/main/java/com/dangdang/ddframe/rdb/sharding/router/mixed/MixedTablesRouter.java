@@ -22,7 +22,7 @@ import java.util.Collection;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.router.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingResult;

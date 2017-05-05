@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadB
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 

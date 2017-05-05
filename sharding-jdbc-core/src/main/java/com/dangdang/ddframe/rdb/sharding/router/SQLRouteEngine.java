@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;

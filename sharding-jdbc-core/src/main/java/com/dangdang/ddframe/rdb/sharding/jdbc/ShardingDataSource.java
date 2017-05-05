@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;

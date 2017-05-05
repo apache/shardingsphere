@@ -20,9 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.google.common.base.Optional;
 import org.junit.Test;
 

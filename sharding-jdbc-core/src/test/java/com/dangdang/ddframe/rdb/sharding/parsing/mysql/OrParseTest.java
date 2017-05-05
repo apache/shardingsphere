@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import lombok.RequiredArgsConstructor;

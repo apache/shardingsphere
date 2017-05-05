@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb;
 import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
 import com.dangdang.ddframe.rdb.sharding.api.AllApiTests;
 import com.dangdang.ddframe.rdb.sharding.config.AllConfigTests;
-import com.dangdang.ddframe.rdb.sharding.constants.AllConstantsTests;
+import com.dangdang.ddframe.rdb.sharding.constant.AllConstantsTests;
 import com.dangdang.ddframe.rdb.sharding.executor.AllExecutorTests;
 import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
 import com.dangdang.ddframe.rdb.sharding.id.generator.AllIdGeneratorTest;

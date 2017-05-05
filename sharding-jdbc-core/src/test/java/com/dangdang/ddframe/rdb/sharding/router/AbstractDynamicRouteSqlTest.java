@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 
 import java.util.Collection;
 import java.util.Collections;

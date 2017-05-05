@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleParser;

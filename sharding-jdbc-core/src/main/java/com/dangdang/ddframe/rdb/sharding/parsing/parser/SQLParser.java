@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContex
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;

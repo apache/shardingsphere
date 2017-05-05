@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

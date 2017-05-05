@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

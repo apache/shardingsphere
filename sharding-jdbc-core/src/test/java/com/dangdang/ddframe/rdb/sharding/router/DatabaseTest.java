@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.HintManager;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderDatabaseShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;

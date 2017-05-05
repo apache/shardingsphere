@@ -15,23 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-/**
- * 分片运算符.
- *
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-public enum ShardingOperator {
-    
-    EQUAL("="), 
-    BETWEEN("BETWEEN"), 
-    IN("IN");
-    
-    private final String expression;
+@RunWith(Suite.class)
+@Suite.SuiteClasses(DatabaseTypeTest.class)
+public class AllConstantsTests {
 }

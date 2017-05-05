@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import org.junit.Test;

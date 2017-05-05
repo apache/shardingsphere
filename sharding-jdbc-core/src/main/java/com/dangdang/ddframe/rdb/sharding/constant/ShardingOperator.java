@@ -15,14 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant;
+package com.dangdang.ddframe.rdb.sharding.constant;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL类型.
- * 
+ * 分片运算符.
+ *
  * @author zhangliang
  */
-public enum SQLType {
+@RequiredArgsConstructor
+@Getter
+public enum ShardingOperator {
     
-    SELECT, INSERT, DELETE, UPDATE
+    EQUAL("="), 
+    BETWEEN("BETWEEN"), 
+    IN("IN");
+    
+    private final String expression;
 }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.constants;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;

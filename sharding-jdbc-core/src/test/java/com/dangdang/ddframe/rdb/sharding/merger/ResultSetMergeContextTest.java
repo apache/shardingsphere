@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;

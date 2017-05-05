@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api.strategy.common;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestMultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.fixture.TestSingleKeyShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
 import com.google.common.collect.Range;
 import org.junit.Test;

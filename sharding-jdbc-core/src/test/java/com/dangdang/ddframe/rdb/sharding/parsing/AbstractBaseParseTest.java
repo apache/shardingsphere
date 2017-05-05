@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;

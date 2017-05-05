@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.transaction.soft.api.config;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.transaction.soft.constants.TransactionLogDataSourceType;
 import com.dangdang.ddframe.rdb.transaction.soft.datasource.TransactionLogDataSource;
 import com.dangdang.ddframe.rdb.transaction.soft.datasource.impl.MemoryTransactionLogDataSource;

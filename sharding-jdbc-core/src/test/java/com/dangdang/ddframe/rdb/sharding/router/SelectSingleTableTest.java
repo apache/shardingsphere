@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import org.junit.Ignore;
 import org.junit.Test;
 

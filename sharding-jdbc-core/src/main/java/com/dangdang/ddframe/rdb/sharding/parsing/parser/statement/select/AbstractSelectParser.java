@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;

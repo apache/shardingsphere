@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.Or
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerInsertParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 import java.util.List;

@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.parser.MyS
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.parser.OracleSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parser.PostgreSQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerSelectParser;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 /**

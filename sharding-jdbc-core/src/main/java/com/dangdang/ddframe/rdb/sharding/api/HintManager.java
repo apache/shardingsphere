@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;

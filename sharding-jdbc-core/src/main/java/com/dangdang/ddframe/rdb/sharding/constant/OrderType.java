@@ -1,4 +1,4 @@
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
 /**
  * 排序类型.

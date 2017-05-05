@@ -15,12 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.constants;
+package com.dangdang.ddframe.rdb.sharding.constant;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses(DatabaseTypeTest.class)
-public class AllConstantsTests {
+/**
+ * SQL类型.
+ * 
+ * @author zhangliang
+ */
+public enum SQLType {
+    
+    SELECT, INSERT, DELETE, UPDATE
 }
