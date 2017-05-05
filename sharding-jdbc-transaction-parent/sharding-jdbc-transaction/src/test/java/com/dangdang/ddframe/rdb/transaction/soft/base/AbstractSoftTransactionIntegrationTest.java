@@ -79,7 +79,7 @@ public abstract class AbstractSoftTransactionIntegrationTest {
         return result;
     }
     
-    private void createTable(final ShardingDataSource shardingDataSource) throws SQLException {
+    private void createTable(final ShardingDataSource shardingDataSource) {
         String dbSchema = "CREATE TABLE IF NOT EXISTS `transaction_test` ("
             + "`id` int NOT NULL, "
             + "PRIMARY KEY (`id`));";

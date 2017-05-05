@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByC
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public final class ResultSetFactory {
         return resultSets.get(0);
     }
     
-    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets) throws SQLException {
+    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets) {
         return shardingResultSets.getResultSets().get(0);
     }
     

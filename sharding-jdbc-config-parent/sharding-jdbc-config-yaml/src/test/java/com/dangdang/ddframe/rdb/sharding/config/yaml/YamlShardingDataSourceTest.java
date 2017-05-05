@@ -113,7 +113,7 @@ public class YamlShardingDataSourceTest {
         return getShardingRule(new YamlShardingDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+    private ShardingRule getShardingRule(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);

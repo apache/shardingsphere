@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.OrderByContext;
 import com.google.common.base.Preconditions;
 
 import java.sql.ResultSet;

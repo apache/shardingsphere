@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;

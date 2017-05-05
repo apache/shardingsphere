@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.parser;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.ParserUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.parser.SQLParserEngine;
+import com.dangdang.ddframe.rdb.sharding.parser.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parser.parser.SQLParserEngine;
 import org.junit.Test;
 
 import java.util.Collections;

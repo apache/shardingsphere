@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.binding;
 
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleRoutingTableFactor;
 import lombok.AccessLevel;
 import lombok.Getter;

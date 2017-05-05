@@ -54,7 +54,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
         assertSelectAfterUpdate();
     }
     
-    private void assertSelectBeforeUpdate() throws SQLException, DatabaseUnitException {
+    private void assertSelectBeforeUpdate() throws SQLException {
         String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
@@ -62,7 +62,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
         }
     }
     
-    private void assertSelectAfterUpdate() throws SQLException, DatabaseUnitException {
+    private void assertSelectAfterUpdate() throws SQLException {
         String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();

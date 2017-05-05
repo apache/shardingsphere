@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.IndexColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.IndexColumn;
+import com.dangdang.ddframe.rdb.sharding.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -54,7 +54,7 @@ public final class ResultSetMergeContext {
         init();
     }
     
-    private void init() throws SQLException {
+    private void init() {
         setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
         currentOrderByKeys.addAll(sqlContext.getOrderByContexts());
     }

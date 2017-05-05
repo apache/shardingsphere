@@ -19,12 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.dialect.mysql.lexer.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.Lexer;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.analyzer.Dictionary;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Keyword;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parser.dialect.mysql.lexer.MySQLKeyword;
+import com.dangdang.ddframe.rdb.sharding.parser.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parser.lexer.analyzer.Dictionary;
+import com.dangdang.ddframe.rdb.sharding.parser.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parser.lexer.token.Keyword;
+import com.dangdang.ddframe.rdb.sharding.parser.lexer.token.TokenType;
 import com.google.common.base.CharMatcher;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,11 +32,11 @@ import lombok.AllArgsConstructor;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.Assist.END;
-import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.DELETE;
-import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.INSERT;
-import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.SELECT;
-import static com.dangdang.ddframe.rdb.sharding.parser.sql.lexer.token.DefaultKeyword.UPDATE;
+import static com.dangdang.ddframe.rdb.sharding.parser.lexer.token.Assist.END;
+import static com.dangdang.ddframe.rdb.sharding.parser.lexer.token.DefaultKeyword.DELETE;
+import static com.dangdang.ddframe.rdb.sharding.parser.lexer.token.DefaultKeyword.INSERT;
+import static com.dangdang.ddframe.rdb.sharding.parser.lexer.token.DefaultKeyword.SELECT;
+import static com.dangdang.ddframe.rdb.sharding.parser.lexer.token.DefaultKeyword.UPDATE;
 
 /**
  * SQL工具类.

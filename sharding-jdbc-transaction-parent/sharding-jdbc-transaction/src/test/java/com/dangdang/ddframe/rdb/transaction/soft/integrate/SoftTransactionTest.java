@@ -47,7 +47,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         transactionManager.end();
     }
     
-    private void insert() throws SQLException {
+    private void insert() {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
                 Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.INSERT);
@@ -58,7 +58,7 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         }
     }
     
-    private int select() throws SQLException {
+    private int select() {
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (

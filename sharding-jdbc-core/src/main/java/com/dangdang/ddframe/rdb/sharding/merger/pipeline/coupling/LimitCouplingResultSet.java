@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.delegate.AbstractDelegateResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
