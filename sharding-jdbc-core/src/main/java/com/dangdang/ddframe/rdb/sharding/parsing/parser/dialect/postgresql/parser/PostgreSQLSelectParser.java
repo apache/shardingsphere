@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class PostgreSQLSelectParser extends AbstractSelectParser {
@@ -49,17 +49,17 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         parseWhere();
         parseGroupBy();
         if (getExprParser().equalAny(PostgreSQLKeyword.WINDOW)) {
-            throw new ParserUnsupportedException(PostgreSQLKeyword.WINDOW);
+            throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
         getSqlContext().getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         parseLimit();
         if (getExprParser().skipIfEqual(DefaultKeyword.FETCH)) {
-            throw new ParserUnsupportedException(DefaultKeyword.FETCH);
+            throw new SQLParsingUnsupportedException(DefaultKeyword.FETCH);
         }
         if (getExprParser().skipIfEqual(DefaultKeyword.FOR)) {
             getExprParser().skipIfEqual(DefaultKeyword.UPDATE, PostgreSQLKeyword.SHARE);
             if (getExprParser().equalAny(PostgreSQLKeyword.OF)) {
-                throw new ParserUnsupportedException(PostgreSQLKeyword.OF);
+                throw new SQLParsingUnsupportedException(PostgreSQLKeyword.OF);
             }
             getExprParser().skipIfEqual(PostgreSQLKeyword.NOWAIT);
         }
@@ -80,7 +80,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                     if (getExprParser().equalAny(Literals.INT)) {
                     } else if (getExprParser().equalAny(Symbol.QUESTION)) {
                     } else {
-                        throw new ParserException(getExprParser().getLexer());
+                        throw new SQLParsingException(getExprParser().getLexer());
                     }
                     getExprParser().getLexer().nextToken();
                 }
@@ -90,7 +90,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                 if (getExprParser().equalAny(Literals.INT)) {
                 } else if (getExprParser().equalAny(Symbol.QUESTION)) {
                 } else {
-                    throw new ParserException(getExprParser().getLexer());
+                    throw new SQLParsingException(getExprParser().getLexer());
                 }
                 getExprParser().getLexer().nextToken();
                 getExprParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);

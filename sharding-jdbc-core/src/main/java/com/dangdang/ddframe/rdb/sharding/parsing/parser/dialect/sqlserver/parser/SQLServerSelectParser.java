@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.lexer.
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class SQLServerSelectParser extends AbstractSelectParser {
@@ -51,7 +51,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             parseSelectList();
         }
         if (getExprParser().equalAny(DefaultKeyword.INTO)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         parseFrom();
         parseWhere();
@@ -87,7 +87,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
                 }
             }
         } else {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
     }
 }

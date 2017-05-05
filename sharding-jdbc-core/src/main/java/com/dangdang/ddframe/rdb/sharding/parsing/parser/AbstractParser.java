@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public abstract class AbstractParser {
      */
     public final void accept(final TokenType tokenType) {
         if (lexer.getCurrentToken().getType() != tokenType) {
-            throw new ParserException(lexer, tokenType);
+            throw new SQLParsingException(lexer, tokenType);
         }
         lexer.nextToken();
     }

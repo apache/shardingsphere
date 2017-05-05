@@ -25,8 +25,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.lexer.
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 
@@ -74,7 +74,7 @@ public final class SQLServerParser extends SQLParser {
     
     protected void skipOutput() {
         if (equalAny(SQLServerKeyword.OUTPUT)) {
-            throw new ParserUnsupportedException(SQLServerKeyword.OUTPUT);
+            throw new SQLParsingUnsupportedException(SQLServerKeyword.OUTPUT);
         }
     }
     
@@ -89,7 +89,7 @@ public final class SQLServerParser extends SQLParser {
             offset = (int) getParameters().get(offsetIndex);
             setParametersIndex(offsetIndex + 1);
         } else {
-            throw new ParserException(getLexer());
+            throw new SQLParsingException(getLexer());
         }
         getLexer().nextToken();
         LimitContext limitContext;
@@ -105,7 +105,7 @@ public final class SQLServerParser extends SQLParser {
                 rowCount = (int) getParameters().get(rowCountIndex);
                 setParametersIndex(rowCountIndex + 1);
             } else {
-                throw new ParserException(getLexer());
+                throw new SQLParsingException(getLexer());
             }
             getLexer().nextToken();
             getLexer().nextToken();

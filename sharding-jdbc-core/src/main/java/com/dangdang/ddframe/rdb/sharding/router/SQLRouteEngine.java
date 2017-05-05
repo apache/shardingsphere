@@ -20,20 +20,20 @@ package com.dangdang.ddframe.rdb.sharding.router;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
@@ -68,13 +68,13 @@ public final class SQLRouteEngine {
      *
      * @param logicSql 逻辑SQL
      * @return 路由结果
-     * @throws SQLParserException SQL解析失败异常
+     * @throws SQLParsingException SQL解析失败异常
      */
-    public SQLRouteResult route(final String logicSql) throws SQLParserException {
+    public SQLRouteResult route(final String logicSql) throws SQLParsingException {
         return route(logicSql, Collections.emptyList());
     }
     
-    SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParserException {
+    SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParsingException {
         return routeSQL(parseSQL(logicSql, parameters), parameters);
     }
     

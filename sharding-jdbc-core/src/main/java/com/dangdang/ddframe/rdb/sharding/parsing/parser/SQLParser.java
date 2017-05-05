@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnCo
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
@@ -299,7 +300,7 @@ public class SQLParser extends AbstractParser {
             parseComparisonCondition(sqlContext);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equalAny(DefaultKeyword.OR)) {
-            throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
         }
     }
     

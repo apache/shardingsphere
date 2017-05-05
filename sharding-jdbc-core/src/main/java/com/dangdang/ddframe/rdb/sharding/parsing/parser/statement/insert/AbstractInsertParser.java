@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
@@ -92,7 +92,7 @@ public abstract class AbstractInsertParser {
     
     private void parseInto() {
         if (getUnsupportedKeywords().contains(exprParser.getLexer().getCurrentToken().getType())) {
-            throw new ParserUnsupportedException(exprParser.getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(exprParser.getLexer().getCurrentToken().getType());
         }
         exprParser.skipUntil(DefaultKeyword.INTO);
         exprParser.getLexer().nextToken();

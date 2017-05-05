@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
@@ -109,7 +109,7 @@ public class SQLUtil {
             }
             if (tokenType instanceof Assist) {
                 if (tokenType.equals(END)) {
-                    throw new SQLParserException("Unsupported SQL statement: [%s]", sql);
+                    throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
                 }
             }
             lexer.nextToken();

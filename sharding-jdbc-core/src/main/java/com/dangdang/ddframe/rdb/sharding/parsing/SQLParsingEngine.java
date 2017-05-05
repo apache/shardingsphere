@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.parse
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.parser.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.SQLDeleteParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.SQLInsertParserFactory;
@@ -75,7 +75,7 @@ public final class SQLParsingEngine {
         if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
             return SQLDeleteParserFactory.newInstance(sqlParser, dbType).parse();
         }
-        throw new ParserUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }
     
     private SQLParser getSQLParser() {

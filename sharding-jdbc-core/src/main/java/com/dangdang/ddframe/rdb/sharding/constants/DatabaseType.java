@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.constants;
 
-import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
@@ -47,6 +46,7 @@ public enum DatabaseType {
      */
     public static DatabaseType valueFrom(final String databaseProductName) {
         Optional<DatabaseType> databaseTypeOptional = Iterators.tryFind(Arrays.asList(DatabaseType.values()).iterator(), new Predicate<DatabaseType>() {
+            
             @Override
             public boolean apply(final DatabaseType input) {
                 return input.productName.equals(databaseProductName);
@@ -55,6 +55,6 @@ public enum DatabaseType {
         if (databaseTypeOptional.isPresent()) {
             return databaseTypeOptional.get();
         }
-        throw new DatabaseTypeUnsupportedException(databaseProductName); 
+        throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseProductName)); 
     }
 }

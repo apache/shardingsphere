@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
@@ -92,7 +92,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition3.getValues().get(1), is((Comparable) 20));
     }
     
-    @Test(expected = ParserUnsupportedException.class)
+    @Test(expected = SQLParsingUnsupportedException.class)
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
         List<Object> parameters = Collections.emptyList();

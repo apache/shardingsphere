@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.lexer.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.google.common.base.Optional;
@@ -61,7 +61,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     private void skipInto() {
         if (getExprParser().equalAny(DefaultKeyword.INTO)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
     }
     
@@ -166,7 +166,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
 
     private void skipModelColumnClause() {
-        throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
     }
     
     @Override
@@ -213,7 +213,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getExprParser().equalAny(DefaultKeyword.SELECT)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         if (getExprParser().skipIfEqual(OracleKeyword.ONLY)) {
             getExprParser().skipIfEqual(Symbol.LEFT_PAREN);
@@ -310,7 +310,7 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getExprParser().skipIfEqual(OracleKeyword.NULLS)) {
             getExprParser().getLexer().nextToken();
             if (!getExprParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
-                throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+                throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
             }
         }
     }

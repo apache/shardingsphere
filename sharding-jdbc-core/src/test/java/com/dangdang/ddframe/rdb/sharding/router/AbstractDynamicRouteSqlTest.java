@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
 
 import java.util.Collection;
@@ -27,22 +26,21 @@ import java.util.List;
 
 public abstract class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     
-    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final String targetDataSource, final String targetSQL) throws SQLParserException {
+    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final String targetDataSource, final String targetSQL) {
         assertSingleTarget(shardingValuePairs, originSql, Collections.emptyList(), targetDataSource, targetSQL);
     }
     
-    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) 
-            throws SQLParserException {
+    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) {
         assertMultipleTargets(shardingValuePairs, originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
     protected void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final int expectedSize,
-                                         final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+                                         final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
         assertMultipleTargets(shardingValuePairs, originSql, Collections.emptyList(), expectedSize, targetDataSources, targetSQLs);
     }
     
     private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, 
-                                       final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+                                       final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
         try (HintManager hintManager = HintManager.getInstance()) {
             for (ShardingValuePair each : shardingValuePairs) {
                 hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);

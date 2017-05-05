@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ import java.util.Arrays;
 public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     
     @Test
-    public void assertBindingTableWithUnBoundTable() throws SQLParserException {
+    public void assertBindingTableWithUnBoundTable() {
         assertSingleTarget("select * from order o join order_item i join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "select * from order_1 o join order_item_1 i join order_attr_b a using(order_id) where o.order_id = 1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), 
@@ -35,7 +34,7 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertConditionFromRelationship() throws SQLParserException {
+    public void assertConditionFromRelationship() {
         assertSingleTarget("select * from order o join order_attr a using(order_id) where o.order_id = 1", "ds_1",
                 "select * from order_1 o join order_attr_b a using(order_id) where o.order_id = 1");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1), new ShardingValuePair("order_attr", 1)), "select * from order o join order_attr a using(order_id)", "ds_1",
@@ -43,14 +42,14 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectWithCartesianProductAllPartitions() throws SQLParserException {
+    public void assertSelectWithCartesianProductAllPartitions() {
         assertMultipleTargets("select * from order o, order_attr a", 4, Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 o, order_attr_a a", "select * from order_1 o, order_attr_a a", 
                         "select * from order_0 o, order_attr_b a", "select * from order_1 o, order_attr_b a"));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertSelectTableWithoutRules() throws SQLParserException {
+    public void assertSelectTableWithoutRules() {
         assertSingleTarget("select * from aaa, bbb, ccc", null, null);
     }
 }

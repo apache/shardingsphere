@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.constants;
 
-import com.dangdang.ddframe.rdb.sharding.exception.DatabaseTypeUnsupportedException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +32,7 @@ public final class DatabaseTypeTest {
         assertThat(DatabaseType.valueFrom("Microsoft SQL Server"), is(DatabaseType.SQLServer));
     }
     
-    @Test(expected = DatabaseTypeUnsupportedException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void assertValueFromFailure() {
         DatabaseType.valueFrom("unknown");
     }

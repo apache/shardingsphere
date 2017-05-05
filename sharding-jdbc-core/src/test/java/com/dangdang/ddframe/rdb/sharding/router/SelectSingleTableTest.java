@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.ShardingOperator;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertThat;
 public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
 
     @Test
-    public void assertGroupBy() throws SQLParserException {
+    public void assertGroupBy() {
         assertSingleTarget("select sum(qty) from order where order_id = 1 group by tenant_id", "ds_1",
                 "select sum(qty) , tenant_id AS sharding_gen_1 from order_1 where order_id = 1 group by tenant_id");
 //        assertMultipleTargets("select sum(qty) from order group by tenant_id", 4, Arrays.asList("ds_0", "ds_1"),
@@ -40,7 +39,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSingleSelect() throws SQLParserException {
+    public void assertSingleSelect() {
         assertSingleTarget("select * from order where order_id = 1", "ds_1", "select * from order_1 where order_id = 1");
         assertSingleTarget("select * from order where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "select * from order_0 where order_id = ?");
         assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 1)), "select * from order", "ds_1", "select * from order_1");
@@ -48,7 +47,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectWithAlias() throws SQLParserException {
+    public void assertSelectWithAlias() {
         assertSingleTarget("select * from order a where a.order_id = 2", "ds_0", "select * from order_0 a where a.order_id = 2");
         assertSingleTarget("select * from order A where a.order_id = 2", "ds_0", "select * from order_0 A where a.order_id = 2");
         assertSingleTarget("select * from order a where A.order_id = 2", "ds_0", "select * from order_0 a where A.order_id = 2");
@@ -58,12 +57,12 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectWithTableNameAsAlias() throws SQLParserException {
+    public void assertSelectWithTableNameAsAlias() {
         assertSingleTarget("select * from order where order.order_id = 10", "ds_0", "select * from order_0 where order_0.order_id = 10");
     }
     
     @Test
-    public void assertSelectWithIn() throws SQLParserException {
+    public void assertSelectWithIn() {
         assertMultipleTargets("select * from order where order_id in (?,?,?)", Arrays.<Object>asList(1, 2, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?)", "select * from order_1 where order_id in (?,?,?)"));
         assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.IN, 1, 2, 100)), "select * from order", 4,
@@ -73,14 +72,14 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     @Ignore
     // TODO or
-    public void assertSelectWithInAndIntersection() throws SQLParserException {
+    public void assertSelectWithInAndIntersection() {
         assertMultipleTargets("select * from order where order_id in (?,?) or order_id in (?,?)", Arrays.<Object>asList(1, 2, 100, 2), 4,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_1 where order_id in (?,?) or order_id in (?,?)", "select * from order_1 where order_id in (?, ?) or order_id in (?, ?)"));
     }
     
     @Test
-    public void assertSelectWithBetween() throws SQLParserException {
+    public void assertSelectWithBetween() {
         assertMultipleTargets("select * from order where order_id between ? and ?", Arrays.<Object>asList(1, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id between ? and ?", "select * from order_1 where order_id between ? and ?"));
         assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.BETWEEN, 1, 100)), "select * from order", 4,
@@ -90,7 +89,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     @Ignore
     // TODO or
-    public void assertSelectWithBetweenAndIntersection() throws SQLParserException {
+    public void assertSelectWithBetweenAndIntersection() {
         assertMultipleTargets("select * from order where order_id between ? and ? or order_id between ? and ? ", Arrays.<Object>asList(1, 50, 29, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 where order_id between ? and ? or order_id between ? and ? ", 
@@ -98,7 +97,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSingleSelectLimit() throws SQLParserException {
+    public void assertSingleSelectLimit() {
         assertSingleTarget("select * from order where order_id = 1 limit 5", "ds_1", "select * from order_1 where order_id = 1 limit 5");
         assertSingleTarget("select * from order where order_id = 1 limit 2,5", "ds_1", "select * from order_1 where order_id = 1 limit 2,5");
         assertSingleTarget("select * from order where order_id = 1 limit 5 offset 2", "ds_1", "select * from order_1 where order_id = 1 limit 5 offset 2");
@@ -120,7 +119,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectInLimit() throws SQLParserException {
+    public void assertSelectInLimit() {
         assertMultipleTargets("select * from order where order_id in (?,?,?) limit 5", Arrays.<Object>asList(1, 2, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit 5", "select * from order_1 where order_id in (?,?,?) limit 5"));
         assertMultipleTargets("select * from order where order_id in (?,?,?) limit 2,5", Arrays.<Object>asList(1, 2, 100), 4,
@@ -151,7 +150,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     @Ignore
-    public void assertSelectOrLimit() throws SQLParserException {
+    public void assertSelectOrLimit() {
         assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit 5", Arrays.<Object>asList(1, 2, 100), 2,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit 5", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit 5"));

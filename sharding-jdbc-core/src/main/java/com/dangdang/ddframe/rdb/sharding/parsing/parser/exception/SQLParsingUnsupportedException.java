@@ -15,17 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.exception;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
-public class ParserUnsupportedException extends RuntimeException {
+public class SQLParsingUnsupportedException extends ShardingJdbcException {
     
     private static final long serialVersionUID = -4968036951399076811L;
     
     private static final String MESSAGE = "Not supported token '%s'.";
     
-    public ParserUnsupportedException(final TokenType tokenType) {
+    public SQLParsingUnsupportedException(final TokenType tokenType) {
         super(String.format(MESSAGE, tokenType.toString()));
     }
 }

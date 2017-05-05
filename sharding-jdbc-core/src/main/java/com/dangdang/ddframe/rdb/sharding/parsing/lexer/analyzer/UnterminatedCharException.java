@@ -17,12 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+
 /**
  * 符号未正确结束的异常.
  *
  * @author zhangliang
  */
-public final class UnterminatedCharException extends RuntimeException {
+public final class UnterminatedCharException extends ShardingJdbcException {
     
     private static final long serialVersionUID = 8575890835166900925L;
     

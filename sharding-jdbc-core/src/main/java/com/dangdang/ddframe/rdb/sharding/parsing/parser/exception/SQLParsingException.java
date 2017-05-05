@@ -15,12 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.exception;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 
-public class ParserException extends RuntimeException {
+public class SQLParsingException extends ShardingJdbcException {
     
     private static final long serialVersionUID = -6408790652103666096L;
     
@@ -28,11 +29,15 @@ public class ParserException extends RuntimeException {
     
     private static final String TOKEN_ERROR_MESSAGE = "SQL syntax error, token is '%s', literals is '%s'.";
     
-    public ParserException(final Lexer lexer, final TokenType expectedTokenType) {
+    public SQLParsingException(final String message, final Object... args) {
+        super(message, args);
+    }
+    
+    public SQLParsingException(final Lexer lexer, final TokenType expectedTokenType) {
         super(String.format(UNMATCH_MESSAGE, expectedTokenType, lexer.getCurrentToken().getType(), lexer.getCurrentToken().getLiterals()));
     }
     
-    public ParserException(final Lexer lexer) {
+    public SQLParsingException(final Lexer lexer) {
         super(String.format(TOKEN_ERROR_MESSAGE, lexer.getCurrentToken().getType(), lexer.getCurrentToken().getLiterals()));
     }
 }

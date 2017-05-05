@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.contstant.SQLType;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ public class SQLUtilTest {
         assertThat(SQLUtil.getTypeByStart(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fdelete\t\n  table  "), is(SQLType.DELETE));
     }
     
-    @Test(expected = SQLParserException.class)
+    @Test(expected = SQLParsingException.class)
     public void assertNoSQL() {
         SQLUtil.getTypeByStart("int i = 0");
     }

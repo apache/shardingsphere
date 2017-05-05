@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -27,7 +26,7 @@ import java.util.Collections;
 public final class SelectBindingTableTest extends AbstractDynamicRouteSqlTest {
     
     @Test
-    public void assertSelectWithBindingJoin() throws SQLParserException {
+    public void assertSelectWithBindingJoin() {
         assertSingleTarget("select * from order o inner join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1",
                 "select * from order_1 o inner join order_item_1 i on o.order_id = i.order_id where o.order_id = 1");
         assertSingleTarget("select * from order o join order_item i on o.order_id = i.order_id where o.order_id = 1", "ds_1",
@@ -41,7 +40,7 @@ public final class SelectBindingTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectWithBindingJoinDynamic() throws SQLParserException {
+    public void assertSelectWithBindingJoinDynamic() {
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o inner join order_item i on o.order_id = i.order_id", "ds_1",
                 "select * from order_1 o inner join order_item_1 i on o.order_id = i.order_id");
         assertSingleTarget(Lists.newArrayList(new ShardingValuePair("order", 1)), "select * from order o join order_item i on o.order_id = i.order_id", "ds_1",
@@ -53,7 +52,7 @@ public final class SelectBindingTableTest extends AbstractDynamicRouteSqlTest {
     }
     
     @Test
-    public void assertSelectWithRouteAllPartitions() throws SQLParserException {
+    public void assertSelectWithRouteAllPartitions() {
         assertMultipleTargets("select * from order o inner join order_item i on o.order_id = i.order_id", 4, Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 o inner join order_item_0 i on o.order_id = i.order_id", "select * from order_1 o inner join order_item_1 i on o.order_id = i.order_id"));
     }

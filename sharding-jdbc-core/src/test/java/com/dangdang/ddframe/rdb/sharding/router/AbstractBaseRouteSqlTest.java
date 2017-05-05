@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderAttrShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderShardingAlgorithm;
 import com.google.common.base.Function;
@@ -69,21 +68,21 @@ public abstract class AbstractBaseRouteSqlTest {
                 .tableShardingStrategy(new TableShardingStrategy("order_id", new OrderShardingAlgorithm())).build();
     }
     
-    protected void assertSingleTarget(final String originSql, final String targetDataSource, final String targetSQL) throws SQLParserException {
+    protected void assertSingleTarget(final String originSql, final String targetDataSource, final String targetSQL) {
         assertSingleTarget(originSql, Collections.emptyList(), targetDataSource, targetSQL);
     }
     
-    protected void assertSingleTarget(final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) throws SQLParserException {
+    protected void assertSingleTarget(final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) {
         assertMultipleTargets(originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
     protected void assertMultipleTargets(final String originSql, final int expectedSize, 
-            final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+            final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
         assertMultipleTargets(originSql, Collections.emptyList(), expectedSize, targetDataSources, targetSQLs);
     }
     
     protected void assertMultipleTargets(final String originSql, final List<Object> parameters, final int expectedSize, 
-            final Collection<String> targetDataSources, final Collection<String> targetSQLs) throws SQLParserException {
+            final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
         SQLRouteResult actual = new SQLRouteEngine(getShardingRule(), DatabaseType.MySQL).route(originSql, parameters);
         assertThat(actual.getExecutionUnits().size(), is(expectedSize));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {

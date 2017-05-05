@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.lexer.Ora
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.ParserUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class MySQLSelectParser extends AbstractSelectParser {
@@ -49,7 +49,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
             getSqlContext().setLimitContext(((MySQLParser) getExprParser()).parseLimit(getParametersIndex()));
         }
         if (getExprParser().equalAny(DefaultKeyword.PROCEDURE)) {
-            throw new ParserUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
         }
         queryRest();
     }
