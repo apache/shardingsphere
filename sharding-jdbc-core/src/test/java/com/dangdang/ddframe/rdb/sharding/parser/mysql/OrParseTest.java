@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parser.parser.SQLParserEngine;
+import com.dangdang.ddframe.rdb.sharding.parser.SQLParserEngine;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

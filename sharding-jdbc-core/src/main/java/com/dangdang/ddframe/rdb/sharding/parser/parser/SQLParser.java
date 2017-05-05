@@ -55,7 +55,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public class SQLParser extends Parser {
+public class SQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     

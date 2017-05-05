@@ -33,7 +33,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class Parser {
+public abstract class AbstractParser {
     
     @Getter
     private final Lexer lexer;

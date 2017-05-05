@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.DeleteSQLContext;

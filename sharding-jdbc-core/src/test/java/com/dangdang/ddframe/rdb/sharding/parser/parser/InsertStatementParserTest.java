@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.InsertSQLContext;

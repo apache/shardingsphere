@@ -33,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.parser.SQLParserEngine;
+import com.dangdang.ddframe.rdb.sharding.parser.SQLParserEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
