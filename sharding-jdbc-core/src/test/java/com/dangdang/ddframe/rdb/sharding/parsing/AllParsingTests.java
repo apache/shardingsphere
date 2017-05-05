@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForOneParameterTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForTowParametersTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLStatementTest;
@@ -34,6 +35,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        TokenizerTest.class,
         LexerTest.class,
         MySQLLexerTest.class,
         OracleLexerTest.class,
