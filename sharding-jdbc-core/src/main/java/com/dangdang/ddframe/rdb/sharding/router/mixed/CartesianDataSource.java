@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.mixed;
 
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.ToString;

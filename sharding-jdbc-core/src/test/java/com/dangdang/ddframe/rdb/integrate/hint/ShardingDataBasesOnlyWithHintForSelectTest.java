@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.hint;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parsing.contstant.ShardingOperator;
 import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;

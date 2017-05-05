@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.OrderByContext;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;

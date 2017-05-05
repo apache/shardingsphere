@@ -23,17 +23,17 @@ import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parser.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilderContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.SQLParserEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.DeleteSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLBuilderContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.UpdateSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
@@ -94,7 +94,7 @@ public final class SQLRouteEngine {
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
-        SQLContext result = new SQLParserEngine(databaseType, logicSql, shardingRule, parameters).parseStatement();
+        SQLContext result = new SQLParsingEngine(databaseType, logicSql, shardingRule, parameters).parseStatement();
         MetricsContext.stop(context);
         return result;
     }

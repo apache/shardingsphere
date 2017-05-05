@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parser.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.contstant.OrderType;
 import com.google.common.base.Optional;
 import org.junit.Test;
 

@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.id.generator.AllIdGeneratorTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
 import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
 import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
-import com.dangdang.ddframe.rdb.sharding.parser.AllParserTests;
+import com.dangdang.ddframe.rdb.sharding.parsing.AllParserTests;
 import com.dangdang.ddframe.rdb.sharding.router.AllRouterTests;
 import com.dangdang.ddframe.rdb.sharding.util.AllUtilTests;
 import org.junit.runner.RunWith;

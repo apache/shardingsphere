@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactory;
-import com.dangdang.ddframe.rdb.sharding.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.GroupByContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

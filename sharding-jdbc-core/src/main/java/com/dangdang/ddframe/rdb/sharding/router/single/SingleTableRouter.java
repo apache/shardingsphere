@@ -28,8 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.contstant.SQLType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;

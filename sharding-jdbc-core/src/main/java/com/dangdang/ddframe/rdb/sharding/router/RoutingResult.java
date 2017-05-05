@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import java.util.Collection;
 
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLBuilder;
 
 /**
  *  路由结果接口.

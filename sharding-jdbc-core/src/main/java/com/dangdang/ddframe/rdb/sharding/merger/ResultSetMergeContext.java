@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.IndexColumn;
-import com.dangdang.ddframe.rdb.sharding.parser.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.IndexColumn;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

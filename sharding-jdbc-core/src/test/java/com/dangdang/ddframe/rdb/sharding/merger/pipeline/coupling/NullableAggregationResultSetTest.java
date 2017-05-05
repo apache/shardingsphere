@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.contstant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.context.SelectSQLContext;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
