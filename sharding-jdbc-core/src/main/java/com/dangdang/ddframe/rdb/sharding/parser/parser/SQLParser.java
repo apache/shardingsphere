@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIgnoreExpr;
-import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLPropertyExpr;
@@ -330,7 +329,7 @@ public class SQLParser extends AbstractParser {
         getLexer().nextToken();
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
+        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLNumberExpr || right instanceof SQLTextExpr || right instanceof SQLPlaceholderExpr)) {
             Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), right));

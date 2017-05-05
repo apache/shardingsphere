@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 文本表达式.
+ * 字符表达式.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLTextExpr implements SQLLiteralExpr {
+public final class SQLTextExpr implements SQLExpr {
     
     private final String text;
 }
