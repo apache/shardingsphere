@@ -17,18 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.dialect.mysql.parser;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parser.context.RowCountLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.dialect.mysql.lexer.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parser.dialect.mysql.lexer.MySQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parser.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parser.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parser.parser.ParserException;
 import com.dangdang.ddframe.rdb.sharding.parser.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 
 import java.util.List;
 
@@ -44,7 +43,13 @@ public final class MySQLParser extends SQLParser {
         getLexer().nextToken();
     }
     
-    public LimitContext parseLimit(final int parametersIndex, final SelectSQLContext sqlContext) {
+    /**
+     * 解析分页上.
+     * 
+     * @param parametersIndex 参数索引
+     * @return 分页上下文
+     */
+    public LimitContext parseLimit(final int parametersIndex) {
         skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentToken().getEndPosition();
@@ -63,10 +68,10 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (skipIfEqual(Symbol.COMMA)) {
-            return getLimitContextWithComma(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
+            return getLimitContextWithComma(parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (skipIfEqual(MySQLKeyword.OFFSET)) {
-            return getLimitContextWithOffset(parametersIndex, sqlContext, valueIndex, valueBeginPosition, value, isParameterForValue);
+            return getLimitContextWithOffset(parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
             getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
@@ -78,7 +83,7 @@ public final class MySQLParser extends SQLParser {
     }
     
     private LimitContext getLimitContextWithComma(
-            final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+            final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int rowCount;
         int rowCountIndex = -1;
@@ -108,7 +113,7 @@ public final class MySQLParser extends SQLParser {
     }
     
     private LimitContext getLimitContextWithOffset(
-            final int parametersIndex, final SelectSQLContext sqlContext, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+            final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int offsetBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int offset;
         int offsetIndex = -1;

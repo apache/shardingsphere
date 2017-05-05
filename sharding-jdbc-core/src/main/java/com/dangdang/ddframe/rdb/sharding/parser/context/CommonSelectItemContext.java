@@ -34,7 +34,5 @@ public final class CommonSelectItemContext implements SelectItemContext {
     
     private final Optional<String> alias;
     
-    private final int index;
-    
     private final boolean star;
 }

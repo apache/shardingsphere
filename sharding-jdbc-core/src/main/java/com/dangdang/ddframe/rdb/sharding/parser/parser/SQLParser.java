@@ -18,17 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parser.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.CommonSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.SelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLCharExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIdentifierExpr;
@@ -257,15 +256,14 @@ public class SQLParser extends Parser {
      * 解析查询列.
      *
      * @param index 参数索引
-     * @param sqlContext SQL上下文
      * @return 查询列上下文
      */
-    public final SelectItemContext parseSelectItem(final int index, final SelectSQLContext sqlContext) {
+    public final SelectItemContext parseSelectItem(final int index) {
         skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = getLexer().getCurrentToken().getLiterals();
         if (equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             getLexer().nextToken();
-            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), parseAlias(), index, true);
+            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), parseAlias(), true);
         }
         if (skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
             return new AggregationSelectItemContext(skipParentheses(), parseAlias(), index, AggregationType.valueOf(literals.toUpperCase()));
@@ -282,7 +280,7 @@ public class SQLParser extends Parser {
                 sqlBuilderContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), index, false);
+        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), false);
     }
     
     /**

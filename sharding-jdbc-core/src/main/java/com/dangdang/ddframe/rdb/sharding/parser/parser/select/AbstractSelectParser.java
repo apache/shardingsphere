@@ -116,7 +116,7 @@ public abstract class AbstractSelectParser {
     protected final void parseSelectList() {
         int index = 1;
         do {
-            SelectItemContext selectItemContext = exprParser.parseSelectItem(index, sqlContext);
+            SelectItemContext selectItemContext = exprParser.parseSelectItem(index);
             sqlContext.getItemContexts().add(selectItemContext);
             if (selectItemContext instanceof CommonSelectItemContext && ((CommonSelectItemContext) selectItemContext).isStar()) {
                 sqlContext.setContainStar(true);

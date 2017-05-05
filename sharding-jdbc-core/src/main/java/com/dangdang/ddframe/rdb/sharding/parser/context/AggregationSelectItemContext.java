@@ -39,8 +39,6 @@ public final class AggregationSelectItemContext implements SelectItemContext, In
     
     private final Optional<String> alias;
     
-    private final int index;
-    
     @Setter
     private int columnIndex = -1;
     
@@ -48,11 +46,10 @@ public final class AggregationSelectItemContext implements SelectItemContext, In
     
     private final List<AggregationSelectItemContext> derivedAggregationSelectItemContexts = new ArrayList<>(2);
     
-    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int index, final AggregationType aggregationType) {
+    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int columnIndex, final AggregationType aggregationType) {
         this.innerExpression = innerExpression;
         this.alias = alias;
-        this.index = index;
-        columnIndex = index;
+        this.columnIndex = columnIndex;
         this.aggregationType = aggregationType;
     }
     

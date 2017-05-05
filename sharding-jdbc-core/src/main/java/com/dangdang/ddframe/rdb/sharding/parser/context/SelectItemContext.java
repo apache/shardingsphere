@@ -29,6 +29,4 @@ public interface SelectItemContext {
     String getExpression();
     
     Optional<String> getAlias();
-    
-    int getIndex();
 }

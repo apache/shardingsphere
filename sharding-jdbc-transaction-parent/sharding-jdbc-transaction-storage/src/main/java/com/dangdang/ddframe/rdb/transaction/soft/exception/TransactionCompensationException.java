@@ -24,6 +24,8 @@ package com.dangdang.ddframe.rdb.transaction.soft.exception;
  */
 public class TransactionCompensationException extends RuntimeException {
     
+    private static final long serialVersionUID = -4796865355222634311L;
+    
     public TransactionCompensationException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
