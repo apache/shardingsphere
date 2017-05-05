@@ -20,9 +20,14 @@ package com.dangdang.ddframe.rdb.sharding.parser.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 占位符表达式.
+ *
+ * @author zhangliang
+ */
 @RequiredArgsConstructor
 @Getter
-public class SQLPlaceholderExpr implements SQLExpr {
+public final class SQLPlaceholderExpr implements SQLExpr {
     
     private final int index;
     

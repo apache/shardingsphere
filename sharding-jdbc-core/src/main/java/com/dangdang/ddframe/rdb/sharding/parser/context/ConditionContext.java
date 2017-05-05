@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parser.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parser.expr.AbstractSQLTextLiteralExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLTextExpr;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -126,8 +126,8 @@ public final class ConditionContext {
             if (sqlExpr instanceof SQLPlaceholderExpr) {
                 values.add((Comparable) ((SQLPlaceholderExpr) sqlExpr).getValue());
                 valueIndices.add(((SQLPlaceholderExpr) sqlExpr).getIndex());
-            } else if (sqlExpr instanceof AbstractSQLTextLiteralExpr) {
-                values.add(((AbstractSQLTextLiteralExpr) sqlExpr).getText());
+            } else if (sqlExpr instanceof SQLTextExpr) {
+                values.add(((SQLTextExpr) sqlExpr).getText());
             } else if (sqlExpr instanceof SQLNumberExpr) {
                 values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
             }

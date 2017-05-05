@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.dialect.mysql.lexer.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLCharExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLNumberExpr;
@@ -69,7 +69,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             } else if (getExprParser().equalAny(Literals.FLOAT)) {
                 sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getCurrentToken().getLiterals()));
             } else if (getExprParser().equalAny(Literals.CHARS)) {
-                sqlExpr = new SQLCharExpr(getExprParser().getLexer().getCurrentToken().getLiterals());
+                sqlExpr = new SQLTextExpr(getExprParser().getLexer().getCurrentToken().getLiterals());
             } else if (getExprParser().equalAny(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
             } else if (getExprParser().equalAny(Symbol.QUESTION)) {

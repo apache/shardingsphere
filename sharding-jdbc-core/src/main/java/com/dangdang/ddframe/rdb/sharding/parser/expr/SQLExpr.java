@@ -17,5 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.expr;
 
+/**
+ * SQL表达式接口.
+ * 
+ * @author zhangliang 
+ */
 public interface SQLExpr {
 }

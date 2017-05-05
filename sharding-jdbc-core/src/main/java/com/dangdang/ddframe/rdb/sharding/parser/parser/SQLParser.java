@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parser.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLCharExpr;
+import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parser.expr.SQLIgnoreExpr;
@@ -119,7 +119,7 @@ public class SQLParser extends AbstractParser {
             return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
         }
         if (equalAny(Literals.CHARS)) {
-            return new SQLCharExpr(literals);
+            return new SQLTextExpr(literals);
         }
         // TODO 考虑long的情况
         if (equalAny(Literals.INT)) {

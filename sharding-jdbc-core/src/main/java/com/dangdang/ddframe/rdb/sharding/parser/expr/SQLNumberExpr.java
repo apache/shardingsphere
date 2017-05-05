@@ -20,9 +20,14 @@ package com.dangdang.ddframe.rdb.sharding.parser.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 数字表达式.
+ *
+ * @author zhangliang
+ */
 @RequiredArgsConstructor
 @Getter
-public class SQLNumberExpr implements SQLLiteralExpr {
+public final class SQLNumberExpr implements SQLLiteralExpr {
     
     private final Number number;
 }

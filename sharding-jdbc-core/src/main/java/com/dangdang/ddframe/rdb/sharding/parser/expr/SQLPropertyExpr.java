@@ -20,9 +20,14 @@ package com.dangdang.ddframe.rdb.sharding.parser.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 属性表达式.
+ *
+ * @author zhangliang
+ */
 @RequiredArgsConstructor
 @Getter
-public class SQLPropertyExpr implements SQLExpr {
+public final class SQLPropertyExpr implements SQLExpr {
     
     private final SQLIdentifierExpr owner;
     

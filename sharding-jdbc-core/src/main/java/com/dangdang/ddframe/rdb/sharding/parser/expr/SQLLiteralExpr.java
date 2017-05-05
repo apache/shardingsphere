@@ -17,5 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parser.expr;
 
+/**
+ * 字面量表达式.
+ *
+ * @author zhangliang
+ */
 public interface SQLLiteralExpr extends SQLExpr {
 }
