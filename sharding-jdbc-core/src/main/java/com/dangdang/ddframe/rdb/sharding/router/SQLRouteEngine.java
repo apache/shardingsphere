@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.DeleteSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;

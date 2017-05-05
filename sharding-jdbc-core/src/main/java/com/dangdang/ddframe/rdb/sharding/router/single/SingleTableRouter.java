@@ -28,8 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -157,7 +156,7 @@ public final class SingleTableRouter {
     private List<ShardingValue<?>> getShardingValues(final Collection<String> shardingColumns) {
         List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
-            Optional<Condition> condition = conditionContext.find(logicTable, each);
+            Optional<ConditionContext.Condition> condition = conditionContext.find(logicTable, each);
             if (condition.isPresent()) {
                 result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get()));
             }

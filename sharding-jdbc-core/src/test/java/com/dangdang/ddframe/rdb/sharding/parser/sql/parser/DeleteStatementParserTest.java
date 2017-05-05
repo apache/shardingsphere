@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.DeleteSQLContext;
 import org.junit.Test;
 
@@ -73,16 +73,16 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     private void assertDeleteStatement(final DeleteSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
-        Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition1.getValues().size(), is(1));
         assertThat(condition1.getValues().get(0), is((Comparable) 1));
-        Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        ConditionContext.Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
         assertThat(condition2.getOperator(), is(ShardingOperator.IN));
         assertThat(condition2.getValues().size(), is(2));
         assertThat(condition2.getValues().get(0), is((Comparable) 1));
         assertThat(condition2.getValues().get(1), is((Comparable) 3));
-        Condition condition3 = sqlContext.getConditionContext().find("TABLE_XXX", "field3").get();
+        ConditionContext.Condition condition3 = sqlContext.getConditionContext().find("TABLE_XXX", "field3").get();
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
         assertThat(condition3.getValues().size(), is(2));
         assertThat(condition3.getValues().get(0), is((Comparable) 5));
@@ -132,7 +132,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         DeleteSQLContext sqlContext = (DeleteSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        ConditionContext.Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));

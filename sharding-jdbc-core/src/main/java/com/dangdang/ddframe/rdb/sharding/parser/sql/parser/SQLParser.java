@@ -19,8 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parser.sql.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.SQLBuilderContext;
@@ -57,7 +56,6 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-@Setter
 public class SQLParser extends Parser {
     
     private final ShardingRule shardingRule;
@@ -66,6 +64,7 @@ public class SQLParser extends Parser {
     
     private final SQLBuilderContext sqlBuilderContext;
     
+    @Setter
     private int parametersIndex;
     
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule, final List<Object> parameters) {
@@ -298,54 +297,50 @@ public class SQLParser extends Parser {
     }
     
     private void parseConditions(final SQLContext sqlContext) {
-        ConditionContext conditionContext = new ConditionContext();
+        sqlContext.setConditionContext(new ConditionContext());
         do {
-            Optional<Condition> conditionOptional = parseComparisonCondition(sqlContext);
-            // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
-            if (conditionOptional.isPresent()) {
-                conditionContext.add(conditionOptional.get());
-            }
+            parseComparisonCondition(sqlContext);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equalAny(DefaultKeyword.OR)) {
             throw new ParserUnsupportedException(getLexer().getCurrentToken().getType());
         }
-        sqlContext.setConditionContext(conditionContext);
     }
     
     // TODO 解析组合expr
-    public final Optional<Condition> parseComparisonCondition(final SQLContext sqlContext) {
+    public final void parseComparisonCondition(final SQLContext sqlContext) {
         skipIfEqual(Symbol.LEFT_PAREN);
         SQLExpr left = parseExpression(sqlContext);
         if (equalAny(Symbol.EQ)) {
-            return parseEqualCondition(sqlContext, left);
+            parseEqualCondition(sqlContext, left);
+            return;
         }
         if (equalAny(DefaultKeyword.IN)) {
-            return parseInCondition(sqlContext, left);
+            parseInCondition(sqlContext, left);
+            return;
         }
         if (equalAny(DefaultKeyword.BETWEEN)) {
-            return parseBetweenCondition(sqlContext, left);
+            parseBetweenCondition(sqlContext, left);
+            return;
         }
         if (equalAny(Symbol.LT) || equalAny(Symbol.GT) || equalAny(Symbol.LT_EQ) || equalAny(Symbol.GT_EQ)) {
             parserOtherCondition(sqlContext);
         }
         skipIfEqual(Symbol.LEFT_PAREN);
-        return Optional.absent();
     }
     
-    private Optional<Condition> parseEqualCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseEqualCondition(final SQLContext sqlContext, final SQLExpr left) {
         getLexer().nextToken();
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLLiteralExpr || right instanceof SQLPlaceholderExpr)) {
             Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-                return Optional.of(new Condition(column.get(), right));
+                sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
             }
         }
-        return Optional.absent();
     }
     
-    private Optional<Condition> parseInCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseInCondition(final SQLContext sqlContext, final SQLExpr left) {
         getLexer().nextToken();
         accept(Symbol.LEFT_PAREN);
         List<SQLExpr> rights = new LinkedList<>();
@@ -355,16 +350,14 @@ public class SQLParser extends Parser {
             }
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
-        Condition result = null;
         Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            result = new Condition(column.get(), rights);
+            sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights));
         }
         getLexer().nextToken();
-        return Optional.fromNullable(result);
     }
     
-    private Optional<Condition> parseBetweenCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseBetweenCondition(final SQLContext sqlContext, final SQLExpr left) {
         getLexer().nextToken();
         List<SQLExpr> rights = new LinkedList<>();
         rights.add(parseExpression(sqlContext));
@@ -372,9 +365,8 @@ public class SQLParser extends Parser {
         rights.add(parseExpression(sqlContext));
         Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            return Optional.of(new Condition(column.get(), rights.get(0), rights.get(1)));
+            sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights.get(0), rights.get(1)));
         }
-        return Optional.absent();
     }
     
     private void parserOtherCondition(final SQLContext sqlContext) {

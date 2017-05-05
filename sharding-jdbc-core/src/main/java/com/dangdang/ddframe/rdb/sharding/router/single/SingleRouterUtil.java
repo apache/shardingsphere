@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.router.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ public class SingleRouterUtil {
      * @param condition 条件对象
      * @return 分片值对象
      */
-    public static ShardingValue<?> convertConditionToShardingValue(final Condition condition) {
+    public static ShardingValue<?> convertConditionToShardingValue(final ConditionContext.Condition condition) {
         List<Comparable<?>> conditionValues = condition.getValues();
         switch (condition.getOperator()) {
             case EQUAL:
@@ -56,5 +56,4 @@ public class SingleRouterUtil {
                 throw new UnsupportedOperationException(condition.getOperator().getExpression());
         }
     }
-    
 }

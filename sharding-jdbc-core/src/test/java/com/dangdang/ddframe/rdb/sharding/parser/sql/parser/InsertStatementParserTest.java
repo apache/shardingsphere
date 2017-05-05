@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.google.common.collect.Lists;
 import org.junit.Test;
@@ -90,11 +90,11 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void assertInsertStatement(final InsertSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition1.getValues().size(), is(1));
         assertThat(condition1.getValues().get(0), is((Comparable) 10));
-        Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        ConditionContext.Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
         assertThat(condition2.getShardingColumnContext().getColumnName(), is("field2"));
         assertThat(condition2.getShardingColumnContext().getTableName(), is("TABLE_XXX"));
         assertThat(condition2.getOperator(), is(ShardingOperator.EQUAL));
@@ -149,7 +149,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) new SQLParserEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
-        Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        ConditionContext.Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));

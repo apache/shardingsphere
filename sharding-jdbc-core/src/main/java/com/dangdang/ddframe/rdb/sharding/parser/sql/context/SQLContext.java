@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.context;
 
 import com.dangdang.ddframe.rdb.sharding.parser.contstant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.expr.SQLExpr;
 import com.google.common.base.Optional;

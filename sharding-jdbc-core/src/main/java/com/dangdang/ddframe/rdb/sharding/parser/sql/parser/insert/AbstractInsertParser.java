@@ -18,8 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parser.sql.parser.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.Condition;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parser.sql.context.ShardingColumnContext;
@@ -178,7 +177,7 @@ public abstract class AbstractInsertParser {
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
                 }
                 if (getShardingRule().isShardingColumn(each)) {
-                    conditionContext.add(new Condition(each, sqlExprs.get(count)));
+                    conditionContext.add(new ConditionContext.Condition(each, sqlExprs.get(count)));
                 }
                 count++;
             }
