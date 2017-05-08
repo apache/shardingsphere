@@ -38,16 +38,6 @@ Sharding-JDBC功能灵活且全面：
     </item>
     
     <item>
-      <title>Release Notes</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/release-notes/</link>
-      <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
-      
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/release-notes/</guid>
-      <description>1.4.2 功能提升  ISSUE #219 线程性能优化 ISSUE #215 流式排序的聚集结果集 StreamingOrderByReducerResultSet性能优化 ISSUE #161 结果集归并的时候可以采用堆排序来提升性能  缺陷修正  ISSUE #212 对去缺少数据源规则给出更有意义的提示 ISSUE #214 where中 table_name.column_name in (?,?)无法解析表达式 ISSUE #180 批量执行Update返回值不准确 ISSUE #225 自动生成Id最后一位不归零  1.4.1 功能提升  ISSUE #191 根据主机的IP生成workerId的IdGenerator实现 ISSUE #192 根据HOSTNAME的数字尾缀获取workerId的IdGenerator ISSUE #210 路由到单库单表移除补充的SQL语句片段  缺陷修正  ISSUE #194 jdbc接口中资源释放错误 ISSUE #199 分表且复用PreparedStatement对象造成数据路由错误 ISSUE #201 批量操作执行前事件发送缺失 ISSUE #203 合并batch操作发送的事件 ISSUE #209 limit并行异常  1.4.0 功能提升 自动生成键实现，包含
- ISSUE #162 分布式主键算法实现 ISSUE #163 获取自增序列jdbc接口实现 ISSUE #171 sharding-jdbc-core配合自动生成序列改造 ISSUE #172 YAML与Spring的配置方式增加对于自增序列的支持  缺陷修正  ISSUE #176 AbstractMemoryResultSet对SQL的wasNull实现有问题  1.</description>
-    </item>
-    
-    <item>
       <title>贡献代码</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/contribution/</link>
       <pubDate>Wed, 12 Apr 2017 16:06:17 +0800</pubDate>

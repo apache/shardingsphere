@@ -27,11 +27,6 @@
   </url>
   
   <url>
-    <loc>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/release-notes/</loc>
-    <lastmod>2016-12-06T22:38:50+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/sharding/</loc>
     <lastmod>2016-12-06T22:38:50+08:00</lastmod>
   </url>
