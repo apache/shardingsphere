@@ -12,10 +12,10 @@
     
     <item>
       <title>概览</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/</link>
       <pubDate>Wed, 12 Apr 2017 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/</guid>
       <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
 Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。

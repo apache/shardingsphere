@@ -12,10 +12,10 @@
     
     <item>
       <title>设计规划</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/</link>
       <pubDate>Mon, 12 Dec 2016 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/</guid>
       <description> 本章导航  想了解架构设计及项目模块设计的概念，请阅读架构设计及目录结构说明。 Sharding-JDBC未来规划有哪些呢？请阅读未来规划。  </description>
     </item>
     

@@ -273,10 +273,10 @@ TableRule.builder(&amp;quot;t_order_item&amp;quot;).autoIncrementColumns(&amp;qu
     
     <item>
       <title>概览</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/</link>
       <pubDate>Wed, 12 Apr 2017 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/</guid>
       <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
 Sharding-JDBC是当当应用框架ddframe中，关系型数据库模块dd-rdb中分离出来的数据库水平扩展框架，即透明化数据库分库分表访问。Sharding-JDBC继dubbox和Elastic-Job之后，是ddframe系列开源的第三个产品。
 Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
@@ -286,28 +286,28 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
     
     <item>
       <title>使用指南</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/</link>
       <pubDate>Mon, 12 Dec 2016 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/</guid>
       <description> 本章导航  想一览基本的概念，请阅读基本概念。 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读如何分库分表章节。 分库分表后，要进一步提高性能，可以使用读写分离功能。 配置手册介绍了如何通过YAML和Spring两种方式配置。 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，但也可以使用强制路由方式来设置分片数据。该模式非常适合存量系统扩容。 分库分表后主键如何生成？分布式主键将给你答案。 分库后事务如何保证？事务支持将介绍Sharding-JDBC如何通过使用柔性事务的方式来实现分布式事务。  </description>
     </item>
     
     <item>
       <title>设计规划</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/03-design/</link>
       <pubDate>Mon, 12 Dec 2016 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/</guid>
       <description> 本章导航  想了解架构设计及项目模块设计的概念，请阅读架构设计及目录结构说明。 Sharding-JDBC未来规划有哪些呢？请阅读未来规划。  </description>
     </item>
     
     <item>
       <title>起航</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/01-start/index/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/01-start/</link>
       <pubDate>Fri, 02 Dec 2016 16:06:17 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/index/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/</guid>
       <description> 本章导航  如果想快速体验Sharding-JDBC的强大功能，请阅读快速入门。 如果在使用中遇到什么问题，请首先在FAQ中寻找解决问题的答案。 想要在自己的项目中集成Sharding-JDBC,您一定很关心它能做什么和不能做什么。 数据库中间件一般都不会支持完全的SQL语法,在这里能了解到支持的SQL语法。 最后，你会关心中间件的性能情况。这里将展示我们的性能测试结果。  </description>
     </item>
     
