@@ -27,12 +27,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
-    public SQLServerUpdateParser(final SQLParser exprParser) {
-        super(exprParser);
+    public SQLServerUpdateParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        ((SQLServerParser) getExprParser()).parseTop();
+        ((SQLServerParser) getSqlParser()).parseTop();
     }
 }

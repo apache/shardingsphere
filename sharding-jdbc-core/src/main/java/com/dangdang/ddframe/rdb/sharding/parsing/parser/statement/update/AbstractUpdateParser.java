@@ -34,16 +34,16 @@ import lombok.Getter;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractUpdateParser {
     
-    private final SQLParser exprParser;
+    private final SQLParser sqlParser;
     
     private final UpdateSQLContext sqlContext;
     
     private int parametersIndex;
     
-    public AbstractUpdateParser(final SQLParser exprParser) {
-        this.exprParser = exprParser;
+    public AbstractUpdateParser(final SQLParser sqlParser) {
+        this.sqlParser = sqlParser;
         sqlContext = new UpdateSQLContext();
-        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
+        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     /**
@@ -52,42 +52,42 @@ public abstract class AbstractUpdateParser {
      * @return 解析结果
      */
     public UpdateSQLContext parse() {
-        exprParser.getLexer().nextToken();
+        sqlParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
-        exprParser.parseSingleTable(sqlContext);
+        sqlParser.parseSingleTable(sqlContext);
         parseSetItems();
-        exprParser.skipUntil(DefaultKeyword.WHERE);
-        exprParser.setParametersIndex(parametersIndex);
-        exprParser.parseWhere(sqlContext);
+        sqlParser.skipUntil(DefaultKeyword.WHERE);
+        sqlParser.setParametersIndex(parametersIndex);
+        sqlParser.parseWhere(sqlContext);
         return sqlContext;
     }
     
     protected abstract void skipBetweenUpdateAndTable();
     
     private void parseSetItems() {
-        exprParser.accept(DefaultKeyword.SET);
+        sqlParser.accept(DefaultKeyword.SET);
         do {
             parseSetItem();
-        } while (exprParser.skipIfEqual(Symbol.COMMA));
+        } while (sqlParser.skipIfEqual(Symbol.COMMA));
     }
     
     private void parseSetItem() {
-        if (exprParser.equalAny(Symbol.LEFT_PAREN)) {
-            exprParser.skipParentheses();
+        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
+            sqlParser.skipParentheses();
         } else {
-            int beginPosition = exprParser.getLexer().getCurrentToken().getEndPosition();
-            String literals = exprParser.getLexer().getCurrentToken().getLiterals();
-            exprParser.getLexer().nextToken();
+            int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
+            String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
+            sqlParser.getLexer().nextToken();
             String tableName = sqlContext.getTables().get(0).getName();
-            if (exprParser.skipIfEqual(Symbol.DOT)) {
+            if (sqlParser.skipIfEqual(Symbol.DOT)) {
                 if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    exprParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+                    sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 }
-                exprParser.getLexer().nextToken();
+                sqlParser.getLexer().nextToken();
             }
         }
-        exprParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
-        exprParser.parseExpression(sqlContext);
-        parametersIndex = exprParser.getParametersIndex();
+        sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
+        sqlParser.parseExpression(sqlContext);
+        parametersIndex = sqlParser.getParametersIndex();
     }
 }

@@ -24,13 +24,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class OracleDeleteParser extends AbstractDeleteParser {
     
-    public OracleDeleteParser(final SQLParser exprParser) {
-        super(exprParser);
+    public OracleDeleteParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().skipIfEqual(DefaultKeyword.FROM);
-        getExprParser().skipIfEqual(OracleKeyword.ONLY);
+        getSqlParser().skipIfEqual(DefaultKeyword.FROM);
+        getSqlParser().skipIfEqual(OracleKeyword.ONLY);
     }
 }

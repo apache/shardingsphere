@@ -51,7 +51,7 @@ public abstract class AbstractSelectParser {
     
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
     
-    private SQLParser exprParser;
+    private SQLParser sqlParser;
     
     private final SelectSQLContext sqlContext;
     
@@ -62,10 +62,10 @@ public abstract class AbstractSelectParser {
     
     private ItemsToken itemsToken;
     
-    public AbstractSelectParser(final SQLParser exprParser) {
-        this.exprParser = exprParser;
+    public AbstractSelectParser(final SQLParser sqlParser) {
+        this.sqlParser = sqlParser;
         sqlContext = new SelectSQLContext();
-        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
+        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     /**
@@ -78,7 +78,7 @@ public abstract class AbstractSelectParser {
         sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         customizedSelect();
         if (!itemsToken.getItems().isEmpty()) {
-            exprParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
+            sqlParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
         }
         return sqlContext;
     }
@@ -87,7 +87,7 @@ public abstract class AbstractSelectParser {
     }
     
     protected void query() {
-        getExprParser().accept(DefaultKeyword.SELECT);
+        getSqlParser().accept(DefaultKeyword.SELECT);
         parseDistinct();
         parseSelectList();
         parseFrom();
@@ -97,15 +97,15 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void parseDistinct() {
-        if (getExprParser().equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
+        if (getSqlParser().equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
             sqlContext.setDistinct(true);
-            getExprParser().getLexer().nextToken();
-            if (hasDistinctOn() && getExprParser().equalAny(DefaultKeyword.ON)) {
-                getExprParser().getLexer().nextToken();
-                getExprParser().skipParentheses();
+            getSqlParser().getLexer().nextToken();
+            if (hasDistinctOn() && getSqlParser().equalAny(DefaultKeyword.ON)) {
+                getSqlParser().getLexer().nextToken();
+                getSqlParser().skipParentheses();
             }
-        } else if (getExprParser().equalAny(DefaultKeyword.ALL)) {
-            getExprParser().getLexer().nextToken();
+        } else if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
+            getSqlParser().getLexer().nextToken();
         }
     }
     
@@ -116,14 +116,14 @@ public abstract class AbstractSelectParser {
     protected final void parseSelectList() {
         int index = 1;
         do {
-            SelectItemContext selectItemContext = exprParser.parseSelectItem(index);
+            SelectItemContext selectItemContext = sqlParser.parseSelectItem(index);
             sqlContext.getItemContexts().add(selectItemContext);
             if (selectItemContext instanceof CommonSelectItemContext && ((CommonSelectItemContext) selectItemContext).isStar()) {
                 sqlContext.setContainStar(true);
             }
             index++;
-        } while (getExprParser().skipIfEqual(Symbol.COMMA));
-        sqlContext.setSelectListLastPosition(getExprParser().getLexer().getCurrentToken().getEndPosition() - getExprParser().getLexer().getCurrentToken().getLiterals().length());
+        } while (getSqlParser().skipIfEqual(Symbol.COMMA));
+        sqlContext.setSelectListLastPosition(getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
         itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
         for (SelectItemContext each : sqlContext.getItemContexts()) {
             if (each instanceof AggregationSelectItemContext) {
@@ -144,8 +144,8 @@ public abstract class AbstractSelectParser {
     }
     
     protected void queryRest() {
-        if (getExprParser().equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
-            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().equalAny(DefaultKeyword.UNION, DefaultKeyword.EXCEPT, DefaultKeyword.INTERSECT, DefaultKeyword.MINUS)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
     
@@ -153,8 +153,8 @@ public abstract class AbstractSelectParser {
         if (sqlContext.getTables().isEmpty()) {
             return;
         }
-        exprParser.parseWhere(sqlContext);
-        parametersIndex = exprParser.getParametersIndex();
+        sqlParser.parseWhere(sqlContext);
+        parametersIndex = sqlParser.getParametersIndex();
     }
     
     /**
@@ -164,28 +164,28 @@ public abstract class AbstractSelectParser {
      * @return 排序上下文
      */
     public final List<OrderByContext> parseOrderBy(final SelectSQLContext sqlContext) {
-        if (!exprParser.skipIfEqual(DefaultKeyword.ORDER)) {
+        if (!sqlParser.skipIfEqual(DefaultKeyword.ORDER)) {
             return Collections.emptyList();
         }
         List<OrderByContext> result = new LinkedList<>();
-        exprParser.skipIfEqual(DefaultKeyword.SIBLINGS);
-        exprParser.accept(DefaultKeyword.BY);
+        sqlParser.skipIfEqual(DefaultKeyword.SIBLINGS);
+        sqlParser.accept(DefaultKeyword.BY);
         do {
             Optional<OrderByContext> orderByContext = parseSelectOrderByItem(sqlContext);
             if (orderByContext.isPresent()) {
                 result.add(orderByContext.get());
             }
         }
-        while (exprParser.skipIfEqual(Symbol.COMMA));
+        while (sqlParser.skipIfEqual(Symbol.COMMA));
         return result;
     }
     
     protected Optional<OrderByContext> parseSelectOrderByItem(final SelectSQLContext sqlContext) {
-        SQLExpr expr = exprParser.parseExpression(sqlContext);
+        SQLExpr expr = sqlParser.parseExpression(sqlContext);
         OrderType orderByType = OrderType.ASC;
-        if (exprParser.skipIfEqual(DefaultKeyword.ASC)) {
+        if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;
-        } else if (exprParser.skipIfEqual(DefaultKeyword.DESC)) {
+        } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
         OrderByContext result;
@@ -218,31 +218,31 @@ public abstract class AbstractSelectParser {
     }
     
     protected void parseGroupBy() {
-        if (getExprParser().skipIfEqual(DefaultKeyword.GROUP)) {
-            getExprParser().accept(DefaultKeyword.BY);
+        if (getSqlParser().skipIfEqual(DefaultKeyword.GROUP)) {
+            getSqlParser().accept(DefaultKeyword.BY);
             while (true) {
-                addGroupByItem(exprParser.parseExpression(sqlContext));
-                if (!getExprParser().equalAny(Symbol.COMMA)) {
+                addGroupByItem(sqlParser.parseExpression(sqlContext));
+                if (!getSqlParser().equalAny(Symbol.COMMA)) {
                     break;
                 }
-                getExprParser().getLexer().nextToken();
+                getSqlParser().getLexer().nextToken();
             }
-            while (getExprParser().equalAny(DefaultKeyword.WITH) || getExprParser().getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
-                getExprParser().getLexer().nextToken();
+            while (getSqlParser().equalAny(DefaultKeyword.WITH) || getSqlParser().getLexer().getCurrentToken().getLiterals().equalsIgnoreCase("ROLLUP")) {
+                getSqlParser().getLexer().nextToken();
             }
-            if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
-                exprParser.parseExpression(sqlContext);
+            if (getSqlParser().skipIfEqual(DefaultKeyword.HAVING)) {
+                sqlParser.parseExpression(sqlContext);
             }
-        } else if (getExprParser().skipIfEqual(DefaultKeyword.HAVING)) {
-            exprParser.parseExpression(sqlContext);
+        } else if (getSqlParser().skipIfEqual(DefaultKeyword.HAVING)) {
+            sqlParser.parseExpression(sqlContext);
         }
     }
     
     protected final void addGroupByItem(final SQLExpr sqlExpr) {
         OrderType orderByType = OrderType.ASC;
-        if (getExprParser().equalAny(DefaultKeyword.ASC)) {
-            getExprParser().getLexer().nextToken();
-        } else if (getExprParser().skipIfEqual(DefaultKeyword.DESC)) {
+        if (getSqlParser().equalAny(DefaultKeyword.ASC)) {
+            getSqlParser().getLexer().nextToken();
+        } else if (getSqlParser().skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
         GroupByContext groupByContext;
@@ -294,13 +294,13 @@ public abstract class AbstractSelectParser {
     }
     
     public final void parseFrom() {
-        if (getExprParser().skipIfEqual(DefaultKeyword.FROM)) {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.FROM)) {
             parseTable();
         }
     }
     
     public void parseTable() {
-        if (getExprParser().equalAny(Symbol.LEFT_PAREN)) {
+        if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         parseTableFactor();
@@ -308,45 +308,45 @@ public abstract class AbstractSelectParser {
     }
     
     protected final void parseTableFactor() {
-        int beginPosition = getExprParser().getLexer().getCurrentToken().getEndPosition() - getExprParser().getLexer().getCurrentToken().getLiterals().length();
-        String literals = getExprParser().getLexer().getCurrentToken().getLiterals();
-        getExprParser().getLexer().nextToken();
+        int beginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length();
+        String literals = getSqlParser().getLexer().getCurrentToken().getLiterals();
+        getSqlParser().getLexer().nextToken();
         // TODO 包含Schema解析
-        if (getExprParser().skipIfEqual(Symbol.DOT)) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().parseAlias();
+        if (getSqlParser().skipIfEqual(Symbol.DOT)) {
+            getSqlParser().getLexer().nextToken();
+            getSqlParser().parseAlias();
             return;
         }
         // FIXME 根据shardingRule过滤table
-        exprParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
-        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getExprParser().parseAlias()));
+        sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
+        sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getSqlParser().parseAlias()));
     }
     
     protected void parseJoinTable() {
-        if (getExprParser().skipJoin()) {
+        if (getSqlParser().skipJoin()) {
             parseTable();
-            if (getExprParser().skipIfEqual(DefaultKeyword.ON)) {
+            if (getSqlParser().skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    parseTableCondition(getExprParser().getLexer().getCurrentToken().getEndPosition());
-                    getExprParser().accept(Symbol.EQ);
-                    parseTableCondition(getExprParser().getLexer().getCurrentToken().getEndPosition() - getExprParser().getLexer().getCurrentToken().getLiterals().length());
-                } while (getExprParser().skipIfEqual(DefaultKeyword.AND));
-            } else if (getExprParser().skipIfEqual(DefaultKeyword.USING)) {
-                getExprParser().skipParentheses();
+                    parseTableCondition(getSqlParser().getLexer().getCurrentToken().getEndPosition());
+                    getSqlParser().accept(Symbol.EQ);
+                    parseTableCondition(getSqlParser().getLexer().getCurrentToken().getEndPosition() - getSqlParser().getLexer().getCurrentToken().getLiterals().length());
+                } while (getSqlParser().skipIfEqual(DefaultKeyword.AND));
+            } else if (getSqlParser().skipIfEqual(DefaultKeyword.USING)) {
+                getSqlParser().skipParentheses();
             }
             parseJoinTable();
         }
     }
     
     private void parseTableCondition(final int startPosition) {
-        SQLExpr sqlExpr = exprParser.parseExpression();
+        SQLExpr sqlExpr = sqlParser.parseExpression();
         if (!(sqlExpr instanceof SQLPropertyExpr)) {
             return;
         }
         SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
         for (TableContext each : sqlContext.getTables()) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
-                exprParser.getSqlBuilderContext().getSqlTokens().add(
+                sqlParser.getSqlBuilderContext().getSqlTokens().add(
                         new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
             }
         }

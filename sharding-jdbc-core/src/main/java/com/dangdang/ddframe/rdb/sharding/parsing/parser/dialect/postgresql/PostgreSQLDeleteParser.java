@@ -29,13 +29,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class PostgreSQLDeleteParser extends AbstractDeleteParser {
     
-    public PostgreSQLDeleteParser(final SQLParser exprParser) {
-        super(exprParser);
+    public PostgreSQLDeleteParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().skipIfEqual(DefaultKeyword.FROM);
-        getExprParser().skipIfEqual(PostgreSQLKeyword.ONLY);
+        getSqlParser().skipIfEqual(DefaultKeyword.FROM);
+        getSqlParser().skipIfEqual(PostgreSQLKeyword.ONLY);
     }
 }

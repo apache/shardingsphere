@@ -29,13 +29,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class MySQLDeleteParser extends AbstractDeleteParser {
     
-    public MySQLDeleteParser(final SQLParser exprParser) {
-        super(exprParser);
+    public MySQLDeleteParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        getExprParser().skipAll(MySQLKeyword.LOW_PRIORITY, MySQLKeyword.QUICK, MySQLKeyword.IGNORE);
-        getExprParser().skipIfEqual(DefaultKeyword.FROM);
+        getSqlParser().skipAll(MySQLKeyword.LOW_PRIORITY, MySQLKeyword.QUICK, MySQLKeyword.IGNORE);
+        getSqlParser().skipIfEqual(DefaultKeyword.FROM);
     }
 }

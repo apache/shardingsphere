@@ -28,14 +28,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class SQLServerDeleteParser extends AbstractDeleteParser {
     
-    public SQLServerDeleteParser(final SQLParser exprParser) {
-        super(exprParser);
+    public SQLServerDeleteParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        ((SQLServerParser) getExprParser()).parseTop();
-        ((SQLServerParser) getExprParser()).skipOutput();
-        getExprParser().skipIfEqual(DefaultKeyword.FROM);
+        ((SQLServerParser) getSqlParser()).parseTop();
+        ((SQLServerParser) getSqlParser()).skipOutput();
+        getSqlParser().skipIfEqual(DefaultKeyword.FROM);
     }
 }

@@ -26,32 +26,32 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class SQLServerSelectParser extends AbstractSelectParser {
     
-    public SQLServerSelectParser(final SQLParser exprParser) {
-        super(exprParser);
+    public SQLServerSelectParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void customizedSelect() {
-        if (getExprParser().equalAny(DefaultKeyword.FOR)) {
+        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             parseFor();
         }
-        if (getExprParser().equalAny(SQLServerKeyword.OFFSET)) {
-            ((SQLServerParser) getExprParser()).parseOffset(getSqlContext());
+        if (getSqlParser().equalAny(SQLServerKeyword.OFFSET)) {
+            ((SQLServerParser) getSqlParser()).parseOffset(getSqlContext());
         }
     }
     
     @Override
     public void query() {
-        if (getExprParser().skipIfEqual(DefaultKeyword.SELECT)) {
+        if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
             parseDistinct();
-            if (getExprParser().equalAny(SQLServerKeyword.TOP)) {
+            if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
                 // TODO save topContext
-                ((SQLServerParser) getExprParser()).parseTop();
+                ((SQLServerParser) getSqlParser()).parseTop();
             }
             parseSelectList();
         }
-        if (getExprParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
         parseFrom();
         parseWhere();
@@ -61,33 +61,33 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseJoinTable() {
-        if (getExprParser().skipIfEqual(DefaultKeyword.WITH)) {
-            getExprParser().skipParentheses();
+        if (getSqlParser().skipIfEqual(DefaultKeyword.WITH)) {
+            getSqlParser().skipParentheses();
         }
         super.parseJoinTable();
     }
     
     private void parseFor() {
-        getExprParser().getLexer().nextToken();
-        if (getExprParser().equalAny(SQLServerKeyword.BROWSE)) {
-            getExprParser().getLexer().nextToken();
-        } else if (getExprParser().skipIfEqual(SQLServerKeyword.XML)) {
+        getSqlParser().getLexer().nextToken();
+        if (getSqlParser().equalAny(SQLServerKeyword.BROWSE)) {
+            getSqlParser().getLexer().nextToken();
+        } else if (getSqlParser().skipIfEqual(SQLServerKeyword.XML)) {
             while (true) {
-                if (getExprParser().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
-                    getExprParser().getLexer().nextToken();
-                } else if (getExprParser().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
-                    getExprParser().skipIfEqual(SQLServerKeyword.XSINIL);
+                if (getSqlParser().equalAny(SQLServerKeyword.AUTO, SQLServerKeyword.TYPE, SQLServerKeyword.XMLSCHEMA)) {
+                    getSqlParser().getLexer().nextToken();
+                } else if (getSqlParser().skipIfEqual(SQLServerKeyword.ELEMENTS)) {
+                    getSqlParser().skipIfEqual(SQLServerKeyword.XSINIL);
                 } else {
                     break;
                 }
-                if (getExprParser().equalAny(Symbol.COMMA)) {
-                    getExprParser().getLexer().nextToken();
+                if (getSqlParser().equalAny(Symbol.COMMA)) {
+                    getSqlParser().getLexer().nextToken();
                 } else {
                     break;
                 }
             }
         } else {
-            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
 }

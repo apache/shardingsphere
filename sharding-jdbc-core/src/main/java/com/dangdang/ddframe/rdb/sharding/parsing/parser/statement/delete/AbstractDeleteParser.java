@@ -33,14 +33,14 @@ import lombok.RequiredArgsConstructor;
 public abstract class AbstractDeleteParser {
     
     @Getter(AccessLevel.PROTECTED)
-    private final SQLParser exprParser;
+    private final SQLParser sqlParser;
     
     private final DeleteSQLContext sqlContext;
     
-    public AbstractDeleteParser(final SQLParser exprParser) {
-        this.exprParser = exprParser;
+    public AbstractDeleteParser(final SQLParser sqlParser) {
+        this.sqlParser = sqlParser;
         sqlContext = new DeleteSQLContext();
-        sqlContext.setSqlBuilderContext(exprParser.getSqlBuilderContext());
+        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     /**
@@ -49,11 +49,11 @@ public abstract class AbstractDeleteParser {
      * @return 解析结果
      */
     public DeleteSQLContext parse() {
-        exprParser.getLexer().nextToken();
+        sqlParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
-        exprParser.parseSingleTable(sqlContext);
-        exprParser.skipUntil(DefaultKeyword.WHERE);
-        exprParser.parseWhere(sqlContext);
+        sqlParser.parseSingleTable(sqlContext);
+        sqlParser.skipUntil(DefaultKeyword.WHERE);
+        sqlParser.parseWhere(sqlContext);
         return sqlContext;
     }
     

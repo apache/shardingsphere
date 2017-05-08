@@ -29,13 +29,13 @@ import com.google.common.base.Optional;
 
 public class OracleSelectParser extends AbstractSelectParser {
     
-    public OracleSelectParser(final SQLParser exprParser) {
-        super(exprParser);
+    public OracleSelectParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void customizedSelect() {
-        if (getExprParser().equalAny(DefaultKeyword.FOR)) {
+        if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
         if (getSqlContext().getOrderByContexts().isEmpty()) {
@@ -45,8 +45,8 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public void query() {
-        if (getExprParser().equalAny(DefaultKeyword.SELECT)) {
-            getExprParser().getLexer().nextToken();
+        if (getSqlParser().equalAny(DefaultKeyword.SELECT)) {
+            getSqlParser().getLexer().nextToken();
             parseDistinct();
             parseSelectList();
         }
@@ -60,8 +60,8 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipInto() {
-        if (getExprParser().equalAny(DefaultKeyword.INTO)) {
-            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().equalAny(DefaultKeyword.INTO)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
     }
     
@@ -73,36 +73,36 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipStart() {
-        if (getExprParser().skipIfEqual(OracleKeyword.START)) {
-            getExprParser().accept(DefaultKeyword.WITH);
-            getExprParser().parseComparisonCondition(getSqlContext());
+        if (getSqlParser().skipIfEqual(OracleKeyword.START)) {
+            getSqlParser().accept(DefaultKeyword.WITH);
+            getSqlParser().parseComparisonCondition(getSqlContext());
         }
     }
     
     private void skipConnect() {
-        if (getExprParser().skipIfEqual(OracleKeyword.CONNECT)) {
-            getExprParser().accept(DefaultKeyword.BY);
-            getExprParser().skipIfEqual(OracleKeyword.PRIOR);
-            if (getExprParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
-                getExprParser().skipIfEqual(OracleKeyword.PRIOR);
+        if (getSqlParser().skipIfEqual(OracleKeyword.CONNECT)) {
+            getSqlParser().accept(DefaultKeyword.BY);
+            getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
+            if (getSqlParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
+                getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getExprParser().parseComparisonCondition(getSqlContext());
+            getSqlParser().parseComparisonCondition(getSqlContext());
         }
     }
     
     private void skipModelClause() {
-        if (!getExprParser().skipIfEqual(OracleKeyword.MODEL)) {
+        if (!getSqlParser().skipIfEqual(OracleKeyword.MODEL)) {
             return;
         }
         skipCellReferenceOptions();
-        getExprParser().skipIfEqual(OracleKeyword.RETURN);
-        getExprParser().skipIfEqual(DefaultKeyword.ALL);
-        getExprParser().skipIfEqual(OracleKeyword.UPDATED);
-        getExprParser().skipIfEqual(OracleKeyword.ROWS);
-        while (getExprParser().skipIfEqual(OracleKeyword.REFERENCE)) {
-            getExprParser().getLexer().nextToken();
-            getExprParser().accept(DefaultKeyword.ON);
-            getExprParser().skipParentheses();
+        getSqlParser().skipIfEqual(OracleKeyword.RETURN);
+        getSqlParser().skipIfEqual(DefaultKeyword.ALL);
+        getSqlParser().skipIfEqual(OracleKeyword.UPDATED);
+        getSqlParser().skipIfEqual(OracleKeyword.ROWS);
+        while (getSqlParser().skipIfEqual(OracleKeyword.REFERENCE)) {
+            getSqlParser().getLexer().nextToken();
+            getSqlParser().accept(DefaultKeyword.ON);
+            getSqlParser().skipParentheses();
             skipModelColumnClause();
             skipCellReferenceOptions();
         }
@@ -110,55 +110,55 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipCellReferenceOptions() {
-        if (getExprParser().skipIfEqual(OracleKeyword.IGNORE)) {
-            getExprParser().accept(OracleKeyword.NAV);
-        } else if (getExprParser().skipIfEqual(OracleKeyword.KEEP)) {
-            getExprParser().accept(OracleKeyword.NAV);
+        if (getSqlParser().skipIfEqual(OracleKeyword.IGNORE)) {
+            getSqlParser().accept(OracleKeyword.NAV);
+        } else if (getSqlParser().skipIfEqual(OracleKeyword.KEEP)) {
+            getSqlParser().accept(OracleKeyword.NAV);
         }
-        if (getExprParser().skipIfEqual(DefaultKeyword.UNIQUE)) {
-            getExprParser().skipIfEqual(OracleKeyword.DIMENSION, OracleKeyword.SINGLE);
-            getExprParser().skipIfEqual(OracleKeyword.REFERENCE);
+        if (getSqlParser().skipIfEqual(DefaultKeyword.UNIQUE)) {
+            getSqlParser().skipIfEqual(OracleKeyword.DIMENSION, OracleKeyword.SINGLE);
+            getSqlParser().skipIfEqual(OracleKeyword.REFERENCE);
         }
     }
     
     private void skipMainModelClause() {
-        if (getExprParser().skipIfEqual(OracleKeyword.MAIN)) {
-            getExprParser().getLexer().nextToken();
+        if (getSqlParser().skipIfEqual(OracleKeyword.MAIN)) {
+            getSqlParser().getLexer().nextToken();
         }
         skipQueryPartitionClause();
-        getExprParser().accept(OracleKeyword.DIMENSION);
-        getExprParser().accept(DefaultKeyword.BY);
-        getExprParser().skipParentheses();
-        getExprParser().accept(OracleKeyword.MEASURES);
-        getExprParser().skipParentheses();
+        getSqlParser().accept(OracleKeyword.DIMENSION);
+        getSqlParser().accept(DefaultKeyword.BY);
+        getSqlParser().skipParentheses();
+        getSqlParser().accept(OracleKeyword.MEASURES);
+        getSqlParser().skipParentheses();
         skipCellReferenceOptions();
         skipModelRulesClause();
     }
 
     private void skipModelRulesClause() {
-        if (getExprParser().skipIfEqual(OracleKeyword.RULES)) {
-            getExprParser().skipIfEqual(DefaultKeyword.UPDATE);
-            getExprParser().skipIfEqual(OracleKeyword.UPSERT);
-            if (getExprParser().skipIfEqual(OracleKeyword.AUTOMATIC)) {
-                getExprParser().accept(DefaultKeyword.ORDER);
-            } else if (getExprParser().skipIfEqual(OracleKeyword.SEQUENTIAL)) {
-                getExprParser().accept(DefaultKeyword.ORDER);
+        if (getSqlParser().skipIfEqual(OracleKeyword.RULES)) {
+            getSqlParser().skipIfEqual(DefaultKeyword.UPDATE);
+            getSqlParser().skipIfEqual(OracleKeyword.UPSERT);
+            if (getSqlParser().skipIfEqual(OracleKeyword.AUTOMATIC)) {
+                getSqlParser().accept(DefaultKeyword.ORDER);
+            } else if (getSqlParser().skipIfEqual(OracleKeyword.SEQUENTIAL)) {
+                getSqlParser().accept(DefaultKeyword.ORDER);
             }
         }
-        if (getExprParser().skipIfEqual(DefaultKeyword.ITERATE)) {
-            getExprParser().skipParentheses();
-            if (getExprParser().skipIfEqual(DefaultKeyword.UNTIL)) {
-                getExprParser().skipParentheses();
+        if (getSqlParser().skipIfEqual(DefaultKeyword.ITERATE)) {
+            getSqlParser().skipParentheses();
+            if (getSqlParser().skipIfEqual(DefaultKeyword.UNTIL)) {
+                getSqlParser().skipParentheses();
             }
         }
-        getExprParser().skipParentheses();
+        getSqlParser().skipParentheses();
     }
     
     private void skipQueryPartitionClause() {
-        if (getExprParser().skipIfEqual(OracleKeyword.PARTITION)) {
-            getExprParser().accept(DefaultKeyword.BY);
-            if (getExprParser().equalAny(Symbol.LEFT_PAREN)) {
-                getExprParser().skipParentheses();
+        if (getSqlParser().skipIfEqual(OracleKeyword.PARTITION)) {
+            getSqlParser().accept(DefaultKeyword.BY);
+            if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
+                getSqlParser().skipParentheses();
             } else {
                 throw new UnsupportedOperationException("Cannot support PARTITION BY without ()");
             }
@@ -166,42 +166,42 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
 
     private void skipModelColumnClause() {
-        throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
     }
     
     @Override
     protected void parseGroupBy() {
         // TODO
-//        if (getExprParser().equalAny(DefaultKeyword.GROUP)) {
-//            getExprParser().getLexer().nextToken();
-//            getExprParser().accept(DefaultKeyword.BY);
+//        if (getSqlParser().equalAny(DefaultKeyword.GROUP)) {
+//            getSqlParser().getLexer().nextToken();
+//            getSqlParser().accept(DefaultKeyword.BY);
 //            while (true) {
-//                if (getExprParser().getLexer().identifierEquals("GROUPING")) {
+//                if (getSqlParser().getLexer().identifierEquals("GROUPING")) {
 //                    throw new UnsupportedOperationException("Cannot support GROUPING SETS");
 //                } 
-//                addGroupByItem(getExprParser().expr());
-//                if (!getExprParser().equalAny(Symbol.COMMA)) {
+//                addGroupByItem(getSqlParser().expr());
+//                if (!getSqlParser().equalAny(Symbol.COMMA)) {
 //                    break;
 //                }
-//                getExprParser().getLexer().nextToken();
+//                getSqlParser().getLexer().nextToken();
 //            }
-//            if (getExprParser().skipIfEqual(Token.HAVING)) {
-//                getExprParser().expr();
+//            if (getSqlParser().skipIfEqual(Token.HAVING)) {
+//                getSqlParser().expr();
 //            }
-//        } else if (getExprParser().skipIfEqual(Token.HAVING)) {
+//        } else if (getSqlParser().skipIfEqual(Token.HAVING)) {
 //            SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
-//            groupBy.setHaving(getExprParser().expr());
-//            if (getExprParser().skipIfEqual(DefaultKeyword.GROUP)) {
-//                getExprParser().accept(DefaultKeyword.BY);
+//            groupBy.setHaving(getSqlParser().expr());
+//            if (getSqlParser().skipIfEqual(DefaultKeyword.GROUP)) {
+//                getSqlParser().accept(DefaultKeyword.BY);
 //                while (true) {
-//                    if (getExprParser().getLexer().identifierEquals("GROUPING")) {
+//                    if (getSqlParser().getLexer().identifierEquals("GROUPING")) {
 //                        throw new UnsupportedOperationException("Cannot support GROUPING SETS");
 //                    }
-//                    addGroupByItem(getExprParser().expr());
-//                    if (!getExprParser().equalAny(Symbol.COMMA)) {
+//                    addGroupByItem(getSqlParser().expr());
+//                    if (!getSqlParser().equalAny(Symbol.COMMA)) {
 //                        break;
 //                    }
-//                    getExprParser().getLexer().nextToken();
+//                    getSqlParser().getLexer().nextToken();
 //                }
 //            }
 //        }
@@ -209,16 +209,16 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public final void parseTable() {
-        if (getExprParser().equalAny(Symbol.LEFT_PAREN)) {
+        if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
-        if (getExprParser().equalAny(DefaultKeyword.SELECT)) {
-            throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().equalAny(DefaultKeyword.SELECT)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
-        if (getExprParser().skipIfEqual(OracleKeyword.ONLY)) {
-            getExprParser().skipIfEqual(Symbol.LEFT_PAREN);
+        if (getSqlParser().skipIfEqual(OracleKeyword.ONLY)) {
+            getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
             parseQueryTableExpression();
-            getExprParser().skipIfEqual(Symbol.RIGHT_PAREN);
+            getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
             skipFlashbackQueryClause();
         } else {
             parseQueryTableExpression();
@@ -235,11 +235,11 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void parseSample() {
-        if (getExprParser().skipIfEqual(OracleKeyword.SAMPLE)) {
-            getExprParser().skipIfEqual(OracleKeyword.BLOCK);
-            getExprParser().skipParentheses();
-            if (getExprParser().skipIfEqual(OracleKeyword.SEED)) {
-                getExprParser().skipParentheses();
+        if (getSqlParser().skipIfEqual(OracleKeyword.SAMPLE)) {
+            getSqlParser().skipIfEqual(OracleKeyword.BLOCK);
+            getSqlParser().skipParentheses();
+            if (getSqlParser().skipIfEqual(OracleKeyword.SEED)) {
+                getSqlParser().skipParentheses();
             }
         }
     }
@@ -250,34 +250,34 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipPartition(final OracleKeyword keyword) {
-        if (getExprParser().skipIfEqual(keyword)) {
-            getExprParser().skipParentheses();
-            if (getExprParser().skipIfEqual(DefaultKeyword.FOR)) {
-                getExprParser().skipParentheses();
+        if (getSqlParser().skipIfEqual(keyword)) {
+            getSqlParser().skipParentheses();
+            if (getSqlParser().skipIfEqual(DefaultKeyword.FOR)) {
+                getSqlParser().skipParentheses();
             }
         }
     }
     
     private void skipPivotClause() {
-        if (getExprParser().skipIfEqual(OracleKeyword.PIVOT)) {
-            getExprParser().skipIfEqual(OracleKeyword.XML);
-            getExprParser().skipParentheses();
-        } else if (getExprParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
-            if (getExprParser().skipIfEqual(OracleKeyword.INCLUDE)) {
-                getExprParser().accept(OracleKeyword.NULLS);
-            } else if (getExprParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
-                getExprParser().accept(OracleKeyword.NULLS);
+        if (getSqlParser().skipIfEqual(OracleKeyword.PIVOT)) {
+            getSqlParser().skipIfEqual(OracleKeyword.XML);
+            getSqlParser().skipParentheses();
+        } else if (getSqlParser().skipIfEqual(OracleKeyword.UNPIVOT)) {
+            if (getSqlParser().skipIfEqual(OracleKeyword.INCLUDE)) {
+                getSqlParser().accept(OracleKeyword.NULLS);
+            } else if (getSqlParser().skipIfEqual(OracleKeyword.EXCLUDE)) {
+                getSqlParser().accept(OracleKeyword.NULLS);
             }
-            getExprParser().skipParentheses();
+            getSqlParser().skipParentheses();
         }
     }
     
     private void skipFlashbackQueryClause() {
-        if (getExprParser().equalAny(OracleKeyword.VERSIONS)) {
+        if (getSqlParser().equalAny(OracleKeyword.VERSIONS)) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
-        } else if (getExprParser().skipIfEqual(DefaultKeyword.AS)) {
-            if (getExprParser().skipIfEqual(OracleKeyword.OF)) {
-                if (getExprParser().skipIfEqual(OracleKeyword.SCN) || getExprParser().skipIfEqual(OracleKeyword.TIMESTAMP)) {
+        } else if (getSqlParser().skipIfEqual(DefaultKeyword.AS)) {
+            if (getSqlParser().skipIfEqual(OracleKeyword.OF)) {
+                if (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP)) {
                     throw new UnsupportedOperationException("Cannot support Flashback Query");
                 }
             }
@@ -285,17 +285,17 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipForUpdate() {
-        getExprParser().getLexer().nextToken();
-        getExprParser().accept(DefaultKeyword.UPDATE);
-        if (getExprParser().skipIfEqual(OracleKeyword.OF)) {
+        getSqlParser().getLexer().nextToken();
+        getSqlParser().accept(DefaultKeyword.UPDATE);
+        if (getSqlParser().skipIfEqual(OracleKeyword.OF)) {
             do {
-                getExprParser().parseExpression();
-            } while (getExprParser().skipIfEqual(Symbol.COMMA));
+                getSqlParser().parseExpression();
+            } while (getSqlParser().skipIfEqual(Symbol.COMMA));
         }
-        if (getExprParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
-            getExprParser().getLexer().nextToken();
-        } else if (getExprParser().skipIfEqual(OracleKeyword.SKIP)) {
-            getExprParser().accept(OracleKeyword.LOCKED);
+        if (getSqlParser().equalAny(OracleKeyword.NOWAIT, OracleKeyword.WAIT)) {
+            getSqlParser().getLexer().nextToken();
+        } else if (getSqlParser().skipIfEqual(OracleKeyword.SKIP)) {
+            getSqlParser().accept(OracleKeyword.LOCKED);
         }
     }
     
@@ -307,10 +307,10 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipAfterOrderByItem() {
-        if (getExprParser().skipIfEqual(OracleKeyword.NULLS)) {
-            getExprParser().getLexer().nextToken();
-            if (!getExprParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
-                throw new SQLParsingUnsupportedException(getExprParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().skipIfEqual(OracleKeyword.NULLS)) {
+            getSqlParser().getLexer().nextToken();
+            if (!getSqlParser().skipIfEqual(OracleKeyword.FIRST, OracleKeyword.LAST)) {
+                throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
             }
         }
     }

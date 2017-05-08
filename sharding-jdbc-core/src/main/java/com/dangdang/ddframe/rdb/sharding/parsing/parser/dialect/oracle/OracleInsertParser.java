@@ -35,8 +35,8 @@ import java.util.Set;
  */
 public final class OracleInsertParser extends AbstractInsertParser {
     
-    public OracleInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public OracleInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
+        super(shardingRule, parameters, sqlParser);
     }
     
     @Override

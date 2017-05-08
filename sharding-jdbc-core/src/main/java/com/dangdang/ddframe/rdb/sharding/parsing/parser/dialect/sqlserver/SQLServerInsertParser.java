@@ -30,7 +30,7 @@ import java.util.List;
  */
 public final class SQLServerInsertParser extends AbstractInsertParser {
     
-    public SQLServerInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public SQLServerInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
+        super(shardingRule, parameters, sqlParser);
     }
 }

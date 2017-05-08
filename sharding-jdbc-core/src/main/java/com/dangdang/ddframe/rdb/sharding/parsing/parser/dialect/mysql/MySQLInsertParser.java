@@ -46,8 +46,8 @@ import java.util.Set;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser exprParser) {
-        super(shardingRule, parameters, exprParser);
+    public MySQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
+        super(shardingRule, parameters, sqlParser);
     }
     
     @Override
@@ -59,34 +59,34 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(getSqlContext().getTables().get(0).getName());
         ConditionContext conditionContext = new ConditionContext();
         do {
-            getExprParser().getLexer().nextToken();
+            getSqlParser().getLexer().nextToken();
             ShardingColumnContext shardingColumnContext = getColumn(autoIncrementColumns);
-            getExprParser().getLexer().nextToken();
-            getExprParser().accept(Symbol.EQ);
+            getSqlParser().getLexer().nextToken();
+            getSqlParser().accept(Symbol.EQ);
             SQLExpr sqlExpr;
-            if (getExprParser().equalAny(Literals.INT)) {
-                sqlExpr = new SQLNumberExpr(Integer.parseInt(getExprParser().getLexer().getCurrentToken().getLiterals()));
-            } else if (getExprParser().equalAny(Literals.FLOAT)) {
-                sqlExpr = new SQLNumberExpr(Double.parseDouble(getExprParser().getLexer().getCurrentToken().getLiterals()));
-            } else if (getExprParser().equalAny(Literals.CHARS)) {
-                sqlExpr = new SQLTextExpr(getExprParser().getLexer().getCurrentToken().getLiterals());
-            } else if (getExprParser().equalAny(DefaultKeyword.NULL)) {
+            if (getSqlParser().equalAny(Literals.INT)) {
+                sqlExpr = new SQLNumberExpr(Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals()));
+            } else if (getSqlParser().equalAny(Literals.FLOAT)) {
+                sqlExpr = new SQLNumberExpr(Double.parseDouble(getSqlParser().getLexer().getCurrentToken().getLiterals()));
+            } else if (getSqlParser().equalAny(Literals.CHARS)) {
+                sqlExpr = new SQLTextExpr(getSqlParser().getLexer().getCurrentToken().getLiterals());
+            } else if (getSqlParser().equalAny(DefaultKeyword.NULL)) {
                 sqlExpr = new SQLIgnoreExpr();
-            } else if (getExprParser().equalAny(Symbol.QUESTION)) {
-                sqlExpr = new SQLPlaceholderExpr(getExprParser().getParametersIndex(), getExprParser().getParameters().get(getExprParser().getParametersIndex()));
-                getExprParser().setParametersIndex(getExprParser().getParametersIndex() + 1);
+            } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+                sqlExpr = new SQLPlaceholderExpr(getSqlParser().getParametersIndex(), getSqlParser().getParameters().get(getSqlParser().getParametersIndex()));
+                getSqlParser().setParametersIndex(getSqlParser().getParametersIndex() + 1);
             } else {
                 throw new UnsupportedOperationException("");
             }
-            getExprParser().getLexer().nextToken();
-            if (getExprParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
+            getSqlParser().getLexer().nextToken();
+            if (getSqlParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 if (getShardingRule().isShardingColumn(shardingColumnContext)) {
                     conditionContext.add(new ConditionContext.Condition(shardingColumnContext, sqlExpr));
                 }
             } else {
-                getExprParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
+                getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
-        } while (getExprParser().equalAny(Symbol.COMMA));
+        } while (getSqlParser().equalAny(Symbol.COMMA));
         getSqlContext().setConditionContext(conditionContext);
     }
     

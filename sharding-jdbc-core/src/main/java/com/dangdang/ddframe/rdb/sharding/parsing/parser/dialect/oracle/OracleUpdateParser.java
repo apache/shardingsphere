@@ -23,12 +23,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 public class OracleUpdateParser extends AbstractUpdateParser {
     
-    public OracleUpdateParser(final SQLParser exprParser) {
-        super(exprParser);
+    public OracleUpdateParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().skipIfEqual(OracleKeyword.ONLY);
+        getSqlParser().skipIfEqual(OracleKeyword.ONLY);
     }
 }

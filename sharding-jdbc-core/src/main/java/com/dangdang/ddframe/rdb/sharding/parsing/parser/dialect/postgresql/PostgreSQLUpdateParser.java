@@ -28,12 +28,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class PostgreSQLUpdateParser extends AbstractUpdateParser {
     
-    public PostgreSQLUpdateParser(final SQLParser exprParser) {
-        super(exprParser);
+    public PostgreSQLUpdateParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().skipIfEqual(PostgreSQLKeyword.ONLY);
+        getSqlParser().skipIfEqual(PostgreSQLKeyword.ONLY);
     }
 }

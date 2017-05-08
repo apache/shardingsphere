@@ -28,12 +28,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
  */
 public final class MySQLUpdateParser extends AbstractUpdateParser {
     
-    public MySQLUpdateParser(final SQLParser exprParser) {
-        super(exprParser);
+    public MySQLUpdateParser(final SQLParser sqlParser) {
+        super(sqlParser);
     }
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        getExprParser().skipAll(MySQLKeyword.LOW_PRIORITY, MySQLKeyword.IGNORE);
+        getSqlParser().skipAll(MySQLKeyword.LOW_PRIORITY, MySQLKeyword.IGNORE);
     }
 }
