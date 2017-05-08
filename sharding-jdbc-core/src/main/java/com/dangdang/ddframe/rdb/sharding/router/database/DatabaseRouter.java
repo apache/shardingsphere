@@ -44,7 +44,7 @@ public class DatabaseRouter {
     
     private final DatabaseShardingStrategy databaseShardingStrategy;
     
-    private final SQLType sqlStatementType;
+    private final SQLType sqlType;
     
     /**
      * 根据Hint路由到库.
@@ -56,7 +56,7 @@ public class DatabaseRouter {
         Preconditions.checkState(shardingValueOptional.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValueOptional.get());
         Collection<String> routedResult = databaseShardingStrategy
-                .doStaticSharding(sqlStatementType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValueOptional.get()));
+                .doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValueOptional.get()));
         Preconditions.checkState(!routedResult.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routedResult);
         return new DatabaseRoutingResult(routedResult);

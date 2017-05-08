@@ -59,13 +59,13 @@ public final class SingleTableRouter {
     
     private final TableRule tableRule;
     
-    private final SQLType sqlStatementType;
+    private final SQLType sqlType;
     
-    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLType sqlStatementType) {
+    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLType sqlType) {
         this.shardingRule = shardingRule;
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;
-        this.sqlStatementType = sqlStatementType;
+        this.sqlType = sqlType;
         Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(logicTable);
         if (tableRuleOptional.isPresent()) {
             tableRule = tableRuleOptional.get();
@@ -105,7 +105,7 @@ public final class SingleTableRouter {
             shardingValues = getShardingValues(strategy.getShardingColumns());
         }
         logBeforeRoute("database", logicTable, tableRule.getActualDatasourceNames(), strategy.getShardingColumns(), shardingValues);
-        Collection<String> result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.getActualDatasourceNames(), shardingValues));
+        Collection<String> result = new HashSet<>(strategy.doStaticSharding(sqlType, tableRule.getActualDatasourceNames(), shardingValues));
         logAfterRoute("database", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         return result;
@@ -124,7 +124,7 @@ public final class SingleTableRouter {
         if (tableRule.isDynamic()) {
             result = new HashSet<>(strategy.doDynamicSharding(shardingValues));
         } else {
-            result = new HashSet<>(strategy.doStaticSharding(sqlStatementType, tableRule.getActualTableNames(routedDataSources), shardingValues));    
+            result = new HashSet<>(strategy.doStaticSharding(sqlType, tableRule.getActualTableNames(routedDataSources), shardingValues));    
         }
         logAfterRoute("table", logicTable, result);
         Preconditions.checkState(!result.isEmpty(), "no table route info");

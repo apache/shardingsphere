@@ -51,14 +51,14 @@ public class ShardingStrategy {
     /**
      * 计算静态分片.
      *
-     * @param sqlStatementType SQL语句的类型
+     * @param sqlType SQL语句的类型
      * @param availableTargetNames 所有的可用分片资源集合
      * @param shardingValues 分片值集合
      * @return 分库后指向的数据源名称集合
      */
-    public Collection<String> doStaticSharding(final SQLType sqlStatementType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+    public Collection<String> doStaticSharding(final SQLType sqlType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
         if (shardingValues.isEmpty()) {
-            Preconditions.checkState(!isInsertMultiple(sqlStatementType, availableTargetNames), "INSERT statement should contain sharding value.");
+            Preconditions.checkState(!isInsertMultiple(sqlType, availableTargetNames), "INSERT statement should contain sharding value.");
             return availableTargetNames;
         }
         return doSharding(shardingValues, availableTargetNames);
@@ -101,7 +101,7 @@ public class ShardingStrategy {
         throw new UnsupportedOperationException(shardingAlgorithm.getClass().getName());
     }
     
-    private boolean isInsertMultiple(final SQLType sqlStatementType, final Collection<String> availableTargetNames) {
-        return SQLType.INSERT.equals(sqlStatementType) && availableTargetNames.size() > 1;
+    private boolean isInsertMultiple(final SQLType sqlType, final Collection<String> availableTargetNames) {
+        return SQLType.INSERT.equals(sqlType) && availableTargetNames.size() > 1;
     }
 }

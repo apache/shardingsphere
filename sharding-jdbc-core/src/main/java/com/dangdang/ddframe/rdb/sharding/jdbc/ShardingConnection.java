@@ -57,11 +57,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * 根据数据源名称获取相应的数据库连接.
      * 
      * @param dataSourceName 数据源名称
-     * @param sqlStatementType SQL语句类型
+     * @param sqlType SQL语句类型
      * @return 数据库连接
      */
-    public Connection getConnection(final String dataSourceName, final SQLType sqlStatementType) throws SQLException {
-        Connection result = getConnectionInternal(dataSourceName, sqlStatementType);
+    public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
+        Connection result = getConnectionInternal(dataSourceName, sqlType);
         replayMethodsInvocation(result);
         return result;
     }
@@ -91,8 +91,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.SELECT).getMetaData();
     }
     
-    private Connection getConnectionInternal(final String dataSourceName, final SQLType sqlStatementType) throws SQLException {
-        Optional<Connection> connectionOptional = fetchCachedConnectionBySqlStatementType(dataSourceName, sqlStatementType);
+    private Connection getConnectionInternal(final String dataSourceName, final SQLType sqlType) throws SQLException {
+        Optional<Connection> connectionOptional = fetchCachedConnectionBySQLType(dataSourceName, sqlType);
         if (connectionOptional.isPresent()) {
             return connectionOptional.get();
         }
@@ -101,8 +101,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
         String realDataSourceName = dataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
-            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlStatementType);
-            realDataSourceName = getRealDataSourceName(dataSourceName, sqlStatementType);
+            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
+            realDataSourceName = getRealDataSourceName(dataSourceName, sqlType);
         }
         Connection result = dataSource.getConnection();
         MetricsContext.stop(metricsContext);
@@ -110,16 +110,16 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return result;
     }
     
-    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlStatementType) {
+    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
         String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (!MasterSlaveDataSource.isDML(sqlStatementType)) {
+        if (!MasterSlaveDataSource.isDML(sqlType)) {
             return slaveDataSourceName;
         }
         closeConnection(connectionMap.remove(slaveDataSourceName));
         return getMasterDataSourceName(dataSourceName);
     }
     
-    private Optional<Connection> fetchCachedConnectionBySqlStatementType(final String dataSourceName, final SQLType sqlStatementType) {
+    private Optional<Connection> fetchCachedConnectionBySQLType(final String dataSourceName, final SQLType sqlType) {
         if (connectionMap.containsKey(dataSourceName)) {
             return Optional.of(connectionMap.get(dataSourceName));
         }
@@ -127,7 +127,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         if (connectionMap.containsKey(masterDataSourceName)) {
             return Optional.of(connectionMap.get(masterDataSourceName));
         }
-        if (MasterSlaveDataSource.isDML(sqlStatementType)) {
+        if (MasterSlaveDataSource.isDML(sqlType)) {
             return Optional.absent();
         }
         String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);

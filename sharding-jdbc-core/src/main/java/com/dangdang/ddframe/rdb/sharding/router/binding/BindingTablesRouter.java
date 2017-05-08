@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.router.binding;
 
-import java.util.Collection;
-
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
 
 /**
  * Binding库表路由类.
@@ -44,13 +44,13 @@ public class BindingTablesRouter {
     
     private final BindingTableRule bindingTableRule;
     
-    private final SQLType sqlStatementType;
+    private final SQLType sqlType;
     
-    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext, final SQLType sqlStatementType) {
+    public BindingTablesRouter(final ShardingRule shardingRule, final Collection<String> logicTables, final ConditionContext conditionContext, final SQLType sqlType) {
         this.shardingRule = shardingRule;
         this.logicTables = logicTables;
         this.conditionContext = conditionContext;
-        this.sqlStatementType = sqlStatementType;
+        this.sqlType = sqlType;
         Optional<BindingTableRule> optionalBindingTableRule = shardingRule.findBindingTableRule(logicTables.iterator().next());
         Preconditions.checkState(optionalBindingTableRule.isPresent());
         bindingTableRule = optionalBindingTableRule.get();
@@ -65,7 +65,7 @@ public class BindingTablesRouter {
         BindingRoutingResult result = null;
         for (final String each : logicTables) {
             if (null == result) {
-                result = new BindingRoutingResult(new SingleTableRouter(shardingRule, each, conditionContext, sqlStatementType).route());
+                result = new BindingRoutingResult(new SingleTableRouter(shardingRule, each, conditionContext, sqlType).route());
             } else {
                 result.bind(bindingTableRule, each);
             }
