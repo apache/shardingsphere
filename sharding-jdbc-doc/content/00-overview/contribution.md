@@ -3,8 +3,8 @@ toc = true
 date = "2017-04-12T16:06:17+08:00"
 title = "贡献代码"
 weight = 3
-prev = "/00-overview/release-notes/"
-next = "/01-start/index/"
+prev = "/00-overview/intro/"
+next = "/01-start"
 
 +++
 

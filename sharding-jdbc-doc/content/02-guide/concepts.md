@@ -3,7 +3,7 @@ toc = true
 date = "2016-12-06T22:38:50+08:00"
 title = "核心概念"
 weight = 1
-prev = "/02-guide/index/"
+prev = "/02-guide"
 next = "/02-guide/sharding/"
 
 +++
