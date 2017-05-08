@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -47,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractSelectParser {
+public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
     
@@ -68,11 +69,7 @@ public abstract class AbstractSelectParser {
         sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
-    /**
-     * 解析查询.
-     * 
-     * @return 解析结果
-     */
+    @Override
     public final SelectSQLContext parse() {
         query();
         sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));

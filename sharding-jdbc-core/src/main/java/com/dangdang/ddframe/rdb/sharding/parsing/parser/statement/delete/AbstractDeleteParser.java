@@ -17,9 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractDeleteParser {
+public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     @Getter(AccessLevel.PROTECTED)
     private final SQLParser sqlParser;
@@ -43,11 +44,7 @@ public abstract class AbstractDeleteParser {
         sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
-    /**
-     * 解析Delete语句.
-     *
-     * @return 解析结果
-     */
+    @Override
     public DeleteSQLContext parse() {
         sqlParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();

@@ -31,6 +31,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
@@ -48,7 +49,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractInsertParser {
+public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
@@ -66,11 +67,7 @@ public abstract class AbstractInsertParser {
         sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
-    /**
-     * 解析Insert语句.
-     * 
-     * @return 解析结果
-     */
+    @Override
     public final InsertSQLContext parse() {
         sqlParser.getLexer().nextToken();
         parseInto();

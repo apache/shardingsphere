@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,7 +33,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractUpdateParser {
+public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
@@ -46,11 +47,7 @@ public abstract class AbstractUpdateParser {
         sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
-    /**
-     * 解析Update语句.
-     *
-     * @return 解析结果
-     */
+    @Override
     public UpdateSQLContext parse() {
         sqlParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
