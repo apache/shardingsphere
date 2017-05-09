@@ -55,14 +55,11 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
-    private final List<Object> parameters;
-    
     private final InsertSQLContext sqlContext;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         this.shardingRule = shardingRule;
-        this.parameters = parameters;
         sqlContext = new InsertSQLContext();
         sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
@@ -160,17 +157,16 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             ItemsToken itemsToken = new ItemsToken(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
             int offset = 0;
-            int parametersSize = parameters.size();
             for (ShardingColumnContext each : shardingColumnContexts) {
                 if (each.isAutoIncrement()) {
                     Number generatedId = getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
-                    if (parameters.isEmpty()) {
+                    if (0 == sqlParser.getParametersIndex()) {
                         itemsToken.getItems().add(generatedId.toString());
                         sqlExprs.add(new SQLNumberExpr(generatedId));
                     } else {
                         itemsToken.getItems().add("?");
                         offset++;
-                        sqlExprs.add(new SQLPlaceholderExpr(parametersSize + offset - 1));
+                        sqlExprs.add(new SQLPlaceholderExpr(sqlParser.getParametersIndex() + offset - 1));
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), generatedId);

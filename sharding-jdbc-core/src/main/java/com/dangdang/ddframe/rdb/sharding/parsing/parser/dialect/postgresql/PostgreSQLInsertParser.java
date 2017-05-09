@@ -17,11 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
 
 /**
  * PostgreSQL Insert语句解析器.
@@ -30,7 +28,7 @@ import java.util.List;
  */
 public final class PostgreSQLInsertParser extends AbstractInsertParser {
     
-    public PostgreSQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
-        super(shardingRule, parameters, sqlParser);
+    public PostgreSQLInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
 }

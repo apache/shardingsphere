@@ -18,25 +18,24 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,8 +45,8 @@ import java.util.Set;
  */
 public final class MySQLInsertParser extends AbstractInsertParser {
     
-    public MySQLInsertParser(final ShardingRule shardingRule, final List<Object> parameters, final SQLParser sqlParser) {
-        super(shardingRule, parameters, sqlParser);
+    public MySQLInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
+        super(shardingRule, sqlParser);
     }
     
     @Override
