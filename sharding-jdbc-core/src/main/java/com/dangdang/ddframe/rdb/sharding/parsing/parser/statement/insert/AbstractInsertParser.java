@@ -168,7 +168,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
                     } else {
                         itemsToken.getItems().add("?");
                         parameters.add(autoIncrementedValue);
-                        sqlExprs.add(new SQLPlaceholderExpr(parameters.size() - 1, autoIncrementedValue));
+                        sqlExprs.add(new SQLPlaceholderExpr(parameters.size() - 1));
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
                     sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);

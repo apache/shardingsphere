@@ -28,8 +28,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,19 +71,19 @@ public final class ConditionContext {
      * @param parameters 参数列表
      */
     public void setNewConditionValue(final List<Object> parameters) {
-        for (Condition each : conditions.values()) {
-            if (each.getValueIndices().isEmpty()) {
-                continue;
-            }
-            for (int i = 0; i < each.getValueIndices().size(); i++) {
-                Object value = parameters.get(each.getValueIndices().get(i));
-                if (value instanceof Comparable<?>) {
-                    each.getValues().set(i, (Comparable<?>) value);
-                } else {
-                    each.getValues().set(i, "");
-                }
-            }
-        }
+//        for (Condition each : conditions.values()) {
+//            if (each.valueIndices.isEmpty()) {
+//                continue;
+//            }
+//            for (int i = 0; i < each.valueIndices.size(); i++) {
+//                Object value = parameters.get(each.valueIndices.get(i));
+//                if (value instanceof Comparable<?>) {
+//                    each.values.set(i, (Comparable<?>) value);
+//                } else {
+//                    each.values.set(i, "");
+//                }
+//            }
+//        }
     }
     
     /**
@@ -100,9 +100,9 @@ public final class ConditionContext {
         
         private final ShardingOperator operator;
         
-        private final List<Comparable<?>> values = new ArrayList<>();
+        private final List<Comparable<?>> values = new LinkedList<>();
         
-        private final List<Integer> valueIndices = new ArrayList<>();
+        private final List<Integer> valueIndices = new LinkedList<>();
         
         public Condition(final ShardingColumnContext shardingColumnContext, final SQLExpr sqlExpr) {
             this(shardingColumnContext, ShardingOperator.EQUAL);
@@ -124,13 +124,29 @@ public final class ConditionContext {
         
         private void initSQLExpr(final SQLExpr sqlExpr) {
             if (sqlExpr instanceof SQLPlaceholderExpr) {
-                values.add((Comparable) ((SQLPlaceholderExpr) sqlExpr).getValue());
                 valueIndices.add(((SQLPlaceholderExpr) sqlExpr).getIndex());
             } else if (sqlExpr instanceof SQLTextExpr) {
                 values.add(((SQLTextExpr) sqlExpr).getText());
             } else if (sqlExpr instanceof SQLNumberExpr) {
                 values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
             }
+        }
+    
+        /**
+         * 获取分片值.
+         * 
+         * @param parameters 参数列表
+         * @return 分片值
+         */
+        public List<Comparable<?>> getValues(final List<Object> parameters) {
+            List<Comparable<?>> result = new LinkedList<>(values);
+            for (int each : valueIndices) {
+                Object parameter = parameters.get(each);
+                if (parameter instanceof Comparable<?>) {
+                    result.add((Comparable<?>) parameter);
+                }
+            }
+            return result;
         }
     }
 }

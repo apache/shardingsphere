@@ -33,6 +33,7 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class DeleteStatementParserTest extends AbstractStatementParserTest {
     
@@ -54,24 +55,12 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
                 "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10",
                 shardingRule, parameters);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
-        assertDeleteStatement(sqlContext);
+        assertDeleteStatementWithoutParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
-    @Test
-    public void parseWithParameter() throws SQLException {
-        ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10);
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
-                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule, parameters);
-        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
-        assertDeleteStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), is(
-                "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
-    }
-    
-    private void assertDeleteStatement(final DeleteSQLContext sqlContext) {
+    private void assertDeleteStatementWithoutParameter(final DeleteSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
         ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
@@ -88,6 +77,40 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition3.getValues().size(), is(2));
         assertThat(condition3.getValues().get(0), is((Comparable) 5));
         assertThat(condition3.getValues().get(1), is((Comparable) 20));
+    }
+    
+    @Test
+    public void parseWithParameter() throws SQLException {
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Arrays.<Object>asList(10, 1, 10, 1, 3, 10, 5, 20, 10);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
+                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule, parameters);
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        assertDeleteStatementWithParameter(sqlContext);
+        assertThat(sqlContext.getSqlBuilder().toString(), is(
+                "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
+    }
+    
+    private void assertDeleteStatementWithParameter(final DeleteSQLContext sqlContext) {
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
+        ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
+        assertTrue(condition1.getValues().isEmpty());
+        assertThat(condition1.getValueIndices().size(), is(1));
+        assertThat(condition1.getValueIndices().get(0), is(1));
+        ConditionContext.Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        assertThat(condition2.getOperator(), is(ShardingOperator.IN));
+        assertTrue(condition2.getValues().isEmpty());
+        assertThat(condition2.getValueIndices().size(), is(2));
+        assertThat(condition2.getValueIndices().get(0), is(3));
+        assertThat(condition2.getValueIndices().get(1), is(4));
+        ConditionContext.Condition condition3 = sqlContext.getConditionContext().find("TABLE_XXX", "field3").get();
+        assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
+        assertTrue(condition3.getValues().isEmpty());
+        assertThat(condition3.getValueIndices().size(), is(2));
+        assertThat(condition3.getValueIndices().get(0), is(6));
+        assertThat(condition3.getValueIndices().get(1), is(7));
     }
     
     @Test(expected = UnsupportedOperationException.class)

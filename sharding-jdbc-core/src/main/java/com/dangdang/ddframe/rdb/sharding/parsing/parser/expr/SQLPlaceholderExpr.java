@@ -30,6 +30,4 @@ import lombok.RequiredArgsConstructor;
 public final class SQLPlaceholderExpr implements SQLExpr {
     
     private final int index;
-    
-    private final Object value;
 }

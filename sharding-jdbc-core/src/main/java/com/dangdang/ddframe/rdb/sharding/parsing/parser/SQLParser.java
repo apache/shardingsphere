@@ -116,7 +116,7 @@ public class SQLParser extends AbstractParser {
     private SQLExpr getExpression(final String literals) {
         if (equalAny(Symbol.QUESTION)) {
             parametersIndex++;
-            return new SQLPlaceholderExpr(parametersIndex - 1, parameters.get(parametersIndex - 1));
+            return new SQLPlaceholderExpr(parametersIndex - 1);
         }
         if (equalAny(Literals.CHARS)) {
             return new SQLTextExpr(literals);

@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.core.Is.is;
@@ -34,13 +35,13 @@ public class SingleRouterUtilTest {
     public void testConvertConditionToShardingValue() throws Exception {
         ConditionContext.Condition condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.EQUAL);
         condition.getValues().add(1);
-        ShardingValue<?> shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition);
+        ShardingValue<?> shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.SINGLE));
         assertThat((Integer) shardingValue.getValue(), is(1));
         condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.IN);
         condition.getValues().add(1);
         condition.getValues().add(2);
-        shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition);
+        shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.LIST));
         Iterator<?> iterator = shardingValue.getValues().iterator();
         assertThat((Integer) iterator.next(), is(1));
@@ -48,7 +49,7 @@ public class SingleRouterUtilTest {
         condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.BETWEEN);
         condition.getValues().add(1);
         condition.getValues().add(2);
-        shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition);
+        shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.RANGE));
         assertThat((Integer) shardingValue.getValueRange().lowerEndpoint(), is(1));
         assertThat((Integer) shardingValue.getValueRange().upperEndpoint(), is(2));

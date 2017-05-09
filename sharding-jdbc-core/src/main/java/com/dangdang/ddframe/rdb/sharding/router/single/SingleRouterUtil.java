@@ -38,10 +38,11 @@ public class SingleRouterUtil {
      * 将条件对象转换为分片值对象.
      * 
      * @param condition 条件对象
+     * @param parameters 参数列表
      * @return 分片值对象
      */
-    public static ShardingValue<?> convertConditionToShardingValue(final ConditionContext.Condition condition) {
-        List<Comparable<?>> conditionValues = condition.getValues();
+    public static ShardingValue<?> convertConditionToShardingValue(final ConditionContext.Condition condition, final List<Object> parameters) {
+        List<Comparable<?>> conditionValues = condition.getValues(parameters);
         switch (condition.getOperator()) {
             case EQUAL:
             case IN:

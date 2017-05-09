@@ -45,6 +45,7 @@ import java.util.Map;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +57,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         List<Object> parameters = Collections.emptyList();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
-        assertInsertStatement(sqlContext);
+        assertInsertStatementWithoutParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
@@ -66,7 +67,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         List<Object> parameters = Lists.<Object>newArrayList(10, 1);
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
-        assertInsertStatement(sqlContext);
+        assertInsertStatementWithParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
@@ -76,7 +77,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         List<Object> parameters = Collections.emptyList();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
-        assertInsertStatement(sqlContext);
+        assertInsertStatementWithoutParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
@@ -86,11 +87,11 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         List<Object> parameters = Lists.<Object>newArrayList(10);
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule, parameters);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
-        assertInsertStatement(sqlContext);
+        assertInsertStatementWithParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, ?)"));
     }
     
-    private void assertInsertStatement(final InsertSQLContext sqlContext) {
+    private void assertInsertStatementWithoutParameter(final InsertSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
@@ -102,6 +103,22 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition2.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition2.getValues().size(), is(1));
         assertThat(condition2.getValues().get(0), is((Comparable) 1));
+    }
+    
+    private void assertInsertStatementWithParameter(final InsertSQLContext sqlContext) {
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
+        assertTrue(condition1.getValues().isEmpty());
+        assertThat(condition1.getValueIndices().size(), is(1));
+        assertThat(condition1.getValueIndices().get(0), is(0));
+        ConditionContext.Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        assertThat(condition2.getShardingColumnContext().getColumnName(), is("field2"));
+        assertThat(condition2.getShardingColumnContext().getTableName(), is("TABLE_XXX"));
+        assertThat(condition2.getOperator(), is(ShardingOperator.EQUAL));
+        assertTrue(condition2.getValues().isEmpty());
+        assertThat(condition2.getValueIndices().size(), is(1));
+        assertThat(condition2.getValueIndices().get(0), is(1));
     }
     
     private ShardingRule createShardingRuleWithAutoIncrementColumns() {

@@ -34,6 +34,7 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
@@ -54,26 +55,13 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 WHERE TABLE_XXX.field4<10 AND"
                 + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule, parameters);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
-        assertUpdateStatement(sqlContext);
+        assertUpdateStatementWithoutParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), 
                 is("UPDATE [Token(TABLE_XXX)] xxx SET [Token(TABLE_XXX)].field1=field1+1,xxx.field2=2 WHERE [Token(TABLE_XXX)].field4<10 "
                 + "AND [Token(TABLE_XXX)].field1=1 AND xxx.field5>10 AND [Token(TABLE_XXX)].field2 IN (1,3) AND xxx.field6<=10 AND [Token(TABLE_XXX)].field3 BETWEEN 5 AND 20 AND xxx.field7>=10"));
     }
     
-    @Test
-    public void parseWithParameter() {
-        ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10);
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
-                "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?",
-                shardingRule, parameters);
-        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
-        assertUpdateStatement(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
-                + "WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
-    }
-    
-    private void assertUpdateStatement(final UpdateSQLContext sqlContext) {
+    private void assertUpdateStatementWithoutParameter(final UpdateSQLContext sqlContext) {
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
         ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
@@ -90,6 +78,41 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition3.getValues().size(), is(2));
         assertThat(condition3.getValues().get(0), is((Comparable) 5));
         assertThat(condition3.getValues().get(1), is((Comparable) 20));
+    }
+    
+    @Test
+    public void parseWithParameter() {
+        ShardingRule shardingRule = createShardingRule();
+        List<Object> parameters = Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
+                "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?",
+                shardingRule, parameters);
+        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
+        assertUpdateStatementWitParameter(sqlContext);
+        assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
+                + "WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
+    }
+    
+    private void assertUpdateStatementWitParameter(final UpdateSQLContext sqlContext) {
+        assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(sqlContext.getTables().get(0).getAlias().get(), is("xxx"));
+        ConditionContext.Condition condition1 = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
+        assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
+        assertTrue(condition1.getValues().isEmpty());
+        assertThat(condition1.getValueIndices().size(), is(1));
+        assertThat(condition1.getValueIndices().get(0), is(2));
+        ConditionContext.Condition condition2 = sqlContext.getConditionContext().find("TABLE_XXX", "field2").get();
+        assertThat(condition2.getOperator(), is(ShardingOperator.IN));
+        assertTrue(condition2.getValues().isEmpty());
+        assertThat(condition2.getValueIndices().size(), is(2));
+        assertThat(condition2.getValueIndices().get(0), is(4));
+        assertThat(condition2.getValueIndices().get(1), is(5));
+        ConditionContext.Condition condition3 = sqlContext.getConditionContext().find("TABLE_XXX", "field3").get();
+        assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
+        assertTrue(condition3.getValues().isEmpty());
+        assertThat(condition3.getValueIndices().size(), is(2));
+        assertThat(condition3.getValueIndices().get(0), is(7));
+        assertThat(condition3.getValueIndices().get(1), is(8));
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)

@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 混合多库表路由类.
@@ -41,6 +42,8 @@ import java.util.Collection;
 public class MixedTablesRouter {
     
     private final ShardingRule shardingRule;
+    
+    private final List<Object> parameters;
     
     private final Collection<String> logicTables;
     
@@ -59,11 +62,11 @@ public class MixedTablesRouter {
         Collection<String> remainingTables = new ArrayList<>(logicTables);
         Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
         if (1 < bindingTables.size()) {
-            result.add(new BindingTablesRouter(shardingRule, bindingTables, conditionContext, sqlType).route());
+            result.add(new BindingTablesRouter(shardingRule, parameters, bindingTables, conditionContext, sqlType).route());
             remainingTables.removeAll(bindingTables);
         }
         for (String each : remainingTables) {
-            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, each, conditionContext, sqlType).route();
+            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, conditionContext, sqlType).route();
             if (null != routingResult) {
                 result.add(routingResult);
             }

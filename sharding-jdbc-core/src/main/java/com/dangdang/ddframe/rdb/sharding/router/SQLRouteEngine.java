@@ -125,7 +125,7 @@ public final class SQLRouteEngine {
     SQLRouteResult routeSQL(final SQLContext sqlContext, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
-        RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext);
+        RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext, parameters);
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlContext.getSqlBuilder()));
         amendSQLAccordingToRouteResult(sqlContext, parameters, result);
         MetricsContext.stop(context);
@@ -136,7 +136,7 @@ public final class SQLRouteEngine {
         return result;
     }
     
-    private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLContext sqlContext) {
+    private RoutingResult routeSQL(final ConditionContext conditionContext, final SQLContext sqlContext, final List<Object> parameters) {
         if (HintManagerHolder.isDatabaseShardingOnly()) {
             return new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlContext.getType()).route();
         }
@@ -148,13 +148,13 @@ public final class SQLRouteEngine {
             }
         }));
         if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, logicTables.iterator().next(), conditionContext, sqlContext.getType()).route();
+            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), conditionContext, sqlContext.getType()).route();
         } 
         if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, logicTables, conditionContext, sqlContext.getType()).route();
+            return new BindingTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
         } 
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, logicTables, conditionContext, sqlContext.getType()).route();
+        return new MixedTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
     }
     
     private void amendSQLAccordingToRouteResult(final SQLContext sqlContext, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {

@@ -53,6 +53,8 @@ public final class SingleTableRouter {
     
     private final ShardingRule shardingRule;
     
+    private final List<Object> parameters;
+    
     private final String logicTable;
     
     private final ConditionContext conditionContext;
@@ -61,8 +63,9 @@ public final class SingleTableRouter {
     
     private final SQLType sqlType;
     
-    public SingleTableRouter(final ShardingRule shardingRule, final String logicTable, final ConditionContext conditionContext, final SQLType sqlType) {
+    public SingleTableRouter(final ShardingRule shardingRule, final List<Object> parameters, final String logicTable, final ConditionContext conditionContext, final SQLType sqlType) {
         this.shardingRule = shardingRule;
+        this.parameters = parameters;
         this.logicTable = logicTable;
         this.conditionContext = conditionContext;
         this.sqlType = sqlType;
@@ -158,7 +161,7 @@ public final class SingleTableRouter {
         for (String each : shardingColumns) {
             Optional<ConditionContext.Condition> condition = conditionContext.find(logicTable, each);
             if (condition.isPresent()) {
-                result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get()));
+                result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get(), parameters));
             }
         }
         return result;
