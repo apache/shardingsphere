@@ -159,19 +159,21 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
             ItemsToken itemsToken = new ItemsToken(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
+            int offset = 0;
+            int parametersSize = parameters.size();
             for (ShardingColumnContext each : shardingColumnContexts) {
                 if (each.isAutoIncrement()) {
-                    Number autoIncrementedValue = getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
+                    Number generatedId = getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
                     if (parameters.isEmpty()) {
-                        itemsToken.getItems().add(autoIncrementedValue.toString());
-                        sqlExprs.add(new SQLNumberExpr(autoIncrementedValue));
+                        itemsToken.getItems().add(generatedId.toString());
+                        sqlExprs.add(new SQLNumberExpr(generatedId));
                     } else {
                         itemsToken.getItems().add("?");
-                        parameters.add(autoIncrementedValue);
-                        sqlExprs.add(new SQLPlaceholderExpr(parameters.size() - 1));
+                        offset++;
+                        sqlExprs.add(new SQLPlaceholderExpr(parametersSize + offset - 1));
                     }
                     sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
-                    sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), autoIncrementedValue);
+                    sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), generatedId);
                 }
                 if (getShardingRule().isShardingColumn(each)) {
                     conditionContext.add(new ConditionContext.Condition(each, sqlExprs.get(count)));

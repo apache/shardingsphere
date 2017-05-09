@@ -67,7 +67,7 @@ public class GeneratedKeyContext {
      * @param columnName 列名称
      * @param value 键值
      */
-    public void putValue(final String columnName, final Object value) {
+    public void putValue(final String columnName, final Number value) {
         valueTable.put(rowIndex, columnIndex, value);
         columnNameToIndexMap.put(columnName, columnIndex);
         columnIndex++;
