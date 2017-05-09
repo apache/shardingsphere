@@ -58,7 +58,6 @@ public class PreparedSQLRouter {
         } else {
             List<Object> generatedIds = generateId();
             parameters.addAll(generatedIds);
-            sqlContext.getConditionContext().setNewConditionValue(parameters);
         }
         return engine.routeSQL(sqlContext, parameters);
     }

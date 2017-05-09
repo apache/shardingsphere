@@ -66,27 +66,6 @@ public final class ConditionContext {
     }
     
     /**
-     * 解析参数中间的新数据.
-     * 
-     * @param parameters 参数列表
-     */
-    public void setNewConditionValue(final List<Object> parameters) {
-//        for (Condition each : conditions.values()) {
-//            if (each.valueIndices.isEmpty()) {
-//                continue;
-//            }
-//            for (int i = 0; i < each.valueIndices.size(); i++) {
-//                Object value = parameters.get(each.valueIndices.get(i));
-//                if (value instanceof Comparable<?>) {
-//                    each.values.set(i, (Comparable<?>) value);
-//                } else {
-//                    each.values.set(i, "");
-//                }
-//            }
-//        }
-    }
-    
-    /**
      * 条件对象.
      * 
      * @author gaohongtao
@@ -131,7 +110,7 @@ public final class ConditionContext {
                 values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
             }
         }
-    
+        
         /**
          * 获取分片值.
          * 
