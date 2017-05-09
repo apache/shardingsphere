@@ -71,11 +71,7 @@ public final class SQLRouteEngine {
      * @throws SQLParsingException SQL解析失败异常
      */
     public SQLRouteResult route(final String logicSql) throws SQLParsingException {
-        return route(logicSql, Collections.emptyList());
-    }
-    
-    SQLRouteResult route(final String logicSql, final List<Object> parameters) throws SQLParsingException {
-        return routeSQL(parseSQL(logicSql, parameters), parameters);
+        return routeSQL(parseSQL(logicSql, Collections.emptyList()), Collections.emptyList());
     }
     
     /**

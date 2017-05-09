@@ -26,27 +26,34 @@ import java.util.List;
 
 public abstract class AbstractDynamicRouteSqlTest extends AbstractBaseRouteSqlTest {
     
-    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final String targetDataSource, final String targetSQL) {
-        assertSingleTarget(shardingValuePairs, originSql, Collections.emptyList(), targetDataSource, targetSQL);
+    protected void assertSingleTargetWithoutParameter(final List<ShardingValuePair> shardingValuePairs, final String originSql, final String targetDataSource, final String targetSQL) {
+        assertMultipleTargetsWithoutParameter(shardingValuePairs, originSql, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
-    protected void assertSingleTarget(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) {
-        assertMultipleTargets(shardingValuePairs, originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
+    protected void assertSingleTargetWithParameters(
+            final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final String targetDataSource, final String targetSQL) {
+        assertMultipleTargetsWithParameters(shardingValuePairs, originSql, parameters, 1, Collections.singletonList(targetDataSource), Collections.singletonList(targetSQL));
     }
     
-    protected void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final int expectedSize,
-                                         final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
-        assertMultipleTargets(shardingValuePairs, originSql, Collections.emptyList(), expectedSize, targetDataSources, targetSQLs);
+    protected void assertMultipleTargetsWithoutParameter(final List<ShardingValuePair> shardingValuePairs, final String originSql, final int expectedSize,
+                                                     final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            for (ShardingValuePair each : shardingValuePairs) {
+                hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
+                hintManager.addTableShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
+            }
+            assertMultipleTargetsWithoutParameter(originSql, expectedSize, targetDataSources, targetSQLs);
+        }
     }
     
-    private void assertMultipleTargets(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, 
+    protected void assertMultipleTargetsWithParameters(final List<ShardingValuePair> shardingValuePairs, final String originSql, final List<Object> parameters, final int expectedSize, 
                                        final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
         try (HintManager hintManager = HintManager.getInstance()) {
             for (ShardingValuePair each : shardingValuePairs) {
                 hintManager.addDatabaseShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
                 hintManager.addTableShardingValue(each.logicTable, "order_id", each.shardingOperator, each.shardingValue);
             }
-            assertMultipleTargets(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
+            assertMultipleTargetsWithParameters(originSql, parameters, expectedSize, targetDataSources, targetSQLs);
         }
     }
     

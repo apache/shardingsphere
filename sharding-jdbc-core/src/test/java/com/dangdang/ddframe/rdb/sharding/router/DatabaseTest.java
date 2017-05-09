@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -68,7 +67,7 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        SQLRouteResult actual = new SQLRouteEngine(shardingRule, DatabaseType.MySQL).route(originSql, Collections.emptyList());
+        SQLRouteResult actual = new SQLRouteEngine(shardingRule, DatabaseType.MySQL).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

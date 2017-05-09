@@ -32,40 +32,40 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
 
     @Test
     public void assertGroupBy() {
-        assertSingleTarget("select sum(qty) from order where order_id = 1 group by tenant_id", "ds_1",
+        assertSingleTargetWithoutParameter("select sum(qty) from order where order_id = 1 group by tenant_id", "ds_1",
                 "select sum(qty) , tenant_id AS sharding_gen_1 from order_1 where order_id = 1 group by tenant_id");
-//        assertMultipleTargets("select sum(qty) from order group by tenant_id", 4, Arrays.asList("ds_0", "ds_1"),
+//        assertMultipleTargetsWithoutParameters("select sum(qty) from order group by tenant_id", 4, Arrays.asList("ds_0", "ds_1"),
 //                Arrays.asList("select sum(qty) , tenant_id as sharding_gen_1 from order_0 group by tenant_id", "select sum(qty) , tenant_id as sharding_gen_1 from order_1 group by tenant_id"));
     }
     
     @Test
     public void assertSingleSelect() {
-        assertSingleTarget("select * from order where order_id = 1", "ds_1", "select * from order_1 where order_id = 1");
-        assertSingleTarget("select * from order where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "select * from order_0 where order_id = ?");
-        assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 1)), "select * from order", "ds_1", "select * from order_1");
-        assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order", "ds_0", "select * from order_0");
+        assertSingleTargetWithoutParameter("select * from order where order_id = 1", "ds_1", "select * from order_1 where order_id = 1");
+        assertSingleTargetWithoutParameter(Collections.singletonList(new ShardingValuePair("order", 1)), "select * from order", "ds_1", "select * from order_1");
+        assertSingleTargetWithoutParameter(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order", "ds_0", "select * from order_0");
+        assertSingleTargetWithParameters("select * from order where order_id = ?", Collections.<Object>singletonList(2), "ds_0", "select * from order_0 where order_id = ?");
     }
     
     @Test
     public void assertSelectWithAlias() {
-        assertSingleTarget("select * from order a where a.order_id = 2", "ds_0", "select * from order_0 a where a.order_id = 2");
-        assertSingleTarget("select * from order A where a.order_id = 2", "ds_0", "select * from order_0 A where a.order_id = 2");
-        assertSingleTarget("select * from order a where A.order_id = 2", "ds_0", "select * from order_0 a where A.order_id = 2");
-        assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order a", "ds_0", "select * from order_0 a");
-        assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order A", "ds_0", "select * from order_0 A");
-        assertSingleTarget(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order a", "ds_0", "select * from order_0 a");
+        assertSingleTargetWithoutParameter("select * from order a where a.order_id = 2", "ds_0", "select * from order_0 a where a.order_id = 2");
+        assertSingleTargetWithoutParameter("select * from order A where a.order_id = 2", "ds_0", "select * from order_0 A where a.order_id = 2");
+        assertSingleTargetWithoutParameter("select * from order a where A.order_id = 2", "ds_0", "select * from order_0 a where A.order_id = 2");
+        assertSingleTargetWithoutParameter(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order a", "ds_0", "select * from order_0 a");
+        assertSingleTargetWithoutParameter(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order A", "ds_0", "select * from order_0 A");
+        assertSingleTargetWithoutParameter(Collections.singletonList(new ShardingValuePair("order", 2)), "select * from order a", "ds_0", "select * from order_0 a");
     }
     
     @Test
     public void assertSelectWithTableNameAsAlias() {
-        assertSingleTarget("select * from order where order.order_id = 10", "ds_0", "select * from order_0 where order_0.order_id = 10");
+        assertSingleTargetWithoutParameter("select * from order where order.order_id = 10", "ds_0", "select * from order_0 where order_0.order_id = 10");
     }
     
     @Test
     public void assertSelectWithIn() {
-        assertMultipleTargets("select * from order where order_id in (?,?,?)", Arrays.<Object>asList(1, 2, 100), 4, 
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?)", Arrays.<Object>asList(1, 2, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?)", "select * from order_1 where order_id in (?,?,?)"));
-        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.IN, 1, 2, 100)), "select * from order", 4,
+        assertMultipleTargetsWithoutParameter(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.IN, 1, 2, 100)), "select * from order", 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0", "select * from order_1"));
     }
     
@@ -73,16 +73,16 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Ignore
     // TODO or
     public void assertSelectWithInAndIntersection() {
-        assertMultipleTargets("select * from order where order_id in (?,?) or order_id in (?,?)", Arrays.<Object>asList(1, 2, 100, 2), 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?) or order_id in (?,?)", Arrays.<Object>asList(1, 2, 100, 2), 4,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_1 where order_id in (?,?) or order_id in (?,?)", "select * from order_1 where order_id in (?, ?) or order_id in (?, ?)"));
     }
     
     @Test
     public void assertSelectWithBetween() {
-        assertMultipleTargets("select * from order where order_id between ? and ?", Arrays.<Object>asList(1, 100), 4, 
+        assertMultipleTargetsWithParameters("select * from order where order_id between ? and ?", Arrays.<Object>asList(1, 100), 4, 
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id between ? and ?", "select * from order_1 where order_id between ? and ?"));
-        assertMultipleTargets(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.BETWEEN, 1, 100)), "select * from order", 4,
+        assertMultipleTargetsWithoutParameter(Collections.singletonList(new ShardingValuePair("order", ShardingOperator.BETWEEN, 1, 100)), "select * from order", 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0", "select * from order_1"));
     }
     
@@ -90,7 +90,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Ignore
     // TODO or
     public void assertSelectWithBetweenAndIntersection() {
-        assertMultipleTargets("select * from order where order_id between ? and ? or order_id between ? and ? ", Arrays.<Object>asList(1, 50, 29, 100), 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id between ? and ? or order_id between ? and ? ", Arrays.<Object>asList(1, 50, 29, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 where order_id between ? and ? or order_id between ? and ? ", 
                         "select * from order_1 where order_id between ? and ? or order_id between ? and ? "));
@@ -98,52 +98,52 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     
     @Test
     public void assertSingleSelectLimit() {
-        assertSingleTarget("select * from order where order_id = 1 limit 5", "ds_1", "select * from order_1 where order_id = 1 limit 5");
-        assertSingleTarget("select * from order where order_id = 1 limit 2,5", "ds_1", "select * from order_1 where order_id = 1 limit 2,5");
-        assertSingleTarget("select * from order where order_id = 1 limit 5 offset 2", "ds_1", "select * from order_1 where order_id = 1 limit 5 offset 2");
+        assertSingleTargetWithoutParameter("select * from order where order_id = 1 limit 5", "ds_1", "select * from order_1 where order_id = 1 limit 5");
+        assertSingleTargetWithoutParameter("select * from order where order_id = 1 limit 2,5", "ds_1", "select * from order_1 where order_id = 1 limit 2,5");
+        assertSingleTargetWithoutParameter("select * from order where order_id = 1 limit 5 offset 2", "ds_1", "select * from order_1 where order_id = 1 limit 5 offset 2");
         List<Object> parameters = Arrays.<Object>asList(2, 4, 5);
-        assertSingleTarget("select * from order where order_id = ? limit ?,?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?,?");
+        assertSingleTargetWithParameters("select * from order where order_id = ? limit ?,?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?,?");
         assertThat(parameters, is(Arrays.<Object>asList(2, 4, 5)));
         parameters = Arrays.<Object>asList(2, 4, 5);
-        assertSingleTarget("select * from order where order_id = ? limit ? offset ?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ? offset ?");
+        assertSingleTargetWithParameters("select * from order where order_id = ? limit ? offset ?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ? offset ?");
         assertThat(parameters, is(Arrays.<Object>asList(2, 4, 5)));
         parameters = Arrays.<Object>asList(2, 5);
-        assertSingleTarget("select * from order where order_id = ? limit ?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?");
+        assertSingleTargetWithParameters("select * from order where order_id = ? limit ?", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?");
         assertThat(parameters, is(Arrays.<Object>asList(2, 5)));
         parameters = Arrays.<Object>asList(2, 5);
-        assertSingleTarget("select * from order where order_id = ? limit ?,10", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?,10");
+        assertSingleTargetWithParameters("select * from order where order_id = ? limit ?,10", parameters, "ds_0", "select * from order_0 where order_id = ? limit ?,10");
         assertThat(parameters, is(Arrays.<Object>asList(2, 5)));
         parameters = Arrays.<Object>asList(2, 5);
-        assertSingleTarget("select * from order where order_id = ? limit 10,?", parameters, "ds_0", "select * from order_0 where order_id = ? limit 10,?");
+        assertSingleTargetWithParameters("select * from order where order_id = ? limit 10,?", parameters, "ds_0", "select * from order_0 where order_id = ? limit 10,?");
         assertThat(parameters, is(Arrays.<Object>asList(2, 5)));
     }
     
     @Test
     public void assertSelectInLimit() {
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit 5", Arrays.<Object>asList(1, 2, 100), 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit 5", Arrays.<Object>asList(1, 2, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit 5", "select * from order_1 where order_id in (?,?,?) limit 5"));
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit 2,5", Arrays.<Object>asList(1, 2, 100), 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit 2,5", Arrays.<Object>asList(1, 2, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit 0,7", "select * from order_1 where order_id in (?,?,?) limit 0,7"));
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit 5 offset 2", Arrays.<Object>asList(1, 2, 100), 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit 5 offset 2", Arrays.<Object>asList(1, 2, 100), 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit 7 offset 0", "select * from order_1 where order_id in (?,?,?) limit 7 offset 0"));
         List<Object> parameters = Arrays.<Object>asList(1, 2, 100, 5);
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit ?", parameters, 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit ?", parameters, 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit ?", "select * from order_1 where order_id in (?,?,?) limit ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 5)));
         parameters = Arrays.<Object>asList(1, 2, 100, 2, 5);
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit ?,?", parameters, 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit ?,?", parameters, 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit ?,?", "select * from order_1 where order_id in (?,?,?) limit ?,?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 0, 7)));
         parameters = Arrays.<Object>asList(1, 2, 100, 5, 2);
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit ? offset ?", parameters, 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit ? offset ?", parameters, 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit ? offset ?", "select * from order_1 where order_id in (?,?,?) limit ? offset ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 7, 0)));
         parameters = Arrays.<Object>asList(1, 2, 100, 5);
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit 2,?", parameters, 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit 2,?", parameters, 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit 0,?", "select * from order_1 where order_id in (?,?,?) limit 0,?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 7)));
         parameters = Arrays.<Object>asList(1, 2, 100, 2);
-        assertMultipleTargets("select * from order where order_id in (?,?,?) limit ?,5", parameters, 4,
+        assertMultipleTargetsWithParameters("select * from order where order_id in (?,?,?) limit ?,5", parameters, 4,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList("select * from order_0 where order_id in (?,?,?) limit ?,7", "select * from order_1 where order_id in (?,?,?) limit ?,7"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 0)));
     }
@@ -151,38 +151,38 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     @Ignore
     public void assertSelectOrLimit() {
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit 5", Arrays.<Object>asList(1, 2, 100), 2,
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit 5", Arrays.<Object>asList(1, 2, 100), 2,
                 Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit 5", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit 5"));
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit 2,5", Arrays.<Object>asList(1, 2, 100), 2,
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit 2,5", Arrays.<Object>asList(1, 2, 100), 2,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                         "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit 0, 7", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit 0, 7"));
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit 5 offset 2", Arrays.<Object>asList(1, 2, 100), 2,
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit 5 offset 2", Arrays.<Object>asList(1, 2, 100), 2,
                 Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                         "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit 0, 7", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit 0, 7"));
     
         List<Object> parameters = Arrays.<Object>asList(1, 2, 100, 5);
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?", parameters, 2, Arrays.asList("ds_0", "ds_1"), 
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?", parameters, 2, Arrays.asList("ds_0", "ds_1"), 
                 Arrays.asList("select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit ?", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 5)));
     
         parameters = Arrays.<Object>asList(1, 2, 100, 2, 5);
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?,?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?,?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                 "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit ?, ?", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit ?, ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 0, 7)));
     
         parameters = Arrays.<Object>asList(1, 2, 100, 5, 2);
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit ? offset ?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit ? offset ?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                 "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit ?, ?", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit ?, ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 0, 7)));
     
         parameters = Arrays.<Object>asList(1, 2, 100, 5);
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit 2,?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit 2,?", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                 "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit 0, ?", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit 0, ?"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 7)));
     
         parameters = Arrays.<Object>asList(1, 2, 100, 2);
-        assertMultipleTargets("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?,5", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
+        assertMultipleTargetsWithParameters("select * from order where order_id = ? or order_id = ? or order_id = ? limit ?,5", parameters, 2, Arrays.asList("ds_0", "ds_1"), Arrays.asList(
                 "select * from order_0 where order_id = ? or order_id = ? or order_id = ? limit ?, 7", "select * from order_1 where order_id = ? or order_id = ? or order_id = ? limit ?, 7"));
         assertThat(parameters, is(Arrays.<Object>asList(1, 2, 100, 0)));
     }
