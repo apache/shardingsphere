@@ -56,13 +56,13 @@ public class PreparedSQLRouter {
         if (null == sqlContext) {
             sqlContext = engine.parseSQL(logicSql, parameters);
         } else {
-            List<Object> generatedIds = generateId();
+            List<Number> generatedIds = generateId();
             parameters.addAll(generatedIds);
         }
         return engine.routeSQL(sqlContext, parameters);
     }
     
-    private List<Object> generateId() {
+    private List<Number> generateId() {
         if (!(sqlContext instanceof InsertSQLContext)) {
             return Collections.emptyList();
         }
@@ -72,11 +72,11 @@ public class PreparedSQLRouter {
         }
         TableRule tableRule = tableRuleOptional.get();
         GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlContext).getGeneratedKeyContext();
-        List<Object> result = new ArrayList<>(generatedKeyContext.getColumns().size());
+        List<Number> result = new ArrayList<>(generatedKeyContext.getColumns().size());
         for (String each : generatedKeyContext.getColumns()) {
-            Object id = tableRule.generateId(each);
-            result.add(id);
-            generatedKeyContext.putValue(each, id);
+            Number generatedId = tableRule.generateId(each);
+            result.add(generatedId);
+            generatedKeyContext.putValue(each, generatedId);
         }
         return result;
     }

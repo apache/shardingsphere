@@ -215,7 +215,7 @@ public final class TableRule {
      * @param columnName 列名称
      * @return 生成的id
      */
-    public Object generateId(final String columnName) {
+    public Number generateId(final String columnName) {
         Number result = autoIncrementColumnMap.get(columnName).generateId();
         Preconditions.checkNotNull(result);
         return result;
