@@ -67,6 +67,13 @@ public interface SQLContext {
     Optional<ShardingColumnContext> findColumn(SQLExpr expr);
     
     /**
+     * 获取SQL构建器上下文.
+     *
+     * @return SQL构建器上下文
+     */
+    SQLBuilderContext getSqlBuilderContext();
+    
+    /**
      * 获取SQL构建器.
      * 
      * @return SQL构建器

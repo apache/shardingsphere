@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * 预解析功能的SQL路由器.
@@ -58,8 +57,6 @@ public class PreparedSQLRouter {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
             sqlContext = engine.parseSQL(logicSql, parameters);
-            // TODO 提炼至rewrite模块
-            fillGeneratedId(parameters);
         } else {
             List<Number> generatedIds = generateId();
             parameters.addAll(generatedIds);
@@ -67,15 +64,6 @@ public class PreparedSQLRouter {
         // TODO 提炼至rewrite模块
         setLimit(parameters);
         return engine.routeSQL(sqlContext, parameters);
-    }
-    
-    private void fillGeneratedId(final List<Object> parameters) {
-        if (sqlContext instanceof InsertSQLContext) {
-            InsertSQLContext insertSQLContext = (InsertSQLContext) sqlContext;
-            for (Integer each : new TreeSet<>(insertSQLContext.getGeneratedKeyContext().getColumnNameToIndexMap().values())) {
-                parameters.add(insertSQLContext.getGeneratedKeyContext().getValueTable().get(0, each));
-            }
-        }
     }
     
     private void setLimit(final List<Object> parameters) {

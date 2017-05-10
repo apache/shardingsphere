@@ -18,19 +18,16 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
@@ -68,12 +65,12 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     public final InsertSQLContext parse() {
         sqlParser.getLexer().nextToken();
         parseInto();
-        Collection<ShardingColumnContext> shardingColumnContexts = parseColumns();
+        parseColumns();
         if (sqlParser.equalAny(DefaultKeyword.SELECT, Symbol.LEFT_PAREN)) {
             throw new UnsupportedOperationException("Cannot support subquery");
         }
         if (getValuesKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
-            parseValues(shardingColumnContexts);
+            parseValues();
         } else if (getCustomizedInsertKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
             parseCustomizedInsert();
         }
@@ -107,41 +104,25 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return Collections.emptySet();
     }
     
-    private Collection<ShardingColumnContext> parseColumns() {
+    private void parseColumns() {
         Collection<ShardingColumnContext> result = new LinkedList<>();
-        Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(sqlContext.getTables().get(0).getName());
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
             do {
                 sqlParser.getLexer().nextToken();
-                result.add(getColumn(autoIncrementColumns));
+                result.add(new ShardingColumnContext(SQLUtil.getExactlyValue(sqlParser.getLexer().getCurrentToken().getLiterals()), sqlContext.getTables().get(0).getName()));
                 sqlParser.getLexer().nextToken();
             } while (!sqlParser.equalAny(Symbol.RIGHT_PAREN) && !sqlParser.equalAny(Assist.END));
-            ItemsToken itemsToken = new ItemsToken(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
-            for (String each : autoIncrementColumns) {
-                itemsToken.getItems().add(each);
-                result.add(new ShardingColumnContext(each, sqlContext.getTables().get(0).getName(), true));
-            }
-            if (!itemsToken.getItems().isEmpty()) {
-                sqlParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
-            }
+            sqlContext.setColumnsListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             sqlParser.getLexer().nextToken();
         }
-        return result;
-    }
-    
-    protected final ShardingColumnContext getColumn(final Collection<String> autoIncrementColumns) {
-        String columnName = SQLUtil.getExactlyValue(sqlParser.getLexer().getCurrentToken().getLiterals());
-        if (autoIncrementColumns.contains(columnName)) {
-            autoIncrementColumns.remove(columnName);
-        }
-        return new ShardingColumnContext(columnName, sqlContext.getTables().get(0).getName());
+        sqlContext.getShardingColumnContexts().addAll(result);
     }
     
     protected Set<TokenType> getValuesKeywords() {
         return Sets.<TokenType>newHashSet(DefaultKeyword.VALUES);
     }
     
-    private void parseValues(final Collection<ShardingColumnContext> shardingColumnContexts) {
+    private void parseValues() {
         boolean parsed = false;
         do {
             if (parsed) {
@@ -154,30 +135,13 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             do {
                 sqlExprs.add(sqlParser.parseExpression());
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
-            ItemsToken itemsToken = new ItemsToken(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+            sqlContext.setValuesListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
-            int offset = 0;
-            for (ShardingColumnContext each : shardingColumnContexts) {
-                if (each.isAutoIncrement()) {
-                    Number generatedId = getShardingRule().findTableRule(sqlContext.getTables().get(0).getName()).generateId(each.getColumnName());
-                    if (0 == sqlParser.getParametersIndex()) {
-                        itemsToken.getItems().add(generatedId.toString());
-                        sqlExprs.add(new SQLNumberExpr(generatedId));
-                    } else {
-                        itemsToken.getItems().add("?");
-                        offset++;
-                        sqlExprs.add(new SQLPlaceholderExpr(sqlParser.getParametersIndex() + offset - 1));
-                    }
-                    sqlContext.getGeneratedKeyContext().getColumns().add(each.getColumnName());
-                    sqlContext.getGeneratedKeyContext().putValue(each.getColumnName(), generatedId);
-                }
+            for (ShardingColumnContext each : sqlContext.getShardingColumnContexts()) {
                 if (getShardingRule().isShardingColumn(each)) {
                     conditionContext.add(new ConditionContext.Condition(each, sqlExprs.get(count)));
                 }
                 count++;
-            }
-            if (!itemsToken.getItems().isEmpty()) {
-                sqlParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
             }
             sqlParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;

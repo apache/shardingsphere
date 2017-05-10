@@ -23,17 +23,21 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
@@ -45,6 +49,7 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +97,57 @@ public final class SQLRouteEngine {
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
         SQLContext result = new SQLParsingEngine(databaseType, logicSql, shardingRule).parseStatement();
         MetricsContext.stop(context);
+        // TODO 提炼至rewrite模块
+        if (result instanceof InsertSQLContext) {
+            String tableName = result.getTables().get(0).getName();
+            ItemsToken columnsToken = new ItemsToken(((InsertSQLContext) result).getColumnsListLastPosition());
+            Collection<String> autoIncrementColumns = shardingRule.getAutoIncrementColumns(tableName);
+            for (String each : autoIncrementColumns) {
+                if (!isIncluded((InsertSQLContext) result, each)) {
+                    columnsToken.getItems().add(each);
+                }
+            }
+            if (!columnsToken.getItems().isEmpty()) {
+                result.getSqlBuilderContext().getSqlTokens().add(columnsToken);
+            }
+            ItemsToken valuesToken = new ItemsToken(((InsertSQLContext) result).getValuesListLastPosition());
+            int offset = parameters.size() - 1;
+            for (String each : autoIncrementColumns) {
+                if (isIncluded((InsertSQLContext) result, each)) {
+                    continue;
+                }
+                Number generatedId = shardingRule.findTableRule(tableName).generateId(each);
+                ShardingColumnContext shardingColumnContext = new ShardingColumnContext(each, tableName, true);
+                if (parameters.isEmpty()) {
+                    valuesToken.getItems().add(generatedId.toString());
+                    if (shardingRule.isShardingColumn(shardingColumnContext)) {
+                        result.getConditionContext().add(new ConditionContext.Condition(shardingColumnContext, new SQLNumberExpr(generatedId)));
+                    }
+                } else {
+                    valuesToken.getItems().add("?");
+                    parameters.add(generatedId);
+                    offset++;
+                    if (shardingRule.isShardingColumn(shardingColumnContext)) {
+                        result.getConditionContext().add(new ConditionContext.Condition(shardingColumnContext, new SQLPlaceholderExpr(offset)));
+                    }
+                }
+                ((InsertSQLContext) result).getGeneratedKeyContext().getColumns().add(each);
+                ((InsertSQLContext) result).getGeneratedKeyContext().putValue(each, generatedId);
+            }
+            if (!valuesToken.getItems().isEmpty()) {
+                result.getSqlBuilderContext().getSqlTokens().add(valuesToken);
+            }
+        }
         return result;
+    }
+    
+    private boolean isIncluded(final InsertSQLContext insertSQLContext, final String autoIncrementColumn) {
+        for (ShardingColumnContext shardingColumnContext : insertSQLContext.getShardingColumnContexts()) {
+            if (shardingColumnContext.getColumnName().equalsIgnoreCase(autoIncrementColumn)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private SQLContext buildHintParsedResult(final String logicSql) {

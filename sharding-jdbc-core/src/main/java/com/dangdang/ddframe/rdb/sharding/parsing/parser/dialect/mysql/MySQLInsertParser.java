@@ -33,9 +33,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -55,11 +55,11 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     private void parseInsertSet() {
-        Collection<String> autoIncrementColumns = getShardingRule().getAutoIncrementColumns(getSqlContext().getTables().get(0).getName());
         ConditionContext conditionContext = new ConditionContext();
         do {
             getSqlParser().getLexer().nextToken();
-            ShardingColumnContext shardingColumnContext = getColumn(autoIncrementColumns);
+            ShardingColumnContext shardingColumnContext = new ShardingColumnContext(
+                    SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getSqlContext().getTables().get(0).getName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
             SQLExpr sqlExpr;

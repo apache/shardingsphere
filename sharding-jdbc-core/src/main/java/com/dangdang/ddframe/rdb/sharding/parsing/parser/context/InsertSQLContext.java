@@ -19,6 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Insert SQL上下文.
@@ -26,9 +30,16 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class InsertSQLContext extends AbstractSQLContext {
     
     private final GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext();
+    
+    private final Collection<ShardingColumnContext> shardingColumnContexts = new LinkedList<>();
+    
+    private int columnsListLastPosition;
+    
+    private int valuesListLastPosition;
     
     public InsertSQLContext() {
         super(SQLType.INSERT);

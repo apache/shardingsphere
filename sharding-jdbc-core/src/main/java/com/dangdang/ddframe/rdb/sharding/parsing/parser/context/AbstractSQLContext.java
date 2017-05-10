@@ -48,7 +48,6 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private ConditionContext conditionContext = new ConditionContext();
     
-    @Getter(AccessLevel.NONE)
     private SQLBuilderContext sqlBuilderContext;
     
     @Setter(AccessLevel.NONE)
