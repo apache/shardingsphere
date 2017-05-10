@@ -21,9 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -49,9 +49,6 @@ public abstract class AbstractSQLContext implements SQLContext {
     private ConditionContext conditionContext = new ConditionContext();
     
     private SQLBuilderContext sqlBuilderContext;
-    
-    @Setter(AccessLevel.NONE)
-    private SQLBuilder sqlBuilder;
     
     @Override
     public final SQLType getType() {
@@ -127,13 +124,5 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     @Override
     public void setLimitContext(final LimitContext limitContext) {
-    }
-    
-    @Override
-    public SQLBuilder getSqlBuilder() {
-        if (null == sqlBuilder) {
-            sqlBuilder = sqlBuilderContext.toSqlBuilder(tables);  
-        }
-        return sqlBuilder;
     }
 }

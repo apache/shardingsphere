@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -40,7 +41,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(sqlContext.getSqlBuilder().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
     
     @Test
@@ -51,7 +53,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
                 shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatementWithoutParameter(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), is(
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
@@ -81,7 +84,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
                 "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatementWithParameter(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), is(
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
@@ -152,6 +156,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertThat(sqlContext.getSqlBuilder().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
     }
 }

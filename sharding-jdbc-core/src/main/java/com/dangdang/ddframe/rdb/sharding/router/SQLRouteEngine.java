@@ -28,8 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
@@ -38,6 +36,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
 import com.dangdang.ddframe.rdb.sharding.router.mixed.MixedTablesRouter;
@@ -177,8 +178,9 @@ public final class SQLRouteEngine {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
         RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext, parameters);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlContext.getSqlBuilder()));
-        amendSQLAccordingToRouteResult(sqlContext, parameters, result);
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlContext.getSqlBuilderContext());
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlRewriteEngine.rewrite()));
+        amendSQLAccordingToRouteResult(parameters, result, sqlRewriteEngine);
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
@@ -208,9 +210,9 @@ public final class SQLRouteEngine {
         return new MixedTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
     }
     
-    private void amendSQLAccordingToRouteResult(final SQLContext sqlContext, final List<Object> parameters, final SQLRouteResult sqlRouteResult) {
+    private void amendSQLAccordingToRouteResult(final List<Object> parameters, final SQLRouteResult sqlRouteResult, final SQLRewriteEngine sqlRewriteEngine) {
         LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
-        SQLBuilder sqlBuilder = sqlContext.getSqlBuilder();
+        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
         if (null != limit) {
             if (1 == sqlRouteResult.getExecutionUnits().size()) {
                 if (limit.getOffsetParameterIndex() > -1) {

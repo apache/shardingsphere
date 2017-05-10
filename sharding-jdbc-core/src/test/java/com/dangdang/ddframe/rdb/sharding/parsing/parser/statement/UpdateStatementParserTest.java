@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -41,7 +42,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
     
     @Test
@@ -51,7 +53,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
                 + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatementWithoutParameter(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), 
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(),
                 is("UPDATE [Token(TABLE_XXX)] xxx SET [Token(TABLE_XXX)].field1=field1+1,xxx.field2=2 WHERE [Token(TABLE_XXX)].field4<10 "
                 + "AND [Token(TABLE_XXX)].field1=1 AND xxx.field5>10 AND [Token(TABLE_XXX)].field2 IN (1,3) AND xxx.field6<=10 AND [Token(TABLE_XXX)].field3 BETWEEN 5 AND 20 AND xxx.field7>=10"));
     }
@@ -83,7 +86,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
                 shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatementWitParameter(sqlContext);
-        assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
                 + "WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
@@ -147,6 +151,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
-        assertThat(sqlContext.getSqlBuilder().toString(), is(expectedSQL));
+        // TODO 放入rewrite模块断言
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(expectedSQL));
     }
 }

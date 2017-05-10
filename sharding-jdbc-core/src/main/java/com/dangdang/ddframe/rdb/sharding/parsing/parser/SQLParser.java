@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLBuilderContext;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
@@ -220,6 +220,7 @@ public class SQLParser extends AbstractParser {
         }
         sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
         sqlContext.getTables().add(tableContext);
+        sqlContext.getSqlBuilderContext().getTableNames().add(tableContext.getName());
     }
     
     /**

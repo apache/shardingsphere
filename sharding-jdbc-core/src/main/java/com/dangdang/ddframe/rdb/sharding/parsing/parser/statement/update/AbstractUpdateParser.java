@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;

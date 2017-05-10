@@ -317,6 +317,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         // FIXME 根据shardingRule过滤table
         sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
         sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getSqlParser().parseAlias()));
+        sqlContext.getSqlBuilderContext().getTableNames().add(SQLUtil.getExactlyValue(literals));
     }
     
     protected void parseJoinTable() {
