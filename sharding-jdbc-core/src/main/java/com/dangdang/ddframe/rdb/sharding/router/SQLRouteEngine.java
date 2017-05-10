@@ -90,7 +90,7 @@ public final class SQLRouteEngine {
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSql, parameters);
-        SQLContext result = new SQLParsingEngine(databaseType, logicSql, shardingRule, parameters).parseStatement();
+        SQLContext result = new SQLParsingEngine(databaseType, logicSql, shardingRule).parseStatement();
         MetricsContext.stop(context);
         return result;
     }

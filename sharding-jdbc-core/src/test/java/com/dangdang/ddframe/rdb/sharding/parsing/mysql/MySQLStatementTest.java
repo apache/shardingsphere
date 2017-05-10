@@ -20,17 +20,16 @@ package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
-import java.util.Collections;
 
 @RunWith(Parameterized.class)
 public final class MySQLStatementTest extends AbstractBaseParseTest {
@@ -49,7 +48,6 @@ public final class MySQLStatementTest extends AbstractBaseParseTest {
     @Test
     public void assertParse() {
         new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addAutoIncrementColumn("order", "order_id").addAutoIncrementColumn("payment", "id").addAutoIncrementColumn("payment", "order_id").build(),
-                Collections.emptyList()).parseStatement();
+                .addAutoIncrementColumn("order", "order_id").addAutoIncrementColumn("payment", "id").addAutoIncrementColumn("payment", "order_id").build()).parseStatement();
     }
 }

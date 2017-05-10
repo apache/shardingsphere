@@ -20,10 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
-import java.util.Collections;
 
 @RunWith(Parameterized.class)
 public final class OrParseTest extends AbstractBaseParseTest {
@@ -54,6 +53,6 @@ public final class OrParseTest extends AbstractBaseParseTest {
     public void assertParse() {
         new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder()
                 .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
-                .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build(), Collections.emptyList()).parseStatement();
+                .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parseStatement();
     }
 }

@@ -18,17 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-
-import java.util.List;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 
 /**
  * MySQL解析器.
@@ -37,8 +35,8 @@ import java.util.List;
  */
 public final class MySQLParser extends SQLParser {
     
-    public MySQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        super(new MySQLLexer(sql), shardingRule, parameters);
+    public MySQLParser(final String sql, final ShardingRule shardingRule) {
+        super(new MySQLLexer(sql), shardingRule);
         getLexer().nextToken();
     }
     
@@ -59,7 +57,7 @@ public final class MySQLParser extends SQLParser {
             valueBeginPosition = valueBeginPosition - (value + "").length();
         } else if (equalAny(Symbol.QUESTION)) {
             valueIndex = parametersIndex;
-            value = (int) getParameters().get(valueIndex);
+            value = -1;
             valueBeginPosition--;
             isParameterForValue = true;
         } else {
@@ -75,14 +73,10 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        if (value < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value");
-        }
         return new LimitContext(value, valueIndex);
     }
     
-    private LimitContext getLimitContextWithComma(
-            final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private LimitContext getLimitContextWithComma(final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int rowCount;
         int rowCountIndex = -1;
@@ -92,7 +86,7 @@ public final class MySQLParser extends SQLParser {
             rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
         } else if (equalAny(Symbol.QUESTION)) {
             rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-            rowCount = (int) getParameters().get(rowCountIndex);
+            rowCount = -1;
             rowCountBeginPosition--;
             isParameterForRowCount = true;
         } else {
@@ -104,9 +98,6 @@ public final class MySQLParser extends SQLParser {
         }
         if (!isParameterForRowCount) {
             getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
-        }
-        if (value < 0 || rowCount < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
         }
         return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
     }
@@ -122,7 +113,7 @@ public final class MySQLParser extends SQLParser {
             offsetBeginPosition = offsetBeginPosition - (offset + "").length();
         } else if (equalAny(Symbol.QUESTION)) {
             offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-            offset = (int) getParameters().get(offsetIndex);
+            offset = -1;
             offsetBeginPosition--;
             isParameterForOffset = true;
         } else {
@@ -134,9 +125,6 @@ public final class MySQLParser extends SQLParser {
         }
         if (!isParameterForValue) {
             getSqlBuilderContext().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
-        }
-        if (value < 0 || offset < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
         }
         return new LimitContext(offset, value, offsetIndex, valueIndex);
     }

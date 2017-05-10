@@ -59,17 +59,14 @@ public class SQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     
-    private final List<Object> parameters;
-    
     private final SQLBuilderContext sqlBuilderContext;
     
     @Setter
     private int parametersIndex;
     
-    public SQLParser(final Lexer lexer, final ShardingRule shardingRule, final List<Object> parameters) {
+    public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {
         super(lexer);
         this.shardingRule = shardingRule;
-        this.parameters = parameters;
         sqlBuilderContext = new SQLBuilderContext(lexer.getInput());
     }
     

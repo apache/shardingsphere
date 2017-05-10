@@ -19,36 +19,28 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import org.junit.Test;
-
-import java.util.Collections;
 
 public final class UnsupportedParseTest {
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertCreate() {
-        new SQLParsingEngine(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", new ShardingRuleMockBuilder().build(), Collections.emptyList()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", new ShardingRuleMockBuilder().build()).parseStatement();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertDrop() {
-        new SQLParsingEngine(DatabaseType.MySQL, "DROP TABLE `order`", new ShardingRuleMockBuilder().build(), Collections.emptyList()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "DROP TABLE `order`", new ShardingRuleMockBuilder().build()).parseStatement();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertTruncate() {
-        new SQLParsingEngine(DatabaseType.MySQL, "TRUNCATE `order`", new ShardingRuleMockBuilder().build(), Collections.emptyList()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "TRUNCATE `order`", new ShardingRuleMockBuilder().build()).parseStatement();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertAlter() {
-        new SQLParsingEngine(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", new ShardingRuleMockBuilder().build(), Collections.emptyList()).parseStatement();
-    }
-    
-    @Test(expected = SQLParsingException.class)
-    public void assertNegativeLimitRowCount() {
-        new SQLParsingEngine(DatabaseType.MySQL, "select * from order limit -2,-1", new ShardingRuleMockBuilder().build(), Collections.emptyList()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", new ShardingRuleMockBuilder().build()).parseStatement();
     }
 }

@@ -17,20 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLServerTop;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLServerTop;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * SQLServer解析器.
@@ -39,8 +37,8 @@ import java.util.List;
  */
 public final class SQLServerParser extends SQLParser {
     
-    public SQLServerParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        super(new SQLServerLexer(sql), shardingRule, parameters);
+    public SQLServerParser(final String sql, final ShardingRule shardingRule) {
+        super(new SQLServerLexer(sql), shardingRule);
         getLexer().nextToken();
     }
     
@@ -86,7 +84,7 @@ public final class SQLServerParser extends SQLParser {
             offset = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
         } else if (equalAny(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
-            offset = (int) getParameters().get(offsetIndex);
+            offset = -1;
             setParametersIndex(offsetIndex + 1);
         } else {
             throw new SQLParsingException(getLexer());
@@ -102,7 +100,7 @@ public final class SQLServerParser extends SQLParser {
                 rowCount = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             } else if (equalAny(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
-                rowCount = (int) getParameters().get(rowCountIndex);
+                rowCount = -1;
                 setParametersIndex(rowCountIndex + 1);
             } else {
                 throw new SQLParsingException(getLexer());

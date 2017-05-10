@@ -19,17 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -41,8 +38,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutCondition() throws SQLException, NoSuchFieldException, IllegalAccessException {
         ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Collections.emptyList();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule, parameters);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX SET field1=field1+1", shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
@@ -51,9 +47,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithoutParameter()  {
         ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Collections.emptyList();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "UPDATE TABLE_XXX xxx SET TABLE_XXX.field1=field1+1,xxx.field2=2 WHERE TABLE_XXX.field4<10 AND"
-                + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule, parameters);
+                + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10", shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatementWithoutParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), 
@@ -83,10 +78,9 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test
     public void parseWithParameter() {
         ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Arrays.<Object>asList(2, 10, 1, 10, 1, 3, 10, 5, 20, 10);
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
                 "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?",
-                shardingRule, parameters);
+                shardingRule);
         UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
         assertUpdateStatementWitParameter(sqlContext);
         assertThat(sqlContext.getSqlBuilder().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
@@ -118,8 +112,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test(expected = SQLParsingUnsupportedException.class)
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
-        List<Object> parameters = Collections.emptyList();
-        new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule, parameters).parseStatement();
+        new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parseStatement();
     }
     
     @Test
@@ -147,7 +140,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
-        UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule(), Collections.emptyList()).parseStatement();
+        UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
         ConditionContext.Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();

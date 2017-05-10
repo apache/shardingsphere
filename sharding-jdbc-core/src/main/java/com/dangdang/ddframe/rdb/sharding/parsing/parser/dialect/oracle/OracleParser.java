@@ -23,8 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexe
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.google.common.base.Optional;
 
-import java.util.List;
-
 /**
  * Oracle解析器.
  *
@@ -32,8 +30,8 @@ import java.util.List;
  */
 public final class OracleParser extends SQLParser {
     
-    public OracleParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        super(new OracleLexer(sql), shardingRule, parameters);
+    public OracleParser(final String sql, final ShardingRule shardingRule) {
+        super(new OracleLexer(sql), shardingRule);
         getLexer().nextToken();
     }
     

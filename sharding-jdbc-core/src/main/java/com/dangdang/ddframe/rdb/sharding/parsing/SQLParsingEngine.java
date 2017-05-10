@@ -19,22 +19,20 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.SQLDeleteParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.SQLInsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SQLSelectParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.SQLUpdateParserFactory;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 /**
  * SQL解析引擎.
@@ -49,8 +47,6 @@ public final class SQLParsingEngine {
     private final String sql;
     
     private final ShardingRule shardingRule;
-    
-    private final List<Object> parameters;
     
     /**
      * 解析SQL.
@@ -82,13 +78,13 @@ public final class SQLParsingEngine {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLParser(sql, shardingRule, parameters);
+                return new MySQLParser(sql, shardingRule);
             case Oracle:
-                return new OracleParser(sql, shardingRule, parameters);
+                return new OracleParser(sql, shardingRule);
             case SQLServer:
-                return new SQLServerParser(sql, shardingRule, parameters);
+                return new SQLServerParser(sql, shardingRule);
             case PostgreSQL:
-                return new PostgreSQLParser(sql, shardingRule, parameters);
+                return new PostgreSQLParser(sql, shardingRule);
             default:
                 throw new UnsupportedOperationException(dbType.name());
         }

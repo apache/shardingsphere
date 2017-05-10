@@ -17,11 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-
-import java.util.List;
 
 /**
  * PostgreSQL解析器.
@@ -30,8 +28,8 @@ import java.util.List;
  */
 public final class PostgreSQLParser extends SQLParser {
     
-    public PostgreSQLParser(final String sql, final ShardingRule shardingRule, final List<Object> parameters) {
-        super(new PostgreSQLLexer(sql), shardingRule, parameters);
+    public PostgreSQLParser(final String sql, final ShardingRule shardingRule) {
+        super(new PostgreSQLLexer(sql), shardingRule);
         getLexer().nextToken();
     }
 }
