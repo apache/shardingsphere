@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
@@ -77,7 +78,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`) VALUES (10)"));
+        GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     @Test
@@ -87,7 +89,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`) VALUES (?)"));
+        GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
+        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     
     private void assertInsertStatementWithoutParameter(final InsertSQLContext sqlContext) {
