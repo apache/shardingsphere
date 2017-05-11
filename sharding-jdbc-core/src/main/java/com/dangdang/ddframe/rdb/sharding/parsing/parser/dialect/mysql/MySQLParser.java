@@ -24,8 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 
 /**

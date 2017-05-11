@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +27,11 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableToken implements SQLToken {
+public final class RowCountLimitToken implements SQLToken {
+    
+    public static final String COUNT_NAME = "limit_count";
     
     private final int beginPosition;
     
-    private final String originalLiterals;
-    
-    private final String tableName;
+    private final int rowCount;
 }

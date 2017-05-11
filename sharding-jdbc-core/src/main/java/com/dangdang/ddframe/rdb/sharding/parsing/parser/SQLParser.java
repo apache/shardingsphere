@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
@@ -155,10 +155,9 @@ public class SQLParser extends AbstractParser {
     }
     
     private void setTableToken(final SQLContext sqlContext, final int beginPosition, final SQLPropertyExpr propertyExpr) {
-        String tableName = sqlContext.getTables().get(0).getName();
         String owner = propertyExpr.getOwner().getName();
-        if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-            sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+        if (sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+            sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
     
@@ -218,7 +217,7 @@ public class SQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals()));
         sqlContext.getTables().add(tableContext);
         sqlContext.getSqlBuilderContext().getTableNames().add(tableContext.getName());
     }
@@ -275,7 +274,7 @@ public class SQLParser extends AbstractParser {
             expression.append(value);
             getLexer().nextToken();
             if (equalAny(Symbol.DOT)) {
-                sqlBuilderContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
+                sqlBuilderContext.getSqlTokens().add(new TableToken(position, value));
             }
         }
         return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), false);

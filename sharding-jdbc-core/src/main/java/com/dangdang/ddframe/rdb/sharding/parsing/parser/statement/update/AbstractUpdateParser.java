@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -75,10 +75,9 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
             String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
             sqlParser.getLexer().nextToken();
-            String tableName = sqlContext.getTables().get(0).getName();
             if (sqlParser.skipIfEqual(Symbol.DOT)) {
-                if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+                if (sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                    sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
                 }
                 sqlParser.getLexer().nextToken();
             }

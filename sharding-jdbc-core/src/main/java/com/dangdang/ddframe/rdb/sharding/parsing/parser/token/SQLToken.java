@@ -15,23 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 /**
- * 表语言标记对象.
+ * SQL语言标记对象.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class RowCountLimitToken implements SQLToken {
+public interface SQLToken {
     
-    public static final String COUNT_NAME = "limit_count";
-    
-    private final int beginPosition;
-    
-    private final int rowCount;
+    int getBeginPosition();
 }

@@ -1,6 +1,6 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
