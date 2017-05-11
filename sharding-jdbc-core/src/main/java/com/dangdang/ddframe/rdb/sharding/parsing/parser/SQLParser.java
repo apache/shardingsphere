@@ -18,17 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -242,38 +237,6 @@ public class SQLParser extends AbstractParser {
             }
         }
         return false;
-    }
-    
-    /**
-     * 解析查询列.
-     *
-     * @param sqlContext SQL上下文
-     * @param index 参数索引
-     * @return 查询列上下文
-     */
-    public final SelectItemContext parseSelectItem(final SQLContext sqlContext, final int index) {
-        skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
-        String literals = getLexer().getCurrentToken().getLiterals();
-        if (equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
-            getLexer().nextToken();
-            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), parseAlias(), true);
-        }
-        if (skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItemContext(skipParentheses(), parseAlias(), index, AggregationType.valueOf(literals.toUpperCase()));
-        }
-        StringBuilder expression = new StringBuilder();
-        // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
-        // FIXME 解析xxx.*
-        while (!equalAny(DefaultKeyword.AS) && !equalAny(Symbol.COMMA) && !equalAny(DefaultKeyword.FROM) && !equalAny(Assist.END)) {
-            String value = getLexer().getCurrentToken().getLiterals();
-            int position = getLexer().getCurrentToken().getEndPosition() - value.length();
-            expression.append(value);
-            getLexer().nextToken();
-            if (equalAny(Symbol.DOT)) {
-                sqlContext.getSqlTokens().add(new TableToken(position, value));
-            }
-        }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), false);
     }
     
     /**
