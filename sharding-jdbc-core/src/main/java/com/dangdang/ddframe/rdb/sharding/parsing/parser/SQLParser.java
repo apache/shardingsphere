@@ -31,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
@@ -40,6 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -151,10 +151,9 @@ public class SQLParser extends AbstractParser {
     }
     
     private void setTableToken(final SQLContext sqlContext, final int beginPosition, final SQLPropertyExpr propertyExpr) {
-        String tableName = sqlContext.getTables().get(0).getName();
         String owner = propertyExpr.getOwner().getName();
-        if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+        if (sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
     
@@ -214,7 +213,7 @@ public class SQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals()));
         sqlContext.getTables().add(tableContext);
     }
     
@@ -271,7 +270,7 @@ public class SQLParser extends AbstractParser {
             expression.append(value);
             getLexer().nextToken();
             if (equalAny(Symbol.DOT)) {
-                sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
+                sqlContext.getSqlTokens().add(new TableToken(position, value));
             }
         }
         return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), false);

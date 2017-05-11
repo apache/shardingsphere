@@ -15,23 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * 分页长度标记对象.
+ * 选择项标记对象.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class RowCountLimitToken implements SQLToken {
-    
-    public static final String COUNT_NAME = "limit_count";
+public final class ItemsToken implements SQLToken {
     
     private final int beginPosition;
     
-    private final int rowCount;
+    private final List<String> items = new LinkedList<>();
 }

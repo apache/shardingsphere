@@ -28,7 +28,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public final class ResultSetMergeContext {
     
     private final List<OrderByContext> currentOrderByKeys;
     
-    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLContext sqlContext) throws SQLException {
+    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLContext sqlContext) {
         this.shardingResultSets = shardingResultSets;
         this.sqlContext = sqlContext;
         currentOrderByKeys = new LinkedList<>();

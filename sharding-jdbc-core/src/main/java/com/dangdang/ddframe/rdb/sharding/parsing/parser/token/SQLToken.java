@@ -15,24 +15,14 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedList;
-import java.util.List;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 /**
- * 选择项标记对象.
+ * SQL标记对象.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ItemsToken implements SQLToken {
+public interface SQLToken {
     
-    private final int beginPosition;
-    
-    private final List<String> items = new LinkedList<>();
+    int getBeginPosition();
 }

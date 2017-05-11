@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
+
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 
 import java.util.Collections;
 import java.util.Comparator;

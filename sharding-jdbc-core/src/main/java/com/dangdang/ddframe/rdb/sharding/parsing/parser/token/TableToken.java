@@ -15,14 +15,31 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
+
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL标记对象.
+ * 表标记对象.
  *
  * @author zhangliang
  */
-public interface SQLToken {
+@RequiredArgsConstructor
+@Getter
+public final class TableToken implements SQLToken {
     
-    int getBeginPosition();
+    private final int beginPosition;
+    
+    private final String originalLiterals;
+    
+    /**
+     * 获取表名称.
+     * 
+     * @return 表名称
+     */
+    public String getTableName() {
+        return SQLUtil.getExactlyValue(originalLiterals);
+    }
 }

@@ -15,23 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分页偏移量标记对象.
+ * 分页长度标记对象.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class OffsetLimitToken implements SQLToken {
+public final class RowCountLimitToken implements SQLToken {
     
-    public static final String OFFSET_NAME = "limit_offset";
+    public static final String COUNT_NAME = "limit_count";
     
     private final int beginPosition;
     
-    private final int offset;
+    private final int rowCount;
 }
