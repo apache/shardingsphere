@@ -18,29 +18,28 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -59,15 +58,12 @@ public class SQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     
-    private final SQLBuilderContext sqlBuilderContext;
-    
     @Setter
     private int parametersIndex;
     
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {
         super(lexer);
         this.shardingRule = shardingRule;
-        sqlBuilderContext = new SQLBuilderContext(lexer.getInput());
     }
     
     /**
@@ -158,7 +154,7 @@ public class SQLParser extends AbstractParser {
         String tableName = sqlContext.getTables().get(0).getName();
         String owner = propertyExpr.getOwner().getName();
         if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-            sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
+            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner, tableName));
         }
     }
     
@@ -218,9 +214,8 @@ public class SQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlBuilderContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals(), tableContext.getName()));
         sqlContext.getTables().add(tableContext);
-        sqlContext.getSqlBuilderContext().getTableNames().add(tableContext.getName());
     }
     
     /**
@@ -253,10 +248,11 @@ public class SQLParser extends AbstractParser {
     /**
      * 解析查询列.
      *
+     * @param sqlContext SQL上下文
      * @param index 参数索引
      * @return 查询列上下文
      */
-    public final SelectItemContext parseSelectItem(final int index) {
+    public final SelectItemContext parseSelectItem(final SQLContext sqlContext, final int index) {
         skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = getLexer().getCurrentToken().getLiterals();
         if (equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
@@ -275,7 +271,7 @@ public class SQLParser extends AbstractParser {
             expression.append(value);
             getLexer().nextToken();
             if (equalAny(Symbol.DOT)) {
-                sqlBuilderContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
+                sqlContext.getSqlTokens().add(new TableToken(position, value, SQLUtil.getExactlyValue(value)));
             }
         }
         return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), parseAlias(), false);

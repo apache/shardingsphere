@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 选择项语言标记对象.
+ * 选择项标记对象.
  *
  * @author zhangliang
  */

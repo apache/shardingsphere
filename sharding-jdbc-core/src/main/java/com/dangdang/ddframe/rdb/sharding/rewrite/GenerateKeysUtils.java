@@ -35,7 +35,7 @@ public class GenerateKeysUtils {
             }
         }
         if (!columnsToken.getItems().isEmpty()) {
-            insertSQLContext.getSqlBuilderContext().getSqlTokens().add(columnsToken);
+            insertSQLContext.getSqlTokens().add(columnsToken);
         }
         ItemsToken valuesToken = new ItemsToken(insertSQLContext.getValuesListLastPosition());
         int offset = parameters.size() - 1;
@@ -62,7 +62,7 @@ public class GenerateKeysUtils {
             insertSQLContext.getGeneratedKeyContext().putValue(each, generatedId);
         }
         if (!valuesToken.getItems().isEmpty()) {
-            insertSQLContext.getSqlBuilderContext().getSqlTokens().add(valuesToken);
+            insertSQLContext.getSqlTokens().add(valuesToken);
         }
     }
     

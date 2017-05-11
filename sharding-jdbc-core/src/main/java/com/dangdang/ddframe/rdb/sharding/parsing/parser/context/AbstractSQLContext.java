@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -30,6 +29,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,7 +48,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private ConditionContext conditionContext = new ConditionContext();
     
-    private SQLBuilderContext sqlBuilderContext;
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     @Override
     public final SQLType getType() {

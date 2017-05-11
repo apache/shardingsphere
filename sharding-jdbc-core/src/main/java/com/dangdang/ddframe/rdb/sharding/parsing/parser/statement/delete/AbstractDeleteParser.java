@@ -41,7 +41,6 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     public AbstractDeleteParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new DeleteSQLContext();
-        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     @Override

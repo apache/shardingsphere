@@ -58,7 +58,6 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         this.sqlParser = sqlParser;
         this.shardingRule = shardingRule;
         sqlContext = new InsertSQLContext();
-        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     @Override

@@ -36,7 +36,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
@@ -70,12 +69,12 @@ public final class SQLRouteEngine {
     /**
      * SQL路由.
      *
-     * @param logicSql 逻辑SQL
+     * @param logicSQL 逻辑SQL
      * @return 路由结果
      * @throws SQLParsingException SQL解析失败异常
      */
-    public SQLRouteResult route(final String logicSql) throws SQLParsingException {
-        return routeSQL(parseSQL(logicSql, Collections.emptyList()), Collections.emptyList());
+    public SQLRouteResult route(final String logicSQL) throws SQLParsingException {
+        return routeSQL(logicSQL, parseSQL(logicSQL, Collections.emptyList()), Collections.emptyList());
     }
     
     /**
@@ -120,16 +119,14 @@ public final class SQLRouteEngine {
             default:
                 throw new UnsupportedOperationException("");
         }
-        SQLBuilderContext sqlBuilderContext = new SQLBuilderContext(logicSql);
-        result.setSqlBuilderContext(sqlBuilderContext);
         return result;
     }
     
-    SQLRouteResult routeSQL(final SQLContext sqlContext, final List<Object> parameters) {
+    SQLRouteResult routeSQL(final String logicSQL, final SQLContext sqlContext, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
         RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext, parameters);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(sqlContext.getSqlBuilderContext());
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlRewriteEngine.rewrite()));
         amendSQLAccordingToRouteResult(parameters, result, sqlRewriteEngine);
         MetricsContext.stop(context);

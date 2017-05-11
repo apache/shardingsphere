@@ -20,9 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableToken;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,12 +34,19 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class SQLRewriteEngine {
     
     private final SQLBuilderContext sqlBuilderContext;
     
     private SQLBuilder sqlBuilder;
+    
+    public SQLRewriteEngine(final String originalSQL, final SQLContext sqlContext) {
+        sqlBuilderContext = new SQLBuilderContext(originalSQL);
+        for (TableContext each : sqlContext.getTables()) {
+            sqlBuilderContext.getTableNames().add(each.getName());
+        }
+        sqlBuilderContext.getSqlTokens().addAll(sqlContext.getSqlTokens());
+    }
     
     /**
      * SQL重写.

@@ -63,7 +63,7 @@ public class PreparedSQLRouter {
         }
         // TODO 提炼至rewrite模块
         setLimit(parameters);
-        return engine.routeSQL(sqlContext, parameters);
+        return engine.routeSQL(logicSql, sqlContext, parameters);
     }
     
     private void setLimit(final List<Object> parameters) {

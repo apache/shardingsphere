@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
 /**
- * SQL语言标记对象.
+ * SQL标记对象.
  *
  * @author zhangliang
  */

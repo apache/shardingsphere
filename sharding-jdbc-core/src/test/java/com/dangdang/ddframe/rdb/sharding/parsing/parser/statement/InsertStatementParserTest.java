@@ -53,44 +53,48 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutParameter() throws SQLException {
+        String sql = "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
     @Test
     public void parseWithParameter() {
+        String sql = "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
     @Test
     public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
+        String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)";
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
         GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     @Test
     public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
+        String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
         ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parseStatement();
         assertInsertStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
         GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     
     private void assertInsertStatementWithoutParameter(final InsertSQLContext sqlContext) {
@@ -162,7 +166,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(expectedSQL));
+        assertThat(new SQLRewriteEngine(actualSQL, sqlContext).rewrite().toString(), is(expectedSQL));
     }
     
     @Test(expected = UnsupportedOperationException.class)

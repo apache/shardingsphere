@@ -66,7 +66,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     public AbstractSelectParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new SelectSQLContext();
-        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     @Override
@@ -75,7 +74,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         sqlContext.getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         customizedSelect();
         if (!itemsToken.getItems().isEmpty()) {
-            sqlParser.getSqlBuilderContext().getSqlTokens().add(itemsToken);
+            sqlContext.getSqlTokens().add(itemsToken);
         }
         return sqlContext;
     }
@@ -113,7 +112,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected final void parseSelectList() {
         int index = 1;
         do {
-            SelectItemContext selectItemContext = sqlParser.parseSelectItem(index);
+            SelectItemContext selectItemContext = sqlParser.parseSelectItem(sqlContext, index);
             sqlContext.getItemContexts().add(selectItemContext);
             if (selectItemContext instanceof CommonSelectItemContext && ((CommonSelectItemContext) selectItemContext).isStar()) {
                 sqlContext.setContainStar(true);
@@ -315,9 +314,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         // FIXME 根据shardingRule过滤table
-        sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals, SQLUtil.getExactlyValue(literals)));
         sqlContext.getTables().add(new TableContext(literals, SQLUtil.getExactlyValue(literals), getSqlParser().parseAlias()));
-        sqlContext.getSqlBuilderContext().getTableNames().add(SQLUtil.getExactlyValue(literals));
     }
     
     protected void parseJoinTable() {
@@ -344,8 +342,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
         for (TableContext each : sqlContext.getTables()) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
-                sqlParser.getSqlBuilderContext().getSqlTokens().add(
-                        new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
+                sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName(), SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName())));
             }
         }
     }

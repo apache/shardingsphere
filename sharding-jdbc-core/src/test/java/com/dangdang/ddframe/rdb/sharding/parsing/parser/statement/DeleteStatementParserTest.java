@@ -37,24 +37,24 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithoutCondition() throws SQLException {
+        String sql = "DELETE FROM TABLE_XXX";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
     
     @Test
     public void parseWithoutParameter() throws SQLException {
+        String sql = "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL,
-                "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10",
-                shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
@@ -79,13 +79,13 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithParameter() throws SQLException {
+        String sql = "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, 
-                "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?", shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
         assertDeleteStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString(), is(
+        assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
@@ -157,6 +157,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sqlContext.getSqlBuilderContext()).rewrite().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
+        assertThat(new SQLRewriteEngine(actualSQL, sqlContext).rewrite().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
     }
 }

@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilderContext;
 import com.google.common.base.Optional;
 
 import java.util.List;
@@ -68,13 +67,6 @@ public interface SQLContext {
     Optional<ShardingColumnContext> findColumn(SQLExpr expr);
     
     /**
-     * 设置SQL构建器上下文.
-     *
-     * @param sqlBuilderContext SQL构建器上下文
-     */
-    void setSqlBuilderContext(SQLBuilderContext sqlBuilderContext);
-    
-    /**
      * 获取排序上下文集合.
      * 
      * @return 排序上下文集合
@@ -110,9 +102,9 @@ public interface SQLContext {
     void setLimitContext(LimitContext limitContext);
     
     /**
-     * 获取SQL构建器上下文.
-     *
-     * @return SQL构建器上下文
+     * 获取SQL标记集合.
+     * 
+     * @return SQL标记集合
      */
-    SQLBuilderContext getSqlBuilderContext();
+    List<SQLToken> getSqlTokens();
 }

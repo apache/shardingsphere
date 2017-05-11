@@ -44,7 +44,6 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     public AbstractUpdateParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new UpdateSQLContext();
-        sqlContext.setSqlBuilderContext(sqlParser.getSqlBuilderContext());
     }
     
     @Override
@@ -78,7 +77,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             String tableName = sqlContext.getTables().get(0).getName();
             if (sqlParser.skipIfEqual(Symbol.DOT)) {
                 if (tableName.equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    sqlParser.getSqlBuilderContext().getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
+                    sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals, tableName));
                 }
                 sqlParser.getLexer().nextToken();
             }

@@ -46,7 +46,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
         parseGroupBy();
         getSqlContext().getOrderByContexts().addAll(parseOrderBy(getSqlContext()));
         if (getSqlParser().equalAny(MySQLKeyword.LIMIT)) {
-            getSqlContext().setLimitContext(((MySQLParser) getSqlParser()).parseLimit(getParametersIndex()));
+            getSqlContext().setLimitContext(((MySQLParser) getSqlParser()).parseLimit(getSqlContext(), getParametersIndex()));
         }
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());

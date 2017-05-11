@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 表语言标记对象.
+ * 分页偏移量标记对象.
  *
  * @author zhangliang
  */
