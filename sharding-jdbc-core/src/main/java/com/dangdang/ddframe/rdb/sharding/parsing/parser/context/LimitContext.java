@@ -28,10 +28,6 @@ import lombok.Getter;
 @Getter
 public final class LimitContext {
     
-    public static final String OFFSET_NAME = "limit_offset";
-    
-    public static final String COUNT_NAME = "limit_count";
-    
     private final int rowCount;
     
     private final Optional<Integer> offset;

@@ -28,6 +28,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OffsetLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
@@ -230,8 +232,8 @@ public final class SQLRouteEngine {
                 if (limit.getRowCountParameterIndex() > -1) {
                     parameters.set(limit.getRowCountParameterIndex(), rowCount);
                 }
-                sqlBuilder.buildSQL(LimitContext.OFFSET_NAME, String.valueOf(offset));
-                sqlBuilder.buildSQL(LimitContext.COUNT_NAME, String.valueOf(rowCount));
+                sqlBuilder.buildSQL(OffsetLimitToken.OFFSET_NAME, String.valueOf(offset));
+                sqlBuilder.buildSQL(RowCountLimitToken.COUNT_NAME, String.valueOf(rowCount));
             }
         }
     }
