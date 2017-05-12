@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -41,7 +42,8 @@ public final class OrderByContext implements IndexColumn {
     
     private final OrderType orderByType;
     
-    private final Optional<String> alias;
+    @Setter
+    private Optional<String> alias;
     
     private int columnIndex;
     

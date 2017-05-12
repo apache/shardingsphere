@@ -37,6 +37,10 @@ public final class DerivedUtils {
     
     private static final String DERIVED_SUM_ALIAS = "AVG_DERIVED_SUM_%s";
     
+    private static final String ORDER_BY_DERIVED_ALIAS = "ORDER_BY_DERIVED_%s";
+    
+    private static final String GROUP_BY_DERIVED_ALIAS = "GROUP_BY_DERIVED_%s";
+    
     /**
      * 追加派生列.
      *
@@ -55,57 +59,43 @@ public final class DerivedUtils {
     private static void appendAvgDerivedColumns(final SelectSQLContext selectSQLContext, final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
         for (SelectItemContext each : selectSQLContext.getItemContexts()) {
-            if (each instanceof AggregationSelectItemContext) {
-                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-                if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
-                    AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset)), -1, AggregationType.COUNT);
-                    AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_SUM_ALIAS, derivedColumnOffset)), -1, AggregationType.SUM);
-                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
-                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
-                    // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
-                    itemsToken.getItems().add(countSelectItemContext.getExpression() + " AS " + countSelectItemContext.getAlias().get() + " ");
-                    itemsToken.getItems().add(sumSelectItemContext.getExpression() + " AS " + sumSelectItemContext.getAlias().get() + " ");
-                    derivedColumnOffset++;
-                }
+            if (!(each instanceof AggregationSelectItemContext) || AggregationType.AVG != ((AggregationSelectItemContext) each).getAggregationType()) {
+                continue;
             }
+            AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
+            AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
+                    aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset)), -1, AggregationType.COUNT);
+            AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
+                    aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_SUM_ALIAS, derivedColumnOffset)), -1, AggregationType.SUM);
+            aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
+            aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
+            // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+            itemsToken.getItems().add(countSelectItemContext.getExpression() + " AS " + countSelectItemContext.getAlias().get() + " ");
+            itemsToken.getItems().add(sumSelectItemContext.getExpression() + " AS " + sumSelectItemContext.getAlias().get() + " ");
+            derivedColumnOffset++;
         }
     }
     
     private static void appendOrderByDerivedColumns(final SelectSQLContext selectSQLContext, final ItemsToken itemsToken) {
+        int derivedColumnOffset = 0;
         for (OrderByContext each : selectSQLContext.getOrderByContexts()) {
-            if (!each.getIndex().isPresent()) {
-                boolean found = false;
+            if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !selectSQLContext.isContainStar()) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
-                for (SelectItemContext context : selectSQLContext.getItemContexts()) {
-                    if (context.getExpression().equalsIgnoreCase(orderByExpression) || orderByExpression.equalsIgnoreCase(context.getAlias().orNull())) {
-                        found = true;
-                        break;
-                    }
-                }
-                // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-                if (!found && each.getAlias().isPresent()) {
-                    itemsToken.getItems().add(orderByExpression + " AS " + each.getAlias().get() + " ");
-                }
+                String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
+                each.setAlias(Optional.of(alias));
+                itemsToken.getItems().add(orderByExpression + " AS " + alias + " ");
             }
         }
     }
     
     private static void appendGroupByDerivedColumns(final SelectSQLContext selectSQLContext, final ItemsToken itemsToken) {
+        int derivedColumnOffset = 0;
         for (GroupByContext each : selectSQLContext.getGroupByContexts()) {
-            boolean found = false;
-            String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
-            for (SelectItemContext context : selectSQLContext.getItemContexts()) {
-                if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
-                        || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {
-                    found = true;
-                    break;
-                }
-            }
-            // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-            if (!found && each.getAlias().isPresent()) {
-                itemsToken.getItems().add(groupByExpression + " AS " + each.getAlias().get() + " ");
+            if (!each.getAlias().isPresent() && !selectSQLContext.isContainStar()) {
+                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
+                String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
+                each.setAlias(Optional.of(alias));
+                itemsToken.getItems().add(groupByExpression + " AS " + alias + " ");
             }
         }
     }

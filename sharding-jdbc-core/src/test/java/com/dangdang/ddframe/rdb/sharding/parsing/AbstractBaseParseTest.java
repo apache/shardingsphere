@@ -166,8 +166,9 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn input) {
-                    return new GroupByContext(
+                    GroupByContext groupByContext = new GroupByContext(
                             Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    return groupByContext;
                 }
             }));
         }

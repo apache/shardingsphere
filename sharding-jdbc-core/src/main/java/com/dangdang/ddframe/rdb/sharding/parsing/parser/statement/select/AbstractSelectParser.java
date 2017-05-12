@@ -50,16 +50,12 @@ import java.util.List;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
     
-    private static final String SHARDING_GEN_ALIAS = "sharding_gen_%s";
-    
     private SQLParser sqlParser;
     
     private final SelectSQLContext sqlContext;
     
     @Setter
     private int parametersIndex;
-    
-    private int derivedColumnOffset;
     
     public AbstractSelectParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
@@ -256,11 +252,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 return Optional.of(rawName);
             }
         }
-        return Optional.of(generateDerivedColumnAlias());
-    }
-    
-    private String generateDerivedColumnAlias() {
-        return String.format(SHARDING_GEN_ALIAS, ++derivedColumnOffset);
+        return Optional.absent();
     }
     
     public final void parseFrom() {
