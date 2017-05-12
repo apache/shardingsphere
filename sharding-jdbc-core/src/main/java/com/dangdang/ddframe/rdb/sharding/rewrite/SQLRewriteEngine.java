@@ -139,4 +139,22 @@ public final class SQLRewriteEngine {
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
+    
+    /**
+     * 修订SQL和参数.
+     * 
+     * @param parameters 参数
+     */
+    public void amend(final List<Object> parameters) {
+        if (limit.getOffsetParameterIndex() > -1) {
+            parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
+        } else {
+            sqlBuilder.amend(OffsetLimitToken.OFFSET_NAME, String.valueOf(limit.getOffset()));
+        }
+        if (limit.getRowCountParameterIndex() > -1) {
+            parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
+        } else {
+            sqlBuilder.amend(RowCountLimitToken.COUNT_NAME, String.valueOf(limit.getRowCount()));
+        }
+    }
 }

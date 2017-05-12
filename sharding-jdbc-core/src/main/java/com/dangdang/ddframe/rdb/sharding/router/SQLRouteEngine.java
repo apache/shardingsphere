@@ -26,17 +26,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
@@ -135,7 +131,9 @@ public final class SQLRouteEngine {
         RoutingResult routingResult = routeSQL(sqlContext.getConditionContext(), sqlContext, parameters);
         SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlRewriteEngine.rewrite()));
-        amendSQLAccordingToRouteResult(parameters, result, sqlRewriteEngine);
+        if (null != sqlContext.getLimitContext() && 1 == result.getExecutionUnits().size()) {
+            sqlRewriteEngine.amend(parameters);
+        }
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
         for (SQLExecutionUnit each : result.getExecutionUnits()) {
@@ -165,21 +163,21 @@ public final class SQLRouteEngine {
         return new MixedTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
     }
     
-    private void amendSQLAccordingToRouteResult(final List<Object> parameters, final SQLRouteResult sqlRouteResult, final SQLRewriteEngine sqlRewriteEngine) {
-        LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
-        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
-        if (null == limit || 1 != sqlRouteResult.getExecutionUnits().size()) {
-            return;
-        }
-        if (limit.getOffsetParameterIndex() > -1) {
-            parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
-        } else {
-            sqlBuilder.buildSQL(OffsetLimitToken.OFFSET_NAME, String.valueOf(limit.getOffset()));
-        }
-        if (limit.getRowCountParameterIndex() > -1) {
-            parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
-        } else {
-            sqlBuilder.buildSQL(RowCountLimitToken.COUNT_NAME, String.valueOf(limit.getRowCount()));
-        }
-    }
+//    private void amendSQLAccordingToRouteResult(final List<Object> parameters, final SQLRouteResult sqlRouteResult, final SQLRewriteEngine sqlRewriteEngine) {
+//        LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
+//        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
+//        if (null == limit || 1 != sqlRouteResult.getExecutionUnits().size()) {
+//            return;
+//        }
+//        if (limit.getOffsetParameterIndex() > -1) {
+//            parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
+//        } else {
+//            sqlBuilder.amend(OffsetLimitToken.OFFSET_NAME, String.valueOf(limit.getOffset()));
+//        }
+//        if (limit.getRowCountParameterIndex() > -1) {
+//            parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
+//        } else {
+//            sqlBuilder.amend(RowCountLimitToken.COUNT_NAME, String.valueOf(limit.getRowCount()));
+//        }
+//    }
 }

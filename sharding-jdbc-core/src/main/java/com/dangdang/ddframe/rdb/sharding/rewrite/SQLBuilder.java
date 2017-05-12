@@ -96,7 +96,7 @@ public class SQLBuilder {
      * @param label 占位符
      * @param token 实际的值
      */
-    public void buildSQL(final String label, final String token) {
+    public void amend(final String label, final String token) {
         if (!tokenMap.containsKey(label)) {
             return;
         }
