@@ -21,9 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -61,23 +59,7 @@ public class PreparedSQLRouter {
             List<Number> generatedIds = generateId();
             parameters.addAll(generatedIds);
         }
-        // TODO 提炼至rewrite模块
-        setLimit(parameters);
         return engine.routeSQL(logicSql, sqlContext, parameters);
-    }
-    
-    private void setLimit(final List<Object> parameters) {
-        if (null == sqlContext.getLimitContext()) {
-            return;
-        }
-        int offset = -1 == sqlContext.getLimitContext().getOffsetParameterIndex()
-                ? sqlContext.getLimitContext().getOffset() : (int) parameters.get(sqlContext.getLimitContext().getOffsetParameterIndex());
-        int rowCount = -1 == sqlContext.getLimitContext().getRowCountParameterIndex()
-                ? sqlContext.getLimitContext().getRowCount() : (int) parameters.get(sqlContext.getLimitContext().getRowCountParameterIndex());
-        sqlContext.setLimitContext(new LimitContext(offset, rowCount, sqlContext.getLimitContext().getOffsetParameterIndex(), sqlContext.getLimitContext().getRowCountParameterIndex()));
-        if (offset < 0 || rowCount < 0) {
-            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
-        }
     }
     
     private List<Number> generateId() {

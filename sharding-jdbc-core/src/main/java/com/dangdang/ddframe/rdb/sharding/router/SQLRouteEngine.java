@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
+import com.dangdang.ddframe.rdb.sharding.rewrite.LimitUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
@@ -101,6 +102,9 @@ public final class SQLRouteEngine {
         }
         if (result instanceof SelectSQLContext) {
             DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
+        }
+        if (null != result.getLimitContext()) {
+            LimitUtils.appendLimit(result, parameters);
         }
         return result;
     }
