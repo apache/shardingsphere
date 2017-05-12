@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import org.junit.Test;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
@@ -90,9 +91,67 @@ public final class TokenizerTest {
     }
 
     @Test
+    public void assertSkipHint() {
+        String comment = "/*--xyz \n WHERE XX=1 //xyz*/";
+        String sql = "SELECT * FROM XXX_TABLE " + comment + "WHERE YY>2";
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        int expected = sql.indexOf("/") + comment.length();
+        assertThat(tokenizer.skipHint(), is(expected));
+    }
+
+    @Test(expected = UnterminatedCharException.class)
+    public void assertSkipHintUnterminatedCharException() {
+        String comment = "/*--xyz \n WHERE XX=1 //xyz";
+        String sql = "SELECT * FROM XXX_TABLE " + comment;
+        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("/"));
+        tokenizer.skipHint();
+    }
+
+    @Test
     public void assertScanVariable() {
-        String sql = "SELECT * FROM XXX_TABLE @var WHERE YY>2";
-        Tokenizer tokenizer = new Tokenizer(sql, dictionary, sql.indexOf("@"));
-        assertTrue(new ReflectionEquals(tokenizer.scanVariable()).matches(new Token(Literals.VARIABLE, "@var", 28)));
+        String sql = "SELECT * FROM XXX_TABLE %s WHERE YY>2";
+        assertScanVariable(sql, "@var");
+        assertScanVariable(sql, "@@var");
+    }
+
+    private void assertScanVariable(final String sql, final String literals) {
+        String formatSql = String.format(sql, literals);
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, formatSql.indexOf("@"));
+        assertTrue(new ReflectionEquals(tokenizer.scanVariable()).matches(new Token(Literals.VARIABLE, literals, formatSql.indexOf("WHERE") - 1)));
+    }
+
+    @Test
+    public void assertScanNumber() {
+        String sql = "SELECT * FROM XXX_TABLE WHERE XX=%s";
+        assertScanNumber(sql, "123", Literals.INT);
+        assertScanNumber(sql, "-123", Literals.INT);
+        assertScanNumber(sql, "123.0", Literals.FLOAT);
+        assertScanNumber(sql, "123e4", Literals.FLOAT);
+        assertScanNumber(sql, "123E4", Literals.FLOAT);
+        assertScanNumber(sql, "123e+4", Literals.FLOAT);
+        assertScanNumber(sql, "123E+4", Literals.FLOAT);
+        assertScanNumber(sql, "123e-4", Literals.FLOAT);
+        assertScanNumber(sql, "123E-4", Literals.FLOAT);
+        assertScanNumber(sql, ".5", Literals.FLOAT);
+        assertScanNumber(sql, "123f", Literals.FLOAT);
+        assertScanNumber(sql, "123F", Literals.FLOAT);
+        assertScanNumber(sql, ".5f", Literals.FLOAT);
+        assertScanNumber(sql, ".5F", Literals.FLOAT);
+        assertScanNumber(sql, "123d", Literals.FLOAT);
+        assertScanNumber(sql, "123D", Literals.FLOAT);
+        assertScanHexDecimal(sql, "0x1e", Literals.HEX);
+        assertScanHexDecimal(sql, "0x-1e", Literals.HEX);
+    }
+
+    private void assertScanNumber(final String sql, final String literals, final TokenType type) {
+        String formatSql = String.format(sql, literals);
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
+        assertTrue(new ReflectionEquals(tokenizer.scanNumber()).matches(new Token(type, literals, formatSql.length())));
+    }
+
+    private void assertScanHexDecimal(final String sql, final String literals, final TokenType type) {
+        String formatSql = String.format(sql, literals);
+        Tokenizer tokenizer = new Tokenizer(formatSql, dictionary, sql.indexOf("=") + 1);
+        assertTrue(new ReflectionEquals(tokenizer.scanHexDecimal()).matches(new Token(type, literals, formatSql.length())));
     }
 }
