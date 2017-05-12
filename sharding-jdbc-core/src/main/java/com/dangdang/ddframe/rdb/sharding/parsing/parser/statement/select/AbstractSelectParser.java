@@ -36,7 +36,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -62,8 +61,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private int derivedColumnOffset;
     
-    private ItemsToken itemsToken;
-    
     public AbstractSelectParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new SelectSQLContext();
@@ -74,9 +71,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         query();
         sqlContext.getOrderByContexts().addAll(parseOrderBy());
         customizedSelect();
-        if (!itemsToken.getItems().isEmpty()) {
-            sqlContext.getSqlTokens().add(itemsToken);
-        }
         return sqlContext;
     }
     
@@ -121,23 +115,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             index++;
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         sqlContext.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
-        itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
-        for (SelectItemContext each : sqlContext.getItemContexts()) {
-            if (each instanceof AggregationSelectItemContext) {
-                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-                if (AggregationType.AVG.equals(aggregationSelectItemContext.getAggregationType())) {
-                    AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationType.COUNT);
-                    AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
-                            aggregationSelectItemContext.getInnerExpression(), Optional.of(generateDerivedColumnAlias()), -1, AggregationType.SUM);
-                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
-                    aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
-                    // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
-                    itemsToken.getItems().add(countSelectItemContext.getExpression() + " AS " + countSelectItemContext.getAlias().get() + " ");
-                    itemsToken.getItems().add(sumSelectItemContext.getExpression() + " AS " + sumSelectItemContext.getAlias().get() + " ");
-                }
-            }
-        }
     }
     
     private SelectItemContext parseSelectItem(final int index) {
@@ -221,20 +198,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else {
             return Optional.absent();
         }
-        if (!result.getIndex().isPresent()) {
-            boolean found = false;
-            String orderByExpression = result.getOwner().isPresent() ? result.getOwner().get() + "." + result.getName().get() : result.getName().get();
-            for (SelectItemContext context : sqlContext.getItemContexts()) {
-                if (context.getExpression().equalsIgnoreCase(orderByExpression) || orderByExpression.equalsIgnoreCase(context.getAlias().orNull())) {
-                    found = true;
-                    break;
-                }
-            }
-            // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-            if (!found && result.getAlias().isPresent()) {
-                itemsToken.getItems().add(orderByExpression + " AS " + result.getAlias().get() + " ");
-            }
-        }
         return Optional.of(result);
     }
     
@@ -278,20 +241,6 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         sqlContext.getGroupByContexts().add(groupByContext);
-    
-        boolean found = false;
-        String groupByExpression = groupByContext.getOwner().isPresent() ? groupByContext.getOwner().get() + "." + groupByContext.getName() : groupByContext.getName();
-        for (SelectItemContext context : sqlContext.getItemContexts()) {
-            if ((!context.getAlias().isPresent() && context.getExpression().equalsIgnoreCase(groupByExpression))
-                    || (context.getAlias().isPresent() && context.getAlias().get().equalsIgnoreCase(groupByExpression))) {
-                found = true;
-                break;
-            }
-        }
-        // TODO 需重构,目前的做法是通过补列有别名则补列,如果不包含select item则生成别名,进而补列,这里逻辑不直观
-        if (!found && groupByContext.getAlias().isPresent()) {
-            itemsToken.getItems().add(groupByExpression + " AS " + groupByContext.getAlias().get() + " ");
-        }
     }
     
     private Optional<String> getAlias(final String name) {

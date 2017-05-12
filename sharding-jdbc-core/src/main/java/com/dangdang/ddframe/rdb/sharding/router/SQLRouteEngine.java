@@ -34,6 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
@@ -97,6 +98,9 @@ public final class SQLRouteEngine {
         MetricsContext.stop(context);
         if (result instanceof InsertSQLContext) {
             GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);
+        }
+        if (result instanceof SelectSQLContext) {
+            DerivedUtils.appendDerivedColumns((SelectSQLContext) result);
         }
         return result;
     }
