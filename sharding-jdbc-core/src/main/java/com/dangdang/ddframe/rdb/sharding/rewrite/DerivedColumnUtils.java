@@ -31,7 +31,7 @@ import com.google.common.base.Optional;
  *
  * @author zhangliang
  */
-public final class DerivedUtils {
+public final class DerivedColumnUtils {
     
     private static final String DERIVED_COUNT_ALIAS = "AVG_DERIVED_COUNT_%s";
     
@@ -62,16 +62,16 @@ public final class DerivedUtils {
             if (!(each instanceof AggregationSelectItemContext) || AggregationType.AVG != ((AggregationSelectItemContext) each).getAggregationType()) {
                 continue;
             }
-            AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-            AggregationSelectItemContext countSelectItemContext = new AggregationSelectItemContext(
-                    aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset)), -1, AggregationType.COUNT);
-            AggregationSelectItemContext sumSelectItemContext = new AggregationSelectItemContext(
-                    aggregationSelectItemContext.getInnerExpression(), Optional.of(String.format(DERIVED_SUM_ALIAS, derivedColumnOffset)), -1, AggregationType.SUM);
-            aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(countSelectItemContext);
-            aggregationSelectItemContext.getDerivedAggregationSelectItemContexts().add(sumSelectItemContext);
+            AggregationSelectItemContext avgContext = (AggregationSelectItemContext) each;
+            String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
+            AggregationSelectItemContext countContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
+            String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
+            AggregationSelectItemContext sumContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
+            avgContext.getDerivedAggregationSelectItemContexts().add(countContext);
+            avgContext.getDerivedAggregationSelectItemContexts().add(sumContext);
             // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
-            itemsToken.getItems().add(countSelectItemContext.getExpression() + " AS " + countSelectItemContext.getAlias().get() + " ");
-            itemsToken.getItems().add(sumSelectItemContext.getExpression() + " AS " + sumSelectItemContext.getAlias().get() + " ");
+            itemsToken.getItems().add(countContext.getExpression() + " AS " + countAlias + " ");
+            itemsToken.getItems().add(sumContext.getExpression() + " AS " + sumAlias + " ");
             derivedColumnOffset++;
         }
     }
