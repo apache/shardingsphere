@@ -36,7 +36,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
-import com.dangdang.ddframe.rdb.sharding.rewrite.LimitUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
@@ -104,7 +103,7 @@ public final class SQLRouteEngine {
             DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
         }
         if (null != result.getLimitContext()) {
-            LimitUtils.appendLimit(result, parameters);
+            result.getLimitContext().processParameters(parameters);
         }
         return result;
     }
@@ -169,26 +168,18 @@ public final class SQLRouteEngine {
     private void amendSQLAccordingToRouteResult(final List<Object> parameters, final SQLRouteResult sqlRouteResult, final SQLRewriteEngine sqlRewriteEngine) {
         LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
         SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
-        if (null != limit) {
-            if (1 == sqlRouteResult.getExecutionUnits().size()) {
-                if (limit.getOffsetParameterIndex() > -1) {
-                    parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
-                }
-                if (limit.getRowCountParameterIndex() > -1) {
-                    parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
-                }
-            } else {
-                int offset = 0;
-                int rowCount = limit.getOffset() + limit.getRowCount();
-                if (limit.getOffsetParameterIndex() > -1) {
-                    parameters.set(limit.getOffsetParameterIndex(), offset);
-                }
-                if (limit.getRowCountParameterIndex() > -1) {
-                    parameters.set(limit.getRowCountParameterIndex(), rowCount);
-                }
-                sqlBuilder.buildSQL(OffsetLimitToken.OFFSET_NAME, String.valueOf(offset));
-                sqlBuilder.buildSQL(RowCountLimitToken.COUNT_NAME, String.valueOf(rowCount));
-            }
+        if (null == limit || 1 != sqlRouteResult.getExecutionUnits().size()) {
+            return;
+        }
+        if (limit.getOffsetParameterIndex() > -1) {
+            parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
+        } else {
+            sqlBuilder.buildSQL(OffsetLimitToken.OFFSET_NAME, String.valueOf(limit.getOffset()));
+        }
+        if (limit.getRowCountParameterIndex() > -1) {
+            parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
+        } else {
+            sqlBuilder.buildSQL(RowCountLimitToken.COUNT_NAME, String.valueOf(limit.getRowCount()));
         }
     }
 }

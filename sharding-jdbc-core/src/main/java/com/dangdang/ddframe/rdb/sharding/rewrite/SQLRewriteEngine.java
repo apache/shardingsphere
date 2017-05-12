@@ -127,14 +127,14 @@ public final class SQLRewriteEngine {
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, rowCountLimitToken.getRowCount() + "");
+        sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, rowCountLimitToken.getRowCount() + limit.getOffset() + "");
         int beginPosition = rowCountLimitToken.getBeginPosition() + (rowCountLimitToken.getRowCount() + "").length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens) {
-        sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, offsetLimitToken.getOffset() + "");
+        sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, "0");
         int beginPosition = offsetLimitToken.getBeginPosition() + (offsetLimitToken.getOffset() + "").length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));

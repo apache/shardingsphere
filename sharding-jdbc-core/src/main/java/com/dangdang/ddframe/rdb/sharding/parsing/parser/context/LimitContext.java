@@ -17,8 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
  * 分页上下文.
@@ -26,11 +30,12 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class LimitContext {
     
-    private final int rowCount;
+    private int rowCount;
     
-    private final Optional<Integer> offset;
+    private Optional<Integer> offset;
     
     private final int rowCountParameterIndex;
     
@@ -50,7 +55,43 @@ public final class LimitContext {
         this.rowCountParameterIndex = rowCountParameterIndex;
     }
     
+    /**
+     * 获取分页偏移量.
+     * 
+     * @return 分页偏移量
+     */
     public int getOffset() {
         return offset.isPresent() ? offset.get() : 0;
+    }
+    
+    /**
+     * 填充改写分页参数.
+     *
+     * @param parameters 参数
+     */
+    public void processParameters(final List<Object> parameters) {
+        fill(parameters);
+        rewrite(parameters);
+    }
+    
+    private void fill(final List<Object> parameters) {
+        int offset = -1 == offsetParameterIndex ? getOffset() : (int) parameters.get(offsetParameterIndex);
+        int rowCount = -1 == rowCountParameterIndex ? this.rowCount : (int) parameters.get(rowCountParameterIndex);
+        this.offset = Optional.of(offset);
+        this.rowCount = rowCount;
+        if (offset < 0 || rowCount < 0) {
+            throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
+        }
+    }
+    
+    private void rewrite(final List<Object> parameters) {
+        int rewriteOffset = 0;
+        int rewriteRowCount = getOffset() + rowCount;
+        if (offsetParameterIndex > -1) {
+            parameters.set(offsetParameterIndex, rewriteOffset);
+        }
+        if (rowCountParameterIndex > -1) {
+            parameters.set(rowCountParameterIndex, rewriteRowCount);
+        }
     }
 }
