@@ -26,9 +26,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * SQL重写引擎.
@@ -37,16 +40,20 @@ import java.util.List;
  */
 public final class SQLRewriteEngine {
     
-    private final SQLBuilderContext sqlBuilderContext;
+    private final String originalSQL;
+    
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
+    
+    private final Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
     private SQLBuilder sqlBuilder;
     
     public SQLRewriteEngine(final String originalSQL, final SQLContext sqlContext) {
-        sqlBuilderContext = new SQLBuilderContext(originalSQL);
+        this.originalSQL = originalSQL;
+        sqlTokens.addAll(sqlContext.getSqlTokens());
         for (TableContext each : sqlContext.getTables()) {
-            sqlBuilderContext.getTableNames().add(each.getName());
+            tableNames.add(each.getName());
         }
-        sqlBuilderContext.getSqlTokens().addAll(sqlContext.getSqlTokens());
     }
     
     /**
@@ -63,16 +70,15 @@ public final class SQLRewriteEngine {
     
     private SQLBuilder rewriteInternal() {
         SQLBuilder result = new SQLBuilder();
-        if (sqlBuilderContext.getSqlTokens().isEmpty()) {
-            result.append(sqlBuilderContext.getOriginalSQL());
+        if (sqlTokens.isEmpty()) {
+            result.append(originalSQL);
             return result;
         }
         int count = 0;
-        List<SQLToken> sqlTokens = sqlBuilderContext.getSqlTokens();
         sortByBeginPosition();
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
-                result.append(sqlBuilderContext.getOriginalSQL().substring(0, each.getBeginPosition()));
+                result.append(originalSQL.substring(0, each.getBeginPosition()));
             }
             if (each instanceof TableToken) {
                 appendTableToken(result, (TableToken) each, count, sqlTokens);
@@ -89,7 +95,7 @@ public final class SQLRewriteEngine {
     }
     
     private void sortByBeginPosition() {
-        Collections.sort(sqlBuilderContext.getSqlTokens(), new Comparator<SQLToken>() {
+        Collections.sort(sqlTokens, new Comparator<SQLToken>() {
             
             @Override
             public int compare(final SQLToken o1, final SQLToken o2) {
@@ -99,11 +105,11 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        String tableName = sqlBuilderContext.getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
+        String tableName = tableNames.contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
         sqlBuilder.appendToken(tableName);
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
-        int endPosition = sqlTokens.size() - 1 == count ? sqlBuilderContext.getOriginalSQL().length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(sqlBuilderContext.getOriginalSQL().substring(beginPosition, endPosition));
+        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final List<SQLToken> sqlTokens) {
@@ -112,21 +118,21 @@ public final class SQLRewriteEngine {
             sqlBuilder.append(item);
         }
         int beginPosition = itemsToken.getBeginPosition();
-        int endPosition = sqlTokens.size() - 1 == count ? sqlBuilderContext.getOriginalSQL().length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(sqlBuilderContext.getOriginalSQL().substring(beginPosition, endPosition));
+        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens) {
         sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, rowCountLimitToken.getRowCount() + "");
         int beginPosition = rowCountLimitToken.getBeginPosition() + (rowCountLimitToken.getRowCount() + "").length();
-        int endPosition = sqlTokens.size() - 1 == count ? sqlBuilderContext.getOriginalSQL().length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(sqlBuilderContext.getOriginalSQL().substring(beginPosition, endPosition));
+        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens) {
         sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, offsetLimitToken.getOffset() + "");
         int beginPosition = offsetLimitToken.getBeginPosition() + (offsetLimitToken.getOffset() + "").length();
-        int endPosition = sqlTokens.size() - 1 == count ? sqlBuilderContext.getOriginalSQL().length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(sqlBuilderContext.getOriginalSQL().substring(beginPosition, endPosition));
+        int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
+        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
 }
