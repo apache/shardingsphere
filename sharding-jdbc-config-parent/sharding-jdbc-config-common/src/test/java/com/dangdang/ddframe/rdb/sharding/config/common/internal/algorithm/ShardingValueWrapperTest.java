@@ -89,6 +89,13 @@ public final class ShardingValueWrapperTest {
         assertThat(new ShardingValueWrapper(date.getTime()).toString(FORMAT_TEXT), is(DATE_TEXT));
         assertThat(new ShardingValueWrapper(DATE_TEXT).toString(FORMAT_TEXT), is(DATE_TEXT));
     }
+
+    @Test
+    public void testFormat() throws Exception {
+        assertThat(new ShardingValueWrapper((short) 1).format("%02d"), is("01"));
+        assertThat(new ShardingValueWrapper(1).format("%02d"), is("01"));
+        assertThat(new ShardingValueWrapper(1L).format("%02d"), is("01"));
+    }
     
     @Test(expected = IllegalArgumentException.class)
     public void testUnsupportedType() throws Exception {
