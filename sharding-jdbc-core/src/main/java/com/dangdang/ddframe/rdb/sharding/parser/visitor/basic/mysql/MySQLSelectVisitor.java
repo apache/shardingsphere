@@ -19,17 +19,13 @@ package com.dangdang.ddframe.rdb.sharding.parser.visitor.basic.mysql;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
-import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
-import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumericLiteralExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
+import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
+import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
-import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlSelectGroupByExpr;
+import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOrderingExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.dangdang.ddframe.rdb.sharding.exception.SQLParserException;
@@ -40,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parser.result.merger.Limit;
 import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import lombok.val;
 
 import java.util.List;
 
@@ -132,6 +129,8 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
         }
         return super.visit(x);
     }
+
+
     
     /**
      * 将GROUP BY列放入parseResult.
@@ -141,15 +140,24 @@ public class MySQLSelectVisitor extends AbstractMySQLVisitor {
      * @return false 停止遍历AST
      */
     @Override
-    public boolean visit(final MySqlSelectGroupByExpr x) {
-        OrderByType orderByType = null == x.getType() ? OrderByType.ASC : OrderByType.valueOf(x.getType());
-        if (x.getExpr() instanceof SQLPropertyExpr) {
-            SQLPropertyExpr expr = (SQLPropertyExpr) x.getExpr();
-            getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getName(), orderByType);
-        } else if (x.getExpr() instanceof SQLIdentifierExpr) {
-            SQLIdentifierExpr expr = (SQLIdentifierExpr) x.getExpr();
-            getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getName(), orderByType);
+    public boolean visit(final SQLSelectGroupByClause x) {
+        for (SQLExpr item : x.getItems()) {
+            OrderByType orderByType = OrderByType.ASC;
+            if (item instanceof MySqlOrderingExpr) {
+                val mySqlOrderingExpr = (MySqlOrderingExpr) item;
+                orderByType = mySqlOrderingExpr.getType() == SQLOrderingSpecification.ASC ? OrderByType.ASC : OrderByType.DESC;
+                item = mySqlOrderingExpr.getExpr();
+            }
+
+            if (item instanceof SQLPropertyExpr) {
+                val expr = (SQLPropertyExpr) item;
+                getParseContext().addGroupByColumns(Optional.of(expr.getOwner().toString()), expr.getName(), orderByType);
+            } else if (item instanceof SQLIdentifierExpr) {
+                val expr = (SQLIdentifierExpr) item;
+                getParseContext().addGroupByColumns(Optional.<String>absent(), expr.getName(), orderByType);
+            }
         }
+
         return super.visit(x);
     }
     
