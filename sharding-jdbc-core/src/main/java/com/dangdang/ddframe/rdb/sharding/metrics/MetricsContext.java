@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.metrics;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
@@ -41,7 +42,9 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsContext {
     
-    private static final ThreadLocal<MetricRegistry> HOLDER = new ThreadLocal<>();
+    private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
+    private static ScheduledReporter reporter = null;
+    private static final Object LOCK = new Object();
     
     /**
      * 初始化度量上下文持有者.
@@ -49,21 +52,27 @@ public final class MetricsContext {
      * @param shardingProperties Sharding-JDBC的配置属性
      */
     public static void init(final ShardingProperties shardingProperties) {
-        HOLDER.remove();
         boolean metricsEnabled = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_ENABLE);
         if (!metricsEnabled) {
             return;
         }
-        long period = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
+        long period = shardingProperties
+            .getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
         String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
-        MetricRegistry metricRegistry = new MetricRegistry();
-        Slf4jReporter.forRegistry(metricRegistry)
-                .outputTo(LoggerFactory.getLogger(loggerName))
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG)
-                .build().start(period, TimeUnit.MILLISECONDS);
-        HOLDER.set(metricRegistry);
+        // build a static reporter (only need one)
+        if (null == reporter) {
+            synchronized (LOCK) {
+                if (null == reporter) {
+                    reporter = Slf4jReporter.forRegistry(METRIC_REGISTRY)
+                        .outputTo(LoggerFactory.getLogger(loggerName))
+                        .convertRatesTo(TimeUnit.SECONDS)
+                        .convertDurationsTo(TimeUnit.MILLISECONDS)
+                        .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG)
+                        .build();
+                    reporter.start(period, TimeUnit.MILLISECONDS);
+                }
+            }
+        }
     }
     
     /**
@@ -74,7 +83,7 @@ public final class MetricsContext {
      * @return 计时上下文
      */
     public static Timer.Context start(final String name) {
-        return null == HOLDER.get() ? null : HOLDER.get().timer(MetricRegistry.name(name)).time();
+      return METRIC_REGISTRY.timer(MetricRegistry.name(name)).time();
     }
     
     /**
@@ -92,6 +101,6 @@ public final class MetricsContext {
      * 清理数据.
      */
     public static void clear() {
-        HOLDER.remove();
+      // do nothing
     }
 }
