@@ -18,14 +18,19 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
+import com.google.common.base.Optional;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -90,5 +95,28 @@ public final class GenerateKeysUtils {
             }
         }
         return false;
+    }
+    
+    /**
+     * 获取自增主键.
+     * 
+     * @param shardingRule 分片规则
+     * @param insertSQLContext 解析结果
+     * @return 自增主键集合
+     */
+    public static List<Number> generateKeys(final ShardingRule shardingRule, final InsertSQLContext insertSQLContext) {
+        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(insertSQLContext.getTables().iterator().next().getName());
+        if (!tableRuleOptional.isPresent()) {
+            return Collections.emptyList();
+        }
+        TableRule tableRule = tableRuleOptional.get();
+        GeneratedKeyContext generatedKeyContext = insertSQLContext.getGeneratedKeyContext();
+        List<Number> result = new ArrayList<>(generatedKeyContext.getColumns().size());
+        for (String each : generatedKeyContext.getColumns()) {
+            Number generatedId = tableRule.generateId(each);
+            result.add(generatedId);
+            generatedKeyContext.putValue(each, generatedId);
+        }
+        return result;
     }
 }
