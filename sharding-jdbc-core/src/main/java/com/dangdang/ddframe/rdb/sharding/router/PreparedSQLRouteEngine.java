@@ -19,23 +19,22 @@ package com.dangdang.ddframe.rdb.sharding.router;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * 预解析功能的SQL路由器.
+ * 预解析的SQL路由引擎..
  * 
  * @author gaohongtao
  */
-@RequiredArgsConstructor
-public class PreparedSQLRouter {
+public final class PreparedSQLRouteEngine {
     
     private final String logicSql;
     
@@ -45,8 +44,14 @@ public class PreparedSQLRouter {
     
     private SQLContext sqlContext;
     
+    public PreparedSQLRouteEngine(final String logicSql, final ShardingContext shardingContext) {
+        this.logicSql = logicSql;
+        engine = shardingContext.getSqlRouteEngine();
+        shardingRule = shardingContext.getShardingRule();
+    }
+    
     /**
-     * 使用参数进行SQL路由.
+     * SQL路由.
      * 当第一次路由时进行SQL解析,之后的路由复用第一次的解析结果.
      * 
      * @param parameters SQL中的参数

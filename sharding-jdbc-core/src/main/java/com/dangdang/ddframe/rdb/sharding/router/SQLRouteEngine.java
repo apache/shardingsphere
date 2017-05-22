@@ -30,7 +30,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
@@ -68,20 +67,9 @@ public final class SQLRouteEngine {
      *
      * @param logicSQL 逻辑SQL
      * @return 路由结果
-     * @throws SQLParsingException SQL解析失败异常
      */
-    public SQLRouteResult route(final String logicSQL) throws SQLParsingException {
+    public SQLRouteResult route(final String logicSQL) {
         return routeSQL(logicSQL, parseSQL(logicSQL, Collections.emptyList()), Collections.emptyList());
-    }
-    
-    /**
-     * 预解析SQL路由.
-     * 
-     * @param logicSql 逻辑SQL
-     * @return 预解析SQL路由器
-     */
-    public PreparedSQLRouter prepareSQL(final String logicSql) {
-        return new PreparedSQLRouter(logicSql, this, shardingRule);
     }
     
     SQLContext parseSQL(final String logicSql, final List<Object> parameters) {
@@ -162,22 +150,4 @@ public final class SQLRouteEngine {
         // TODO 可配置是否执行笛卡尔积
         return new MixedTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
     }
-    
-//    private void amendSQLAccordingToRouteResult(final List<Object> parameters, final SQLRouteResult sqlRouteResult, final SQLRewriteEngine sqlRewriteEngine) {
-//        LimitContext limit = sqlRouteResult.getSqlContext().getLimitContext();
-//        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite();
-//        if (null == limit || 1 != sqlRouteResult.getExecutionUnits().size()) {
-//            return;
-//        }
-//        if (limit.getOffsetParameterIndex() > -1) {
-//            parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
-//        } else {
-//            sqlBuilder.amend(OffsetLimitToken.OFFSET_NAME, String.valueOf(limit.getOffset()));
-//        }
-//        if (limit.getRowCountParameterIndex() > -1) {
-//            parameters.set(limit.getRowCountParameterIndex(), limit.getRowCount());
-//        } else {
-//            sqlBuilder.amend(RowCountLimitToken.COUNT_NAME, String.valueOf(limit.getRowCount()));
-//        }
-//    }
 }

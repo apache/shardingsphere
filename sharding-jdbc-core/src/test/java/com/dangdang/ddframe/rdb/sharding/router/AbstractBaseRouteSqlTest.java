@@ -24,6 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderAttrShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderShardingAlgorithm;
 import com.google.common.base.Function;
@@ -100,7 +101,8 @@ public abstract class AbstractBaseRouteSqlTest {
     
     protected void assertMultipleTargetsWithParameters(
             final String originSql, final List<Object> parameters, final int expectedSize, final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
-        SQLRouteResult actual = new SQLRouteEngine(getShardingRule(), DatabaseType.MySQL).prepareSQL(originSql).route(parameters);
+        ShardingContext shardingContext = new ShardingContext(getShardingRule(), new SQLRouteEngine(getShardingRule(), DatabaseType.MySQL), null);
+        SQLRouteResult actual = new PreparedSQLRouteEngine(originSql, shardingContext).route(parameters);
         assertThat(actual.getExecutionUnits().size(), is(expectedSize));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
