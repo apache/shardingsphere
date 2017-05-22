@@ -30,23 +30,23 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 预解析的SQL路由引擎..
+ * 预解析的SQL路由器.
  * 
  * @author gaohongtao
  */
-public final class PreparedSQLRouteEngine {
+public final class PreparedSQLRouter {
     
-    private final String logicSql;
+    private final String logicSQL;
     
-    private final SQLRouteEngine engine;
+    private final RouteEngine routeEngine;
     
     private final ShardingRule shardingRule;
     
     private SQLContext sqlContext;
     
-    public PreparedSQLRouteEngine(final String logicSql, final ShardingContext shardingContext) {
-        this.logicSql = logicSql;
-        engine = shardingContext.getSqlRouteEngine();
+    public PreparedSQLRouter(final String logicSQL, final ShardingContext shardingContext) {
+        this.logicSQL = logicSQL;
+        routeEngine = shardingContext.getRouteEngine();
         shardingRule = shardingContext.getShardingRule();
     }
     
@@ -59,12 +59,12 @@ public final class PreparedSQLRouteEngine {
      */
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
-            sqlContext = engine.parseSQL(logicSql, parameters);
+            sqlContext = routeEngine.parse(logicSQL, parameters);
         } else {
             List<Number> generatedIds = generateId();
             parameters.addAll(generatedIds);
         }
-        return engine.route(logicSql, sqlContext, parameters);
+        return routeEngine.route(logicSQL, sqlContext, parameters);
     }
     
     private List<Number> generateId() {

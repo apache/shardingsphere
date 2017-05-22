@@ -67,7 +67,7 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        SQLRouteResult actual = new SQLRouteEngine(shardingRule, DatabaseType.MySQL).route(originSql);
+        SQLRouteResult actual = new SQLRouter(new RouteEngine(shardingRule, DatabaseType.MySQL)).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

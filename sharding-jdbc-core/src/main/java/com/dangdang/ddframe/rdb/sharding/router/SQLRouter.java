@@ -15,26 +15,31 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.router;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.router.RouteEngine;
-import lombok.Getter;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+
 /**
- * 数据源运行期上下文.
+ * SQL路由器.
  * 
- * @author gaohongtao
+ * @author zhangiang
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShardingContext {
-    
-    private final ShardingRule shardingRule;
+public final class SQLRouter {
     
     private final RouteEngine routeEngine;
     
-    private final ExecutorEngine executorEngine;
+    /**
+     * SQL路由.
+     *
+     * @param logicSQL 逻辑SQL
+     * @return 路由结果
+     */
+    public SQLRouteResult route(final String logicSQL) {
+        SQLContext sqlContext = routeEngine.parse(logicSQL, Collections.emptyList());
+        return routeEngine.route(logicSQL, sqlContext, Collections.emptyList());
+    }
 }

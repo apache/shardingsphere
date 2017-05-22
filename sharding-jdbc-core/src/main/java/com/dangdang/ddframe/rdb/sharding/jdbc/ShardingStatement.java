@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyCont
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.router.SQLRouter;
 import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
@@ -274,7 +275,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
-        SQLRouteResult sqlRouteResult = shardingConnection.getShardingContext().getSqlRouteEngine().route(sql);
+        SQLRouteResult sqlRouteResult = new SQLRouter(shardingConnection.getShardingContext().getRouteEngine()).route(sql);
         if (sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
             generatedKeyContext = ((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKeyContext();
         } else {

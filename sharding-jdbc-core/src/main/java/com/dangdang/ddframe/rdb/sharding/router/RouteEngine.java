@@ -41,42 +41,51 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 /**
- * SQL路由引擎.
+ * 路由引擎.
  * 
- * @author gaohongtao
  * @author zhangiang
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class SQLRouteEngine {
+public final class RouteEngine {
     
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
     
-    /**
-     * SQL路由.
-     *
-     * @param logicSQL 逻辑SQL
-     * @return 路由结果
-     */
-    public SQLRouteResult route(final String logicSQL) {
-        return route(logicSQL, parseSQL(logicSQL, Collections.emptyList()), Collections.emptyList());
+    SQLContext parse(final String logicSQL, final List<Object> parameters) {
+        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
+        if (HintManagerHolder.isDatabaseShardingOnly()) {
+            return sqlParsingEngine.prepareParse();
+        }
+        Context context = MetricsContext.start("Parse SQL");
+        log.debug("Logic SQL: {}, {}", logicSQL, parameters);
+        SQLContext result = sqlParsingEngine.parse();
+        MetricsContext.stop(context);
+        if (result instanceof InsertSQLContext) {
+            GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);
+        }
+        if (result instanceof SelectSQLContext) {
+            DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
+        }
+        if (null != result.getLimitContext()) {
+            result.getLimitContext().processParameters(parameters);
+        }
+        return result;
     }
     
     SQLRouteResult route(final String logicSQL, final SQLContext sqlContext, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
         RoutingResult routingResult = route(sqlContext.getConditionContext(), sqlContext, parameters);
-        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlRewriteEngine.rewrite()));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(rewriteEngine.rewrite()));
         if (null != sqlContext.getLimitContext() && 1 == result.getExecutionUnits().size()) {
-            sqlRewriteEngine.amend(parameters);
+            rewriteEngine.amend(parameters);
         }
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());
@@ -105,26 +114,5 @@ public final class SQLRouteEngine {
         }
         // TODO 可配置是否执行笛卡尔积
         return new MixedTablesRouter(shardingRule, parameters, logicTables, conditionContext, sqlContext.getType()).route();
-    }
-    
-    SQLContext parseSQL(final String logicSQL, final List<Object> parameters) {
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
-        if (HintManagerHolder.isDatabaseShardingOnly()) {
-            return sqlParsingEngine.prepareParse();
-        }
-        Context context = MetricsContext.start("Parse SQL");
-        log.debug("Logic SQL: {}, {}", logicSQL, parameters);
-        SQLContext result = sqlParsingEngine.parse();
-        MetricsContext.stop(context);
-        if (result instanceof InsertSQLContext) {
-            GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);
-        }
-        if (result instanceof SelectSQLContext) {
-            DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
-        }
-        if (null != result.getLimitContext()) {
-            result.getLimitContext().processParameters(parameters);
-        }
-        return result;
     }
 }

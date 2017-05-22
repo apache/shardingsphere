@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteEngine;
+import com.dangdang.ddframe.rdb.sharding.router.RouteEngine;
 import com.google.common.base.Preconditions;
 
 import javax.sql.DataSource;
@@ -55,7 +55,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         shardingProperties = new ShardingProperties(props);
         executorEngine = new ExecutorEngine(shardingProperties);
         try {
-            shardingContext = new ShardingContext(shardingRule, new SQLRouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), executorEngine);
+            shardingContext = new ShardingContext(shardingRule, new RouteEngine(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule))), executorEngine);
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
