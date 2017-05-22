@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.router.fixture.OrderDatabaseShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -67,7 +68,8 @@ public class DatabaseTest {
     }
     
     private void assertTarget(final String originSql, final String targetDataSource) {
-        SQLRouteResult actual = new SQLRouter(new RouteEngine(shardingRule, DatabaseType.MySQL)).route(originSql);
+        ShardingContext shardingContext = new ShardingContext(shardingRule, new RouteEngine(shardingRule, DatabaseType.MySQL), null);
+        SQLRouteResult actual = new SQLRouter(shardingContext).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(1));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             

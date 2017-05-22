@@ -275,7 +275,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
-        SQLRouteResult sqlRouteResult = new SQLRouter(shardingConnection.getShardingContext().getRouteEngine()).route(sql);
+        SQLRouteResult sqlRouteResult = new SQLRouter(shardingConnection.getShardingContext()).route(sql);
         if (sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
             generatedKeyContext = ((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKeyContext();
         } else {

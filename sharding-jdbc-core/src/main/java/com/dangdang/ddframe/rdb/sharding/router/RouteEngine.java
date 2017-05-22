@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
+import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.router.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.router.database.DatabaseRouter;
@@ -38,6 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +55,7 @@ import java.util.Set;
 @Slf4j
 public final class RouteEngine {
     
+    @Getter
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
@@ -72,20 +75,21 @@ public final class RouteEngine {
         if (result instanceof SelectSQLContext) {
             DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
         }
-        if (null != result.getLimitContext()) {
-            result.getLimitContext().processParameters(parameters);
-        }
         return result;
     }
     
     SQLRouteResult route(final String logicSQL, final SQLContext sqlContext, final List<Object> parameters) {
         Context context = MetricsContext.start("Route SQL");
+        if (null != sqlContext.getLimitContext()) {
+            sqlContext.getLimitContext().processParameters(parameters);
+        }
         SQLRouteResult result = new SQLRouteResult(sqlContext);
         RoutingResult routingResult = route(sqlContext.getConditionContext(), sqlContext, parameters);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(rewriteEngine.rewrite()));
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite();
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
         if (null != sqlContext.getLimitContext() && 1 == result.getExecutionUnits().size()) {
-            rewriteEngine.amend(parameters);
+            rewriteEngine.amend(sqlBuilder, parameters);
         }
         MetricsContext.stop(context);
         log.debug("final route result is {} target", result.getExecutionUnits().size());

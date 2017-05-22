@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.router;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 
@@ -27,10 +27,13 @@ import java.util.Collections;
  * 
  * @author zhangiang
  */
-@RequiredArgsConstructor
 public final class SQLRouter {
     
     private final RouteEngine routeEngine;
+    
+    public SQLRouter(final ShardingContext shardingContext) {
+        routeEngine = shardingContext.getRouteEngine();
+    }
     
     /**
      * SQL路由.

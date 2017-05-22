@@ -49,8 +49,6 @@ public final class SQLRewriteEngine {
     
     private final LimitContext limit;
     
-    private SQLBuilder sqlBuilder;
-    
     public SQLRewriteEngine(final String originalSQL, final SQLContext sqlContext) {
         this.originalSQL = originalSQL;
         sqlTokens.addAll(sqlContext.getSqlTokens());
@@ -62,17 +60,10 @@ public final class SQLRewriteEngine {
     
     /**
      * SQL改写.
-     * 
+     *
      * @return SQL构建器
      */
     public SQLBuilder rewrite() {
-        if (null == sqlBuilder) {
-            sqlBuilder = rewriteInternal();
-        }
-        return sqlBuilder;
-    }
-    
-    private SQLBuilder rewriteInternal() {
         SQLBuilder result = new SQLBuilder();
         if (sqlTokens.isEmpty()) {
             result.append(originalSQL);
@@ -143,9 +134,10 @@ public final class SQLRewriteEngine {
     /**
      * 修订SQL和参数.
      * 
+     * @param sqlBuilder SQL构建器
      * @param parameters 参数
      */
-    public void amend(final List<Object> parameters) {
+    public void amend(final SQLBuilder sqlBuilder, final List<Object> parameters) {
         if (limit.getOffsetParameterIndex() > -1) {
             parameters.set(limit.getOffsetParameterIndex(), limit.getOffset());
         } else {

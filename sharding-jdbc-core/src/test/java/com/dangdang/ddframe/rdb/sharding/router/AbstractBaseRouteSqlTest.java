@@ -75,7 +75,8 @@ public abstract class AbstractBaseRouteSqlTest {
     
     protected void assertMultipleTargetsWithoutParameter(
             final String originSql, final int expectedSize, final Collection<String> targetDataSources, final Collection<String> targetSQLs) {
-        SQLRouteResult actual = new SQLRouter(new RouteEngine(getShardingRule(), DatabaseType.MySQL)).route(originSql);
+        ShardingContext shardingContext = new ShardingContext(getShardingRule(), new RouteEngine(getShardingRule(), DatabaseType.MySQL), null);
+        SQLRouteResult actual = new SQLRouter(shardingContext).route(originSql);
         assertThat(actual.getExecutionUnits().size(), is(expectedSize));
         Set<String> actualDataSources = new HashSet<>(Collections2.transform(actual.getExecutionUnits(), new Function<SQLExecutionUnit, String>() {
             
