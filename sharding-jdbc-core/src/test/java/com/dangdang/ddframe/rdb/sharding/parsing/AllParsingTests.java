@@ -44,10 +44,11 @@ import org.junit.runners.Suite;
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class,
-        MySQLStatementTest.class, 
+        MySQLStatementTest.class,
+        SQLParsingEngineTest.class,
         MySQLPreparedStatementForOneParameterTest.class, 
         MySQLPreparedStatementForTowParametersTest.class,  
-        OrParseTest.class, 
+        OrParseTest.class,
         UnsupportedParseTest.class
     })
 public class AllParsingTests {

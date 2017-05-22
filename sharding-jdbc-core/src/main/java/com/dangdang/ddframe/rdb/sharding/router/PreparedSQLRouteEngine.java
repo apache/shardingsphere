@@ -64,7 +64,7 @@ public final class PreparedSQLRouteEngine {
             List<Number> generatedIds = generateId();
             parameters.addAll(generatedIds);
         }
-        return engine.routeSQL(logicSql, sqlContext, parameters);
+        return engine.route(logicSql, sqlContext, parameters);
     }
     
     private List<Number> generateId() {
