@@ -39,7 +39,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         String sql = "UPDATE TABLE_XXX SET field1=field1+1";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
+        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parse();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
@@ -51,7 +51,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
                 + " TABLE_XXX.field1=1 AND xxx.field5>10 AND TABLE_XXX.field2 IN (1,3) AND xxx.field6<=10 AND TABLE_XXX.field3 BETWEEN 5 AND 20 AND xxx.field7>=10";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
+        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parse();
         assertUpdateStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(),
@@ -83,7 +83,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         String sql = "UPDATE TABLE_XXX AS xxx SET field1=field1+? WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parseStatement();
+        UpdateSQLContext sqlContext = (UpdateSQLContext) statementParser.parse();
         assertUpdateStatementWitParameter(sqlContext);
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
@@ -115,7 +115,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     @Test(expected = SQLParsingUnsupportedException.class)
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parseStatement();
+        new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parse();
     }
     
     @Test
@@ -143,7 +143,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
-        UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parseStatement();
+        UpdateSQLContext sqlContext = (UpdateSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
         ConditionContext.Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();

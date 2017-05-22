@@ -44,12 +44,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SQLSele
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.SQLUpdateParserFactory;
 import lombok.RequiredArgsConstructor;
 
-import static com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist.END;
-import static com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword.DELETE;
-import static com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword.INSERT;
-import static com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword.SELECT;
-import static com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword.UPDATE;
-
 /**
  * SQL解析引擎.
  *
@@ -67,9 +61,9 @@ public final class SQLParsingEngine {
     /**
      * 解析SQL.
      * 
-     * @return SQL解析对象
+     * @return SQL解析上下文
      */
-    public SQLContext parseStatement() {
+    public SQLContext parse() {
         SQLParser sqlParser = getSQLParser();
         sqlParser.skipIfEqual(Symbol.SEMI);
         if (sqlParser.equalAny(DefaultKeyword.WITH)) {
@@ -116,27 +110,28 @@ public final class SQLParsingEngine {
     }
     
     /**
-     * 获取SQL类型.
+     * 预解析SQL.
+     * 仅获取SQL类型.
      *
-     * @return SQL解析对象
+     * @return SQL解析上下文
      */
-    public SQLContext getStatementType() {
+    public SQLContext prepareParse() {
         Lexer lexer = new Lexer(sql, new Dictionary());
         lexer.nextToken();
         while (true) {
             TokenType tokenType = lexer.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
-                if (tokenType.equals(SELECT)) {
+                if (tokenType.equals(DefaultKeyword.SELECT)) {
                     return new SelectSQLContext();
-                } else if (tokenType.equals(UPDATE)) {
+                } else if (tokenType.equals(DefaultKeyword.UPDATE)) {
                     return new UpdateSQLContext();
-                } else if (tokenType.equals(INSERT)) {
+                } else if (tokenType.equals(DefaultKeyword.INSERT)) {
                     return new InsertSQLContext();
-                } else if (tokenType.equals(DELETE)) {
+                } else if (tokenType.equals(DefaultKeyword.DELETE)) {
                     return new DeleteSQLContext();
                 }
             }
-            if (tokenType instanceof Assist && tokenType.equals(END)) {
+            if (tokenType instanceof Assist && tokenType.equals(Assist.END)) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
             lexer.nextToken();

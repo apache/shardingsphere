@@ -17,16 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.config;
 
+import com.dangdang.ddframe.rdb.sharding.util.StringUtil;
+import com.google.common.base.Joiner;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
-import com.dangdang.ddframe.rdb.sharding.util.StringUtil;
-import com.google.common.base.Joiner;
-
 /**
- * Sharding-JDBC的配置属性.
+ * 分片配置属性.
  *
  * @author gaohongtao
  * @author zhangliang

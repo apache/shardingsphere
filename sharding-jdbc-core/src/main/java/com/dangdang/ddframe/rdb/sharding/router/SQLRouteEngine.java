@@ -110,11 +110,11 @@ public final class SQLRouteEngine {
     SQLContext parseSQL(final String logicSQL, final List<Object> parameters) {
         SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
         if (HintManagerHolder.isDatabaseShardingOnly()) {
-            return sqlParsingEngine.getStatementType();
+            return sqlParsingEngine.prepareParse();
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSQL, parameters);
-        SQLContext result = sqlParsingEngine.parseStatement();
+        SQLContext result = sqlParsingEngine.parse();
         MetricsContext.stop(context);
         if (result instanceof InsertSQLContext) {
             GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);

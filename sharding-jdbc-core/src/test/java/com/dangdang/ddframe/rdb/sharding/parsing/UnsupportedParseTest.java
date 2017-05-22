@@ -26,21 +26,21 @@ public final class UnsupportedParseTest {
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertCreate() {
-        new SQLParsingEngine(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", new ShardingRuleMockBuilder().build()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "CREATE TABLE `order` (id BIGINT(10))", new ShardingRuleMockBuilder().build()).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertDrop() {
-        new SQLParsingEngine(DatabaseType.MySQL, "DROP TABLE `order`", new ShardingRuleMockBuilder().build()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "DROP TABLE `order`", new ShardingRuleMockBuilder().build()).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertTruncate() {
-        new SQLParsingEngine(DatabaseType.MySQL, "TRUNCATE `order`", new ShardingRuleMockBuilder().build()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "TRUNCATE `order`", new ShardingRuleMockBuilder().build()).parse();
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
     public void assertAlter() {
-        new SQLParsingEngine(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", new ShardingRuleMockBuilder().build()).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "ALTER TABLE `order` ADD COLUMN `other` VARCHAR(45)", new ShardingRuleMockBuilder().build()).parse();
     }
 }

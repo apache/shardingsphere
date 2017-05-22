@@ -40,7 +40,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         String sql = "DELETE FROM TABLE_XXX";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parse();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
@@ -51,7 +51,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         String sql = "DELETE FROM TABLE_XXX xxx WHERE field4<10 AND TABLE_XXX.field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parse();
         assertDeleteStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is(
@@ -82,7 +82,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         String sql = "DELETE FROM TABLE_XXX xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
-        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parseStatement();
+        DeleteSQLContext sqlContext = (DeleteSQLContext) statementParser.parse();
         assertDeleteStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is(
@@ -115,13 +115,13 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     public void parseStatementWithDeleteMultipleTable() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.MySQL, "DELETE TABLE_XXX1, TABLE_xxx2 FROM TABLE_XXX1 JOIN TABLE_XXX2", shardingRule)
-                .parseStatement();
+                .parse();
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void parseStatementWithDeleteMultipleTableWithUsing() {
         ShardingRule shardingRule = createShardingRule();
-        new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parseStatement();
+        new SQLParsingEngine(DatabaseType.MySQL, "DELETE FROM TABLE_XXX1, TABLE_xxx2 USING TABLE_XXX1 JOIN TABLE_XXX2", shardingRule).parse();
     }
     
     @Test
@@ -149,7 +149,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
-        DeleteSQLContext sqlContext = (DeleteSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parseStatement();
+        DeleteSQLContext sqlContext = (DeleteSQLContext) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
         assertThat(sqlContext.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(sqlContext.getTables().get(0).getAlias().isPresent());
         ConditionContext.Condition condition = sqlContext.getConditionContext().find("TABLE_XXX", "field1").get();
