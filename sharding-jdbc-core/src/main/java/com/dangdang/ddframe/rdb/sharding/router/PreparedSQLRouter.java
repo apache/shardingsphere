@@ -62,4 +62,3 @@ public final class PreparedSQLRouter {
         return routeEngine.route(logicSQL, sqlContext, parameters);
     }
 }
-

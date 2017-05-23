@@ -39,7 +39,6 @@ import com.dangdang.ddframe.rdb.sharding.router.single.SingleTableRouter;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,19 +54,18 @@ import java.util.Set;
 @Slf4j
 public final class RouteEngine {
     
-    @Getter
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
     
     SQLContext parse(final String logicSQL, final List<Object> parameters) {
-        SQLParsingEngine sqlParsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
+        SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
         if (HintManagerHolder.isDatabaseShardingOnly()) {
-            return sqlParsingEngine.prepareParse();
+            return parsingEngine.prepareParse();
         }
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSQL, parameters);
-        SQLContext result = sqlParsingEngine.parse();
+        SQLContext result = parsingEngine.parse();
         MetricsContext.stop(context);
         if (result instanceof InsertSQLContext) {
             GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);

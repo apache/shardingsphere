@@ -55,8 +55,7 @@ public class DatabaseRouter {
         Optional<ShardingValue<?>> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValueOptional.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValueOptional.get());
-        Collection<String> routedResult = databaseShardingStrategy
-                .doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValueOptional.get()));
+        Collection<String> routedResult = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValueOptional.get()));
         Preconditions.checkState(!routedResult.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", routedResult);
         return new DatabaseRoutingResult(routedResult);
