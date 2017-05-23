@@ -42,6 +42,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.SQLDele
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.SQLInsertParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SQLSelectParserFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.SQLUpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.DerivedColumnUtils;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeysUtils;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -70,10 +72,14 @@ public final class SQLParsingEngine {
             skipWith(sqlParser);
         }
         if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
-            return SQLSelectParserFactory.newInstance(sqlParser).parse();
+            SelectSQLContext result = SQLSelectParserFactory.newInstance(sqlParser).parse();
+            DerivedColumnUtils.appendDerivedColumns(result);
+            return result;
         }
         if (sqlParser.equalAny(DefaultKeyword.INSERT)) {
-            return SQLInsertParserFactory.newInstance(shardingRule, sqlParser).parse();
+            InsertSQLContext result = SQLInsertParserFactory.newInstance(shardingRule, sqlParser).parse();
+            GeneratedKeysUtils.appendGenerateKeys(shardingRule, result);
+            return result;
         }
         if (sqlParser.equalAny(DefaultKeyword.UPDATE)) {
             return SQLUpdateParserFactory.newInstance(sqlParser).parse();

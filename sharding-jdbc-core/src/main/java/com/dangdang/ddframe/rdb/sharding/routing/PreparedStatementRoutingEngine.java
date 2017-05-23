@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 
@@ -58,7 +57,10 @@ public final class PreparedStatementRoutingEngine {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
             sqlContext = sqlRouter.parse(logicSQL, parameters);
-        } else if (sqlContext instanceof InsertSQLContext) {
+            if (sqlContext instanceof InsertSQLContext && !sqlContext.getTables().isEmpty()) {
+                GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) sqlContext);
+            }
+        } else if (sqlContext instanceof InsertSQLContext && !sqlContext.getTables().isEmpty()) {
             parameters.addAll(GenerateKeysUtils.generateKeys(shardingRule, (InsertSQLContext) sqlContext));
         }
         return sqlRouter.route(logicSQL, parameters, sqlContext);

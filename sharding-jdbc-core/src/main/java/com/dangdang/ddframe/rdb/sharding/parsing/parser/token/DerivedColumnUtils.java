@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.rewrite;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
@@ -23,14 +23,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * 补列工具类.
  *
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DerivedColumnUtils {
     
     private static final String DERIVED_COUNT_ALIAS = "AVG_DERIVED_COUNT_%s";

@@ -23,12 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
-import com.dangdang.ddframe.rdb.sharding.rewrite.DerivedColumnUtils;
-import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
@@ -69,12 +65,6 @@ public final class ParsingSQLRouter implements SQLRouter {
         log.debug("Logic SQL: {}, {}", logicSQL, parameters);
         SQLContext result = parsingEngine.parse();
         MetricsContext.stop(context);
-        if (result instanceof InsertSQLContext) {
-            GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) result);
-        }
-        if (result instanceof SelectSQLContext) {
-            DerivedColumnUtils.appendDerivedColumns((SelectSQLContext) result);
-        }
         return result;
     }
     
