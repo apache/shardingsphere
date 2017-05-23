@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.engine;
+package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
@@ -27,15 +27,15 @@ import lombok.NoArgsConstructor;
  * @author zhangiang
  */
 @NoArgsConstructor
-public final class RouteEngineFactory {
+public final class SQLRouterFactory {
     
     /**
-     * 创建路由引擎.
+     * 创建SQL路由器.
      * 
      * @param shardingContext 数据源运行期上下文
-     * @return 路由引擎
+     * @return SQL路由器
      */
-    public static RouteEngine createRouteEngine(final ShardingContext shardingContext) {
-        return HintManagerHolder.isDatabaseShardingOnly() ? new RouteWithoutParsingEngine(shardingContext) : new RouteWithParsingEngine(shardingContext);
+    public static SQLRouter createSQLRouter(final ShardingContext shardingContext) {
+        return HintManagerHolder.isDatabaseShardingOnly() ? new UnparsingSQLRouter(shardingContext) : new ParsingSQLRouter(shardingContext);
     }
 }

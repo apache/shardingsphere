@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.engine;
+package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -34,18 +34,18 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
- * 无需解析的路由引擎.
+ * 无需解析的SQL路由器.
  * 
  * @author zhangiang
  */
 @Slf4j
-public final class RouteWithoutParsingEngine implements RouteEngine {
+public final class UnparsingSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
     
-    public RouteWithoutParsingEngine(final ShardingContext shardingContext) {
+    public UnparsingSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
         databaseType = shardingContext.getDatabaseType();
     }

@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.routing;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.routing.engine.RouteEngine;
-import com.dangdang.ddframe.rdb.sharding.routing.engine.RouteEngineFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 
 import java.util.Collections;
 
@@ -29,12 +29,12 @@ import java.util.Collections;
  * 
  * @author zhangiang
  */
-public final class SQLRouter {
+public final class StatementRoutingEngine {
     
-    private final RouteEngine routeEngine;
+    private final SQLRouter sqlRouter;
     
-    public SQLRouter(final ShardingContext shardingContext) {
-        routeEngine = RouteEngineFactory.createRouteEngine(shardingContext);
+    public StatementRoutingEngine(final ShardingContext shardingContext) {
+        sqlRouter = SQLRouterFactory.createSQLRouter(shardingContext);
     }
     
     /**
@@ -44,7 +44,7 @@ public final class SQLRouter {
      * @return 路由结果
      */
     public SQLRouteResult route(final String logicSQL) {
-        SQLContext sqlContext = routeEngine.parse(logicSQL, Collections.emptyList());
-        return routeEngine.route(logicSQL, Collections.emptyList(), sqlContext);
+        SQLContext sqlContext = sqlRouter.parse(logicSQL, Collections.emptyList());
+        return sqlRouter.route(logicSQL, Collections.emptyList(), sqlContext);
     }
 }

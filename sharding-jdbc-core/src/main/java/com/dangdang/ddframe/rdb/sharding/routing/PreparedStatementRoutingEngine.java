@@ -22,8 +22,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.rewrite.GenerateKeysUtils;
-import com.dangdang.ddframe.rdb.sharding.routing.engine.RouteEngine;
-import com.dangdang.ddframe.rdb.sharding.routing.engine.RouteEngineFactory;
+import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 
 import java.util.List;
 
@@ -32,19 +32,19 @@ import java.util.List;
  * 
  * @author gaohongtao
  */
-public final class PreparedSQLRouter {
+public final class PreparedStatementRoutingEngine {
     
     private final String logicSQL;
     
-    private final RouteEngine routeEngine;
+    private final SQLRouter sqlRouter;
     
     private final ShardingRule shardingRule;
     
     private SQLContext sqlContext;
     
-    public PreparedSQLRouter(final String logicSQL, final ShardingContext shardingContext) {
+    public PreparedStatementRoutingEngine(final String logicSQL, final ShardingContext shardingContext) {
         this.logicSQL = logicSQL;
-        routeEngine = RouteEngineFactory.createRouteEngine(shardingContext);
+        sqlRouter = SQLRouterFactory.createSQLRouter(shardingContext);
         shardingRule = shardingContext.getShardingRule();
     }
     
@@ -57,10 +57,10 @@ public final class PreparedSQLRouter {
      */
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
-            sqlContext = routeEngine.parse(logicSQL, parameters);
+            sqlContext = sqlRouter.parse(logicSQL, parameters);
         } else if (sqlContext instanceof InsertSQLContext) {
             parameters.addAll(GenerateKeysUtils.generateKeys(shardingRule, (InsertSQLContext) sqlContext));
         }
-        return routeEngine.route(logicSQL, parameters, sqlContext);
+        return sqlRouter.route(logicSQL, parameters, sqlContext);
     }
 }

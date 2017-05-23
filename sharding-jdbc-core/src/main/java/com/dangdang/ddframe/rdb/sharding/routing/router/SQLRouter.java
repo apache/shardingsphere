@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.engine;
+package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
@@ -23,11 +23,11 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import java.util.List;
 
 /**
- * 路由引擎.
+ * SQL路由器.
  * 
  * @author zhangiang
  */
-public interface RouteEngine {
+public interface SQLRouter {
     
     /**
      * SQL解析.
