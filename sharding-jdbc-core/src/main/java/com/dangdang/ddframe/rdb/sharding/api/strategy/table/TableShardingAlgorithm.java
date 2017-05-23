@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.table;
 
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 
 /**
  * 分表算法接口.

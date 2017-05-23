@@ -23,9 +23,9 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementA
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.router.PreparedSQLRouter;
-import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
-import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
+import com.dangdang.ddframe.rdb.sharding.routing.PreparedSQLRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;

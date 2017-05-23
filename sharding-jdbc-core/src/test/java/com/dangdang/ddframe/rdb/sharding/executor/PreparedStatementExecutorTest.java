@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDMLExecutionEventL
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDQLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.router.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

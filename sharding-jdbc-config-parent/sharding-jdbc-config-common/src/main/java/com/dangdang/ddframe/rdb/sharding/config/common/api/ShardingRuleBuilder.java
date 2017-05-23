@@ -36,10 +36,10 @@ import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.Closur
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
 import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

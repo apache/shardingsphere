@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
 import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
 import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.AllParsingTests;
-import com.dangdang.ddframe.rdb.sharding.router.AllRouterTests;
+import com.dangdang.ddframe.rdb.sharding.routing.AllRoutingTests;
 import com.dangdang.ddframe.rdb.sharding.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -40,7 +40,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllApiTests.class,
         AllConfigTests.class, 
         AllParsingTests.class, 
-        AllRouterTests.class, 
+        AllRoutingTests.class, 
         AllMergerTests.class,
         AllExecutorTests.class, 
         AllJDBCTests.class, 
