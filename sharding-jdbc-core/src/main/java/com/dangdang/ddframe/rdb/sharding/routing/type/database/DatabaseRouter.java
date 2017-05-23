@@ -38,7 +38,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class DatabaseRouter {
+public final class DatabaseRouter {
     
     private final DataSourceRule dataSourceRule;
     
@@ -47,17 +47,17 @@ public class DatabaseRouter {
     private final SQLType sqlType;
     
     /**
-     * 根据Hint路由到库.
+     * 根据线索路由到库.
      * 
      * @return 库路由结果
      */
     public DatabaseRoutingResult route() {
-        Optional<ShardingValue<?>> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
-        Preconditions.checkState(shardingValueOptional.isPresent());
-        log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValueOptional.get());
-        Collection<String> routedResult = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValueOptional.get()));
-        Preconditions.checkState(!routedResult.isEmpty(), "no database route info");
-        log.debug("After database sharding only result: {}", routedResult);
-        return new DatabaseRoutingResult(routedResult);
+        Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
+        Preconditions.checkState(shardingValue.isPresent());
+        log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
+        Collection<String> result = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValue.get()));
+        Preconditions.checkState(!result.isEmpty(), "no database route info");
+        log.debug("After database sharding only result: {}", result);
+        return new DatabaseRoutingResult(result);
     }
 }
