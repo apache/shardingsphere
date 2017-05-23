@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
@@ -29,7 +27,7 @@ import java.util.List;
 /**
  * 预解析的SQL路由器.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
 public final class PreparedStatementRoutingEngine {
     
@@ -37,14 +35,11 @@ public final class PreparedStatementRoutingEngine {
     
     private final SQLRouter sqlRouter;
     
-    private final ShardingRule shardingRule;
-    
     private SQLContext sqlContext;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingContext shardingContext) {
         this.logicSQL = logicSQL;
         sqlRouter = SQLRouterFactory.createSQLRouter(shardingContext);
-        shardingRule = shardingContext.getShardingRule();
     }
     
     /**
@@ -57,11 +52,6 @@ public final class PreparedStatementRoutingEngine {
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
             sqlContext = sqlRouter.parse(logicSQL, parameters);
-            if (sqlContext instanceof InsertSQLContext && !sqlContext.getTables().isEmpty()) {
-                GenerateKeysUtils.appendGenerateKeys(shardingRule, parameters, (InsertSQLContext) sqlContext);
-            }
-        } else if (sqlContext instanceof InsertSQLContext && !sqlContext.getTables().isEmpty()) {
-            parameters.addAll(GenerateKeysUtils.generateKeys(shardingRule, (InsertSQLContext) sqlContext));
         }
         return sqlRouter.route(logicSQL, parameters, sqlContext);
     }

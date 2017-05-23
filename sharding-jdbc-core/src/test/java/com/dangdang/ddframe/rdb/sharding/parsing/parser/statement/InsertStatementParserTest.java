@@ -29,8 +29,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.routing.GenerateKeysUtils;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.router.GenerateKeysUtils;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -81,7 +81,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
+        GenerateKeysUtils.appendGenerateKeysTokenForStatement(shardingRule, sqlContext);
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
@@ -93,7 +93,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        GenerateKeysUtils.appendGenerateKeys(shardingRule, Collections.emptyList(), sqlContext);
+        GenerateKeysUtils.appendGenerateKeysTokenForStatement(shardingRule, sqlContext);
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     

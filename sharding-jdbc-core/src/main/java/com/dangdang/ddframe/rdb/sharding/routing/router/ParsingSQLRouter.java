@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
@@ -64,6 +65,13 @@ public final class ParsingSQLRouter implements SQLRouter {
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}, {}", logicSQL, parameters);
         SQLContext result = parsingEngine.parse();
+        if (result instanceof InsertSQLContext) {
+            if (parameters.isEmpty()) {
+                GenerateKeysUtils.appendGenerateKeysTokenForStatement(shardingRule, (InsertSQLContext) result);
+            } else {
+                GenerateKeysUtils.appendGenerateKeysTokenForPreparedStatement(shardingRule, parameters.size(), (InsertSQLContext) result);
+            }
+        }
         MetricsContext.stop(context);
         return result;
     }
@@ -71,6 +79,9 @@ public final class ParsingSQLRouter implements SQLRouter {
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         final Context context = MetricsContext.start("Route SQL");
+        if (sqlContext instanceof InsertSQLContext && !parameters.isEmpty()) {
+            parameters.addAll(GenerateKeysUtils.generateKeys(shardingRule, (InsertSQLContext) sqlContext).values());
+        }
         if (null != sqlContext.getLimitContext()) {
             sqlContext.getLimitContext().processParameters(parameters);
         }
