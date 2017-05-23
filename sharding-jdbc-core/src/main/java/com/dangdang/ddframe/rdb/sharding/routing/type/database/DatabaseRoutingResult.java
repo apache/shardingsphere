@@ -39,6 +39,7 @@ public class DatabaseRoutingResult implements RoutingResult {
     @Override
     public Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
         return Collections2.transform(routedDatabaseNames, new Function<String, SQLExecutionUnit>() {
+            
             @Override
             public SQLExecutionUnit apply(final String input) {
                 return new SQLExecutionUnit(input, sqlBuilder);
