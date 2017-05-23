@@ -77,7 +77,7 @@ public final class RouteEngine {
     }
     
     SQLRouteResult route(final String logicSQL, final SQLContext sqlContext, final List<Object> parameters) {
-        Context context = MetricsContext.start("Route SQL");
+        final Context context = MetricsContext.start("Route SQL");
         if (null != sqlContext.getLimitContext()) {
             sqlContext.getLimitContext().processParameters(parameters);
         }
