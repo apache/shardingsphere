@@ -15,36 +15,36 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.router;
+package com.dangdang.ddframe.rdb.sharding.router.engine;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.router.engine.RouteEngine;
-import com.dangdang.ddframe.rdb.sharding.router.engine.RouteEngineFactory;
+import com.dangdang.ddframe.rdb.sharding.router.SQLRouteResult;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
- * SQL路由器.
+ * 路由引擎.
  * 
  * @author zhangiang
  */
-public final class SQLRouter {
+public interface RouteEngine {
     
-    private final RouteEngine routeEngine;
-    
-    public SQLRouter(final ShardingContext shardingContext) {
-        routeEngine = RouteEngineFactory.createRouteEngine(shardingContext);
-    }
+    /**
+     * SQL解析.
+     * 
+     * @param logicSQL 逻辑SQL
+     * @param parameters 参数
+     * @return 解析结果
+     */
+    SQLContext parse(final String logicSQL, final List<Object> parameters);
     
     /**
      * SQL路由.
-     *
+     * 
      * @param logicSQL 逻辑SQL
+     * @param sqlContext 解析结果
+     * @param parameters 参数
      * @return 路由结果
      */
-    public SQLRouteResult route(final String logicSQL) {
-        SQLContext sqlContext = routeEngine.parse(logicSQL, Collections.emptyList());
-        return routeEngine.route(logicSQL, Collections.emptyList(), sqlContext);
-    }
+    SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext);
 }

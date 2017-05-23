@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.router.RouteEngine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +34,7 @@ public final class ShardingContext {
     
     private final ShardingRule shardingRule;
     
-    private final RouteEngine routeEngine;
+    private final DatabaseType databaseType;
     
     private final ExecutorEngine executorEngine;
 }
