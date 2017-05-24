@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
@@ -43,16 +42,13 @@ public final class UnparsingSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
-    private final DatabaseType databaseType;
-    
     public UnparsingSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
-        databaseType = shardingContext.getDatabaseType();
     }
     
     @Override
     public SQLContext parse(final String logicSQL, final int parametersSize) {
-        return new SQLParsingEngine(databaseType, logicSQL, shardingRule).prepareParse();
+        return new SQLJudgeEngine(logicSQL).judge();
     }
     
     @Override
