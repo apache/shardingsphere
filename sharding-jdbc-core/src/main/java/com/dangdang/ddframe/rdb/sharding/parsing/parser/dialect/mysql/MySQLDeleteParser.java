@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.AbstractDeleteParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete.AbstractDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
 /**

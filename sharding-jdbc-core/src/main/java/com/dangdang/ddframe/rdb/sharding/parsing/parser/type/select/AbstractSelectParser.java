@@ -15,14 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
@@ -35,7 +34,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
@@ -49,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractSelectParser implements SQLStatementParser {
+public abstract class AbstractSelectParser implements SQLParser {
     
     private static final String DERIVED_COUNT_ALIAS = "AVG_DERIVED_COUNT_%s";
     
@@ -59,14 +58,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private static final String GROUP_BY_DERIVED_ALIAS = "GROUP_BY_DERIVED_%s";
     
-    private SQLParser sqlParser;
+    private com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     
     private final SelectSQLContext sqlContext;
     
     @Setter
     private int parametersIndex;
     
-    public AbstractSelectParser(final SQLParser sqlParser) {
+    public AbstractSelectParser(final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new SelectSQLContext();
     }

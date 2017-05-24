@@ -27,9 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexe
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.DeleteStatementParserTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.InsertStatementParserTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.UpdateStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.DeleteStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.InsertStatementParserTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.UpdateStatementParserTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

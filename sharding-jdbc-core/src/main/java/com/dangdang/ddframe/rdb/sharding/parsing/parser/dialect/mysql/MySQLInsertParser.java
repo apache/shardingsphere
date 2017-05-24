@@ -32,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
 

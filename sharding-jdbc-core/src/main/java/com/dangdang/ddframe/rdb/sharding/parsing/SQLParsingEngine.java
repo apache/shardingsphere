@@ -38,10 +38,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.SQLDeleteParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.SQLInsertParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SQLSelectParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.SQLUpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete.SQLDeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert.SQLInsertParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.SQLSelectParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.update.SQLUpdateParserFactory;
 import lombok.RequiredArgsConstructor;
 
 /**

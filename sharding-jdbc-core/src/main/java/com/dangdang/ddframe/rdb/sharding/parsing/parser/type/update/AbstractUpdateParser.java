@@ -15,14 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.update;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,15 +32,15 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractUpdateParser implements SQLStatementParser {
+public abstract class AbstractUpdateParser implements SQLParser {
     
-    private final SQLParser sqlParser;
+    private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     
     private final UpdateSQLContext sqlContext;
     
     private int parametersIndex;
     
-    public AbstractUpdateParser(final SQLParser sqlParser) {
+    public AbstractUpdateParser(final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new UpdateSQLContext();
     }

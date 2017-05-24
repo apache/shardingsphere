@@ -15,12 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +30,14 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractDeleteParser implements SQLStatementParser {
+public abstract class AbstractDeleteParser implements SQLParser {
     
     @Getter(AccessLevel.PROTECTED)
-    private final SQLParser sqlParser;
+    private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     
     private final DeleteSQLContext sqlContext;
     
-    public AbstractDeleteParser(final SQLParser sqlParser) {
+    public AbstractDeleteParser(final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         sqlContext = new DeleteSQLContext();
     }
