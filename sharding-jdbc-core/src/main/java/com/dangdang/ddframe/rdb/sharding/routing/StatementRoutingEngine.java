@@ -44,7 +44,7 @@ public final class StatementRoutingEngine {
      * @return 路由结果
      */
     public SQLRouteResult route(final String logicSQL) {
-        SQLContext sqlContext = sqlRouter.parse(logicSQL, Collections.emptyList());
+        SQLContext sqlContext = sqlRouter.parse(logicSQL, 0);
         return sqlRouter.route(logicSQL, Collections.emptyList(), sqlContext);
     }
 }

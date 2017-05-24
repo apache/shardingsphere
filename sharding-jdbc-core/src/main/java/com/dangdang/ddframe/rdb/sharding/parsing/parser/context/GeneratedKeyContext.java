@@ -34,7 +34,7 @@ import java.util.Map;
  * @author gaohongtao
  */
 @ToString
-public class GeneratedKeyContext {
+public final class GeneratedKeyContext {
     
     @Getter
     private final List<String> columns = new LinkedList<>();

@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -49,6 +50,14 @@ import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractSelectParser implements SQLStatementParser {
+    
+    private static final String DERIVED_COUNT_ALIAS = "AVG_DERIVED_COUNT_%s";
+    
+    private static final String DERIVED_SUM_ALIAS = "AVG_DERIVED_SUM_%s";
+    
+    private static final String ORDER_BY_DERIVED_ALIAS = "ORDER_BY_DERIVED_%s";
+    
+    private static final String GROUP_BY_DERIVED_ALIAS = "GROUP_BY_DERIVED_%s";
     
     private SQLParser sqlParser;
     
@@ -67,6 +76,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         query();
         sqlContext.getOrderByContexts().addAll(parseOrderBy());
         customizedSelect();
+        appendDerivedColumns();
         return sqlContext;
     }
     
@@ -309,6 +319,60 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         for (TableContext each : sqlContext.getTables()) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
                 sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName()));
+            }
+        }
+    }
+    
+    private void appendDerivedColumns() {
+        ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
+        appendAvgDerivedColumns(itemsToken);
+        appendOrderByDerivedColumns(itemsToken);
+        appendGroupByDerivedColumns(itemsToken);
+        if (!itemsToken.getItems().isEmpty()) {
+            sqlContext.getSqlTokens().add(itemsToken);
+        }
+    }
+    
+    private void appendAvgDerivedColumns(final ItemsToken itemsToken) {
+        int derivedColumnOffset = 0;
+        for (SelectItemContext each : sqlContext.getItemContexts()) {
+            if (!(each instanceof AggregationSelectItemContext) || AggregationType.AVG != ((AggregationSelectItemContext) each).getAggregationType()) {
+                continue;
+            }
+            AggregationSelectItemContext avgContext = (AggregationSelectItemContext) each;
+            String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
+            AggregationSelectItemContext countContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
+            String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
+            AggregationSelectItemContext sumContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
+            avgContext.getDerivedAggregationSelectItemContexts().add(countContext);
+            avgContext.getDerivedAggregationSelectItemContexts().add(sumContext);
+            // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
+            itemsToken.getItems().add(countContext.getExpression() + " AS " + countAlias + " ");
+            itemsToken.getItems().add(sumContext.getExpression() + " AS " + sumAlias + " ");
+            derivedColumnOffset++;
+        }
+    }
+    
+    private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
+        int derivedColumnOffset = 0;
+        for (OrderByContext each : sqlContext.getOrderByContexts()) {
+            if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !sqlContext.isContainStar()) {
+                String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
+                String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
+                each.setAlias(Optional.of(alias));
+                itemsToken.getItems().add(orderByExpression + " AS " + alias + " ");
+            }
+        }
+    }
+    
+    private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
+        int derivedColumnOffset = 0;
+        for (GroupByContext each : sqlContext.getGroupByContexts()) {
+            if (!each.getAlias().isPresent() && !sqlContext.isContainStar()) {
+                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
+                String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
+                each.setAlias(Optional.of(alias));
+                itemsToken.getItems().add(groupByExpression + " AS " + alias + " ");
             }
         }
     }

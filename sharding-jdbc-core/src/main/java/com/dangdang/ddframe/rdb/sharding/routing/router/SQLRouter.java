@@ -33,10 +33,10 @@ public interface SQLRouter {
      * SQL解析.
      * 
      * @param logicSQL 逻辑SQL
-     * @param parameters 参数
+     * @param parametersSize 参数个数
      * @return 解析结果
      */
-    SQLContext parse(final String logicSQL, final List<Object> parameters);
+    SQLContext parse(String logicSQL, int parametersSize);
     
     /**
      * SQL路由.
@@ -46,5 +46,5 @@ public interface SQLRouter {
      * @param parameters 参数
      * @return 路由结果
      */
-    SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext);
+    SQLRouteResult route(String logicSQL, List<Object> parameters, SQLContext sqlContext);
 }

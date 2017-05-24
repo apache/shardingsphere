@@ -60,16 +60,16 @@ public final class ParsingSQLRouter implements SQLRouter {
     }
     
     @Override
-    public SQLContext parse(final String logicSQL, final List<Object> parameters) {
+    public SQLContext parse(final String logicSQL, final int parametersSize) {
         SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
         Context context = MetricsContext.start("Parse SQL");
-        log.debug("Logic SQL: {}, {}", logicSQL, parameters);
+        log.debug("Logic SQL: {}", logicSQL);
         SQLContext result = parsingEngine.parse();
         if (result instanceof InsertSQLContext) {
-            if (parameters.isEmpty()) {
-                GenerateKeysUtils.appendGenerateKeysTokenForStatement(shardingRule, (InsertSQLContext) result);
+            if (0 == parametersSize) {
+                ((InsertSQLContext) result).appendGenerateKeysToken(shardingRule);
             } else {
-                GenerateKeysUtils.appendGenerateKeysTokenForPreparedStatement(shardingRule, parameters.size(), (InsertSQLContext) result);
+                ((InsertSQLContext) result).appendGenerateKeysToken(shardingRule, parametersSize);
             }
         }
         MetricsContext.stop(context);
@@ -80,7 +80,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         final Context context = MetricsContext.start("Route SQL");
         if (sqlContext instanceof InsertSQLContext && !parameters.isEmpty()) {
-            parameters.addAll(GenerateKeysUtils.generateKeys(shardingRule, (InsertSQLContext) sqlContext).values());
+            parameters.addAll(((InsertSQLContext) sqlContext).generateKeys(shardingRule).values());
         }
         if (null != sqlContext.getLimitContext()) {
             sqlContext.getLimitContext().processParameters(parameters);

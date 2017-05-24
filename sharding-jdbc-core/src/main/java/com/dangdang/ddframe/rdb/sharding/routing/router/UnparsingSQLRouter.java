@@ -51,7 +51,7 @@ public final class UnparsingSQLRouter implements SQLRouter {
     }
     
     @Override
-    public SQLContext parse(final String logicSQL, final List<Object> parameters) {
+    public SQLContext parse(final String logicSQL, final int parametersSize) {
         return new SQLParsingEngine(databaseType, logicSQL, shardingRule).prepareParse();
     }
     

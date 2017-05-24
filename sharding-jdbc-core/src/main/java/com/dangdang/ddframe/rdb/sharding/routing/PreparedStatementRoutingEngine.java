@@ -51,7 +51,7 @@ public final class PreparedStatementRoutingEngine {
      */
     public SQLRouteResult route(final List<Object> parameters) {
         if (null == sqlContext) {
-            sqlContext = sqlRouter.parse(logicSQL, parameters);
+            sqlContext = sqlRouter.parse(logicSQL, parameters.size());
         }
         return sqlRouter.route(logicSQL, parameters, sqlContext);
     }
