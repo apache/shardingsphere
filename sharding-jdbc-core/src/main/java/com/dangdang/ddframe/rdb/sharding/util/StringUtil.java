@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
  * @author zhangliang
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StringUtil {
+public final class StringUtil {
     
     /**
      * 判断是否为boolean值.

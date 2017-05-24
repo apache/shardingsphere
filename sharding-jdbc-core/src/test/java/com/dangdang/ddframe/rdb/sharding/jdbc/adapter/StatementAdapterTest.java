@@ -151,7 +151,6 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
         when(st1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         final Statement st2 = Mockito.mock(Statement.class);
         when(st2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        
         AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
             
             @Override
@@ -326,6 +325,6 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     @Test
     public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
         actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `order_id` IN (1, 2)");
-        assertThat(actual.getGeneratedKeys().next(), is(false));
+        assertFalse(actual.getGeneratedKeys().next());
     }
 }
