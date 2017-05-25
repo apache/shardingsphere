@@ -73,7 +73,7 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
     
     @Test
     public void assertDelete() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `order_id` = %s AND `user_id` = %s";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = %s AND `user_id` = %s";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {

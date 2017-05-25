@@ -57,7 +57,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
     
     @Test
     public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `status`) VALUES (?, ?)";
+        String sql = "INSERT INTO `t_order` (`user_id`, `status`) VALUES (?, ?)";
         try (Connection connection = shardingDataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (int i = 1; i <= 10; i++) {
@@ -155,7 +155,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
     
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
@@ -172,7 +172,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
     
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `status` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `status` = ?";
         try (Connection connection = shardingDataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, "init");

@@ -316,7 +316,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertGetGeneratedKeysForSingleRoutedStatement() throws SQLException {
-        actual.executeUpdate("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')");
+        actual.executeUpdate("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
         ResultSet generatedKeysResult = actual.getGeneratedKeys();
         assertTrue(generatedKeysResult.next());
         assertTrue(generatedKeysResult.getInt(1) > 0);

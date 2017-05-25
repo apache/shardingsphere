@@ -160,7 +160,7 @@ public final class ShardingTablesOnlyForPStatementWithDMLTest extends AbstractSh
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
         ShardingDataSource shardingDataSource = getShardingDataSource();
-        String sql = "DELETE `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
         try (Connection connection = shardingDataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             for (int i = 10; i < 12; i++) {
@@ -178,7 +178,7 @@ public final class ShardingTablesOnlyForPStatementWithDMLTest extends AbstractSh
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         ShardingDataSource shardingDataSource = getShardingDataSource();
-        String sql = "DELETE `t_order` WHERE `status` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `status` = ?";
         try (Connection connection = shardingDataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, "init");

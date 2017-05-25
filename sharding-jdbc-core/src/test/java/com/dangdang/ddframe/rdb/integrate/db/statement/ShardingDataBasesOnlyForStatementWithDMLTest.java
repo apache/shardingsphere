@@ -58,7 +58,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`order_id`, `status`) VALUES (%s, '%s')", i, "insert"));
+                connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`user_id`, `status`) VALUES (%s, '%s')", i, "insert"));
                 connection.commit();
                 connection.close();
             }
@@ -94,7 +94,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format("DELETE `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = '%s'", i * 100 + j, i, "init")), is(1));
+                    assertThat(stmt.executeUpdate(String.format("DELETE FROM `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = '%s'", i * 100 + j, i, "init")), is(1));
                 }
             }
         }
@@ -105,7 +105,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format("DELETE `t_order` WHERE `status` = '%s'", "init")), is(40));
+            assertThat(stmt.executeUpdate(String.format("DELETE FROM `t_order` WHERE `status` = '%s'", "init")), is(40));
         }
         assertDataSet("delete", "init");
     }

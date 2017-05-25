@@ -134,7 +134,7 @@ public final class ShardingDataBasesOnlyWithHintForDMLTest extends AbstractShard
     
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (DynamicShardingValueHelper helper = new DynamicShardingValueHelper(i, i * 100 + j);

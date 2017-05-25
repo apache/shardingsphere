@@ -82,7 +82,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
     @Test
     public void assertDelete() throws SQLException, DatabaseUnitException {
         ShardingDataSource shardingDataSource = getShardingDataSource();
-        String sql = "DELETE `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = '%s'";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = '%s'";
         for (int i = 10; i < 12; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection();
@@ -97,7 +97,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         ShardingDataSource shardingDataSource = getShardingDataSource();
-        String sql = "DELETE `t_order` WHERE `status` = '%s'";
+        String sql = "DELETE FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = shardingDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
             assertThat(stmt.executeUpdate(String.format(sql, "init")), is(20));

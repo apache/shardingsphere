@@ -163,7 +163,7 @@ public final class ShardingMasterSlaveForPStatementWithDMLTest extends AbstractS
     
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `order_id` = ? AND `user_id` = ?";
+        String sql = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ?";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {

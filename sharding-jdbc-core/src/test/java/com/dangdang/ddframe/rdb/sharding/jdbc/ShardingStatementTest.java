@@ -187,7 +187,7 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
     
     @Test
     public void assertAutoIncrement() throws SQLException {
-        String sql = "INSERT INTO `t_order`(`order_id`, `status`) VALUES (%d,'%s')";
+        String sql = "INSERT INTO `t_order`(`user_id`, `status`) VALUES (%d,'%s')";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 Statement stmt = connection.createStatement()) {

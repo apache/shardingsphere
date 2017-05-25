@@ -167,12 +167,12 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final int[] columnIndexes) throws SQLException {
-        return new ShardingPreparedStatement(this, sql, columnIndexes);
+        return new ShardingPreparedStatement(this, sql, Statement.RETURN_GENERATED_KEYS);
     }
     
     @Override
     public PreparedStatement prepareStatement(final String sql, final String[] columnNames) throws SQLException {
-        return new ShardingPreparedStatement(this, sql, columnNames);
+        return new ShardingPreparedStatement(this, sql, Statement.RETURN_GENERATED_KEYS);
     }
     
     @Override
