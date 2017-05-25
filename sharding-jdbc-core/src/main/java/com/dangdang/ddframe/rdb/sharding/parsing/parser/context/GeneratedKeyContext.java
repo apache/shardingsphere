@@ -20,12 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,11 +32,12 @@ import java.util.Map;
  * 
  * @author gaohongtao
  */
+@RequiredArgsConstructor
 @ToString
 public final class GeneratedKeyContext {
     
     @Getter
-    private final List<String> columns = new LinkedList<>();
+    private final String column;
     
     @Getter
     private final Map<String, Integer> columnNameToIndexMap = new HashMap<>();
