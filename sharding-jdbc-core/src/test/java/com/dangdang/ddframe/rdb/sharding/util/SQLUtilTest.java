@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.util;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class SQLUtilTest {

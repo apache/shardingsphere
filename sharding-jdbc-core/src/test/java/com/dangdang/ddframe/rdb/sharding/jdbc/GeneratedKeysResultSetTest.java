@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,8 +24,7 @@ import org.mockito.Mockito;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -41,21 +38,9 @@ public class GeneratedKeysResultSetTest {
     
     private GeneratedKeysResultSet actualResultSet;
     
-    static GeneratedKeysResultSet createMock() {
-        Map<String, Integer> columnMap = new HashMap<>();
-        columnMap.put("order_id", 0);
-        columnMap.put("order_no", 1);
-        Table<Integer, Integer, Object> valueTable = TreeBasedTable.create();
-        valueTable.put(0, 0, 1L);
-        valueTable.put(0, 1, "OL_1");
-        valueTable.put(1, 0, 2L);
-        valueTable.put(1, 1, "OL_2");
-        return new GeneratedKeysResultSet(valueTable, columnMap, STATEMENT);
-    }
-    
     @Before
     public void init() {
-        actualResultSet = createMock();
+        actualResultSet = new GeneratedKeysResultSet(Arrays.<Number>asList(1L, 2L).iterator(), "order_id", STATEMENT);
     }
     
     @Test
@@ -87,9 +72,9 @@ public class GeneratedKeysResultSetTest {
     @Test
     public void getString() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getString(2), is("OL_1"));
+        assertThat(actualResultSet.getString(1), is("1"));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getString("order_no"), is("OL_2"));
+        assertThat(actualResultSet.getString("order_id"), is("2"));
         assertFalse(actualResultSet.next());
     }
     
@@ -161,18 +146,18 @@ public class GeneratedKeysResultSetTest {
     @Test
     public void getBytes() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getBytes(2), is("OL_1".getBytes()));
+        assertThat(actualResultSet.getBytes(1), is("1".getBytes()));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getBytes("order_no"), is("OL_2".getBytes()));
+        assertThat(actualResultSet.getBytes("order_id"), is("2".getBytes()));
         assertFalse(actualResultSet.next());
     }
     
     @Test
     public void getObject() throws Exception {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject(2), is((Object) "OL_1"));
+        assertThat(actualResultSet.getObject(1), is((Object) 1L));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject("order_no"), is((Object) "OL_2"));
+        assertThat(actualResultSet.getObject("order_id"), is((Object) 2L));
         assertFalse(actualResultSet.next());
     }
     
@@ -190,5 +175,4 @@ public class GeneratedKeysResultSetTest {
     public void getStatement() throws Exception {
         assertThat(actualResultSet.getStatement(), is(STATEMENT));
     }
-    
 }

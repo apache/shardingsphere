@@ -98,7 +98,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
             generatedKey = null;
         }
         result.put(generatedKeyContext.getColumn(), generatedKey);
-        generatedKeyContext.putValue(generatedKeyContext.getColumn(), generatedKey);
+        generatedKeyContext.getValues().add(generatedKey);
         return result;
     }
     

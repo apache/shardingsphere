@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -198,17 +197,19 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
             assertFalse(stmt.getGeneratedKeys().next());
             assertFalse(stmt.execute(String.format(sql, 1, "init"), Statement.RETURN_GENERATED_KEYS));
             assertTrue(stmt.getGeneratedKeys().next());
-            assertEquals(stmt.getGeneratedKeys().getLong(1), 3);
+            assertThat(stmt.getGeneratedKeys().getLong(1), is(3L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{1}));
             assertTrue(stmt.getGeneratedKeys().next());
-            assertEquals(stmt.getGeneratedKeys().getLong(1), 4);
+            assertThat(stmt.getGeneratedKeys().getLong(1), is(4L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"user_id"}));
             assertTrue(stmt.getGeneratedKeys().next());
-            assertEquals(stmt.getGeneratedKeys().getLong(1), 5);
+            assertThat(stmt.getGeneratedKeys().getLong(1), is(5L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{2}));
-            assertFalse(stmt.getGeneratedKeys().next());
+            assertTrue(stmt.getGeneratedKeys().next());
+            assertThat(stmt.getGeneratedKeys().getLong(1), is(6L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"no"}));
-            assertFalse(stmt.getGeneratedKeys().next());
+            assertTrue(stmt.getGeneratedKeys().next());
+            assertThat(stmt.getGeneratedKeys().getLong(1), is(7L));
         }
     }
 }

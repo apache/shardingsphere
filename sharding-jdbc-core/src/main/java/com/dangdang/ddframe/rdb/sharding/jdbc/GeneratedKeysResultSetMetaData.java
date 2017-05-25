@@ -17,175 +17,146 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Table;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 生成键结果集元数据.
  * 
  * @author gaohongtao
  */
-class GeneratedKeysResultSetMetaData implements ResultSetMetaData {
+@RequiredArgsConstructor
+class GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
-    private final Map<Integer, String> indexToColumnNameMap = new HashMap<>();
-    
-    private final Table<Integer, Integer, Object> autoIncrementValueTable;
-    
-    GeneratedKeysResultSetMetaData(final Table<Integer, Integer, Object> autoIncrementValueTable, final Map<String, Integer> autoIncrementColumnNameToIndexMap) {
-        this.autoIncrementValueTable = autoIncrementValueTable;
-        for (Map.Entry<String, Integer> each : autoIncrementColumnNameToIndexMap.entrySet()) {
-            indexToColumnNameMap.put(each.getValue(), each.getKey());
-        }
-    }
+    private final String generatedKeyColumn;
     
     @Override
     public int getColumnCount() throws SQLException {
-        return indexToColumnNameMap.size();
+        return 1;
     }
     
     @Override
     public boolean isAutoIncrement(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return true;
     }
     
     @Override
     public boolean isCaseSensitive(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return true;
     }
     
     @Override
     public boolean isSearchable(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return false;
     }
     
     @Override
     public boolean isCurrency(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return false;
     }
     
     @Override
     public int isNullable(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return columnNoNulls;
     }
     
     @Override
     public boolean isSigned(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return true;
     }
     
     @Override
     public int getColumnDisplaySize(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return 0;
     }
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        checkIndex(column);
-        return indexToColumnNameMap.get(column - 1);
+        Preconditions.checkArgument(column == 1);
+        return generatedKeyColumn;
     }
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        checkIndex(column);
-        return indexToColumnNameMap.get(column - 1);
+        Preconditions.checkArgument(column == 1);
+        return generatedKeyColumn;
     }
     
     @Override
     public String getSchemaName(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return "";
     }
     
     @Override
     public int getPrecision(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return 0;
     }
     
     @Override
     public int getScale(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return 0;
     }
     
     @Override
     public String getTableName(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return "";
     }
     
     @Override
     public String getCatalogName(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return "";
     }
     
     @Override
     public int getColumnType(final int column) throws SQLException {
-        checkIndex(column);
-        Object value = autoIncrementValueTable.get(0, column - 1);
-        return value instanceof Number ? Types.BIGINT : Types.VARCHAR;
+        Preconditions.checkArgument(column == 1);
+        return Types.BIGINT;
     }
     
     @Override
     public String getColumnTypeName(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return "";
     }
     
     @Override
     public boolean isReadOnly(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return true;
     }
     
     @Override
     public boolean isWritable(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return false;
     }
     
     @Override
     public boolean isDefinitelyWritable(final int column) throws SQLException {
-        checkIndex(column);
+        Preconditions.checkArgument(column == 1);
         return false;
     }
     
     @Override
     public String getColumnClassName(final int column) throws SQLException {
-        checkIndex(column);
-        Object value = autoIncrementValueTable.get(0, column - 1);
-        return value.getClass().getName();
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T unwrap(final Class<T> iface) throws SQLException {
-        if (isWrapperFor(iface)) {
-            return (T) this;
-        }
-        throw new SQLException(String.format("[%s] cannot be unwrapped as [%s]", getClass().getName(), iface.getName()));
-    }
-    
-    @Override
-    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
-        return iface.isInstance(this);
-    }
-    
-    private void checkIndex(final int column) {
-        Preconditions.checkArgument(column >= 1 && column <= indexToColumnNameMap.size());
+        Preconditions.checkArgument(column == 1);
+        return Number.class.getName();
     }
 }

@@ -19,16 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * 生成键结果集.
@@ -38,46 +36,47 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
     
-    private final Table<Integer, Integer, Object> valueTable;
+    private final Iterator<Number> generatedKeys;
     
-    private final Map<String, Integer> columnNameToIndexMap;
+    private final String generatedKeyColumn;
     
     private final Statement statement;
     
-    private boolean isClosed;
+    private boolean closed;
     
-    private int rowIndex = -1;
+    private Number currentGeneratedKey;
     
     public GeneratedKeysResultSet() {
-        valueTable = TreeBasedTable.create();
-        columnNameToIndexMap = new HashMap<>();
+        generatedKeys = Collections.<Number>emptyList().iterator();
+        generatedKeyColumn = null;
         statement = null;
-        isClosed = true;
+        closed = true;
     }
     
     @Override
     public boolean isClosed() throws SQLException {
-        return isClosed;
+        return closed;
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (isClosed()) {
+        if (closed || !generatedKeys.hasNext()) {
+            currentGeneratedKey = null;
             return false;
         }
-        rowIndex++;
-        return rowIndex + 1 <= valueTable.rowKeySet().size();
+        currentGeneratedKey = generatedKeys.next();
+        return true;
     }
     
     @Override
     public void close() throws SQLException {
-        isClosed = true;
+        closed = true;
     }
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
         checkState();
-        return new GeneratedKeysResultSetMetaData(valueTable, columnNameToIndexMap);
+        return new GeneratedKeysResultSetMetaData(generatedKeyColumn);
     }
     
     @Override
@@ -88,146 +87,129 @@ public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResu
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        checkState();
-        return valueTable.get(rowIndex, columnIndex - 1).toString();
+        checkStateForGetData();
+        return currentGeneratedKey.toString();
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        checkState();
-        return valueTable.get(rowIndex, findColumn(columnLabel)).toString();
+        return getString(1);
     }
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).byteValue();
+        checkStateForGetData();
+        return currentGeneratedKey.byteValue();
     }
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).byteValue();
+        return getByte(1);
     }
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).shortValue();
+        checkStateForGetData();
+        return currentGeneratedKey.shortValue();
     }
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).shortValue();
+        return getShort(1);
     }
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).intValue();
+        checkStateForGetData();
+        return currentGeneratedKey.intValue();
     }
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).intValue();
+        return getInt(1);
     }
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).longValue();
+        checkStateForGetData();
+        return currentGeneratedKey.longValue();
     }
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).longValue();
+        return getLong(1);
     }
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).floatValue();
+        checkStateForGetData();
+        return currentGeneratedKey.floatValue();
     }
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).floatValue();
+        return getFloat(1);
     }
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        checkState();
-        return getNumberValue(columnIndex - 1).doubleValue();
+        checkStateForGetData();
+        return currentGeneratedKey.doubleValue();
     }
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        checkState();
-        return getNumberValue(findColumn(columnLabel)).doubleValue();
+        return getDouble(1);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        checkState();
-        return new BigDecimal(getNumberValue(columnIndex - 1).longValue()).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        checkStateForGetData();
+        return new BigDecimal(currentGeneratedKey.longValue()).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        checkState();
-        return new BigDecimal(getNumberValue(findColumn(columnLabel)).longValue()).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        return getBigDecimal(1, scale);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        checkState();
-        return new BigDecimal(getNumberValue(columnIndex - 1).longValue());
+        checkStateForGetData();
+        return new BigDecimal(currentGeneratedKey.longValue());
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        checkState();
-        return new BigDecimal(getNumberValue(findColumn(columnLabel)).longValue());
-    }
-    
-    private Number getNumberValue(final int columnIndex) {
-        Object value = valueTable.get(rowIndex, columnIndex);
-        Preconditions.checkState(value instanceof Number);
-        return (Number) value;
+        return getBigDecimal(1);
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        checkState();
+        checkStateForGetData();
         return getString(columnIndex).getBytes();
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        checkState();
-        return getString(columnLabel).getBytes();
+        return getBytes(1);
     }
     
     @Override
     public Object getObject(final int columnIndex) throws SQLException {
-        checkState();
-        return valueTable.get(rowIndex, columnIndex - 1);
+        checkStateForGetData();
+        return currentGeneratedKey;
     }
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        checkState();
-        return valueTable.get(rowIndex, findColumn(columnLabel));
+        return getObject(1);
     }
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
         checkState();
-        return columnNameToIndexMap.get(columnLabel);
+        return 1;
     }
     
     @Override
@@ -249,6 +231,11 @@ public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResu
     }
     
     private void checkState() throws SQLException {
-        Preconditions.checkState(!isClosed(), "ResultSet has closed");
+        Preconditions.checkState(!closed, "ResultSet has closed.");
+    }
+    
+    private void checkStateForGetData() throws SQLException {
+        Preconditions.checkState(!closed, "ResultSet has closed.");
+        Preconditions.checkNotNull(currentGeneratedKey, "ResultSet should call next or has no more data.");
     }
 }
