@@ -18,9 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.id.generator;
 
 /**
- * Id 生成接口.
- * 
- * @author gaohongtao
+ * 主键生成器.
+ *
+ * @author zhangliang
  */
 public interface IdGenerator {
     

@@ -23,10 +23,10 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -52,6 +52,8 @@ public final class ShardingRule {
     
     private final TableShardingStrategy tableShardingStrategy;
     
+    private final IdGenerator idGenerator;
+    
     /**
      * 全属性构造器.
      * 
@@ -64,7 +66,7 @@ public final class ShardingRule {
     @Deprecated
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy) {
+            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final IdGenerator idGenerator) {
         Preconditions.checkNotNull(dataSourceRule);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
@@ -73,6 +75,7 @@ public final class ShardingRule {
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
+        this.idGenerator = idGenerator;
     }
     
     /**
@@ -232,19 +235,18 @@ public final class ShardingRule {
     }
     
     /**
-     * 获取所有需要自增的列名.
+     * 获取自增列名称.
      * 
-     * @param tableName 表名
-     * @return 自增列
+     * @param tableName 表名称
+     * @return 自增列名称
      */
-    public Collection<String> getAutoIncrementColumns(final String tableName) {
+    public Optional<String> getAutoIncrementColumn(final String tableName) {
         for (TableRule each : tableRules) {
-            if (!each.getLogicTable().equalsIgnoreCase(tableName)) {
-                continue;
+            if (each.getLogicTable().equalsIgnoreCase(tableName)) {
+                return Optional.fromNullable(each.getAutoIncrementColumn());
             }
-            return Sets.newLinkedHashSet(each.getAutoIncrementColumnMap().keySet());
         }
-        return Collections.emptySet();
+        return Optional.absent();
     }
     
     /**
@@ -337,14 +339,11 @@ public final class ShardingRule {
          * @return 分片规则配置对象
          */
         public ShardingRule build() {
-            ShardingRule result = new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy);
-            if (null == idGeneratorClass) {
-                return result;
+            IdGenerator idGenerator = null;
+            if (null != idGeneratorClass) {
+                idGenerator = KeyGeneratorFactory.createKeyGenerator(idGeneratorClass);
             }
-            for (TableRule each : tableRules) {
-                each.fillIdGenerator(idGeneratorClass);
-            }
-            return result;
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, idGenerator);
         }
     }
 }

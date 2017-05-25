@@ -35,19 +35,19 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    WithNamespaceAlgorithmClassTest.class, 
-    WithNamespaceAlgorithmClassAndPropsTest.class, 
-    WithNamespaceDifferentTablesTest.class, 
-    WithNamespaceAlgorithmExpressionTest.class, 
-    WithNamespaceAlgorithmExpressionForDynamicTest.class, 
-    WithNamespaceDefaultStrategyTest.class, 
-    WithNamespaceBindingTablesTest.class, 
-    WithoutNamespaceTest.class, 
-    WithoutNamespaceDefaultStrategyTest.class, 
-    WithNamespaceDifferentTablesTest.class,
-    WithNamespaceForIndicatedDataSourceNamesTest.class,
-    WithNamespaceForMasterSlaveTest.class,
-    AutoIncrementDBUnitTest.class
+        WithNamespaceAlgorithmClassTest.class, 
+        WithNamespaceAlgorithmClassAndPropsTest.class, 
+        WithNamespaceDifferentTablesTest.class, 
+        WithNamespaceAlgorithmExpressionTest.class, 
+        WithNamespaceAlgorithmExpressionForDynamicTest.class, 
+        WithNamespaceDefaultStrategyTest.class, 
+        WithNamespaceBindingTablesTest.class, 
+        WithoutNamespaceTest.class, 
+        WithoutNamespaceDefaultStrategyTest.class, 
+        WithNamespaceDifferentTablesTest.class,
+        WithNamespaceForIndicatedDataSourceNamesTest.class,
+        WithNamespaceForMasterSlaveTest.class,
+        AutoIncrementDBUnitTest.class
     })
 public class AllSpringTests {
 }

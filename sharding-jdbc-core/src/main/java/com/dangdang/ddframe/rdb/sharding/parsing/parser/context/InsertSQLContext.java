@@ -86,7 +86,15 @@ public final class InsertSQLContext extends AbstractSQLContext {
         TableRule tableRule = tableRuleOptional.get();
         Map<String, Number> result = new LinkedHashMap<>(generatedKeyContext.getColumns().size());
         for (String each : generatedKeyContext.getColumns()) {
-            Number generatedKey = tableRule.generateId(each);
+            Number generatedKey;
+            if (null != tableRule.getIdGenerator()) {
+                generatedKey = tableRule.getIdGenerator().generateId();
+            } else if (null != shardingRule.getIdGenerator()) {
+                generatedKey = shardingRule.getIdGenerator().generateId();
+            } else {
+                // TODO 使用default id生成器
+                generatedKey = null;
+            }
             result.put(each, generatedKey);
             generatedKeyContext.putValue(each, generatedKey);
         }
