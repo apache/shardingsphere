@@ -31,13 +31,13 @@
     <rdb:strategy id="tableStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.spring.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
-        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" id-generator-class="com.dangdang.ddframe.rdb.sharding.spring.fixture.IncrementIdGenerator">
+        <rdb:sharding-rule data-sources="dbtbl_0,dbtbl_1" default-data-source="dbtbl_0" key-generator-class="com.dangdang.ddframe.rdb.sharding.spring.fixture.IncrementKeyGenerator">
             <rdb:table-rules>
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
                     <rdb:auto-increment-column column-name="order_id"/>
                 </rdb:table-rule>
                 <rdb:table-rule logic-table="t_order_item" actual-tables="t_order_item_${0..3}" database-strategy="databaseStrategy" table-strategy="tableStrategy">
-                    <rdb:auto-increment-column column-name="order_item_id" column-id-generator-class="com.dangdang.ddframe.rdb.sharding.spring.fixture.DecrementIdGenerator"/>
+                    <rdb:auto-increment-column column-name="order_item_id" column-key-generator-class="com.dangdang.ddframe.rdb.sharding.spring.fixture.DecrementKeyGenerator"/>
                 </rdb:table-rule>
             </rdb:table-rules>
         </rdb:sharding-rule>

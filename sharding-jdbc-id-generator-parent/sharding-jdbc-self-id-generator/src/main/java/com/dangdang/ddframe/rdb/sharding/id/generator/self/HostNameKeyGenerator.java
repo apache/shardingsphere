@@ -17,39 +17,45 @@
 
 package com.dangdang.ddframe.rdb.sharding.id.generator.self;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * 根据机器IP获取工作进程Id,如果线上机器的IP二进制表示的最后10位不重复,建议使用此种方式
- * ,列如机器的IP为192.168.1.108,二进制表示:11000000 10101000 00000001 01101100
- * ,截取最后10位 01 01101100,转为十进制364,设置workerId为364.
+ * 根据机器名最后的数字编号获取工作进程Id.如果线上机器命名有统一规范,建议使用此种方式.
+ * 列如机器的HostName为:dangdang-db-sharding-dev-01(公司名-部门名-服务名-环境名-编号)
+ * ,会截取HostName最后的编号01作为workerId.
  *
  * @author DonneyYoung
- */
-public class IPIdGenerator implements IdGenerator {
+ **/
+public class HostNameKeyGenerator implements KeyGenerator {
 
-    private final CommonSelfIdGenerator commonSelfIdGenerator = new CommonSelfIdGenerator();
+    private final CommonSelfKeyGenerator commonSelfKeyGenerator = new CommonSelfKeyGenerator();
 
     static {
         initWorkerId();
     }
-
+    
     static void initWorkerId() {
         InetAddress address;
+        Long workerId;
         try {
             address = InetAddress.getLocalHost();
         } catch (final UnknownHostException e) {
             throw new IllegalStateException("Cannot get LocalHost InetAddress, please check your network!");
         }
-        byte[] ipAddressByteArray = address.getAddress();
-        CommonSelfIdGenerator.setWorkerId((long) (((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << Byte.SIZE) + (ipAddressByteArray[ipAddressByteArray.length - 1] & 0xFF)));
+        String hostName = address.getHostName();
+        try {
+            workerId = Long.valueOf(hostName.replace(hostName.replaceAll("\\d+$", ""), ""));
+        } catch (final NumberFormatException e) {
+            throw new IllegalArgumentException(String.format("Wrong hostname:%s, hostname must be end with number!", hostName));
+        }
+        CommonSelfKeyGenerator.setWorkerId(workerId);
     }
 
     @Override
-    public Number generateId() {
-        return commonSelfIdGenerator.generateId();
+    public Number generateKey() {
+        return commonSelfKeyGenerator.generateKey();
     }
 }

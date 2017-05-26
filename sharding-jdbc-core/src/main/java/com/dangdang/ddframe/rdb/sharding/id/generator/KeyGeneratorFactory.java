@@ -32,15 +32,15 @@ public final class KeyGeneratorFactory {
     /**
      * 创建主键生成器.
      * 
-     * @param idGeneratorClass 主键生成器类
+     * @param keyGeneratorClass 主键生成器类
      * @return 主键生成器实例
      */
-    public static IdGenerator createKeyGenerator(final Class<? extends IdGenerator> idGeneratorClass) {
-        Preconditions.checkNotNull(idGeneratorClass);
+    public static KeyGenerator createKeyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
+        Preconditions.checkNotNull(keyGeneratorClass);
         try {
-            return idGeneratorClass.newInstance();
+            return keyGeneratorClass.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", idGeneratorClass.getName()));
+            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClass.getName()));
         }
     }
 }

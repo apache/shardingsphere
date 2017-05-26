@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShard
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.google.common.base.Optional;
@@ -52,7 +52,7 @@ public final class ShardingRule {
     
     private final TableShardingStrategy tableShardingStrategy;
     
-    private final IdGenerator idGenerator;
+    private final KeyGenerator keyGenerator;
     
     /**
      * 全属性构造器.
@@ -66,7 +66,7 @@ public final class ShardingRule {
     @Deprecated
     public ShardingRule(
             final DataSourceRule dataSourceRule, final Collection<TableRule> tableRules, final Collection<BindingTableRule> bindingTableRules, 
-            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final IdGenerator idGenerator) {
+            final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(dataSourceRule);
         this.dataSourceRule = dataSourceRule;
         this.tableRules = null == tableRules ? Collections.<TableRule>emptyList() : tableRules;
@@ -75,7 +75,7 @@ public final class ShardingRule {
                 Collections.<String>emptyList(), new NoneDatabaseShardingAlgorithm()) : databaseShardingStrategy;
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
-        this.idGenerator = idGenerator;
+        this.keyGenerator = keyGenerator;
     }
     
     /**
@@ -265,7 +265,7 @@ public final class ShardingRule {
         
         private TableShardingStrategy tableShardingStrategy;
         
-        private Class<? extends IdGenerator> idGeneratorClass;
+        private Class<? extends KeyGenerator> keyGeneratorClass;
         
         /**
          * 构建数据源配置规则.
@@ -323,13 +323,13 @@ public final class ShardingRule {
         }
     
         /**
-         * 构建默认id生成器.
+         * 构建默认主键生成器.
          * 
-         * @param idGeneratorClass 默认的Id生成器
+         * @param keyGeneratorClass 默认主键生成器
          * @return 分片规则配置对象构建器
          */
-        public ShardingRuleBuilder idGenerator(final Class<? extends IdGenerator> idGeneratorClass) {
-            this.idGeneratorClass = idGeneratorClass;
+        public ShardingRuleBuilder keyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
+            this.keyGeneratorClass = keyGeneratorClass;
             return this;
         }
         
@@ -339,11 +339,11 @@ public final class ShardingRule {
          * @return 分片规则配置对象
          */
         public ShardingRule build() {
-            IdGenerator idGenerator = null;
-            if (null != idGeneratorClass) {
-                idGenerator = KeyGeneratorFactory.createKeyGenerator(idGeneratorClass);
+            KeyGenerator keyGenerator = null;
+            if (null != keyGeneratorClass) {
+                keyGenerator = KeyGeneratorFactory.createKeyGenerator(keyGeneratorClass);
             }
-            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, idGenerator);
+            return new ShardingRule(dataSourceRule, tableRules, bindingTableRules, databaseShardingStrategy, tableShardingStrategy, keyGenerator);
         }
     }
 }

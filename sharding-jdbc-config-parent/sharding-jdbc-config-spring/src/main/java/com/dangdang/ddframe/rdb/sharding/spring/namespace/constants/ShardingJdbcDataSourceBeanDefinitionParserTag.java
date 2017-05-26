@@ -65,8 +65,8 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     public static final String AUTO_INCREMENT_COLUMN = "auto-increment-column";
     
     public static final String COLUMN_NAME = "column-name";
-     
-    public static final String COLUMN_ID_GENERATOR_CLASS = "column-id-generator-class";
     
-    public static final String ID_GENERATOR_CLASS = "id-generator-class";
+    public static final String COLUMN_KEY_GENERATOR_CLASS = "column-key-generator-class";
+    
+    public static final String KEY_GENERATOR_CLASS = "key-generator-class";
 }

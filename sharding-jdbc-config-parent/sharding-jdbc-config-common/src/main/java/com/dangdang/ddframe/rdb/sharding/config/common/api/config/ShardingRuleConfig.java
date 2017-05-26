@@ -47,5 +47,5 @@ public class ShardingRuleConfig {
     
     private StrategyConfig defaultTableStrategy;
     
-    private String idGeneratorClass;
+    private String keyGeneratorClass;
 }

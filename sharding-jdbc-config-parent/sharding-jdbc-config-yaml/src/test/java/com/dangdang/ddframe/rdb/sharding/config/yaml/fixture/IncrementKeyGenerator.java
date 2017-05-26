@@ -17,15 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
-import lombok.AccessLevel;
-import lombok.Getter;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-abstract class AbstractNumberIdGenerator implements IdGenerator {
+public final class IncrementKeyGenerator implements KeyGenerator {
     
-    @Getter(AccessLevel.PACKAGE)
     private final AtomicInteger sequence = new AtomicInteger(100);
     
+    @Override
+    public Number generateKey() {
+        return sequence.incrementAndGet();
+    }
 }

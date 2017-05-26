@@ -40,14 +40,14 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(HostNameIdGenerator.class)
+@PrepareForTest(HostNameKeyGenerator.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class HostNameIdGeneratorTest {
+public class HostNameKeyGeneratorTest {
     
     private static InetAddress rightAddress;
     
     private static InetAddress wrongAddress;
-
+    
     @Rule
     public ExpectedException exception = ExpectedException.none();
     
@@ -61,54 +61,53 @@ public class HostNameIdGeneratorTest {
         }
         rightAddress = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
         wrongAddress = InetAddress.getByAddress("dangdang-db-sharding-dev", ipv4Byte);
-        //static init HostNameIdGenerator
+        //static init HostNameKeyGenerator
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameIdGenerator.initWorkerId();
+        HostNameKeyGenerator.initWorkerId();
     }
-
+    
     @Test
-    public void testRightHostName() throws UnknownHostException {
+    public void assertRightHostName() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameIdGenerator.initWorkerId();
-        assertThat(CommonSelfIdGenerator.getWorkerId(), is(233L));
+        HostNameKeyGenerator.initWorkerId();
+        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(233L));
     }
-
+    
     @Test
-    public void testUnknownHost() throws UnknownHostException {
+    public void assertUnknownHost() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Cannot get LocalHost InetAddress, please check your network!");
-        HostNameIdGenerator.initWorkerId();
+        HostNameKeyGenerator.initWorkerId();
     }
-
+    
     @Test
-    public void testWrongHostName() throws UnknownHostException {
+    public void assertWrongHostName() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(wrongAddress);
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(String.format("Wrong hostname:%s, hostname must be end with number!", wrongAddress.getHostName()));
-        HostNameIdGenerator.initWorkerId();
+        HostNameKeyGenerator.initWorkerId();
     }
-
+    
     @Test
-    public void generateId() throws Exception {
+    public void assertGenerateId() throws Exception {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameIdGenerator.initWorkerId();
+        HostNameKeyGenerator.initWorkerId();
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-
         final int taskNumber = threadNumber << 2;
-        final HostNameIdGenerator idGenerator = new HostNameIdGenerator();
+        final HostNameKeyGenerator keyGenerator = new HostNameKeyGenerator();
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {
                 @Override
                 public Long call() throws Exception {
-                    return (Long) idGenerator.generateId();
+                    return (Long) keyGenerator.generateKey();
                 }
             }).get());
         }

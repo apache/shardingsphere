@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementKeyGenerator;
 import com.google.common.collect.Sets;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -204,9 +204,9 @@ public final class TableRuleTest {
     
     @Test
     public void assertAutoIncrementColumn() {
-        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).autoIncrementColumns("col_1", IncrementIdGenerator.class).build();
+        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).autoIncrementColumns("col_1", IncrementKeyGenerator.class).build();
         assertThat(actual.getAutoIncrementColumn(), is("col_1"));
-        assertThat(actual.getIdGenerator(), instanceOf(IncrementIdGenerator.class));
+        assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     
     private DataSourceRule createDataSourceRule() {

@@ -89,10 +89,10 @@ public final class InsertSQLContext extends AbstractSQLContext {
         TableRule tableRule = tableRuleOptional.get();
         Map<String, Number> result = new LinkedHashMap<>(1, 1);
         Number generatedKey;
-        if (null != tableRule.getIdGenerator()) {
-            generatedKey = tableRule.getIdGenerator().generateId();
-        } else if (null != shardingRule.getIdGenerator()) {
-            generatedKey = shardingRule.getIdGenerator().generateId();
+        if (null != tableRule.getKeyGenerator()) {
+            generatedKey = tableRule.getKeyGenerator().generateKey();
+        } else if (null != shardingRule.getKeyGenerator()) {
+            generatedKey = shardingRule.getKeyGenerator().generateKey();
         } else {
             // TODO 使用default id生成器
             generatedKey = null;

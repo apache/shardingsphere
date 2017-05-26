@@ -26,7 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRu
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.MultiAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm;
 import com.google.common.base.Joiner;
@@ -78,7 +79,7 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDataSource(createDataSourceMap());
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         shardingRuleConfig.setTables(createTableRuleConfigMap());
-        shardingRuleConfig.setIdGeneratorClass("not.existed");
+        shardingRuleConfig.setKeyGeneratorClass("not.existed");
         shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
@@ -91,7 +92,7 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDataSource(createDataSourceMap());
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         shardingRuleConfig.setTables(createTableRuleConfigMap());
-        shardingRuleConfig.setIdGeneratorClass("com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementIdGenerator");
+        shardingRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
         shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
@@ -165,10 +166,10 @@ public final class ShardingRuleBuilderTest {
         autoIncrementColumnMap.put("order_id", null);
         AutoIncrementColumnConfig orderIdConfig = new AutoIncrementColumnConfig();
         orderIdConfig.setColumnName("order_id");
-        autoIncrementColumnMap.put("order_item_id", "com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator");
+        autoIncrementColumnMap.put("order_item_id", DecrementKeyGenerator.class.getName());
         AutoIncrementColumnConfig orderItemIdConfig = new AutoIncrementColumnConfig();
         orderItemIdConfig.setColumnName("order_item_id");
-        orderItemIdConfig.setColumnIdGeneratorClass(DecrementIdGenerator.class.getName());
+        orderItemIdConfig.setColumnKeyGeneratorClass(DecrementKeyGenerator.class.getName());
         result.setAutoIncrementColumns(Arrays.asList(orderIdConfig, orderItemIdConfig));
         return result;
     }

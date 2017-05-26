@@ -31,11 +31,11 @@ import java.util.concurrent.Executors;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class CommonSelfIdGeneratorTest {
+public class CommonSelfKeyGeneratorTest {
     
     @Before
     public void init() {
-        CommonSelfIdGenerator.setClock(AbstractClock.systemClock());
+        CommonSelfKeyGenerator.setClock(AbstractClock.systemClock());
     }
     
     @Test
@@ -44,13 +44,13 @@ public class CommonSelfIdGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
     
         final int taskNumber = threadNumber << 2;
-        final CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
+        final CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {
                 @Override
                 public Long call() throws Exception {
-                    return (Long) idGenerator.generateId();
+                    return (Long) keyGenerator.generateKey();
                 }
             }).get());
         }
@@ -65,12 +65,12 @@ public class CommonSelfIdGeneratorTest {
     }
     
     private long maxId(final int maxSequence) {
-        CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
-        CommonSelfIdGenerator.setClock(new FixClock(1 << 13));
-        long id = 0;
+        CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
+        CommonSelfKeyGenerator.setClock(new FixClock(1 << 13));
+        long result = 0;
         for (int i = 0; i < maxSequence; i++) {
-            id = (Long) idGenerator.generateId();
+            result = (Long) keyGenerator.generateKey();
         }
-        return id;
+        return result;
     }
 }

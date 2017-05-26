@@ -15,17 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.fixture;
+package com.dangdang.ddframe.rdb.sharding.id.generator;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
-import lombok.AccessLevel;
-import lombok.Getter;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-abstract class AbstractNumberIdGenerator implements IdGenerator {
+/**
+ * 主键生成器.
+ *
+ * @author zhangliang
+ */
+public interface KeyGenerator {
     
-    @Getter(AccessLevel.PACKAGE)
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
+    /**
+     * 生成主键.
+     * 
+     * @return 自动生成的主键
+     */
+    Number generateKey();
 }

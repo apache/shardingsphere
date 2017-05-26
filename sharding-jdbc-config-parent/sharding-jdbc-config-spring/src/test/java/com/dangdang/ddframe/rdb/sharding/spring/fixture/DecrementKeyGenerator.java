@@ -15,19 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator;
+package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
-/**
- * 主键生成器.
- *
- * @author zhangliang
- */
-public interface IdGenerator {
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class DecrementKeyGenerator implements KeyGenerator {
     
-    /**
-     * 生成Id.
-     * 
-     * @return 返回生成的Id,返回值应为@{@link Number}对象或者为@{@link String}对象
-     */
-    Number generateId();
+    private final AtomicInteger sequence = new AtomicInteger(100);
+    
+    @Override
+    public Number generateKey() {
+        return sequence.decrementAndGet();
+    }
 }

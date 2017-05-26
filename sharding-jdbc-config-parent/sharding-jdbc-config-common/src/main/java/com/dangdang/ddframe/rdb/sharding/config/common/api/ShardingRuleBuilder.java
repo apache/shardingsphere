@@ -35,7 +35,7 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfi
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
@@ -86,8 +86,8 @@ public final class ShardingRuleBuilder {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
         com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder().dataSourceRule(dataSourceRule);
-        if (!Strings.isNullOrEmpty(shardingRuleConfig.getIdGeneratorClass())) {
-            shardingRuleBuilder.idGenerator(loadClass(shardingRuleConfig.getIdGeneratorClass(), IdGenerator.class));
+        if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
+            shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }
         return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
                 .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class))
@@ -123,10 +123,10 @@ public final class ShardingRuleBuilder {
     
     private void buildAutoIncrementColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
         for (AutoIncrementColumnConfig each : tableRuleConfig.getAutoIncrementColumns()) {
-            if (Strings.isNullOrEmpty(each.getColumnIdGeneratorClass())) {
+            if (Strings.isNullOrEmpty(each.getColumnKeyGeneratorClass())) {
                 tableRuleBuilder.autoIncrementColumns(each.getColumnName());
             } else {
-                tableRuleBuilder.autoIncrementColumns(each.getColumnName(), loadClass(each.getColumnIdGeneratorClass(), IdGenerator.class));
+                tableRuleBuilder.autoIncrementColumns(each.getColumnName(), loadClass(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
             }
         }
     }

@@ -17,10 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.fixture;
 
-public class IncrementIdGenerator extends AbstractNumberIdGenerator {
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class IncrementKeyGenerator implements KeyGenerator {
+    
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Override
-    public Number generateId() {
-        return getSequence().incrementAndGet();
+    public Number generateKey() {
+        return sequence.incrementAndGet();
     }
 }

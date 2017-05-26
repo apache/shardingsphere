@@ -23,7 +23,7 @@ public class ApiWorkerIdTest extends AbstractWorkerIdTest {
     
     @Before
     public void init() {
-        CommonSelfIdGenerator.setWorkerId(11L);
+        CommonSelfKeyGenerator.setWorkerId(11L);
     }
     
     @Override

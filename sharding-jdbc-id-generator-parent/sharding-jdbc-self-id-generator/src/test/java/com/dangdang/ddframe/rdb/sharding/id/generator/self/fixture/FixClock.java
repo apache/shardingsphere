@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.id.generator.self.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.id.generator.self.time.AbstractClock;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +30,7 @@ public class FixClock extends AbstractClock {
     
     private final AtomicInteger invokedTimes = new AtomicInteger();
     
-    private long current = CommonSelfIdGenerator.SJDBC_EPOCH;
+    private long current = CommonSelfKeyGenerator.SJDBC_EPOCH;
     
     @Override
     public long millis() {

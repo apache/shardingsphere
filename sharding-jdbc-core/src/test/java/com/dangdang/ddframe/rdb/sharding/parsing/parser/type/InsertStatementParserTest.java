@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlg
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
@@ -130,7 +130,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule)
                 .tableShardingStrategy(new TableShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneTableShardingAlgorithm()))
                 .autoIncrementColumns("field1").autoIncrementColumns("field2").build();
-        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).idGenerator(IncrementIdGenerator.class).build();
+        return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).keyGenerator(IncrementKeyGenerator.class).build();
     }
     
     @Test

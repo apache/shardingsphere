@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.id.generator.self;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.id.generator.self.time.AbstractClock;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -45,14 +45,14 @@ import java.util.Date;
  * 
  * <p>
  * 工作进程Id获取优先级: 系统变量{@code sjdbc.self.id.generator.worker.id} 大于 环境变量{@code SJDBC_SELF_ID_GENERATOR_WORKER_ID}
- * ,另外可以调用@{@code CommonSelfIdGenerator.setWorkerId}进行设置
+ * ,另外可以调用@{@code CommonSelfKeyGenerator.setWorkerId}进行设置
  * </p>
  * 
  * @author gaohongtao
  */
 @Getter
 @Slf4j
-public class CommonSelfIdGenerator implements IdGenerator {
+public class CommonSelfKeyGenerator implements KeyGenerator {
     
     public static final long SJDBC_EPOCH;
     
@@ -109,7 +109,7 @@ public class CommonSelfIdGenerator implements IdGenerator {
      */
     public static void setWorkerId(final Long workerId) {
         Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE);
-        CommonSelfIdGenerator.workerId = workerId;
+        CommonSelfKeyGenerator.workerId = workerId;
     }
     
     /**
@@ -118,7 +118,7 @@ public class CommonSelfIdGenerator implements IdGenerator {
      * @return 返回@{@link Long}类型的Id
      */
     @Override
-    public synchronized Number generateId() {
+    public synchronized Number generateKey() {
         long time = clock.millis();
         Preconditions.checkState(lastTime <= time, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, time);
         if (lastTime == time) {

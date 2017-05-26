@@ -14,7 +14,7 @@ dataSource:
     
 defaultDataSourceName: db0
 
-idGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.IncrementIdGenerator
+keyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.IncrementKeyGenerator
     
 tables:
   config:
@@ -36,7 +36,7 @@ tables:
     actualTables: t_order_item_${0..1}
     autoIncrementColumns:
       - columnName: order_item_id
-        columnIdGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.DecrementIdGenerator
+        columnKeyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.DecrementKeyGenerator
     #绑定表中其余的表的策略与第一张表的策略相同
     databaseStrategy: *db001
     tableStrategy: *table001

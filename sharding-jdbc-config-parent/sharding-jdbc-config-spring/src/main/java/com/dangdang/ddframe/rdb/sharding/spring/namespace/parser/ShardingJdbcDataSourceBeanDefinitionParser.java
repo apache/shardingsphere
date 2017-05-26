@@ -68,14 +68,14 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         factory.addPropertyValue("bindingTables", parseBindingTablesConfig(shardingRuleElement));
         factory.addPropertyValue("defaultDatabaseStrategy", parseDefaultDatabaseStrategyConfig(shardingRuleElement));
         factory.addPropertyValue("defaultTableStrategy", parseDefaultTableStrategyConfig(shardingRuleElement));
-        parseIdGenerator(factory, shardingRuleElement);
+        parseKeyGenerator(factory, shardingRuleElement);
         return factory.getBeanDefinition();
     }
     
-    private void parseIdGenerator(final BeanDefinitionBuilder factory, final Element element) {
-        String idGeneratorClass = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.ID_GENERATOR_CLASS);
-        if (!Strings.isNullOrEmpty(idGeneratorClass)) {
-            factory.addPropertyValue("idGeneratorClass", idGeneratorClass);
+    private void parseKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
+        String keyGeneratorClass = element.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.KEY_GENERATOR_CLASS);
+        if (!Strings.isNullOrEmpty(keyGeneratorClass)) {
+            factory.addPropertyValue("keyGeneratorClass", keyGeneratorClass);
         }
     }
     
@@ -136,7 +136,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
             public AutoIncrementColumnConfig apply(final Element input) {
                 AutoIncrementColumnConfig result = new AutoIncrementColumnConfig();
                 result.setColumnName(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME));
-                result.setColumnIdGeneratorClass(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_ID_GENERATOR_CLASS));
+                result.setColumnKeyGeneratorClass(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS));
                 return result;
             }
         }));

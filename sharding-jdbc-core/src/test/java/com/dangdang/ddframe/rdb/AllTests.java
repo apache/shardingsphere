@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.config.AllConfigTests;
 import com.dangdang.ddframe.rdb.sharding.constant.AllConstantsTests;
 import com.dangdang.ddframe.rdb.sharding.executor.AllExecutorTests;
 import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
-import com.dangdang.ddframe.rdb.sharding.id.generator.AllIdGeneratorTest;
+import com.dangdang.ddframe.rdb.sharding.id.generator.AllKeyGeneratorTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
 import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
 import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
@@ -48,7 +48,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllUtilTests.class, 
         AllMetricsTests.class, 
         AllIntegrateTests.class, 
-        AllIdGeneratorTest.class
+        AllKeyGeneratorTest.class
     })
 public class AllTests {
 }

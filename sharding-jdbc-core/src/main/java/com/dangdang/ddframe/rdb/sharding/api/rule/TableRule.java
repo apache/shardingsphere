@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGeneratorFactory;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -53,7 +53,7 @@ public final class TableRule {
     
     private final String autoIncrementColumn;
     
-    private final IdGenerator idGenerator;
+    private final KeyGenerator keyGenerator;
     
     /**
      * 全属性构造器.
@@ -67,7 +67,7 @@ public final class TableRule {
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy,
-                     final String autoIncrementColumn, final IdGenerator idGenerator) {
+                     final String autoIncrementColumn, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
         this.dynamic = dynamic;
@@ -83,7 +83,7 @@ public final class TableRule {
             this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
         }
         this.autoIncrementColumn = autoIncrementColumn;
-        this.idGenerator = idGenerator;
+        this.keyGenerator = keyGenerator;
     }
     
     /**
@@ -202,15 +202,6 @@ public final class TableRule {
     }
     
     /**
-     * 生成Id.
-     * 
-     * @return 生成的id
-     */
-    public Number generateId() {
-        return idGenerator.generateId();
-    }
-    
-    /**
      * 表规则配置对象构建器.
      */
     @RequiredArgsConstructor
@@ -229,11 +220,11 @@ public final class TableRule {
         private DatabaseShardingStrategy databaseShardingStrategy;
         
         private TableShardingStrategy tableShardingStrategy;
-    
+        
         private String autoIncrementColumn;
-    
-        private Class<? extends IdGenerator> idGeneratorClass;
-    
+        
+        private Class<? extends KeyGenerator> keyGeneratorClass;
+        
         /**
          * 构建是否为动态表.
          *
@@ -299,7 +290,7 @@ public final class TableRule {
             this.tableShardingStrategy = tableShardingStrategy;
             return this;
         }
-    
+        
         /**
          * 自增列.
          * 
@@ -310,17 +301,17 @@ public final class TableRule {
             this.autoIncrementColumn = autoIncrementColumn;
             return this;
         }
-    
+        
         /**
          * 自增列.
          *
          * @param autoIncrementColumn 自增列名称
-         * @param idGeneratorClass 列Id生成器的类
+         * @param keyGeneratorClass 列主键生成器类
          * @return 规则配置对象构建器
          */
-        public TableRuleBuilder autoIncrementColumns(final String autoIncrementColumn, final Class<? extends IdGenerator> idGeneratorClass) {
+        public TableRuleBuilder autoIncrementColumns(final String autoIncrementColumn, final Class<? extends KeyGenerator> keyGeneratorClass) {
             this.autoIncrementColumn = autoIncrementColumn;
-            this.idGeneratorClass = idGeneratorClass;
+            this.keyGeneratorClass = keyGeneratorClass;
             return this;
         }
         
@@ -330,12 +321,11 @@ public final class TableRule {
          * @return 表规则配置对象
          */
         public TableRule build() {
-            IdGenerator idGenerator = null;
-            if (null != autoIncrementColumn && null != idGeneratorClass) {
-                idGenerator = KeyGeneratorFactory.createKeyGenerator(idGeneratorClass);
+            KeyGenerator keyGenerator = null;
+            if (null != autoIncrementColumn && null != keyGeneratorClass) {
+                keyGenerator = KeyGeneratorFactory.createKeyGenerator(keyGeneratorClass);
             }
-            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, 
-                    databaseShardingStrategy, tableShardingStrategy, autoIncrementColumn, idGenerator);
+            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy, autoIncrementColumn, keyGenerator);
         }
     }
 }

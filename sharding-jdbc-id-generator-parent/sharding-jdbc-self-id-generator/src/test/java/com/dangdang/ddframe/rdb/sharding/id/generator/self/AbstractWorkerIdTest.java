@@ -32,23 +32,22 @@ public abstract class AbstractWorkerIdTest {
     
     @Before
     public void setup() {
-        CommonSelfIdGenerator.setClock(new FixClock(1));
-        CommonSelfIdGenerator.initWorkerId();
+        CommonSelfKeyGenerator.setClock(new FixClock(1));
+        CommonSelfKeyGenerator.initWorkerId();
     }
     
     @After
     public void clear() {
-        CommonSelfIdGenerator.setClock(AbstractClock.systemClock());
-        CommonSelfIdGenerator.setWorkerId(0L);
+        CommonSelfKeyGenerator.setClock(AbstractClock.systemClock());
+        CommonSelfKeyGenerator.setWorkerId(0L);
     }
     
     @Test
     public void testWorkerId() {
-        CommonSelfIdGenerator idGenerator = new CommonSelfIdGenerator();
-        
-        assertThat((Long) idGenerator.generateId(), is(getWorkerId() << 12L));
-        assertThat(idGenerator.getLastTime(), is(CommonSelfIdGenerator.SJDBC_EPOCH));
-        assertThat(idGenerator.getSequence(), is(0L));
-        assertThat(CommonSelfIdGenerator.getWorkerId(), is(getWorkerId()));
+        CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
+        assertThat((Long) keyGenerator.generateKey(), is(getWorkerId() << 12L));
+        assertThat(keyGenerator.getLastTime(), is(CommonSelfKeyGenerator.SJDBC_EPOCH));
+        assertThat(keyGenerator.getSequence(), is(0L));
+        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(getWorkerId()));
     }
 }

@@ -25,12 +25,12 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UnsupportedIdGeneratorTest {
+public class UnsupportedKeyGeneratorTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalClass() {
         TableRule.builder("test").dataSourceRule(createDataSourceRule())
-                .autoIncrementColumns("col_1", IllegalIdGenerator.class).build();
+                .autoIncrementColumns("col_1", IllegalKeyGenerator.class).build();
     }
     
     private DataSourceRule createDataSourceRule() {
@@ -40,9 +40,9 @@ public class UnsupportedIdGeneratorTest {
         return new DataSourceRule(result);
     }
     
-    private static class IllegalIdGenerator implements IdGenerator {
+    private static class IllegalKeyGenerator implements KeyGenerator {
         @Override
-        public Number generateId() {
+        public Number generateKey() {
             return null;
         }
     }

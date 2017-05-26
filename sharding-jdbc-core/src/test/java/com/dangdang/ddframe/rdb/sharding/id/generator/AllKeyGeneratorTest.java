@@ -15,12 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.yaml.fixture;
+package com.dangdang.ddframe.rdb.sharding.id.generator;
 
-public class IncrementIdGenerator extends AbstractNumberIdGenerator {
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses(
+        UnsupportedKeyGeneratorTest.class
+)
+public class AllKeyGeneratorTest {
     
-    @Override
-    public Number generateId() {
-        return getSequence().incrementAndGet();
-    }
 }

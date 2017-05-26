@@ -40,9 +40,9 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(IPIdGenerator.class)
+@PrepareForTest(IPKeyGenerator.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class IPIdGeneratorTest {
+public class IPKeyGeneratorTest {
     
     private static InetAddress address;
 
@@ -60,15 +60,15 @@ public class IPIdGeneratorTest {
         address = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
-        IPIdGenerator.initWorkerId();
+        IPKeyGenerator.initWorkerId();
     }
 
     @Test
     public void testIP() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
-        IPIdGenerator.initWorkerId();
-        assertThat(CommonSelfIdGenerator.getWorkerId(), is(364L));
+        IPKeyGenerator.initWorkerId();
+        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(364L));
     }
 
     @Test
@@ -77,25 +77,25 @@ public class IPIdGeneratorTest {
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Cannot get LocalHost InetAddress, please check your network!");
-        IPIdGenerator.initWorkerId();
+        IPKeyGenerator.initWorkerId();
     }
 
     @Test
     public void generateId() throws Exception {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
-        IPIdGenerator.initWorkerId();
+        IPKeyGenerator.initWorkerId();
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
 
         final int taskNumber = threadNumber << 2;
-        final IPIdGenerator idGenerator = new IPIdGenerator();
+        final IPKeyGenerator keyGenerator = new IPKeyGenerator();
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {
                 @Override
                 public Long call() throws Exception {
-                    return (Long) idGenerator.generateId();
+                    return (Long) keyGenerator.generateKey();
                 }
             }).get());
         }

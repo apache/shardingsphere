@@ -15,12 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.config.common.fixture;
+package com.dangdang.ddframe.rdb.sharding.id.generator.fixture;
 
-public class IncrementIdGenerator extends AbstractNumberIdGenerator {
+import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class IncrementKeyGenerator implements KeyGenerator {
+    
+    private final AtomicInteger i = new AtomicInteger();
     
     @Override
-    public Number generateId() {
-        return getSequence().incrementAndGet();
+    public Number generateKey() {
+        return i.incrementAndGet();
     }
 }

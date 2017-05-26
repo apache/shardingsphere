@@ -31,22 +31,22 @@ next = "/02-guide/transaction"
 TableRule.builder("t_order").autoIncrementColumns("order_id");
 ```
 
-设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator接口。
+设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator接口。
 
-配置全局生成器(com.x.x.AIdGenerator):
+配置全局生成器(com.xx.xx.KeyGenerator):
 
 ```java
-ShardingRule.builder().idGenerator(com.x.x.AIdGenerator.class);
+ShardingRule.builder().keyGenerator(com.xx.xx.KeyGenerator.class);
 
 ```
 
-有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.x.x.BIdGenerator来生成Id:
+有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.xx.xx.OtherKeyGenerator来生成Id:
 
 ```java
-TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.BIdGenerator.class);
+TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.xx.xx.OtherKeyGenerator.class);
 ```
 
-这样t_order就使用com.x.x.AIdGenerator生成Id，而t_order_item使用com.x.x.BIdGenerator生成Id。
+这样t_order就使用com.xx.xx.KeyGenerator生成Id，而t_order_item使用com.xx.xx.OtherKeyGenerator生成Id。
 
 
 ### 获取自动生成键
@@ -72,7 +72,7 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
     <version>${sharding-jdbc.version}</version>
 </dependency>
 ```
-类名称：com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator
+类名称：com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfKeyGenerator
 
 该生成器作为默认的生成器实现提供，生成的数据为64bit的long型数据。
 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
@@ -87,7 +87,7 @@ TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.x.x.
 
 该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个进程的工作进程Id是不同的。该值默认为0，目前可以通过三种方式设置。
 
- 1. 调用静态方法CommonSelfIdGenerator.setWorkerId("xxxx")设置。
+ 1. 调用静态方法CommonSelfKeyGenerator.setWorkerId("xxxx")设置。
  1. 设置Java的系统变量，也就是再启动命令行中设置-Dsjdbc.self.id.generator.worker.id=xxx设置。
  1. 设置系统环境变量，通过SJDBC_SELF_ID_GENERATOR_WORKER_ID=xxx设置。
 

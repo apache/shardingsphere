@@ -15,7 +15,7 @@ dataSource:
     username: root
     password:
 
-idGeneratorClass: com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator
+keyGeneratorClass: com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfKeyGenerator
 
 tables:
   t_config:

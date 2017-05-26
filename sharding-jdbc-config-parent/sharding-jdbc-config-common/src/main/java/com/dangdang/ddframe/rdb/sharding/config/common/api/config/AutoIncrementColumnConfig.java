@@ -31,5 +31,5 @@ public class AutoIncrementColumnConfig {
     
     private String columnName;
     
-    private String columnIdGeneratorClass;
+    private String columnKeyGeneratorClass;
 }
