@@ -30,7 +30,7 @@ public class UnsupportedKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalClass() {
         TableRule.builder("test").dataSourceRule(createDataSourceRule())
-                .autoIncrementColumns("col_1", IllegalKeyGenerator.class).build();
+                .generateKeyColumn("col_1", IllegalKeyGenerator.class).build();
     }
     
     private DataSourceRule createDataSourceRule() {

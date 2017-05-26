@@ -27,7 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabase
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
@@ -115,18 +115,18 @@ public final class ShardingRuleBuilder {
             if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
                 tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
             }
-            buildAutoIncrementColumn(tableRuleBuilder, tableRuleConfig);
+            buildGenerateKeyColumn(tableRuleBuilder, tableRuleConfig);
             result.add(tableRuleBuilder.build());
         }
         return result;
     }
     
-    private void buildAutoIncrementColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
-        for (AutoIncrementColumnConfig each : tableRuleConfig.getAutoIncrementColumns()) {
+    private void buildGenerateKeyColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
+        for (GenerateKeyColumnConfig each : tableRuleConfig.getGenerateKeyColumns()) {
             if (Strings.isNullOrEmpty(each.getColumnKeyGeneratorClass())) {
-                tableRuleBuilder.autoIncrementColumns(each.getColumnName());
+                tableRuleBuilder.generateKeyColumn(each.getColumnName());
             } else {
-                tableRuleBuilder.autoIncrementColumns(each.getColumnName(), loadClass(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
+                tableRuleBuilder.generateKeyColumn(each.getColumnName(), loadClass(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
             }
         }
     }

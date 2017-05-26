@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
@@ -127,14 +127,14 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         if (!Strings.isNullOrEmpty(tableStrategy)) {
             factory.addPropertyReference("tableStrategy", tableStrategy);
         }
-        List<Element> autoIncrementColumns = DomUtils.getChildElementsByTagName(tableElement, ShardingJdbcDataSourceBeanDefinitionParserTag.AUTO_INCREMENT_COLUMN);
-        if (null == autoIncrementColumns || autoIncrementColumns.isEmpty()) {
+        List<Element> generateKeyColumns = DomUtils.getChildElementsByTagName(tableElement, ShardingJdbcDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN);
+        if (null == generateKeyColumns || generateKeyColumns.isEmpty()) {
             return factory.getBeanDefinition();
         }
-        factory.addPropertyValue("autoIncrementColumns", Lists.transform(autoIncrementColumns, new Function<Element, AutoIncrementColumnConfig>() {
+        factory.addPropertyValue("generateKeyColumns", Lists.transform(generateKeyColumns, new Function<Element, GenerateKeyColumnConfig>() {
             @Override
-            public AutoIncrementColumnConfig apply(final Element input) {
-                AutoIncrementColumnConfig result = new AutoIncrementColumnConfig();
+            public GenerateKeyColumnConfig apply(final Element input) {
+                GenerateKeyColumnConfig result = new GenerateKeyColumnConfig();
                 result.setColumnName(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_NAME));
                 result.setColumnKeyGeneratorClass(input.getAttribute(ShardingJdbcDataSourceBeanDefinitionParserTag.COLUMN_KEY_GENERATOR_CLASS));
                 return result;

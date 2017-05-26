@@ -51,7 +51,7 @@ public final class TableRule {
     
     private final TableShardingStrategy tableShardingStrategy;
     
-    private final String autoIncrementColumn;
+    private final String generateKeyColumn;
     
     private final KeyGenerator keyGenerator;
     
@@ -67,7 +67,7 @@ public final class TableRule {
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
                      final DatabaseShardingStrategy databaseShardingStrategy, final TableShardingStrategy tableShardingStrategy,
-                     final String autoIncrementColumn, final KeyGenerator keyGenerator) {
+                     final String generateKeyColumn, final KeyGenerator keyGenerator) {
         Preconditions.checkNotNull(logicTable);
         this.logicTable = logicTable;
         this.dynamic = dynamic;
@@ -82,7 +82,7 @@ public final class TableRule {
         } else {
             this.actualTables = generateDataNodes(actualTables, dataSourceRule, dataSourceNames);
         }
-        this.autoIncrementColumn = autoIncrementColumn;
+        this.generateKeyColumn = generateKeyColumn;
         this.keyGenerator = keyGenerator;
     }
     
@@ -221,7 +221,7 @@ public final class TableRule {
         
         private TableShardingStrategy tableShardingStrategy;
         
-        private String autoIncrementColumn;
+        private String generateKeyColumn;
         
         private Class<? extends KeyGenerator> keyGeneratorClass;
         
@@ -294,23 +294,23 @@ public final class TableRule {
         /**
          * 自增列.
          * 
-         * @param autoIncrementColumn 自增列名称
+         * @param generateKeyColumn 自增列名称
          * @return 规则配置对象构建器
          */
-        public TableRuleBuilder autoIncrementColumns(final String autoIncrementColumn) {
-            this.autoIncrementColumn = autoIncrementColumn;
+        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn) {
+            this.generateKeyColumn = generateKeyColumn;
             return this;
         }
         
         /**
          * 自增列.
          *
-         * @param autoIncrementColumn 自增列名称
+         * @param generateKeyColumn 自增列名称
          * @param keyGeneratorClass 列主键生成器类
          * @return 规则配置对象构建器
          */
-        public TableRuleBuilder autoIncrementColumns(final String autoIncrementColumn, final Class<? extends KeyGenerator> keyGeneratorClass) {
-            this.autoIncrementColumn = autoIncrementColumn;
+        public TableRuleBuilder generateKeyColumn(final String generateKeyColumn, final Class<? extends KeyGenerator> keyGeneratorClass) {
+            this.generateKeyColumn = generateKeyColumn;
             this.keyGeneratorClass = keyGeneratorClass;
             return this;
         }
@@ -322,10 +322,10 @@ public final class TableRule {
          */
         public TableRule build() {
             KeyGenerator keyGenerator = null;
-            if (null != autoIncrementColumn && null != keyGeneratorClass) {
+            if (null != generateKeyColumn && null != keyGeneratorClass) {
                 keyGenerator = KeyGeneratorFactory.createKeyGenerator(keyGeneratorClass);
             }
-            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy, autoIncrementColumn, keyGenerator);
+            return new TableRule(logicTable, dynamic, actualTables, dataSourceRule, dataSourceNames, databaseShardingStrategy, tableShardingStrategy, generateKeyColumn, keyGenerator);
         }
     }
 }

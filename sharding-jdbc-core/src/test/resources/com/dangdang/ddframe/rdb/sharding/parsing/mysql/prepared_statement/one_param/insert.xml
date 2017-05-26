@@ -16,7 +16,7 @@
             </condition-context>
         </condition-contexts>
     </assert>
-    <assert id="assertInsertWithParameterAndAutoincrementColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="insert into [Token(order)]('state', order_id) values(?, ?)">
+    <assert id="assertInsertWithParameterAndGenerateKeyColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="insert into [Token(order)]('state', order_id) values(?, ?)">
         <tables>
             <table name="order" />
         </tables>
@@ -33,7 +33,7 @@
             </condition-context>
         </condition-contexts>
     </assert>
-    <assert id="assertInsertWithParameterAndAutoincrementColumn" sql="insert into `payment`('state') values(?)" expected-sql="insert into [Token(payment)]('state', order_id, pay_no) values(?, ?, ?)">
+    <assert id="assertInsertWithParameterAndGenerateKeyColumn" sql="insert into `payment`('state') values(?)" expected-sql="insert into [Token(payment)]('state', order_id, pay_no) values(?, ?, ?)">
         <tables>
             <table name="payment" />
         </tables>

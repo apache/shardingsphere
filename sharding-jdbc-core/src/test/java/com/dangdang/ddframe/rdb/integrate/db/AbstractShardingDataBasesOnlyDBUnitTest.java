@@ -76,7 +76,7 @@ public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDB
         }
         isShutdown = false;
         DataSourceRule dataSourceRule = new DataSourceRule(createDataSourceMap("dataSource_%s"));
-        TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).autoIncrementColumns("order_id", IncrementKeyGenerator.class).build();
+        TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", IncrementKeyGenerator.class).build();
         TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
                 .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))

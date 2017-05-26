@@ -62,7 +62,7 @@ public final class ShardingJdbcDataSourceBeanDefinitionParserTag {
     
     public static final String DEFAULT_TABLE_STRATEGY_ATTRIBUTE = "default-table-strategy";
     
-    public static final String AUTO_INCREMENT_COLUMN = "auto-increment-column";
+    public static final String GENERATE_KEY_COLUMN = "generate-key-column";
     
     public static final String COLUMN_NAME = "column-name";
     

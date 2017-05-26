@@ -199,13 +199,13 @@ public final class TableRuleTest {
                 + "DataNode(dataSourceName=ds1, tableName=table_1), "
                 + "DataNode(dataSourceName=ds1, tableName=table_2)], "
                 + "databaseShardingStrategy=null, tableShardingStrategy=null, "
-                + "autoIncrementColumnMap={})"));
+                + "generateKeyColumnsMap={})"));
     }
     
     @Test
-    public void assertAutoIncrementColumn() {
-        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).autoIncrementColumns("col_1", IncrementKeyGenerator.class).build();
-        assertThat(actual.getAutoIncrementColumn(), is("col_1"));
+    public void assertGenerateKeyColumn() {
+        TableRule actual = TableRule.builder("logicTable").dataSourceRule(createDataSourceRule()).generateKeyColumn("col_1", IncrementKeyGenerator.class).build();
+        assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     

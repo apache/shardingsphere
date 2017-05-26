@@ -23,11 +23,11 @@ import lombok.Setter;
 /**
  * 自增列配置.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
 @Getter
 @Setter
-public class AutoIncrementColumnConfig {
+public class GenerateKeyColumnConfig {
     
     private String columnName;
     

@@ -41,26 +41,26 @@ public class ShardingRuleMockBuilder {
     
     private final List<String> shardingColumns = new ArrayList<>();
     
-    private final Multimap<String, String> autoIncrementColumnMap = LinkedHashMultimap.create();
+    private final Multimap<String, String> generateKeyColumnsMap = LinkedHashMultimap.create();
     
     public ShardingRuleMockBuilder addShardingColumns(final String shardingColumnName) {
         this.shardingColumns.add(shardingColumnName);
         return this;
     }
     
-    public ShardingRuleMockBuilder addAutoIncrementColumn(final String tableName, final String columnName) {
-        autoIncrementColumnMap.put(tableName, columnName);
+    public ShardingRuleMockBuilder addgenerateKeyColumn(final String tableName, final String columnName) {
+        generateKeyColumnsMap.put(tableName, columnName);
         return this;
     }
     
     public ShardingRule build() {
         final DataSourceRule dataSourceRule = new DataSourceRule(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
-        Collection<TableRule> tableRules = Lists.newArrayList(Iterators.transform(autoIncrementColumnMap.keySet().iterator(), new Function<String, TableRule>() {
+        Collection<TableRule> tableRules = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRule>() {
             @Override
             public TableRule apply(final String input) {
                 TableRule.TableRuleBuilder builder =  TableRule.builder(input).actualTables(Collections.singletonList(input)).dataSourceRule(dataSourceRule);
-                for (String each : autoIncrementColumnMap.get(input)) {
-                    builder.autoIncrementColumns(each);
+                for (String each : generateKeyColumnsMap.get(input)) {
+                    builder.generateKeyColumn(each);
                 }
                 return builder.build();
             }

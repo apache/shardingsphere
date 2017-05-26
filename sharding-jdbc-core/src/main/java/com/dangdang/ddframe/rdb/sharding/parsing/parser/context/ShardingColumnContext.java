@@ -28,14 +28,14 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-@EqualsAndHashCode(exclude = "autoIncrement")
+@EqualsAndHashCode(exclude = "generateKey")
 public final class ShardingColumnContext {
     
     private final String columnName;
     
     private final String tableName;
     
-    private final boolean autoIncrement;
+    private final boolean generateKey;
     
     public ShardingColumnContext(final String columnName, final String tableName) {
         this(columnName, tableName, false);

@@ -73,9 +73,9 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithAutoIncrementColumnsWithoutParameter() throws SQLException {
+    public void parseWithGenerateKeyColumnsWithoutParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)";
-        ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
+        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithoutParameter(sqlContext);
@@ -85,9 +85,9 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithAutoIncrementColumnsWithParameter() throws SQLException {
+    public void parseWithGenerateKeyColumnsWithParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
-        ShardingRule shardingRule = createShardingRuleWithAutoIncrementColumns();
+        ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithParameter(sqlContext);
@@ -113,7 +113,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getValueIndices().get(0), is(0));
     }
     
-    private ShardingRule createShardingRuleWithAutoIncrementColumns() {
+    private ShardingRule createShardingRuleWithGenerateKeyColumns() {
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -129,7 +129,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         TableRule tableRule = TableRule.builder("TABLE_XXX").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule)
                 .tableShardingStrategy(new TableShardingStrategy(Arrays.asList("field1", "field2", "field3", "field4", "field5", "field6", "field7"), new NoneTableShardingAlgorithm()))
-                .autoIncrementColumns("field1").autoIncrementColumns("field2").build();
+                .generateKeyColumn("field1").generateKeyColumn("field2").build();
         return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).keyGenerator(IncrementKeyGenerator.class).build();
     }
     

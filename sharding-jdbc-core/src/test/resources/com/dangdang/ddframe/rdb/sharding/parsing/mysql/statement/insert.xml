@@ -16,7 +16,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertWithAutoIncrementColumn" sql="insert into `order`('state') values('RUNNING')" expected-sql="insert into [Token(order)]('state', order_id) values('RUNNING', 1)">
+    <assert id="assertInsertWithGenerateKeyColumn" sql="insert into `order`('state') values('RUNNING')" expected-sql="insert into [Token(order)]('state', order_id) values('RUNNING', 1)">
         <tables>
             <table name="order" />
         </tables>
@@ -32,7 +32,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertWithoutAutoIncrementColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')" expected-sql="insert into [Token(user)]('user_id', 'state') values(1, 'RUNNING')">
+    <assert id="assertInsertWithoutGenerateKeyColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')" expected-sql="insert into [Token(user)]('user_id', 'state') values(1, 'RUNNING')">
         <tables>
             <table name="user" />
         </tables>
@@ -48,7 +48,7 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertWithMultiAutoIncrementColumn" sql="insert into `payment`('state') values('RUNNING')" expected-sql="insert into [Token(payment)]('state', id, order_id) values('RUNNING', 1, 1)">
+    <assert id="assertInsertWithMultiGenerateKeyColumn" sql="insert into `payment`('state') values('RUNNING')" expected-sql="insert into [Token(payment)]('state', id, order_id) values('RUNNING', 1, 1)">
         <tables>
             <table name="payment" />
         </tables>

@@ -23,7 +23,7 @@ tables:
     
   t_order: 
     actualTables: t_order_${0..1}
-    autoIncrementColumns:
+    generateKeyColumns:
       - columnName: order_id 
     databaseStrategy: &db001
       shardingColumns: order_id
@@ -34,7 +34,7 @@ tables:
         
   t_order_item:
     actualTables: t_order_item_${0..1}
-    autoIncrementColumns:
+    generateKeyColumns:
       - columnName: order_item_id
         columnKeyGeneratorClass: com.dangdang.ddframe.rdb.sharding.config.yaml.fixture.DecrementKeyGenerator
     #绑定表中其余的表的策略与第一张表的策略相同

@@ -281,7 +281,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     }
     
     @Test
-    public void assertAddBatchWithAutoIncrementColumn() throws SQLException {
+    public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
         String sql = "INSERT INTO `t_order`(`user_id`, `status`) VALUES (?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();

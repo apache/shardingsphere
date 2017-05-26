@@ -240,10 +240,10 @@ public final class ShardingRule {
      * @param tableName 表名称
      * @return 自增列名称
      */
-    public Optional<String> getAutoIncrementColumn(final String tableName) {
+    public Optional<String> getGenerateKeyColumn(final String tableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equalsIgnoreCase(tableName)) {
-                return Optional.fromNullable(each.getAutoIncrementColumn());
+                return Optional.fromNullable(each.getGenerateKeyColumn());
             }
         }
         return Optional.absent();

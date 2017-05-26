@@ -54,7 +54,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     }
     
     @Test
-    public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithGenerateKeyColumn() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding;
 
-import com.dangdang.ddframe.rdb.sharding.spring.AutoIncrementDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.spring.GenerateKeyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceDefaultStrategyTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.WithoutNamespaceTest;
 import com.dangdang.ddframe.rdb.sharding.spring.cases.namespace.WithNamespaceAlgorithmClassAndPropsTest;
@@ -47,7 +47,7 @@ import org.junit.runners.Suite.SuiteClasses;
         WithNamespaceDifferentTablesTest.class,
         WithNamespaceForIndicatedDataSourceNamesTest.class,
         WithNamespaceForMasterSlaveTest.class,
-        AutoIncrementDBUnitTest.class
+        GenerateKeyDBUnitTest.class
     })
 public class AllSpringTests {
 }

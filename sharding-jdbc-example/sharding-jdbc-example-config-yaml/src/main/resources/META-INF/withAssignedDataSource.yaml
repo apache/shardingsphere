@@ -23,7 +23,7 @@ tables:
 
   t_order: 
     actualTables: ds_${0..1}.t_order_${0..1}
-    autoIncrementColumns:
+    generateKeyColumns:
       - columnName: order_id
     tableStrategy:
       shardingColumns: order_id

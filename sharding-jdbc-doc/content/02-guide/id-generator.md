@@ -28,7 +28,7 @@ next = "/02-guide/transaction"
 配置自增列：
 
 ```java
-TableRule.builder("t_order").autoIncrementColumns("order_id");
+TableRule.builder("t_order").generateKeyColumns("order_id");
 ```
 
 设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator接口。
@@ -43,7 +43,7 @@ ShardingRule.builder().keyGenerator(com.xx.xx.KeyGenerator.class);
 有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.xx.xx.OtherKeyGenerator来生成Id:
 
 ```java
-TableRule.builder("t_order_item").autoIncrementColumns("order_item_id", com.xx.xx.OtherKeyGenerator.class);
+TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.OtherKeyGenerator.class);
 ```
 
 这样t_order就使用com.xx.xx.KeyGenerator生成Id，而t_order_item使用com.xx.xx.OtherKeyGenerator生成Id。
