@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
     
     @Test
-    public void test() throws SQLException {
+    public void assertGenerateKey() throws SQLException {
         try (Connection connection = getShardingDataSource().getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
