@@ -80,7 +80,10 @@ public final class ParsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         final Context context = MetricsContext.start("Route SQL");
         if (sqlContext instanceof InsertSQLContext && !parameters.isEmpty()) {
-            parameters.addAll(((InsertSQLContext) sqlContext).generateKeys(shardingRule).values());
+            Number generatedKey = ((InsertSQLContext) sqlContext).generateKey(shardingRule);
+            if (null != generatedKey) {
+                parameters.add(generatedKey);
+            }
         }
         if (null != sqlContext.getLimitContext()) {
             sqlContext.getLimitContext().processParameters(parameters);
