@@ -15,19 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-/**
- * 主键生成器.
- *
- * @author zhangliang
- */
-public interface KeyGenerator {
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.ProvideSystemProperty;
+
+public class SystemPropertyWorkerIdTest extends AbstractWorkerIdTest {
     
-    /**
-     * 生成主键.
-     * 
-     * @return 自动生成的主键
-     */
-    Number generateKey();
+    @Rule
+    public final ProvideSystemProperty provideSystemProperty = new ProvideSystemProperty("sjdbc.self.id.generator.worker.id", "12");
+    
+    @Override
+    protected long getWorkerId() {
+        return 12L;
+    }
 }

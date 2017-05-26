@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self.fixture;
+package com.dangdang.ddframe.rdb.sharding.keygen.self.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.time.AbstractClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.self.CommonSelfKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicInteger;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

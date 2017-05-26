@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.api.rule;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGeneratorFactory;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

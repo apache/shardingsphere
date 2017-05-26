@@ -15,19 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Before;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ApiWorkerIdTest.class,
-        SystemPropertyWorkerIdTest.class,
-        SystemEnvWorkerIdTest.class,
-        CommonSelfKeyGeneratorTest.class,
-        HostNameKeyGeneratorTest.class,
-        IPKeyGeneratorTest.class
-    })
-public class AllTest {
+public class ApiWorkerIdTest extends AbstractWorkerIdTest {
+    
+    @Before
+    public void init() {
+        CommonSelfKeyGenerator.setWorkerId(11L);
+    }
+    
+    @Override
+    protected long getWorkerId() {
+        return 11;
+    }
 }

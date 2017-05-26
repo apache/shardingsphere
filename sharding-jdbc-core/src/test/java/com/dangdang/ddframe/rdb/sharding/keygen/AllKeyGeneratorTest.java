@@ -15,18 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.fixture;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class IncrementKeyGenerator implements KeyGenerator {
+@RunWith(Suite.class)
+@Suite.SuiteClasses(
+        UnsupportedKeyGeneratorTest.class
+)
+public class AllKeyGeneratorTest {
     
-    private final AtomicInteger i = new AtomicInteger();
-    
-    @Override
-    public Number generateKey() {
-        return i.incrementAndGet();
-    }
 }

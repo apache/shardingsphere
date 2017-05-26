@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.config.yaml.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

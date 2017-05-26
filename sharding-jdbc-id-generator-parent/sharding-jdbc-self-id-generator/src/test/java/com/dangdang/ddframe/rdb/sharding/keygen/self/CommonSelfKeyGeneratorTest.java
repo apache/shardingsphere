@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.fixture.FixClock;
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.time.AbstractClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.self.fixture.FixClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
 import org.junit.Before;
 import org.junit.Test;
 

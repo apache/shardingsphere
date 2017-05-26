@@ -35,7 +35,7 @@ import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfi
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;

@@ -22,8 +22,8 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShard
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGeneratorFactory;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

@@ -15,9 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

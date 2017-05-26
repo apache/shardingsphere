@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-import com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.id.generator.self.time.AbstractClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;

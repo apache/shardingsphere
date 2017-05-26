@@ -15,36 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self.time;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
 /**
- * 时钟定义.
- * 
- * @author gaohongtao
+ * 主键生成器.
+ *
+ * @author zhangliang
  */
-public abstract class AbstractClock {
+public interface KeyGenerator {
     
     /**
-     * 创建系统时钟.
+     * 生成主键.
      * 
-     * @return 系统时钟
+     * @return 自动生成的主键
      */
-    public static AbstractClock systemClock() {
-        return new SystemClock();
-    }
-    
-    /**
-     * 返回从纪元开始的毫秒数.
-     * 
-     * @return 从纪元开始的毫秒数
-     */
-    public abstract long millis();
-    
-    private static final class SystemClock extends AbstractClock {
-    
-        @Override
-        public long millis() {
-            return System.currentTimeMillis();
-        }
-    }
+    Number generateKey();
 }

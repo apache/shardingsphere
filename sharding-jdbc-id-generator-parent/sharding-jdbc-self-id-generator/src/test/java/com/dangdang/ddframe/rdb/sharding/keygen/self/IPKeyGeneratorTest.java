@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -40,14 +40,12 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(HostNameKeyGenerator.class)
+@PrepareForTest(IPKeyGenerator.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class HostNameKeyGeneratorTest {
+public class IPKeyGeneratorTest {
     
-    private static InetAddress rightAddress;
-    
-    private static InetAddress wrongAddress;
-    
+    private static InetAddress address;
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
     
@@ -59,49 +57,39 @@ public class HostNameKeyGeneratorTest {
         for (int i = 0; i < 4; i++) {
             ipv4Byte[i] = (byte) Integer.valueOf(ipv4StingArray[i]).intValue();
         }
-        rightAddress = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
-        wrongAddress = InetAddress.getByAddress("dangdang-db-sharding-dev", ipv4Byte);
-        //static init HostNameKeyGenerator
+        address = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameKeyGenerator.initWorkerId();
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
+        IPKeyGenerator.initWorkerId();
     }
-    
+
     @Test
-    public void assertRightHostName() throws UnknownHostException {
+    public void testIP() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameKeyGenerator.initWorkerId();
-        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(233L));
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
+        IPKeyGenerator.initWorkerId();
+        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(364L));
     }
-    
+
     @Test
-    public void assertUnknownHost() throws UnknownHostException {
+    public void testUnknownHost() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenThrow(new UnknownHostException());
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Cannot get LocalHost InetAddress, please check your network!");
-        HostNameKeyGenerator.initWorkerId();
+        IPKeyGenerator.initWorkerId();
     }
-    
+
     @Test
-    public void assertWrongHostName() throws UnknownHostException {
+    public void generateId() throws Exception {
         PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(wrongAddress);
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(String.format("Wrong hostname:%s, hostname must be end with number!", wrongAddress.getHostName()));
-        HostNameKeyGenerator.initWorkerId();
-    }
-    
-    @Test
-    public void assertGenerateId() throws Exception {
-        PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
-        HostNameKeyGenerator.initWorkerId();
+        PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
+        IPKeyGenerator.initWorkerId();
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
+
         final int taskNumber = threadNumber << 2;
-        final HostNameKeyGenerator keyGenerator = new HostNameKeyGenerator();
+        final IPKeyGenerator keyGenerator = new IPKeyGenerator();
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {

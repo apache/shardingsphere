@@ -15,19 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.id.generator.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
-public class ApiWorkerIdTest extends AbstractWorkerIdTest {
+public class SystemEnvWorkerIdTest extends AbstractWorkerIdTest {
+    
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
     
     @Before
-    public void init() {
-        CommonSelfKeyGenerator.setWorkerId(11L);
+    public void setup() {
+        environmentVariables.set("SJDBC_SELF_ID_GENERATOR_WORKER_ID", "13");
+        super.setup();
     }
     
     @Override
     protected long getWorkerId() {
-        return 11;
+        return 13L;
     }
 }
