@@ -24,7 +24,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/namespace/withNamespaceGenerateKeyColumns.xml")
@@ -36,10 +37,10 @@ public class GenerateKeyDBUnitTest extends AbstractSpringDBUnitTest {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
             assertTrue(statement.getGeneratedKeys().next());
-            assertEquals(statement.getGeneratedKeys().getLong(1), 101L);
+            assertThat(statement.getGeneratedKeys().getLong(1), is(101L));
             statement.execute("INSERT INTO `t_order_item` (`order_id`, `user_id`, `status`) VALUES (101, 1, 'init')", Statement.RETURN_GENERATED_KEYS);
             assertTrue(statement.getGeneratedKeys().next());
-            assertEquals(statement.getGeneratedKeys().getLong(1), 99L);
+            assertThat(statement.getGeneratedKeys().getLong(1), is(99L));
         }
     }
 }

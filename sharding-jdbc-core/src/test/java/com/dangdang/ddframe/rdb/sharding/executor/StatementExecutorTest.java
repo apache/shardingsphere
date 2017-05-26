@@ -82,7 +82,7 @@ public final class StatementExecutorTest {
     @Test
     public void assertNoStatement() throws SQLException {
         StatementExecutor actual = new StatementExecutor(executorEngine);
-        assertThat(actual.execute(), is(false));
+        assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
     }

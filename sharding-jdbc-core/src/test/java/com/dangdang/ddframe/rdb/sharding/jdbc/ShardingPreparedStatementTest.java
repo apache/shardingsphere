@@ -37,7 +37,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -304,13 +303,13 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
                 assertThat(each, is(1));
             }
             assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 1);
+            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(1L));
             assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 2);
+            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(2L));
             assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 3);
+            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(3L));
             assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertEquals(preparedStatement.getGeneratedKeys().getLong(1), 4);
+            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(4L));
             assertFalse(preparedStatement.getGeneratedKeys().next());
             try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 11")) {
                 assertTrue(rs.next());

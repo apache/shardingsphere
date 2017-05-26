@@ -38,7 +38,9 @@ import java.util.Date;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -96,8 +98,7 @@ public final class MemoryResultSetTest {
         assertThat(rs.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
         rs.clearWarnings();
         assertThat(rs.getWarnings(), nullValue());
-        
-        assertThat(rs.next(), is(true));
+        assertTrue(rs.next());
         if (scale > 0) {
             assertThat(ResultSet.class.getMethod(methodName, int.class, int.class).invoke(rs, 1, scale), is(result));
             assertThat(ResultSet.class.getMethod(methodName, String.class, int.class).invoke(rs, "name", scale), is(result));
@@ -109,13 +110,13 @@ public final class MemoryResultSetTest {
             assertThat(ResultSet.class.getMethod(methodName, String.class).invoke(rs, "name"), is(result));
         }
         if (null == result || null == input) {
-            assertThat(rs.wasNull(), is(true));
+            assertTrue(rs.wasNull());
         } else {
-            assertThat(rs.wasNull(), is(false));
+            assertFalse(rs.wasNull());
         }
-        assertThat(rs.next(), is(false));
-        assertThat(rs.isClosed(), is(false));
+        assertFalse(rs.next());
+        assertFalse(rs.isClosed());
         rs.close();
-        assertThat(rs.isClosed(), is(true));
+        assertTrue(rs.isClosed());
     }
 }

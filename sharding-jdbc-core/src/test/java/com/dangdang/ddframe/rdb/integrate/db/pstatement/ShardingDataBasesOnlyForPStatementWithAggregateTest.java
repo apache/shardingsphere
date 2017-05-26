@@ -17,12 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -30,8 +24,16 @@ import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
@@ -54,10 +56,10 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("COUNT(*)"), is(40));
             assertThat(rs.getInt(1), is(40));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -73,10 +75,10 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getLong("SUM(`user_id`)"), is(780L));
             assertThat(rs.getLong(1), is(780L));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -92,10 +94,10 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getDouble("MAX(`user_id`)"), is(29D));
             assertThat(rs.getDouble(1), is(29D));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -111,10 +113,10 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getFloat("MIN(`user_id`)"), is(10F));
             assertThat(rs.getFloat(1), is(10F));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -131,10 +133,10 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getObject("AVG(`user_id`)"), Is.<Object>is(new BigDecimal("19.5000")));
             assertThat(rs.getBigDecimal(1), Is.<Object>is(new BigDecimal("19.5000")));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     

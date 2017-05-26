@@ -17,21 +17,23 @@
 
 package com.dangdang.ddframe.rdb.integrate.nullable;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingForNullableWithAggregateTest extends AbstractShardingNullableDBUnitTest {
     
@@ -48,12 +50,12 @@ public final class ShardingForNullableWithAggregateTest extends AbstractSharding
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("COUNT(`user_id`)"), is(0));
             assertThat(rs.getInt(1), is(0));
             assertThat(rs.getObject("COUNT(`user_id`)"), CoreMatchers.<Object>is(new BigDecimal("0")));
             assertThat(rs.getObject(1), CoreMatchers.<Object>is(new BigDecimal("0")));
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -63,12 +65,12 @@ public final class ShardingForNullableWithAggregateTest extends AbstractSharding
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("SUM(`user_id`)"), is(0));
             assertThat(rs.getInt(1), is(0));
             assertThat(rs.getObject("SUM(`user_id`)"), nullValue());
             assertThat(rs.getObject(1), nullValue());
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -78,12 +80,12 @@ public final class ShardingForNullableWithAggregateTest extends AbstractSharding
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("MAX(`user_id`)"), is(0));
             assertThat(rs.getInt(1), is(0));
             assertThat(rs.getObject("MAX(`user_id`)"), nullValue());
             assertThat(rs.getObject(1), nullValue());
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -93,12 +95,12 @@ public final class ShardingForNullableWithAggregateTest extends AbstractSharding
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("MIN(`user_id`)"), is(0));
             assertThat(rs.getInt(1), is(0));
             assertThat(rs.getObject("MIN(`user_id`)"), nullValue());
             assertThat(rs.getObject(1), nullValue());
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     
@@ -108,12 +110,12 @@ public final class ShardingForNullableWithAggregateTest extends AbstractSharding
         try (Connection conn = shardingDataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            assertThat(rs.next(), is(true));
+            assertTrue(rs.next());
             assertThat(rs.getInt("AVG(`user_id`)"), is(0));
             assertThat(rs.getInt(1), is(0));
             assertThat(rs.getObject("AVG(`user_id`)"), nullValue());
             assertThat(rs.getObject(1), nullValue());
-            assertThat(rs.next(), is(false));
+            assertFalse(rs.next());
         }
     }
     

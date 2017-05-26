@@ -35,8 +35,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class MemoryOrderByResultSetTest {
     
@@ -50,7 +52,7 @@ public class MemoryOrderByResultSetTest {
         }
         assertThat(actualList, is(Arrays.asList(1, 2, 3, 4, 5, 6, 6, 6, 8)));
         rs.close();
-        assertThat(rs.isClosed(), is(true));
+        assertTrue(rs.isClosed());
         
         rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
                 Collections.singletonList(new OrderByContext(1, OrderType.DESC))) { };
@@ -120,22 +122,22 @@ public class MemoryOrderByResultSetTest {
         rs1.put("time", null);
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))), 
                 Collections.singletonList(new OrderByContext(1, OrderType.ASC))) { };
-        assertThat(rs.next(), is(true));
+        assertTrue(rs.next());
         assertThat(rs.getObject(2), nullValue());
-        assertThat(rs.wasNull(), is(true));
+        assertTrue(rs.wasNull());
     }
     
     @Test
     public void assertOthers() throws SQLException {
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
                 Collections.singletonList(new OrderByContext(1, OrderType.ASC))) { };
-        assertThat(rs.next(), is(true));
+        assertTrue(rs.next());
         assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
         assertThat(rs.getFetchSize(), is(9));
         assertThat(rs.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
         assertThat(rs.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
         rs.clearWarnings();
         assertThat(rs.getWarnings(), nullValue());
-        assertThat(rs.getMetaData() instanceof MockResultSet.MockResultSetMetaData, is(true));
+        assertThat(rs.getMetaData(), instanceOf(MockResultSet.MockResultSetMetaData.class));
     }
 }

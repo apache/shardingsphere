@@ -29,7 +29,6 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -70,7 +69,7 @@ public class GeneratedKeysResultSetMetaDataTest {
     
     @Test
     public void isNullable() throws Exception {
-        assertEquals(actualMetaData.isNullable(1), ResultSetMetaData.columnNoNulls);
+        assertThat(actualMetaData.isNullable(1), is(ResultSetMetaData.columnNoNulls));
     }
     
     @Test
@@ -80,7 +79,7 @@ public class GeneratedKeysResultSetMetaDataTest {
     
     @Test
     public void getColumnDisplaySize() throws Exception {
-        assertEquals(actualMetaData.getColumnDisplaySize(1), 0);
+        assertThat(actualMetaData.getColumnDisplaySize(1), is(0));
     }
     
     @Test
@@ -100,12 +99,12 @@ public class GeneratedKeysResultSetMetaDataTest {
     
     @Test
     public void getPrecision() throws Exception {
-        assertEquals(actualMetaData.getPrecision(1), 0);
+        assertThat(actualMetaData.getPrecision(1), is(0));
     }
     
     @Test
     public void getScale() throws Exception {
-        assertEquals(actualMetaData.getScale(1), 0);
+        assertThat(actualMetaData.getScale(1), is(0));
     }
     
     @Test

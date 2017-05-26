@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -83,24 +84,24 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
             }
     
             try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3101")) {
-                assertThat(rs.next(), is(true));
+                assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(11));
-                assertThat(rs.next(), is(false));
+                assertFalse(rs.next());
             }
             try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3102")) {
-                assertThat(rs.next(), is(true));
+                assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(12));
-                assertThat(rs.next(), is(false));
+                assertFalse(rs.next());
             }
             try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3111")) {
-                assertThat(rs.next(), is(true));
+                assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(21));
-                assertThat(rs.next(), is(false));
+                assertFalse(rs.next());
             }
             try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3112")) {
-                assertThat(rs.next(), is(true));
+                assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(22));
-                assertThat(rs.next(), is(false));
+                assertFalse(rs.next());
             }
         }
     }
