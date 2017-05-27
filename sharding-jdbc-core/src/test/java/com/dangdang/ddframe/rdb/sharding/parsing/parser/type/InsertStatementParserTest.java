@@ -80,7 +80,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithoutParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        sqlContext.appendGenerateKeysToken(shardingRule);
+        sqlContext.appendGenerateKeyToken(shardingRule);
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
@@ -92,7 +92,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertSQLContext sqlContext = (InsertSQLContext) statementParser.parse();
         assertInsertStatementWithParameter(sqlContext);
         // TODO 放入rewrite模块断言
-        sqlContext.appendGenerateKeysToken(shardingRule);
+        sqlContext.appendGenerateKeyToken(shardingRule);
         assertThat(new SQLRewriteEngine(sql, sqlContext).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     

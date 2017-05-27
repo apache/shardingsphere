@@ -67,9 +67,9 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLContext result = parsingEngine.parse();
         if (result instanceof InsertSQLContext) {
             if (0 == parametersSize) {
-                ((InsertSQLContext) result).appendGenerateKeysToken(shardingRule);
+                ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule);
             } else {
-                ((InsertSQLContext) result).appendGenerateKeysToken(shardingRule, parametersSize);
+                ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule, parametersSize);
             }
         }
         MetricsContext.stop(context);
