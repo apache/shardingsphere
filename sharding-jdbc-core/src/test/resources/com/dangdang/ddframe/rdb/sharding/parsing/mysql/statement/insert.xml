@@ -64,19 +64,6 @@
         </condition-contexts>
     </assert>
     
-    <assert id="assertInsertNull" sql="insert into `order`('order_id','state') values(NULL,'')" expected-sql="insert into [Token(order)]('order_id','state') values(NULL,'')">
-        <tables>
-            <table name="order" />
-        </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="state" table-name="order" operator="EQUAL">
-                    <value value="" type="java.lang.String" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
-    </assert>
-    
     <!-- // TODO
     <assert id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )" expected-sql="INSERT INTO [Token(order)] ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )">
         <tables>

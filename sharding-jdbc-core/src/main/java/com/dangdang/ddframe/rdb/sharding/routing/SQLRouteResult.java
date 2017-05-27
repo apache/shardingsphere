@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,4 +38,6 @@ public final class SQLRouteResult {
     private final SQLContext sqlContext;
     
     private final Set<SQLExecutionUnit> executionUnits = new HashSet<>();
+    
+    private final List<Number> generatedKeys = new LinkedList<>();
 }

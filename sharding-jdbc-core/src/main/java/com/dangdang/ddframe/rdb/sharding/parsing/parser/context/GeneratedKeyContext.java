@@ -17,12 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.Setter;
 
 /**
  * 自动生成键上下文.
@@ -30,11 +28,14 @@ import java.util.List;
  * @author zhangliang
  */
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
-@ToString
+@Setter
 public final class GeneratedKeyContext {
     
     private final String column;
     
-    private final List<Number> values = new LinkedList<>();
+    private final int index;
+    
+    private Number value;
 }

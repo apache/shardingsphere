@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.StatementRoutingEngine;
@@ -81,7 +80,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
-    private SQLContext sqlContext;
+    private SQLRouteResult sqlRouteResult;
     
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
@@ -113,7 +112,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet rs;
         try {
-            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlContext);
+            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlContext());
         } finally {
             clearRouteContext();
         }
@@ -210,22 +209,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKeyContext = getGeneratedKeyContext();
-        if (!generatedKeyContext.isPresent()) {
-            Collection<? extends Statement> routedStatements = getRoutedStatements();
-            if (1 == routedStatements.size()) {
-                return routedStatements.iterator().next().getGeneratedKeys();
-            }
-            return new GeneratedKeysResultSet();
-        }
-        if (returnGeneratedKeys) {
-            return new GeneratedKeysResultSet(generatedKeyContext.get().getValues().iterator(), generatedKeyContext.get().getColumn(), this);
+        if (generatedKeyContext.isPresent() && returnGeneratedKeys) {
+            return new GeneratedKeysResultSet(sqlRouteResult.getGeneratedKeys().iterator(), generatedKeyContext.get().getColumn(), this);
         }
         return new GeneratedKeysResultSet();
     }
     
     protected final Optional<GeneratedKeyContext> getGeneratedKeyContext() {
-        if (null != sqlContext && sqlContext instanceof InsertSQLContext) {
-            return Optional.fromNullable(((InsertSQLContext) sqlContext).getGeneratedKeyContext());
+        if (null != sqlRouteResult && sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
+            return Optional.fromNullable(((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKeyContext());
         }
         return Optional.absent();
     }
@@ -240,8 +232,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
-        SQLRouteResult sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
-        sqlContext = sqlRouteResult.getSqlContext();
+        sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlContext().getType()), each.getSQL());
             replayMethodsInvocation(statement);
@@ -289,7 +280,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : getRoutedStatements()) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlContext);
+        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlRouteResult.getSqlContext());
         return currentResultSet;
     }
     

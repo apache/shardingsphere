@@ -250,6 +250,26 @@ public final class ShardingRule {
     }
     
     /**
+     * 获取自增主键.
+     *
+     * @return 自增列与主键映射表
+     */
+    public Number generateKey(final String tableName) {
+        Optional<TableRule> tableRule = tryFindTableRule(tableName);
+        if (!tableRule.isPresent()) {
+            throw new ShardingJdbcException("Cannot find strategy for generate keys.");
+        }
+        if (null != tableRule.get().getKeyGenerator()) {
+            return tableRule.get().getKeyGenerator().generateKey();
+        } else if (null != keyGenerator) {
+            return keyGenerator.generateKey();
+        } else {
+            // TODO 使用default id生成器
+            throw new ShardingJdbcException("Cannot find strategy for generate keys.");
+        }
+    }
+    
+    /**
      * 分片规则配置对象构建器.
      */
     @RequiredArgsConstructor

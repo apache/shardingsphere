@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
@@ -39,6 +40,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +56,8 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private final DatabaseType databaseType;
     
+    private final List<Number> generatedKeys = new LinkedList<>();
+    
     public ParsingSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
         databaseType = shardingContext.getDatabaseType();
@@ -66,11 +70,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         log.debug("Logic SQL: {}", logicSQL);
         SQLContext result = parsingEngine.parse();
         if (result instanceof InsertSQLContext) {
-            if (0 == parametersSize) {
-                ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule);
-            } else {
-                ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule, parametersSize);
-            }
+            ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule, parametersSize);
         }
         MetricsContext.stop(context);
         return result;
@@ -79,16 +79,20 @@ public final class ParsingSQLRouter implements SQLRouter {
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         final Context context = MetricsContext.start("Route SQL");
-        if (sqlContext instanceof InsertSQLContext && !parameters.isEmpty()) {
-            Number generatedKey = ((InsertSQLContext) sqlContext).generateKey(shardingRule);
-            if (null != generatedKey) {
+        SQLRouteResult result = new SQLRouteResult(sqlContext);
+        if (sqlContext instanceof InsertSQLContext && null != ((InsertSQLContext) sqlContext).getGeneratedKeyContext()) {
+            GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlContext).getGeneratedKeyContext();
+            if (parameters.isEmpty()) {
+                result.getGeneratedKeys().add(generatedKeyContext.getValue());
+            } else if (parameters.size() == generatedKeyContext.getIndex()) {
+                Number generatedKey = shardingRule.generateKey(sqlContext.getTables().get(0).getName());
                 parameters.add(generatedKey);
+                setGeneratedKeys(result, generatedKey);
             }
         }
         if (null != sqlContext.getLimitContext()) {
             sqlContext.getLimitContext().processParameters(parameters);
         }
-        SQLRouteResult result = new SQLRouteResult(sqlContext);
         RoutingResult routingResult = route(parameters, sqlContext);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
         SQLBuilder sqlBuilder = rewriteEngine.rewrite();
@@ -124,5 +128,11 @@ public final class ParsingSQLRouter implements SQLRouter {
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSQL(), parameters);
         }
+    }
+    
+    private void setGeneratedKeys(final SQLRouteResult sqlRouteResult, final Number generatedKey) {
+        generatedKeys.add(generatedKey);
+        sqlRouteResult.getGeneratedKeys().clear();
+        sqlRouteResult.getGeneratedKeys().addAll(generatedKeys);
     }
 }
