@@ -17,16 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.ProvideSystemProperty;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-public class SystemPropertyWorkerIdTest extends AbstractWorkerIdTest {
-    
-    @Rule
-    public final ProvideSystemProperty provideSystemProperty = new ProvideSystemProperty("sjdbc.self.id.generator.worker.id", "12");
-    
-    @Override
-    protected long getWorkerId() {
-        return 12L;
-    }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        HostNameKeyGeneratorTest.class,
+        IPKeyGeneratorTest.class
+    })
+public class AllTests {
 }

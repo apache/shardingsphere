@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 
 import java.net.InetAddress;
@@ -31,7 +32,7 @@ import java.net.UnknownHostException;
  */
 public class IPKeyGenerator implements KeyGenerator {
     
-    private final CommonSelfKeyGenerator commonSelfKeyGenerator = new CommonSelfKeyGenerator();
+    private final DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
     
     static {
         initWorkerId();
@@ -45,11 +46,11 @@ public class IPKeyGenerator implements KeyGenerator {
             throw new IllegalStateException("Cannot get LocalHost InetAddress, please check your network!");
         }
         byte[] ipAddressByteArray = address.getAddress();
-        CommonSelfKeyGenerator.setWorkerId((long) (((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << Byte.SIZE) + (ipAddressByteArray[ipAddressByteArray.length - 1] & 0xFF)));
+        DefaultKeyGenerator.setWorkerId((long) (((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << Byte.SIZE) + (ipAddressByteArray[ipAddressByteArray.length - 1] & 0xFF)));
     }
     
     @Override
     public Number generateKey() {
-        return commonSelfKeyGenerator.generateKey();
+        return defaultKeyGenerator.generateKey();
     }
 }

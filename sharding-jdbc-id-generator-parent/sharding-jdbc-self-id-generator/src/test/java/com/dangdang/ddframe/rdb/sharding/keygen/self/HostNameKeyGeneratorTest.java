@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -72,7 +73,7 @@ public class HostNameKeyGeneratorTest {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameKeyGenerator.initWorkerId();
-        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(233L));
+        assertThat(DefaultKeyGenerator.getWorkerId(), is(233L));
     }
     
     @Test

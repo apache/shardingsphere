@@ -15,15 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen;
+package com.dangdang.ddframe.rdb.sharding.keygen.workerid;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
+import org.junit.Before;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses(
-        UnsupportedKeyGeneratorTest.class
-)
-public class AllKeyGeneratorTest {
+public final class ApiWorkerIdTest extends AbstractWorkerIdTest {
     
+    @Before
+    public void init() {
+        DefaultKeyGenerator.setWorkerId(11L);
+    }
+    
+    @Override
+    protected long getWorkerId() {
+        return 11;
+    }
 }

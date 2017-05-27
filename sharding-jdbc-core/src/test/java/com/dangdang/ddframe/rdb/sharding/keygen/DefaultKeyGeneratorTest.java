@@ -15,11 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import com.dangdang.ddframe.rdb.sharding.keygen.self.fixture.FixClock;
-import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
-import org.junit.Before;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.FixedTimeService;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -31,45 +29,40 @@ import java.util.concurrent.Executors;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class CommonSelfKeyGeneratorTest {
-    
-    @Before
-    public void init() {
-        CommonSelfKeyGenerator.setClock(AbstractClock.systemClock());
-    }
+public final class DefaultKeyGeneratorTest {
     
     @Test
-    public void generateId() throws Exception {
+    public void assertGenerateKey() throws Exception {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-    
         final int taskNumber = threadNumber << 2;
-        final CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
-        Set<Long> hashSet = new HashSet<>();
+        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        Set<Number> generatedKeys = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
-            hashSet.add(executor.submit(new Callable<Long>() {
+            generatedKeys.add(executor.submit(new Callable<Number>() {
+                
                 @Override
-                public Long call() throws Exception {
-                    return (Long) keyGenerator.generateKey();
+                public Number call() throws Exception {
+                    return keyGenerator.generateKey();
                 }
             }).get());
         }
-        assertThat(hashSet.size(), is(taskNumber));
+        assertThat(generatedKeys.size(), is(taskNumber));
     }
     
     @Test
-    public void testMaxSequence() throws Exception {
+    public void assertMaxSequence() {
         assertThat(maxId((1 << 12) - 1), is((1L << 12L) - 2));
         assertThat(maxId(1 << 12), is((1L << 12L) - 1));
         assertThat(maxId((1 << 12) + 1), is(1L << 22));
     }
     
     private long maxId(final int maxSequence) {
-        CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
-        CommonSelfKeyGenerator.setClock(new FixClock(1 << 13));
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        DefaultKeyGenerator.setTimeService(new FixedTimeService(1 << 13));
         long result = 0;
         for (int i = 0; i < maxSequence; i++) {
-            result = (Long) keyGenerator.generateKey();
+            result = keyGenerator.generateKey().longValue();
         }
         return result;
     }

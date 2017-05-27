@@ -15,25 +15,25 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self.fixture;
+package com.dangdang.ddframe.rdb.sharding.keygen.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.keygen.self.CommonSelfKeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.TimeService;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
-public class FixClock extends AbstractClock {
+public final class FixedTimeService extends TimeService {
     
     private final int expectedInvokedTimes;
     
     private final AtomicInteger invokedTimes = new AtomicInteger();
     
-    private long current = CommonSelfKeyGenerator.SJDBC_EPOCH;
+    private long current = DefaultKeyGenerator.EPOCH;
     
     @Override
-    public long millis() {
+    public long getCurrentMillis() {
         if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
             return current;
         }

@@ -15,10 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.keygen.workerid;
 
-import com.dangdang.ddframe.rdb.sharding.keygen.self.fixture.FixClock;
-import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.keygen.TimeService;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.FixedTimeService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,22 +33,22 @@ public abstract class AbstractWorkerIdTest {
     
     @Before
     public void setup() {
-        CommonSelfKeyGenerator.setClock(new FixClock(1));
-        CommonSelfKeyGenerator.initWorkerId();
+        DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
+        DefaultKeyGenerator.initWorkerId();
     }
     
     @After
     public void clear() {
-        CommonSelfKeyGenerator.setClock(AbstractClock.systemClock());
-        CommonSelfKeyGenerator.setWorkerId(0L);
+        DefaultKeyGenerator.setTimeService(new TimeService());
+        DefaultKeyGenerator.setWorkerId(0L);
     }
     
     @Test
-    public void testWorkerId() {
-        CommonSelfKeyGenerator keyGenerator = new CommonSelfKeyGenerator();
-        assertThat((Long) keyGenerator.generateKey(), is(getWorkerId() << 12L));
-        assertThat(keyGenerator.getLastTime(), is(CommonSelfKeyGenerator.SJDBC_EPOCH));
+    public void assertWorkerId() {
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        assertThat(keyGenerator.generateKey().longValue(), is(getWorkerId() << 12L));
+        assertThat(keyGenerator.getLastTime(), is(DefaultKeyGenerator.EPOCH));
         assertThat(keyGenerator.getSequence(), is(0L));
-        assertThat(CommonSelfKeyGenerator.getWorkerId(), is(getWorkerId()));
+        assertThat(DefaultKeyGenerator.getWorkerId(), is(getWorkerId()));
     }
 }

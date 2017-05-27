@@ -15,10 +15,8 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
-import com.dangdang.ddframe.rdb.sharding.keygen.self.time.AbstractClock;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -30,7 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * 自生成Id生成器.
+ * 默认的主键生成器.
  * 
  * <p>
  * 长度为64bit,从高位到低位依次为
@@ -44,7 +42,7 @@ import java.util.Date;
  * </pre>
  * 
  * <p>
- * 工作进程Id获取优先级: 系统变量{@code sjdbc.self.id.generator.worker.id} 大于 环境变量{@code SJDBC_SELF_ID_GENERATOR_WORKER_ID}
+ * 工作进程Id获取优先级: 系统变量{@code sharding-jdbc.default.key.generator.worker.id} 大于 环境变量{@code SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID}
  * ,另外可以调用@{@code CommonSelfKeyGenerator.setWorkerId}进行设置
  * </p>
  * 
@@ -52,9 +50,13 @@ import java.util.Date;
  */
 @Getter
 @Slf4j
-public class CommonSelfKeyGenerator implements KeyGenerator {
+public final class DefaultKeyGenerator implements KeyGenerator {
     
-    public static final long SJDBC_EPOCH;
+    public static final long EPOCH;
+    
+    public static final String WORKER_ID_PROPERTY_KEY = "sharding-jdbc.default.key.generator.worker.id";
+    
+    public static final String WORKER_ID_ENV_KEY = "SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID";
     
     private static final long SEQUENCE_BITS = 12L;
     
@@ -69,7 +71,7 @@ public class CommonSelfKeyGenerator implements KeyGenerator {
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
     @Setter
-    private static AbstractClock clock = AbstractClock.systemClock();
+    private static TimeService timeService = new TimeService();
     
     @Getter
     private static long workerId;
@@ -81,7 +83,7 @@ public class CommonSelfKeyGenerator implements KeyGenerator {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        SJDBC_EPOCH = calendar.getTimeInMillis();
+        EPOCH = calendar.getTimeInMillis();
         initWorkerId();
     }
     
@@ -89,13 +91,13 @@ public class CommonSelfKeyGenerator implements KeyGenerator {
     
     private long lastTime;
     
-    static void initWorkerId() {
-        String workerId = System.getProperty("sjdbc.self.id.generator.worker.id");
+    public static void initWorkerId() {
+        String workerId = System.getProperty(WORKER_ID_PROPERTY_KEY);
         if (!Strings.isNullOrEmpty(workerId)) {
             setWorkerId(Long.valueOf(workerId));
             return;
         }
-        workerId = System.getenv("SJDBC_SELF_ID_GENERATOR_WORKER_ID");
+        workerId = System.getenv(WORKER_ID_ENV_KEY);
         if (Strings.isNullOrEmpty(workerId)) {
             return;
         }
@@ -107,9 +109,9 @@ public class CommonSelfKeyGenerator implements KeyGenerator {
      * 
      * @param workerId 工作进程Id
      */
-    public static void setWorkerId(final Long workerId) {
+    public static void setWorkerId(final long workerId) {
         Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE);
-        CommonSelfKeyGenerator.workerId = workerId;
+        DefaultKeyGenerator.workerId = workerId;
     }
     
     /**
@@ -119,26 +121,26 @@ public class CommonSelfKeyGenerator implements KeyGenerator {
      */
     @Override
     public synchronized Number generateKey() {
-        long time = clock.millis();
-        Preconditions.checkState(lastTime <= time, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, time);
-        if (lastTime == time) {
+        long currentMillis = timeService.getCurrentMillis();
+        Preconditions.checkState(lastTime <= currentMillis, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, currentMillis);
+        if (lastTime == currentMillis) {
             if (0L == (sequence = ++sequence & SEQUENCE_MASK)) {
-                time = waitUntilNextTime(time);
+                currentMillis = waitUntilNextTime(currentMillis);
             }
         } else {
             sequence = 0;
         }
-        lastTime = time;
+        lastTime = currentMillis;
         if (log.isDebugEnabled()) {
             log.debug("{}-{}-{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
         }
-        return ((time - SJDBC_EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     private long waitUntilNextTime(final long lastTime) {
-        long time = clock.millis();
+        long time = timeService.getCurrentMillis();
         while (time <= lastTime) {
-            time = clock.millis();
+            time = timeService.getCurrentMillis();
         }
         return time;
     }

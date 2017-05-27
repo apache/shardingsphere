@@ -22,11 +22,13 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShard
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -52,7 +54,11 @@ public final class ShardingRule {
     
     private final TableShardingStrategy tableShardingStrategy;
     
+    @Getter(AccessLevel.NONE)
     private final KeyGenerator keyGenerator;
+    
+    @Getter(AccessLevel.NONE)
+    private final KeyGenerator defaultGenerator;
     
     /**
      * 全属性构造器.
@@ -76,6 +82,7 @@ public final class ShardingRule {
         this.tableShardingStrategy = null == tableShardingStrategy ? new TableShardingStrategy(
                 Collections.<String>emptyList(), new NoneTableShardingAlgorithm()) : tableShardingStrategy;
         this.keyGenerator = keyGenerator;
+        defaultGenerator = KeyGeneratorFactory.createKeyGenerator(DefaultKeyGenerator.class);
     }
     
     /**
@@ -247,12 +254,11 @@ public final class ShardingRule {
         }
         if (null != tableRule.get().getKeyGenerator()) {
             return tableRule.get().getKeyGenerator().generateKey();
-        } else if (null != keyGenerator) {
-            return keyGenerator.generateKey();
-        } else {
-            // TODO 使用default id生成器
-            throw new ShardingJdbcException("Cannot find strategy for generate keys.");
         }
+        if (null != keyGenerator) {
+            return keyGenerator.generateKey();
+        }
+        return defaultGenerator.generateKey();
     }
     
     /**

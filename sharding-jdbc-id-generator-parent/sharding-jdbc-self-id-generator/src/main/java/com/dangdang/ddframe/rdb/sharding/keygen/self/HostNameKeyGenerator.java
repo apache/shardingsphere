@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen.self;
 
+import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 
 import java.net.InetAddress;
@@ -31,7 +32,7 @@ import java.net.UnknownHostException;
  **/
 public class HostNameKeyGenerator implements KeyGenerator {
 
-    private final CommonSelfKeyGenerator commonSelfKeyGenerator = new CommonSelfKeyGenerator();
+    private final DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
 
     static {
         initWorkerId();
@@ -51,11 +52,11 @@ public class HostNameKeyGenerator implements KeyGenerator {
         } catch (final NumberFormatException e) {
             throw new IllegalArgumentException(String.format("Wrong hostname:%s, hostname must be end with number!", hostName));
         }
-        CommonSelfKeyGenerator.setWorkerId(workerId);
+        DefaultKeyGenerator.setWorkerId(workerId);
     }
 
     @Override
     public Number generateKey() {
-        return commonSelfKeyGenerator.generateKey();
+        return defaultKeyGenerator.generateKey();
     }
 }

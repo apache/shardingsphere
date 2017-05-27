@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +35,6 @@ public final class KeyGeneratorFactory {
      * @return 主键生成器实例
      */
     public static KeyGenerator createKeyGenerator(final Class<? extends KeyGenerator> keyGeneratorClass) {
-        Preconditions.checkNotNull(keyGeneratorClass);
         try {
             return keyGeneratorClass.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {

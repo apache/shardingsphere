@@ -15,25 +15,21 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-
-public class SystemEnvWorkerIdTest extends AbstractWorkerIdTest {
+/**
+ * 时间服务.
+ * 
+ * @author zhangliang
+ */
+public class TimeService {
     
-    @Rule
-    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
-    
-    @Before
-    public void setup() {
-        environmentVariables.set("SJDBC_SELF_ID_GENERATOR_WORKER_ID", "13");
-        super.setup();
-    }
-    
-    @Override
-    protected long getWorkerId() {
-        return 13L;
+    /**
+     * 获取当前时间的毫秒数.
+     * 
+     * @return 当前时间的毫秒数
+     */
+    public long getCurrentMillis() {
+        return System.currentTimeMillis();
     }
 }

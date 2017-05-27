@@ -88,8 +88,8 @@ TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.
 该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个进程的工作进程Id是不同的。该值默认为0，目前可以通过三种方式设置。
 
  1. 调用静态方法CommonSelfKeyGenerator.setWorkerId("xxxx")设置。
- 1. 设置Java的系统变量，也就是再启动命令行中设置-Dsjdbc.self.id.generator.worker.id=xxx设置。
- 1. 设置系统环境变量，通过SJDBC_SELF_ID_GENERATOR_WORKER_ID=xxx设置。
+ 1. 设置Java的系统变量，也就是再启动命令行中设置-Dsharding-jdbc.default.key.generator.worker.id=xxx设置。
+ 1. 设置系统环境变量，通过SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID=xxx设置。
 
 ### 序列位(12bit)
 

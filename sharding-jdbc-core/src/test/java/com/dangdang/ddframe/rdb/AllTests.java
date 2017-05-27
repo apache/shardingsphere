@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.config.AllConfigTests;
 import com.dangdang.ddframe.rdb.sharding.constant.AllConstantsTests;
 import com.dangdang.ddframe.rdb.sharding.executor.AllExecutorTests;
 import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
-import com.dangdang.ddframe.rdb.sharding.keygen.AllKeyGeneratorTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
+import com.dangdang.ddframe.rdb.sharding.keygen.AllKeygenTests;
 import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
 import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.AllParsingTests;
@@ -44,11 +44,11 @@ import org.junit.runners.Suite.SuiteClasses;
         AllMergerTests.class,
         AllExecutorTests.class, 
         AllJDBCTests.class, 
-        AllHintTests.class, 
+        AllHintTests.class,
+        AllKeygenTests.class, 
         AllUtilTests.class, 
         AllMetricsTests.class, 
-        AllIntegrateTests.class, 
-        AllKeyGeneratorTest.class
+        AllIntegrateTests.class
     })
 public class AllTests {
 }
