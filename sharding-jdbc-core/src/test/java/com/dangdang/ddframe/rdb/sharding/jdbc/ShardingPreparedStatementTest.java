@@ -280,7 +280,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
     }
     
     @Test
-    public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
+    public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
         String sql = "INSERT INTO `t_order`(`user_id`, `status`) VALUES (?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
@@ -297,6 +297,62 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             preparedStatement.addBatch();
             preparedStatement.setInt(1, 22);
             preparedStatement.setString(2, "BATCH");
+            preparedStatement.addBatch();
+            int[] result = preparedStatement.executeBatch();
+            for (int each : result) {
+                assertThat(each, is(1));
+            }
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(1L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(2L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(3L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(4L));
+            assertFalse(generateKeyResultSet.next());
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 11")) {
+                assertTrue(rs.next());
+                assertThat(rs.getInt(1), is(1));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 12")) {
+                assertTrue(rs.next());
+                assertThat(rs.getInt(1), is(2));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 21")) {
+                assertTrue(rs.next());
+                assertThat(rs.getInt(1), is(3));
+            }
+            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 22")) {
+                assertTrue(rs.next());
+                assertThat(rs.getInt(1), is(4));
+            }
+        }
+    }
+    
+    @Test
+    public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
+        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        try (
+                Connection connection = shardingDataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                Statement queryStatement = connection.createStatement()) {
+            preparedStatement.setInt(1, 1);
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 2);
+            preparedStatement.setInt(2, 12);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 3);
+            preparedStatement.setInt(2, 21);
+            preparedStatement.setString(3, "BATCH");
+            preparedStatement.addBatch();
+            preparedStatement.setInt(1, 4);
+            preparedStatement.setInt(2, 22);
+            preparedStatement.setString(3, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
             for (int each : result) {

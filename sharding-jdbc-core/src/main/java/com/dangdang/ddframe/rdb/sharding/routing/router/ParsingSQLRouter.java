@@ -88,6 +88,8 @@ public final class ParsingSQLRouter implements SQLRouter {
                 Number generatedKey = shardingRule.generateKey(sqlContext.getTables().get(0).getName());
                 parameters.add(generatedKey);
                 setGeneratedKeys(result, generatedKey);
+            } else if (-1 != generatedKeyContext.getIndex()) {
+                setGeneratedKeys(result, (Number) parameters.get(generatedKeyContext.getIndex()));
             }
         }
         if (null != sqlContext.getLimitContext()) {
