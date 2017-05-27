@@ -173,6 +173,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         return result;
     }
     
+    @Override
     protected BackendStatementWrapper generateStatement(final Connection conn, final String shardingSql) throws SQLException {
         Optional<GeneratedKeyContext> generatedKeyContext = getGeneratedKeyContext();
         if (isReturnGeneratedKeys() && generatedKeyContext.isPresent()) {

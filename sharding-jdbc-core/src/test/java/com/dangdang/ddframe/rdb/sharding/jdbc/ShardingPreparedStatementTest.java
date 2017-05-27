@@ -302,15 +302,16 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDataBas
             for (int each : result) {
                 assertThat(each, is(1));
             }
-            assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(1L));
-            assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(2L));
-            assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(3L));
-            assertTrue(preparedStatement.getGeneratedKeys().next());
-            assertThat(preparedStatement.getGeneratedKeys().getLong(1), is(4L));
-            assertFalse(preparedStatement.getGeneratedKeys().next());
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(1L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(2L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(3L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(4L));
+            assertFalse(generateKeyResultSet.next());
             try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 11")) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(1));

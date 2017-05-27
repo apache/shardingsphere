@@ -196,20 +196,25 @@ public final class ShardingStatementTest extends AbstractShardingDataBasesOnlyDB
             assertFalse(stmt.execute(String.format(sql, 1, "init"), Statement.NO_GENERATED_KEYS));
             assertFalse(stmt.getGeneratedKeys().next());
             assertFalse(stmt.execute(String.format(sql, 1, "init"), Statement.RETURN_GENERATED_KEYS));
-            assertTrue(stmt.getGeneratedKeys().next());
-            assertThat(stmt.getGeneratedKeys().getLong(1), is(3L));
+            ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(3L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{1}));
-            assertTrue(stmt.getGeneratedKeys().next());
-            assertThat(stmt.getGeneratedKeys().getLong(1), is(4L));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(4L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"user_id"}));
-            assertTrue(stmt.getGeneratedKeys().next());
-            assertThat(stmt.getGeneratedKeys().getLong(1), is(5L));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(5L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new int[]{2}));
-            assertTrue(stmt.getGeneratedKeys().next());
-            assertThat(stmt.getGeneratedKeys().getLong(1), is(6L));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(6L));
             assertFalse(stmt.execute(String.format(sql, 1, "init"), new String[]{"no"}));
-            assertTrue(stmt.getGeneratedKeys().next());
-            assertThat(stmt.getGeneratedKeys().getLong(1), is(7L));
+            generatedKeysResultSet = stmt.getGeneratedKeys();
+            assertTrue(generatedKeysResultSet.next());
+            assertThat(generatedKeysResultSet.getLong(1), is(7L));
         }
     }
 }

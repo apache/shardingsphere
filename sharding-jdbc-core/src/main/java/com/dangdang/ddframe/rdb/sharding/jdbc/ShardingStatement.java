@@ -86,8 +86,6 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
     
-    private ResultSet generatedKeysResultSet;
-    
     ShardingStatement(final ShardingConnection shardingConnection) {
         this(shardingConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -210,22 +208,19 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public final ResultSet getGeneratedKeys() throws SQLException {
-        if (null != generatedKeysResultSet) {
-            return generatedKeysResultSet;
-        }
+    public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKeyContext = getGeneratedKeyContext();
         if (!generatedKeyContext.isPresent()) {
             Collection<? extends Statement> routedStatements = getRoutedStatements();
             if (1 == routedStatements.size()) {
-                return generatedKeysResultSet = routedStatements.iterator().next().getGeneratedKeys();
+                return routedStatements.iterator().next().getGeneratedKeys();
             }
-            return generatedKeysResultSet = new GeneratedKeysResultSet();
+            return new GeneratedKeysResultSet();
         }
         if (returnGeneratedKeys) {
-            return generatedKeysResultSet = new GeneratedKeysResultSet(generatedKeyContext.get().getValues().iterator(), generatedKeyContext.get().getColumn(), this);
+            return new GeneratedKeysResultSet(generatedKeyContext.get().getValues().iterator(), generatedKeyContext.get().getColumn(), this);
         }
-        return generatedKeysResultSet = new GeneratedKeysResultSet();
+        return new GeneratedKeysResultSet();
     }
     
     protected final Optional<GeneratedKeyContext> getGeneratedKeyContext() {
@@ -241,7 +236,6 @@ public class ShardingStatement extends AbstractStatementAdapter {
         cachedRoutedStatements.getFirst().addAll(firstList);
         firstList.clear();
         cachedRoutedStatements.addLast(firstList);
-        generatedKeysResultSet = null;
     }
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
