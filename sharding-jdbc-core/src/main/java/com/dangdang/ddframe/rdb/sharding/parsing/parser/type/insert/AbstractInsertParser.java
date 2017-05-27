@@ -173,7 +173,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     private GeneratedKeyContext createGeneratedKeyContext(final ShardingColumnContext shardingColumnContext, final SQLExpr sqlExpr) {
         GeneratedKeyContext result;
         if (sqlExpr instanceof SQLPlaceholderExpr) {
-            result = new GeneratedKeyContext(shardingColumnContext.getColumnName(), ((SQLPlaceholderExpr) sqlExpr).getIndex());
+            result = new GeneratedKeyContext(shardingColumnContext.getColumnName(), ((SQLPlaceholderExpr) sqlExpr).getIndex(), null);
         } else if (sqlExpr instanceof SQLNumberExpr) {
             result = new GeneratedKeyContext(shardingColumnContext.getColumnName(), -1, ((SQLNumberExpr) sqlExpr).getNumber());
         } else {

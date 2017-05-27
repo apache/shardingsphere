@@ -17,10 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * 自动生成键上下文.
@@ -28,14 +26,12 @@ import lombok.Setter;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
 public final class GeneratedKeyContext {
     
     private final String column;
     
     private final int index;
     
-    private Number value;
+    private final Number value;
 }

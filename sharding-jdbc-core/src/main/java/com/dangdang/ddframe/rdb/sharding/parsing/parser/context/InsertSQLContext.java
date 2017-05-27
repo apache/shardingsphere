@@ -92,7 +92,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
         valuesToken.getItems().add("?");
         addCondition(shardingRule, new ShardingColumnContext(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable(), true), new SQLPlaceholderExpr(parametersSize));
-        generatedKeyContext = new GeneratedKeyContext(tableRule.getGenerateKeyColumn(), parametersSize);
+        generatedKeyContext = new GeneratedKeyContext(tableRule.getGenerateKeyColumn(), parametersSize, null);
     }
     
     private Optional<GeneratedKeyToken> findGeneratedKeyToken() {
