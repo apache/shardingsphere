@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
  *
  * @author zhangliang
  */
-public interface SQLParser {
+public interface SQLStatementParser {
     
     /**
      * 解析SQL语句.

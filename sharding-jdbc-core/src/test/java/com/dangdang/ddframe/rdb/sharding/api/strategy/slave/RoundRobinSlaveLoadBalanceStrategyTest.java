@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 public final class RoundRobinSlaveLoadBalanceStrategyTest {
     
-    private RoundRobinSlaveLoadBalanceStrategy roundRobinSlaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
+    private final RoundRobinSlaveLoadBalanceStrategy roundRobinSlaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
     @Test
     public void assertGetDataSource() {

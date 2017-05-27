@@ -33,7 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -52,7 +52,7 @@ import java.util.Set;
  * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractInsertParser implements SQLParser {
+public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     

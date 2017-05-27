@@ -115,16 +115,13 @@ public class ParameterizedAbstractPreparedStatementAdapterTest {
         containerField.setAccessible(true);
         ParameterList container = new ParameterList(PreparedStatement.class);
         containerField.set(ps, container);
-        
         clazz.getMethod(methodName, parameterClasses).invoke(ps, parameters);
-        
         Field invocationListField = ParameterList.class.getDeclaredField("jdbcMethodInvocations");
         invocationListField.setAccessible(true);
+        @SuppressWarnings("unchecked")
         List<JdbcMethodInvocation> list = (List<JdbcMethodInvocation>) invocationListField.get(container);
-        
         assertThat(list.size(), is(1));
         JdbcMethodInvocation invocation = list.get(0);
-    
         Field methodField = JdbcMethodInvocation.class.getDeclaredField("method");
         methodField.setAccessible(true);
         Method method = (Method) methodField.get(invocation);

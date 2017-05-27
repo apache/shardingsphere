@@ -17,7 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.*;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import org.junit.Test;
 import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 

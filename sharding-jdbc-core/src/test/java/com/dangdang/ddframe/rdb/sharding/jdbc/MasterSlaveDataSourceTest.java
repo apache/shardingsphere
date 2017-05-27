@@ -40,11 +40,11 @@ import static org.mockito.Mockito.when;
 
 public final class MasterSlaveDataSourceTest {
     
-    private DataSource masterDataSource = new TestDataSource("test_ds_master");
+    private final DataSource masterDataSource = new TestDataSource("test_ds_master");
     
-    private DataSource slaveDataSource = new TestDataSource("test_ds_slave");
+    private final DataSource slaveDataSource = new TestDataSource("test_ds_slave");
     
-    private MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
+    private final MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource("test_ds", masterDataSource, Collections.singletonList(slaveDataSource));
     
     @Before
     @After

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractDeleteParser implements SQLParser {
+public abstract class AbstractDeleteParser implements SQLStatementParser {
     
     @Getter(AccessLevel.PROTECTED)
     private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;

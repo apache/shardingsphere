@@ -109,7 +109,7 @@ public abstract class AbstractBaseParseTest {
     }
     
     private static Object[] getDataParameter(final Assert assertObj) {
-        Object[] result = new Object[6];
+        final Object[] result = new Object[6];
         result[0] = assertObj.getId();
         result[1] = assertObj.getSql();
         result[2] = assertObj.getExpectedSQL();
@@ -166,9 +166,8 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn input) {
-                    GroupByContext groupByContext = new GroupByContext(
+                    return new GroupByContext(
                             Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
-                    return groupByContext;
                 }
             }));
         }

@@ -103,20 +103,6 @@ public final class ShardingRule {
     }
     
     /**
-     * 根据逻辑表名找到指定分片规则.
-     * 
-     * @param logicTableName 逻辑表名称
-     * @return 该逻辑表的分片规则
-     */
-    public TableRule findTableRule(final String logicTableName) {
-        Optional<TableRule> tableRuleOptional = tryFindTableRule(logicTableName);
-        if (tableRuleOptional.isPresent()) {
-            return tableRuleOptional.get();
-        }
-        throw new ShardingJdbcException(String.format("%s does not exist in ShardingRule", logicTableName));
-    }
-    
-    /**
      * 获取数据库分片策略.
      * 
      * <p>

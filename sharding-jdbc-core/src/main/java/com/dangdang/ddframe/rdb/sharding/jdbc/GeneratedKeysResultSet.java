@@ -230,12 +230,12 @@ public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResu
         return statement;
     }
     
-    private void checkState() throws SQLException {
+    private void checkState() {
         Preconditions.checkState(!closed, "ResultSet has closed.");
     }
     
-    private void checkStateForGetData() throws SQLException {
-        Preconditions.checkState(!closed, "ResultSet has closed.");
+    private void checkStateForGetData() {
+        checkState();
         Preconditions.checkNotNull(currentGeneratedKey, "ResultSet should call next or has no more data.");
     }
 }

@@ -46,7 +46,7 @@ public final class GroupByContext implements IndexColumn {
     @Setter
     private int columnIndex;
     
-    public GroupByContext(final Optional<String> owner, final String name, final OrderType orderByType, Optional<String> alias) {
+    public GroupByContext(final Optional<String> owner, final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = owner;
         this.name = name;
         this.orderByType = orderByType;

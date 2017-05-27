@@ -50,7 +50,7 @@ import java.util.Calendar;
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
     @Getter(AccessLevel.PROTECTED)
-    private ParameterList parameters = new ParameterList(PreparedStatement.class);
+    private final ParameterList parameters = new ParameterList(PreparedStatement.class);
     
     protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);

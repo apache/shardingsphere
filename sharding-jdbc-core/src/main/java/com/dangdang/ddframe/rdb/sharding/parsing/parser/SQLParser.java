@@ -49,11 +49,11 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@Setter
 public class SQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     
-    @Setter
     private int parametersIndex;
     
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {

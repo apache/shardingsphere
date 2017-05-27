@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class HintManagerHolderTest {
     
-    private HintManager hintManager = HintManager.getInstance();
+    private final HintManager hintManager = HintManager.getInstance();
     
     @After
     public void tearDown() {
