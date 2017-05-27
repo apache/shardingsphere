@@ -10,7 +10,7 @@
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-config-parent</module>
         <module>sharding-jdbc-transaction-parent</module>
-        <module>sharding-jdbc-id-generator-parent</module>
+        <module>sharding-jdbc-plugin</module>
     </modules>
     
     <properties>

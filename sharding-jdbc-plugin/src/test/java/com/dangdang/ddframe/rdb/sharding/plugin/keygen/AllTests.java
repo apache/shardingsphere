@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.plugin.keygen;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

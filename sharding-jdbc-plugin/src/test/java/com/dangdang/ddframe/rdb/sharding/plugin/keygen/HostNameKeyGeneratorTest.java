@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.plugin.keygen;
 
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import org.junit.BeforeClass;

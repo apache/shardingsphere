@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.keygen.self;
+package com.dangdang.ddframe.rdb.sharding.plugin.keygen;
 
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
  *
  * @author DonneyYoung
  **/
-public class HostNameKeyGenerator implements KeyGenerator {
+public final class HostNameKeyGenerator implements KeyGenerator {
 
     private final DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
 
