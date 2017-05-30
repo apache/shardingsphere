@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForAllData() throws SQLException {
         SQLContext sqlContext = new SelectSQLContext();
-        sqlContext.setLimitContext(new LimitContext(1, 10, -1, -1));
+        sqlContext.setLimit(new Limit(1, 10, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), sqlContext);
         int count = 0;
         while (resultSet.next()) {
@@ -59,7 +59,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForPartData() throws SQLException {
         SQLContext sqlContext = new SelectSQLContext();
-        sqlContext.setLimitContext(new LimitContext(1, 1, -1, -1));
+        sqlContext.setLimit(new Limit(1, 1, -1, -1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), sqlContext);
         int count = 0;
         while (resultSet.next()) {

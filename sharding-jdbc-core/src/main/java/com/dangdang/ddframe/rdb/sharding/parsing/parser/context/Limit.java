@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class LimitContext {
+public final class Limit {
     
     private int rowCount;
     
@@ -41,14 +41,14 @@ public final class LimitContext {
     
     private final int offsetParameterIndex;
     
-    public LimitContext(final int rowCount, final int rowCountParameterIndex) {
+    public Limit(final int rowCount, final int rowCountParameterIndex) {
         this.rowCount = rowCount;
         offset = Optional.absent();
         this.offsetParameterIndex = -1;
         this.rowCountParameterIndex = rowCountParameterIndex;
     }
     
-    public LimitContext(final int offset, final int rowCount, final int offsetParameterIndex, final int rowCountParameterIndex) {
+    public Limit(final int offset, final int rowCount, final int offsetParameterIndex, final int rowCountParameterIndex) {
         this.offset = Optional.of(offset);
         this.rowCount = rowCount;
         this.offsetParameterIndex = offsetParameterIndex;

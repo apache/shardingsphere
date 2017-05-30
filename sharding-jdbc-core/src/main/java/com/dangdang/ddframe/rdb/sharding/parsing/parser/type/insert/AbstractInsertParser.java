@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -159,7 +159,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
                     conditionContext.add(new ConditionContext.Condition(each, sqlExpr));
                 }
                 if (generateKeyColumnIndex == count) {
-                    sqlContext.setGeneratedKeyContext(createGeneratedKeyContext(each, sqlExpr));
+                    sqlContext.setGeneratedKey(createGeneratedKey(each, sqlExpr));
                 }
                 count++;
             }
@@ -170,12 +170,12 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         while (sqlParser.equalAny(Symbol.COMMA));
     }
     
-    private GeneratedKeyContext createGeneratedKeyContext(final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
-        GeneratedKeyContext result;
+    private GeneratedKey createGeneratedKey(final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
+        GeneratedKey result;
         if (sqlExpr instanceof SQLPlaceholderExpr) {
-            result = new GeneratedKeyContext(shardingColumn.getColumnName(), ((SQLPlaceholderExpr) sqlExpr).getIndex(), null);
+            result = new GeneratedKey(shardingColumn.getColumnName(), ((SQLPlaceholderExpr) sqlExpr).getIndex(), null);
         } else if (sqlExpr instanceof SQLNumberExpr) {
-            result = new GeneratedKeyContext(shardingColumn.getColumnName(), -1, ((SQLNumberExpr) sqlExpr).getNumber());
+            result = new GeneratedKey(shardingColumn.getColumnName(), -1, ((SQLNumberExpr) sqlExpr).getNumber());
         } else {
             throw new ShardingJdbcException("Generated key only support number.");
         }
@@ -192,7 +192,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     private void appendGenerateKey() {
         String tableName = sqlContext.getTables().get(0).getName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
-        if (!generateKeyColumn.isPresent() || null != sqlContext.getGeneratedKeyContext()) {
+        if (!generateKeyColumn.isPresent() || null != sqlContext.getGeneratedKey()) {
             return;
         } 
         ItemsToken columnsToken = new ItemsToken(sqlContext.getColumnsListLastPosition());

@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,18 +42,18 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     
     private final ResultSet resultSet;
     
-    private final List<GroupByContext> groupByContexts;
+    private final List<GroupBy> groupByList;
     
-    private final Map<AggregationSelectItemContext, AggregationUnit> aggregationUnitMap;
+    private final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupByContext> groupByContexts, final List<AggregationSelectItemContext> aggregationColumns) throws SQLException {
+    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupBy> groupByList, final List<AggregationSelectItem> aggregationColumns) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
-        this.groupByContexts = groupByContexts;
-        aggregationUnitMap = Maps.toMap(aggregationColumns, new Function<AggregationSelectItemContext, AggregationUnit>() {
+        this.groupByList = groupByList;
+        aggregationUnitMap = Maps.toMap(aggregationColumns, new Function<AggregationSelectItem, AggregationUnit>() {
             
             @Override
-            public AggregationUnit apply(final AggregationSelectItemContext input) {
+            public AggregationUnit apply(final AggregationSelectItem input) {
                 return AggregationUnitFactory.create(input.getAggregationType());
             }
         });
@@ -65,15 +65,15 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @throws SQLException SQL异常
      */
     public void aggregate() throws SQLException {
-        for (Map.Entry<AggregationSelectItemContext, AggregationUnit> each : aggregationUnitMap.entrySet()) {
-            each.getValue().merge(getAggregationValues(each.getKey().getDerivedAggregationSelectItemContexts().isEmpty()
-                    ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedAggregationSelectItemContexts()));
+        for (Map.Entry<AggregationSelectItem, AggregationUnit> each : aggregationUnitMap.entrySet()) {
+            each.getValue().merge(getAggregationValues(each.getKey().getDerivedAggregationSelectItems().isEmpty()
+                    ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedAggregationSelectItems()));
         }
     }
     
-    private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItemContext> aggregationColumns) throws SQLException {
+    private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItem> aggregationColumns) throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(aggregationColumns.size());
-        for (AggregationSelectItemContext each : aggregationColumns) {
+        for (AggregationSelectItem each : aggregationColumns) {
             result.add((Comparable<?>) resultSet.getObject(each.getColumnIndex()));
         }
         return result;
@@ -83,7 +83,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * 生成结果.
      */
     public void generateResult() {
-        for (AggregationSelectItemContext each : aggregationUnitMap.keySet()) {
+        for (AggregationSelectItem each : aggregationUnitMap.keySet()) {
             setCell(each.getColumnIndex(), aggregationUnitMap.get(each).getResult());
         }
     }
@@ -95,8 +95,8 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @throws SQLException SQL异常
      */
     public List<Object> getGroupByValues() throws SQLException {
-        List<Object> result = new ArrayList<>(groupByContexts.size());
-        for (GroupByContext each : groupByContexts) {
+        List<Object> result = new ArrayList<>(groupByList.size());
+        for (GroupBy each : groupByList) {
             result.add(resultSet.getObject(each.getColumnIndex()));
         }
         return result;
@@ -105,20 +105,20 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("GroupByKey is: ");
-        result.append(Lists.transform(groupByContexts, new Function<GroupByContext, Object>() {
+        result.append(Lists.transform(groupByList, new Function<GroupBy, Object>() {
             
             @Override
-            public Object apply(final GroupByContext input) {
+            public Object apply(final GroupBy input) {
                 return getCell(input.getColumnIndex());
             }
         }));
         if (aggregationUnitMap.isEmpty()) {
             return result.toString();
         }
-        result.append("; Aggregation result is: ").append(Lists.transform(new ArrayList<>(aggregationUnitMap.keySet()), new Function<AggregationSelectItemContext, String>() {
+        result.append("; Aggregation result is: ").append(Lists.transform(new ArrayList<>(aggregationUnitMap.keySet()), new Function<AggregationSelectItem, String>() {
             
             @Override
-            public String apply(final AggregationSelectItemContext input) {
+            public String apply(final AggregationSelectItem input) {
                 Object value = getCell(input.getColumnIndex());
                 value = null == value ? "null" : value;
                 return String.format("{index:%d, type:%s, value:%s}", input.getColumnIndex(), input.getAggregationType(), value);

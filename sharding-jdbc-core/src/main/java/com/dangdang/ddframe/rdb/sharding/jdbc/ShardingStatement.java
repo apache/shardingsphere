@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
@@ -208,16 +208,16 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        Optional<GeneratedKeyContext> generatedKeyContext = getGeneratedKeyContext();
-        if (generatedKeyContext.isPresent() && returnGeneratedKeys) {
-            return new GeneratedKeysResultSet(sqlRouteResult.getGeneratedKeys().iterator(), generatedKeyContext.get().getColumn(), this);
+        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        if (generatedKey.isPresent() && returnGeneratedKeys) {
+            return new GeneratedKeysResultSet(sqlRouteResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
         }
         return new GeneratedKeysResultSet();
     }
     
-    protected final Optional<GeneratedKeyContext> getGeneratedKeyContext() {
+    protected final Optional<GeneratedKey> getGeneratedKey() {
         if (null != sqlRouteResult && sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
-            return Optional.fromNullable(((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKeyContext());
+            return Optional.fromNullable(((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKey());
         }
         return Optional.absent();
     }

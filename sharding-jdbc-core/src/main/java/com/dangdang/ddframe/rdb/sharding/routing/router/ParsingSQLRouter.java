@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
@@ -80,26 +80,26 @@ public final class ParsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         final Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
-        if (sqlContext instanceof InsertSQLContext && null != ((InsertSQLContext) sqlContext).getGeneratedKeyContext()) {
-            GeneratedKeyContext generatedKeyContext = ((InsertSQLContext) sqlContext).getGeneratedKeyContext();
+        if (sqlContext instanceof InsertSQLContext && null != ((InsertSQLContext) sqlContext).getGeneratedKey()) {
+            GeneratedKey generatedKey = ((InsertSQLContext) sqlContext).getGeneratedKey();
             if (parameters.isEmpty()) {
-                result.getGeneratedKeys().add(generatedKeyContext.getValue());
-            } else if (parameters.size() == generatedKeyContext.getIndex()) {
-                Number generatedKey = shardingRule.generateKey(sqlContext.getTables().get(0).getName());
-                parameters.add(generatedKey);
-                setGeneratedKeys(result, generatedKey);
-            } else if (-1 != generatedKeyContext.getIndex()) {
-                setGeneratedKeys(result, (Number) parameters.get(generatedKeyContext.getIndex()));
+                result.getGeneratedKeys().add(generatedKey.getValue());
+            } else if (parameters.size() == generatedKey.getIndex()) {
+                Number key = shardingRule.generateKey(sqlContext.getTables().get(0).getName());
+                parameters.add(key);
+                setGeneratedKeys(result, key);
+            } else if (-1 != generatedKey.getIndex()) {
+                setGeneratedKeys(result, (Number) parameters.get(generatedKey.getIndex()));
             }
         }
-        if (null != sqlContext.getLimitContext()) {
-            sqlContext.getLimitContext().processParameters(parameters);
+        if (null != sqlContext.getLimit()) {
+            sqlContext.getLimit().processParameters(parameters);
         }
         RoutingResult routingResult = route(parameters, sqlContext);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
         SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
-        if (null != sqlContext.getLimitContext() && 1 == result.getExecutionUnits().size()) {
+        if (null != sqlContext.getLimit() && 1 == result.getExecutionUnits().size()) {
             rewriteEngine.amend(sqlBuilder, parameters);
         }
         MetricsContext.stop(context);

@@ -72,35 +72,35 @@ public interface SQLContext {
      * 
      * @return 排序上下文集合
      */
-    List<OrderByContext> getOrderByContexts();
+    List<OrderBy> getOrderByList();
     
     /**
      * 获取分组上下文集合.
      * 
      * @return 分组上下文集合
      */
-    List<GroupByContext> getGroupByContexts();
+    List<GroupBy> getGroupByList();
     
     /**
      * 获取聚合上下文集合.
      * 
      * @return 聚合上下文集合
      */
-    List<AggregationSelectItemContext> getAggregationSelectItemContexts();
+    List<AggregationSelectItem> getAggregationSelectItems();
     
     /**
      * 获取分页上下文.
      * 
      * @return 分页上下文
      */
-    LimitContext getLimitContext();
+    Limit getLimit();
     
     /**
      * 设置分页上下文.
      *
-     * @param limitContext  分页上下文
+     * @param limit  分页上下文
      */
-    void setLimitContext(LimitContext limitContext);
+    void setLimit(Limit limit);
     
     /**
      * 获取SQL标记集合.

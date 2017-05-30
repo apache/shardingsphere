@@ -39,26 +39,26 @@ public final class SelectSQLContext extends AbstractSQLContext {
     
     private int selectListLastPosition;
     
-    private final List<SelectItemContext> itemContexts = new LinkedList<>();
+    private final List<SelectItem> items = new LinkedList<>();
     
-    private final List<GroupByContext>  groupByContexts = new LinkedList<>();
+    private final List<GroupBy> groupByList = new LinkedList<>();
     
-    private final List<OrderByContext>  orderByContexts = new LinkedList<>();
+    private final List<OrderBy> orderByList = new LinkedList<>();
     
-    private LimitContext limitContext;
+    private Limit limit;
     
     public SelectSQLContext() {
         super(SQLType.SELECT);
     }
     
     @Override
-    public List<AggregationSelectItemContext> getAggregationSelectItemContexts() {
-        List<AggregationSelectItemContext> result = new LinkedList<>();
-        for (SelectItemContext each : itemContexts) {
-            if (each instanceof AggregationSelectItemContext) {
-                AggregationSelectItemContext aggregationSelectItemContext = (AggregationSelectItemContext) each;
-                result.add(aggregationSelectItemContext);
-                for (AggregationSelectItemContext derivedEach: aggregationSelectItemContext.getDerivedAggregationSelectItemContexts()) {
+    public List<AggregationSelectItem> getAggregationSelectItems() {
+        List<AggregationSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationSelectItem) {
+                AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
+                result.add(aggregationSelectItem);
+                for (AggregationSelectItem derivedEach: aggregationSelectItem.getDerivedAggregationSelectItems()) {
                     result.add(derivedEach);
                 }
             }
@@ -66,8 +66,7 @@ public final class SelectSQLContext extends AbstractSQLContext {
         return result;
     }
     
-    @Override
-    public LimitContext getLimitContext() {
-        return limitContext;
+    public Limit getLimit() {
+        return limit;
     }
 }

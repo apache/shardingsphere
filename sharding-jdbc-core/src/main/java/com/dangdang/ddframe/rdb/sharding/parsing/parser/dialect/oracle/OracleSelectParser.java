@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.AbstractSelectParser;
 import com.google.common.base.Optional;
@@ -37,8 +37,8 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
-        if (getSqlContext().getOrderByContexts().isEmpty()) {
-            getSqlContext().getOrderByContexts().addAll(parseOrderBy());
+        if (getSqlContext().getOrderByList().isEmpty()) {
+            getSqlContext().getOrderByList().addAll(parseOrderBy());
         }
     }
     
@@ -299,8 +299,8 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected Optional<OrderByContext> parseSelectOrderByItem() {
-        Optional<OrderByContext> result = super.parseSelectOrderByItem();
+    protected Optional<OrderBy> parseSelectOrderByItem() {
+        Optional<OrderBy> result = super.parseSelectOrderByItem();
         skipAfterOrderByItem();
         return result;
     }

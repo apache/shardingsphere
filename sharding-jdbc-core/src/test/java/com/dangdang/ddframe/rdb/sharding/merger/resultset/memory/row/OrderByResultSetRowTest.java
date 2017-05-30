@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import org.junit.Test;
 
@@ -37,32 +37,32 @@ public final class OrderByResultSetRowTest {
     @Test
     public void assertCompareToForAsc() throws SQLException {
         OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other_1"), 
-                Arrays.asList(new OrderByContext(1, OrderType.ASC), new OrderByContext(2, OrderType.ASC)));
+                Arrays.asList(new OrderBy(1, OrderType.ASC), new OrderBy(2, OrderType.ASC)));
         OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(createResultSet("order_3", "order_4", "other_2"), 
-                Arrays.asList(new OrderByContext(1, OrderType.ASC), new OrderByContext(2, OrderType.ASC)));
+                Arrays.asList(new OrderBy(1, OrderType.ASC), new OrderBy(2, OrderType.ASC)));
         assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) < 0);
     }
     
     @Test
     public void assertCompareToForDesc() throws SQLException {
         OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other_1"), 
-                Arrays.asList(new OrderByContext(1, OrderType.DESC), new OrderByContext(2, OrderType.DESC)));
+                Arrays.asList(new OrderBy(1, OrderType.DESC), new OrderBy(2, OrderType.DESC)));
         OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(createResultSet("order_3", "order_4", "other_2"), 
-                Arrays.asList(new OrderByContext(1, OrderType.DESC), new OrderByContext(2, OrderType.DESC)));
+                Arrays.asList(new OrderBy(1, OrderType.DESC), new OrderBy(2, OrderType.DESC)));
         assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) > 0);
     }
     
     @Test
     public void assertCompareToWhenEqual() throws SQLException {
         OrderByResultSetRow orderByResultSetRow = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other"), 
-                Arrays.asList(new OrderByContext(1, OrderType.DESC), new OrderByContext(2, OrderType.DESC)));
+                Arrays.asList(new OrderBy(1, OrderType.DESC), new OrderBy(2, OrderType.DESC)));
         assertThat(orderByResultSetRow.compareTo(orderByResultSetRow), is(0));
     }
     
     @Test
     public void assertToString() throws SQLException {
         assertThat(new OrderByResultSetRow(createResultSet("order_1", "order_2", "other"), 
-                Arrays.asList(new OrderByContext(1, OrderType.DESC), new OrderByContext(2, OrderType.DESC))).toString(), 
+                Arrays.asList(new OrderBy(1, OrderType.DESC), new OrderBy(2, OrderType.DESC))).toString(), 
                 is("Order by columns value is [order_1, order_2]"));
     }
     

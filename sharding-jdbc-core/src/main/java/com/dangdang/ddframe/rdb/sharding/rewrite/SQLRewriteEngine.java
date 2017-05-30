@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -47,7 +47,7 @@ public final class SQLRewriteEngine {
     
     private final Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
-    private final LimitContext limit;
+    private final Limit limit;
     
     public SQLRewriteEngine(final String originalSQL, final SQLContext sqlContext) {
         this.originalSQL = originalSQL;
@@ -55,7 +55,7 @@ public final class SQLRewriteEngine {
         for (Table each : sqlContext.getTables()) {
             tableNames.add(each.getName());
         }
-        limit = sqlContext.getLimitContext();
+        limit = sqlContext.getLimit();
     }
     
     /**

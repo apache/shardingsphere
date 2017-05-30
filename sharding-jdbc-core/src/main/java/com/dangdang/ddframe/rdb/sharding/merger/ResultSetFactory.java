@@ -82,7 +82,7 @@ public final class ResultSetFactory {
             resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
             return new MemoryOrderByReducerResultSet(resultSetMergeContext);
         }
-        if (!resultSetMergeContext.getSqlContext().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlContext().getOrderByContexts().isEmpty()) {
+        if (!resultSetMergeContext.getSqlContext().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlContext().getOrderByList().isEmpty()) {
             return new StreamingOrderByReducerResultSet(resultSetMergeContext);
         }
         return new IteratorReducerResultSet(resultSetMergeContext);
@@ -90,14 +90,14 @@ public final class ResultSetFactory {
     
     private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         ResultSet result = resultSet;
-        if (!resultSetMergeContext.getSqlContext().getGroupByContexts().isEmpty() || !resultSetMergeContext.getSqlContext().getAggregationSelectItemContexts().isEmpty()) {
+        if (!resultSetMergeContext.getSqlContext().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlContext().getAggregationSelectItems().isEmpty()) {
             result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
         if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
             resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
             result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
         }
-        if (null != resultSetMergeContext.getSqlContext().getLimitContext()) {
+        if (null != resultSetMergeContext.getSqlContext().getLimit()) {
             result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlContext());
         }
         return result;

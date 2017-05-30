@@ -24,9 +24,19 @@ import com.google.common.base.Optional;
  *
  * @author zhangliang
  */
-public interface SelectItemContext {
+public interface SelectItem {
     
+    /**
+     * 获取表达式.
+     * 
+     * @return 表达式
+     */
     String getExpression();
     
+    /**
+     * 获取别名.
+     * 
+     * @return 别名
+     */
     Optional<String> getAlias();
 }

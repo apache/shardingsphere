@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Getter
 @ToString
-public final class AggregationSelectItemContext implements SelectItemContext, IndexColumn {
+public final class AggregationSelectItem implements SelectItem, IndexColumn {
     
     private final String innerExpression;
     
@@ -44,9 +44,9 @@ public final class AggregationSelectItemContext implements SelectItemContext, In
     
     private final AggregationType aggregationType;
     
-    private final List<AggregationSelectItemContext> derivedAggregationSelectItemContexts = new ArrayList<>(2);
+    private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
     
-    public AggregationSelectItemContext(final String innerExpression, final Optional<String> alias, final int columnIndex, final AggregationType aggregationType) {
+    public AggregationSelectItem(final String innerExpression, final Optional<String> alias, final int columnIndex, final AggregationType aggregationType) {
         this.innerExpression = innerExpression;
         this.alias = alias;
         this.columnIndex = columnIndex;

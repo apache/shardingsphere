@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class GeneratedKeyContext {
+public final class GeneratedKey {
     
     private final String column;
     

@@ -44,7 +44,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
     
     private final Collection<ShardingColumn> shardingColumns = new LinkedList<>();
     
-    private GeneratedKeyContext generatedKeyContext;
+    private GeneratedKey generatedKey;
     
     private int columnsListLastPosition;
     
@@ -61,7 +61,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
      * @param parametersSize 参数个数
      */
     public void appendGenerateKeyToken(final ShardingRule shardingRule, final int parametersSize) {
-        if (null != generatedKeyContext) {
+        if (null != generatedKey) {
             return;
         }
         Optional<TableRule> tableRule = shardingRule.tryFindTableRule(getTables().get(0).getName());
@@ -86,13 +86,13 @@ public final class InsertSQLContext extends AbstractSQLContext {
         Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
         valuesToken.getItems().add(generatedKey.toString());
         addCondition(shardingRule, new ShardingColumn(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpr(generatedKey));
-        generatedKeyContext = new GeneratedKeyContext(tableRule.getLogicTable(), -1, generatedKey);
+        this.generatedKey = new GeneratedKey(tableRule.getLogicTable(), -1, generatedKey);
     }
     
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
         valuesToken.getItems().add("?");
         addCondition(shardingRule, new ShardingColumn(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpr(parametersSize));
-        generatedKeyContext = new GeneratedKeyContext(tableRule.getGenerateKeyColumn(), parametersSize, null);
+        generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), parametersSize, null);
     }
     
     private Optional<GeneratedKeyToken> findGeneratedKeyToken() {

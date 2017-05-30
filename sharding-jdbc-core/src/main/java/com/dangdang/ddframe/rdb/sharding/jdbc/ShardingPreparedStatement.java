@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKeyContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
@@ -175,8 +175,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     @Override
     protected BackendStatementWrapper generateStatement(final Connection conn, final String shardingSql) throws SQLException {
-        Optional<GeneratedKeyContext> generatedKeyContext = getGeneratedKeyContext();
-        if (isReturnGeneratedKeys() && generatedKeyContext.isPresent()) {
+        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, Statement.RETURN_GENERATED_KEYS), shardingSql);
         }
         if (0 != getResultSetHoldability()) {

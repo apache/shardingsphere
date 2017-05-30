@@ -23,11 +23,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItemContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -74,7 +74,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Override
     public final SelectSQLContext parse() {
         query();
-        sqlContext.getOrderByContexts().addAll(parseOrderBy());
+        sqlContext.getOrderByList().addAll(parseOrderBy());
         customizedSelect();
         appendDerivedColumns();
         return sqlContext;
@@ -113,9 +113,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     protected final void parseSelectList() {
         int index = 1;
         do {
-            SelectItemContext selectItemContext = parseSelectItem(index);
-            sqlContext.getItemContexts().add(selectItemContext);
-            if (selectItemContext instanceof CommonSelectItemContext && ((CommonSelectItemContext) selectItemContext).isStar()) {
+            SelectItem selectItem = parseSelectItem(index);
+            sqlContext.getItems().add(selectItem);
+            if (selectItem instanceof CommonSelectItem && ((CommonSelectItem) selectItem).isStar()) {
                 sqlContext.setContainStar(true);
             }
             index++;
@@ -123,18 +123,18 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         sqlContext.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
-    private SelectItemContext parseSelectItem(final int index) {
+    private SelectItem parseSelectItem(final int index) {
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         if (sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             sqlParser.getLexer().nextToken();
-            return new CommonSelectItemContext(Symbol.STAR.getLiterals(), sqlParser.parseAlias(), true);
+            return new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias(), true);
         }
         if (sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItemContext(sqlParser.skipParentheses(), sqlParser.parseAlias(), index, AggregationType.valueOf(literals.toUpperCase()));
+            return new AggregationSelectItem(sqlParser.skipParentheses(), sqlParser.parseAlias(), index, AggregationType.valueOf(literals.toUpperCase()));
         }
         StringBuilder expression = new StringBuilder();
-        // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItemContext类型并不关注expression和alias
+        // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItem类型并不关注expression和alias
         // FIXME 解析xxx.*
         while (!sqlParser.equalAny(DefaultKeyword.AS) && !sqlParser.equalAny(Symbol.COMMA) && !sqlParser.equalAny(DefaultKeyword.FROM) && !sqlParser.equalAny(Assist.END)) {
             String value = sqlParser.getLexer().getCurrentToken().getLiterals();
@@ -145,7 +145,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 sqlContext.getSqlTokens().add(new TableToken(position, value));
             }
         }
-        return new CommonSelectItemContext(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
+        return new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
     }
     
     protected void queryRest() {
@@ -167,24 +167,24 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
      *
      * @return 排序上下文
      */
-    public final List<OrderByContext> parseOrderBy() {
+    public final List<OrderBy> parseOrderBy() {
         if (!sqlParser.skipIfEqual(DefaultKeyword.ORDER)) {
             return Collections.emptyList();
         }
-        List<OrderByContext> result = new LinkedList<>();
+        List<OrderBy> result = new LinkedList<>();
         sqlParser.skipIfEqual(DefaultKeyword.SIBLINGS);
         sqlParser.accept(DefaultKeyword.BY);
         do {
-            Optional<OrderByContext> orderByContext = parseSelectOrderByItem();
-            if (orderByContext.isPresent()) {
-                result.add(orderByContext.get());
+            Optional<OrderBy> orderBy = parseSelectOrderByItem();
+            if (orderBy.isPresent()) {
+                result.add(orderBy.get());
             }
         }
         while (sqlParser.skipIfEqual(Symbol.COMMA));
         return result;
     }
     
-    protected Optional<OrderByContext> parseSelectOrderByItem() {
+    protected Optional<OrderBy> parseSelectOrderByItem() {
         SQLExpr expr = sqlParser.parseExpression(sqlContext);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
@@ -192,14 +192,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        OrderByContext result;
+        OrderBy result;
         if (expr instanceof SQLNumberExpr) {
-            result = new OrderByContext(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
+            result = new OrderBy(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
         } else if (expr instanceof SQLIdentifierExpr) {
-            result = new OrderByContext(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName())));
+            result = new OrderBy(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName())));
         } else if (expr instanceof SQLPropertyExpr) {
             SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            result = new OrderByContext(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
+            result = new OrderBy(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpr.getName())));
         } else {
             return Optional.absent();
@@ -235,18 +235,18 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        GroupByContext groupByContext;
+        GroupBy groupBy;
         if (sqlExpr instanceof SQLPropertyExpr) {
             SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            groupByContext = new GroupByContext(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
+            groupBy = new GroupBy(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
                     getAlias(SQLUtil.getExactlyValue(expr.getOwner() + "." + SQLUtil.getExactlyValue(expr.getName()))));
         } else if (sqlExpr instanceof SQLIdentifierExpr) {
             SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
-            groupByContext = new GroupByContext(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName())));
+            groupBy = new GroupBy(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName())));
         } else {
             return;
         }
-        sqlContext.getGroupByContexts().add(groupByContext);
+        sqlContext.getGroupByList().add(groupBy);
     }
     
     private Optional<String> getAlias(final String name) {
@@ -254,7 +254,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItemContext each : sqlContext.getItemContexts()) {
+        for (SelectItem each : sqlContext.getItems()) {
             if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
                 return each.getAlias();
             }
@@ -335,17 +335,17 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendAvgDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (SelectItemContext each : sqlContext.getItemContexts()) {
-            if (!(each instanceof AggregationSelectItemContext) || AggregationType.AVG != ((AggregationSelectItemContext) each).getAggregationType()) {
+        for (SelectItem each : sqlContext.getItems()) {
+            if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getAggregationType()) {
                 continue;
             }
-            AggregationSelectItemContext avgContext = (AggregationSelectItemContext) each;
+            AggregationSelectItem avgContext = (AggregationSelectItem) each;
             String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
-            AggregationSelectItemContext countContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
+            AggregationSelectItem countContext = new AggregationSelectItem(avgContext.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
             String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
-            AggregationSelectItemContext sumContext = new AggregationSelectItemContext(avgContext.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
-            avgContext.getDerivedAggregationSelectItemContexts().add(countContext);
-            avgContext.getDerivedAggregationSelectItemContexts().add(sumContext);
+            AggregationSelectItem sumContext = new AggregationSelectItem(avgContext.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
+            avgContext.getDerivedAggregationSelectItems().add(countContext);
+            avgContext.getDerivedAggregationSelectItems().add(sumContext);
             // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
             itemsToken.getItems().add(countContext.getExpression() + " AS " + countAlias + " ");
             itemsToken.getItems().add(sumContext.getExpression() + " AS " + sumAlias + " ");
@@ -355,7 +355,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (OrderByContext each : sqlContext.getOrderByContexts()) {
+        for (OrderBy each : sqlContext.getOrderByList()) {
             if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !sqlContext.isContainStar()) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                 String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
@@ -367,7 +367,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (GroupByContext each : sqlContext.getGroupByContexts()) {
+        for (GroupBy each : sqlContext.getGroupByList()) {
             if (!each.getAlias().isPresent() && !sqlContext.isContainStar()) {
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);

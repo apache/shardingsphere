@@ -54,7 +54,7 @@ public class NullableAggregationResultSetTest {
     @Test
     public void assertNullable() throws SQLException {
         SQLContext sqlContext = new SelectSQLContext();
-        ((SelectSQLContext) sqlContext).getItemContexts().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
+        ((SelectSQLContext) sqlContext).getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
         ResultSet resultSet1;
         ResultSet resultSet2;
         if (aggregationType == AggregationType.AVG) {

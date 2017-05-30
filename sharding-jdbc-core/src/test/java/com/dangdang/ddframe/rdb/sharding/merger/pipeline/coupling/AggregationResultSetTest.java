@@ -68,7 +68,7 @@ public final class AggregationResultSetTest {
     @Test
     public void assertNext() throws SQLException {
         SelectSQLContext sqlContext = new SelectSQLContext();
-        sqlContext.getItemContexts().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0), null, 1));
+        sqlContext.getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0), null, 1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.asList(
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData1))),
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData2))),

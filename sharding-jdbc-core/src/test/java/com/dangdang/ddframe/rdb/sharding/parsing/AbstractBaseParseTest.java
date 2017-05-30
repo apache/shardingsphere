@@ -23,11 +23,11 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
@@ -62,13 +62,13 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<ConditionContext> expectedConditionContexts;
     
-    private final Iterator<OrderByContext> orderByContexts;
+    private final Iterator<OrderBy> orderByList;
     
-    private final Iterator<GroupByContext> groupByContexts;
+    private final Iterator<GroupBy> groupByList;
     
-    private final Iterator<AggregationSelectItemContext> aggregationColumns;
+    private final Iterator<AggregationSelectItem> aggregationColumns;
     
-    private final LimitContext limit;
+    private final Limit limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
                                     final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
@@ -77,10 +77,10 @@ public abstract class AbstractBaseParseTest {
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();
         this.expectedConditionContexts = expectedConditionContext.iterator();
-        this.orderByContexts = expectedSQLContext.getOrderByContexts().iterator();
-        this.groupByContexts = expectedSQLContext.getGroupByContexts().iterator();
-        this.aggregationColumns = expectedSQLContext.getAggregationSelectItemContexts().iterator();
-        this.limit = expectedSQLContext.getLimitContext();
+        this.orderByList = expectedSQLContext.getOrderByList().iterator();
+        this.groupByList = expectedSQLContext.getGroupByList().iterator();
+        this.aggregationColumns = expectedSQLContext.getAggregationSelectItems().iterator();
+        this.limit = expectedSQLContext.getLimit();
     }
     
     protected static Collection<Object[]> dataParameters(final String path) {
@@ -152,38 +152,38 @@ public abstract class AbstractBaseParseTest {
         }
         SQLContext sqlContext = new SelectSQLContext();
         if (null != assertObj.getOrderByColumns()) {
-            sqlContext.getOrderByContexts().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn, OrderByContext>() {
+            sqlContext.getOrderByList().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn, OrderBy>() {
                 
                 @Override
-                public OrderByContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderByContext(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase())) 
-                            : new OrderByContext(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                public OrderBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn input) {
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderBy(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase())) 
+                            : new OrderBy(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }
         if (null != assertObj.getGroupByColumns()) {
-            sqlContext.getGroupByContexts().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn, GroupByContext>() {
+            sqlContext.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn, GroupBy>() {
                 
                 @Override
-                public GroupByContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn input) {
-                    return new GroupByContext(
+                public GroupBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn input) {
+                    return new GroupBy(
                             Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             }));
         }
         if (null != assertObj.getAggregationColumns()) {
-            sqlContext.getAggregationSelectItemContexts().addAll(Lists.transform(assertObj.getAggregationColumns(), 
-                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn, AggregationSelectItemContext>() {
+            sqlContext.getAggregationSelectItems().addAll(Lists.transform(assertObj.getAggregationColumns(), 
+                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn, AggregationSelectItem>() {
                         
                         @Override
-                        public AggregationSelectItemContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn input) {
-                            AggregationSelectItemContext result = new AggregationSelectItemContext(input.getExpression(), Optional.fromNullable(input.getAlias()), -1, 
+                        public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn input) {
+                            AggregationSelectItem result = new AggregationSelectItem(input.getExpression(), Optional.fromNullable(input.getAlias()), -1, 
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn each : input.getDerivedColumns()) {
-                                result.getDerivedAggregationSelectItemContexts().add(new AggregationSelectItemContext(each.getExpression(), Optional.fromNullable(each.getAlias()), -1, 
+                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getExpression(), Optional.fromNullable(each.getAlias()), -1, 
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
                             return result;
@@ -191,7 +191,7 @@ public abstract class AbstractBaseParseTest {
                 }));
         }
         if (null != assertObj.getLimit()) {
-            sqlContext.setLimitContext(new LimitContext(
+            sqlContext.setLimit(new Limit(
                     assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
         }
         result[5] = sqlContext;

@@ -19,57 +19,38 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 排序上下文.
+ * 分组上下文.
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
-public final class OrderByContext implements IndexColumn {
+public final class GroupBy implements IndexColumn {
     
     private final Optional<String> owner;
     
-    private final Optional<String> name;
-    
-    private final Optional<Integer> index;
+    private final String name;
     
     private final OrderType orderByType;
     
     @Setter
     private Optional<String> alias;
     
+    @Setter
     private int columnIndex;
     
-    public OrderByContext(final String name, final OrderType orderByType, final Optional<String> alias) {
-        this.owner = Optional.absent();
-        this.name = Optional.of(name);
-        index = Optional.absent();
+    public GroupBy(final Optional<String> owner, final String name, final OrderType orderByType, final Optional<String> alias) {
+        this.owner = owner;
+        this.name = name;
         this.orderByType = orderByType;
         this.alias = alias;
-    }
-    
-    public OrderByContext(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
-        this.owner = Optional.of(owner);
-        this.name = Optional.of(name);
-        index = Optional.absent();
-        this.orderByType = orderByType;
-        this.alias = alias;
-    }
-    
-    public OrderByContext(final int index, final OrderType orderByType) {
-        owner = Optional.absent();
-        name = Optional.absent();
-        this.index = Optional.of(index);
-        this.orderByType = orderByType;
-        alias = Optional.absent();
-        columnIndex = index;
     }
     
     @Override
@@ -79,14 +60,6 @@ public final class OrderByContext implements IndexColumn {
     
     @Override
     public Optional<String> getColumnName() {
-        return name;
-    }
-    
-    @Override
-    public void setColumnIndex(final int index) {
-        if (this.index.isPresent()) {
-            return;
-        }
-        columnIndex = index;
+        return Optional.of(name);
     }
 }

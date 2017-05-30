@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
@@ -48,7 +48,7 @@ public final class MySQLParser extends SQLParser {
      * @param parametersIndex 参数索引
      * @return 分页上下文
      */
-    public LimitContext parseLimit(final SQLContext sqlContext, final int parametersIndex) {
+    public Limit parseLimit(final SQLContext sqlContext, final int parametersIndex) {
         skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentToken().getEndPosition();
@@ -67,19 +67,19 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (skipIfEqual(Symbol.COMMA)) {
-            return getLimitContextWithComma(sqlContext, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
+            return getLimitWithComma(sqlContext, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (skipIfEqual(MySQLKeyword.OFFSET)) {
-            return getLimitContextWithOffset(sqlContext, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
+            return getLimitWithOffset(sqlContext, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
             sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new LimitContext(value, valueIndex);
+        return new Limit(value, valueIndex);
     }
     
-    private LimitContext getLimitContextWithComma(final SQLContext sqlContext, 
-                                                  final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithComma(final SQLContext sqlContext,
+                                    final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int rowCount;
         int rowCountIndex = -1;
@@ -102,11 +102,11 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForRowCount) {
             sqlContext.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
-        return new LimitContext(value, rowCount, valueIndex, rowCountIndex);
+        return new Limit(value, rowCount, valueIndex, rowCountIndex);
     }
     
-    private LimitContext getLimitContextWithOffset(final SQLContext sqlContext, 
-                                                   final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithOffset(final SQLContext sqlContext,
+                                     final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int offsetBeginPosition = getLexer().getCurrentToken().getEndPosition();
         int offset;
         int offsetIndex = -1;
@@ -129,6 +129,6 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             sqlContext.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new LimitContext(offset, value, offsetIndex, valueIndex);
+        return new Limit(offset, value, offsetIndex, valueIndex);
     }
 }

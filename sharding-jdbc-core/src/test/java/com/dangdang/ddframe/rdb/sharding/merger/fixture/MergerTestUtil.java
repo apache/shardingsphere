@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItemContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -81,13 +81,13 @@ public final class MergerTestUtil {
         return result;
     }
     
-    public static AggregationSelectItemContext createAggregationColumn(final AggregationType aggregationType, final String name, final String alias, final int index) {
-        AggregationSelectItemContext result = new AggregationSelectItemContext(name, Optional.fromNullable(alias), index, aggregationType);
+    public static AggregationSelectItem createAggregationColumn(final AggregationType aggregationType, final String name, final String alias, final int index) {
+        AggregationSelectItem result = new AggregationSelectItem(name, Optional.fromNullable(alias), index, aggregationType);
         if (AggregationType.AVG.equals(aggregationType)) {
-            result.getDerivedAggregationSelectItemContexts().add(
-                    new AggregationSelectItemContext(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationType.COUNT));
-            result.getDerivedAggregationSelectItemContexts().add(
-                    new AggregationSelectItemContext(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationType.SUM));
+            result.getDerivedAggregationSelectItems().add(
+                    new AggregationSelectItem(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationType.COUNT));
+            result.getDerivedAggregationSelectItems().add(
+                    new AggregationSelectItem(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationType.SUM));
         }
         return result;
     }

@@ -103,27 +103,23 @@ public abstract class AbstractSQLContext implements SQLContext {
         return new ShardingColumn(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
-    @Override
-    public List<OrderByContext> getOrderByContexts() {
+    public List<OrderBy> getOrderByList() {
+        return Collections.emptyList();
+    }
+    
+    public List<GroupBy> getGroupByList() {
         return Collections.emptyList();
     }
     
     @Override
-    public List<GroupByContext> getGroupByContexts() {
+    public List<AggregationSelectItem> getAggregationSelectItems() {
         return Collections.emptyList();
     }
     
-    @Override
-    public List<AggregationSelectItemContext> getAggregationSelectItemContexts() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public LimitContext getLimitContext() {
+    public Limit getLimit() {
         return null;
     }
     
-    @Override
-    public void setLimitContext(final LimitContext limitContext) {
+    public void setLimit(final Limit limit) {
     }
 }

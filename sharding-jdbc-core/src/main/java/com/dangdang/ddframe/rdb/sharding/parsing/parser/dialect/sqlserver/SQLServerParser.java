@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLServerTop;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
@@ -90,7 +90,7 @@ public final class SQLServerParser extends SQLParser {
             throw new SQLParsingException(getLexer());
         }
         getLexer().nextToken();
-        LimitContext limitContext;
+        Limit limit;
         if (skipIfEqual(DefaultKeyword.FETCH)) {
             getLexer().nextToken();
             int rowCount;
@@ -107,10 +107,10 @@ public final class SQLServerParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limitContext = new LimitContext(offset, rowCount, offsetIndex, rowCountIndex);
+            limit = new Limit(offset, rowCount, offsetIndex, rowCountIndex);
         } else {
-            limitContext = new LimitContext(offset, offsetIndex);
+            limit = new Limit(offset, offsetIndex);
         }
-        sqlContext.setLimitContext(limitContext);
+        sqlContext.setLimit(limit);
     }
 }

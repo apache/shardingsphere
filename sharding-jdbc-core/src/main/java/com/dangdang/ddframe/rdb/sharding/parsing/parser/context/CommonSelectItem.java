@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommonSelectItemContext implements SelectItemContext {
+public final class CommonSelectItem implements SelectItem {
     
     private final String expression;
     
