@@ -193,22 +193,21 @@ public class SQLParser extends AbstractParser {
         String literals = getLexer().getCurrentToken().getLiterals();
         getLexer().nextToken();
         if (skipIfEqual(Symbol.DOT)) {
-            String tableName = getLexer().getCurrentToken().getLiterals();
             getLexer().nextToken();
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(tableName, SQLUtil.getExactlyValue(literals), parseAlias());
+            tableContext = new TableContext(SQLUtil.getExactlyValue(literals), parseAlias());
         } else {
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(literals, SQLUtil.getExactlyValue(literals), parseAlias());
+            tableContext = new TableContext(SQLUtil.getExactlyValue(literals), parseAlias());
         }
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, tableContext.getOriginalLiterals()));
+        sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals));
         sqlContext.getTables().add(tableContext);
     }
     

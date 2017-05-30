@@ -33,13 +33,7 @@ import lombok.ToString;
 @ToString
 public final class TableContext {
     
-    private final String originalLiterals;
-    
     private final String name;
     
     private final Optional<String> alias;
-    
-    public TableContext(final String name, final Optional<String> alias) {
-        this(name, name, alias);
-    }
 }

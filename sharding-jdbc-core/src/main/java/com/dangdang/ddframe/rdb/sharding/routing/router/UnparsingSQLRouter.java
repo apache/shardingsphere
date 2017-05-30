@@ -52,6 +52,7 @@ public final class UnparsingSQLRouter implements SQLRouter {
     }
     
     @Override
+    // TODO insert的SQL仍然需要解析自增主键
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlContext);
