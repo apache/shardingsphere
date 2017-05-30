@@ -108,9 +108,9 @@ public final class InsertStatement extends AbstractSQLStatement {
         return Optional.absent();
     }
     
-    private void addCondition(final ShardingRule shardingRule, final Column column, final SQLExpression sqlExpr) {
+    private void addCondition(final ShardingRule shardingRule, final Column column, final SQLExpression sqlExpression) {
         if (shardingRule.isShardingColumn(column)) {
-            add(new Condition(column, sqlExpr));
+            add(new Condition(column, sqlExpression));
         }
     }
 }

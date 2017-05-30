@@ -30,20 +30,20 @@ public final class Condition {
     
     private final List<Integer> valueIndices = new LinkedList<>();
     
-    public Condition(final Column column, final SQLExpression sqlExpr) {
+    public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
-        initSQLExpr(sqlExpr);
+        initSQLExpr(sqlExpression);
     }
     
-    public Condition(final Column column, final SQLExpression beginSqlExpr, final SQLExpression endSqlExpr) {
+    public Condition(final Column column, final SQLExpression beginSqlExpression, final SQLExpression endSqlExpression) {
         this(column, ShardingOperator.BETWEEN);
-        initSQLExpr(beginSqlExpr);
-        initSQLExpr(endSqlExpr);
+        initSQLExpr(beginSqlExpression);
+        initSQLExpr(endSqlExpression);
     }
     
-    public Condition(final Column column, final List<SQLExpression> sqlExprs) {
+    public Condition(final Column column, final List<SQLExpression> sqlExpressions) {
         this(column, ShardingOperator.IN);
-        for (SQLExpression each : sqlExprs) {
+        for (SQLExpression each : sqlExpressions) {
             initSQLExpr(each);
         }
     }
