@@ -31,7 +31,7 @@ import java.util.Map;
  * 
  * @author gaohongtao
  */
-public class SQLBuilder {
+public final class SQLBuilder {
     
     private final List<Object> segments;
     
@@ -164,7 +164,7 @@ public class SQLBuilder {
         currentSegment.append(literals);
         changeState();
     }
-
+    
     private void changeState() {
         changed = true;
         for (SQLBuilder each : derivedSQLBuilders) {
@@ -194,7 +194,7 @@ public class SQLBuilder {
         private String label;
         
         private String value;
-
+        
         private final List<Integer> indices = new LinkedList<>();
         
         String toToken() {
@@ -204,7 +204,7 @@ public class SQLBuilder {
             Joiner joiner = Joiner.on("");
             return label.equals(value) ? joiner.join("[Token(", value, ")]") : joiner.join("[", label, "(", value, ")]");
         }
-    
+        
         @Override
         public String toString() {
             return null == value ? "" : value;

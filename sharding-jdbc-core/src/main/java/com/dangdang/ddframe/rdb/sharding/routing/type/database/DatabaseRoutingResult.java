@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-public class DatabaseRoutingResult implements RoutingResult {
+public final class DatabaseRoutingResult implements RoutingResult {
     
     private final Collection<String> routedDatabaseNames;
     

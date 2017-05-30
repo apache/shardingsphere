@@ -35,7 +35,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Slf4j
-public class BindingTablesRouter {
+public final class BindingTablesRouter {
     
     private final ShardingRule shardingRule;
     

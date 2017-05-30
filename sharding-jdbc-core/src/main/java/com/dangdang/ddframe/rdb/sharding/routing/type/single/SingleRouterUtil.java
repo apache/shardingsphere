@@ -32,7 +32,7 @@ import java.util.List;
  * @author gaohongtao
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SingleRouterUtil {
+public final class SingleRouterUtil {
     
     /**
      * 将条件对象转换为分片值对象.

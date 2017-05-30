@@ -39,7 +39,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class MixedTablesRouter {
+public final class MixedTablesRouter {
     
     private final ShardingRule shardingRule;
     
