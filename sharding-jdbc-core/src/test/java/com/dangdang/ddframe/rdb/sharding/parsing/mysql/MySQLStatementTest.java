@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -35,8 +35,8 @@ import java.util.Collection;
 public final class MySQLStatementTest extends AbstractBaseParseTest {
     
     public MySQLStatementTest(
-            final String testCaseName, final String sql, final String expectedSQL, 
-            final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
+            final String testCaseName, final String sql, final String expectedSQL,
+            final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLContext);
     }
     

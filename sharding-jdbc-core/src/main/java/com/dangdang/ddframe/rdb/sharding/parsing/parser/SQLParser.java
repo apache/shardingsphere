@@ -24,8 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
@@ -188,7 +188,7 @@ public class SQLParser extends AbstractParser {
             }
             hasParentheses = true;
         }
-        TableContext tableContext;
+        Table table;
         final int beginPosition = getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length();
         String literals = getLexer().getCurrentToken().getLiterals();
         getLexer().nextToken();
@@ -197,18 +197,18 @@ public class SQLParser extends AbstractParser {
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(SQLUtil.getExactlyValue(literals), parseAlias());
+            table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
         } else {
             if (hasParentheses) {
                 accept(Symbol.RIGHT_PAREN);
             }
-            tableContext = new TableContext(SQLUtil.getExactlyValue(literals), parseAlias());
+            table = new Table(SQLUtil.getExactlyValue(literals), parseAlias());
         }
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlContext.getTables().add(tableContext);
+        sqlContext.getTables().add(table);
     }
     
     /**
@@ -286,7 +286,7 @@ public class SQLParser extends AbstractParser {
         SQLExpr right = parseExpression(sqlContext);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
         if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLNumberExpr || right instanceof SQLTextExpr || right instanceof SQLPlaceholderExpr)) {
-            Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
+            Optional<ShardingColumn> column = sqlContext.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
             }
@@ -303,7 +303,7 @@ public class SQLParser extends AbstractParser {
             }
             rights.add(parseExpression(sqlContext));
         } while (!equalAny(Symbol.RIGHT_PAREN));
-        Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
+        Optional<ShardingColumn> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights));
         }
@@ -316,7 +316,7 @@ public class SQLParser extends AbstractParser {
         rights.add(parseExpression(sqlContext));
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlContext));
-        Optional<ShardingColumnContext> column = sqlContext.findColumn(left);
+        Optional<ShardingColumn> column = sqlContext.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
             sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights.get(0), rights.get(1)));
         }

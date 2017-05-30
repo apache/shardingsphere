@@ -42,7 +42,7 @@ import java.util.LinkedList;
 @Setter
 public final class InsertSQLContext extends AbstractSQLContext {
     
-    private final Collection<ShardingColumnContext> shardingColumnContexts = new LinkedList<>();
+    private final Collection<ShardingColumn> shardingColumns = new LinkedList<>();
     
     private GeneratedKeyContext generatedKeyContext;
     
@@ -85,13 +85,13 @@ public final class InsertSQLContext extends AbstractSQLContext {
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken) {
         Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
         valuesToken.getItems().add(generatedKey.toString());
-        addCondition(shardingRule, new ShardingColumnContext(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable(), true), new SQLNumberExpr(generatedKey));
+        addCondition(shardingRule, new ShardingColumn(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpr(generatedKey));
         generatedKeyContext = new GeneratedKeyContext(tableRule.getLogicTable(), -1, generatedKey);
     }
     
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
         valuesToken.getItems().add("?");
-        addCondition(shardingRule, new ShardingColumnContext(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable(), true), new SQLPlaceholderExpr(parametersSize));
+        addCondition(shardingRule, new ShardingColumn(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpr(parametersSize));
         generatedKeyContext = new GeneratedKeyContext(tableRule.getGenerateKeyColumn(), parametersSize, null);
     }
     
@@ -104,9 +104,9 @@ public final class InsertSQLContext extends AbstractSQLContext {
         return Optional.absent();
     }
     
-    private void addCondition(final ShardingRule shardingRule, final ShardingColumnContext shardingColumnContext, final SQLExpr sqlExpr) {
-        if (shardingRule.isShardingColumn(shardingColumnContext)) {
-            getConditionContext().add(new ConditionContext.Condition(shardingColumnContext, sqlExpr));
+    private void addCondition(final ShardingRule shardingRule, final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
+        if (shardingRule.isShardingColumn(shardingColumn)) {
+            getConditionContext().add(new ConditionContext.Condition(shardingColumn, sqlExpr));
         }
     }
 }

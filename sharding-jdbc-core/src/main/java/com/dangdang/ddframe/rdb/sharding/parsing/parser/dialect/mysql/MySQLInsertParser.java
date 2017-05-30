@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
@@ -58,7 +58,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         ConditionContext conditionContext = new ConditionContext();
         do {
             getSqlParser().getLexer().nextToken();
-            ShardingColumnContext shardingColumnContext = new ShardingColumnContext(
+            ShardingColumn shardingColumn = new ShardingColumn(
                     SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getSqlContext().getTables().get(0).getName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
@@ -79,8 +79,8 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             }
             getSqlParser().getLexer().nextToken();
             if (getSqlParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
-                if (getShardingRule().isShardingColumn(shardingColumnContext)) {
-                    conditionContext.add(new ConditionContext.Condition(shardingColumnContext, sqlExpr));
+                if (getShardingRule().isShardingColumn(shardingColumn)) {
+                    conditionContext.add(new ConditionContext.Condition(shardingColumn, sqlExpr));
                 }
             } else {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);

@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 
-public class UnsupportedOperationDerivedShardingColumnContextResultSetTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public class UnsupportedOperationDerivedShardingColumnResultSetTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
     private ResultSet actual;
     

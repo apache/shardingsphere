@@ -17,27 +17,22 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * 列对象.
- *
+ * 表上下文.
+ * 
  * @author zhangliang
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(exclude = "generateKey")
-public final class ShardingColumnContext {
+@ToString
+public final class Table {
     
-    private final String columnName;
+    private final String name;
     
-    private final String tableName;
-    
-    private final boolean generateKey;
-    
-    public ShardingColumnContext(final String columnName, final String tableName) {
-        this(columnName, tableName, false);
-    }
+    private final Optional<String> alias;
 }

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
@@ -52,7 +52,7 @@ public final class SQLRewriteEngine {
     public SQLRewriteEngine(final String originalSQL, final SQLContext sqlContext) {
         this.originalSQL = originalSQL;
         sqlTokens.addAll(sqlContext.getSqlTokens());
-        for (TableContext each : sqlContext.getTables()) {
+        for (Table each : sqlContext.getTables()) {
             tableNames.add(each.getName());
         }
         limit = sqlContext.getLimitContext();

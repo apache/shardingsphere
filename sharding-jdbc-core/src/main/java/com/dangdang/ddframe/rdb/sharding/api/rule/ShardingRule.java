@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.keygen.KeyGeneratorFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
@@ -205,22 +205,22 @@ public final class ShardingRule {
     /**
      * 判断是否为分片列.
      *
-     * @param shardingColumnContext 表对象
+     * @param shardingColumn 表对象
      * @return 是否为分片列
      */
-    public boolean isShardingColumn(final ShardingColumnContext shardingColumnContext) {
-        if (databaseShardingStrategy.getShardingColumns().contains(shardingColumnContext.getColumnName())
-                || tableShardingStrategy.getShardingColumns().contains(shardingColumnContext.getColumnName())) {
+    public boolean isShardingColumn(final ShardingColumn shardingColumn) {
+        if (databaseShardingStrategy.getShardingColumns().contains(shardingColumn.getColumnName())
+                || tableShardingStrategy.getShardingColumns().contains(shardingColumn.getColumnName())) {
             return true;
         }
         for (TableRule each : tableRules) {
-            if (!each.getLogicTable().equalsIgnoreCase(shardingColumnContext.getTableName())) {
+            if (!each.getLogicTable().equalsIgnoreCase(shardingColumn.getTableName())) {
                 continue;
             }
-            if (null != each.getDatabaseShardingStrategy() && each.getDatabaseShardingStrategy().getShardingColumns().contains(shardingColumnContext.getColumnName())) {
+            if (null != each.getDatabaseShardingStrategy() && each.getDatabaseShardingStrategy().getShardingColumns().contains(shardingColumn.getColumnName())) {
                 return true;
             }
-            if (null != each.getTableShardingStrategy() && each.getTableShardingStrategy().getShardingColumns().contains(shardingColumnContext.getColumnName())) {
+            if (null != each.getTableShardingStrategy() && each.getTableShardingStrategy().getShardingColumns().contains(shardingColumn.getColumnName())) {
                 return true;
             }
         }

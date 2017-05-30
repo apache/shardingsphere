@@ -47,11 +47,11 @@ public final class SingleRouterUtil {
             case EQUAL:
             case IN:
                 if (1 == conditionValues.size()) {
-                    return new ShardingValue<Comparable<?>>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), conditionValues.get(0));
+                    return new ShardingValue<Comparable<?>>(condition.getShardingColumn().getTableName(), condition.getShardingColumn().getColumnName(), conditionValues.get(0));
                 }
-                return new ShardingValue<>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), conditionValues);
+                return new ShardingValue<>(condition.getShardingColumn().getTableName(), condition.getShardingColumn().getColumnName(), conditionValues);
             case BETWEEN:
-                return new ShardingValue<>(condition.getShardingColumnContext().getTableName(), condition.getShardingColumnContext().getColumnName(), 
+                return new ShardingValue<>(condition.getShardingColumn().getTableName(), condition.getShardingColumn().getColumnName(), 
                         Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
             default:
                 throw new UnsupportedOperationException(condition.getOperator().getExpression());

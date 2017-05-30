@@ -29,7 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItemContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
@@ -291,7 +291,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         // FIXME 根据shardingRule过滤table
         sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlContext.getTables().add(new TableContext(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
+        sqlContext.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
     }
     
     protected void parseJoinTable() {
@@ -316,7 +316,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
-        for (TableContext each : sqlContext.getTables()) {
+        for (Table each : sqlContext.getTables()) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
                 sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName()));
             }

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -33,12 +33,12 @@ public class SingleRouterUtilTest {
     
     @Test
     public void testConvertConditionToShardingValue() throws Exception {
-        ConditionContext.Condition condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.EQUAL);
+        ConditionContext.Condition condition = new ConditionContext.Condition(new ShardingColumn("test", "test"), ShardingOperator.EQUAL);
         condition.getValues().add(1);
         ShardingValue<?> shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.SINGLE));
         assertThat((Integer) shardingValue.getValue(), is(1));
-        condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.IN);
+        condition = new ConditionContext.Condition(new ShardingColumn("test", "test"), ShardingOperator.IN);
         condition.getValues().add(1);
         condition.getValues().add(2);
         shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
@@ -46,7 +46,7 @@ public class SingleRouterUtilTest {
         Iterator<?> iterator = shardingValue.getValues().iterator();
         assertThat((Integer) iterator.next(), is(1));
         assertThat((Integer) iterator.next(), is(2));
-        condition = new ConditionContext.Condition(new ShardingColumnContext("test", "test"), ShardingOperator.BETWEEN);
+        condition = new ConditionContext.Condition(new ShardingColumn("test", "test"), ShardingOperator.BETWEEN);
         condition.getValues().add(1);
         condition.getValues().add(2);
         shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());

@@ -43,7 +43,7 @@ public interface SQLContext {
      * 
      * @return 表解析对象集合
      */
-    List<TableContext> getTables();
+    List<Table> getTables();
     
     /**
      * 获取条件对象上下文.
@@ -65,7 +65,7 @@ public interface SQLContext {
      * @param expr SQL表达式
      * @return 列对象
      */
-    Optional<ShardingColumnContext> findColumn(SQLExpr expr);
+    Optional<ShardingColumn> findColumn(SQLExpr expr);
     
     /**
      * 获取排序上下文集合.

@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.LimitContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderByContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumnContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.TableContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -58,7 +58,7 @@ public abstract class AbstractBaseParseTest {
     
     private final String expectedSQL;
     
-    private final Iterator<TableContext> expectedTables;
+    private final Iterator<Table> expectedTables;
     
     private final Iterator<ConditionContext> expectedConditionContexts;
     
@@ -71,7 +71,7 @@ public abstract class AbstractBaseParseTest {
     private final LimitContext limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                 final Collection<TableContext> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
+                                    final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
@@ -113,11 +113,11 @@ public abstract class AbstractBaseParseTest {
         result[0] = assertObj.getId();
         result[1] = assertObj.getSql();
         result[2] = assertObj.getExpectedSQL();
-        result[3] = Lists.transform(assertObj.getTables(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table, TableContext>() {
+        result[3] = Lists.transform(assertObj.getTables(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table, Table>() {
             
             @Override
-            public TableContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table input) {
-                return new TableContext(input.getName(), Optional.of(input.getAlias()));
+            public Table apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table input) {
+                return new Table(input.getName(), Optional.of(input.getAlias()));
             }
         });
         if (null == assertObj.getConditionContexts()) {
@@ -133,7 +133,7 @@ public abstract class AbstractBaseParseTest {
                     }
                     for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : input.getConditions()) {
                         ConditionContext.Condition condition = new ConditionContext.Condition(
-                                new ShardingColumnContext(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
+                                new ShardingColumn(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
                         condition.getValues().addAll(Lists.transform(each.getValues(), new Function<Value, Comparable<?>>() {
                             
                             @Override

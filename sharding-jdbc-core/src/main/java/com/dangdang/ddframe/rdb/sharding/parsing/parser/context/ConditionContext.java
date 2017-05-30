@@ -41,7 +41,7 @@ import java.util.Map;
 @ToString
 public final class ConditionContext {
     
-    private final Map<ShardingColumnContext, Condition> conditions = new LinkedHashMap<>();
+    private final Map<ShardingColumn, Condition> conditions = new LinkedHashMap<>();
     
     /**
      * 添加条件对象.
@@ -51,7 +51,7 @@ public final class ConditionContext {
     // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
     public void add(final Condition condition) {
         // TODO 自关联有问题，表名可考虑使用别名对应
-        conditions.put(condition.getShardingColumnContext(), condition);
+        conditions.put(condition.getShardingColumn(), condition);
     }
     
     /**
@@ -62,7 +62,7 @@ public final class ConditionContext {
      * @return 条件对象
      */
     public Optional<Condition> find(final String table, final String column) {
-        return Optional.fromNullable(conditions.get(new ShardingColumnContext(column, table)));
+        return Optional.fromNullable(conditions.get(new ShardingColumn(column, table)));
     }
     
     /**
@@ -75,7 +75,7 @@ public final class ConditionContext {
     @EqualsAndHashCode
     public static final class Condition {
         
-        private final ShardingColumnContext shardingColumnContext;
+        private final ShardingColumn shardingColumn;
         
         private final ShardingOperator operator;
         
@@ -83,19 +83,19 @@ public final class ConditionContext {
         
         private final List<Integer> valueIndices = new LinkedList<>();
         
-        public Condition(final ShardingColumnContext shardingColumnContext, final SQLExpr sqlExpr) {
-            this(shardingColumnContext, ShardingOperator.EQUAL);
+        public Condition(final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
+            this(shardingColumn, ShardingOperator.EQUAL);
             initSQLExpr(sqlExpr);
         }
         
-        public Condition(final ShardingColumnContext shardingColumnContext, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
-            this(shardingColumnContext, ShardingOperator.BETWEEN);
+        public Condition(final ShardingColumn shardingColumn, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
+            this(shardingColumn, ShardingOperator.BETWEEN);
             initSQLExpr(beginSqlExpr);
             initSQLExpr(endSqlExpr);
         }
         
-        public Condition(final ShardingColumnContext shardingColumnContext, final List<SQLExpr> sqlExprs) {
-            this(shardingColumnContext, ShardingOperator.IN);
+        public Condition(final ShardingColumn shardingColumn, final List<SQLExpr> sqlExprs) {
+            this(shardingColumn, ShardingOperator.IN);
             for (SQLExpr each : sqlExprs) {
                 initSQLExpr(each);
             }

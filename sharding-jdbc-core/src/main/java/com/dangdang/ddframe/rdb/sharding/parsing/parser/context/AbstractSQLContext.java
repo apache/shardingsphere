@@ -45,7 +45,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     
     private final SQLType type;
     
-    private final List<TableContext> tables = new ArrayList<>();
+    private final List<Table> tables = new ArrayList<>();
     
     private ConditionContext conditionContext = new ConditionContext();
     
@@ -57,7 +57,7 @@ public abstract class AbstractSQLContext implements SQLContext {
     }
     
     @Override
-    public Optional<ShardingColumnContext> findColumn(final SQLExpr expr) {
+    public Optional<ShardingColumn> findColumn(final SQLExpr expr) {
         if (expr instanceof SQLPropertyExpr) {
             return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
         }
@@ -67,18 +67,18 @@ public abstract class AbstractSQLContext implements SQLContext {
         return Optional.absent();
     }
     
-    private ShardingColumnContext getColumnWithQualifiedName(final SQLPropertyExpr expr) {
-        Optional<TableContext> table = findTable((expr.getOwner()).getName());
+    private ShardingColumn getColumnWithQualifiedName(final SQLPropertyExpr expr) {
+        Optional<Table> table = findTable((expr.getOwner()).getName());
         return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
-    private Optional<TableContext> findTable(final String tableNameOrAlias) {
-        Optional<TableContext> tableFromName = findTableFromName(tableNameOrAlias);
+    private Optional<Table> findTable(final String tableNameOrAlias) {
+        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
         return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
     }
     
-    private Optional<TableContext> findTableFromName(final String name) {
-        for (TableContext each : tables) {
+    private Optional<Table> findTableFromName(final String name) {
+        for (Table each : tables) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
                 return Optional.of(each);
             }
@@ -86,8 +86,8 @@ public abstract class AbstractSQLContext implements SQLContext {
         return Optional.absent();
     }
     
-    private Optional<TableContext> findTableFromAlias(final String alias) {
-        for (TableContext each : tables) {
+    private Optional<Table> findTableFromAlias(final String alias) {
+        for (Table each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
                 return Optional.of(each);
             }
@@ -95,12 +95,12 @@ public abstract class AbstractSQLContext implements SQLContext {
         return Optional.absent();
     }
     
-    private ShardingColumnContext getColumnWithoutAlias(final SQLIdentifierExpr expr) {
+    private ShardingColumn getColumnWithoutAlias(final SQLIdentifierExpr expr) {
         return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
     }
     
-    private ShardingColumnContext createColumn(final String columnName, final String tableName) {
-        return new ShardingColumnContext(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
+    private ShardingColumn createColumn(final String columnName, final String tableName) {
+        return new ShardingColumn(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
     @Override
