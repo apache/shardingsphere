@@ -18,11 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -33,22 +35,17 @@ public class SingleRouterUtilTest {
     
     @Test
     public void testConvertConditionToShardingValue() throws Exception {
-        Condition condition = new Condition(new Column("test", "test"), ShardingOperator.EQUAL);
-        condition.getValues().add(1);
+        Condition condition = new Condition(new Column("test", "test"), new SQLNumberExpression(1));
         ShardingValue<?> shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.SINGLE));
         assertThat((Integer) shardingValue.getValue(), is(1));
-        condition = new Condition(new Column("test", "test"), ShardingOperator.IN);
-        condition.getValues().add(1);
-        condition.getValues().add(2);
+        condition = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
         shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.LIST));
         Iterator<?> iterator = shardingValue.getValues().iterator();
         assertThat((Integer) iterator.next(), is(1));
         assertThat((Integer) iterator.next(), is(2));
-        condition = new Condition(new Column("test", "test"), ShardingOperator.BETWEEN);
-        condition.getValues().add(1);
-        condition.getValues().add(2);
+        condition = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
         shardingValue = SingleRouterUtil.convertConditionToShardingValue(condition, Collections.emptyList());
         assertThat(shardingValue.getType(), is(ShardingValue.ShardingValueType.RANGE));
         assertThat((Integer) shardingValue.getValueRange().lowerEndpoint(), is(1));

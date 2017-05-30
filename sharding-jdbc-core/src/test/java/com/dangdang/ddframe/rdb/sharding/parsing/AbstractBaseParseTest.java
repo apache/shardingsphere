@@ -30,6 +30,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Function;
@@ -134,17 +138,31 @@ public abstract class AbstractBaseParseTest {
                         return result;
                     }
                     for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : input.getConditions()) {
-                        Condition condition = new Condition(
-                                new Column(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
-                        condition.getValues().addAll(Lists.transform(each.getValues(), new Function<Value, Comparable<?>>() {
-                            
-                            @Override
-                            public Comparable<?> apply(final Value input) {
-                                return input.getValueWithType();
+                        List<SQLExpression> sqlExpressions = new LinkedList<>();
+                        for (Value value : each.getValues()) {
+                            Comparable<?> valueWithType = value.getValueWithType();
+                            if (valueWithType instanceof Number) {
+                                sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
+                            } else {
+                                sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
                             }
-                        }));
-                        if (null != each.getValueIndices()) {
-                            condition.getValueIndices().addAll(each.getValueIndices());
+                        }
+                        for (int index : each.getValueIndices()) {
+                            sqlExpressions.add(new SQLPlaceholderExpression(index));
+                        }
+                        Condition condition;
+                        switch (ShardingOperator.valueOf(each.getOperator().toUpperCase())) {
+                            case EQUAL:
+                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
+                                break;
+                            case BETWEEN:
+                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
+                                break;
+                            case IN:
+                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
                         }
                         result.add(condition);
                     }

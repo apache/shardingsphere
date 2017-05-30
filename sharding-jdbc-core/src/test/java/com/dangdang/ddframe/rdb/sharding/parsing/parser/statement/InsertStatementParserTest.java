@@ -44,7 +44,6 @@ import java.util.Map;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -84,6 +83,14 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
+    private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
+        assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
+        Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
+        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
+        assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
+        assertThat(condition.getValues(Collections.emptyList()).get(0), is((Comparable) 10));
+    }
+    
     @Test
     public void parseWithGenerateKeyColumnsWithParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
@@ -96,21 +103,12 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite().toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     
-    private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
-        assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues().size(), is(1));
-        assertThat(condition.getValues().get(0), is((Comparable) 10));
-    }
-    
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertTrue(condition.getValues().isEmpty());
-        assertThat(condition.getValueIndices().size(), is(1));
-        assertThat(condition.getValueIndices().get(0), is(0));
+        assertThat(condition.getValues(Collections.<Object>singletonList(0)).size(), is(1));
+        assertThat(condition.getValues(Collections.<Object>singletonList(0)).get(0), is((Comparable) 0));
     }
     
     private ShardingRule createShardingRuleWithGenerateKeyColumns() {
@@ -162,8 +160,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertFalse(insertStatement.getTables().get(0).getAlias().isPresent());
         Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues().size(), is(1));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
+        assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
+        assertThat(condition.getValues(Collections.emptyList()).get(0), is((Comparable) 1));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(actualSQL, insertStatement).rewrite().toString(), is(expectedSQL));
     }

@@ -5,6 +5,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,40 +18,43 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public final class Condition {
     
+    @Getter
     private final Column column;
     
+    @Getter
     private final ShardingOperator operator;
     
     private final List<Comparable<?>> values = new LinkedList<>();
     
-    private final List<Integer> valueIndices = new LinkedList<>();
+    private final List<Integer> indices = new LinkedList<>();
+    
+    // TODO 增加index位置的list
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
-        initSQLExpr(sqlExpression);
+        init(sqlExpression);
     }
     
-    public Condition(final Column column, final SQLExpression beginSqlExpression, final SQLExpression endSqlExpression) {
+    public Condition(final Column column, final SQLExpression beginSQLExpression, final SQLExpression endSQLExpression) {
         this(column, ShardingOperator.BETWEEN);
-        initSQLExpr(beginSqlExpression);
-        initSQLExpr(endSqlExpression);
+        init(beginSQLExpression);
+        init(endSQLExpression);
     }
     
     public Condition(final Column column, final List<SQLExpression> sqlExpressions) {
         this(column, ShardingOperator.IN);
         for (SQLExpression each : sqlExpressions) {
-            initSQLExpr(each);
+            init(each);
         }
     }
     
-    private void initSQLExpr(final SQLExpression sqlExpression) {
+    private void init(final SQLExpression sqlExpression) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            valueIndices.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+            indices.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
         } else if (sqlExpression instanceof SQLTextExpression) {
             values.add(((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {
@@ -66,7 +70,7 @@ public final class Condition {
      */
     public List<Comparable<?>> getValues(final List<Object> parameters) {
         List<Comparable<?>> result = new LinkedList<>(values);
-        for (int each : valueIndices) {
+        for (int each : indices) {
             Object parameter = parameters.get(each);
             if (parameter instanceof Comparable<?>) {
                 result.add((Comparable<?>) parameter);

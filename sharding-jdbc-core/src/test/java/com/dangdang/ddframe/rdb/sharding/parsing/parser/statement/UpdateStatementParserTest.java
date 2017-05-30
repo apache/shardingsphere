@@ -27,10 +27,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateS
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
@@ -64,18 +67,18 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(updateStatement.getTables().get(0).getAlias().get(), is("xxx"));
         Condition condition1 = updateStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition1.getValues().size(), is(1));
-        assertThat(condition1.getValues().get(0), is((Comparable) 1));
+        assertThat(condition1.getValues(Collections.emptyList()).size(), is(1));
+        assertThat(condition1.getValues(Collections.emptyList()).get(0), is((Comparable) 1));
         Condition condition2 = updateStatement.find("TABLE_XXX", "field2").get();
         assertThat(condition2.getOperator(), is(ShardingOperator.IN));
-        assertThat(condition2.getValues().size(), is(2));
-        assertThat(condition2.getValues().get(0), is((Comparable) 1));
-        assertThat(condition2.getValues().get(1), is((Comparable) 3));
+        assertThat(condition2.getValues(Collections.emptyList()).size(), is(2));
+        assertThat(condition2.getValues(Collections.emptyList()).get(0), is((Comparable) 1));
+        assertThat(condition2.getValues(Collections.emptyList()).get(1), is((Comparable) 3));
         Condition condition3 = updateStatement.find("TABLE_XXX", "field3").get();
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
-        assertThat(condition3.getValues().size(), is(2));
-        assertThat(condition3.getValues().get(0), is((Comparable) 5));
-        assertThat(condition3.getValues().get(1), is((Comparable) 20));
+        assertThat(condition3.getValues(Collections.emptyList()).size(), is(2));
+        assertThat(condition3.getValues(Collections.emptyList()).get(0), is((Comparable) 5));
+        assertThat(condition3.getValues(Collections.emptyList()).get(1), is((Comparable) 20));
     }
     
     @Test
@@ -93,23 +96,21 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     private void assertUpdateStatementWitParameter(final UpdateStatement updateStatement) {
         assertThat(updateStatement.getTables().get(0).getName(), is("TABLE_XXX"));
         assertThat(updateStatement.getTables().get(0).getAlias().get(), is("xxx"));
+        List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
         Condition condition1 = updateStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
-        assertTrue(condition1.getValues().isEmpty());
-        assertThat(condition1.getValueIndices().size(), is(1));
-        assertThat(condition1.getValueIndices().get(0), is(2));
+        assertThat(condition1.getValues(actualParameters).size(), is(1));
+        assertThat(condition1.getValues(actualParameters).get(0), is((Comparable) 20));
         Condition condition2 = updateStatement.find("TABLE_XXX", "field2").get();
         assertThat(condition2.getOperator(), is(ShardingOperator.IN));
-        assertTrue(condition2.getValues().isEmpty());
-        assertThat(condition2.getValueIndices().size(), is(2));
-        assertThat(condition2.getValueIndices().get(0), is(4));
-        assertThat(condition2.getValueIndices().get(1), is(5));
+        assertThat(condition2.getValues(actualParameters).size(), is(2));
+        assertThat(condition2.getValues(actualParameters).get(0), is((Comparable) 40));
+        assertThat(condition2.getValues(actualParameters).get(1), is((Comparable) 50));
         Condition condition3 = updateStatement.find("TABLE_XXX", "field3").get();
         assertThat(condition3.getOperator(), is(ShardingOperator.BETWEEN));
-        assertTrue(condition3.getValues().isEmpty());
-        assertThat(condition3.getValueIndices().size(), is(2));
-        assertThat(condition3.getValueIndices().get(0), is(7));
-        assertThat(condition3.getValueIndices().get(1), is(8));
+        assertThat(condition3.getValues(actualParameters).size(), is(2));
+        assertThat(condition3.getValues(actualParameters).get(0), is((Comparable) 70));
+        assertThat(condition3.getValues(actualParameters).get(1), is((Comparable) 80));
     }
     
     @Test(expected = SQLParsingUnsupportedException.class)
@@ -148,8 +149,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertFalse(updateStatement.getTables().get(0).getAlias().isPresent());
         Condition condition = updateStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues().size(), is(1));
-        assertThat(condition.getValues().get(0), is((Comparable) 1));
+        assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
+        assertThat(condition.getValues(Collections.emptyList()).get(0), is((Comparable) 1));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(actualSQL, updateStatement).rewrite().toString(), is(expectedSQL));
     }
