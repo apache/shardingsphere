@@ -50,7 +50,7 @@ import org.junit.runners.Suite;
     ComparableAggregationUnitTest.class, 
     AccumulationAggregationUnitTest.class, 
     AverageAggregationUnitTest.class, 
-    UnsupportedOperationDerivedShardingColumnResultSetTest.class, 
+    UnsupportedOperationDerivedColumnResultSetTest.class, 
     MemoryResultSetTest.class, 
     ResultSetUtilTest.class
     })

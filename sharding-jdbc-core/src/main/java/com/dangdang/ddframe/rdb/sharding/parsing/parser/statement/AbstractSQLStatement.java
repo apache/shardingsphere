@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
@@ -54,7 +54,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final List<Table> tables = new ArrayList<>();
     
-    private final Map<ShardingColumn, Condition> conditions = new LinkedHashMap<>();
+    private final Map<Column, Condition> conditions = new LinkedHashMap<>();
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
@@ -67,16 +67,16 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
     public void add(final Condition condition) {
         // TODO 自关联有问题，表名可考虑使用别名对应
-        conditions.put(condition.getShardingColumn(), condition);
+        conditions.put(condition.getColumn(), condition);
     }
     
     @Override
     public Optional<Condition> find(final String table, final String column) {
-        return Optional.fromNullable(conditions.get(new ShardingColumn(column, table)));
+        return Optional.fromNullable(conditions.get(new Column(column, table)));
     }
     
     @Override
-    public Optional<ShardingColumn> findColumn(final SQLExpression sqlExpression) {
+    public Optional<Column> findColumn(final SQLExpression sqlExpression) {
         if (sqlExpression instanceof SQLPropertyExpression) {
             return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpression) sqlExpression));
         }
@@ -86,7 +86,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return Optional.absent();
     }
     
-    private ShardingColumn getColumnWithQualifiedName(final SQLPropertyExpression expr) {
+    private Column getColumnWithQualifiedName(final SQLPropertyExpression expr) {
         Optional<Table> table = findTable((expr.getOwner()).getName());
         return expr.getOwner() instanceof SQLIdentifierExpression && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
@@ -114,12 +114,12 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return Optional.absent();
     }
     
-    private ShardingColumn getColumnWithoutAlias(final SQLIdentifierExpression expr) {
+    private Column getColumnWithoutAlias(final SQLIdentifierExpression expr) {
         return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
     }
     
-    private ShardingColumn createColumn(final String columnName, final String tableName) {
-        return new ShardingColumn(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
+    private Column createColumn(final String columnName, final String tableName) {
+        return new Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
     public List<OrderBy> getOrderByList() {

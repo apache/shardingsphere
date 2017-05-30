@@ -22,16 +22,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 分片列对象.
+ * 列对象.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class ShardingColumn {
+public final class Column {
     
-    private final String columnName;
+    private final String name;
     
     private final String tableName;
 }

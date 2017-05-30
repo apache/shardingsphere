@@ -22,7 +22,7 @@ import java.util.List;
 @EqualsAndHashCode
 public final class Condition {
     
-    private final ShardingColumn shardingColumn;
+    private final Column column;
     
     private final ShardingOperator operator;
     
@@ -30,19 +30,19 @@ public final class Condition {
     
     private final List<Integer> valueIndices = new LinkedList<>();
     
-    public Condition(final ShardingColumn shardingColumn, final SQLExpression sqlExpr) {
-        this(shardingColumn, ShardingOperator.EQUAL);
+    public Condition(final Column column, final SQLExpression sqlExpr) {
+        this(column, ShardingOperator.EQUAL);
         initSQLExpr(sqlExpr);
     }
     
-    public Condition(final ShardingColumn shardingColumn, final SQLExpression beginSqlExpr, final SQLExpression endSqlExpr) {
-        this(shardingColumn, ShardingOperator.BETWEEN);
+    public Condition(final Column column, final SQLExpression beginSqlExpr, final SQLExpression endSqlExpr) {
+        this(column, ShardingOperator.BETWEEN);
         initSQLExpr(beginSqlExpr);
         initSQLExpr(endSqlExpr);
     }
     
-    public Condition(final ShardingColumn shardingColumn, final List<SQLExpression> sqlExprs) {
-        this(shardingColumn, ShardingOperator.IN);
+    public Condition(final Column column, final List<SQLExpression> sqlExprs) {
+        this(column, ShardingOperator.IN);
         for (SQLExpression each : sqlExprs) {
             initSQLExpr(each);
         }

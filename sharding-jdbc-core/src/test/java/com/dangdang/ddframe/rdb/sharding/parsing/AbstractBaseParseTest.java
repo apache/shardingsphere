@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -135,7 +135,7 @@ public abstract class AbstractBaseParseTest {
                     }
                     for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : input.getConditions()) {
                         Condition condition = new Condition(
-                                new ShardingColumn(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
+                                new Column(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
                         condition.getValues().addAll(Lists.transform(each.getValues(), new Function<Value, Comparable<?>>() {
                             
                             @Override
