@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +53,8 @@ public class NullableAggregationResultSetTest {
     
     @Test
     public void assertNullable() throws SQLException {
-        SQLContext sqlContext = new SelectSQLContext();
-        ((SelectSQLContext) sqlContext).getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
+        SQLStatement selectStatement = new SelectStatement();
+        ((SelectStatement) selectStatement).getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, aggregationType.name() + "(*)", aggregationType.name(), 1));
         ResultSet resultSet1;
         ResultSet resultSet2;
         if (aggregationType == AggregationType.AVG) {
@@ -66,7 +66,7 @@ public class NullableAggregationResultSetTest {
         }
         when(resultSet1.next()).thenReturn(true, false);
         when(resultSet2.next()).thenReturn(true, false);
-        ResultSet actual = ResultSetFactory.getResultSet(Arrays.asList(resultSet1, resultSet2), sqlContext);
+        ResultSet actual = ResultSetFactory.getResultSet(Arrays.asList(resultSet1, resultSet2), selectStatement);
         assertTrue(actual.next());
         assertNull(actual.getObject(1));
         assertThat(actual.getInt(1), is(0));

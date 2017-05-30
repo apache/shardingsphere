@@ -15,45 +15,43 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerSelectParser;
 
 /**
- * Insert语句解析器工厂.
+ * Select语句解析器工厂.
  *
  * @author zhangliang
  */
-public class SQLInsertParserFactory {
+public class SelectParserFactory {
     
     /**
-     * 创建Insert语句解析器.
+     * 创建Select语句解析器.
      * 
-     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
-     * @return Insert语句解析器
+     * @return Select语句解析器
      */
-    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final SQLParser sqlParser) {
+    public static AbstractSelectParser newInstance(final SQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLInsertParser(shardingRule, sqlParser);
+            return new MySQLSelectParser(sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleInsertParser(shardingRule, sqlParser);
+            return new OracleSelectParser(sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerInsertParser(shardingRule, sqlParser);
+            return new SQLServerSelectParser(sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLInsertParser(shardingRule, sqlParser);
+            return new PostgreSQLSelectParser(sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

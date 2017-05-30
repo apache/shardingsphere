@@ -23,11 +23,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Keyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import lombok.RequiredArgsConstructor;
 
@@ -46,20 +46,20 @@ public final class SQLJudgeEngine {
      *
      * @return SQL解析上下文
      */
-    public SQLContext judge() {
+    public SQLStatement judge() {
         Lexer lexer = new Lexer(sql, new Dictionary());
         lexer.nextToken();
         while (true) {
             TokenType tokenType = lexer.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
                 if (tokenType.equals(DefaultKeyword.SELECT)) {
-                    return new SelectSQLContext();
+                    return new SelectStatement();
                 } else if (tokenType.equals(DefaultKeyword.UPDATE)) {
-                    return new UpdateSQLContext();
+                    return new UpdateStatement();
                 } else if (tokenType.equals(DefaultKeyword.INSERT)) {
-                    return new InsertSQLContext();
+                    return new InsertStatement();
                 } else if (tokenType.equals(DefaultKeyword.DELETE)) {
-                    return new DeleteSQLContext();
+                    return new DeleteStatement();
                 }
             }
             if (tokenType instanceof Assist && tokenType.equals(Assist.END)) {

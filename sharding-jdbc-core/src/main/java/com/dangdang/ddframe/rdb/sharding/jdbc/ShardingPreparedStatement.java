@@ -79,7 +79,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet rs;
         try {
             rs = ResultSetFactory.getResultSet(
-                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlRouteResult().getSqlContext());
+                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlRouteResult().getSqlStatement());
         } finally {
             clearRouteContext();
         }
@@ -149,7 +149,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         setSqlRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = (PreparedStatement) getStatement(
-                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlContext().getType()), each.getSQL());
+                    getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSQL());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));

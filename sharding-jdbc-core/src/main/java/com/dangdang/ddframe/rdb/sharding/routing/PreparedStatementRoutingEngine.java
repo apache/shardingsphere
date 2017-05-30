@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.router.SQLRouterFactory;
 
@@ -35,7 +35,7 @@ public final class PreparedStatementRoutingEngine {
     
     private final SQLRouter sqlRouter;
     
-    private SQLContext sqlContext;
+    private SQLStatement sqlStatement;
     
     public PreparedStatementRoutingEngine(final String logicSQL, final ShardingContext shardingContext) {
         this.logicSQL = logicSQL;
@@ -50,9 +50,9 @@ public final class PreparedStatementRoutingEngine {
      * @return 路由结果
      */
     public SQLRouteResult route(final List<Object> parameters) {
-        if (null == sqlContext) {
-            sqlContext = sqlRouter.parse(logicSQL, parameters.size());
+        if (null == sqlStatement) {
+            sqlStatement = sqlRouter.parse(logicSQL, parameters.size());
         }
-        return sqlRouter.route(logicSQL, parameters, sqlContext);
+        return sqlRouter.route(logicSQL, parameters, sqlStatement);
     }
 }

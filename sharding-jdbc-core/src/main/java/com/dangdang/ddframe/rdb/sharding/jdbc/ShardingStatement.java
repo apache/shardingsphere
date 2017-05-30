@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapp
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.StatementRoutingEngine;
@@ -112,7 +112,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet rs;
         try {
-            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlContext());
+            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlStatement());
         } finally {
             clearRouteContext();
         }
@@ -216,8 +216,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     protected final Optional<GeneratedKey> getGeneratedKey() {
-        if (null != sqlRouteResult && sqlRouteResult.getSqlContext() instanceof InsertSQLContext) {
-            return Optional.fromNullable(((InsertSQLContext) sqlRouteResult.getSqlContext()).getGeneratedKey());
+        if (null != sqlRouteResult && sqlRouteResult.getSqlStatement() instanceof InsertStatement) {
+            return Optional.fromNullable(((InsertStatement) sqlRouteResult.getSqlStatement()).getGeneratedKey());
         }
         return Optional.absent();
     }
@@ -234,7 +234,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
         sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlContext().getType()), each.getSQL());
+            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSQL());
             replayMethodsInvocation(statement);
             result.addStatement(new StatementExecutorWrapper(statement, each));
         }
@@ -280,7 +280,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : getRoutedStatements()) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlRouteResult.getSqlContext());
+        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlRouteResult.getSqlStatement());
         return currentResultSet;
     }
     

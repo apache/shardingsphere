@@ -15,9 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type;
-
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 /**
  * SQL语句解析器.
@@ -31,5 +29,5 @@ public interface SQLStatementParser {
      *
      * @return 解析结果
      */
-    SQLContext parse();
+    SQLStatement parse();
 }

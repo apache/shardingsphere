@@ -24,8 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
@@ -64,42 +64,42 @@ public final class ParsingSQLRouter implements SQLRouter {
     }
     
     @Override
-    public SQLContext parse(final String logicSQL, final int parametersSize) {
+    public SQLStatement parse(final String logicSQL, final int parametersSize) {
         SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
         Context context = MetricsContext.start("Parse SQL");
         log.debug("Logic SQL: {}", logicSQL);
-        SQLContext result = parsingEngine.parse();
-        if (result instanceof InsertSQLContext) {
-            ((InsertSQLContext) result).appendGenerateKeyToken(shardingRule, parametersSize);
+        SQLStatement result = parsingEngine.parse();
+        if (result instanceof InsertStatement) {
+            ((InsertStatement) result).appendGenerateKeyToken(shardingRule, parametersSize);
         }
         MetricsContext.stop(context);
         return result;
     }
     
     @Override
-    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLContext sqlContext) {
+    public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         final Context context = MetricsContext.start("Route SQL");
-        SQLRouteResult result = new SQLRouteResult(sqlContext);
-        if (sqlContext instanceof InsertSQLContext && null != ((InsertSQLContext) sqlContext).getGeneratedKey()) {
-            GeneratedKey generatedKey = ((InsertSQLContext) sqlContext).getGeneratedKey();
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
+        if (sqlStatement instanceof InsertStatement && null != ((InsertStatement) sqlStatement).getGeneratedKey()) {
+            GeneratedKey generatedKey = ((InsertStatement) sqlStatement).getGeneratedKey();
             if (parameters.isEmpty()) {
                 result.getGeneratedKeys().add(generatedKey.getValue());
             } else if (parameters.size() == generatedKey.getIndex()) {
-                Number key = shardingRule.generateKey(sqlContext.getTables().get(0).getName());
+                Number key = shardingRule.generateKey(sqlStatement.getTables().get(0).getName());
                 parameters.add(key);
                 setGeneratedKeys(result, key);
             } else if (-1 != generatedKey.getIndex()) {
                 setGeneratedKeys(result, (Number) parameters.get(generatedKey.getIndex()));
             }
         }
-        if (null != sqlContext.getLimit()) {
-            sqlContext.getLimit().processParameters(parameters);
+        if (null != sqlStatement.getLimit()) {
+            sqlStatement.getLimit().processParameters(parameters);
         }
-        RoutingResult routingResult = route(parameters, sqlContext);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlContext);
+        RoutingResult routingResult = route(parameters, sqlStatement);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlStatement);
         SQLBuilder sqlBuilder = rewriteEngine.rewrite();
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
-        if (null != sqlContext.getLimit() && 1 == result.getExecutionUnits().size()) {
+        if (null != sqlStatement.getLimit() && 1 == result.getExecutionUnits().size()) {
             rewriteEngine.amend(sqlBuilder, parameters);
         }
         MetricsContext.stop(context);
@@ -107,8 +107,8 @@ public final class ParsingSQLRouter implements SQLRouter {
         return result;
     }
     
-    private RoutingResult route(final List<Object> parameters, final SQLContext sqlContext) {
-        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(sqlContext.getTables(), new Function<Table, String>() {
+    private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
+        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(sqlStatement.getTables(), new Function<Table, String>() {
             
             @Override
             public String apply(final Table input) {
@@ -116,13 +116,13 @@ public final class ParsingSQLRouter implements SQLRouter {
             }
         }));
         if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), sqlContext.getConditionContext(), sqlContext.getType()).route();
+            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), sqlStatement.getConditionContext(), sqlStatement.getType()).route();
         }
         if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, parameters, logicTables, sqlContext.getConditionContext(), sqlContext.getType()).route();
+            return new BindingTablesRouter(shardingRule, parameters, logicTables, sqlStatement.getConditionContext(), sqlStatement.getType()).route();
         }
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, parameters, logicTables, sqlContext.getConditionContext(), sqlContext.getType()).route();
+        return new MixedTablesRouter(shardingRule, parameters, logicTables, sqlStatement.getConditionContext(), sqlStatement.getType()).route();
     }
     
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {

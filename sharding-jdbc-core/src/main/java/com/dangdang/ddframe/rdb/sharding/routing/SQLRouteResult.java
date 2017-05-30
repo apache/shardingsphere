@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +35,7 @@ import java.util.Set;
 @Getter
 public final class SQLRouteResult {
     
-    private final SQLContext sqlContext;
+    private final SQLStatement sqlStatement;
     
     private final Set<SQLExecutionUnit> executionUnits = new HashSet<>();
     

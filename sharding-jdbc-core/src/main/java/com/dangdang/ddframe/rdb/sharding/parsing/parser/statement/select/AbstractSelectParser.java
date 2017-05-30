@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
@@ -28,7 +28,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItem
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
@@ -37,7 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -61,23 +60,23 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private final SQLParser sqlParser;
     
-    private final SelectSQLContext sqlContext;
+    private final SelectStatement selectStatement;
     
     @Setter
     private int parametersIndex;
     
     public AbstractSelectParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        sqlContext = new SelectSQLContext();
+        selectStatement = new SelectStatement();
     }
     
     @Override
-    public final SelectSQLContext parse() {
+    public final SelectStatement parse() {
         query();
-        sqlContext.getOrderByList().addAll(parseOrderBy());
+        selectStatement.getOrderByList().addAll(parseOrderBy());
         customizedSelect();
         appendDerivedColumns();
-        return sqlContext;
+        return selectStatement;
     }
     
     protected void customizedSelect() {
@@ -95,7 +94,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseDistinct() {
         if (sqlParser.equalAny(DefaultKeyword.DISTINCT, DefaultKeyword.DISTINCTROW, DefaultKeyword.UNION)) {
-            sqlContext.setDistinct(true);
+            selectStatement.setDistinct(true);
             sqlParser.getLexer().nextToken();
             if (hasDistinctOn() && sqlParser.equalAny(DefaultKeyword.ON)) {
                 sqlParser.getLexer().nextToken();
@@ -114,13 +113,13 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         int index = 1;
         do {
             SelectItem selectItem = parseSelectItem(index);
-            sqlContext.getItems().add(selectItem);
+            selectStatement.getItems().add(selectItem);
             if (selectItem instanceof CommonSelectItem && ((CommonSelectItem) selectItem).isStar()) {
-                sqlContext.setContainStar(true);
+                selectStatement.setContainStar(true);
             }
             index++;
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
-        sqlContext.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+        selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
     private SelectItem parseSelectItem(final int index) {
@@ -142,7 +141,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             expression.append(value);
             sqlParser.getLexer().nextToken();
             if (sqlParser.equalAny(Symbol.DOT)) {
-                sqlContext.getSqlTokens().add(new TableToken(position, value));
+                selectStatement.getSqlTokens().add(new TableToken(position, value));
             }
         }
         return new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
@@ -155,10 +154,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseWhere() {
-        if (sqlContext.getTables().isEmpty()) {
+        if (selectStatement.getTables().isEmpty()) {
             return;
         }
-        sqlParser.parseWhere(sqlContext);
+        sqlParser.parseWhere(selectStatement);
         parametersIndex = sqlParser.getParametersIndex();
     }
     
@@ -185,7 +184,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected Optional<OrderBy> parseSelectOrderByItem() {
-        SQLExpr expr = sqlParser.parseExpression(sqlContext);
+        SQLExpr expr = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;
@@ -211,7 +210,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         if (sqlParser.skipIfEqual(DefaultKeyword.GROUP)) {
             sqlParser.accept(DefaultKeyword.BY);
             while (true) {
-                addGroupByItem(sqlParser.parseExpression(sqlContext));
+                addGroupByItem(sqlParser.parseExpression(selectStatement));
                 if (!sqlParser.equalAny(Symbol.COMMA)) {
                     break;
                 }
@@ -221,10 +220,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 sqlParser.getLexer().nextToken();
             }
             if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-                sqlParser.parseExpression(sqlContext);
+                sqlParser.parseExpression(selectStatement);
             }
         } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-            sqlParser.parseExpression(sqlContext);
+            sqlParser.parseExpression(selectStatement);
         }
     }
     
@@ -246,15 +245,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else {
             return;
         }
-        sqlContext.getGroupByList().add(groupBy);
+        selectStatement.getGroupByList().add(groupBy);
     }
     
     private Optional<String> getAlias(final String name) {
-        if (sqlContext.isContainStar()) {
+        if (selectStatement.isContainStar()) {
             return Optional.absent();
         }
         String rawName = SQLUtil.getExactlyValue(name);
-        for (SelectItem each : sqlContext.getItems()) {
+        for (SelectItem each : selectStatement.getItems()) {
             if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
                 return each.getAlias();
             }
@@ -290,8 +289,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         // FIXME 根据shardingRule过滤table
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlContext.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
+        selectStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+        selectStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), sqlParser.parseAlias()));
     }
     
     protected void parseJoinTable() {
@@ -316,47 +315,47 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
-        for (Table each : sqlContext.getTables()) {
+        for (Table each : selectStatement.getTables()) {
             if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
-                sqlContext.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName()));
+                selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName()));
             }
         }
     }
     
     private void appendDerivedColumns() {
-        ItemsToken itemsToken = new ItemsToken(sqlContext.getSelectListLastPosition());
+        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken);
         appendOrderByDerivedColumns(itemsToken);
         appendGroupByDerivedColumns(itemsToken);
         if (!itemsToken.getItems().isEmpty()) {
-            sqlContext.getSqlTokens().add(itemsToken);
+            selectStatement.getSqlTokens().add(itemsToken);
         }
     }
     
     private void appendAvgDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (SelectItem each : sqlContext.getItems()) {
+        for (SelectItem each : selectStatement.getItems()) {
             if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getAggregationType()) {
                 continue;
             }
-            AggregationSelectItem avgContext = (AggregationSelectItem) each;
+            AggregationSelectItem avgItem = (AggregationSelectItem) each;
             String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
-            AggregationSelectItem countContext = new AggregationSelectItem(avgContext.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
+            AggregationSelectItem countItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
             String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
-            AggregationSelectItem sumContext = new AggregationSelectItem(avgContext.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
-            avgContext.getDerivedAggregationSelectItems().add(countContext);
-            avgContext.getDerivedAggregationSelectItems().add(sumContext);
+            AggregationSelectItem sumItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
+            avgItem.getDerivedAggregationSelectItems().add(countItem);
+            avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
-            itemsToken.getItems().add(countContext.getExpression() + " AS " + countAlias + " ");
-            itemsToken.getItems().add(sumContext.getExpression() + " AS " + sumAlias + " ");
+            itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
+            itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
             derivedColumnOffset++;
         }
     }
     
     private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (OrderBy each : sqlContext.getOrderByList()) {
-            if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !sqlContext.isContainStar()) {
+        for (OrderBy each : selectStatement.getOrderByList()) {
+            if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !selectStatement.isContainStar()) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                 String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
@@ -367,8 +366,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (GroupBy each : sqlContext.getGroupByList()) {
-            if (!each.getAlias().isPresent() && !sqlContext.isContainStar()) {
+        for (GroupBy each : selectStatement.getGroupByList()) {
+            if (!each.getAlias().isPresent() && !selectStatement.isContainStar()) {
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 
 import java.util.List;
@@ -36,15 +36,15 @@ public interface SQLRouter {
      * @param parametersSize 参数个数
      * @return 解析结果
      */
-    SQLContext parse(String logicSQL, int parametersSize);
+    SQLStatement parse(String logicSQL, int parametersSize);
     
     /**
      * SQL路由.
      * 
      * @param logicSQL 逻辑SQL
-     * @param sqlContext 解析结果
+     * @param sqlStatement 解析结果
      * @param parameters 参数
      * @return 路由结果
      */
-    SQLRouteResult route(String logicSQL, List<Object> parameters, SQLContext sqlContext);
+    SQLRouteResult route(String logicSQL, List<Object> parameters, SQLStatement sqlStatement);
 }

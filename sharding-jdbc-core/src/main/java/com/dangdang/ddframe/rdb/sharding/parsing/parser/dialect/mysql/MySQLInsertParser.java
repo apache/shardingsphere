@@ -32,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert.AbstractInsertParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
 
@@ -59,7 +59,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         do {
             getSqlParser().getLexer().nextToken();
             ShardingColumn shardingColumn = new ShardingColumn(
-                    SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getSqlContext().getTables().get(0).getName());
+                    SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().get(0).getName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
             SQLExpr sqlExpr;
@@ -86,7 +86,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getSqlParser().equalAny(Symbol.COMMA));
-        getSqlContext().setConditionContext(conditionContext);
+        getInsertStatement().setConditionContext(conditionContext);
     }
     
     @Override

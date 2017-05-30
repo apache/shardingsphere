@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelec
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -42,20 +42,20 @@ public final class ResultSetMergeContext {
     
     private final ShardingResultSets shardingResultSets;
     
-    private final SQLContext sqlContext;
+    private final SQLStatement sqlStatement;
     
     private final List<OrderBy> currentOrderByKeys;
     
-    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLContext sqlContext) {
+    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
         this.shardingResultSets = shardingResultSets;
-        this.sqlContext = sqlContext;
+        this.sqlStatement = sqlStatement;
         currentOrderByKeys = new LinkedList<>();
         init();
     }
     
     private void init() {
         setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
-        currentOrderByKeys.addAll(sqlContext.getOrderByList());
+        currentOrderByKeys.addAll(sqlStatement.getOrderByList());
     }
     
     private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
@@ -75,9 +75,9 @@ public final class ResultSetMergeContext {
     
     private List<IndexColumn> getAllFocusedColumns() {
         List<IndexColumn> result = new LinkedList<>();
-        result.addAll(sqlContext.getGroupByList());
-        result.addAll(sqlContext.getOrderByList());
-        LinkedList<AggregationSelectItem> allAggregationColumns = Lists.newLinkedList(sqlContext.getAggregationSelectItems());
+        result.addAll(sqlStatement.getGroupByList());
+        result.addAll(sqlStatement.getOrderByList());
+        LinkedList<AggregationSelectItem> allAggregationColumns = Lists.newLinkedList(sqlStatement.getAggregationSelectItems());
         while (!allAggregationColumns.isEmpty()) {
             AggregationSelectItem firstElement = allAggregationColumns.poll();
             result.add(firstElement);
@@ -94,7 +94,7 @@ public final class ResultSetMergeContext {
      * @return 分组归并是否需要内存排序
      */
     public boolean isNeedMemorySortForGroupBy() {
-        return !sqlContext.getGroupByList().isEmpty() && !currentOrderByKeys.equals(transformGroupByColumnsToOrderByColumns());
+        return !sqlStatement.getGroupByList().isEmpty() && !currentOrderByKeys.equals(transformGroupByColumnsToOrderByColumns());
     }
     
     /**
@@ -106,7 +106,7 @@ public final class ResultSetMergeContext {
     }
     
     private List<OrderBy> transformGroupByColumnsToOrderByColumns() {
-        return Lists.transform(sqlContext.getGroupByList(), new Function<GroupBy, OrderBy>() {
+        return Lists.transform(sqlStatement.getGroupByList(), new Function<GroupBy, OrderBy>() {
             
             @Override
             public OrderBy apply(final GroupBy input) {
@@ -124,7 +124,7 @@ public final class ResultSetMergeContext {
      * @return 排序归并是否需要内存排序
      */
     public boolean isNeedMemorySortForOrderBy() {
-        return !sqlContext.getOrderByList().isEmpty() && !currentOrderByKeys.equals(sqlContext.getOrderByList());
+        return !sqlStatement.getOrderByList().isEmpty() && !currentOrderByKeys.equals(sqlStatement.getOrderByList());
     }
     
     /**
@@ -132,6 +132,6 @@ public final class ResultSetMergeContext {
      */
     public void setOrderByKeysToCurrentOrderByKeys() {
         currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(sqlContext.getOrderByList());
+        currentOrderByKeys.addAll(sqlStatement.getOrderByList());
     }
 }

@@ -15,43 +15,43 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerSelectParser;
 
 /**
- * Select语句解析器工厂.
+ * Delete语句解析器工厂.
  *
  * @author zhangliang
  */
-public class SQLSelectParserFactory {
+public class DeleteParserFactory {
     
     /**
-     * 创建Select语句解析器.
+     * 创建Delete语句解析器.
      * 
      * @param sqlParser SQL解析器
-     * @return Select语句解析器
+     * @return Delete语句解析器
      */
-    public static AbstractSelectParser newInstance(final SQLParser sqlParser) {
+    public static AbstractDeleteParser newInstance(final SQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLSelectParser(sqlParser);
+            return new MySQLDeleteParser(sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleSelectParser(sqlParser);
+            return new OracleDeleteParser(sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerSelectParser(sqlParser);
+            return new SQLServerDeleteParser(sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLSelectParser(sqlParser);
+            return new PostgreSQLDeleteParser(sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 

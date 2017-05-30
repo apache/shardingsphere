@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
@@ -25,7 +25,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.InsertSQLContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
@@ -33,7 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -58,18 +57,18 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final ShardingRule shardingRule;
     
-    private final InsertSQLContext sqlContext;
+    private final InsertStatement insertStatement;
     
     private int generateKeyColumnIndex = -1;
     
     public AbstractInsertParser(final ShardingRule shardingRule, final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         this.shardingRule = shardingRule;
-        sqlContext = new InsertSQLContext();
+        insertStatement = new InsertStatement();
     }
     
     @Override
-    public final InsertSQLContext parse() {
+    public final InsertStatement parse() {
         sqlParser.getLexer().nextToken();
         parseInto();
         parseColumns();
@@ -82,7 +81,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             parseCustomizedInsert();
         }
         appendGenerateKey();
-        return sqlContext;
+        return insertStatement;
     }
     
     protected Set<TokenType> getUnsupportedKeywords() {
@@ -95,7 +94,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         }
         sqlParser.skipUntil(DefaultKeyword.INTO);
         sqlParser.getLexer().nextToken();
-        sqlParser.parseSingleTable(sqlContext);
+        sqlParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues();
     }
     
@@ -115,7 +114,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     private void parseColumns() {
         Collection<ShardingColumn> result = new LinkedList<>();
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            String tableName = sqlContext.getTables().get(0).getName();
+            String tableName = insertStatement.getTables().get(0).getName();
             Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
             int count = 0;
             do {
@@ -128,10 +127,10 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
                 }
                 count++;
             } while (!sqlParser.equalAny(Symbol.RIGHT_PAREN) && !sqlParser.equalAny(Assist.END));
-            sqlContext.setColumnsListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+            insertStatement.setColumnsListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             sqlParser.getLexer().nextToken();
         }
-        sqlContext.getShardingColumns().addAll(result);
+        insertStatement.getShardingColumns().addAll(result);
     }
     
     protected Set<TokenType> getValuesKeywords() {
@@ -151,21 +150,21 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             do {
                 sqlExprs.add(sqlParser.parseExpression());
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
-            sqlContext.setValuesListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
+            insertStatement.setValuesListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
-            for (ShardingColumn each : sqlContext.getShardingColumns()) {
+            for (ShardingColumn each : insertStatement.getShardingColumns()) {
                 SQLExpr sqlExpr = sqlExprs.get(count);
                 if (getShardingRule().isShardingColumn(each)) {
                     conditionContext.add(new ConditionContext.Condition(each, sqlExpr));
                 }
                 if (generateKeyColumnIndex == count) {
-                    sqlContext.setGeneratedKey(createGeneratedKey(each, sqlExpr));
+                    insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpr));
                 }
                 count++;
             }
             sqlParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
-            sqlContext.setConditionContext(conditionContext);
+            insertStatement.setConditionContext(conditionContext);
         }
         while (sqlParser.equalAny(Symbol.COMMA));
     }
@@ -190,14 +189,14 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     }
     
     private void appendGenerateKey() {
-        String tableName = sqlContext.getTables().get(0).getName();
+        String tableName = insertStatement.getTables().get(0).getName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
-        if (!generateKeyColumn.isPresent() || null != sqlContext.getGeneratedKey()) {
+        if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKey()) {
             return;
         } 
-        ItemsToken columnsToken = new ItemsToken(sqlContext.getColumnsListLastPosition());
+        ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
         columnsToken.getItems().add(generateKeyColumn.get());
-        sqlContext.getSqlTokens().add(columnsToken);
-        sqlContext.getSqlTokens().add(new GeneratedKeyToken(sqlContext.getValuesListLastPosition()));
+        insertStatement.getSqlTokens().add(columnsToken);
+        insertStatement.getSqlTokens().add(new GeneratedKeyToken(insertStatement.getValuesListLastPosition()));
     }
 }

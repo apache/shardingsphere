@@ -15,9 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,13 +31,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Select SQL上下文.
+ * Select SQL语句对象.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public final class SelectSQLContext extends AbstractSQLContext {
+public final class SelectStatement extends AbstractSQLStatement {
     
     private boolean distinct;
     
@@ -47,7 +53,7 @@ public final class SelectSQLContext extends AbstractSQLContext {
     
     private Limit limit;
     
-    public SelectSQLContext() {
+    public SelectStatement() {
         super(SQLType.SELECT);
     }
     

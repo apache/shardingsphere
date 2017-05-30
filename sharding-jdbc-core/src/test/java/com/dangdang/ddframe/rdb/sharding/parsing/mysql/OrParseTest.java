@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,8 +37,8 @@ public final class OrParseTest extends AbstractBaseParseTest {
     
     public OrParseTest(
             final String testCaseName, final String sql, final String expectedSQL,
-            final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLContext expectedSQLContext) {
-        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLContext);
+            final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLStatement expectedSQLStatement) {
+        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditionContext, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")

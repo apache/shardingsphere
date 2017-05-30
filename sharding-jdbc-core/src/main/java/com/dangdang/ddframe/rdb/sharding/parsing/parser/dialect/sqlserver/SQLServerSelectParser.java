@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
@@ -36,7 +36,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             parseFor();
         }
         if (getSqlParser().equalAny(SQLServerKeyword.OFFSET)) {
-            ((SQLServerParser) getSqlParser()).parseOffset(getSqlContext());
+            ((SQLServerParser) getSqlParser()).parseOffset(getSelectStatement());
         }
     }
     

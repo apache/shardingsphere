@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeywor
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 
@@ -44,9 +44,9 @@ public class MySQLSelectParser extends AbstractSelectParser {
         parseFrom();
         parseWhere();
         parseGroupBy();
-        getSqlContext().getOrderByList().addAll(parseOrderBy());
+        getSelectStatement().getOrderByList().addAll(parseOrderBy());
         if (getSqlParser().equalAny(MySQLKeyword.LIMIT)) {
-            getSqlContext().setLimit(((MySQLParser) getSqlParser()).parseLimit(getSqlContext(), getParametersIndex()));
+            getSelectStatement().setLimit(((MySQLParser) getSqlParser()).parseLimit(getSelectStatement(), getParametersIndex()));
         }
         if (getSqlParser().equalAny(DefaultKeyword.PROCEDURE)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());

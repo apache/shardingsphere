@@ -15,13 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.update;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.UpdateSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,25 +35,25 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     
-    private final UpdateSQLContext sqlContext;
+    private final UpdateStatement updateStatement;
     
     private int parametersIndex;
     
     public AbstractUpdateParser(final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        sqlContext = new UpdateSQLContext();
+        updateStatement = new UpdateStatement();
     }
     
     @Override
-    public UpdateSQLContext parse() {
+    public UpdateStatement parse() {
         sqlParser.getLexer().nextToken();
         skipBetweenUpdateAndTable();
-        sqlParser.parseSingleTable(sqlContext);
+        sqlParser.parseSingleTable(updateStatement);
         parseSetItems();
         sqlParser.skipUntil(DefaultKeyword.WHERE);
         sqlParser.setParametersIndex(parametersIndex);
-        sqlParser.parseWhere(sqlContext);
-        return sqlContext;
+        sqlParser.parseWhere(updateStatement);
+        return updateStatement;
     }
     
     protected abstract void skipBetweenUpdateAndTable();
@@ -74,14 +73,14 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
             String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
             sqlParser.getLexer().nextToken();
             if (sqlParser.skipIfEqual(Symbol.DOT)) {
-                if (sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    sqlContext.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
+                if (updateStatement.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                    updateStatement.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
                 }
                 sqlParser.getLexer().nextToken();
             }
         }
         sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
-        sqlParser.parseExpression(sqlContext);
+        sqlParser.parseExpression(updateStatement);
         parametersIndex = sqlParser.getParametersIndex();
     }
 }

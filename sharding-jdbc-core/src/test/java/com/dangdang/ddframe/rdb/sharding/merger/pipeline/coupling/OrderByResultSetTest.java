@@ -21,8 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public final class OrderByResultSetTest {
     @Test
     public void assertNextForAsc() throws SQLException {
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLContext(OrderType.ASC));
+                new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLStatement(OrderType.ASC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
         assertTrue(resultSet.next());
@@ -55,7 +55,7 @@ public final class OrderByResultSetTest {
     @Test
     public void assertNextForDesc() throws SQLException {
         ResultSet resultSet = ResultSetFactory.getResultSet(
-                Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), new MockResultSet<Integer>()), createSQLContext(OrderType.DESC));
+                Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), new MockResultSet<Integer>()), createSQLStatement(OrderType.DESC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(4));
         assertTrue(resultSet.next());
@@ -67,8 +67,8 @@ public final class OrderByResultSetTest {
         assertFalse(resultSet.next());
     }
     
-    private SQLContext createSQLContext(final OrderType orderType) {
-        SQLContext result = new SelectSQLContext();
+    private SQLStatement createSQLStatement(final OrderType orderType) {
+        SQLStatement result = new SelectStatement();
         result.getOrderByList().add(new OrderBy("name", orderType, Optional.<String>absent()));
         return result;
     }

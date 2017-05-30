@@ -22,16 +22,16 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete.SQLDeleteParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.insert.SQLInsertParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.SQLSelectParserFactory;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.update.SQLUpdateParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.DeleteParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectParserFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateParserFactory;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -53,23 +53,23 @@ public final class SQLParsingEngine {
      * 
      * @return SQL解析上下文
      */
-    public SQLContext parse() {
+    public SQLStatement parse() {
         SQLParser sqlParser = getSQLParser();
         sqlParser.skipIfEqual(Symbol.SEMI);
         if (sqlParser.equalAny(DefaultKeyword.WITH)) {
             skipWith(sqlParser);
         }
         if (sqlParser.equalAny(DefaultKeyword.SELECT)) {
-            return SQLSelectParserFactory.newInstance(sqlParser).parse();
+            return SelectParserFactory.newInstance(sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.INSERT)) {
-            return SQLInsertParserFactory.newInstance(shardingRule, sqlParser).parse();
+            return InsertParserFactory.newInstance(shardingRule, sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.UPDATE)) {
-            return SQLUpdateParserFactory.newInstance(sqlParser).parse();
+            return UpdateParserFactory.newInstance(sqlParser).parse();
         }
         if (sqlParser.equalAny(DefaultKeyword.DELETE)) {
-            return SQLDeleteParserFactory.newInstance(sqlParser).parse();
+            return DeleteParserFactory.newInstance(sqlParser).parse();
         }
         throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
     }

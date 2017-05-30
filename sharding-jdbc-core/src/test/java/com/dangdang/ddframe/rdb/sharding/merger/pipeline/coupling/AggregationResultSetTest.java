@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,12 +67,12 @@ public final class AggregationResultSetTest {
     
     @Test
     public void assertNext() throws SQLException {
-        SelectSQLContext sqlContext = new SelectSQLContext();
-        sqlContext.getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0), null, 1));
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0), null, 1));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.asList(
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData1))),
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData2))),
-                MergerTestUtil.mockResult(Collections.<String>emptyList())), sqlContext);
+                MergerTestUtil.mockResult(Collections.<String>emptyList())), selectStatement);
         assertTrue(resultSet.next());
         if (AggregationType.AVG == aggregationType) {
             assertThat(resultSet.getDouble(1), is(result));

@@ -15,11 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.delete;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.DeleteSQLContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.SQLStatementParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,21 +34,21 @@ public abstract class AbstractDeleteParser implements SQLStatementParser {
     @Getter(AccessLevel.PROTECTED)
     private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
     
-    private final DeleteSQLContext sqlContext;
+    private final DeleteStatement deleteStatement;
     
     public AbstractDeleteParser(final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
         this.sqlParser = sqlParser;
-        sqlContext = new DeleteSQLContext();
+        deleteStatement = new DeleteStatement();
     }
     
     @Override
-    public DeleteSQLContext parse() {
+    public DeleteStatement parse() {
         sqlParser.getLexer().nextToken();
         skipBetweenDeleteAndTable();
-        sqlParser.parseSingleTable(sqlContext);
+        sqlParser.parseSingleTable(deleteStatement);
         sqlParser.skipUntil(DefaultKeyword.WHERE);
-        sqlParser.parseWhere(sqlContext);
-        return sqlContext;
+        sqlParser.parseWhere(deleteStatement);
+        return deleteStatement;
     }
     
     protected abstract void skipBetweenDeleteAndTable();

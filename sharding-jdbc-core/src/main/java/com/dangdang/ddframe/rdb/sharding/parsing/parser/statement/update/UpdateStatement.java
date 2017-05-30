@@ -15,18 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 
 /**
- * Update SQL上下文.
+ * Update SQL语句对象.
  *
  * @author zhangliang
  */
-public final class UpdateSQLContext extends AbstractSQLContext {
+public final class UpdateStatement extends AbstractSQLStatement {
     
-    public UpdateSQLContext() {
+    public UpdateStatement() {
         super(SQLType.UPDATE);
     }
 }

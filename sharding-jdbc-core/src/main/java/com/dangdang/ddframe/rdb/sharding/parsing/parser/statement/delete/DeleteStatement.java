@@ -15,20 +15,21 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
 
 /**
- * Delete SQL上下文.
+ * Delete SQL语句对象.
  *
  * @author zhangliang
  */
 @Getter
-public final class DeleteSQLContext extends AbstractSQLContext {
+public final class DeleteStatement extends AbstractSQLStatement {
     
-    public DeleteSQLContext() {
+    public DeleteStatement() {
         super(SQLType.DELETE);
     }
 }

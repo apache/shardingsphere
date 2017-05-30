@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLServerTop;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectSQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 
@@ -76,7 +76,7 @@ public final class SQLServerParser extends SQLParser {
         }
     }
     
-    public void parseOffset(final SelectSQLContext sqlContext) {
+    public void parseOffset(final SelectStatement selectStatement) {
         getLexer().nextToken();
         int offset;
         int offsetIndex = -1;
@@ -111,6 +111,6 @@ public final class SQLServerParser extends SQLParser {
         } else {
             limit = new Limit(offset, offsetIndex);
         }
-        sqlContext.setLimit(limit);
+        selectStatement.setLimit(limit);
     }
 }

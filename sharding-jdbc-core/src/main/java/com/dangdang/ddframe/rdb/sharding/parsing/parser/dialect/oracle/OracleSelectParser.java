@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.type.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.google.common.base.Optional;
 
 public class OracleSelectParser extends AbstractSelectParser {
@@ -37,8 +37,8 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
-        if (getSqlContext().getOrderByList().isEmpty()) {
-            getSqlContext().getOrderByList().addAll(parseOrderBy());
+        if (getSelectStatement().getOrderByList().isEmpty()) {
+            getSelectStatement().getOrderByList().addAll(parseOrderBy());
         }
     }
     
@@ -74,7 +74,7 @@ public class OracleSelectParser extends AbstractSelectParser {
     private void skipStart() {
         if (getSqlParser().skipIfEqual(OracleKeyword.START)) {
             getSqlParser().accept(DefaultKeyword.WITH);
-            getSqlParser().parseComparisonCondition(getSqlContext());
+            getSqlParser().parseComparisonCondition(getSelectStatement());
         }
     }
     
@@ -85,7 +85,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             if (getSqlParser().skipIfEqual(OracleKeyword.NOCYCLE)) {
                 getSqlParser().skipIfEqual(OracleKeyword.PRIOR);
             }
-            getSqlParser().parseComparisonCondition(getSqlContext());
+            getSqlParser().parseComparisonCondition(getSelectStatement());
         }
     }
     

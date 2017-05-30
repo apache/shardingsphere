@@ -15,14 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
@@ -34,13 +38,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Insert SQL上下文.
+ * Insert SQL语句对象.
  *
  * @author zhangliang
  */
 @Getter
 @Setter
-public final class InsertSQLContext extends AbstractSQLContext {
+public final class InsertStatement extends AbstractSQLStatement {
     
     private final Collection<ShardingColumn> shardingColumns = new LinkedList<>();
     
@@ -50,7 +54,7 @@ public final class InsertSQLContext extends AbstractSQLContext {
     
     private int valuesListLastPosition;
     
-    public InsertSQLContext() {
+    public InsertStatement() {
         super(SQLType.INSERT);
     }
     

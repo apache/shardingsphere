@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -64,14 +64,14 @@ public class SQLParser extends AbstractParser {
     /**
      * 解析表达式.
      *
-     * @param sqlContext SQL上下文
+     * @param sqlStatement SQL语句对象
      * @return 表达式
      */
-    public final SQLExpr parseExpression(final SQLContext sqlContext) {
+    public final SQLExpr parseExpression(final SQLStatement sqlStatement) {
         int beginPosition = getLexer().getCurrentToken().getEndPosition();
         SQLExpr result = parseExpression();
         if (result instanceof SQLPropertyExpr) {
-            setTableToken(sqlContext, beginPosition, (SQLPropertyExpr) result);
+            setTableToken(sqlStatement, beginPosition, (SQLPropertyExpr) result);
         }
         return result;
     }
@@ -145,10 +145,10 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    private void setTableToken(final SQLContext sqlContext, final int beginPosition, final SQLPropertyExpr propertyExpr) {
+    private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpr propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
-        if (sqlContext.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
-            sqlContext.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
+        if (sqlStatement.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+            sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
     
@@ -178,9 +178,9 @@ public class SQLParser extends AbstractParser {
     /**
      * 解析单表.
      *
-     * @param sqlContext SQL上下文
+     * @param sqlStatement SQL语句对象
      */
-    public final void parseSingleTable(final SQLContext sqlContext) {
+    public final void parseSingleTable(final SQLStatement sqlStatement) {
         boolean hasParentheses = false;
         if (skipIfEqual(Symbol.LEFT_PAREN)) {
             if (equalAny(DefaultKeyword.SELECT)) {
@@ -207,8 +207,8 @@ public class SQLParser extends AbstractParser {
         if (skipJoin()) {
             throw new UnsupportedOperationException("Cannot support Multiple-Table.");
         }
-        sqlContext.getSqlTokens().add(new TableToken(beginPosition, literals));
-        sqlContext.getTables().add(table);
+        sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
+        sqlStatement.getTables().add(table);
     }
     
     /**
@@ -241,18 +241,18 @@ public class SQLParser extends AbstractParser {
     /**
      * 解析查询条件.
      *
-     * @param sqlContext SQL上下文
+     * @param sqlStatement SQL语句对象
      */
-    public final void parseWhere(final SQLContext sqlContext) {
+    public final void parseWhere(final SQLStatement sqlStatement) {
         if (skipIfEqual(DefaultKeyword.WHERE)) {
-            parseConditions(sqlContext);
+            parseConditions(sqlStatement);
         }
     }
     
-    private void parseConditions(final SQLContext sqlContext) {
-        sqlContext.setConditionContext(new ConditionContext());
+    private void parseConditions(final SQLStatement sqlStatement) {
+        sqlStatement.setConditionContext(new ConditionContext());
         do {
-            parseComparisonCondition(sqlContext);
+            parseComparisonCondition(sqlStatement);
         } while (skipIfEqual(DefaultKeyword.AND));
         if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
@@ -260,40 +260,40 @@ public class SQLParser extends AbstractParser {
     }
     
     // TODO 解析组合expr
-    public final void parseComparisonCondition(final SQLContext sqlContext) {
+    public final void parseComparisonCondition(final SQLStatement sqlStatement) {
         skipIfEqual(Symbol.LEFT_PAREN);
-        SQLExpr left = parseExpression(sqlContext);
+        SQLExpr left = parseExpression(sqlStatement);
         if (equalAny(Symbol.EQ)) {
-            parseEqualCondition(sqlContext, left);
+            parseEqualCondition(sqlStatement, left);
             return;
         }
         if (equalAny(DefaultKeyword.IN)) {
-            parseInCondition(sqlContext, left);
+            parseInCondition(sqlStatement, left);
             return;
         }
         if (equalAny(DefaultKeyword.BETWEEN)) {
-            parseBetweenCondition(sqlContext, left);
+            parseBetweenCondition(sqlStatement, left);
             return;
         }
         if (equalAny(Symbol.LT) || equalAny(Symbol.GT) || equalAny(Symbol.LT_EQ) || equalAny(Symbol.GT_EQ)) {
-            parserOtherCondition(sqlContext);
+            parserOtherCondition(sqlStatement);
         }
         skipIfEqual(Symbol.LEFT_PAREN);
     }
     
-    private void parseEqualCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseEqualCondition(final SQLStatement sqlStatement, final SQLExpr left) {
         getLexer().nextToken();
-        SQLExpr right = parseExpression(sqlContext);
+        SQLExpr right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlContext.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLNumberExpr || right instanceof SQLTextExpr || right instanceof SQLPlaceholderExpr)) {
-            Optional<ShardingColumn> column = sqlContext.findColumn(left);
+        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLNumberExpr || right instanceof SQLTextExpr || right instanceof SQLPlaceholderExpr)) {
+            Optional<ShardingColumn> column = sqlStatement.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-                sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
+                sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
             }
         }
     }
     
-    private void parseInCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseInCondition(final SQLStatement sqlStatement, final SQLExpr left) {
         getLexer().nextToken();
         accept(Symbol.LEFT_PAREN);
         List<SQLExpr> rights = new LinkedList<>();
@@ -301,29 +301,29 @@ public class SQLParser extends AbstractParser {
             if (equalAny(Symbol.COMMA)) {
                 getLexer().nextToken();
             }
-            rights.add(parseExpression(sqlContext));
+            rights.add(parseExpression(sqlStatement));
         } while (!equalAny(Symbol.RIGHT_PAREN));
-        Optional<ShardingColumn> column = sqlContext.findColumn(left);
+        Optional<ShardingColumn> column = sqlStatement.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights));
+            sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), rights));
         }
         getLexer().nextToken();
     }
     
-    private void parseBetweenCondition(final SQLContext sqlContext, final SQLExpr left) {
+    private void parseBetweenCondition(final SQLStatement sqlStatement, final SQLExpr left) {
         getLexer().nextToken();
         List<SQLExpr> rights = new LinkedList<>();
-        rights.add(parseExpression(sqlContext));
+        rights.add(parseExpression(sqlStatement));
         accept(DefaultKeyword.AND);
-        rights.add(parseExpression(sqlContext));
-        Optional<ShardingColumn> column = sqlContext.findColumn(left);
+        rights.add(parseExpression(sqlStatement));
+        Optional<ShardingColumn> column = sqlStatement.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlContext.getConditionContext().add(new ConditionContext.Condition(column.get(), rights.get(0), rights.get(1)));
+            sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), rights.get(0), rights.get(1)));
         }
     }
     
-    private void parserOtherCondition(final SQLContext sqlContext) {
+    private void parserOtherCondition(final SQLStatement sqlStatement) {
         getLexer().nextToken();
-        parseExpression(sqlContext);
+        parseExpression(sqlStatement);
     }
 }

@@ -15,43 +15,45 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.type.update;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLUpdateParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerUpdateParser;
 
 /**
- * Update语句解析器工厂.
+ * Insert语句解析器工厂.
  *
  * @author zhangliang
  */
-public class SQLUpdateParserFactory {
+public class InsertParserFactory {
     
     /**
-     * 创建Update语句解析器.
+     * 创建Insert语句解析器.
      * 
+     * @param shardingRule 分库分表规则配置
      * @param sqlParser SQL解析器
-     * @return Update语句解析器
+     * @return Insert语句解析器
      */
-    public static AbstractUpdateParser newInstance(final SQLParser sqlParser) {
+    public static AbstractInsertParser newInstance(final ShardingRule shardingRule, final SQLParser sqlParser) {
         if (sqlParser instanceof MySQLParser) {
-            return new MySQLUpdateParser(sqlParser);
+            return new MySQLInsertParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof OracleParser) {
-            return new OracleUpdateParser(sqlParser);
+            return new OracleInsertParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof SQLServerParser) {
-            return new SQLServerUpdateParser(sqlParser);
+            return new SQLServerInsertParser(shardingRule, sqlParser);
         }
         if (sqlParser instanceof PostgreSQLParser) {
-            return new PostgreSQLUpdateParser(sqlParser);
+            return new PostgreSQLInsertParser(shardingRule, sqlParser);
         }
         throw new UnsupportedOperationException(String.format("Cannot support sqlParser class [%s].", sqlParser.getClass()));
     } 
