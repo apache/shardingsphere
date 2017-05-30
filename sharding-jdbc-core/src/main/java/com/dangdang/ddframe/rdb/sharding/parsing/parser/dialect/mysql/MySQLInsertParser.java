@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
@@ -55,7 +55,6 @@ public final class MySQLInsertParser extends AbstractInsertParser {
     }
     
     private void parseInsertSet() {
-        ConditionContext conditionContext = new ConditionContext();
         do {
             getSqlParser().getLexer().nextToken();
             ShardingColumn shardingColumn = new ShardingColumn(
@@ -80,13 +79,12 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getSqlParser().getLexer().nextToken();
             if (getSqlParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 if (getShardingRule().isShardingColumn(shardingColumn)) {
-                    conditionContext.add(new ConditionContext.Condition(shardingColumn, sqlExpression));
+                    getInsertStatement().add(new Condition(shardingColumn, sqlExpression));
                 }
             } else {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);
             }
         } while (getSqlParser().equalAny(Symbol.COMMA));
-        getInsertStatement().setConditionContext(conditionContext);
     }
     
     @Override

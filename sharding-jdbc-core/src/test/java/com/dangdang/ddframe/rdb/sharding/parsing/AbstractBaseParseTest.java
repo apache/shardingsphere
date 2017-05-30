@@ -24,14 +24,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -47,6 +47,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractBaseParseTest {
     
@@ -60,7 +62,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<Table> expectedTables;
     
-    private final Iterator<ConditionContext> expectedConditionContexts;
+    private final Iterator<Condition> expectedConditions;
     
     private final Iterator<OrderBy> orderByList;
     
@@ -71,12 +73,12 @@ public abstract class AbstractBaseParseTest {
     private final Limit limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                    final Collection<Table> expectedTables, final Collection<ConditionContext> expectedConditionContext, final SQLStatement expectedSQLStatement) {
+                                    final Collection<Table> expectedTables, final Collection<Condition> expectedConditions, final SQLStatement expectedSQLStatement) {
         this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();
-        this.expectedConditionContexts = expectedConditionContext.iterator();
+        this.expectedConditions = expectedConditions.iterator();
         this.orderByList = expectedSQLStatement.getOrderByList().iterator();
         this.groupByList = expectedSQLStatement.getGroupByList().iterator();
         this.aggregationColumns = expectedSQLStatement.getAggregationSelectItems().iterator();
@@ -117,22 +119,22 @@ public abstract class AbstractBaseParseTest {
             
             @Override
             public Table apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table input) {
-                return new Table(input.getName(), Optional.of(input.getAlias()));
+                return new Table(input.getName(), Optional.fromNullable(input.getAlias()));
             }
         });
         if (null == assertObj.getConditionContexts()) {
-            result[4] = Collections.<ConditionContext>emptyList();
+            result[4] = Collections.<Condition>emptyList();
         } else {
-            result[4] = Lists.transform(assertObj.getConditionContexts(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext, ConditionContext>() {
+            result[4] = Lists.transform(assertObj.getConditionContexts(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext, List<Condition>>() {
                 
                 @Override
-                public ConditionContext apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext input) {
-                    ConditionContext result = new ConditionContext();
+                public List<Condition> apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext input) {
+                    List<Condition> result = new LinkedList<>();
                     if (null == input.getConditions()) {
                         return result;
                     }
                     for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : input.getConditions()) {
-                        ConditionContext.Condition condition = new ConditionContext.Condition(
+                        Condition condition = new Condition(
                                 new ShardingColumn(each.getColumnName(), each.getTableName()), ShardingOperator.valueOf(each.getOperator().toUpperCase()));
                         condition.getValues().addAll(Lists.transform(each.getValues(), new Function<Value, Comparable<?>>() {
                             

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
@@ -47,7 +47,7 @@ public final class MixedTablesRouter {
     
     private final Collection<String> logicTables;
     
-    private final ConditionContext conditionContext;
+    private final SQLStatement sqlStatement;
     
     private final SQLType sqlType;
     
@@ -62,11 +62,11 @@ public final class MixedTablesRouter {
         Collection<String> remainingTables = new ArrayList<>(logicTables);
         Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
         if (1 < bindingTables.size()) {
-            result.add(new BindingTablesRouter(shardingRule, parameters, bindingTables, conditionContext, sqlType).route());
+            result.add(new BindingTablesRouter(shardingRule, parameters, bindingTables, sqlStatement, sqlType).route());
             remainingTables.removeAll(bindingTables);
         }
         for (String each : remainingTables) {
-            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, conditionContext, sqlType).route();
+            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, sqlStatement, sqlType).route();
             if (null != routingResult) {
                 result.add(routingResult);
             }

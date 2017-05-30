@@ -26,10 +26,11 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -57,17 +58,17 @@ public final class SingleTableRouter {
     
     private final String logicTable;
     
-    private final ConditionContext conditionContext;
+    private final SQLStatement sqlStatement;
     
     private final TableRule tableRule;
     
     private final SQLType sqlType;
     
-    public SingleTableRouter(final ShardingRule shardingRule, final List<Object> parameters, final String logicTable, final ConditionContext conditionContext, final SQLType sqlType) {
+    public SingleTableRouter(final ShardingRule shardingRule, final List<Object> parameters, final String logicTable, final SQLStatement sqlStatement, final SQLType sqlType) {
         this.shardingRule = shardingRule;
         this.parameters = parameters;
         this.logicTable = logicTable;
-        this.conditionContext = conditionContext;
+        this.sqlStatement = sqlStatement;
         this.sqlType = sqlType;
         Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(logicTable);
         if (tableRuleOptional.isPresent()) {
@@ -159,7 +160,7 @@ public final class SingleTableRouter {
     private List<ShardingValue<?>> getShardingValues(final Collection<String> shardingColumns) {
         List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
-            Optional<ConditionContext.Condition> condition = conditionContext.find(logicTable, each);
+            Optional<Condition> condition = sqlStatement.find(logicTable, each);
             if (condition.isPresent()) {
                 result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get(), parameters));
             }

@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
@@ -33,12 +33,13 @@ import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL语句对象抽象类.
@@ -47,20 +48,31 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final SQLType type;
     
     private final List<Table> tables = new ArrayList<>();
     
-    private ConditionContext conditionContext = new ConditionContext();
+    private final Map<ShardingColumn, Condition> conditions = new LinkedHashMap<>();
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     @Override
     public final SQLType getType() {
         return type;
+    }
+    
+    @Override
+    // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
+    public void add(final Condition condition) {
+        // TODO 自关联有问题，表名可考虑使用别名对应
+        conditions.put(condition.getShardingColumn(), condition);
+    }
+    
+    @Override
+    public Optional<Condition> find(final String table, final String column) {
+        return Optional.fromNullable(conditions.get(new ShardingColumn(column, table)));
     }
     
     @Override

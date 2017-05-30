@@ -26,9 +26,9 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
@@ -98,7 +98,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        ConditionContext.Condition condition = insertStatement.getConditionContext().find("TABLE_XXX", "field1").get();
+        Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 10));
@@ -106,7 +106,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
         assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        ConditionContext.Condition condition = insertStatement.getConditionContext().find("TABLE_XXX", "field1").get();
+        Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertTrue(condition.getValues().isEmpty());
         assertThat(condition.getValueIndices().size(), is(1));
@@ -160,7 +160,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
         assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getTables().get(0).getAlias().isPresent());
-        ConditionContext.Condition condition = insertStatement.getConditionContext().find("TABLE_XXX", "field1").get();
+        Condition condition = insertStatement.find("TABLE_XXX", "field1").get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues().size(), is(1));
         assertThat(condition.getValues().get(0), is((Comparable) 1));

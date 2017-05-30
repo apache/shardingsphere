@@ -116,13 +116,13 @@ public final class ParsingSQLRouter implements SQLRouter {
             }
         }));
         if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), sqlStatement.getConditionContext(), sqlStatement.getType()).route();
+            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), sqlStatement, sqlStatement.getType()).route();
         }
         if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, parameters, logicTables, sqlStatement.getConditionContext(), sqlStatement.getType()).route();
+            return new BindingTablesRouter(shardingRule, parameters, logicTables, sqlStatement, sqlStatement.getType()).route();
         }
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, parameters, logicTables, sqlStatement.getConditionContext(), sqlStatement.getType()).route();
+        return new MixedTablesRouter(shardingRule, parameters, logicTables, sqlStatement, sqlStatement.getType()).route();
     }
     
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {

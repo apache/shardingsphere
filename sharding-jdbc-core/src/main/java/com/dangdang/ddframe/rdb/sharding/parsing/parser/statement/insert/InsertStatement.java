@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
@@ -110,7 +110,7 @@ public final class InsertStatement extends AbstractSQLStatement {
     
     private void addCondition(final ShardingRule shardingRule, final ShardingColumn shardingColumn, final SQLExpression sqlExpr) {
         if (shardingRule.isShardingColumn(shardingColumn)) {
-            getConditionContext().add(new ConditionContext.Condition(shardingColumn, sqlExpr));
+            add(new Condition(shardingColumn, sqlExpr));
         }
     }
 }

@@ -22,8 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -34,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -250,7 +250,6 @@ public class SQLParser extends AbstractParser {
     }
     
     private void parseConditions(final SQLStatement sqlStatement) {
-        sqlStatement.setConditionContext(new ConditionContext());
         do {
             parseComparisonCondition(sqlStatement);
         } while (skipIfEqual(DefaultKeyword.AND));
@@ -285,10 +284,11 @@ public class SQLParser extends AbstractParser {
         getLexer().nextToken();
         SQLExpression right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpression) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpression)
+                && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<ShardingColumn> column = sqlStatement.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-                sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
+                sqlStatement.add(new Condition(column.get(), right));
             }
         }
     }
@@ -305,7 +305,7 @@ public class SQLParser extends AbstractParser {
         } while (!equalAny(Symbol.RIGHT_PAREN));
         Optional<ShardingColumn> column = sqlStatement.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), rights));
+            sqlStatement.add(new Condition(column.get(), rights));
         }
         getLexer().nextToken();
     }
@@ -318,7 +318,7 @@ public class SQLParser extends AbstractParser {
         rights.add(parseExpression(sqlStatement));
         Optional<ShardingColumn> column = sqlStatement.findColumn(left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), rights.get(0), rights.get(1)));
+            sqlStatement.add(new Condition(column.get(), rights.get(0), rights.get(1)));
         }
     }
     

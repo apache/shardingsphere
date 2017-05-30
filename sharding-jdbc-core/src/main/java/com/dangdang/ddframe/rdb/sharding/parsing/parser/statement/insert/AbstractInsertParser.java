@@ -23,16 +23,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -146,7 +146,6 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             sqlParser.getLexer().nextToken();
             sqlParser.accept(Symbol.LEFT_PAREN);
             List<SQLExpression> sqlExpressions = new LinkedList<>();
-            ConditionContext conditionContext = new ConditionContext();
             do {
                 sqlExpressions.add(sqlParser.parseExpression());
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
@@ -155,7 +154,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             for (ShardingColumn each : insertStatement.getShardingColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (getShardingRule().isShardingColumn(each)) {
-                    conditionContext.add(new ConditionContext.Condition(each, sqlExpression));
+                    insertStatement.add(new Condition(each, sqlExpression));
                 }
                 if (generateKeyColumnIndex == count) {
                     insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpression));
@@ -164,7 +163,6 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             }
             sqlParser.accept(Symbol.RIGHT_PAREN);
             parsed = true;
-            insertStatement.setConditionContext(conditionContext);
         }
         while (sqlParser.equalAny(Symbol.COMMA));
     }
