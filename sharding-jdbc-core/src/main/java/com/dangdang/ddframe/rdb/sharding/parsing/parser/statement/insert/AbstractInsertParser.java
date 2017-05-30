@@ -27,9 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.GeneratedKeyToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -145,20 +145,20 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             }
             sqlParser.getLexer().nextToken();
             sqlParser.accept(Symbol.LEFT_PAREN);
-            List<SQLExpr> sqlExprs = new LinkedList<>();
+            List<SQLExpression> sqlExpressions = new LinkedList<>();
             ConditionContext conditionContext = new ConditionContext();
             do {
-                sqlExprs.add(sqlParser.parseExpression());
+                sqlExpressions.add(sqlParser.parseExpression());
             } while (sqlParser.skipIfEqual(Symbol.COMMA));
             insertStatement.setValuesListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
             int count = 0;
             for (ShardingColumn each : insertStatement.getShardingColumns()) {
-                SQLExpr sqlExpr = sqlExprs.get(count);
+                SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (getShardingRule().isShardingColumn(each)) {
-                    conditionContext.add(new ConditionContext.Condition(each, sqlExpr));
+                    conditionContext.add(new ConditionContext.Condition(each, sqlExpression));
                 }
                 if (generateKeyColumnIndex == count) {
-                    insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpr));
+                    insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpression));
                 }
                 count++;
             }
@@ -169,12 +169,12 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         while (sqlParser.equalAny(Symbol.COMMA));
     }
     
-    private GeneratedKey createGeneratedKey(final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
+    private GeneratedKey createGeneratedKey(final ShardingColumn shardingColumn, final SQLExpression sqlExpression) {
         GeneratedKey result;
-        if (sqlExpr instanceof SQLPlaceholderExpr) {
-            result = new GeneratedKey(shardingColumn.getColumnName(), ((SQLPlaceholderExpr) sqlExpr).getIndex(), null);
-        } else if (sqlExpr instanceof SQLNumberExpr) {
-            result = new GeneratedKey(shardingColumn.getColumnName(), -1, ((SQLNumberExpr) sqlExpr).getNumber());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            result = new GeneratedKey(shardingColumn.getColumnName(), ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
+        } else if (sqlExpression instanceof SQLNumberExpression) {
+            result = new GeneratedKey(shardingColumn.getColumnName(), -1, ((SQLNumberExpression) sqlExpression).getNumber());
         } else {
             throw new ShardingJdbcException("Generated key only support number.");
         }

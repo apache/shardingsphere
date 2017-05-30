@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
@@ -73,7 +73,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                 
                 getSqlParser().getLexer().nextToken();
                 if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
-                    new SQLIdentifierExpr("ALL");
+                    new SQLIdentifierExpression("ALL");
                     getSqlParser().getLexer().nextToken();
                 } else {
                     // rowCount

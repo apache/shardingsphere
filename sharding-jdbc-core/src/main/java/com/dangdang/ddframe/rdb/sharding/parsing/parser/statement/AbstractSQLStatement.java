@@ -25,9 +25,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -64,19 +64,19 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public Optional<ShardingColumn> findColumn(final SQLExpr expr) {
-        if (expr instanceof SQLPropertyExpr) {
-            return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpr) expr));
+    public Optional<ShardingColumn> findColumn(final SQLExpression sqlExpression) {
+        if (sqlExpression instanceof SQLPropertyExpression) {
+            return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpression) sqlExpression));
         }
-        if (expr instanceof SQLIdentifierExpr) {
-            return Optional.fromNullable(getColumnWithoutAlias((SQLIdentifierExpr) expr));
+        if (sqlExpression instanceof SQLIdentifierExpression) {
+            return Optional.fromNullable(getColumnWithoutAlias((SQLIdentifierExpression) sqlExpression));
         }
         return Optional.absent();
     }
     
-    private ShardingColumn getColumnWithQualifiedName(final SQLPropertyExpr expr) {
+    private ShardingColumn getColumnWithQualifiedName(final SQLPropertyExpression expr) {
         Optional<Table> table = findTable((expr.getOwner()).getName());
-        return expr.getOwner() instanceof SQLIdentifierExpr && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
+        return expr.getOwner() instanceof SQLIdentifierExpression && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
     }
     
     private Optional<Table> findTable(final String tableNameOrAlias) {
@@ -102,7 +102,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return Optional.absent();
     }
     
-    private ShardingColumn getColumnWithoutAlias(final SQLIdentifierExpr expr) {
+    private ShardingColumn getColumnWithoutAlias(final SQLIdentifierExpression expr) {
         return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
     }
     

@@ -15,19 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.expr;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
 /**
- * 占位符表达式.
+ * 分片中无需关注的SQL表达式.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLPlaceholderExpr implements SQLExpr {
-    
-    private final int index;
+public class SQLIgnoreExpression implements SQLExpression {
 }

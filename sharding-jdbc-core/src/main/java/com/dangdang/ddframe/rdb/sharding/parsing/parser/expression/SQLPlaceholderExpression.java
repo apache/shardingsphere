@@ -15,21 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.expr;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 属性表达式.
+ * 占位符表达式.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLPropertyExpr implements SQLExpr {
+public final class SQLPlaceholderExpression implements SQLExpression {
     
-    private final SQLIdentifierExpr owner;
-    
-    private final String name;
+    private final int index;
 }

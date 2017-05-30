@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SQLServerTop implements SQLExpr {
+public class SQLServerTop implements SQLExpression {
     
-    private SQLExpr expr;
+    private SQLExpression expr;
     
     private boolean percent;
 }

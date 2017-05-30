@@ -15,12 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.expr;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
 /**
  * SQL表达式接口.
  * 
  * @author zhangliang 
  */
-public interface SQLExpr {
+public interface SQLExpression {
 }

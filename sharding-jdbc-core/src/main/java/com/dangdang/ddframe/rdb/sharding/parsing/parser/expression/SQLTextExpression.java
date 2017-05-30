@@ -15,19 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.expr;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 标识表达式.
+ * 字符表达式.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLIdentifierExpr implements SQLExpr {
+public final class SQLTextExpression implements SQLExpression {
     
-    private final String name;
+    private final String text;
 }

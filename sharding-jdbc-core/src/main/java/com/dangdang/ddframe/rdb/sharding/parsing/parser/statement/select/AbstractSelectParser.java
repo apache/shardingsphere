@@ -30,10 +30,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
@@ -184,7 +184,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected Optional<OrderBy> parseSelectOrderByItem() {
-        SQLExpr expr = sqlParser.parseExpression(selectStatement);
+        SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
             orderByType = OrderType.ASC;
@@ -192,14 +192,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             orderByType = OrderType.DESC;
         }
         OrderBy result;
-        if (expr instanceof SQLNumberExpr) {
-            result = new OrderBy(((SQLNumberExpr) expr).getNumber().intValue(), orderByType);
-        } else if (expr instanceof SQLIdentifierExpr) {
-            result = new OrderBy(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpr) expr).getName())));
-        } else if (expr instanceof SQLPropertyExpr) {
-            SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) expr;
-            result = new OrderBy(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpr.getName()), orderByType, 
-                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpr.getName())));
+        if (sqlExpression instanceof SQLNumberExpression) {
+            result = new OrderBy(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
+        } else if (sqlExpression instanceof SQLIdentifierExpression) {
+            result = new OrderBy(
+                    SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName())));
+        } else if (sqlExpression instanceof SQLPropertyExpression) {
+            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
+            result = new OrderBy(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())));
         } else {
             return Optional.absent();
         }
@@ -227,7 +228,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    protected final void addGroupByItem(final SQLExpr sqlExpr) {
+    protected final void addGroupByItem(final SQLExpression sqlExpression) {
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.equalAny(DefaultKeyword.ASC)) {
             sqlParser.getLexer().nextToken();
@@ -235,13 +236,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             orderByType = OrderType.DESC;
         }
         GroupBy groupBy;
-        if (sqlExpr instanceof SQLPropertyExpr) {
-            SQLPropertyExpr expr = (SQLPropertyExpr) sqlExpr;
-            groupBy = new GroupBy(Optional.of(SQLUtil.getExactlyValue(expr.getOwner().getName())), SQLUtil.getExactlyValue(expr.getName()), orderByType,
-                    getAlias(SQLUtil.getExactlyValue(expr.getOwner() + "." + SQLUtil.getExactlyValue(expr.getName()))));
-        } else if (sqlExpr instanceof SQLIdentifierExpr) {
-            SQLIdentifierExpr expr = (SQLIdentifierExpr) sqlExpr;
-            groupBy = new GroupBy(Optional.<String>absent(), SQLUtil.getExactlyValue(expr.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(expr.getName())));
+        if (sqlExpression instanceof SQLPropertyExpression) {
+            SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
+            groupBy = new GroupBy(Optional.of(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName())), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
+                    getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
+        } else if (sqlExpression instanceof SQLIdentifierExpression) {
+            SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
+            groupBy = new GroupBy(
+                    Optional.<String>absent(), SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
         } else {
             return;
         }
@@ -310,14 +312,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void parseTableCondition(final int startPosition) {
-        SQLExpr sqlExpr = sqlParser.parseExpression();
-        if (!(sqlExpr instanceof SQLPropertyExpr)) {
+        SQLExpression sqlExpression = sqlParser.parseExpression();
+        if (!(sqlExpression instanceof SQLPropertyExpression)) {
             return;
         }
-        SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) sqlExpr;
+        SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
         for (Table each : selectStatement.getTables()) {
-            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpr.getOwner().getName()))) {
-                selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpr.getOwner().getName()));
+            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
+                selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
             }
         }
     }

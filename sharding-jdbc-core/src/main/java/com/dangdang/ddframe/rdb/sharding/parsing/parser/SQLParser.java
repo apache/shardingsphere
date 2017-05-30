@@ -27,13 +27,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIdentifierExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPropertyExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -67,11 +67,11 @@ public class SQLParser extends AbstractParser {
      * @param sqlStatement SQL语句对象
      * @return 表达式
      */
-    public final SQLExpr parseExpression(final SQLStatement sqlStatement) {
+    public final SQLExpression parseExpression(final SQLStatement sqlStatement) {
         int beginPosition = getLexer().getCurrentToken().getEndPosition();
-        SQLExpr result = parseExpression();
-        if (result instanceof SQLPropertyExpr) {
-            setTableToken(sqlStatement, beginPosition, (SQLPropertyExpr) result);
+        SQLExpression result = parseExpression();
+        if (result instanceof SQLPropertyExpression) {
+            setTableToken(sqlStatement, beginPosition, (SQLPropertyExpression) result);
         }
         return result;
     }
@@ -81,49 +81,49 @@ public class SQLParser extends AbstractParser {
      *
      * @return 表达式
      */
-    public final SQLExpr parseExpression() {
+    public final SQLExpression parseExpression() {
         String literals = getLexer().getCurrentToken().getLiterals();
-        final SQLExpr expression = getExpression(literals);
+        final SQLExpression expression = getExpression(literals);
         if (skipIfEqual(Literals.IDENTIFIER)) {
             if (skipIfEqual(Symbol.DOT)) {
                 String property = getLexer().getCurrentToken().getLiterals();
                 getLexer().nextToken();
-                return skipIfCompositeExpression() ? new SQLIgnoreExpr() : new SQLPropertyExpr(new SQLIdentifierExpr(literals), property);
+                return skipIfCompositeExpression() ? new SQLIgnoreExpression() : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
             }
             if (equalAny(Symbol.LEFT_PAREN)) {
                 skipParentheses();
                 skipRestCompositeExpression();
-                return new SQLIgnoreExpr();
+                return new SQLIgnoreExpression();
             }
-            return skipIfCompositeExpression() ? new SQLIgnoreExpr() : expression;
+            return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
         }
         getLexer().nextToken();
-        return skipIfCompositeExpression() ? new SQLIgnoreExpr() : expression;
+        return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
     }
     
-    private SQLExpr getExpression(final String literals) {
+    private SQLExpression getExpression(final String literals) {
         if (equalAny(Symbol.QUESTION)) {
             parametersIndex++;
-            return new SQLPlaceholderExpr(parametersIndex - 1);
+            return new SQLPlaceholderExpression(parametersIndex - 1);
         }
         if (equalAny(Literals.CHARS)) {
-            return new SQLTextExpr(literals);
+            return new SQLTextExpression(literals);
         }
         // TODO 考虑long的情况
         if (equalAny(Literals.INT)) {
-            return new SQLNumberExpr(Integer.parseInt(literals));
+            return new SQLNumberExpression(Integer.parseInt(literals));
         }
         if (equalAny(Literals.FLOAT)) {
-            return new SQLNumberExpr(Double.parseDouble(literals));
+            return new SQLNumberExpression(Double.parseDouble(literals));
         }
         // TODO 考虑long的情况
         if (equalAny(Literals.HEX)) {
-            return new SQLNumberExpr(Integer.parseInt(literals, 16));
+            return new SQLNumberExpression(Integer.parseInt(literals, 16));
         }
         if (equalAny(Literals.IDENTIFIER)) {
-            return new SQLIdentifierExpr(SQLUtil.getExactlyValue(literals));
+            return new SQLIdentifierExpression(SQLUtil.getExactlyValue(literals));
         }
-        return new SQLIgnoreExpr();
+        return new SQLIgnoreExpression();
     }
     
     private boolean skipIfCompositeExpression() {
@@ -145,7 +145,7 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpr propertyExpr) {
+    private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (sqlStatement.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
@@ -262,7 +262,7 @@ public class SQLParser extends AbstractParser {
     // TODO 解析组合expr
     public final void parseComparisonCondition(final SQLStatement sqlStatement) {
         skipIfEqual(Symbol.LEFT_PAREN);
-        SQLExpr left = parseExpression(sqlStatement);
+        SQLExpression left = parseExpression(sqlStatement);
         if (equalAny(Symbol.EQ)) {
             parseEqualCondition(sqlStatement, left);
             return;
@@ -281,11 +281,11 @@ public class SQLParser extends AbstractParser {
         skipIfEqual(Symbol.LEFT_PAREN);
     }
     
-    private void parseEqualCondition(final SQLStatement sqlStatement, final SQLExpr left) {
+    private void parseEqualCondition(final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
-        SQLExpr right = parseExpression(sqlStatement);
+        SQLExpression right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpr) && (right instanceof SQLNumberExpr || right instanceof SQLTextExpr || right instanceof SQLPlaceholderExpr)) {
+        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpression) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<ShardingColumn> column = sqlStatement.findColumn(left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 sqlStatement.getConditionContext().add(new ConditionContext.Condition(column.get(), right));
@@ -293,10 +293,10 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    private void parseInCondition(final SQLStatement sqlStatement, final SQLExpr left) {
+    private void parseInCondition(final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
         accept(Symbol.LEFT_PAREN);
-        List<SQLExpr> rights = new LinkedList<>();
+        List<SQLExpression> rights = new LinkedList<>();
         do {
             if (equalAny(Symbol.COMMA)) {
                 getLexer().nextToken();
@@ -310,9 +310,9 @@ public class SQLParser extends AbstractParser {
         getLexer().nextToken();
     }
     
-    private void parseBetweenCondition(final SQLStatement sqlStatement, final SQLExpr left) {
+    private void parseBetweenCondition(final SQLStatement sqlStatement, final SQLExpression left) {
         getLexer().nextToken();
-        List<SQLExpr> rights = new LinkedList<>();
+        List<SQLExpression> rights = new LinkedList<>();
         rights.add(parseExpression(sqlStatement));
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlStatement));

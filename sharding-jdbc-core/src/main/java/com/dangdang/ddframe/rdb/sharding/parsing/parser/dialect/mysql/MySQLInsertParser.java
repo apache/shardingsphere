@@ -27,11 +27,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ConditionContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLIgnoreExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIgnoreExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.AbstractInsertParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.collect.Sets;
@@ -62,17 +62,17 @@ public final class MySQLInsertParser extends AbstractInsertParser {
                     SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().get(0).getName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
-            SQLExpr sqlExpr;
+            SQLExpression sqlExpression;
             if (getSqlParser().equalAny(Literals.INT)) {
-                sqlExpr = new SQLNumberExpr(Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals()));
+                sqlExpression = new SQLNumberExpression(Integer.parseInt(getSqlParser().getLexer().getCurrentToken().getLiterals()));
             } else if (getSqlParser().equalAny(Literals.FLOAT)) {
-                sqlExpr = new SQLNumberExpr(Double.parseDouble(getSqlParser().getLexer().getCurrentToken().getLiterals()));
+                sqlExpression = new SQLNumberExpression(Double.parseDouble(getSqlParser().getLexer().getCurrentToken().getLiterals()));
             } else if (getSqlParser().equalAny(Literals.CHARS)) {
-                sqlExpr = new SQLTextExpr(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                sqlExpression = new SQLTextExpression(getSqlParser().getLexer().getCurrentToken().getLiterals());
             } else if (getSqlParser().equalAny(DefaultKeyword.NULL)) {
-                sqlExpr = new SQLIgnoreExpr();
+                sqlExpression = new SQLIgnoreExpression();
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                sqlExpr = new SQLPlaceholderExpr(getSqlParser().getParametersIndex());
+                sqlExpression = new SQLPlaceholderExpression(getSqlParser().getParametersIndex());
                 getSqlParser().setParametersIndex(getSqlParser().getParametersIndex() + 1);
             } else {
                 throw new UnsupportedOperationException("");
@@ -80,7 +80,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
             getSqlParser().getLexer().nextToken();
             if (getSqlParser().equalAny(Symbol.COMMA, DefaultKeyword.ON, Assist.END)) {
                 if (getShardingRule().isShardingColumn(shardingColumn)) {
-                    conditionContext.add(new ConditionContext.Condition(shardingColumn, sqlExpr));
+                    conditionContext.add(new ConditionContext.Condition(shardingColumn, sqlExpression));
                 }
             } else {
                 getSqlParser().skipUntil(Symbol.COMMA, DefaultKeyword.ON);

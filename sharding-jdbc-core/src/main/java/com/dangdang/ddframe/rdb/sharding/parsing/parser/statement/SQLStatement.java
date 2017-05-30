@@ -25,7 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.ShardingColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Optional;
 
@@ -69,10 +69,10 @@ public interface SQLStatement {
     /**
      * 获取列对象.
      * 
-     * @param expr SQL表达式
+     * @param sqlExpression SQL表达式
      * @return 列对象
      */
-    Optional<ShardingColumn> findColumn(SQLExpr expr);
+    Optional<ShardingColumn> findColumn(SQLExpression sqlExpression);
     
     /**
      * 获取排序上下文集合.

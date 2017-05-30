@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.expr;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.expression;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLNumberExpr implements SQLExpr {
+public final class SQLNumberExpression implements SQLExpression {
     
     private final Number number;
 }

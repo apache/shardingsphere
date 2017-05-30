@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLNumberExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLPlaceholderExpr;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expr.SQLTextExpr;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -83,31 +83,31 @@ public final class ConditionContext {
         
         private final List<Integer> valueIndices = new LinkedList<>();
         
-        public Condition(final ShardingColumn shardingColumn, final SQLExpr sqlExpr) {
+        public Condition(final ShardingColumn shardingColumn, final SQLExpression sqlExpr) {
             this(shardingColumn, ShardingOperator.EQUAL);
             initSQLExpr(sqlExpr);
         }
         
-        public Condition(final ShardingColumn shardingColumn, final SQLExpr beginSqlExpr, final SQLExpr endSqlExpr) {
+        public Condition(final ShardingColumn shardingColumn, final SQLExpression beginSqlExpr, final SQLExpression endSqlExpr) {
             this(shardingColumn, ShardingOperator.BETWEEN);
             initSQLExpr(beginSqlExpr);
             initSQLExpr(endSqlExpr);
         }
         
-        public Condition(final ShardingColumn shardingColumn, final List<SQLExpr> sqlExprs) {
+        public Condition(final ShardingColumn shardingColumn, final List<SQLExpression> sqlExprs) {
             this(shardingColumn, ShardingOperator.IN);
-            for (SQLExpr each : sqlExprs) {
+            for (SQLExpression each : sqlExprs) {
                 initSQLExpr(each);
             }
         }
         
-        private void initSQLExpr(final SQLExpr sqlExpr) {
-            if (sqlExpr instanceof SQLPlaceholderExpr) {
-                valueIndices.add(((SQLPlaceholderExpr) sqlExpr).getIndex());
-            } else if (sqlExpr instanceof SQLTextExpr) {
-                values.add(((SQLTextExpr) sqlExpr).getText());
-            } else if (sqlExpr instanceof SQLNumberExpr) {
-                values.add((Comparable) ((SQLNumberExpr) sqlExpr).getNumber());
+        private void initSQLExpr(final SQLExpression sqlExpression) {
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                valueIndices.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+            } else if (sqlExpression instanceof SQLTextExpression) {
+                values.add(((SQLTextExpression) sqlExpression).getText());
+            } else if (sqlExpression instanceof SQLNumberExpression) {
+                values.add((Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
             }
         }
         
