@@ -29,6 +29,13 @@ import java.util.Collection;
 public interface RoutingResult {
     
     /**
+     * 判断是否为单库表路由.
+     *
+     * @return 是否为单库表路由
+     */
+    boolean isSingleRouting();
+    
+    /**
      * 获取SQL执行单元集合.
      * 
      * @param sqlBuilder SQL构建器

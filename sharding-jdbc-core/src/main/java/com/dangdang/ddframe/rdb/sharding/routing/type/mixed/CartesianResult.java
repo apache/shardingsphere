@@ -17,16 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 笛卡尔积路由结果.
@@ -54,6 +53,11 @@ final class CartesianResult implements RoutingResult {
             }
         }
         routingDataSources.add(new CartesianDataSource(dataSource, routingTableReference));
+    }
+    
+    @Override
+    public boolean isSingleRouting() {
+        return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableReferences().size();
     }
     
     @Override

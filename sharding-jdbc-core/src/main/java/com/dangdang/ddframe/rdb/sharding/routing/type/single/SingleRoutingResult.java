@@ -47,7 +47,7 @@ public class SingleRoutingResult implements RoutingResult {
     
     void put(final String dataSourceName, final SingleRoutingTableFactor routingTableFactor) {
         for (SingleRoutingDataSource each : routingDataSources) {
-            if (each.getDataSource().equals(dataSourceName)) {
+            if (each.getDataSource().equalsIgnoreCase(dataSourceName)) {
                 each.getRoutingTableFactors().add(routingTableFactor);
                 return;
             }
@@ -135,6 +135,11 @@ public class SingleRoutingResult implements RoutingResult {
             }
         }
         return Optional.absent();
+    }
+    
+    @Override
+    public boolean isSingleRouting() {
+        return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableFactors().size();
     }
     
     @Override

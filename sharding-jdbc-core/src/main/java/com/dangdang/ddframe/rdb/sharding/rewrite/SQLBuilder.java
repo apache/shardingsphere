@@ -91,21 +91,6 @@ public final class SQLBuilder {
     }
     
     /**
-     * 用实际的值替代占位符,并可以标记该SQL是否为派生SQL.
-     * 
-     * @param label 占位符
-     * @param token 实际的值
-     */
-    public void amend(final String label, final String token) {
-        if (!tokenMap.containsKey(label)) {
-            return;
-        }
-        StringToken labelSQL = tokenMap.get(label);
-        labelSQL.value = token;
-        changeState();
-    }
-    
-    /**
      * 记录新的Token.
      * 
      * @param label 占位符

@@ -37,6 +37,11 @@ public final class DatabaseRoutingResult implements RoutingResult {
     private final Collection<String> routedDatabaseNames;
     
     @Override
+    public boolean isSingleRouting() {
+        return true;
+    }
+    
+    @Override
     public Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
         return Collections2.transform(routedDatabaseNames, new Function<String, SQLExecutionUnit>() {
             

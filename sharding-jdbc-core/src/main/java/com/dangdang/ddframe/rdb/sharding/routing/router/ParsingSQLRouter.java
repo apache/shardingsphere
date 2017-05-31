@@ -93,10 +93,15 @@ public final class ParsingSQLRouter implements SQLRouter {
         }
         RoutingResult routingResult = route(parameters, sqlStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlStatement);
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite();
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(!routingResult.isSingleRouting());
         result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
         if (null != sqlStatement.getLimit() && 1 == result.getExecutionUnits().size()) {
-            rewriteEngine.amend(sqlBuilder, parameters);
+            if (sqlStatement.getLimit().getOffsetParameterIndex() > -1) {
+                parameters.set(sqlStatement.getLimit().getOffsetParameterIndex(), sqlStatement.getLimit().getOffset());
+            }
+            if (sqlStatement.getLimit().getRowCountParameterIndex() > -1) {
+                parameters.set(sqlStatement.getLimit().getRowCountParameterIndex(), sqlStatement.getLimit().getRowCount());
+            }
         }
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);

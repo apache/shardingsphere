@@ -48,7 +48,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
         assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
+        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite(true).toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
     
     @Test
@@ -59,7 +59,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
         assertDeleteStatementWithoutParameter(deleteStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite().toString(), is(
+        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite(true).toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<10 AND [Token(TABLE_XXX)].field1=1 AND field5>10 AND xxx.field2 IN (1,3) AND field6<=10 AND field3 BETWEEN 5 AND 20 AND field7>=10"));
     }
     
@@ -90,7 +90,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
         assertDeleteStatementWithParameter(deleteStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite().toString(), is(
+        assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite(true).toString(), is(
                 "DELETE FROM [Token(TABLE_XXX)] xxx WHERE field4<? AND field1=? AND field5>? AND field2 IN (?,?) AND field6<=? AND field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
@@ -158,6 +158,6 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(actualSQL, deleteStatement).rewrite().toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
+        assertThat(new SQLRewriteEngine(actualSQL, deleteStatement).rewrite(true).toString().replace("([Token(TABLE_XXX)] )", "([Token(TABLE_XXX)])"), is(expectedSQL));
     }
 }
