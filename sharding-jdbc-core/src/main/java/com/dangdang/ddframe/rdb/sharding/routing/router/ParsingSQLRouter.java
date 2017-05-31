@@ -79,21 +79,14 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (sqlStatement instanceof InsertStatement && null != ((InsertStatement) sqlStatement).getGeneratedKey()) {
             processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
         }
-        if (null != sqlStatement.getLimit()) {
-            sqlStatement.getLimit().processParameters(parameters);
-        }
         RoutingResult routingResult = route(parameters, sqlStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlStatement);
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(!routingResult.isSingleRouting());
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
-        if (null != sqlStatement.getLimit() && 1 == result.getExecutionUnits().size()) {
-            if (sqlStatement.getLimit().getOffsetParameterIndex() > -1) {
-                parameters.set(sqlStatement.getLimit().getOffsetParameterIndex(), sqlStatement.getLimit().getOffset());
-            }
-            if (sqlStatement.getLimit().getRowCountParameterIndex() > -1) {
-                parameters.set(sqlStatement.getLimit().getRowCountParameterIndex(), sqlStatement.getLimit().getRowCount());
-            }
+        boolean isSingleRouting = routingResult.isSingleRouting();
+        if (null != sqlStatement.getLimit()) {
+            sqlStatement.getLimit().processParameters(parameters, !isSingleRouting);
         }
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
+        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);
         return result;

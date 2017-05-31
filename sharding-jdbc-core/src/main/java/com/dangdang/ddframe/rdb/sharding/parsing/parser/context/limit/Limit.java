@@ -68,10 +68,13 @@ public final class Limit {
      * 填充改写分页参数.
      *
      * @param parameters 参数
+     * @param isRewrite 是否重写参数
      */
-    public void processParameters(final List<Object> parameters) {
+    public void processParameters(final List<Object> parameters, final boolean isRewrite) {
         fill(parameters);
-        rewrite(parameters);
+        if (isRewrite) {
+            rewrite(parameters);
+        }
     }
     
     private void fill(final List<Object> parameters) {

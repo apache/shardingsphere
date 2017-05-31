@@ -57,10 +57,10 @@ public final class SQLRewriteEngine {
     /**
      * SQL改写.
      *
-     * @param rewriteLimit 是否重写Limit
+     * @param isRewriteLimit 是否重写Limit
      * @return SQL构建器
      */
-    public SQLBuilder rewrite(final boolean rewriteLimit) {
+    public SQLBuilder rewrite(final boolean isRewriteLimit) {
         SQLBuilder result = new SQLBuilder();
         if (sqlTokens.isEmpty()) {
             result.append(originalSQL);
@@ -77,9 +77,9 @@ public final class SQLRewriteEngine {
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
             } else if (each instanceof RowCountLimitToken) {
-                appendLimitRowCount(result, (RowCountLimitToken) each, count, sqlTokens, rewriteLimit);
+                appendLimitRowCount(result, (RowCountLimitToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OffsetLimitToken) {
-                appendLimitOffsetToken(result, (OffsetLimitToken) each, count, sqlTokens, rewriteLimit);
+                appendLimitOffsetToken(result, (OffsetLimitToken) each, count, sqlTokens, isRewriteLimit);
             }
             count++;
         }
@@ -114,24 +114,17 @@ public final class SQLRewriteEngine {
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
-    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean rewriteLimit) {
-        
-        if (rewriteLimit) {
-            sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffset()));
-        } else {
-            sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, String.valueOf(rowCountLimitToken.getRowCount()));
-        }
+    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
+        String rowCount = isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffset()) : String.valueOf(rowCountLimitToken.getRowCount());
+        sqlBuilder.appendToken(RowCountLimitToken.COUNT_NAME, rowCount);
         int beginPosition = rowCountLimitToken.getBeginPosition() + String.valueOf(rowCountLimitToken.getRowCount()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
     }
     
-    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean rewriteLimit) {
-        if (rewriteLimit) {
-            sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, "0");
-        } else {
-            sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, String.valueOf(offsetLimitToken.getOffset()));
-        }
+    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
+        String offset = isRewrite ? "0" : String.valueOf(offsetLimitToken.getOffset());
+        sqlBuilder.appendToken(OffsetLimitToken.OFFSET_NAME, offset);
         int beginPosition = offsetLimitToken.getBeginPosition() + String.valueOf(offsetLimitToken.getOffset()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
