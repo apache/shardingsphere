@@ -15,28 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 选择项接口.
+ * 选择项.
  *
  * @author zhangliang
  */
-public interface SelectItem {
+@RequiredArgsConstructor
+@Getter
+public final class CommonSelectItem implements SelectItem {
     
-    /**
-     * 获取表达式.
-     * 
-     * @return 表达式
-     */
-    String getExpression();
+    private final String expression;
     
-    /**
-     * 获取别名.
-     * 
-     * @return 别名
-     */
-    Optional<String> getAlias();
+    private final Optional<String> alias;
+    
+    private final boolean star;
 }
