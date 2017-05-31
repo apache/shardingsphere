@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingTablesRouter;
@@ -49,8 +48,6 @@ public final class MixedTablesRouter {
     
     private final SQLStatement sqlStatement;
     
-    private final SQLType sqlType;
-    
     /**
      * 路由.
      * 
@@ -62,11 +59,11 @@ public final class MixedTablesRouter {
         Collection<String> remainingTables = new ArrayList<>(logicTables);
         Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
         if (1 < bindingTables.size()) {
-            result.add(new BindingTablesRouter(shardingRule, parameters, bindingTables, sqlStatement, sqlType).route());
+            result.add(new BindingTablesRouter(shardingRule, parameters, bindingTables, sqlStatement).route());
             remainingTables.removeAll(bindingTables);
         }
         for (String each : remainingTables) {
-            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, sqlStatement, sqlType).route();
+            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, sqlStatement).route();
             if (null != routingResult) {
                 result.add(routingResult);
             }
