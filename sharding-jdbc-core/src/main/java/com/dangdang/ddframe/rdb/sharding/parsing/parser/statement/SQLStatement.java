@@ -19,13 +19,12 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Optional;
 
@@ -66,14 +65,6 @@ public interface SQLStatement {
      * @return 条件对象
      */
     Optional<Condition> find(Column column);
-    
-    /**
-     * 获取列对象.
-     * 
-     * @param sqlExpression SQL表达式
-     * @return 列对象
-     */
-    Optional<Column> findColumn(SQLExpression sqlExpression);
     
     /**
      * 获取排序集合.

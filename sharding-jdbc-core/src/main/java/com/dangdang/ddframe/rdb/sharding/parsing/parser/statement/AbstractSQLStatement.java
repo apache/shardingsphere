@@ -19,17 +19,13 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,53 +69,6 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Override
     public Optional<Condition> find(final Column column) {
         return Optional.fromNullable(conditions.get(column));
-    }
-    
-    @Override
-    public Optional<Column> findColumn(final SQLExpression sqlExpression) {
-        if (sqlExpression instanceof SQLPropertyExpression) {
-            return Optional.fromNullable(getColumnWithQualifiedName((SQLPropertyExpression) sqlExpression));
-        }
-        if (sqlExpression instanceof SQLIdentifierExpression) {
-            return Optional.fromNullable(getColumnWithoutAlias((SQLIdentifierExpression) sqlExpression));
-        }
-        return Optional.absent();
-    }
-    
-    private Column getColumnWithQualifiedName(final SQLPropertyExpression expr) {
-        Optional<Table> table = findTable((expr.getOwner()).getName());
-        return expr.getOwner() instanceof SQLIdentifierExpression && table.isPresent() ? createColumn(expr.getName(), table.get().getName()) : null;
-    }
-    
-    private Optional<Table> findTable(final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
-        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
-    }
-    
-    private Optional<Table> findTableFromName(final String name) {
-        for (Table each : tables) {
-            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(name))) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Table> findTableFromAlias(final String alias) {
-        for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(SQLUtil.getExactlyValue(alias))) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Column getColumnWithoutAlias(final SQLIdentifierExpression expr) {
-        return 1 == tables.size() ? createColumn(expr.getName(), tables.iterator().next().getName()) : null;
-    }
-    
-    private Column createColumn(final String columnName, final String tableName) {
-        return new Column(SQLUtil.getExactlyValue(columnName), SQLUtil.getExactlyValue(tableName));
     }
     
     public List<OrderBy> getOrderByList() {
