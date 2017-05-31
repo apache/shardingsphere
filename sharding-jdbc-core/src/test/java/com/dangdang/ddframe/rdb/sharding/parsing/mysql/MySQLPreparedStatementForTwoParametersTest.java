@@ -33,9 +33,9 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public final class MySQLPreparedStatementForTowParametersTest extends AbstractBaseParseTest {
+public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBaseParseTest {
     
-    public MySQLPreparedStatementForTowParametersTest(
+    public MySQLPreparedStatementForTwoParametersTest(
             final String testCaseName, final String sql, final String expectedSQL,
             final Collection<Table> expectedTables, final List<Condition> expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
