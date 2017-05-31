@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -154,7 +154,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
                 if (getShardingRule().isShardingColumn(each)) {
-                    insertStatement.add(new Condition(each, sqlExpression));
+                    insertStatement.getConditions().add(new Condition(each, sqlExpression));
                 }
                 if (generateKeyColumnIndex == count) {
                     insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpression));

@@ -23,7 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -289,7 +289,7 @@ public class SQLParser extends AbstractParser {
                 && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-                sqlStatement.add(new Condition(column.get(), right));
+                sqlStatement.getConditions().add(new Condition(column.get(), right));
             }
         }
     }
@@ -306,7 +306,7 @@ public class SQLParser extends AbstractParser {
         } while (!equalAny(Symbol.RIGHT_PAREN));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.add(new Condition(column.get(), rights));
+            sqlStatement.getConditions().add(new Condition(column.get(), rights));
         }
         getLexer().nextToken();
     }
@@ -319,7 +319,7 @@ public class SQLParser extends AbstractParser {
         rights.add(parseExpression(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
         if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.add(new Condition(column.get(), rights.get(0), rights.get(1)));
+            sqlStatement.getConditions().add(new Condition(column.get(), rights.get(0), rights.get(1)));
         }
     }
     

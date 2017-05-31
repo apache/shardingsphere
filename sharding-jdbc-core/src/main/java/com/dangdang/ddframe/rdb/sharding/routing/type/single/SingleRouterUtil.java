@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;

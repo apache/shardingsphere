@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import org.junit.Test;
