@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 表对象.
+ * 表解析对象.
  * 
  * @author zhangliang
  */

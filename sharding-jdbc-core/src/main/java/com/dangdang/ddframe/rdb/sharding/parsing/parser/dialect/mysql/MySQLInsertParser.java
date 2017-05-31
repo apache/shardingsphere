@@ -58,7 +58,7 @@ public final class MySQLInsertParser extends AbstractInsertParser {
         do {
             getSqlParser().getLexer().nextToken();
             Column column = new Column(
-                    SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().get(0).getName());
+                    SQLUtil.getExactlyValue(getSqlParser().getLexer().getCurrentToken().getLiterals()), getInsertStatement().getTables().getSingleTableName());
             getSqlParser().getLexer().nextToken();
             getSqlParser().accept(Symbol.EQ);
             SQLExpression sqlExpression;

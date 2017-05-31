@@ -22,9 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
@@ -40,7 +41,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -148,7 +148,7 @@ public class SQLParser extends AbstractParser {
     
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
-        if (sqlStatement.getTables().get(0).getName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+        if (sqlStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
@@ -285,7 +285,7 @@ public class SQLParser extends AbstractParser {
         getLexer().nextToken();
         SQLExpression right = parseExpression(sqlStatement);
         // TODO 如果有多表,且找不到column是哪个表的,则不加入condition,以后需要解析binding table
-        if ((1 == sqlStatement.getTables().size() || left instanceof SQLPropertyExpression)
+        if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
                 && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
@@ -328,46 +328,23 @@ public class SQLParser extends AbstractParser {
         parseExpression(sqlStatement);
     }
     
-    private Optional<Column> find(final Collection<Table> tables, final SQLExpression sqlExpression) {
+    private Optional<Column> find(final Tables tables, final SQLExpression sqlExpression) {
         if (sqlExpression instanceof SQLPropertyExpression) {
-            return getColumnWithQualifiedName(tables, (SQLPropertyExpression) sqlExpression);
+            return getColumnWithOwner(tables, (SQLPropertyExpression) sqlExpression);
         }
         if (sqlExpression instanceof SQLIdentifierExpression) {
-            return getColumnWithoutOwner(tables, SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()));
+            return getColumnWithoutOwner(tables, (SQLIdentifierExpression) sqlExpression);
         }
         return Optional.absent();
     }
     
-    private Optional<Column> getColumnWithQualifiedName(final Collection<Table> tables, final SQLPropertyExpression propertyExpression) {
-        Optional<Table> table = findTable(tables, SQLUtil.getExactlyValue((propertyExpression.getOwner()).getName()));
+    private Optional<Column> getColumnWithOwner(final Tables tables, final SQLPropertyExpression propertyExpression) {
+        Optional<Table> table = tables.find(SQLUtil.getExactlyValue((propertyExpression.getOwner()).getName()));
         return propertyExpression.getOwner() instanceof SQLIdentifierExpression && table.isPresent()
                 ? Optional.of(new Column(SQLUtil.getExactlyValue(propertyExpression.getName()), table.get().getName())) : Optional.<Column>absent();
     }
     
-    private Optional<Table> findTable(final Collection<Table> tables, final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tables, tableNameOrAlias);
-        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tables, tableNameOrAlias);
-    }
-    
-    private Optional<Table> findTableFromName(final Collection<Table> tables, final String name) {
-        for (Table each : tables) {
-            if (each.getName().equalsIgnoreCase(name)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Table> findTableFromAlias(final Collection<Table> tables, final String alias) {
-        for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Column> getColumnWithoutOwner(final Collection<Table> tables, final String columnName) {
-        return 1 == tables.size() ? Optional.of(new Column(columnName, tables.iterator().next().getName())) : Optional.<Column>absent();
+    private Optional<Column> getColumnWithoutOwner(final Tables tables, final SQLIdentifierExpression identifierExpression) {
+        return tables.isSingleTable() ? Optional.of(new Column(SQLUtil.getExactlyValue(identifierExpression.getName()), tables.getSingleTableName())) : Optional.<Column>absent();
     }
 }

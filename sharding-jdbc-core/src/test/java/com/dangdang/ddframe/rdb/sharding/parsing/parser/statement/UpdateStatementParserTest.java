@@ -44,7 +44,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         UpdateStatement updateStatement = (UpdateStatement) statementParser.parse();
-        assertThat(updateStatement.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, updateStatement).rewrite().toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
@@ -64,8 +64,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertUpdateStatementWithoutParameter(final UpdateStatement updateStatement) {
-        assertThat(updateStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(updateStatement.getTables().get(0).getAlias().get(), is("xxx"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getAlias().get(), is("xxx"));
         Condition condition1 = updateStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition1.getValues(Collections.emptyList()).size(), is(1));
@@ -95,8 +95,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertUpdateStatementWitParameter(final UpdateStatement updateStatement) {
-        assertThat(updateStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(updateStatement.getTables().get(0).getAlias().get(), is("xxx"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getAlias().get(), is("xxx"));
         List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
         Condition condition1 = updateStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
@@ -146,8 +146,8 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
         UpdateStatement updateStatement = (UpdateStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
-        assertThat(updateStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertFalse(updateStatement.getTables().get(0).getAlias().isPresent());
+        assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertFalse(updateStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = updateStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues(Collections.emptyList()).size(), is(1));

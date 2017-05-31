@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Optional;
 
@@ -49,7 +49,7 @@ public interface SQLStatement {
      * 
      * @return 表解析对象集合
      */
-    List<Table> getTables();
+    Tables getTables();
     
     /**
      * 添加条件对象.

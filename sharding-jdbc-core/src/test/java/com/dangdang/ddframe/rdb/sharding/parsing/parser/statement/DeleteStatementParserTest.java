@@ -44,7 +44,7 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
         DeleteStatement deleteStatement = (DeleteStatement) statementParser.parse();
-        assertThat(deleteStatement.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(sql, deleteStatement).rewrite().toString(), is("DELETE FROM [Token(TABLE_XXX)]"));
     }
@@ -62,8 +62,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertDeleteStatementWithoutParameter(final DeleteStatement deleteStatement) {
-        assertThat(deleteStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(deleteStatement.getTables().get(0).getAlias().get(), is("xxx"));
+        assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getTables().find("xxx").get().getAlias().get(), is("xxx"));
         Condition condition1 = deleteStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition1.getValues(Collections.emptyList()).size(), is(1));
@@ -93,8 +93,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertDeleteStatementWithParameter(final DeleteStatement deleteStatement) {
-        assertThat(deleteStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertThat(deleteStatement.getTables().get(0).getAlias().get(), is("xxx"));
+        assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertThat(deleteStatement.getTables().find("xxx").get().getAlias().get(), is("xxx"));
         List<Object> actualParameters = Arrays.<Object>asList(0, 10, 20, 30, 40, 50, 60, 70, 80);
         Condition condition1 = deleteStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition1.getOperator(), is(ShardingOperator.EQUAL));
@@ -151,8 +151,8 @@ public final class DeleteStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
         DeleteStatement deleteStatement = (DeleteStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
-        assertThat(deleteStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertFalse(deleteStatement.getTables().get(0).getAlias().isPresent());
+        assertThat(deleteStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertFalse(deleteStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = deleteStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues(Collections.emptyList()).size(), is(1));

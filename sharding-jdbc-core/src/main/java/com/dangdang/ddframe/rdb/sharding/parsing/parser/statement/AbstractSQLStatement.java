@@ -24,13 +24,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -48,7 +47,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final SQLType type;
     
-    private final List<Table> tables = new ArrayList<>();
+    private final Tables tables = new Tables();
     
     private final Map<Column, Condition> conditions = new LinkedHashMap<>();
     

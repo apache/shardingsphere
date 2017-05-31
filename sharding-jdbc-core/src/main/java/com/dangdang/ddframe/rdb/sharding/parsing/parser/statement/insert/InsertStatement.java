@@ -68,7 +68,7 @@ public final class InsertStatement extends AbstractSQLStatement {
         if (null != generatedKey) {
             return;
         }
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRule(getTables().get(0).getName());
+        Optional<TableRule> tableRule = shardingRule.tryFindTableRule(getTables().getSingleTableName());
         if (!tableRule.isPresent()) {
             return;
         }

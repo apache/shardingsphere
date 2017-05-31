@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
@@ -32,7 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * SQL重写引擎.
@@ -45,16 +43,14 @@ public final class SQLRewriteEngine {
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
-    private final Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private final Collection<String> tableNames;
     
     private final Limit limit;
     
     public SQLRewriteEngine(final String originalSQL, final SQLStatement sqlStatement) {
         this.originalSQL = originalSQL;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
-        for (Table each : sqlStatement.getTables()) {
-            tableNames.add(each.getName());
-        }
+        tableNames = sqlStatement.getTables().getTableNames();
         limit = sqlStatement.getLimit();
     }
     

@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.CommonSelectItem
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
@@ -317,10 +317,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return;
         }
         SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-        for (Table each : selectStatement.getTables()) {
-            if (each.getName().equalsIgnoreCase(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
-                selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
-            }
+        if (selectStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()))) {
+            selectStatement.getSqlTokens().add(new TableToken(startPosition, sqlPropertyExpression.getOwner().getName()));
         }
     }
     

@@ -85,7 +85,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
@@ -105,7 +105,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
-        assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
+        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues(Collections.<Object>singletonList(0)).size(), is(1));
@@ -157,8 +157,8 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
         InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
-        assertThat(insertStatement.getTables().get(0).getName(), is("TABLE_XXX"));
-        assertFalse(insertStatement.getTables().get(0).getAlias().isPresent());
+        assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
+        assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getValues(Collections.emptyList()).size(), is(1));

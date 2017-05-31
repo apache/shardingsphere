@@ -114,7 +114,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     private void parseColumns() {
         Collection<Column> result = new LinkedList<>();
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            String tableName = insertStatement.getTables().get(0).getName();
+            String tableName = insertStatement.getTables().getSingleTableName();
             Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
             int count = 0;
             do {
@@ -187,7 +187,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     }
     
     private void appendGenerateKey() {
-        String tableName = insertStatement.getTables().get(0).getName();
+        String tableName = insertStatement.getTables().getSingleTableName();
         Optional<String> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
         if (!generateKeyColumn.isPresent() || null != insertStatement.getGeneratedKey()) {
             return;

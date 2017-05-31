@@ -24,9 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
@@ -35,14 +34,11 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.MixedTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleTableRouter;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 需要解析的SQL路由器.
@@ -85,7 +81,7 @@ public final class ParsingSQLRouter implements SQLRouter {
             if (parameters.isEmpty()) {
                 result.getGeneratedKeys().add(generatedKey.getValue());
             } else if (parameters.size() == generatedKey.getIndex()) {
-                Number key = shardingRule.generateKey(sqlStatement.getTables().get(0).getName());
+                Number key = shardingRule.generateKey(sqlStatement.getTables().getSingleTableName());
                 parameters.add(key);
                 setGeneratedKeys(result, key);
             } else if (-1 != generatedKey.getIndex()) {
@@ -108,21 +104,15 @@ public final class ParsingSQLRouter implements SQLRouter {
     }
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
-        Set<String> logicTables = Sets.newLinkedHashSet(Collections2.transform(sqlStatement.getTables(), new Function<Table, String>() {
-            
-            @Override
-            public String apply(final Table input) {
-                return input.getName();
-            }
-        }));
-        if (1 == logicTables.size()) {
-            return new SingleTableRouter(shardingRule, parameters, logicTables.iterator().next(), sqlStatement, sqlStatement.getType()).route();
+        Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        if (1 == tableNames.size()) {
+            return new SingleTableRouter(shardingRule, parameters, tableNames.iterator().next(), sqlStatement, sqlStatement.getType()).route();
         }
-        if (shardingRule.isAllBindingTables(logicTables)) {
-            return new BindingTablesRouter(shardingRule, parameters, logicTables, sqlStatement, sqlStatement.getType()).route();
+        if (shardingRule.isAllBindingTables(tableNames)) {
+            return new BindingTablesRouter(shardingRule, parameters, tableNames, sqlStatement, sqlStatement.getType()).route();
         }
         // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, parameters, logicTables, sqlStatement, sqlStatement.getType()).route();
+        return new MixedTablesRouter(shardingRule, parameters, tableNames, sqlStatement, sqlStatement.getType()).route();
     }
     
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {
