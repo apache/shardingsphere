@@ -35,8 +35,6 @@ public final class Condition {
     
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
-    // TODO 增加index位置的list
-    
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
         init(sqlExpression, 0);
