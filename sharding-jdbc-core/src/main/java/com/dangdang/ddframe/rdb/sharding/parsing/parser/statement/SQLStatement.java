@@ -62,11 +62,10 @@ public interface SQLStatement {
     /**
      * 查找条件对象.
      *
-     * @param table 表名称
-     * @param column 列名称
+     * @param column 列对象
      * @return 条件对象
      */
-    Optional<Condition> find(String table, String column);
+    Optional<Condition> find(Column column);
     
     /**
      * 获取列对象.

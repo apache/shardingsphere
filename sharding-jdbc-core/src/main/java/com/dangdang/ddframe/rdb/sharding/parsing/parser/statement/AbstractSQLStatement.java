@@ -71,8 +71,8 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public Optional<Condition> find(final String table, final String column) {
-        return Optional.fromNullable(conditions.get(new Column(column, table)));
+    public Optional<Condition> find(final Column column) {
+        return Optional.fromNullable(conditions.get(column));
     }
     
     @Override

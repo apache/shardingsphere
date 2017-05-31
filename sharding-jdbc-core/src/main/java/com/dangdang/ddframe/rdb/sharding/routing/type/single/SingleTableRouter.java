@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Optional;
@@ -160,7 +161,7 @@ public final class SingleTableRouter {
     private List<ShardingValue<?>> getShardingValues(final Collection<String> shardingColumns) {
         List<ShardingValue<?>> result = new ArrayList<>(shardingColumns.size());
         for (String each : shardingColumns) {
-            Optional<Condition> condition = sqlStatement.find(logicTable, each);
+            Optional<Condition> condition = sqlStatement.find(new Column(each, logicTable));
             if (condition.isPresent()) {
                 result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get(), parameters));
             }
