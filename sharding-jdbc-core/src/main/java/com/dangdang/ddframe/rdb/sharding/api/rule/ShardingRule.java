@@ -32,9 +32,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 分库分表规则配置对象.
@@ -107,6 +110,32 @@ public final class ShardingRule {
             }
         }
         return Optional.absent();
+    }
+    
+    /**
+     * 根据逻辑表名称查找分片规则.
+     *
+     * @param logicTableName 逻辑表名称
+     * @return 该逻辑表的分片规则
+     */
+    public TableRule getTableRule(final String logicTableName) {
+        Optional<TableRule> tableRule = tryFindTableRule(logicTableName);
+        if (tableRule.isPresent()) {
+            return tableRule.get();
+        }
+        if (dataSourceRule.getDefaultDataSource().isPresent()) {
+            return createTableRuleWithDefaultDataSource(logicTableName, dataSourceRule);
+        }
+        throw new ShardingJdbcException("Cannot find table rule and default data source with logic table: '%s'", logicTableName);
+    }
+    
+    private TableRule createTableRuleWithDefaultDataSource(final String logicTableName, final DataSourceRule defaultDataSourceRule) {
+        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
+        defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
+        return TableRule.builder(logicTableName)
+                .dataSourceRule(new DataSourceRule(defaultDataSourceMap))
+                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm()))
+                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
     }
     
     /**

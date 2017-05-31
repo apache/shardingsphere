@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public final class SelectMixedTablesTest extends AbstractDynamicRouteSqlTest {
                         "select * from order_0 o, order_attr_b a", "select * from order_1 o, order_attr_b a"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingJdbcException.class)
     public void assertSelectTableWithoutRules() {
         assertSingleTargetWithoutParameter("select * from aaa, bbb, ccc", null, null);
     }

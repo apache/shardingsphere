@@ -19,12 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
-import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
@@ -33,15 +30,13 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condit
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 单逻辑表的库表路由.
@@ -49,6 +44,7 @@ import java.util.Map;
  * @author gaohongtao
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class SingleTableRouter {
     
@@ -60,48 +56,19 @@ public final class SingleTableRouter {
     
     private final SQLStatement sqlStatement;
     
-    private final TableRule tableRule;
-    
-    public SingleTableRouter(final ShardingRule shardingRule, final List<Object> parameters, final String logicTable, final SQLStatement sqlStatement) {
-        this.shardingRule = shardingRule;
-        this.parameters = parameters;
-        this.logicTable = logicTable;
-        this.sqlStatement = sqlStatement;
-        tableRule = getTableRule(shardingRule, logicTable);
-    }
-    
-    private TableRule getTableRule(final ShardingRule shardingRule, final String logicTable) {
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRule(logicTable);
-        if (tableRule.isPresent()) {
-            return tableRule.get();
-        }
-        if (shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {
-            return createTableRuleWithDefaultDataSource(logicTable, shardingRule.getDataSourceRule());
-        }
-        throw new IllegalArgumentException(String.format("Cannot find table rule and default data source with logic table: '%s'", logicTable));
-    }
-    
-    private TableRule createTableRuleWithDefaultDataSource(final String logicTable, final DataSourceRule defaultDataSourceRule) {
-        Map<String, DataSource> defaultDataSourceMap = new HashMap<>(1);
-        defaultDataSourceMap.put(defaultDataSourceRule.getDefaultDataSourceName(), defaultDataSourceRule.getDefaultDataSource().get());
-        return TableRule.builder(logicTable)
-                .dataSourceRule(new DataSourceRule(defaultDataSourceMap))
-                .databaseShardingStrategy(new DatabaseShardingStrategy("", new NoneDatabaseShardingAlgorithm()))
-                .tableShardingStrategy(new TableShardingStrategy("", new NoneTableShardingAlgorithm())).build();
-    }
-    
     /**
      * 路由.
      * 
      * @return 路由结果
      */
     public SingleRoutingResult route() {
-        Collection<String> routedDataSources = routeDataSources();
-        Collection<String> routedTables = routeTables(routedDataSources);
-        return generateRoutingResult(routedDataSources, routedTables);
+        TableRule tableRule = shardingRule.getTableRule(logicTable);
+        Collection<String> routedDataSources = routeDataSources(tableRule);
+        Collection<String> routedTables = routeTables(tableRule, routedDataSources);
+        return generateRoutingResult(tableRule, routedDataSources, routedTables);
     }
     
-    private Collection<String> routeDataSources() {
+    private Collection<String> routeDataSources(final TableRule tableRule) {
         DatabaseShardingStrategy strategy = shardingRule.getDatabaseShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
         if (HintManagerHolder.isUseShardingHint()) {
@@ -116,7 +83,7 @@ public final class SingleTableRouter {
         return result;
     }
     
-    private Collection<String> routeTables(final Collection<String> routedDataSources) {
+    private Collection<String> routeTables(final TableRule tableRule, final Collection<String> routedDataSources) {
         TableShardingStrategy strategy = shardingRule.getTableShardingStrategy(tableRule);
         List<ShardingValue<?>> shardingValues;
         if (HintManagerHolder.isUseShardingHint()) {
@@ -177,7 +144,7 @@ public final class SingleTableRouter {
         log.debug("After {} sharding {} result: {}", type, logicTable, shardingResults);
     }
     
-    private SingleRoutingResult generateRoutingResult(final Collection<String> routedDataSources, final Collection<String> routedTables) {
+    private SingleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
         SingleRoutingResult result = new SingleRoutingResult();
         for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
             result.put(each.getDataSourceName(), new SingleRoutingTableFactor(logicTable, each.getTableName()));
