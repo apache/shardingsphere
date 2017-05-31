@@ -48,6 +48,6 @@ public final class MySQLPreparedStatementForOneParameterTest extends AbstractBas
     @Test
     public void assertParse() {
         new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addgenerateKeyColumn("order", "order_id").addgenerateKeyColumn("payment", "order_id").addgenerateKeyColumn("payment", "pay_no").build()).parse();
+                .addGenerateKeyColumn("order", "order_id").addGenerateKeyColumn("payment", "order_id").addGenerateKeyColumn("payment", "pay_no").build()).parse();
     }
 }

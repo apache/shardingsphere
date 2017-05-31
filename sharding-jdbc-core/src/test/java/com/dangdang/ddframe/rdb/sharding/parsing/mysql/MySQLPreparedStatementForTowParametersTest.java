@@ -49,6 +49,6 @@ public final class MySQLPreparedStatementForTowParametersTest extends AbstractBa
     @Test
     public void assertParse() {
         new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addgenerateKeyColumn("order", "order_id").build()).parse();
+                .addGenerateKeyColumn("order", "order_id").build()).parse();
     }
 }

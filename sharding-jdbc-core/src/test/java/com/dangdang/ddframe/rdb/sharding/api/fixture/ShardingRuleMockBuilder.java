@@ -48,7 +48,7 @@ public class ShardingRuleMockBuilder {
         return this;
     }
     
-    public ShardingRuleMockBuilder addgenerateKeyColumn(final String tableName, final String columnName) {
+    public ShardingRuleMockBuilder addGenerateKeyColumn(final String tableName, final String columnName) {
         generateKeyColumnsMap.put(tableName, columnName);
         return this;
     }
