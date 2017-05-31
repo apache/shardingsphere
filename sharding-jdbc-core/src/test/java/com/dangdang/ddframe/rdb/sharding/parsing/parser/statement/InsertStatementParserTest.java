@@ -88,8 +88,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
-        assertThat(condition.getValues(Collections.emptyList()).get(0), is((Comparable) 10));
+        assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 10));
     }
     
     @Test
@@ -108,8 +107,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues(Collections.<Object>singletonList(0)).size(), is(1));
-        assertThat(condition.getValues(Collections.<Object>singletonList(0)).get(0), is((Comparable) 0));
+        assertThat(condition.getShardingValue(Collections.<Object>singletonList(0)).getValue(), is((Comparable) 0));
     }
     
     private ShardingRule createShardingRuleWithGenerateKeyColumns() {
@@ -161,8 +159,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
-        assertThat(condition.getValues(Collections.emptyList()).size(), is(1));
-        assertThat(condition.getValues(Collections.emptyList()).get(0), is((Comparable) 1));
+        assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
         // TODO 放入rewrite模块断言
         assertThat(new SQLRewriteEngine(actualSQL, insertStatement).rewrite().toString(), is(expectedSQL));
     }

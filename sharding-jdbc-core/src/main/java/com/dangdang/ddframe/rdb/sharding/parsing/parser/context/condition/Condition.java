@@ -1,11 +1,15 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition;
 
+import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -67,17 +71,31 @@ public final class Condition {
     }
     
     /**
-     * 获取分片值.
+     * 将条件对象转换为分片值.
      *
      * @param parameters 参数列表
      * @return 分片值
      */
-    public List<Comparable<?>> getValues(final List<Object> parameters) {
+    public ShardingValue<?> getShardingValue(final List<Object> parameters) {
+        List<Comparable<?>> conditionValues = getValues(parameters);
+        switch (operator) {
+            case EQUAL:
+                return new ShardingValue<Comparable<?>>(column.getTableName(), column.getName(), conditionValues.get(0));
+            case IN:
+                return new ShardingValue<>(column.getTableName(), column.getName(), conditionValues);
+            case BETWEEN:
+                return new ShardingValue<>(column.getTableName(), column.getName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
+            default:
+                throw new UnsupportedOperationException(operator.getExpression());
+        }
+    }
+    
+    private List<Comparable<?>> getValues(final List<Object> parameters) {
         List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
             Object parameter = parameters.get(entry.getValue());
             if (!(parameter instanceof Comparable<?>)) {
-                continue;
+                throw new ShardingJdbcException("Parameter `%s` should extends Comparable for sharding value.", parameter);
             }
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), (Comparable<?>) parameter);

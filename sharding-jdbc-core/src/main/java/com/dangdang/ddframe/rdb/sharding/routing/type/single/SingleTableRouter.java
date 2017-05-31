@@ -67,14 +67,18 @@ public final class SingleTableRouter {
         this.parameters = parameters;
         this.logicTable = logicTable;
         this.sqlStatement = sqlStatement;
-        Optional<TableRule> tableRuleOptional = shardingRule.tryFindTableRule(logicTable);
-        if (tableRuleOptional.isPresent()) {
-            tableRule = tableRuleOptional.get();
-        } else if (shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {
-            tableRule = createTableRuleWithDefaultDataSource(logicTable, shardingRule.getDataSourceRule());
-        } else {
-            throw new IllegalArgumentException(String.format("Cannot find table rule and default data source with logic table: '%s'", logicTable));
+        tableRule = getTableRule(shardingRule, logicTable);
+    }
+    
+    private TableRule getTableRule(final ShardingRule shardingRule, final String logicTable) {
+        Optional<TableRule> tableRule = shardingRule.tryFindTableRule(logicTable);
+        if (tableRule.isPresent()) {
+            return tableRule.get();
         }
+        if (shardingRule.getDataSourceRule().getDefaultDataSource().isPresent()) {
+            return createTableRuleWithDefaultDataSource(logicTable, shardingRule.getDataSourceRule());
+        }
+        throw new IllegalArgumentException(String.format("Cannot find table rule and default data source with logic table: '%s'", logicTable));
     }
     
     private TableRule createTableRuleWithDefaultDataSource(final String logicTable, final DataSourceRule defaultDataSourceRule) {
@@ -159,7 +163,7 @@ public final class SingleTableRouter {
         for (String each : shardingColumns) {
             Optional<Condition> condition = sqlStatement.getConditions().find(new Column(each, logicTable));
             if (condition.isPresent()) {
-                result.add(SingleRouterUtil.convertConditionToShardingValue(condition.get(), parameters));
+                result.add(condition.get().getShardingValue(parameters));
             }
         }
         return result;
