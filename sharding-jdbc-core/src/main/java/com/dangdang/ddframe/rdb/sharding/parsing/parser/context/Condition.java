@@ -10,8 +10,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 条件对象.
@@ -28,37 +31,39 @@ public final class Condition {
     @Getter
     private final ShardingOperator operator;
     
-    private final List<Comparable<?>> values = new LinkedList<>();
+    private final Map<Integer, Comparable<?>> positionValueMap = new LinkedHashMap<>();
     
-    private final List<Integer> indices = new LinkedList<>();
+    private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
     // TODO 增加index位置的list
     
     public Condition(final Column column, final SQLExpression sqlExpression) {
         this(column, ShardingOperator.EQUAL);
-        init(sqlExpression);
+        init(sqlExpression, 0);
     }
     
     public Condition(final Column column, final SQLExpression beginSQLExpression, final SQLExpression endSQLExpression) {
         this(column, ShardingOperator.BETWEEN);
-        init(beginSQLExpression);
-        init(endSQLExpression);
+        init(beginSQLExpression, 0);
+        init(endSQLExpression, 1);
     }
     
     public Condition(final Column column, final List<SQLExpression> sqlExpressions) {
         this(column, ShardingOperator.IN);
+        int count = 0;
         for (SQLExpression each : sqlExpressions) {
-            init(each);
+            init(each, count);
+            count++;
         }
     }
     
-    private void init(final SQLExpression sqlExpression) {
+    private void init(final SQLExpression sqlExpression, final int position) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            indices.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+            positionIndexMap.put(position, ((SQLPlaceholderExpression) sqlExpression).getIndex());
         } else if (sqlExpression instanceof SQLTextExpression) {
-            values.add(((SQLTextExpression) sqlExpression).getText());
+            positionValueMap.put(position, ((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {
-            values.add((Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
+            positionValueMap.put(position, (Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
         }
     }
     
@@ -69,10 +74,15 @@ public final class Condition {
      * @return 分片值
      */
     public List<Comparable<?>> getValues(final List<Object> parameters) {
-        List<Comparable<?>> result = new LinkedList<>(values);
-        for (int each : indices) {
-            Object parameter = parameters.get(each);
-            if (parameter instanceof Comparable<?>) {
+        List<Comparable<?>> result = new LinkedList<>(positionValueMap.values());
+        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
+            Object parameter = parameters.get(entry.getValue());
+            if (!(parameter instanceof Comparable<?>)) {
+                continue;
+            }
+            if (entry.getKey() < result.size()) {
+                result.add(entry.getKey(), (Comparable<?>) parameter);
+            } else {
                 result.add((Comparable<?>) parameter);
             }
         }
