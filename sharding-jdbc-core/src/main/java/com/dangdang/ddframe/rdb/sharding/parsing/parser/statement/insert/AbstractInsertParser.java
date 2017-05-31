@@ -153,9 +153,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             int count = 0;
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
-                if (getShardingRule().isShardingColumn(each)) {
-                    insertStatement.getConditions().add(new Condition(each, sqlExpression));
-                }
+                insertStatement.getConditions().add(new Condition(each, sqlExpression), getShardingRule());
                 if (generateKeyColumnIndex == count) {
                     insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpression));
                 }

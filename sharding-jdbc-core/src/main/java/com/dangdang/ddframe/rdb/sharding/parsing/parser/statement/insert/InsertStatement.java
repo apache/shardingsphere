@@ -20,10 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
@@ -89,13 +88,13 @@ public final class InsertStatement extends AbstractSQLStatement {
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken) {
         Number generatedKey = shardingRule.generateKey(tableRule.getLogicTable());
         valuesToken.getItems().add(generatedKey.toString());
-        addCondition(shardingRule, new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpression(generatedKey));
+        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLNumberExpression(generatedKey)), shardingRule);
         this.generatedKey = new GeneratedKey(tableRule.getLogicTable(), -1, generatedKey);
     }
     
     private void appendGenerateKeyToken(final ShardingRule shardingRule, final TableRule tableRule, final ItemsToken valuesToken, final int parametersSize) {
         valuesToken.getItems().add("?");
-        addCondition(shardingRule, new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(parametersSize));
+        getConditions().add(new Condition(new Column(tableRule.getGenerateKeyColumn(), tableRule.getLogicTable()), new SQLPlaceholderExpression(parametersSize)), shardingRule);
         generatedKey = new GeneratedKey(tableRule.getGenerateKeyColumn(), parametersSize, null);
     }
     
@@ -106,11 +105,5 @@ public final class InsertStatement extends AbstractSQLStatement {
             }
         }
         return Optional.absent();
-    }
-    
-    private void addCondition(final ShardingRule shardingRule, final Column column, final SQLExpression sqlExpression) {
-        if (shardingRule.isShardingColumn(column)) {
-            getConditions().add(new Condition(column, sqlExpression));
-        }
     }
 }

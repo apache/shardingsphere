@@ -288,8 +288,8 @@ public class SQLParser extends AbstractParser {
         if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
                 && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
-            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-                sqlStatement.getConditions().add(new Condition(column.get(), right));
+            if (column.isPresent()) {
+                sqlStatement.getConditions().add(new Condition(column.get(), right), shardingRule);
             }
         }
     }
@@ -305,8 +305,8 @@ public class SQLParser extends AbstractParser {
             rights.add(parseExpression(sqlStatement));
         } while (!equalAny(Symbol.RIGHT_PAREN));
         Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.getConditions().add(new Condition(column.get(), rights));
+        if (column.isPresent()) {
+            sqlStatement.getConditions().add(new Condition(column.get(), rights), shardingRule);
         }
         getLexer().nextToken();
     }
@@ -318,8 +318,8 @@ public class SQLParser extends AbstractParser {
         accept(DefaultKeyword.AND);
         rights.add(parseExpression(sqlStatement));
         Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            sqlStatement.getConditions().add(new Condition(column.get(), rights.get(0), rights.get(1)));
+        if (column.isPresent()) {
+            sqlStatement.getConditions().add(new Condition(column.get(), rights.get(0), rights.get(1)), shardingRule);
         }
     }
     
