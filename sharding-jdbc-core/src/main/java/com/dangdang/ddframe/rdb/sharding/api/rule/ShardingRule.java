@@ -149,12 +149,7 @@ public final class ShardingRule {
      * @return 数据库分片策略
      */
     public DatabaseShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
-        DatabaseShardingStrategy result = tableRule.getDatabaseShardingStrategy();
-        if (null == result) {
-            result = databaseShardingStrategy;
-        }
-        Preconditions.checkNotNull(result, "no database sharding strategy");
-        return result;
+        return null == tableRule.getDatabaseShardingStrategy() ? databaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
     }
     
     /**
@@ -168,12 +163,7 @@ public final class ShardingRule {
      * @return 表分片策略
      */
     public TableShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
-        TableShardingStrategy result = tableRule.getTableShardingStrategy();
-        if (null == result) {
-            result = tableShardingStrategy;
-        }
-        Preconditions.checkNotNull(result, "no table sharding strategy");
-        return result;
+        return null == tableRule.getTableShardingStrategy() ? tableShardingStrategy : tableRule.getTableShardingStrategy();
     }
     
     /**

@@ -57,11 +57,14 @@ public class ShardingStrategy {
      * @return 分库后指向的数据源名称集合
      */
     public Collection<String> doStaticSharding(final SQLType sqlType, final Collection<String> availableTargetNames, final Collection<ShardingValue<?>> shardingValues) {
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         if (shardingValues.isEmpty()) {
             Preconditions.checkState(!isInsertMultiple(sqlType, availableTargetNames), "INSERT statement should contain sharding value.");
-            return availableTargetNames;
+            result.addAll(availableTargetNames);
+        } else {
+            result.addAll(doSharding(shardingValues, availableTargetNames));
         }
-        return doSharding(shardingValues, availableTargetNames);
+        return result;
     }
     
     /**
@@ -73,7 +76,9 @@ public class ShardingStrategy {
     public Collection<String> doDynamicSharding(final Collection<ShardingValue<?>> shardingValues) {
         Preconditions.checkState(!shardingValues.isEmpty(), "Dynamic table should contain sharding value.");
         Collection<String> availableTargetNames = Collections.emptyList();
-        return doSharding(shardingValues, availableTargetNames);
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(doSharding(shardingValues, availableTargetNames));
+        return result;
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
