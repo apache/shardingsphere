@@ -15,15 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * SQLServer分页对象.
+ * 
+ * @author zhangliang
+ */
 @Getter
 @Setter
-public class SQLServerTop implements SQLExpression {
+public final class Top implements SQLExpression {
     
     private SQLExpression expr;
     

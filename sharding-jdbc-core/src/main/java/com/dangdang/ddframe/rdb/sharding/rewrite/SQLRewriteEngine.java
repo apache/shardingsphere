@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.google.common.base.Optional;

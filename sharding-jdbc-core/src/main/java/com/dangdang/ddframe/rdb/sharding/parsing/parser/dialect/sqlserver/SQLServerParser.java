@@ -24,8 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.SQLServerTop;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Top;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -42,7 +42,7 @@ public final class SQLServerParser extends SQLParser {
         getLexer().nextToken();
     }
     
-    public SQLServerTop parseTop() {
+    public Top parseTop() {
         // TODO
 //        if (getLexer().equalAny(SQLServerKeyword.TOP)) {
 //            SQLServerTop top = new SQLServerTop();
