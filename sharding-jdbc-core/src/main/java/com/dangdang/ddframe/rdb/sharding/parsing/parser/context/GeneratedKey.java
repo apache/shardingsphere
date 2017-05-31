@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 自动生成键上下文.
+ * 自动生成键.
  * 
  * @author zhangliang
  */

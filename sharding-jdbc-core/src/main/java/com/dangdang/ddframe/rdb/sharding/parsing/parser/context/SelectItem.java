@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 import com.google.common.base.Optional;
 
 /**
- * Select Item上下文接口.
+ * 选择项接口.
  *
  * @author zhangliang
  */

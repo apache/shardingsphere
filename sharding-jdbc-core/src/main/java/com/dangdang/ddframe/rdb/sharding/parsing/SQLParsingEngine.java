@@ -51,7 +51,7 @@ public final class SQLParsingEngine {
     /**
      * 解析SQL.
      * 
-     * @return SQL解析上下文
+     * @return SQL语句对象
      */
     public SQLStatement parse() {
         SQLParser sqlParser = getSQLParser();

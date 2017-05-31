@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 排序上下文.
+ * 排序对象.
  *
  * @author zhangliang
  */

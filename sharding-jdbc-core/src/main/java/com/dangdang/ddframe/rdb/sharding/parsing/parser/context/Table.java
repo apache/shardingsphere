@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * 表上下文.
+ * 表对象.
  * 
  * @author zhangliang
  */

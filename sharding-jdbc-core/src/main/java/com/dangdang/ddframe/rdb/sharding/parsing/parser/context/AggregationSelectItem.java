@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 聚合Select Item上下文.
+ * 聚合选择项.
  *
  * @author zhangliang
  */

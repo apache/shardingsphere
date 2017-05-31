@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Select Item上下文.
+ * 选择项.
  *
  * @author zhangliang
  */

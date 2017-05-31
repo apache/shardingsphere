@@ -57,9 +57,6 @@ import java.util.List;
 public abstract class AbstractBaseParseTest {
     
     @Getter(AccessLevel.PROTECTED)
-    private final String testCaseName;
-    
-    @Getter(AccessLevel.PROTECTED)
     private final String sql;
     
     private final String expectedSQL;
@@ -78,7 +75,6 @@ public abstract class AbstractBaseParseTest {
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
                                     final Collection<Table> expectedTables, final Collection<Condition> expectedConditions, final SQLStatement expectedSQLStatement) {
-        this.testCaseName = testCaseName;
         this.sql = sql;
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();

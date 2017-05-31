@@ -42,11 +42,11 @@ public final class MySQLParser extends SQLParser {
     }
     
     /**
-     * 解析分页上.
+     * 解析分页.
      * 
      * @param sqlStatement SQL语句对象
      * @param parametersIndex 参数索引
-     * @return 分页上下文
+     * @return 分页
      */
     public Limit parseLimit(final SQLStatement sqlStatement, final int parametersIndex) {
         skipIfEqual(MySQLKeyword.LIMIT);

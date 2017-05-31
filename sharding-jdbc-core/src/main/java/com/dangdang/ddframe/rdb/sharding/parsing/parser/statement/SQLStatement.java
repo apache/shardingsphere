@@ -77,37 +77,37 @@ public interface SQLStatement {
     Optional<Column> findColumn(SQLExpression sqlExpression);
     
     /**
-     * 获取排序上下文集合.
+     * 获取排序集合.
      * 
-     * @return 排序上下文集合
+     * @return 排序集合
      */
     List<OrderBy> getOrderByList();
     
     /**
-     * 获取分组上下文集合.
+     * 获取分组集合.
      * 
-     * @return 分组上下文集合
+     * @return 分组集合
      */
     List<GroupBy> getGroupByList();
     
     /**
-     * 获取聚合上下文集合.
+     * 获取聚合选择项集合.
      * 
-     * @return 聚合上下文集合
+     * @return 聚合选择项
      */
     List<AggregationSelectItem> getAggregationSelectItems();
     
     /**
-     * 获取分页上下文.
+     * 获取分页.
      * 
-     * @return 分页上下文
+     * @return 分页
      */
     Limit getLimit();
     
     /**
-     * 设置分页上下文.
+     * 设置分页.
      *
-     * @param limit  分页上下文
+     * @param limit  分页
      */
     void setLimit(Limit limit);
     

@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 分组上下文.
+ * 分组对象.
  *
  * @author zhangliang
  */

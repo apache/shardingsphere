@@ -44,7 +44,7 @@ public final class SQLJudgeEngine {
     /**
      * 判断并获取SQL类型.
      *
-     * @return SQL解析上下文
+     * @return SQL语句对象
      */
     public SQLStatement judge() {
         Lexer lexer = new Lexer(sql, new Dictionary());

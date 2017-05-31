@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-<assert id="assertSelectForLimitWithRowCountOnlyWithParameter" sql="SELECT * FROM order o LIMIT ?" expected-sql="SELECT * FROM [Token(order)] o LIMIT ?">
+    <assert id="assertSelectForLimitWithRowCountOnlyWithParameter" sql="SELECT * FROM order o LIMIT ?" expected-sql="SELECT * FROM [Token(order)] o LIMIT ?">
         <tables>
             <table name="order" alias="o" />
         </tables>
