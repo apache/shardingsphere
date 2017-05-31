@@ -77,16 +77,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         final Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
         if (sqlStatement instanceof InsertStatement && null != ((InsertStatement) sqlStatement).getGeneratedKey()) {
-            GeneratedKey generatedKey = ((InsertStatement) sqlStatement).getGeneratedKey();
-            if (parameters.isEmpty()) {
-                result.getGeneratedKeys().add(generatedKey.getValue());
-            } else if (parameters.size() == generatedKey.getIndex()) {
-                Number key = shardingRule.generateKey(sqlStatement.getTables().getSingleTableName());
-                parameters.add(key);
-                setGeneratedKeys(result, key);
-            } else if (-1 != generatedKey.getIndex()) {
-                setGeneratedKeys(result, (Number) parameters.get(generatedKey.getIndex()));
-            }
+            processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
         }
         if (null != sqlStatement.getLimit()) {
             sqlStatement.getLimit().processParameters(parameters);
@@ -124,6 +115,19 @@ public final class ParsingSQLRouter implements SQLRouter {
         log.debug("final route result is {} target", routeResult.getExecutionUnits().size());
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             log.debug("{}:{} {}", each.getDataSource(), each.getSQL(), parameters);
+        }
+    }
+    
+    private void processGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final SQLRouteResult sqlRouteResult) {
+        GeneratedKey generatedKey = insertStatement.getGeneratedKey();
+        if (parameters.isEmpty()) {
+            sqlRouteResult.getGeneratedKeys().add(generatedKey.getValue());
+        } else if (parameters.size() == generatedKey.getIndex()) {
+            Number key = shardingRule.generateKey(insertStatement.getTables().getSingleTableName());
+            parameters.add(key);
+            setGeneratedKeys(sqlRouteResult, key);
+        } else if (-1 != generatedKey.getIndex()) {
+            setGeneratedKeys(sqlRouteResult, (Number) parameters.get(generatedKey.getIndex()));
         }
     }
     
