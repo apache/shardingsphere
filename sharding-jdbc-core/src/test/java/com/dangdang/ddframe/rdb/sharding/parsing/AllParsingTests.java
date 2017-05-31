@@ -17,17 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.LexerTest;
+
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.AllLexerTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.postgresql.PostgreSQLLexerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerLexerTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForOneParameterTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForTowParametersTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLStatementTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.mysql.OrParseTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.ConditionTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.DeleteStatementParserTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.InsertStatementParserTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.UpdateStatementParserTest;
@@ -37,12 +33,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         TokenizerTest.class,
-        LexerTest.class,
-        MySQLLexerTest.class,
-        OracleLexerTest.class,
-        SQLServerLexerTest.class,
-        PostgreSQLLexerTest.class,
-        ConditionTest.class, 
+        AllLexerTests.class,
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class,
