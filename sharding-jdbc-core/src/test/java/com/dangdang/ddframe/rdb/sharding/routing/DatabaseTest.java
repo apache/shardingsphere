@@ -84,7 +84,7 @@ public class DatabaseTest {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
-                return input.getSQL();
+                return input.getSql();
             }
         });
         assertThat(originSql, is(actualSQLs.iterator().next()));

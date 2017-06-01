@@ -41,7 +41,7 @@ public abstract class AbstractExecutorWrapper {
      * @return 是否为DML语句
      */
     final boolean isDML() {
-        String sql = sqlExecutionUnit.getSQL();
+        String sql = sqlExecutionUnit.getSql();
         return sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update") || sql.toLowerCase().startsWith("delete");
     }
     
@@ -51,7 +51,7 @@ public abstract class AbstractExecutorWrapper {
      * @return 是否为DQL语句
      */
     final boolean isDQL() {
-        return sqlExecutionUnit.getSQL().toLowerCase().startsWith("select");
+        return sqlExecutionUnit.getSql().toLowerCase().startsWith("select");
     }
     
     /**

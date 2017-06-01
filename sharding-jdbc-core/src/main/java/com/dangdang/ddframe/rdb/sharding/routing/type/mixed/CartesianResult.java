@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -58,14 +56,5 @@ public final class CartesianResult implements RoutingResult {
     @Override
     public boolean isSingleRouting() {
         return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableReferences().size();
-    }
-    
-    @Override
-    public Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
-        Collection<SQLExecutionUnit> result = new ArrayList<>();
-        for (CartesianDataSource each : routingDataSources) {
-            result.addAll(each.getSQLExecutionUnits(sqlBuilder));
-        }
-        return result;
     }
 }

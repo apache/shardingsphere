@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -140,14 +138,5 @@ public class SingleRoutingResult implements RoutingResult {
     @Override
     public boolean isSingleRouting() {
         return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableFactors().size();
-    }
-    
-    @Override
-    public Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
-        Collection<SQLExecutionUnit> result = new ArrayList<>();
-        for (SingleRoutingDataSource each : routingDataSources) {
-            result.addAll(each.getSQLExecutionUnits(sqlBuilder));
-        }
-        return result;
     }
 }

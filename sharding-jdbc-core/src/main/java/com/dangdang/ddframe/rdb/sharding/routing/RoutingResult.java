@@ -17,10 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-
-import java.util.Collection;
-
 /**
  *  路由结果接口.
  * 
@@ -34,12 +30,4 @@ public interface RoutingResult {
      * @return 是否为单库表路由
      */
     boolean isSingleRouting();
-    
-    /**
-     * 获取SQL执行单元集合.
-     * 
-     * @param sqlBuilder SQL构建器
-     * @return SQL执行单元集合
-     */
-    Collection<SQLExecutionUnit> getSQLExecutionUnits(SQLBuilder sqlBuilder);
 }

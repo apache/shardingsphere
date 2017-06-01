@@ -48,7 +48,7 @@ public final class CartesianDataSource {
     Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
         Collection<SQLExecutionUnit> result = new ArrayList<>();
         for (CartesianTableReference each : routingTableReferences) {
-            result.add(new SQLExecutionUnit(dataSource, each.buildSQL(sqlBuilder)));
+            result.add(new SQLExecutionUnit(dataSource, each.buildSQL(sqlBuilder).toSQL()));
         }
         return result;
     }

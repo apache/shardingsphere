@@ -23,11 +23,10 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.database.DatabaseRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.type.database.DatabaseRoutingResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -56,10 +55,10 @@ public final class UnparsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        RoutingResult routingResult = new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
-        SQLBuilder sqlBuilder = new SQLBuilder();
-        sqlBuilder.append(logicSQL);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
+        DatabaseRoutingResult routingResult = new DatabaseRouter(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
+        for (String each : routingResult.getRoutedDatabaseNames()) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each, logicSQL));
+        }
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);
         return result;
@@ -68,7 +67,7 @@ public final class UnparsingSQLRouter implements SQLRouter {
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {
         log.debug("final route result is {} target", routeResult.getExecutionUnits().size());
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            log.debug("{}:{} {}", each.getDataSource(), each.getSQL(), parameters);
+            log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
         }
     }
 }

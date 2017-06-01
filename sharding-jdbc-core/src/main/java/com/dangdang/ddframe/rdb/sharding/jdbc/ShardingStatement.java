@@ -234,7 +234,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
         sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSQL());
+            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
             replayMethodsInvocation(statement);
             result.addStatement(new StatementExecutorWrapper(statement, each));
         }

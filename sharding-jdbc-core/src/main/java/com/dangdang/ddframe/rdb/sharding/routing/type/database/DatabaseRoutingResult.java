@@ -17,11 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.database;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
@@ -32,6 +29,7 @@ import java.util.Collection;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
+@Getter
 public final class DatabaseRoutingResult implements RoutingResult {
     
     private final Collection<String> routedDatabaseNames;
@@ -39,16 +37,5 @@ public final class DatabaseRoutingResult implements RoutingResult {
     @Override
     public boolean isSingleRouting() {
         return true;
-    }
-    
-    @Override
-    public Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
-        return Collections2.transform(routedDatabaseNames, new Function<String, SQLExecutionUnit>() {
-            
-            @Override
-            public SQLExecutionUnit apply(final String input) {
-                return new SQLExecutionUnit(input, sqlBuilder);
-            }
-        });
     }
 }

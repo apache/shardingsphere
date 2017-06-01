@@ -43,10 +43,10 @@ public final class StatementExecutorWrapper extends AbstractExecutorWrapper {
         super(sqlExecutionUnit);
         this.statement = statement;
         if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSQL()));
+            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
             dqlExecutionEvent = Optional.absent();
         } else if (isDQL()) {
-            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSQL()));
+            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
             dmlExecutionEvent = Optional.absent();
         } else {
             dmlExecutionEvent = Optional.absent();

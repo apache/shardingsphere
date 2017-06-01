@@ -89,7 +89,7 @@ public abstract class AbstractBaseRouteSqlTest {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
-                return input.getSQL();
+                return input.getSql();
             }
         });
         assertThat(actualSQLs, hasItems(targetSQLs.toArray(new String[targetSQLs.size()])));
@@ -116,7 +116,7 @@ public abstract class AbstractBaseRouteSqlTest {
             
             @Override
             public String apply(final SQLExecutionUnit input) {
-                return input.getSQL();
+                return input.getSql();
             }
         });
         assertThat(actualSQLs, hasItems(targetSQLs.toArray(new String[targetSQLs.size()])));

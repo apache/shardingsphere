@@ -46,10 +46,8 @@ import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleTableRouter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 需要解析的SQL路由器.
@@ -99,13 +97,12 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         
         // TODO refactor
-        Set<SQLExecutionUnit> sqlExecutionUnits = new HashSet<>();
         if (routingResult instanceof SingleRoutingResult && !(routingResult instanceof BindingRoutingResult)) {
             for (SingleRoutingDataSource each : ((SingleRoutingResult) routingResult).getRoutingDataSources()) {
                 for (SingleRoutingTableFactor each1 : each.getRoutingTableFactors()) {
                     sqlBuilder.recordNewToken(each1.getLogicTable(), each1.getActualTable());
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
-                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                    result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
                 }
             }
         }
@@ -119,7 +116,7 @@ public final class ParsingSQLRouter implements SQLRouter {
                         sqlBuilder.recordNewToken(e.getLogicTable(), e.getActualTable());
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
-                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                    result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
                 }
             }
         }
@@ -135,13 +132,12 @@ public final class ParsingSQLRouter implements SQLRouter {
                         }
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
-                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                    result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
                 }
             }
         }
     
         
-        result.getExecutionUnits().addAll(sqlExecutionUnits);
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);
         return result;
@@ -162,7 +158,7 @@ public final class ParsingSQLRouter implements SQLRouter {
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {
         log.debug("final route result is {} target", routeResult.getExecutionUnits().size());
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            log.debug("{}:{} {}", each.getDataSource(), each.getSQL(), parameters);
+            log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
         }
     }
     

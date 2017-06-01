@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,36 +27,13 @@ import lombok.ToString;
  * 
  * @author gaohongtao
  */
-@ToString
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = "sqlBuilder")
-public class SQLExecutionUnit {
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class SQLExecutionUnit {
     
-    @Getter
     private final String dataSource;
     
-    private String sql;
-    
-    private final SQLBuilder sqlBuilder;
-    
-    public SQLExecutionUnit(final String dataSource, final String sql) {
-        this.dataSource = dataSource;
-        this.sql = sql;
-        sqlBuilder = new SQLBuilder();
-        sqlBuilder.append(sql);
-    }
-    
-    /**
-     * 获取执行SQL.
-     * 
-     * @return 执行SQL
-     */
-    public String getSQL() {
-        if (null == sql) {
-            sql = sqlBuilder.toSQL();
-        } else {
-            sql = sqlBuilder.isChanged() ? sqlBuilder.toSQL() : sql;
-        }
-        return sql;
-    }
+    private final String sql;
 }

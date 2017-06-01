@@ -393,6 +393,6 @@ public final class PreparedStatementExecutorTest {
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final String dataSource, final String sql) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.append(sql);
-        return new PreparedStatementExecutorWrapper(preparedStatement, Collections.emptyList(), new SQLExecutionUnit(dataSource, sqlBuilder));
+        return new PreparedStatementExecutorWrapper(preparedStatement, Collections.emptyList(), new SQLExecutionUnit(dataSource, sqlBuilder.toSQL()));
     }
 }
