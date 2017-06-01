@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingRoutingResultTest;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianResultTest;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResultTest;
 import org.junit.runner.RunWith;
@@ -30,7 +29,6 @@ import org.junit.runners.Suite;
         SelectMixedTablesTest.class, 
         DMLTest.class, 
         SingleRoutingResultTest.class, 
-        BindingRoutingResultTest.class,
         CartesianResultTest.class,
         DatabaseTest.class
     })

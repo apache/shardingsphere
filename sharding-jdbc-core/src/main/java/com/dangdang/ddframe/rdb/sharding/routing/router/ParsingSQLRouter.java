@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
-import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingTablesRouter;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianDataSource;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianTableReference;
@@ -97,9 +96,9 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (routingResult instanceof SingleRoutingResult) {
             for (SingleRoutingDataSource each : ((SingleRoutingResult) routingResult).getRoutingDataSources()) {
                 for (TableUnit each1 : each.getTableUnits()) {
-                    sqlBuilder.recordNewToken(each1.getLogicTable(), each1.getActualTable());
+                    sqlBuilder.recordNewToken(each1.getLogicTableName(), each1.getActualTableName());
                     for (TableUnit e : each1.getBindingTableUnits()) {
-                        sqlBuilder.recordNewToken(e.getLogicTable(), e.getActualTable());
+                        sqlBuilder.recordNewToken(e.getLogicTableName(), e.getActualTableName());
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
                     result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
@@ -110,9 +109,9 @@ public final class ParsingSQLRouter implements SQLRouter {
             for (CartesianDataSource each : ((CartesianResult) routingResult).getRoutingDataSources()) {
                 for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
                     for (TableUnit each2 : each1.getRoutingTableFactors()) {
-                        sqlBuilder.recordNewToken(each2.getLogicTable(), each2.getActualTable());
+                        sqlBuilder.recordNewToken(each2.getLogicTableName(), each2.getActualTableName());
                         for (TableUnit e : each2.getBindingTableUnits()) {
-                            sqlBuilder.recordNewToken(e.getLogicTable(), e.getActualTable());
+                            sqlBuilder.recordNewToken(e.getLogicTableName(), e.getActualTableName());
                         }
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
@@ -129,11 +128,8 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        if (1 == tableNames.size()) {
+        if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
             return new SingleTableRouter(shardingRule, parameters, tableNames.iterator().next(), sqlStatement).route();
-        }
-        if (shardingRule.isAllBindingTables(tableNames)) {
-            return new BindingTablesRouter(shardingRule, parameters, tableNames, sqlStatement).route();
         }
         // TODO 可配置是否执行笛卡尔积
         return new MixedTablesRouter(shardingRule, parameters, tableNames, sqlStatement).route();

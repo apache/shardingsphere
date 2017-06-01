@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -58,10 +59,25 @@ public final class SingleTableRouter {
     
     /**
      * 路由.
-     * 
+     *
      * @return 路由结果
      */
     public SingleRoutingResult route() {
+        SingleRoutingResult result = new SingleTableRouter(shardingRule, parameters, logicTableName, sqlStatement).route0();
+        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
+        if (!bindingTableRule.isPresent()) {
+            return result;
+        }
+        for (final String each : sqlStatement.getTables().getTableNames()) {
+            if (!each.equalsIgnoreCase(logicTableName) && bindingTableRule.get().hasLogicTable(each)) {
+                result.bind(bindingTableRule.get(), each);
+            }
+        }
+        log.trace("binding table sharding result: {}", result);
+        return result;
+    }
+    
+    private SingleRoutingResult route0() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> routedDataSources = routeDataSources(tableRule);
         Collection<String> routedTables = routeTables(tableRule, routedDataSources);

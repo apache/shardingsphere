@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
@@ -66,14 +67,14 @@ public class SingleRoutingResult implements RoutingResult {
             if (!dataSources.contains(each.getDataSource())) {
                 continue;
             }
-            Set<String> logicTables = each.getLogicTables();
-            if (logicTables.isEmpty()) {
+            Set<String> logicTableNames = each.getLogicTableNames();
+            if (logicTableNames.isEmpty()) {
                 continue;
             }
             if (result.containsKey(each.getDataSource())) {
-                result.get(each.getDataSource()).addAll(logicTables);
+                result.get(each.getDataSource()).addAll(logicTableNames);
             } else {
-                result.put(each.getDataSource(), logicTables);
+                result.put(each.getDataSource(), logicTableNames);
             }
         }
         return result;
@@ -139,5 +140,11 @@ public class SingleRoutingResult implements RoutingResult {
     @Override
     public boolean isSingleRouting() {
         return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getTableUnits().size();
+    }
+    
+    void bind(final BindingTableRule bindingTableRule, final String bindingLogicTable) {
+        for (SingleRoutingDataSource each : getRoutingDataSources()) {
+            each.bind(bindingTableRule, bindingLogicTable);
+        }
     }
 }

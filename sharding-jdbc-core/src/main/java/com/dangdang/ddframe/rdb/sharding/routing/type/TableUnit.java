@@ -34,9 +34,9 @@ import java.util.LinkedList;
 @ToString
 public final class TableUnit {
     
-    private final String logicTable;
+    private final String logicTableName;
     
-    private final String actualTable;
+    private final String actualTableName;
     
     private final Collection<TableUnit> bindingTableUnits = new LinkedList<>();
 }

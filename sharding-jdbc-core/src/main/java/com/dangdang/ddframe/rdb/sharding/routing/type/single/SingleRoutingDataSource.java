@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -48,13 +49,13 @@ public class SingleRoutingDataSource {
         tableUnits.addAll(Arrays.asList(routingTableFactor));
     }
     
-    Set<String> getLogicTables() {
+    Set<String> getLogicTableNames() {
         Set<String> result = new HashSet<>(tableUnits.size());
         result.addAll(Lists.transform(tableUnits, new Function<TableUnit, String>() {
             
             @Override
             public String apply(final TableUnit input) {
-                return input.getLogicTable();
+                return input.getLogicTableName();
             }
         }));
         return result;
@@ -74,8 +75,8 @@ public class SingleRoutingDataSource {
     private Set<String> getActualTables(final String logicTable) {
         Set<String> result = new HashSet<>();
         for (TableUnit each : tableUnits) {
-            if (each.getLogicTable().equals(logicTable)) {
-                result.add(each.getActualTable());
+            if (each.getLogicTableName().equals(logicTable)) {
+                result.add(each.getActualTableName());
             }
         }
         return result;
@@ -83,10 +84,16 @@ public class SingleRoutingDataSource {
     
     Optional<TableUnit> findTableUnits(final String actualTable) {
         for (TableUnit each : tableUnits) {
-            if (each.getActualTable().equals(actualTable)) {
+            if (each.getActualTableName().equals(actualTable)) {
                 return Optional.of(each);
             }
         }
         return Optional.absent();
+    }
+    
+    void bind(final BindingTableRule bindingTableRule, final String bindingLogicTable) {
+        for (TableUnit each : getTableUnits()) {
+            each.getBindingTableUnits().add(new TableUnit(bindingLogicTable, bindingTableRule.getBindingActualTable(getDataSource(), bindingLogicTable, each.getActualTableName())));
+        }
     }
 }
