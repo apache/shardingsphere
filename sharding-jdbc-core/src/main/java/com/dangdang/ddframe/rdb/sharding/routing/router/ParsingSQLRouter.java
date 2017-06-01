@@ -28,17 +28,18 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianRoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianTableReference;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.MixedTablesRouter;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleTableRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.ComplexRoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -93,8 +94,8 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         
         // TODO refactor
-        if (routingResult instanceof SingleRoutingResult) {
-            for (SingleRoutingDataSource each : ((SingleRoutingResult) routingResult).getRoutingDataSources()) {
+        if (routingResult instanceof SimpleRoutingResult) {
+            for (SimpleRoutingDataSource each : ((SimpleRoutingResult) routingResult).getRoutingDataSources()) {
                 for (TableUnit each1 : each.getTableUnits()) {
                     sqlBuilder.recordNewToken(each1.getLogicTableName(), each1.getActualTableName());
                     for (TableUnit e : each1.getBindingTableUnits()) {
@@ -105,8 +106,8 @@ public final class ParsingSQLRouter implements SQLRouter {
                 }
             }
         }
-        if (routingResult instanceof CartesianResult) {
-            for (CartesianDataSource each : ((CartesianResult) routingResult).getRoutingDataSources()) {
+        if (routingResult instanceof CartesianRoutingResult) {
+            for (CartesianDataSource each : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
                 for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
                     for (TableUnit each2 : each1.getRoutingTableFactors()) {
                         sqlBuilder.recordNewToken(each2.getLogicTableName(), each2.getActualTableName());
@@ -128,11 +129,14 @@ public final class ParsingSQLRouter implements SQLRouter {
     
     private RoutingResult route(final List<Object> parameters, final SQLStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        RoutingEngine routingEngine;
         if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
-            return new SingleTableRouter(shardingRule, parameters, tableNames.iterator().next(), sqlStatement).route();
+            routingEngine = new SimpleRoutingEngine(shardingRule, parameters, tableNames.iterator().next(), sqlStatement);
+        } else {
+            // TODO 可配置是否执行笛卡尔积
+            routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement);
         }
-        // TODO 可配置是否执行笛卡尔积
-        return new MixedTablesRouter(shardingRule, parameters, tableNames, sqlStatement).route();
+        return routingEngine.route();
     }
     
     private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {

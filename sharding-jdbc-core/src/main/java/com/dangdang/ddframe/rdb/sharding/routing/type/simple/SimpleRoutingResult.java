@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.single;
+package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -35,24 +35,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 单表路由结果.
+ * 简单路由结果.
  * 
  * @author gaohongtao
  */
 @ToString
-public class SingleRoutingResult implements RoutingResult {
+public class SimpleRoutingResult implements RoutingResult {
     
     @Getter
-    private final List<SingleRoutingDataSource> routingDataSources = new ArrayList<>();
+    private final List<SimpleRoutingDataSource> routingDataSources = new ArrayList<>();
     
     void put(final String dataSourceName, final TableUnit routingTableFactor) {
-        for (SingleRoutingDataSource each : routingDataSources) {
+        for (SimpleRoutingDataSource each : routingDataSources) {
             if (each.getDataSource().equalsIgnoreCase(dataSourceName)) {
                 each.getTableUnits().add(routingTableFactor);
                 return;
             }
         }
-        routingDataSources.add(new SingleRoutingDataSource(dataSourceName, routingTableFactor));
+        routingDataSources.add(new SimpleRoutingDataSource(dataSourceName, routingTableFactor));
     }
     
     /**
@@ -63,7 +63,7 @@ public class SingleRoutingResult implements RoutingResult {
      */
     public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> dataSources) {
         Map<String, Set<String>> result = new HashMap<>();
-        for (SingleRoutingDataSource each : routingDataSources) {
+        for (SimpleRoutingDataSource each : routingDataSources) {
             if (!dataSources.contains(each.getDataSource())) {
                 continue;
             }
@@ -86,10 +86,10 @@ public class SingleRoutingResult implements RoutingResult {
      * @return 数据源名称集合
      */
     public Collection<String> getDataSources() {
-        return Lists.transform(routingDataSources, new Function<SingleRoutingDataSource, String>() {
+        return Lists.transform(routingDataSources, new Function<SimpleRoutingDataSource, String>() {
             
             @Override
-            public String apply(final SingleRoutingDataSource input) {
+            public String apply(final SimpleRoutingDataSource input) {
                 return input.getDataSource();
             }
         });
@@ -106,7 +106,7 @@ public class SingleRoutingResult implements RoutingResult {
      * @return 真实表集合组
      */
     public List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
-        Optional<SingleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
+        Optional<SimpleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
         if (!routingDataSource.isPresent()) {
             return Collections.emptyList();
         }
@@ -121,15 +121,15 @@ public class SingleRoutingResult implements RoutingResult {
      * @return 查找结果
      */
     public Optional<TableUnit> findRoutingTableFactor(final String dataSource, final String actualTable) {
-        Optional<SingleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
+        Optional<SimpleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
         if (!routingDataSource.isPresent()) {
             return Optional.absent();
         }
         return routingDataSource.get().findTableUnits(actualTable);
     }
     
-    private Optional<SingleRoutingDataSource> findRoutingDataSource(final String dataSource) {
-        for (SingleRoutingDataSource each : routingDataSources) {
+    private Optional<SimpleRoutingDataSource> findRoutingDataSource(final String dataSource) {
+        for (SimpleRoutingDataSource each : routingDataSources) {
             if (each.getDataSource().equals(dataSource)) {
                 return Optional.of(each);
             }
@@ -143,7 +143,7 @@ public class SingleRoutingResult implements RoutingResult {
     }
     
     void bind(final BindingTableRule bindingTableRule, final String bindingLogicTable) {
-        for (SingleRoutingDataSource each : getRoutingDataSources()) {
+        for (SimpleRoutingDataSource each : getRoutingDataSources()) {
             each.bind(bindingTableRule, bindingLogicTable);
         }
     }

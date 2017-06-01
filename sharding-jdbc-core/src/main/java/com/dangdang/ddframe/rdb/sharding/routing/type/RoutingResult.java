@@ -15,27 +15,19 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.database;
-
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+package com.dangdang.ddframe.rdb.sharding.routing.type;
 
 /**
- * 库路由结果.
+ *  路由结果接口.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseRoutingResult implements RoutingResult {
+public interface RoutingResult {
     
-    private final Collection<String> routedDatabaseNames;
-    
-    @Override
-    public boolean isSingleRouting() {
-        return true;
-    }
+    /**
+     * 判断是否为单库表路由.
+     *
+     * @return 是否为单库表路由
+     */
+    boolean isSingleRouting();
 }

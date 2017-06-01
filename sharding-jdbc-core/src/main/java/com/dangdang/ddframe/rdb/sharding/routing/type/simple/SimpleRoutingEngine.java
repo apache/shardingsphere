@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.single;
+package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -40,14 +41,13 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 单逻辑表的库表路由.
+ * 简单路由引擎.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class SingleTableRouter {
+public final class SimpleRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
@@ -57,13 +57,9 @@ public final class SingleTableRouter {
     
     private final SQLStatement sqlStatement;
     
-    /**
-     * 路由.
-     *
-     * @return 路由结果
-     */
-    public SingleRoutingResult route() {
-        SingleRoutingResult result = new SingleTableRouter(shardingRule, parameters, logicTableName, sqlStatement).route0();
+    @Override
+    public SimpleRoutingResult route() {
+        SimpleRoutingResult result = new SimpleRoutingEngine(shardingRule, parameters, logicTableName, sqlStatement).route0();
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
         if (!bindingTableRule.isPresent()) {
             return result;
@@ -77,7 +73,7 @@ public final class SingleTableRouter {
         return result;
     }
     
-    private SingleRoutingResult route0() {
+    private SimpleRoutingResult route0() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> routedDataSources = routeDataSources(tableRule);
         Collection<String> routedTables = routeTables(tableRule, routedDataSources);
@@ -148,8 +144,8 @@ public final class SingleTableRouter {
         log.debug("After {} sharding {} result: {}", type, logicTable, shardingResults);
     }
     
-    private SingleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
-        SingleRoutingResult result = new SingleRoutingResult();
+    private SimpleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
+        SimpleRoutingResult result = new SimpleRoutingResult();
         for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
             result.put(each.getDataSourceName(), new TableUnit(logicTableName, each.getTableName()));
         }

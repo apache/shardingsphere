@@ -22,9 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleTableRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -44,7 +45,7 @@ import java.util.TreeSet;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MixedTablesRouter {
+public final class ComplexRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
     
@@ -54,20 +55,15 @@ public final class MixedTablesRouter {
     
     private final SQLStatement sqlStatement;
     
-    /**
-     * 路由.
-     * 
-     * @return 路由结果
-     */
-    // TODO 支持多bindingTable rule
+    @Override
     public RoutingResult route() {
-        Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
+        Collection<SimpleRoutingResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.tryFindTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    result.add(new SingleTableRouter(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement).route());
+                    result.add(new SimpleRoutingEngine(shardingRule, parameters, tableRule.get().getLogicTable(), sqlStatement).route());
                 }
                 Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each);
                 if (bindingTableRule.isPresent()) {
@@ -81,22 +77,6 @@ public final class MixedTablesRouter {
                 }
             }
         }
-        
-        
-        
-//        Collection<String> bindingTables = shardingRule.filterAllBindingTables(logicTables);
-//        Collection<String> remainingTables = new ArrayList<>(logicTables);
-//        Collection<SingleRoutingResult> result = new ArrayList<>(logicTables.size());
-//        if (bindingTables.size() > 1) {
-//            result.add(new SingleTableRouter(shardingRule, parameters, bindingTables, sqlStatement).route());
-//            remainingTables.removeAll(bindingTables);
-//        }
-//        for (String each : remainingTables) {
-//            SingleRoutingResult routingResult = new SingleTableRouter(shardingRule, parameters, each, sqlStatement).route();
-//            if (null != routingResult) {
-//                result.add(routingResult);
-//            }
-//        }
         log.trace("mixed tables sharding result: {}", result);
         if (result.isEmpty()) {
             throw new ShardingJdbcException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
@@ -104,6 +84,6 @@ public final class MixedTablesRouter {
         if (1 == result.size()) {
             return result.iterator().next();
         }
-        return new CartesianTablesRouter(result).route();
+        return new CartesianRoutingEngine(result).route();
     }
 }

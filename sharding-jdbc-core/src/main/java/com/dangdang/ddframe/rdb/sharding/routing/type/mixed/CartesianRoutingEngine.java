@@ -17,8 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingResult;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -42,12 +43,13 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @Slf4j
-final class CartesianTablesRouter {
+public final class CartesianRoutingEngine implements RoutingEngine {
     
-    private final Collection<SingleRoutingResult> routingResults;
+    private final Collection<SimpleRoutingResult> routingResults;
     
-    CartesianResult route() {
-        CartesianResult result = new CartesianResult();
+    @Override
+    public CartesianRoutingResult route() {
+        CartesianRoutingResult result = new CartesianRoutingResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
             List<Set<TableUnit>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
@@ -60,7 +62,7 @@ final class CartesianTablesRouter {
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
         Collection<String> intersectionDataSources = getIntersectionDataSources();
         Map<String, Set<String>> result = new HashMap<>(routingResults.size());
-        for (SingleRoutingResult each : routingResults) {
+        for (SimpleRoutingResult each : routingResults) {
             for (Entry<String, Set<String>> entry : each.getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
                 if (result.containsKey(entry.getKey())) {
                     result.get(entry.getKey()).addAll(entry.getValue());
@@ -74,7 +76,7 @@ final class CartesianTablesRouter {
     
     private Collection<String> getIntersectionDataSources() {
         Collection<String> result = new HashSet<>();
-        for (SingleRoutingResult each : routingResults) {
+        for (SimpleRoutingResult each : routingResults) {
             if (result.isEmpty()) {
                 result.addAll(each.getDataSources());
             }
@@ -85,7 +87,7 @@ final class CartesianTablesRouter {
     
     private List<Set<String>> getActualTableGroups(final String dataSource, final Set<String> logicTables) {
         List<Set<String>> result = new ArrayList<>(logicTables.size());
-        for (SingleRoutingResult each : routingResults) {
+        for (SimpleRoutingResult each : routingResults) {
             result.addAll(each.getActualTableGroups(dataSource, logicTables));
         }
         return result;
@@ -106,7 +108,7 @@ final class CartesianTablesRouter {
     }
     
     private TableUnit findRoutingTableFactor(final String dataSource, final String actualTable) {
-        for (SingleRoutingResult each : routingResults) {
+        for (SimpleRoutingResult each : routingResults) {
             Optional<TableUnit> result = each.findRoutingTableFactor(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();

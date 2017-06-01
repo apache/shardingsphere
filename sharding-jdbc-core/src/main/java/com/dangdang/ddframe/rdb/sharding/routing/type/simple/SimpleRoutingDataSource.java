@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.single;
+package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -32,19 +32,19 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 单表路由数据源.
+ * 简单路由数据源.
  * 
  * @author zhangliang
  */
 @Getter
 @ToString
-public class SingleRoutingDataSource {
+public class SimpleRoutingDataSource {
     
     private final String dataSource;
     
     private final List<TableUnit> tableUnits = new ArrayList<>();
     
-    public SingleRoutingDataSource(final String dataSource, final TableUnit... routingTableFactor) {
+    public SimpleRoutingDataSource(final String dataSource, final TableUnit... routingTableFactor) {
         this.dataSource = dataSource;
         tableUnits.addAll(Arrays.asList(routingTableFactor));
     }

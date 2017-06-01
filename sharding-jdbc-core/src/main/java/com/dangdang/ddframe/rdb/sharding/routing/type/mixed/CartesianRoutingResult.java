@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
-import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * @author zhangliang
  */
 @ToString
-public final class CartesianResult implements RoutingResult {
+public final class CartesianRoutingResult implements RoutingResult {
     
     @Getter
     private final List<CartesianDataSource> routingDataSources = new ArrayList<>();

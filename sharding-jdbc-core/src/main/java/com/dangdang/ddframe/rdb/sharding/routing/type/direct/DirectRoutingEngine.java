@@ -15,14 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.database;
+package com.dangdang.ddframe.rdb.sharding.routing.type.direct;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * 库路由.
+ * 直接路由.
  * 
  * @author gaohongtao
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DatabaseRouter {
+public final class DirectRoutingEngine implements RoutingEngine {
     
     private final DataSourceRule dataSourceRule;
     
@@ -46,18 +47,14 @@ public final class DatabaseRouter {
     
     private final SQLType sqlType;
     
-    /**
-     * 根据线索路由到库.
-     * 
-     * @return 库路由结果
-     */
-    public DatabaseRoutingResult route() {
+    @Override
+    public DirectRoutingResult route() {
         Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
         Collection<String> result = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValue.get()));
         Preconditions.checkState(!result.isEmpty(), "no database route info");
         log.debug("After database sharding only result: {}", result);
-        return new DatabaseRoutingResult(result);
+        return new DirectRoutingResult(result);
     }
 }

@@ -15,27 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
+package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class CartesianResultTest {
+public final class SingleRoutingResultTest {
     
     @Test
     @Ignore
     public void assertToString() {
-        CartesianResult actual = new CartesianResult();
-        CartesianTableReference tableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("logic", "actual")));
-        CartesianDataSource dataSource = new CartesianDataSource("ds", tableReference);
+        SimpleRoutingResult actual = new SimpleRoutingResult();
+        SimpleRoutingDataSource dataSource = new SimpleRoutingDataSource("ds", new TableUnit("logic", "actual"));
         actual.getRoutingDataSources().add(dataSource);
-        assertThat(actual.toString(), is("CartesianResult(routingDataSources=[CartesianDataSource(dataSource=ds, "
-                + "routingTableReferences=[CartesianTableReference(routingTableFactors=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])])"));
+        assertThat(actual.toString(), is("SingleRoutingResult(routingDataSources=["
+                + "SingleRoutingDataSource(dataSource=ds, routingTableFactors=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])"));
     }
 }
