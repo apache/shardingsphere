@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -43,10 +44,10 @@ public class SingleRoutingResult implements RoutingResult {
     @Getter
     private final List<SingleRoutingDataSource> routingDataSources = new ArrayList<>();
     
-    void put(final String dataSourceName, final SingleRoutingTableFactor routingTableFactor) {
+    void put(final String dataSourceName, final TableUnit routingTableFactor) {
         for (SingleRoutingDataSource each : routingDataSources) {
             if (each.getDataSource().equalsIgnoreCase(dataSourceName)) {
-                each.getRoutingTableFactors().add(routingTableFactor);
+                each.getTableUnits().add(routingTableFactor);
                 return;
             }
         }
@@ -118,12 +119,12 @@ public class SingleRoutingResult implements RoutingResult {
      * @param actualTable 真实表名称
      * @return 查找结果
      */
-    public Optional<SingleRoutingTableFactor> findRoutingTableFactor(final String dataSource, final String actualTable) {
+    public Optional<TableUnit> findRoutingTableFactor(final String dataSource, final String actualTable) {
         Optional<SingleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
         if (!routingDataSource.isPresent()) {
             return Optional.absent();
         }
-        return routingDataSource.get().findRoutingTableFactor(actualTable);
+        return routingDataSource.get().findTableUnits(actualTable);
     }
     
     private Optional<SingleRoutingDataSource> findRoutingDataSource(final String dataSource) {
@@ -137,6 +138,6 @@ public class SingleRoutingResult implements RoutingResult {
     
     @Override
     public boolean isSingleRouting() {
-        return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableFactors().size();
+        return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getTableUnits().size();
     }
 }

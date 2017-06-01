@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -35,13 +34,9 @@ import java.util.List;
 @Getter
 public final class CartesianTableReference {
     
-    private final List<SingleRoutingTableFactor> routingTableFactors;
+    private final List<TableUnit> routingTableFactors;
     
-    CartesianTableReference(final List<SingleRoutingTableFactor> routingTableFactors) {
+    CartesianTableReference(final List<TableUnit> routingTableFactors) {
         this.routingTableFactors = new ArrayList<>(routingTableFactors);
-    }
-    
-    SQLBuilder buildSQL(final SQLBuilder builder) {
-        return builder;
     }
 }

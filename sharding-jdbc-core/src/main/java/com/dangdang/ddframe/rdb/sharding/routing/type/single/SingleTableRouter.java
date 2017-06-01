@@ -28,6 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -134,7 +135,7 @@ public final class SingleTableRouter {
     private SingleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
         SingleRoutingResult result = new SingleRoutingResult();
         for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
-            result.put(each.getDataSourceName(), new SingleRoutingTableFactor(logicTableName, each.getTableName()));
+            result.put(each.getDataSourceName(), new TableUnit(logicTableName, each.getTableName()));
         }
         return result;
     }

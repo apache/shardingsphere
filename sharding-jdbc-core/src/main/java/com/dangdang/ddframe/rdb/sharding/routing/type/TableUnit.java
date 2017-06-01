@@ -15,27 +15,28 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.binding;
+package com.dangdang.ddframe.rdb.sharding.routing.type;
 
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Binding表路由表单元.
+ * 路由表单元.
  * 
  * @author zhangliang
  */
-@ToString(callSuper = true)
-public final class BindingRoutingTableFactor extends SingleRoutingTableFactor {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class TableUnit {
     
-    @Getter
-    private final Collection<BindingRoutingTableFactor> bindingRoutingTableFactors = new ArrayList<>();
+    private final String logicTable;
     
-    BindingRoutingTableFactor(final String logicTable, final String actualTable) {
-        super(logicTable, actualTable);
-    }
+    private final String actualTable;
+    
+    private final Collection<TableUnit> bindingTableUnits = new LinkedList<>();
 }

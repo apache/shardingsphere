@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -27,7 +26,6 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,27 +41,19 @@ public class SingleRoutingDataSource {
     
     private final String dataSource;
     
-    private final List<SingleRoutingTableFactor> routingTableFactors = new ArrayList<>();
+    private final List<TableUnit> tableUnits = new ArrayList<>();
     
-    public SingleRoutingDataSource(final String dataSource, final SingleRoutingTableFactor... routingTableFactor) {
+    public SingleRoutingDataSource(final String dataSource, final TableUnit... routingTableFactor) {
         this.dataSource = dataSource;
-        routingTableFactors.addAll(Arrays.asList(routingTableFactor));
-    }
-    
-    Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
-        Collection<SQLExecutionUnit> result = new ArrayList<>();
-        for (SingleRoutingTableFactor each : routingTableFactors) {
-            result.add(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL()));
-        }
-        return result;
+        tableUnits.addAll(Arrays.asList(routingTableFactor));
     }
     
     Set<String> getLogicTables() {
-        Set<String> result = new HashSet<>(routingTableFactors.size());
-        result.addAll(Lists.transform(routingTableFactors, new Function<SingleRoutingTableFactor, String>() {
+        Set<String> result = new HashSet<>(tableUnits.size());
+        result.addAll(Lists.transform(tableUnits, new Function<TableUnit, String>() {
             
             @Override
-            public String apply(final SingleRoutingTableFactor input) {
+            public String apply(final TableUnit input) {
                 return input.getLogicTable();
             }
         }));
@@ -83,7 +73,7 @@ public class SingleRoutingDataSource {
     
     private Set<String> getActualTables(final String logicTable) {
         Set<String> result = new HashSet<>();
-        for (SingleRoutingTableFactor each : routingTableFactors) {
+        for (TableUnit each : tableUnits) {
             if (each.getLogicTable().equals(logicTable)) {
                 result.add(each.getActualTable());
             }
@@ -91,8 +81,8 @@ public class SingleRoutingDataSource {
         return result;
     }
     
-    Optional<SingleRoutingTableFactor> findRoutingTableFactor(final String actualTable) {
-        for (SingleRoutingTableFactor each : routingTableFactors) {
+    Optional<TableUnit> findTableUnits(final String actualTable) {
+        for (TableUnit each : tableUnits) {
             if (each.getActualTable().equals(actualTable)) {
                 return Optional.of(each);
             }

@@ -17,6 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,16 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 笛卡尔积的库表路由.
@@ -51,7 +50,7 @@ final class CartesianTablesRouter {
         CartesianResult result = new CartesianResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
-            List<Set<SingleRoutingTableFactor>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
+            List<Set<TableUnit>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
             result.merge(entry.getKey(), getCartesianTableReferences(Sets.cartesianProduct(routingTableFactorGroups)));
         }
         log.trace("cartesian tables sharding result: {}", result);
@@ -92,13 +91,13 @@ final class CartesianTablesRouter {
         return result;
     }
     
-    private List<Set<SingleRoutingTableFactor>> toRoutingTableFactorGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
-        List<Set<SingleRoutingTableFactor>> result = new ArrayList<>(actualTableGroups.size());
+    private List<Set<TableUnit>> toRoutingTableFactorGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
+        List<Set<TableUnit>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
-            result.add(new HashSet<>(Lists.transform(new ArrayList<>(each), new Function<String, SingleRoutingTableFactor>() {
+            result.add(new HashSet<>(Lists.transform(new ArrayList<>(each), new Function<String, TableUnit>() {
     
                 @Override
-                public SingleRoutingTableFactor apply(final String input) {
+                public TableUnit apply(final String input) {
                     return findRoutingTableFactor(dataSource, input);
                 }
             })));
@@ -106,9 +105,9 @@ final class CartesianTablesRouter {
         return result;
     }
     
-    private SingleRoutingTableFactor findRoutingTableFactor(final String dataSource, final String actualTable) {
+    private TableUnit findRoutingTableFactor(final String dataSource, final String actualTable) {
         for (SingleRoutingResult each : routingResults) {
-            Optional<SingleRoutingTableFactor> result = each.findRoutingTableFactor(dataSource, actualTable);
+            Optional<TableUnit> result = each.findRoutingTableFactor(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
@@ -116,9 +115,9 @@ final class CartesianTablesRouter {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private List<CartesianTableReference> getCartesianTableReferences(final Set<List<SingleRoutingTableFactor>> cartesianRoutingTableFactorGroups) {
+    private List<CartesianTableReference> getCartesianTableReferences(final Set<List<TableUnit>> cartesianRoutingTableFactorGroups) {
         List<CartesianTableReference> result = new ArrayList<>(cartesianRoutingTableFactorGroups.size());
-        for (List<SingleRoutingTableFactor> each : cartesianRoutingTableFactorGroups) {
+        for (List<TableUnit> each : cartesianRoutingTableFactorGroups) {
             result.add(new CartesianTableReference(each));
         }
         return result;

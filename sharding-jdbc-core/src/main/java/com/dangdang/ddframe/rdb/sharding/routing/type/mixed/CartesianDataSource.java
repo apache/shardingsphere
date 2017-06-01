@@ -17,13 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,13 +40,5 @@ public final class CartesianDataSource {
     CartesianDataSource(final String dataSource, final CartesianTableReference routingTableReference) {
         this.dataSource = dataSource;
         routingTableReferences = new ArrayList<>(Collections.singletonList(routingTableReference));
-    }
-    
-    Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
-        Collection<SQLExecutionUnit> result = new ArrayList<>();
-        for (CartesianTableReference each : routingTableReferences) {
-            result.add(new SQLExecutionUnit(dataSource, each.buildSQL(sqlBuilder).toSQL()));
-        }
-        return result;
     }
 }
