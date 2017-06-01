@@ -31,14 +31,25 @@ import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingRoutingDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingRoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingRoutingTableFactor;
 import com.dangdang.ddframe.rdb.sharding.routing.type.binding.BindingTablesRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianTableReference;
 import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.MixedTablesRouter;
+import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleTableRouter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 需要解析的SQL路由器.
@@ -86,7 +97,51 @@ public final class ParsingSQLRouter implements SQLRouter {
             sqlStatement.getLimit().processParameters(parameters, !isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
-        result.getExecutionUnits().addAll(routingResult.getSQLExecutionUnits(sqlBuilder));
+        
+        // TODO refactor
+        Set<SQLExecutionUnit> sqlExecutionUnits = new HashSet<>();
+        if (routingResult instanceof SingleRoutingResult && !(routingResult instanceof BindingRoutingResult)) {
+            for (SingleRoutingDataSource each : ((SingleRoutingResult) routingResult).getRoutingDataSources()) {
+                for (SingleRoutingTableFactor each1 : each.getRoutingTableFactors()) {
+                    sqlBuilder.recordNewToken(each1.getLogicTable(), each1.getActualTable());
+                    sqlBuilder = sqlBuilder.buildSQLWithNewToken();
+                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                }
+            }
+        }
+        if (routingResult instanceof BindingRoutingResult) {
+            for (SingleRoutingDataSource each : ((BindingRoutingResult) routingResult).getRoutingDataSources()) {
+                BindingRoutingDataSource bindingRoutingDataSource = (BindingRoutingDataSource) each;
+                for (SingleRoutingTableFactor each1 : bindingRoutingDataSource.getRoutingTableFactors()) {
+                    BindingRoutingTableFactor bindingRoutingTableFactor = (BindingRoutingTableFactor) each1;
+                    sqlBuilder.recordNewToken(bindingRoutingTableFactor.getLogicTable(), bindingRoutingTableFactor.getActualTable());
+                    for (BindingRoutingTableFactor e : bindingRoutingTableFactor.getBindingRoutingTableFactors()) {
+                        sqlBuilder.recordNewToken(e.getLogicTable(), e.getActualTable());
+                    }
+                    sqlBuilder = sqlBuilder.buildSQLWithNewToken();
+                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                }
+            }
+        }
+        if (routingResult instanceof CartesianResult) {
+            for (CartesianDataSource each : ((CartesianResult) routingResult).getRoutingDataSources()) {
+                for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
+                    for (SingleRoutingTableFactor each2 : each1.getRoutingTableFactors()) {
+                        sqlBuilder.recordNewToken(each2.getLogicTable(), each2.getActualTable());
+                        if (each2 instanceof BindingRoutingTableFactor) {
+                            for (BindingRoutingTableFactor e : ((BindingRoutingTableFactor) each2).getBindingRoutingTableFactors()) {
+                                sqlBuilder.recordNewToken(e.getLogicTable(), e.getActualTable());
+                            }
+                        }
+                    }
+                    sqlBuilder = sqlBuilder.buildSQLWithNewToken();
+                    sqlExecutionUnits.add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+                }
+            }
+        }
+    
+        
+        result.getExecutionUnits().addAll(sqlExecutionUnits);
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);
         return result;

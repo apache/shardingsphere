@@ -34,7 +34,7 @@ import java.util.List;
  * @author zhangliang
  */
 @ToString
-final class CartesianResult implements RoutingResult {
+public final class CartesianResult implements RoutingResult {
     
     @Getter
     private final List<CartesianDataSource> routingDataSources = new ArrayList<>();

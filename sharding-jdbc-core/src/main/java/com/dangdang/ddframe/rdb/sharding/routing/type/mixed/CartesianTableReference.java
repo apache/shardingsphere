@@ -33,7 +33,7 @@ import java.util.List;
  */
 @ToString
 @Getter
-final class CartesianTableReference {
+public final class CartesianTableReference {
     
     private final List<SingleRoutingTableFactor> routingTableFactors;
     
@@ -42,9 +42,6 @@ final class CartesianTableReference {
     }
     
     SQLBuilder buildSQL(final SQLBuilder builder) {
-        for (SingleRoutingTableFactor each : routingTableFactors) {
-            each.replaceSQL(builder);
-        }
-        return builder.buildSQLWithNewToken();
+        return builder;
     }
 }

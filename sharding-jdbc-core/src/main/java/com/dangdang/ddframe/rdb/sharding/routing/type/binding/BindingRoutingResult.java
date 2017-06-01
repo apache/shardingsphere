@@ -31,7 +31,7 @@ import lombok.ToString;
  * @author zhangliang
  */
 @ToString(callSuper = true)
-final class BindingRoutingResult extends SingleRoutingResult {
+public final class BindingRoutingResult extends SingleRoutingResult {
     
     BindingRoutingResult(final SingleRoutingResult singleRoutingResult) {
         getRoutingDataSources().addAll(Lists.transform(singleRoutingResult.getRoutingDataSources(), new Function<SingleRoutingDataSource, BindingRoutingDataSource>() {

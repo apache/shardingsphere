@@ -40,6 +40,13 @@ public class SQLExecutionUnit {
     
     private final SQLBuilder sqlBuilder;
     
+    public SQLExecutionUnit(final String dataSource, final String sql) {
+        this.dataSource = dataSource;
+        this.sql = sql;
+        sqlBuilder = new SQLBuilder();
+        sqlBuilder.append(sql);
+    }
+    
     /**
      * 获取执行SQL.
      * 

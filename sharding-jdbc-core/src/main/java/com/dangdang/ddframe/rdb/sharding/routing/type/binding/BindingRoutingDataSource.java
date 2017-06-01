@@ -33,7 +33,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString(callSuper = true)
-final class BindingRoutingDataSource extends SingleRoutingDataSource {
+public final class BindingRoutingDataSource extends SingleRoutingDataSource {
     
     BindingRoutingDataSource(final SingleRoutingDataSource routingDataSource) {
         super(routingDataSource.getDataSource());

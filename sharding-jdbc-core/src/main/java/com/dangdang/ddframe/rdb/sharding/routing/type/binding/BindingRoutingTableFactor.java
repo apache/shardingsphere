@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.binding;
 
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -32,21 +30,12 @@ import java.util.Collection;
  * @author zhangliang
  */
 @ToString(callSuper = true)
-final class BindingRoutingTableFactor extends SingleRoutingTableFactor {
+public final class BindingRoutingTableFactor extends SingleRoutingTableFactor {
     
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Collection<BindingRoutingTableFactor> bindingRoutingTableFactors = new ArrayList<>();
     
     BindingRoutingTableFactor(final String logicTable, final String actualTable) {
         super(logicTable, actualTable);
-    }
-    
-    @Override
-    public BindingRoutingTableFactor replaceSQL(final SQLBuilder builder) {
-        super.replaceSQL(builder);
-        for (BindingRoutingTableFactor each : bindingRoutingTableFactors) {
-            each.replaceSQL(builder);
-        }
-        return this;
     }
 }

@@ -34,7 +34,7 @@ import java.util.List;
  */
 @Getter
 @ToString
-final class CartesianDataSource {
+public final class CartesianDataSource {
     
     private final String dataSource;
     
