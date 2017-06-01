@@ -52,8 +52,8 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         CartesianRoutingResult result = new CartesianRoutingResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
-            List<Set<TableUnit>> routingTableFactorGroups = toRoutingTableFactorGroups(entry.getKey(), actualTableGroups);
-            result.merge(entry.getKey(), getCartesianTableReferences(Sets.cartesianProduct(routingTableFactorGroups)));
+            List<Set<TableUnit>> tableUnitGroups = toTableUnitGroups(entry.getKey(), actualTableGroups);
+            result.merge(entry.getKey(), getCartesianTableReferences(Sets.cartesianProduct(tableUnitGroups)));
         }
         log.trace("cartesian tables sharding result: {}", result);
         return result;
@@ -93,23 +93,23 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private List<Set<TableUnit>> toRoutingTableFactorGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
+    private List<Set<TableUnit>> toTableUnitGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
         List<Set<TableUnit>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
             result.add(new HashSet<>(Lists.transform(new ArrayList<>(each), new Function<String, TableUnit>() {
     
                 @Override
                 public TableUnit apply(final String input) {
-                    return findRoutingTableFactor(dataSource, input);
+                    return findTableUnit(dataSource, input);
                 }
             })));
         }
         return result;
     }
     
-    private TableUnit findRoutingTableFactor(final String dataSource, final String actualTable) {
+    private TableUnit findTableUnit(final String dataSource, final String actualTable) {
         for (SimpleRoutingResult each : routingResults) {
-            Optional<TableUnit> result = each.findRoutingTableFactor(dataSource, actualTable);
+            Optional<TableUnit> result = each.findTableUnit(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
@@ -117,9 +117,9 @@ public final class CartesianRoutingEngine implements RoutingEngine {
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private List<CartesianTableReference> getCartesianTableReferences(final Set<List<TableUnit>> cartesianRoutingTableFactorGroups) {
-        List<CartesianTableReference> result = new ArrayList<>(cartesianRoutingTableFactorGroups.size());
-        for (List<TableUnit> each : cartesianRoutingTableFactorGroups) {
+    private List<CartesianTableReference> getCartesianTableReferences(final Set<List<TableUnit>> cartesianTableUnitGroups) {
+        List<CartesianTableReference> result = new ArrayList<>(cartesianTableUnitGroups.size());
+        for (List<TableUnit> each : cartesianTableUnitGroups) {
             result.add(new CartesianTableReference(each));
         }
         return result;

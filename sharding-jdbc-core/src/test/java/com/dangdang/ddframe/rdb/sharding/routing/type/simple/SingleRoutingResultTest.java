@@ -33,6 +33,6 @@ public final class SingleRoutingResultTest {
         SimpleRoutingDataSource dataSource = new SimpleRoutingDataSource("ds", new TableUnit("logic", "actual"));
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("SingleRoutingResult(routingDataSources=["
-                + "SingleRoutingDataSource(dataSource=ds, routingTableFactors=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])"));
+                + "SingleRoutingDataSource(dataSource=ds, tableUnits=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])"));
     }
 }

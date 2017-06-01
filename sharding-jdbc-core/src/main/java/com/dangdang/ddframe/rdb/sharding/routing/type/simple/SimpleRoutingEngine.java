@@ -59,21 +59,21 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     
     @Override
     public SimpleRoutingResult route() {
-        SimpleRoutingResult result = new SimpleRoutingEngine(shardingRule, parameters, logicTableName, sqlStatement).route0();
+        SimpleRoutingResult result = new SimpleRoutingEngine(shardingRule, parameters, logicTableName, sqlStatement).routeInternal();
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
         if (!bindingTableRule.isPresent()) {
             return result;
         }
         for (final String each : sqlStatement.getTables().getTableNames()) {
             if (!each.equalsIgnoreCase(logicTableName) && bindingTableRule.get().hasLogicTable(each)) {
-                result.bind(bindingTableRule.get(), each);
+                result.addBindingTableUnit(bindingTableRule.get(), each);
             }
         }
         log.trace("binding table sharding result: {}", result);
         return result;
     }
     
-    private SimpleRoutingResult route0() {
+    private SimpleRoutingResult routeInternal() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> routedDataSources = routeDataSources(tableRule);
         Collection<String> routedTables = routeTables(tableRule, routedDataSources);

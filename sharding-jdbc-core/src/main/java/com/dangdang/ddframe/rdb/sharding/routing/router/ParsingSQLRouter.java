@@ -109,7 +109,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (routingResult instanceof CartesianRoutingResult) {
             for (CartesianDataSource each : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
                 for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
-                    for (TableUnit each2 : each1.getRoutingTableFactors()) {
+                    for (TableUnit each2 : each1.getTableUnits()) {
                         sqlBuilder.recordNewToken(each2.getLogicTableName(), each2.getActualTableName());
                         for (TableUnit e : each2.getBindingTableUnits()) {
                             sqlBuilder.recordNewToken(e.getLogicTableName(), e.getActualTableName());

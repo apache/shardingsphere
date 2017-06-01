@@ -19,24 +19,20 @@ package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
 
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 笛卡尔积表路由组.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
-@ToString
+@RequiredArgsConstructor
 @Getter
+@ToString
 public final class CartesianTableReference {
     
-    private final List<TableUnit> routingTableFactors;
-    
-    CartesianTableReference(final List<TableUnit> routingTableFactors) {
-        this.routingTableFactors = new ArrayList<>(routingTableFactors);
-    }
+    private final List<TableUnit> tableUnits;
 }

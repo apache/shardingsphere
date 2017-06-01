@@ -44,9 +44,15 @@ public class SimpleRoutingDataSource {
     
     private final List<TableUnit> tableUnits = new ArrayList<>();
     
-    public SimpleRoutingDataSource(final String dataSource, final TableUnit... routingTableFactor) {
+    public SimpleRoutingDataSource(final String dataSource, final TableUnit... tableUnits) {
         this.dataSource = dataSource;
-        tableUnits.addAll(Arrays.asList(routingTableFactor));
+        this.tableUnits.addAll(Arrays.asList(tableUnits));
+    }
+    
+    void addBindingTableUnit(final BindingTableRule bindingTableRule, final String bindingLogicTableName) {
+        for (TableUnit each : tableUnits) {
+            each.getBindingTableUnits().add(new TableUnit(bindingLogicTableName, bindingTableRule.getBindingActualTable(dataSource, bindingLogicTableName, each.getActualTableName())));
+        }
     }
     
     Set<String> getLogicTableNames() {
@@ -89,11 +95,5 @@ public class SimpleRoutingDataSource {
             }
         }
         return Optional.absent();
-    }
-    
-    void bind(final BindingTableRule bindingTableRule, final String bindingLogicTable) {
-        for (TableUnit each : getTableUnits()) {
-            each.getBindingTableUnits().add(new TableUnit(bindingLogicTable, bindingTableRule.getBindingActualTable(getDataSource(), bindingLogicTable, each.getActualTableName())));
-        }
     }
 }

@@ -38,6 +38,7 @@ import java.util.Set;
  * 简单路由结果.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
 @ToString
 public class SimpleRoutingResult implements RoutingResult {
@@ -45,14 +46,14 @@ public class SimpleRoutingResult implements RoutingResult {
     @Getter
     private final List<SimpleRoutingDataSource> routingDataSources = new ArrayList<>();
     
-    void put(final String dataSourceName, final TableUnit routingTableFactor) {
+    void put(final String dataSourceName, final TableUnit tableUnit) {
         for (SimpleRoutingDataSource each : routingDataSources) {
             if (each.getDataSource().equalsIgnoreCase(dataSourceName)) {
-                each.getTableUnits().add(routingTableFactor);
+                each.getTableUnits().add(tableUnit);
                 return;
             }
         }
-        routingDataSources.add(new SimpleRoutingDataSource(dataSourceName, routingTableFactor));
+        routingDataSources.add(new SimpleRoutingDataSource(dataSourceName, tableUnit));
     }
     
     /**
@@ -120,7 +121,7 @@ public class SimpleRoutingResult implements RoutingResult {
      * @param actualTable 真实表名称
      * @return 查找结果
      */
-    public Optional<TableUnit> findRoutingTableFactor(final String dataSource, final String actualTable) {
+    public Optional<TableUnit> findTableUnit(final String dataSource, final String actualTable) {
         Optional<SimpleRoutingDataSource> routingDataSource = findRoutingDataSource(dataSource);
         if (!routingDataSource.isPresent()) {
             return Optional.absent();
@@ -142,9 +143,9 @@ public class SimpleRoutingResult implements RoutingResult {
         return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getTableUnits().size();
     }
     
-    void bind(final BindingTableRule bindingTableRule, final String bindingLogicTable) {
-        for (SimpleRoutingDataSource each : getRoutingDataSources()) {
-            each.bind(bindingTableRule, bindingLogicTable);
+    void addBindingTableUnit(final BindingTableRule bindingTableRule, final String bindingLogicTableName) {
+        for (SimpleRoutingDataSource each : routingDataSources) {
+            each.addBindingTableUnit(bindingTableRule, bindingLogicTableName);
         }
     }
 }
