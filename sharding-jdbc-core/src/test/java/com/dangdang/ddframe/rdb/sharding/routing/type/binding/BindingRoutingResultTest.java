@@ -17,22 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.binding;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingDataSource;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.single.SingleRoutingTableFactor;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class BindingRoutingResultTest {
     
     @Test
     public void assertToString() {
         SingleRoutingResult singleRoutingResult = new SingleRoutingResult();
-        SingleRoutingDataSource dataSource = new SingleRoutingDataSource("ds");
-        dataSource.getRoutingTableFactors().add(new SingleRoutingTableFactor("logic", "actual"));
+        SingleRoutingDataSource dataSource = new SingleRoutingDataSource("ds", new SingleRoutingTableFactor("logic", "actual"));
         singleRoutingResult.getRoutingDataSources().add(dataSource);
         BindingRoutingResult actual = new BindingRoutingResult(singleRoutingResult);
         assertThat(actual.toString(), is("BindingRoutingResult(super=SingleRoutingResult(routingDataSources=["

@@ -17,18 +17,17 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.single;
 
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
 
 public final class SingleRoutingResultTest {
     
     @Test
     public void assertToString() {
         SingleRoutingResult actual = new SingleRoutingResult();
-        SingleRoutingDataSource dataSource = new SingleRoutingDataSource("ds");
-        dataSource.getRoutingTableFactors().add(new SingleRoutingTableFactor("logic", "actual"));
+        SingleRoutingDataSource dataSource = new SingleRoutingDataSource("ds", new SingleRoutingTableFactor("logic", "actual"));
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("SingleRoutingResult(routingDataSources=["
                 + "SingleRoutingDataSource(dataSource=ds, routingTableFactors=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])"));

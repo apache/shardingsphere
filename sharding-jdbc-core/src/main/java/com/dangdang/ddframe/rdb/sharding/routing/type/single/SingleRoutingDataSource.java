@@ -23,10 +23,10 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +37,6 @@ import java.util.Set;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public class SingleRoutingDataSource {
@@ -46,9 +45,9 @@ public class SingleRoutingDataSource {
     
     private final List<SingleRoutingTableFactor> routingTableFactors = new ArrayList<>();
     
-    SingleRoutingDataSource(final String dataSource, final SingleRoutingTableFactor routingTableFactor) {
-        this(dataSource);
-        routingTableFactors.add(routingTableFactor);
+    public SingleRoutingDataSource(final String dataSource, final SingleRoutingTableFactor... routingTableFactor) {
+        this.dataSource = dataSource;
+        routingTableFactors.addAll(Arrays.asList(routingTableFactor));
     }
     
     Collection<SQLExecutionUnit> getSQLExecutionUnits(final SQLBuilder sqlBuilder) {
