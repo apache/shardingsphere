@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing;
 
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianRoutingResultTest;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianRoutingResultTest;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SingleRoutingResultTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

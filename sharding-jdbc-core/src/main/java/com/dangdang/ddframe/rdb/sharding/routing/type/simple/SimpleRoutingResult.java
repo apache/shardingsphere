@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Function;
@@ -141,11 +140,5 @@ public class SimpleRoutingResult implements RoutingResult {
     @Override
     public boolean isSingleRouting() {
         return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getTableUnits().size();
-    }
-    
-    void addBindingTableUnit(final BindingTableRule bindingTableRule, final String bindingLogicTableName) {
-        for (SimpleRoutingDataSource each : routingDataSources) {
-            each.addBindingTableUnit(bindingTableRule, bindingLogicTableName);
-        }
     }
 }

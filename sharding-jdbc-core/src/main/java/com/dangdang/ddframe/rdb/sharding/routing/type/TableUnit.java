@@ -21,9 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * 路由表单元.
  * 
@@ -34,9 +31,9 @@ import java.util.LinkedList;
 @ToString
 public final class TableUnit {
     
+    private final String dataSourceName;
+    
     private final String logicTableName;
     
     private final String actualTableName;
-    
-    private final Collection<TableUnit> bindingTableUnits = new LinkedList<>();
 }

@@ -30,7 +30,7 @@ public final class SingleRoutingResultTest {
     @Ignore
     public void assertToString() {
         SimpleRoutingResult actual = new SimpleRoutingResult();
-        SimpleRoutingDataSource dataSource = new SimpleRoutingDataSource("ds", new TableUnit("logic", "actual"));
+        SimpleRoutingDataSource dataSource = new SimpleRoutingDataSource("ds", new TableUnit("ds", "logic", "actual"));
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("SingleRoutingResult(routingDataSources=["
                 + "SingleRoutingDataSource(dataSource=ds, tableUnits=[SingleRoutingTableFactor(logicTable=logic, actualTable=actual)])])"));

@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type.simple;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -59,21 +58,6 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     
     @Override
     public SimpleRoutingResult route() {
-        SimpleRoutingResult result = new SimpleRoutingEngine(shardingRule, parameters, logicTableName, sqlStatement).routeInternal();
-        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
-        if (!bindingTableRule.isPresent()) {
-            return result;
-        }
-        for (final String each : sqlStatement.getTables().getTableNames()) {
-            if (!each.equalsIgnoreCase(logicTableName) && bindingTableRule.get().hasLogicTable(each)) {
-                result.addBindingTableUnit(bindingTableRule.get(), each);
-            }
-        }
-        log.trace("binding table sharding result: {}", result);
-        return result;
-    }
-    
-    private SimpleRoutingResult routeInternal() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> routedDataSources = routeDataSources(tableRule);
         Collection<String> routedTables = routeTables(tableRule, routedDataSources);
@@ -147,7 +131,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     private SimpleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
         SimpleRoutingResult result = new SimpleRoutingResult();
         for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
-            result.put(each.getDataSourceName(), new TableUnit(logicTableName, each.getTableName()));
+            result.put(each.getDataSourceName(), new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
         }
         return result;
     }

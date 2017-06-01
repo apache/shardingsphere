@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
+package com.dangdang.ddframe.rdb.sharding.routing.type.complex;
 
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import org.junit.Ignore;
@@ -32,7 +32,7 @@ public final class CartesianRoutingResultTest {
     @Ignore
     public void assertToString() {
         CartesianRoutingResult actual = new CartesianRoutingResult();
-        CartesianTableReference tableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("logic", "actual")));
+        CartesianTableReference tableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("ds", "logic", "actual")));
         CartesianDataSource dataSource = new CartesianDataSource("ds", tableReference);
         actual.getRoutingDataSources().add(dataSource);
         assertThat(actual.toString(), is("CartesianResult(routingDataSources=[CartesianDataSource(dataSource=ds, "

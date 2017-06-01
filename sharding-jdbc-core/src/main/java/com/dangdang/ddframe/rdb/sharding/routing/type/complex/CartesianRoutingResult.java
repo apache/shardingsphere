@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
+package com.dangdang.ddframe.rdb.sharding.routing.type.complex;
 
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import lombok.Getter;

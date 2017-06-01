@@ -15,24 +15,30 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.mixed;
+package com.dangdang.ddframe.rdb.sharding.routing.type.complex;
 
-import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * 笛卡尔积表路由组.
+ * 笛卡尔积路由数据源.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class CartesianTableReference {
+public final class CartesianDataSource {
     
-    private final List<TableUnit> tableUnits;
+    private final String dataSource;
+    
+    private final List<CartesianTableReference> routingTableReferences;
+    
+    CartesianDataSource(final String dataSource, final CartesianTableReference routingTableReference) {
+        this.dataSource = dataSource;
+        routingTableReferences = new ArrayList<>(Collections.singletonList(routingTableReference));
+    }
 }

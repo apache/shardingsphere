@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
@@ -33,13 +34,14 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianDataSource;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianRoutingResult;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.CartesianTableReference;
-import com.dangdang.ddframe.rdb.sharding.routing.type.mixed.ComplexRoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianDataSource;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianRoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.ComplexRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingDataSource;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingResult;
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -98,8 +100,13 @@ public final class ParsingSQLRouter implements SQLRouter {
             for (SimpleRoutingDataSource each : ((SimpleRoutingResult) routingResult).getRoutingDataSources()) {
                 for (TableUnit each1 : each.getTableUnits()) {
                     sqlBuilder.recordNewToken(each1.getLogicTableName(), each1.getActualTableName());
-                    for (TableUnit e : each1.getBindingTableUnits()) {
-                        sqlBuilder.recordNewToken(e.getLogicTableName(), e.getActualTableName());
+                    Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each1.getLogicTableName());
+                    if (bindingTableRule.isPresent()) {
+                        for (String eachTable : sqlStatement.getTables().getTableNames()) {
+                            if (!eachTable.equalsIgnoreCase(each1.getLogicTableName()) && bindingTableRule.get().hasLogicTable(eachTable)) {
+                                sqlBuilder.recordNewToken(eachTable, bindingTableRule.get().getBindingActualTable(each.getDataSource(), eachTable, each1.getActualTableName()));
+                            }
+                        }
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
                     result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
@@ -111,8 +118,13 @@ public final class ParsingSQLRouter implements SQLRouter {
                 for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
                     for (TableUnit each2 : each1.getTableUnits()) {
                         sqlBuilder.recordNewToken(each2.getLogicTableName(), each2.getActualTableName());
-                        for (TableUnit e : each2.getBindingTableUnits()) {
-                            sqlBuilder.recordNewToken(e.getLogicTableName(), e.getActualTableName());
+                        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each2.getLogicTableName());
+                        if (bindingTableRule.isPresent()) {
+                            for (String eachTable : sqlStatement.getTables().getTableNames()) {
+                                if (!eachTable.equalsIgnoreCase(each2.getLogicTableName()) && bindingTableRule.get().hasLogicTable(eachTable)) {
+                                    sqlBuilder.recordNewToken(eachTable, bindingTableRule.get().getBindingActualTable(each.getDataSource(), eachTable, each2.getActualTableName()));
+                                }
+                            }
                         }
                     }
                     sqlBuilder = sqlBuilder.buildSQLWithNewToken();
