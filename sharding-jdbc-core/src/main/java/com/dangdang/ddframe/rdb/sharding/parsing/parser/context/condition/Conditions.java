@@ -27,9 +27,14 @@ public final class Conditions {
     // TODO 添加condition时进行判断, 比如:如果以存在 等于操作 的condition, 而已存在包含 =符号 的相同column的condition, 则不添加现有的condition, 而且删除原有condition
     public void add(final Condition condition, final ShardingRule shardingRule) {
         // TODO 自关联有问题，表名可考虑使用别名对应
-        if(shardingRule.isShardingColumn(condition.getColumn())) {
+        if (shardingRule.isShardingColumn(condition.getColumn())) {
             conditions.put(condition.getColumn(), condition);
         }
+    }
+    
+    // TODO 引入mockito时去掉该方法
+    public void add(final Condition condition) {
+        conditions.put(condition.getColumn(), condition);
     }
     
     /**

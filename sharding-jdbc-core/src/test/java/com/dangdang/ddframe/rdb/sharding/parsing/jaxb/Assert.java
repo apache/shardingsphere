@@ -45,9 +45,8 @@ public final class Assert {
     @XmlElement(name = "table") 
     private List<Table> tables;
     
-    @XmlElementWrapper(name = "condition-contexts")
-    @XmlElement(name = "condition-context") 
-    private List<ConditionContext> conditionContexts;
+    @XmlElement(name = "conditions") 
+    private Conditions conditions;
     
     @XmlElementWrapper(name = "order-by-columns")
     @XmlElement(name = "order-by-column") 

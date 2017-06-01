@@ -4,9 +4,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <group-by-columns>
             <group-by-column owner="o" name="state" alias="sharding_gen_1" order-by-type="ASC" />
         </group-by-columns>
@@ -16,9 +13,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <group-by-columns>
             <group-by-column owner="o" name="state" order-by-type="ASC" />
         </group-by-columns>
@@ -28,9 +22,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <group-by-columns>
             <group-by-column owner="o" name="state" alias="sharding_gen_1" order-by-type="ASC" />
             <group-by-column owner="o" name="order_id" alias="sharding_gen_2" order-by-type="DESC" />

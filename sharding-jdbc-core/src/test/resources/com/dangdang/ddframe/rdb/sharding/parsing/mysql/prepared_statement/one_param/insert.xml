@@ -4,50 +4,44 @@
         <tables>
             <table name="order" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>0</valueIndices>
-                </condition>
-                <condition column-name="state" table-name="order" operator="EQUAL">
-                    <value value="RUNNING" type="java.lang.String" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>0</valueIndices>
+            </condition>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value value="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
     </assert>
     <assert id="assertInsertWithParameterAndGenerateKeyColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="insert into [Token(order)]('state', order_id) values(?, ?)">
         <tables>
             <table name="order" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="state" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>0</valueIndices>
-                </condition>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>1</valueIndices>
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>0</valueIndices>
+            </condition>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>1</valueIndices>
+            </condition>
+        </conditions>
     </assert>
     <assert id="assertInsertWithParameterAndGenerateKeyColumn" sql="insert into `payment`('state') values(?)" expected-sql="insert into [Token(payment)]('state', order_id, pay_no) values(?, ?, ?)">
         <tables>
             <table name="payment" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="state" table-name="payment" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>0</valueIndices>
-                </condition>
-                <condition column-name="order_id" table-name="payment" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>1</valueIndices>
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="state" table-name="payment" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>0</valueIndices>
+            </condition>
+            <condition column-name="order_id" table-name="payment" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>1</valueIndices>
+            </condition>
+        </conditions>
     </assert>
 </asserts>

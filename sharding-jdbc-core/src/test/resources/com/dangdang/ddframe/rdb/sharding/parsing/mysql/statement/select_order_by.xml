@@ -4,9 +4,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-by-type="ASC" />
             <order-by-column index="2" order-by-type="DESC" />
@@ -18,13 +15,11 @@
             <table name="order" alias="o" />
             <table name="order_item" alias="i" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="state" table-name="order" operator="EQUAL">
-                    <value value="RUNNING" type="java.lang.String" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value value="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" order-by-type="DESC" />
             <order-by-column index="2" order-by-type="ASC" />
@@ -35,10 +30,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-            </condition-context>
-        </condition-contexts>
         <order-by-columns>
             <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
         </order-by-columns>

@@ -4,9 +4,6 @@
         <tables>
             <table name="order"/>
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <aggregation-columns>
             <aggregation-column expression="COUNT(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
             <aggregation-column expression="MAX(MIN(date))" aggregation-type="MAX" index="3" />
@@ -18,9 +15,6 @@
         <tables>
             <table name="order"/>
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <aggregation-columns>
             <aggregation-column expression="AVG(MAX(date))" aggregation-type="AVG" alias="date" index="1">
                 <derived-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1"/>
@@ -41,9 +35,6 @@
         <tables>
             <table name="order"/>
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <group-by-columns>
             <group-by-column name="order_id" order-by-type="ASC" />
         </group-by-columns>
@@ -56,9 +47,6 @@
         <tables>
             <table name="order"/>
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
     </assert>
     
     <!-- // TODO 有*时，聚合的偏移量不准确 -->
@@ -66,9 +54,6 @@
         <tables>
             <table name="order"/>
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <aggregation-columns>
             <aggregation-column expression="COUNT(time)" aggregation-type="COUNT" index="2" />
         </aggregation-columns>

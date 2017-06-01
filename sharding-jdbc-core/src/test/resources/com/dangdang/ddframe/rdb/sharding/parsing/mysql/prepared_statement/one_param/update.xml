@@ -4,13 +4,11 @@
         <tables>
             <table name="order" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                    <valueIndices>0</valueIndices>
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value value="1" type="java.lang.Integer" />
+                <valueIndices>0</valueIndices>
+            </condition>
+        </conditions>
     </assert>
 </asserts>

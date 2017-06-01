@@ -27,7 +27,7 @@ import lombok.Getter;
 
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ConditionContext {
+public final class Conditions {
     
     @XmlElement(name = "condition")
     private List<Condition> conditions;

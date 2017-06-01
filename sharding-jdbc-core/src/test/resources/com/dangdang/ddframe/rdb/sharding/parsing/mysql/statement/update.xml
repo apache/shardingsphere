@@ -4,14 +4,12 @@
         <tables>
             <table name="order" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="IN">
-                    <value value="1" type="java.lang.Integer" />
-                    <value value="2" type="java.lang.Integer" />
-                    <value value="3" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value value="1" type="java.lang.Integer" />
+                <value value="2" type="java.lang.Integer" />
+                <value value="3" type="java.lang.Integer" />
+            </condition>
+        </conditions>
     </assert>
 </asserts>

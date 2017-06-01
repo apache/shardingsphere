@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import org.junit.Test;
@@ -30,13 +30,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
-import java.util.List;
 
 @RunWith(Parameterized.class)
 public final class MySQLPreparedStatementForOneParameterTest extends AbstractBaseParseTest {
     
     public MySQLPreparedStatementForOneParameterTest(final String testCaseName, final String sql, final String expectedSQL, final Collection<Table> expectedTables,
-                                                     final List<Condition> expectedConditions, final SQLStatement expectedSQLStatement) {
+                                                     final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
     }
     

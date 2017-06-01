@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
@@ -42,6 +43,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -49,10 +51,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public abstract class AbstractBaseParseTest {
     
@@ -63,7 +67,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<Table> expectedTables;
     
-    private final Iterator<Condition> expectedConditions;
+    private final Conditions expectedConditions;
     
     private final Iterator<OrderBy> orderByList;
     
@@ -74,11 +78,11 @@ public abstract class AbstractBaseParseTest {
     private final Limit limit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                    final Collection<Table> expectedTables, final Collection<Condition> expectedConditions, final SQLStatement expectedSQLStatement) {
+                                    final Collection<Table> expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         this.sql = sql;
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables.iterator();
-        this.expectedConditions = expectedConditions.iterator();
+        this.expectedConditions = expectedConditions;
         this.orderByList = expectedSQLStatement.getOrderByList().iterator();
         this.groupByList = expectedSQLStatement.getGroupByList().iterator();
         this.aggregationColumns = expectedSQLStatement.getAggregationSelectItems().iterator();
@@ -122,49 +126,42 @@ public abstract class AbstractBaseParseTest {
                 return new Table(input.getName(), Optional.fromNullable(input.getAlias()));
             }
         });
-        if (null == assertObj.getConditionContexts()) {
-            result[4] = Collections.<Condition>emptyList();
+        if (null == assertObj.getConditions()) {
+            result[4] = new Conditions();
         } else {
-            result[4] = Lists.transform(assertObj.getConditionContexts(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext, List<Condition>>() {
-                
-                @Override
-                public List<Condition> apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.ConditionContext input) {
-                    List<Condition> result = new LinkedList<>();
-                    if (null == input.getConditions()) {
-                        return result;
+            Conditions conditions = new Conditions();
+            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : assertObj.getConditions().getConditions()) {
+                List<SQLExpression> sqlExpressions = new LinkedList<>();
+                for (Value value : each.getValues()) {
+                    Comparable<?> valueWithType = value.getValueWithType();
+                    if (valueWithType instanceof Number) {
+                        sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
+                    } else {
+                        sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
                     }
-                    for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : input.getConditions()) {
-                        List<SQLExpression> sqlExpressions = new LinkedList<>();
-                        for (Value value : each.getValues()) {
-                            Comparable<?> valueWithType = value.getValueWithType();
-                            if (valueWithType instanceof Number) {
-                                sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
-                            } else {
-                                sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
-                            }
-                        }
-                        for (int index : each.getValueIndices()) {
-                            sqlExpressions.add(new SQLPlaceholderExpression(index));
-                        }
-                        Condition condition;
-                        switch (ShardingOperator.valueOf(each.getOperator().toUpperCase())) {
-                            case EQUAL:
-                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
-                                break;
-                            case BETWEEN:
-                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
-                                break;
-                            case IN:
-                                condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
-                                break;
-                            default:
-                                throw new UnsupportedOperationException();
-                        }
-                        result.add(condition);
-                    }
-                    return result;
                 }
-            });
+                if (null != each.getValueIndices()) {
+                    for (int index : each.getValueIndices()) {
+                        sqlExpressions.add(new SQLPlaceholderExpression(index));
+                    }
+                }
+                Condition condition;
+                switch (ShardingOperator.valueOf(each.getOperator().toUpperCase())) {
+                    case EQUAL:
+                        condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0));
+                        break;
+                    case BETWEEN:
+                        condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions.get(0), sqlExpressions.get(1));
+                        break;
+                    case IN:
+                        condition = new Condition(new Column(each.getColumnName(), each.getTableName()), sqlExpressions);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+                conditions.add(condition);
+            }
+            result[4] = conditions;
         }
         SQLStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
@@ -213,4 +210,13 @@ public abstract class AbstractBaseParseTest {
         result[5] = selectStatement;
         return result;
     }
+    
+    protected final void assertSQLParsedResult(final SQLStatement actual) {
+        assertConditionContexts(actual);
+    }
+    
+    private void assertConditionContexts(final SQLStatement actual) {
+        assertThat(actual.getConditions(), is(new ReflectionEquals(expectedConditions)));
+    }
+    
 }

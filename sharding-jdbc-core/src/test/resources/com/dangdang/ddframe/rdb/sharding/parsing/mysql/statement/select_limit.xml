@@ -4,9 +4,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <limit offset="4" row-count="5" offset-index="-1" row-count-index="-1"/>
     </assert>
     
@@ -14,9 +11,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <limit offset="0" row-count="5" offset-index="-1" row-count-index="-1" />
     </assert>
 
@@ -24,9 +18,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
         <limit offset="4" row-count="5" offset-index="-1" row-count-index="-1" />
     </assert>
     
@@ -35,9 +26,6 @@
         <tables>
             <table name="order" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
     </assert>
     -->
 </asserts>

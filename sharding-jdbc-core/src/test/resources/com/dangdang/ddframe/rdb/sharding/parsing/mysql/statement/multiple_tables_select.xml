@@ -6,13 +6,11 @@
             <table name="order" alias="o" />
             <table name="order_item" alias="i" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="user_id" table-name="user" operator="EQUAL">
-                    <value value="1000" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="user_id" table-name="user" operator="EQUAL">
+                <value value="1000" type="java.lang.Integer" />
+            </condition>
+        </conditions>
     </assert>
     
     <assert id="assertSelectWithJoin" sql="SELECT * FROM order INNER JOIN user u ON u.user_id = order.user_id JOIN order_item i ON u.user_id = i.user_id WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(order)] INNER JOIN [Token(user)] u ON u.user_id = [Token(order)].user_id JOIN [Token(order_item)] i ON u.user_id = i.user_id WHERE u.user_id = 1000">
@@ -21,13 +19,11 @@
             <table name="user" alias="u" />
             <table name="order_item" alias="i" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="user_id" table-name="user" operator="EQUAL">
-                    <value value="1000" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="user_id" table-name="user" operator="EQUAL">
+                <value value="1000" type="java.lang.Integer" />
+            </condition>
+        </conditions>
     </assert>
     
     <assert id="assertSelectWithJoinUsing" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
@@ -36,13 +32,11 @@
             <table name="order" alias="o" />
             <table name="order_item" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="user_id" table-name="user" operator="EQUAL">
-                    <value value="1000" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="user_id" table-name="user" operator="EQUAL">
+                <value value="1000" type="java.lang.Integer" />
+            </condition>
+        </conditions>
     </assert>
     
     <assert id="assertSelectAmbiguousTableName" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
@@ -51,13 +45,11 @@
             <table name="order" alias="o" />
             <table name="order_item" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="user_id" table-name="user" operator="EQUAL">
-                    <value value="1000" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="user_id" table-name="user" operator="EQUAL">
+                <value value="1000" type="java.lang.Integer" />
+            </condition>
+        </conditions>
     </assert>
     
     <!-- // TODO 目前无法在条件中解析出来不同子关联对应的条件 -->
@@ -66,8 +58,5 @@
             <table name="order" />
             <table name="order_item" />
         </tables>
-        <condition-contexts>
-            <condition-context />
-        </condition-contexts>
     </assert>
 </asserts>
