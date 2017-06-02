@@ -144,12 +144,13 @@ public final class SQLRewriteEngine {
      * @return SQL构建器
      */
     public SQLBuilder rewriteTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
-        sqlBuilder.recordNewToken(tableUnit.getLogicTableName(), tableUnit.getActualTableName());
+        Collection<SQLBuilderToken> stringTokens = new LinkedList<>();
+        stringTokens.add(new SQLBuilderToken(tableUnit.getLogicTableName(), tableUnit.getActualTableName()));
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
         if (bindingTableRule.isPresent()) {
-            rewriteBindingTable(tableUnit, sqlBuilder, bindingTableRule.get());
+            stringTokens.addAll(getBindingTableTokens(tableUnit, sqlBuilder, bindingTableRule.get()));
         }
-        return sqlBuilder.buildSQLWithNewToken();
+        return sqlBuilder.createNewSQLBuilder(stringTokens);
     }
     
     /**
@@ -161,21 +162,24 @@ public final class SQLRewriteEngine {
      * @return SQL构建器
      */
     public SQLBuilder rewriteTable(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
+        Collection<SQLBuilderToken> stringTokens = new LinkedList<>();
         for (TableUnit each : cartesianTableReference.getTableUnits()) {
-            sqlBuilder.recordNewToken(each.getLogicTableName(), each.getActualTableName());
+            stringTokens.add(new SQLBuilderToken(each.getLogicTableName(), each.getActualTableName()));
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getLogicTableName());
             if (bindingTableRule.isPresent()) {
-                rewriteBindingTable(each, sqlBuilder, bindingTableRule.get());
+                stringTokens.addAll(getBindingTableTokens(each, sqlBuilder, bindingTableRule.get()));
             }
         }
-        return sqlBuilder.buildSQLWithNewToken();
+        return sqlBuilder.createNewSQLBuilder(stringTokens);
     }
     
-    private void rewriteBindingTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final BindingTableRule bindingTableRule) {
+    private Collection<SQLBuilderToken> getBindingTableTokens(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final BindingTableRule bindingTableRule) {
+        Collection<SQLBuilderToken> result = new LinkedList<>();
         for (String eachTable : tableNames) {
             if (!eachTable.equalsIgnoreCase(tableUnit.getLogicTableName()) && bindingTableRule.hasLogicTable(eachTable)) {
-                sqlBuilder.recordNewToken(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName()));
+                result.add(new SQLBuilderToken(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName())));
             }
         }
+        return result;
     }
 }

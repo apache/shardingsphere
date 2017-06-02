@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
-import com.google.common.base.Joiner;
-
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,9 +32,7 @@ public final class SQLBuilder {
     
     private final List<Object> segments;
     
-    private final Map<String, StringToken> tokenMap;
-    
-    private final List<StringToken> newTokenList = new LinkedList<>();
+    private final Map<String, SQLBuilderToken> tokenMap;
     
     private StringBuilder currentSegment;
     
@@ -67,32 +64,26 @@ public final class SQLBuilder {
      * @param token 占位符
      */
     public void appendToken(final String label, final String token) {
-        StringToken stringToken;
+        SQLBuilderToken stringToken;
         if (tokenMap.containsKey(label)) {
             stringToken = tokenMap.get(label);
         } else {
-            stringToken = new StringToken();
-            stringToken.label = label;
-            stringToken.value = token;
+            stringToken = new SQLBuilderToken(label, token);
             tokenMap.put(label, stringToken);
         }
-        stringToken.indices.add(segments.size());
+        stringToken.getIndexes().add(segments.size());
         segments.add(stringToken);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
     
     /**
-     * 记录新的Token.
-     * 
-     * @param label 占位符
-     * @param token 实际的值
+     * 追加字面量.
+     *
+     * @param literals 字面量
      */
-    public void recordNewToken(final String label, final String token) {
-        StringToken newToken = new StringToken();
-        newToken.label = label;
-        newToken.value = token;
-        newTokenList.add(newToken);
+    public void append(final String literals) {
+        currentSegment.append(literals);
     }
     
     /**
@@ -100,17 +91,15 @@ public final class SQLBuilder {
      * 
      * @return 新SQL构建器
      */
-    public SQLBuilder buildSQLWithNewToken() {
+    public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> stringTokens) {
         SQLBuilder result = new SQLBuilder(this);
-        for (StringToken each : newTokenList) {
-            StringToken origin = result.tokenMap.get(each.label);
-            each.indices.addAll(origin.indices);
-            result.tokenMap.put(each.label, each);
-            for (Integer index : origin.indices) {
+        for (SQLBuilderToken each : stringTokens) {
+            SQLBuilderToken origin = tokenMap.get(each.getLabel());
+            result.tokenMap.put(each.getLabel(), each);
+            for (Integer index : origin.getIndexes()) {
                 result.segments.set(index, each);
             }
         }
-        newTokenList.clear();
         return result;
     }
     
@@ -127,47 +116,16 @@ public final class SQLBuilder {
         return result.toString();
     }
     
-    /**
-     * 追加字面量.
-     * 
-     * @param literals 字面量
-     */
-    public void append(final String literals) {
-        currentSegment.append(literals);
-    }
-    
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof StringToken) {
-                result.append(((StringToken) each).toToken());
+            if (each instanceof SQLBuilderToken) {
+                result.append(((SQLBuilderToken) each).toToken());
             } else {
                 result.append(each.toString());
             }
         }
         return result.toString();
-    }
-    
-    private class StringToken {
-        
-        private String label;
-        
-        private String value;
-        
-        private final List<Integer> indices = new LinkedList<>();
-        
-        String toToken() {
-            if (null == value) {
-                return "";
-            }
-            Joiner joiner = Joiner.on("");
-            return label.equals(value) ? joiner.join("[Token(", value, ")]") : joiner.join("[", label, "(", value, ")]");
-        }
-        
-        @Override
-        public String toString() {
-            return null == value ? "" : value;
-        }
     }
 }
