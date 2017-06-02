@@ -21,27 +21,35 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL构建器.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLBuilder {
     
     private final List<Object> segments;
     
-    private final Map<String, SQLBuilderToken> tokenMap;
-    
     private StringBuilder currentSegment;
     
     public SQLBuilder() {
-        this(new LinkedList<>(), new HashMap<String, SQLBuilderToken>());
+        segments = new LinkedList<>();
+        currentSegment = new StringBuilder();
+        segments.add(currentSegment);
+    }
+    
+    /**
+     * 追加占位符.
+     * 
+     * @param token 占位符
+     */
+    public void append(final SQLBuilderToken token) {
+        segments.add(token);
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
@@ -56,36 +64,26 @@ public final class SQLBuilder {
     }
     
     /**
-     * 追加占位符.
-     * 
-     * @param token 占位符
-     */
-    public void append(final SQLBuilderToken token) {
-        if (!tokenMap.containsKey(token.getLabel())) {
-            tokenMap.put(token.getLabel(), token);
-        }
-        tokenMap.get(token.getLabel()).getIndexes().add(segments.size());
-        segments.add(tokenMap.get(token.getLabel()));
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
      * 用实际的值替代占位符,并返回新的构建器.
-     * 
+     *
      * @param tokens 占位符集合
      * @return 新SQL构建器
      */
     public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> tokens) {
-        SQLBuilder result = new SQLBuilder(segments, tokenMap);
-        for (SQLBuilderToken each : tokens) {
-            SQLBuilderToken originalToken = tokenMap.get(each.getLabel());
-            result.tokenMap.put(each.getLabel(), each);
-            for (Integer index : originalToken.getIndexes()) {
-                result.segments.set(index, each);
+        for (Object each : segments) {
+            if (each instanceof SQLBuilderToken) {
+                setToken((SQLBuilderToken) each, tokens);
             }
         }
-        return result;
+        return new SQLBuilder(segments);
+    }
+    
+    private void setToken(final SQLBuilderToken targetToken, final Collection<SQLBuilderToken> tokens) {
+        for (SQLBuilderToken each : tokens) {
+            if (targetToken.getLabel().equals(each.getLabel())) {
+                targetToken.setValue(each.getValue());
+            }
+        }
     }
     
     /**
@@ -101,6 +99,7 @@ public final class SQLBuilder {
         return result.toString();
     }
     
+    // TODO remove
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
