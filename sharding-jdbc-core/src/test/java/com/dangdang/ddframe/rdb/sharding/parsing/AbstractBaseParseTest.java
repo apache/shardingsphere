@@ -23,13 +23,13 @@ import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
@@ -48,15 +48,7 @@ import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import java.util.*;
 
 public abstract class AbstractBaseParseTest {
     
@@ -216,7 +208,6 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertConditionContexts(final SQLStatement actual) {
-        assertThat(actual.getConditions(), is(new ReflectionEquals(expectedConditions)));
+        new ReflectionEquals(expectedConditions).matches(actual.getConditions());
     }
-    
 }
