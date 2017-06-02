@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
@@ -39,7 +38,6 @@ import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianRoutingRe
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.ComplexRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
-import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -92,44 +90,17 @@ public final class ParsingSQLRouter implements SQLRouter {
             sqlStatement.getLimit().processParameters(parameters, !isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
-        
-        // TODO refactor
-        if (!(routingResult instanceof CartesianRoutingResult)) {
-            for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-                sqlBuilder.recordNewToken(each.getLogicTableName(), each.getActualTableName());
-                Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getLogicTableName());
-                if (bindingTableRule.isPresent()) {
-                    for (String eachTable : sqlStatement.getTables().getTableNames()) {
-                        if (!eachTable.equalsIgnoreCase(each.getLogicTableName()) && bindingTableRule.get().hasLogicTable(eachTable)) {
-                            sqlBuilder.recordNewToken(eachTable, bindingTableRule.get().getBindingActualTable(each.getDataSourceName(), eachTable, each.getActualTableName()));
-                        }
-                    }
-                }
-                sqlBuilder = sqlBuilder.buildSQLWithNewToken();
-                result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), sqlBuilder.toSQL()));
-            }
-        }
         if (routingResult instanceof CartesianRoutingResult) {
-            for (CartesianDataSource each : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
-                for (CartesianTableReference each1 : each.getRoutingTableReferences()) {
-                    for (TableUnit each2 : each1.getTableUnits()) {
-                        sqlBuilder.recordNewToken(each2.getLogicTableName(), each2.getActualTableName());
-                        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each2.getLogicTableName());
-                        if (bindingTableRule.isPresent()) {
-                            for (String eachTable : sqlStatement.getTables().getTableNames()) {
-                                if (!eachTable.equalsIgnoreCase(each2.getLogicTableName()) && bindingTableRule.get().hasLogicTable(eachTable)) {
-                                    sqlBuilder.recordNewToken(eachTable, bindingTableRule.get().getBindingActualTable(each.getDataSource(), eachTable, each2.getActualTableName()));
-                                }
-                            }
-                        }
-                    }
-                    sqlBuilder = sqlBuilder.buildSQLWithNewToken();
-                    result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSource(), sqlBuilder.toSQL()));
+            for (CartesianDataSource cartesianDataSource : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
+                for (CartesianTableReference cartesianTableReference : cartesianDataSource.getRoutingTableReferences()) {
+                    result.getExecutionUnits().add(new SQLExecutionUnit(cartesianDataSource.getDataSource(), rewriteEngine.rewriteTable(cartesianTableReference, sqlBuilder, shardingRule).toSQL()));
                 }
             }
+        } else {
+            for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+                result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.rewriteTable(each, sqlBuilder, shardingRule).toSQL()));
+            }
         }
-    
-        
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);
         return result;

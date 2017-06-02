@@ -18,6 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
+import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
@@ -25,6 +27,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
+import com.google.common.base.Optional;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -128,5 +133,49 @@ public final class SQLRewriteEngine {
         int beginPosition = offsetLimitToken.getBeginPosition() + String.valueOf(offsetLimitToken.getOffset()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
+    }
+    
+    /**
+     * 改写SQL表.
+     * 
+     * @param tableUnit 路由表单元
+     * @param sqlBuilder SQL构建器
+     * @param shardingRule 分库分表规则配置对象
+     * @return SQL构建器
+     */
+    public SQLBuilder rewriteTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
+        sqlBuilder.recordNewToken(tableUnit.getLogicTableName(), tableUnit.getActualTableName());
+        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
+        if (bindingTableRule.isPresent()) {
+            rewriteBindingTable(tableUnit, sqlBuilder, bindingTableRule.get());
+        }
+        return sqlBuilder.buildSQLWithNewToken();
+    }
+    
+    /**
+     * 改写SQL表.
+     * 
+     * @param cartesianTableReference 笛卡尔积路由表单元
+     * @param sqlBuilder SQL构建器
+     * @param shardingRule 分库分表规则配置对象
+     * @return SQL构建器
+     */
+    public SQLBuilder rewriteTable(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
+        for (TableUnit each : cartesianTableReference.getTableUnits()) {
+            sqlBuilder.recordNewToken(each.getLogicTableName(), each.getActualTableName());
+            Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getLogicTableName());
+            if (bindingTableRule.isPresent()) {
+                rewriteBindingTable(each, sqlBuilder, bindingTableRule.get());
+            }
+        }
+        return sqlBuilder.buildSQLWithNewToken();
+    }
+    
+    private void rewriteBindingTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final BindingTableRule bindingTableRule) {
+        for (String eachTable : tableNames) {
+            if (!eachTable.equalsIgnoreCase(tableUnit.getLogicTableName()) && bindingTableRule.hasLogicTable(eachTable)) {
+                sqlBuilder.recordNewToken(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName()));
+            }
+        }
     }
 }
