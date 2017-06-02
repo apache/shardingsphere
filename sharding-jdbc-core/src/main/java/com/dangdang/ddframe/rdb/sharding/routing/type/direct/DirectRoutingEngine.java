@@ -24,6 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.hint.ShardingKey;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +50,17 @@ public final class DirectRoutingEngine implements RoutingEngine {
     private final SQLType sqlType;
     
     @Override
-    public DirectRoutingResult route() {
+    public RoutingResult route() {
         Optional<ShardingValue<?>> shardingValue = HintManagerHolder.getDatabaseShardingValue(new ShardingKey(HintManagerHolder.DB_TABLE_NAME, HintManagerHolder.DB_COLUMN_NAME));
         Preconditions.checkState(shardingValue.isPresent());
         log.debug("Before database sharding only db:{} sharding values: {}", dataSourceRule.getDataSourceNames(), shardingValue.get());
-        Collection<String> result = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValue.get()));
-        Preconditions.checkState(!result.isEmpty(), "no database route info");
-        log.debug("After database sharding only result: {}", result);
-        return new DirectRoutingResult(result);
+        Collection<String> routingDataSources = databaseShardingStrategy.doStaticSharding(sqlType, dataSourceRule.getDataSourceNames(), Collections.<ShardingValue<?>>singleton(shardingValue.get()));
+        Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
+        log.debug("After database sharding only result: {}", routingDataSources);
+        RoutingResult result = new RoutingResult();
+        for (String each : routingDataSources) {
+            result.getTableUnits().getTableUnits().add(new TableUnit(each, "", ""));
+        }
+        return result;
     }
 }

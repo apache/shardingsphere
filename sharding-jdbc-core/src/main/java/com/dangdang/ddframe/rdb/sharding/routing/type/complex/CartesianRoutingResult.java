@@ -32,7 +32,7 @@ import java.util.List;
  * @author zhangliang
  */
 @ToString
-public final class CartesianRoutingResult implements RoutingResult {
+public final class CartesianRoutingResult extends RoutingResult {
     
     @Getter
     private final List<CartesianDataSource> routingDataSources = new ArrayList<>();
@@ -51,10 +51,5 @@ public final class CartesianRoutingResult implements RoutingResult {
             }
         }
         routingDataSources.add(new CartesianDataSource(dataSource, routingTableReference));
-    }
-    
-    @Override
-    public boolean isSingleRouting() {
-        return 1 == routingDataSources.size() && 1 == routingDataSources.get(0).getRoutingTableReferences().size();
     }
 }

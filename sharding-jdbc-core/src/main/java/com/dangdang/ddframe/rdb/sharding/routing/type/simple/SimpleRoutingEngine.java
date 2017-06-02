@@ -29,6 +29,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -57,7 +58,7 @@ public final class SimpleRoutingEngine implements RoutingEngine {
     private final SQLStatement sqlStatement;
     
     @Override
-    public SimpleRoutingResult route() {
+    public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         Collection<String> routedDataSources = routeDataSources(tableRule);
         Collection<String> routedTables = routeTables(tableRule, routedDataSources);
@@ -128,10 +129,10 @@ public final class SimpleRoutingEngine implements RoutingEngine {
         log.debug("After {} sharding {} result: {}", type, logicTable, shardingResults);
     }
     
-    private SimpleRoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
-        SimpleRoutingResult result = new SimpleRoutingResult();
+    private RoutingResult generateRoutingResult(final TableRule tableRule, final Collection<String> routedDataSources, final Collection<String> routedTables) {
+        RoutingResult result = new RoutingResult();
         for (DataNode each : tableRule.getActualDataNodes(routedDataSources, routedTables)) {
-            result.put(each.getDataSourceName(), new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
+            result.getTableUnits().getTableUnits().add(new TableUnit(each.getDataSourceName(), logicTableName, each.getTableName()));
         }
         return result;
     }

@@ -25,8 +25,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLJudgeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.type.direct.DirectRoutingEngine;
-import com.dangdang.ddframe.rdb.sharding.routing.type.direct.DirectRoutingResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -55,9 +56,9 @@ public final class UnparsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        DirectRoutingResult routingResult = new DirectRoutingEngine(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
-        for (String each : routingResult.getRoutedDatabaseNames()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each, logicSQL));
+        RoutingResult routingResult = new DirectRoutingEngine(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
+        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
         }
         MetricsContext.stop(context);
         logSQLRouteResult(result, parameters);

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -28,6 +29,7 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 @ToString
 public final class TableUnit {
     

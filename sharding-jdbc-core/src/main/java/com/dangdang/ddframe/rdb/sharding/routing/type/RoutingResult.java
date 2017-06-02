@@ -17,17 +17,25 @@
 
 package com.dangdang.ddframe.rdb.sharding.routing.type;
 
+import lombok.Getter;
+
 /**
- *  路由结果接口.
+ *  路由结果.
  * 
  * @author zhangliang
  */
-public interface RoutingResult {
+@Getter
+public class RoutingResult {
+    
+    private final TableUnits tableUnits = new TableUnits();
     
     /**
      * 判断是否为单库表路由.
      *
      * @return 是否为单库表路由
      */
-    boolean isSingleRouting();
+    public final boolean isSingleRouting() {
+        return 1 == tableUnits.getTableUnits().size();
+    }
+    
 }

@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingEngine;
-import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -57,7 +56,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Collection<SimpleRoutingResult> result = new ArrayList<>(logicTables.size());
+        Collection<RoutingResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
             Optional<TableRule> tableRule = shardingRule.tryFindTableRule(each);
