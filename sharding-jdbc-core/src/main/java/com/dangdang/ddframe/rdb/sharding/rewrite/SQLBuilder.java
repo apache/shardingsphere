@@ -49,35 +49,6 @@ public final class SQLBuilder {
     }
     
     /**
-     * 增加占位符.
-     * 
-     * @param token 占位符
-     */
-    public void appendToken(final String token) {
-        appendToken(token, token);
-    }
-    
-    /**
-     * 增加占位符.
-     * 
-     * @param label 占位符标签
-     * @param token 占位符
-     */
-    public void appendToken(final String label, final String token) {
-        SQLBuilderToken stringToken;
-        if (tokenMap.containsKey(label)) {
-            stringToken = tokenMap.get(label);
-        } else {
-            stringToken = new SQLBuilderToken(label, token);
-            tokenMap.put(label, stringToken);
-        }
-        stringToken.getIndexes().add(segments.size());
-        segments.add(stringToken);
-        currentSegment = new StringBuilder();
-        segments.add(currentSegment);
-    }
-    
-    /**
      * 追加字面量.
      *
      * @param literals 字面量
@@ -87,13 +58,28 @@ public final class SQLBuilder {
     }
     
     /**
+     * 追加占位符.
+     * 
+     * @param token 占位符
+     */
+    public void append(final SQLBuilderToken token) {
+        if (!tokenMap.containsKey(token.getLabel())) {
+            tokenMap.put(token.getLabel(), token);
+        }
+        tokenMap.get(token.getLabel()).getIndexes().add(segments.size());
+        segments.add(tokenMap.get(token.getLabel()));
+        currentSegment = new StringBuilder();
+        segments.add(currentSegment);
+    }
+    
+    /**
      * 用实际的值替代占位符,并返回新的构建器.
      * 
      * @return 新SQL构建器
      */
-    public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> stringTokens) {
+    public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> tokens) {
         SQLBuilder result = new SQLBuilder(this);
-        for (SQLBuilderToken each : stringTokens) {
+        for (SQLBuilderToken each : tokens) {
             SQLBuilderToken origin = tokenMap.get(each.getLabel());
             result.tokenMap.put(each.getLabel(), each);
             for (Integer index : origin.getIndexes()) {
