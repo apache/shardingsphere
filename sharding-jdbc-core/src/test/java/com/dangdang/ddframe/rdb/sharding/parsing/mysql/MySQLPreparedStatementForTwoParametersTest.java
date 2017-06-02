@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +36,7 @@ public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBa
     
     public MySQLPreparedStatementForTwoParametersTest(
             final String testCaseName, final String sql, final String expectedSQL,
-            final Collection<Table> expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
@@ -47,7 +47,7 @@ public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBa
     
     @Test
     public void assertParse() {
-        new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addGenerateKeyColumn("order", "order_id").build()).parse();
+        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
+                .addGenerateKeyColumn("order", "order_id").build()).parse());
     }
 }

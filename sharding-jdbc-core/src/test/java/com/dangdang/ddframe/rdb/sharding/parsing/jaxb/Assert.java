@@ -41,9 +41,8 @@ public final class Assert {
     @XmlAttribute(name = "expected-sql")
     private String expectedSQL;
     
-    @XmlElementWrapper(name = "tables")
-    @XmlElement(name = "table") 
-    private List<Table> tables;
+    @XmlElement(name = "tables") 
+    private Tables tables;
     
     @XmlElement(name = "conditions") 
     private Conditions conditions;
