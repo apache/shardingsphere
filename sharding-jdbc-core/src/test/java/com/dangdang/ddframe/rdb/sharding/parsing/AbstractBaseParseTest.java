@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
-import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Index;
 import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
@@ -129,19 +128,16 @@ public abstract class AbstractBaseParseTest {
             Conditions conditions = new Conditions();
             for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : assertObj.getConditions().getConditions()) {
                 List<SQLExpression> sqlExpressions = new LinkedList<>();
-                if (null != each.getValues()) {
-                    for (Value value : each.getValues()) {
+                for (Value value : each.getValues()) {
+                    if (null != value.getIndex()) {
+                        sqlExpressions.add(new SQLPlaceholderExpression(value.getIndex()));
+                    } else {
                         Comparable<?> valueWithType = value.getValueWithType();
                         if (valueWithType instanceof Number) {
                             sqlExpressions.add(new SQLNumberExpression((Number) valueWithType));
                         } else {
                             sqlExpressions.add(new SQLTextExpression(valueWithType.toString()));
                         }
-                    }
-                }
-                if (null != each.getIndexes()) {
-                    for (Index index : each.getIndexes()) {
-                        sqlExpressions.add(new SQLPlaceholderExpression(index.getValue()));
                     }
                 }
                 Condition condition;
@@ -211,10 +207,7 @@ public abstract class AbstractBaseParseTest {
     }
     
     protected final void assertSQLStatement(final SQLStatement actual) {
-        assertConditionContexts(actual);
-    }
-    
-    private void assertConditionContexts(final SQLStatement actual) {
+        assertTrue(new ReflectionEquals(expectedTables).matches(actual.getTables()));
         assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
     }
 }

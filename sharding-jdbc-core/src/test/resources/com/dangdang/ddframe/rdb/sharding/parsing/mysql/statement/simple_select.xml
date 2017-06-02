@@ -9,9 +9,6 @@
     -->
 
     <assert id="assertSelectWithDatabaseName" sql="select * from db.order" expected-sql="SELECT * FROM [Token(db.order)]">
-        <tables>
-            <table name="db.order" />
-        </tables>
     </assert>
     
     <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id = 1">
@@ -19,9 +16,9 @@
             <table name="order" />
         </tables>
         <conditions>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
-                </condition>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
         </conditions>
     </assert>
     
@@ -31,7 +28,7 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="EQUAL">
-                <value value="1" type="java.lang.Integer" />
+                <value literal="1" type="java.lang.Integer" />
             </condition>
         </conditions>
     </assert>
@@ -42,10 +39,10 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="EQUAL">
-                <value value="1" type="int" />
+                <value literal="1" type="int" />
             </condition>
             <condition column-name="state" table-name="order" operator="EQUAL">
-                <value value="RUNNING" type="java.lang.String" />
+                <value literal="RUNNING" type="java.lang.String" />
             </condition>
         </conditions>
     </assert>
@@ -56,7 +53,7 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="EQUAL">
-                <value value="1" type="int" />
+                <value literal="1" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -67,8 +64,8 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="BETWEEN">
-                <value value="1" type="int" />
-                <value value="10" type="int" />
+                <value literal="1" type="int" />
+                <value literal="10" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -79,9 +76,9 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="IN">
-                <value value="1" type="int" />
-                <value value="2" type="int" />
-                <value value="3" type="int" />
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
+                <value literal="3" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -92,9 +89,9 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="IN">
-                <value value="1" type="int" />
-                <value value="2" type="int" />
-                <value value="3" type="int" />
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
+                <value literal="3" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -105,8 +102,8 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="BETWEEN">
-                <value value="1" type="int" />
-                <value value="3" type="int" />
+                <value literal="1" type="int" />
+                <value literal="3" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -126,8 +123,8 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="EQUAL">
-                <value value="1" type="int" />
-                <value value="2" type="int" />
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
             </condition>
         </conditions>
     </assert>
@@ -142,10 +139,10 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="IN">
-                <value value="1" type="int" />
-                <value value="3" type="int" />
-                <value value="2" type="int" />
-                <value value="4" type="int" />
+                <value literal="1" type="int" />
+                <value literal="3" type="int" />
+                <value literal="2" type="int" />
+                <value literal="4" type="int" />
             </condition>
         </conditions>
     </assert>

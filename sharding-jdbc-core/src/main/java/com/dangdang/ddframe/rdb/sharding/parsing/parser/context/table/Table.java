@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table;
 
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -29,6 +30,7 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 @ToString
 public final class Table {
     

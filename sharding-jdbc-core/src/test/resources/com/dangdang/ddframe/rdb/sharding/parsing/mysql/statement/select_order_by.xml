@@ -17,7 +17,7 @@
         </tables>
         <conditions>
             <condition column-name="state" table-name="order" operator="EQUAL">
-                <value value="RUNNING" type="java.lang.String" />
+                <value literal="RUNNING" type="java.lang.String" />
             </condition>
         </conditions>
         <order-by-columns>

@@ -8,7 +8,7 @@
         <condition-contexts>
             <condition-context>
                 <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
+                    <value literal="1" type="java.lang.Integer" />
                 </condition>
             </condition-context>
         </condition-contexts>
@@ -23,7 +23,7 @@
         <condition-contexts>
             <condition-context>
                 <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="1" type="java.lang.Integer" />
+                    <value literal="1" type="java.lang.Integer" />
                 </condition>
             </condition-context>
         </condition-contexts>
@@ -43,7 +43,7 @@
         <condition-contexts>
             <condition-context>
                 <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value value="2" type="java.lang.Integer" />
+                    <value literal="2" type="java.lang.Integer" />
                 </condition>
             </condition-context>
         </condition-contexts>

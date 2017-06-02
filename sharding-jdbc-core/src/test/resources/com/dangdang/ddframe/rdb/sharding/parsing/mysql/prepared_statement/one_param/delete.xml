@@ -6,7 +6,7 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="IN">
-                <index value="0" />
+                <value index="0" />
             </condition>
         </conditions>
     </assert>

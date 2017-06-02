@@ -6,10 +6,10 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="EQUAL">
-                <value value="1" type="java.lang.Integer" />
+                <value literal="1" type="java.lang.Integer" />
             </condition>
             <condition column-name="state" table-name="order" operator="EQUAL">
-                <value value="RUNNING" type="java.lang.String" />
+                <value literal="RUNNING" type="java.lang.String" />
             </condition>
         </conditions>
     </assert>
@@ -20,7 +20,7 @@
         </tables>
         <conditions>
             <condition column-name="state" table-name="order" operator="EQUAL">
-                <value value="RUNNING" type="java.lang.String" />
+                <value literal="RUNNING" type="java.lang.String" />
             </condition>
         </conditions>
     </assert>
@@ -31,10 +31,10 @@
         </tables>
         <conditions>
             <condition column-name="user_id" table-name="user" operator="EQUAL">
-                <value value="1" type="java.lang.Integer" />
+                <value literal="1" type="java.lang.Integer" />
             </condition>
             <condition column-name="state" table-name="user" operator="EQUAL">
-                <value value="RUNNING" type="java.lang.String" />
+                <value literal="RUNNING" type="java.lang.String" />
             </condition>
         </conditions>
     </assert>

@@ -42,7 +42,4 @@ public final class Condition {
     
     @XmlElement(name = "value") 
     private List<Value> values;
-    
-    @XmlElement(name = "index")
-    private List<Index> indexes;
 }

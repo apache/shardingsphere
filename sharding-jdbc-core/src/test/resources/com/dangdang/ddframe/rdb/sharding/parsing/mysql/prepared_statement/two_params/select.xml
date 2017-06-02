@@ -6,8 +6,8 @@
         </tables>
         <conditions>
             <condition column-name="order_id" table-name="order" operator="BETWEEN">
-                <index value="0" />
-                <index value="1" />
+                <value index="0" />
+                <value index="1" />
             </condition>
         </conditions>
     </assert>
