@@ -18,9 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 import com.google.common.base.Joiner;
-import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,12 +37,7 @@ public final class SQLBuilder {
     
     private final List<StringToken> newTokenList = new LinkedList<>();
     
-    private final List<SQLBuilder> derivedSQLBuilders = new ArrayList<>();
-    
     private StringBuilder currentSegment;
-    
-    @Getter
-    private boolean changed;
     
     public SQLBuilder() {
         segments = new LinkedList<>();
@@ -56,7 +49,6 @@ public final class SQLBuilder {
     private SQLBuilder(final SQLBuilder originBuilder) {
         segments = new LinkedList<>(originBuilder.segments);
         tokenMap = new HashMap<>(originBuilder.tokenMap);
-        changeState();
     }
     
     /**
@@ -109,9 +101,6 @@ public final class SQLBuilder {
      * @return 新SQL构建器
      */
     public SQLBuilder buildSQLWithNewToken() {
-        if (!newTokenList.isEmpty()) {
-            changeState();
-        }
         SQLBuilder result = new SQLBuilder(this);
         for (StringToken each : newTokenList) {
             StringToken origin = result.tokenMap.get(each.label);
@@ -121,7 +110,6 @@ public final class SQLBuilder {
                 result.segments.set(index, each);
             }
         }
-        derivedSQLBuilders.add(result);
         newTokenList.clear();
         return result;
     }
@@ -132,7 +120,6 @@ public final class SQLBuilder {
      * @return SQL语句
      */
     public String toSQL() {
-        clearState();
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             result.append(each.toString());
@@ -147,18 +134,6 @@ public final class SQLBuilder {
      */
     public void append(final String literals) {
         currentSegment.append(literals);
-        changeState();
-    }
-    
-    private void changeState() {
-        changed = true;
-        for (SQLBuilder each : derivedSQLBuilders) {
-            each.changeState();
-        }
-    }
-    
-    private void clearState() {
-        changed = false;
     }
     
     @Override
