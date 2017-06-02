@@ -20,10 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.AllLexerTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForOneParameterTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLPreparedStatementForTwoParametersTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.mysql.MySQLStatementTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.mysql.OrParseTest;
+import com.dangdang.ddframe.rdb.sharding.parsing.mysql.AllMySQLStatementTests;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.DeleteStatementParserTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.InsertStatementParserTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.UpdateStatementParserTest;
@@ -37,11 +34,8 @@ import org.junit.runners.Suite;
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
         DeleteStatementParserTest.class,
-        MySQLStatementTest.class,
         SQLParsingEngineTest.class,
-        MySQLPreparedStatementForOneParameterTest.class, 
-        MySQLPreparedStatementForTwoParametersTest.class,  
-        OrParseTest.class,
+        AllMySQLStatementTests.class,
         UnsupportedParseTest.class
     })
 public class AllParsingTests {

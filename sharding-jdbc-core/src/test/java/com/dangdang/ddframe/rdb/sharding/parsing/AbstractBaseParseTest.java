@@ -50,6 +50,8 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.*;
 
+import static org.junit.Assert.assertTrue;
+
 public abstract class AbstractBaseParseTest {
     
     @Getter(AccessLevel.PROTECTED)
@@ -203,11 +205,11 @@ public abstract class AbstractBaseParseTest {
         return result;
     }
     
-    protected final void assertSQLParsedResult(final SQLStatement actual) {
+    protected final void assertSQLStatement(final SQLStatement actual) {
         assertConditionContexts(actual);
     }
     
     private void assertConditionContexts(final SQLStatement actual) {
-        new ReflectionEquals(expectedConditions).matches(actual.getConditions());
+        assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
     }
 }
