@@ -26,8 +26,7 @@ public final class SQLBuilderToken {
         if (null == value) {
             return "";
         }
-        Joiner joiner = Joiner.on("");
-        return label.equals(value) ? joiner.join("[Token(", value, ")]") : joiner.join("[", label, "(", value, ")]");
+        return label.equals(value) ? Joiner.on("").join("[Token(", value, ")]") : Joiner.on("").join("[", label, "(", value, ")]");
     }
     
     @Override

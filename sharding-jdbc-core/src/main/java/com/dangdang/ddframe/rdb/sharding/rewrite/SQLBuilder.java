@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.rewrite;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,6 +31,7 @@ import java.util.Map;
  * 
  * @author gaohongtao
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLBuilder {
     
     private final List<Object> segments;
@@ -37,15 +41,9 @@ public final class SQLBuilder {
     private StringBuilder currentSegment;
     
     public SQLBuilder() {
-        segments = new LinkedList<>();
-        tokenMap = new HashMap<>();
+        this(new LinkedList<>(), new HashMap<String, SQLBuilderToken>());
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
-    }
-    
-    private SQLBuilder(final SQLBuilder originBuilder) {
-        segments = new LinkedList<>(originBuilder.segments);
-        tokenMap = new HashMap<>(originBuilder.tokenMap);
     }
     
     /**
@@ -75,14 +73,15 @@ public final class SQLBuilder {
     /**
      * 用实际的值替代占位符,并返回新的构建器.
      * 
+     * @param tokens 占位符集合
      * @return 新SQL构建器
      */
     public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> tokens) {
-        SQLBuilder result = new SQLBuilder(this);
+        SQLBuilder result = new SQLBuilder(segments, tokenMap);
         for (SQLBuilderToken each : tokens) {
-            SQLBuilderToken origin = tokenMap.get(each.getLabel());
+            SQLBuilderToken originalToken = tokenMap.get(each.getLabel());
             result.tokenMap.put(each.getLabel(), each);
-            for (Integer index : origin.getIndexes()) {
+            for (Integer index : originalToken.getIndexes()) {
                 result.segments.set(index, each);
             }
         }
@@ -97,7 +96,7 @@ public final class SQLBuilder {
     public String toSQL() {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            result.append(each.toString());
+            result.append(each);
         }
         return result.toString();
     }
