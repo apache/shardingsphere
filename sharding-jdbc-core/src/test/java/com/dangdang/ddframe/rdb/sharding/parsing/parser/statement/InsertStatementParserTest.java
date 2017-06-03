@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public final class InsertStatementParserTest extends AbstractStatementParserTest {
     
     @Test
-    public void parseWithoutParameter() throws SQLException {
+    public void assertParseWithoutParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
@@ -62,7 +62,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithParameter() {
+    public void assertParseWithParameter() {
         String sql = "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule);
@@ -73,7 +73,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithGenerateKeyColumnsWithoutParameter() throws SQLException {
+    public void assertParseWithGenerateKeyColumnsWithoutParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)";
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
@@ -92,7 +92,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void parseWithGenerateKeyColumnsWithParameter() throws SQLException {
+    public void assertparseWithGenerateKeyColumnsWithParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);

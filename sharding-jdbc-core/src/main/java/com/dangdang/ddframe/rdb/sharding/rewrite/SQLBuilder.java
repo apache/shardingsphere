@@ -20,9 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL构建器.
@@ -44,46 +44,46 @@ public final class SQLBuilder {
     }
     
     /**
-     * 追加占位符.
-     * 
-     * @param token 占位符
+     * 追加字面量.
+     *
+     * @param literals 字面量
      */
-    public void append(final SQLBuilderToken token) {
-        segments.add(token);
+    public void appendLiterals(final String literals) {
+        currentSegment.append(literals);
+    }
+    
+    /**
+     * 追加表占位符.
+     *
+     * @param tableName 表名称
+     */
+    public void appendTable(final String tableName) {
+        segments.add(new SQLRewriteTableToken(tableName));
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
     
     /**
-     * 追加字面量.
+     * 创建新SQL构建器.
      *
-     * @param literals 字面量
-     */
-    public void append(final String literals) {
-        currentSegment.append(literals);
-    }
-    
-    /**
-     * 用实际的值替代占位符,并返回新的构建器.
-     *
-     * @param tokens 占位符集合
+     * @param tableTokens 占位符集合
      * @return 新SQL构建器
      */
-    public SQLBuilder createNewSQLBuilder(final Collection<SQLBuilderToken> tokens) {
+    public SQLBuilder createNewSQLBuilder(final Map<String, String> tableTokens) {
+        List<Object> result = new LinkedList<>();
         for (Object each : segments) {
-            if (each instanceof SQLBuilderToken) {
-                setToken((SQLBuilderToken) each, tokens);
+            if (each instanceof SQLRewriteTableToken) {
+                String tableName = ((SQLRewriteTableToken) each).tableName;
+                if (tableTokens.containsKey(tableName)) {
+                    result.add(new SQLRewriteTableToken(tableTokens.get(tableName)));
+                } else {
+                    result.add(each);
+                }
+            } else {
+                result.add(each);
             }
         }
-        return new SQLBuilder(segments);
-    }
-    
-    private void setToken(final SQLBuilderToken targetToken, final Collection<SQLBuilderToken> tokens) {
-        for (SQLBuilderToken each : tokens) {
-            if (targetToken.getLabel().equals(each.getLabel())) {
-                targetToken.setValue(each.getValue());
-            }
-        }
+        return new SQLBuilder(result);
     }
     
     /**
@@ -104,12 +104,23 @@ public final class SQLBuilder {
     public String toString() {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof SQLBuilderToken) {
-                result.append(((SQLBuilderToken) each).toToken());
+            if (each instanceof SQLRewriteTableToken) {
+                result.append(String.format("[Token(%s)]", ((SQLRewriteTableToken) each).tableName));
             } else {
-                result.append(each.toString());
+                result.append(each);
             }
         }
         return result.toString();
+    }
+    
+    @RequiredArgsConstructor
+    private class SQLRewriteTableToken {
+        
+        private final String tableName;
+        
+        @Override
+        public String toString() {
+            return tableName;
+        }
     }
 }

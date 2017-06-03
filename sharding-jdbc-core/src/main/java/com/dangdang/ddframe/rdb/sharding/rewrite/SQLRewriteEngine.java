@@ -34,8 +34,10 @@ import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL重写引擎.
@@ -68,14 +70,14 @@ public final class SQLRewriteEngine {
     public SQLBuilder rewrite(final boolean isRewriteLimit) {
         SQLBuilder result = new SQLBuilder();
         if (sqlTokens.isEmpty()) {
-            result.append(originalSQL);
+            result.appendLiterals(originalSQL);
             return result;
         }
         int count = 0;
         sortByBeginPosition();
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
-                result.append(originalSQL.substring(0, each.getBeginPosition()));
+                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
             }
             if (each instanceof TableToken) {
                 appendTableToken(result, (TableToken) each, count, sqlTokens);
@@ -103,34 +105,34 @@ public final class SQLRewriteEngine {
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
         String tableName = tableNames.contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
-        sqlBuilder.append(new SQLBuilderToken(tableName, tableName));
+        sqlBuilder.appendTable(tableName);
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final List<SQLToken> sqlTokens) {
         for (String item : itemsToken.getItems()) {
-            sqlBuilder.append(", ");
-            sqlBuilder.append(item);
+            sqlBuilder.appendLiterals(", ");
+            sqlBuilder.appendLiterals(item);
         }
         int beginPosition = itemsToken.getBeginPosition();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.append(isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffset()) : String.valueOf(rowCountLimitToken.getRowCount()));
+        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffset()) : String.valueOf(rowCountLimitToken.getRowCount()));
         int beginPosition = rowCountLimitToken.getBeginPosition() + String.valueOf(rowCountLimitToken.getRowCount()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
     private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.append(isRewrite ? "0" : String.valueOf(offsetLimitToken.getOffset()));
+        sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetLimitToken.getOffset()));
         int beginPosition = offsetLimitToken.getBeginPosition() + String.valueOf(offsetLimitToken.getOffset()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.append(originalSQL.substring(beginPosition, endPosition));
+        sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
     /**
@@ -142,13 +144,13 @@ public final class SQLRewriteEngine {
      * @return SQL构建器
      */
     public SQLBuilder rewriteTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
-        Collection<SQLBuilderToken> tokens = new LinkedList<>();
-        tokens.add(new SQLBuilderToken(tableUnit.getLogicTableName(), tableUnit.getActualTableName()));
+        Map<String, String> tableTokens = new HashMap<>();
+        tableTokens.put(tableUnit.getLogicTableName(), tableUnit.getActualTableName());
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
         if (bindingTableRule.isPresent()) {
-            tokens.addAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
+            tableTokens.putAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
         }
-        return sqlBuilder.createNewSQLBuilder(tokens);
+        return sqlBuilder.createNewSQLBuilder(tableTokens);
     }
     
     /**
@@ -160,22 +162,22 @@ public final class SQLRewriteEngine {
      * @return SQL构建器
      */
     public SQLBuilder rewriteTable(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
-        Collection<SQLBuilderToken> tokens = new LinkedList<>();
+        Map<String, String> tableTokens = new HashMap<>();
         for (TableUnit each : cartesianTableReference.getTableUnits()) {
-            tokens.add(new SQLBuilderToken(each.getLogicTableName(), each.getActualTableName()));
+            tableTokens.put(each.getLogicTableName(), each.getActualTableName());
             Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(each.getLogicTableName());
             if (bindingTableRule.isPresent()) {
-                tokens.addAll(getBindingTableTokens(each, bindingTableRule.get()));
+                tableTokens.putAll(getBindingTableTokens(each, bindingTableRule.get()));
             }
         }
-        return sqlBuilder.createNewSQLBuilder(tokens);
+        return sqlBuilder.createNewSQLBuilder(tableTokens);
     }
     
-    private Collection<SQLBuilderToken> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
-        Collection<SQLBuilderToken> result = new LinkedList<>();
+    private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
+        Map<String, String> result = new HashMap<>();
         for (String eachTable : tableNames) {
             if (!eachTable.equalsIgnoreCase(tableUnit.getLogicTableName()) && bindingTableRule.hasLogicTable(eachTable)) {
-                result.add(new SQLBuilderToken(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName())));
+                result.put(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName()));
             }
         }
         return result;
