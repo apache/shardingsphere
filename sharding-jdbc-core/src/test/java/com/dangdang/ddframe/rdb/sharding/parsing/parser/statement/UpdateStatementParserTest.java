@@ -48,7 +48,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         UpdateStatement updateStatement = (UpdateStatement) statementParser.parse();
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, updateStatement).rewrite(true).toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
+        assertThat(new SQLRewriteEngine(shardingRule, sql, updateStatement).rewrite(true).toString(), is("UPDATE [Token(TABLE_XXX)] SET field1=field1+1"));
     }
     
     @Test
@@ -60,7 +60,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         UpdateStatement updateStatement = (UpdateStatement) statementParser.parse();
         assertUpdateStatementWithoutParameter(updateStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, updateStatement).rewrite(true).toString(),
+        assertThat(new SQLRewriteEngine(shardingRule, sql, updateStatement).rewrite(true).toString(),
                 is("UPDATE [Token(TABLE_XXX)] xxx SET [Token(TABLE_XXX)].field1=field1+1,xxx.field2=2 WHERE [Token(TABLE_XXX)].field4<10 "
                 + "AND [Token(TABLE_XXX)].field1=1 AND xxx.field5>10 AND [Token(TABLE_XXX)].field2 IN (1,3) AND xxx.field6<=10 AND [Token(TABLE_XXX)].field3 BETWEEN 5 AND 20 AND xxx.field7>=10"));
     }
@@ -92,7 +92,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         UpdateStatement updateStatement = (UpdateStatement) statementParser.parse();
         assertUpdateStatementWitParameter(updateStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, updateStatement).rewrite(true).toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
+        assertThat(new SQLRewriteEngine(shardingRule, sql, updateStatement).rewrite(true).toString(), is("UPDATE [Token(TABLE_XXX)] AS xxx SET field1=field1+? "
                 + "WHERE field4<? AND xxx.field1=? AND field5>? AND xxx.field2 IN (?, ?) AND field6<=? AND xxx.field3 BETWEEN ? AND ? AND field7>=?"));
     }
     
@@ -147,13 +147,14 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
-        UpdateStatement updateStatement = (UpdateStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
+        ShardingRule shardingRule = createShardingRule();
+        UpdateStatement updateStatement = (UpdateStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(updateStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(updateStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = updateStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Object) 1));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(actualSQL, updateStatement).rewrite(true).toString(), is(expectedSQL));
+        assertThat(new SQLRewriteEngine(shardingRule, actualSQL, updateStatement).rewrite(true).toString(), is(expectedSQL));
     }
 }

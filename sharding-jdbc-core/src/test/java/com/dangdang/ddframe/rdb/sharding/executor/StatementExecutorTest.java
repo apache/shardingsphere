@@ -511,12 +511,12 @@ public final class StatementExecutorTest {
     private StatementExecutorWrapper createStatementExecutorWrapperForDQL(final Statement statement, final String dataSource) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(SELECT_FROM_DUAL);
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL()));
+        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDML(final Statement statement, final String dataSource) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(DELETE_FROM_DUAL);
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL()));
+        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
     }
 }

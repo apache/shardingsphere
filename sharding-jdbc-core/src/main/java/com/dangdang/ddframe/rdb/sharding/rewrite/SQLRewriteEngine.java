@@ -46,6 +46,8 @@ import java.util.Map;
  */
 public final class SQLRewriteEngine {
     
+    private final ShardingRule shardingRule;
+    
     private final String originalSQL;
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
@@ -54,7 +56,8 @@ public final class SQLRewriteEngine {
     
     private final Limit limit;
     
-    public SQLRewriteEngine(final String originalSQL, final SQLStatement sqlStatement) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final SQLStatement sqlStatement) {
+        this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
         tableNames = sqlStatement.getTables().getTableNames();
@@ -136,32 +139,38 @@ public final class SQLRewriteEngine {
     }
     
     /**
-     * 改写SQL表.
+     * 生成SQL语句.
      * 
      * @param tableUnit 路由表单元
      * @param sqlBuilder SQL构建器
-     * @param shardingRule 分库分表规则配置对象
-     * @return SQL构建器
+     * @return SQL语句
      */
-    public SQLBuilder rewriteTable(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
+    public String generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(getTableTokens(tableUnit));
+    }
+    
+    /**
+     * 生成SQL语句.
+     *
+     * @param cartesianTableReference 笛卡尔积路由表单元
+     * @param sqlBuilder SQL构建器
+     * @return SQL语句
+     */
+    public String generateSQL(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder) {
+        return sqlBuilder.toSQL(getTableTokens(cartesianTableReference));
+    }
+    
+    private Map<String, String> getTableTokens(final TableUnit tableUnit) {
         Map<String, String> tableTokens = new HashMap<>();
         tableTokens.put(tableUnit.getLogicTableName(), tableUnit.getActualTableName());
         Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
         if (bindingTableRule.isPresent()) {
             tableTokens.putAll(getBindingTableTokens(tableUnit, bindingTableRule.get()));
         }
-        return sqlBuilder.createNewSQLBuilder(tableTokens);
+        return tableTokens;
     }
     
-    /**
-     * 改写SQL表.
-     * 
-     * @param cartesianTableReference 笛卡尔积路由表单元
-     * @param sqlBuilder SQL构建器
-     * @param shardingRule 分库分表规则配置对象
-     * @return SQL构建器
-     */
-    public SQLBuilder rewriteTable(final CartesianTableReference cartesianTableReference, final SQLBuilder sqlBuilder, final ShardingRule shardingRule) {
+    private Map<String, String> getTableTokens(final CartesianTableReference cartesianTableReference) {
         Map<String, String> tableTokens = new HashMap<>();
         for (TableUnit each : cartesianTableReference.getTableUnits()) {
             tableTokens.put(each.getLogicTableName(), each.getActualTableName());
@@ -170,7 +179,7 @@ public final class SQLRewriteEngine {
                 tableTokens.putAll(getBindingTableTokens(each, bindingTableRule.get()));
             }
         }
-        return sqlBuilder.createNewSQLBuilder(tableTokens);
+        return tableTokens;
     }
     
     private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {

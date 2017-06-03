@@ -58,7 +58,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithoutParameter(insertStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
+        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithParameter(insertStatement);
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
+        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
     @Test
@@ -81,7 +81,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertInsertStatementWithoutParameter(insertStatement);
         // TODO 放入rewrite模块断言
         insertStatement.appendGenerateKeyToken(shardingRule, 0);
-        assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
+        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
@@ -100,7 +100,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         assertInsertStatementWithParameter(insertStatement);
         // TODO 放入rewrite模块断言
         insertStatement.appendGenerateKeyToken(shardingRule, 0);
-        assertThat(new SQLRewriteEngine(sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
+        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
@@ -154,14 +154,15 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
-        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, createShardingRule()).parse();
+        ShardingRule shardingRule = createShardingRule();
+        InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
         assertFalse(insertStatement.getTables().find("TABLE_XXX").get().getAlias().isPresent());
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
         // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(actualSQL, insertStatement).rewrite(true).toString(), is(expectedSQL));
+        assertThat(new SQLRewriteEngine(shardingRule, actualSQL, insertStatement).rewrite(true).toString(), is(expectedSQL));
     }
     
     @Test(expected = UnsupportedOperationException.class)

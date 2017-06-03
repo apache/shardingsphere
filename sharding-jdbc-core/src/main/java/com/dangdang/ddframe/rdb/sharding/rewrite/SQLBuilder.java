@@ -58,43 +58,25 @@ public final class SQLBuilder {
      * @param tableName 表名称
      */
     public void appendTable(final String tableName) {
-        segments.add(new SQLRewriteTableToken(tableName));
+        segments.add(new TableToken(tableName));
         currentSegment = new StringBuilder();
         segments.add(currentSegment);
     }
     
     /**
-     * 创建新SQL构建器.
+     * 生成SQL语句.
      *
      * @param tableTokens 占位符集合
-     * @return 新SQL构建器
-     */
-    public SQLBuilder createNewSQLBuilder(final Map<String, String> tableTokens) {
-        List<Object> result = new LinkedList<>();
-        for (Object each : segments) {
-            if (each instanceof SQLRewriteTableToken) {
-                String tableName = ((SQLRewriteTableToken) each).tableName;
-                if (tableTokens.containsKey(tableName)) {
-                    result.add(new SQLRewriteTableToken(tableTokens.get(tableName)));
-                } else {
-                    result.add(each);
-                }
-            } else {
-                result.add(each);
-            }
-        }
-        return new SQLBuilder(result);
-    }
-    
-    /**
-     * 生成SQL语句.
-     * 
      * @return SQL语句
      */
-    public String toSQL() {
+    public String toSQL(final Map<String, String> tableTokens) {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            result.append(each);
+            if (each instanceof TableToken && tableTokens.containsKey(((TableToken) each).tableName)) {
+                result.append(tableTokens.get(((TableToken) each).tableName));
+            } else {
+                result.append(each);
+            }
         }
         return result.toString();
     }
@@ -104,8 +86,8 @@ public final class SQLBuilder {
     public String toString() {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
-            if (each instanceof SQLRewriteTableToken) {
-                result.append(String.format("[Token(%s)]", ((SQLRewriteTableToken) each).tableName));
+            if (each instanceof TableToken) {
+                result.append(String.format("[Token(%s)]", ((TableToken) each).tableName));
             } else {
                 result.append(each);
             }
@@ -114,7 +96,7 @@ public final class SQLBuilder {
     }
     
     @RequiredArgsConstructor
-    private class SQLRewriteTableToken {
+    private class TableToken {
         
         private final String tableName;
         

@@ -84,7 +84,7 @@ public final class ParsingSQLRouter implements SQLRouter {
             processGeneratedKey(parameters, (InsertStatement) sqlStatement, result);
         }
         RoutingResult routingResult = route(parameters, sqlStatement);
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(logicSQL, sqlStatement);
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, sqlStatement);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (null != sqlStatement.getLimit()) {
             sqlStatement.getLimit().processParameters(parameters, !isSingleRouting);
@@ -93,12 +93,12 @@ public final class ParsingSQLRouter implements SQLRouter {
         if (routingResult instanceof CartesianRoutingResult) {
             for (CartesianDataSource cartesianDataSource : ((CartesianRoutingResult) routingResult).getRoutingDataSources()) {
                 for (CartesianTableReference cartesianTableReference : cartesianDataSource.getRoutingTableReferences()) {
-                    result.getExecutionUnits().add(new SQLExecutionUnit(cartesianDataSource.getDataSource(), rewriteEngine.rewriteTable(cartesianTableReference, sqlBuilder, shardingRule).toSQL()));
+                    result.getExecutionUnits().add(new SQLExecutionUnit(cartesianDataSource.getDataSource(), rewriteEngine.generateSQL(cartesianTableReference, sqlBuilder)));
                 }
             }
         } else {
             for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-                result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.rewriteTable(each, sqlBuilder, shardingRule).toSQL()));
+                result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder)));
             }
         }
         MetricsContext.stop(context);
