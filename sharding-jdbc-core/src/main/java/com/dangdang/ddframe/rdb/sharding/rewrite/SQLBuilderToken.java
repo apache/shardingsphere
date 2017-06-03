@@ -3,7 +3,6 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 import com.google.common.base.Joiner;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -12,7 +11,6 @@ import lombok.Setter;
  * @author zhangliang
  */
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class SQLBuilderToken {

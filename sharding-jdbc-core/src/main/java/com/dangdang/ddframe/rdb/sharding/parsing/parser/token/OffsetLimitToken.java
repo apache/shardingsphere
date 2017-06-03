@@ -29,8 +29,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class OffsetLimitToken implements SQLToken {
     
-    public static final String OFFSET_NAME = "limit_offset";
-    
     private final int beginPosition;
     
     private final int offset;
