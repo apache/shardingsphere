@@ -17,21 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.fixture.EventCaller;
-import com.dangdang.ddframe.rdb.sharding.executor.fixture.ExecutorTestUtil;
-import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDQLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,34 +41,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PreparedStatementExecutorTest {
-    
-    private ExecutorEngine executorEngine;
-    
-    @Mock
-    private EventCaller eventCaller;
-    
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new ExecutorEngine(ExecutorTestUtil.createShardingProperties());
-        DMLExecutionEventBus.register(new TestDMLExecutionEventListener(eventCaller));
-        DQLExecutionEventBus.register(new TestDQLExecutionEventListener(eventCaller));
-    }
-    
-    @After
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
-        ExecutorTestUtil.clear();
-        DMLExecutionEventBus.clearListener();
-        DQLExecutionEventBus.clearListener();
-        executorEngine.shutdown();
-    }
+public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTest {
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.EMPTY_LIST);
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.EMPTY_LIST);
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -90,15 +58,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         ResultSet resultSet = mock(ResultSet.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(preparedStatement).executeQuery();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -113,7 +81,7 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
@@ -121,13 +89,13 @@ public final class PreparedStatementExecutorTest {
         verify(preparedStatement2).executeQuery();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -136,15 +104,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(preparedStatement).executeQuery();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
@@ -158,20 +126,20 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.executeQuery()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(preparedStatement1).executeQuery();
         verify(preparedStatement2).executeQuery();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller, times(2)).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
@@ -179,15 +147,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         when(preparedStatement.executeUpdate()).thenReturn(10);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertThat(actual.executeUpdate(), is(10));
         verify(preparedStatement).executeUpdate();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -200,19 +168,19 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.executeUpdate()).thenReturn(20);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         assertThat(actual.executeUpdate(), is(30));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -221,15 +189,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement).executeUpdate();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
@@ -243,19 +211,19 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.executeUpdate()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller, times(2)).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
@@ -263,15 +231,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         when(preparedStatement.execute()).thenReturn(false);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -284,19 +252,19 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.execute()).thenReturn(false);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -305,15 +273,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller()).verifyException(exp);
     }
     
     @Test
@@ -327,19 +295,19 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.execute()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifyDataSource("ds_1");
-        verify(eventCaller, times(4)).verifySQL("DELETE FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        verify(eventCaller, times(2)).verifyException(exp);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_1");
+        verify(getEventCaller(), times(4)).verifySQL("DELETE FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        verify(getEventCaller(), times(2)).verifyException(exp);
     }
     
     @Test
@@ -347,15 +315,15 @@ public final class PreparedStatementExecutorTest {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         when(preparedStatement.execute()).thenReturn(true);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
-        verify(eventCaller, times(2)).verifyDataSource("ds_0");
-        verify(eventCaller, times(2)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(2)).verifyParameters(Collections.emptyList());
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(2)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(2)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller()).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -368,18 +336,18 @@ public final class PreparedStatementExecutorTest {
         when(preparedStatement2.execute()).thenReturn(true);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(executorEngine, Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
         assertTrue(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
         verify(preparedStatement1).getConnection();
         verify(preparedStatement2).getConnection();
-        verify(eventCaller, times(4)).verifyDataSource("ds_0");
-        verify(eventCaller, times(4)).verifySQL("SELECT * FROM dual");
-        verify(eventCaller, times(4)).verifyParameters(Collections.emptyList());
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
-        verify(eventCaller, times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        verify(eventCaller, times(0)).verifyException(null);
+        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
+        verify(getEventCaller(), times(4)).verifySQL("SELECT * FROM dual");
+        verify(getEventCaller(), times(4)).verifyParameters(Collections.emptyList());
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
+        verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapperForDQL(final PreparedStatement preparedStatement, final String dataSource) {

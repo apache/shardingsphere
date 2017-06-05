@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
@@ -48,8 +46,7 @@ public final class ExecutorEngine {
     
     private final ListeningExecutorService executorService;
     
-    public ExecutorEngine(final ShardingProperties shardingProperties) {
-        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
+    public ExecutorEngine(final int executorSize) {
         executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder()
                         .setDaemon(true).setNameFormat("ShardingJDBC-%d").build()));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
