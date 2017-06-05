@@ -32,8 +32,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class AggregationSelectItem {
     
-    @XmlAttribute
-    private String expression;
+    @XmlAttribute(name = "inner-expression")
+    private String innerExpression;
     
     @XmlAttribute(name = "aggregation-type")
     private String aggregationType;

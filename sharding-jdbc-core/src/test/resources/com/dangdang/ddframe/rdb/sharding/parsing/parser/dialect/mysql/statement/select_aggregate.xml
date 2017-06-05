@@ -5,9 +5,9 @@
             <table name="order"/>
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item expression="COUNT(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
-            <aggregation-select-item expression="MAX(MIN(date))" aggregation-type="MAX" index="3" />
-            <aggregation-select-item expression="MIN(time)" aggregation-type="MIN" alias="Time" index="4" />
+            <aggregation-select-item inner-expression="(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
+            <aggregation-select-item inner-expression="(MIN(date))" aggregation-type="MAX" index="3" />
+            <aggregation-select-item inner-expression="(time)" aggregation-type="MIN" alias="Time" index="4" />
         </aggregation-select-items>
     </assert>
 
@@ -16,18 +16,14 @@
             <table name="order"/>
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item expression="AVG(MAX(date))" aggregation-type="AVG" alias="date" index="1">
-                <derived-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1"/>
-                <derived-column expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
+            <aggregation-select-item inner-expression="(MAX(date))" aggregation-type="AVG" alias="date" index="1">
+                <derived-column inner-expression="(MAX(date))" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0"/>
+                <derived-column inner-expression="(MAX(date))" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" />
             </aggregation-select-item>
-            <aggregation-select-item expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1" />
-            <aggregation-select-item expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
-            <aggregation-select-item expression="AVG(DISTINCT time)" aggregation-type="AVG" index="2">
-                <derived-column expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
-                <derived-column expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
+            <aggregation-select-item inner-expression="(DISTINCT time)" aggregation-type="AVG" index="2">
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_1" />
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_1" />
             </aggregation-select-item>
-            <aggregation-select-item expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
-            <aggregation-select-item expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
         </aggregation-select-items>
     </assert>
     
@@ -39,7 +35,7 @@
             <group-by-column name="order_id" order-by-type="ASC" />
         </group-by-columns>
         <aggregation-select-items>
-            <aggregation-select-item expression="MAX(date)" aggregation-type="MAX" index="2" />
+            <aggregation-select-item inner-expression="(date)" aggregation-type="MAX" index="2" />
         </aggregation-select-items>
     </assert>
     
@@ -55,7 +51,7 @@
             <table name="order"/>
         </tables>
         <aggregation-select-items>
-            <aggregation-select-item expression="COUNT(time)" aggregation-type="COUNT" index="2" />
+            <aggregation-select-item inner-expression="(time)" aggregation-type="COUNT" index="2" />
         </aggregation-select-items>
     </assert>
 </asserts>

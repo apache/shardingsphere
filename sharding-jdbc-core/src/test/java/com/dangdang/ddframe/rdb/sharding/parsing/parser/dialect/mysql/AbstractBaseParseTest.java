@@ -183,13 +183,13 @@ public abstract class AbstractBaseParseTest {
                 
                         @Override
                         public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem input) {
-                            AggregationSelectItem result = new AggregationSelectItem(input.getExpression(), Optional.fromNullable(input.getAlias()), -1,
+                            AggregationSelectItem result = new AggregationSelectItem(input.getInnerExpression(), Optional.fromNullable(input.getAlias()), -1,
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
                             for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
-                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getExpression(), Optional.fromNullable(each.getAlias()), -1,
+                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getInnerExpression(), Optional.fromNullable(each.getAlias()), -1,
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
                             return result;
@@ -214,7 +214,7 @@ public abstract class AbstractBaseParseTest {
         assertExpectedConditions(actual);
         assertOrderBy(actual);
         assertGroupBy(actual);
-//        assertAggregationSelectItem(actual);
+        assertAggregationSelectItem(actual);
         assertLimit(actual);
     }
     
@@ -243,11 +243,10 @@ public abstract class AbstractBaseParseTest {
     private void assertAggregationSelectItem(final SQLStatement actual) {
         for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
             AggregationSelectItem expected = aggregationSelectItems.next();
-            assertTrue(new ReflectionEquals(expected).matches(each));
-            //assertThat(each, new ReflectionEquals(expected, "derivedColumns"));
-//            for (int i = 0; i < each.getDerivedColumns().size(); i++) {
-//                assertThat(each.getDerivedColumns().get(i), new ReflectionEquals(expected.getDerivedColumns().get(i)));
-//            }
+            assertTrue(new ReflectionEquals(expected, "derivedColumns").matches(each));
+            for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
+                assertTrue(new ReflectionEquals(expected.getDerivedAggregationSelectItems().get(i)).matches(each.getDerivedAggregationSelectItems().get(i)));
+            }
         }
         assertFalse(aggregationSelectItems.hasNext());
     }
