@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class GroupByColumn {
+public final class Limit {
     
     @XmlAttribute
-    private String owner;
+    private Integer offset;
     
-    @XmlAttribute
-    private String name;
+    @XmlAttribute(name = "row-count")
+    private Integer rowCount;
     
-    @XmlAttribute
-    private String alias;
+    @XmlAttribute(name = "offset-index")
+    private Integer offsetParameterIndex;
     
-    @XmlAttribute(name = "order-by-type") 
-    private String orderByType;
+    @XmlAttribute(name = "row-count-index")
+    private Integer rowCountParameterIndex;
 }

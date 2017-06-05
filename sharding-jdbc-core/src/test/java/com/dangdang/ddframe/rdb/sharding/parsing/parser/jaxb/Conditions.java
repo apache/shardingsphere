@@ -15,23 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import lombok.Getter;
-import lombok.Setter;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class Table {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class Conditions {
     
-    @XmlAttribute
-    private String name;
-    
-    @XmlAttribute
-    private String alias;
+    @XmlElement(name = "condition")
+    private List<Condition> conditions;
 }

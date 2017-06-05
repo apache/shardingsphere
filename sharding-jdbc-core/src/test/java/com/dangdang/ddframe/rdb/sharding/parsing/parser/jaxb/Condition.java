@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,34 +23,23 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Value {
+public final class Condition {
+    
+    @XmlAttribute(name = "column-name")
+    private String columnName;
+    
+    @XmlAttribute(name = "table-name")
+    private String tableName;
     
     @XmlAttribute
-    private Integer index;
+    private String operator;
     
-    @XmlAttribute
-    private String literal;
-    
-    @XmlAttribute
-    private String type;
-    
-    public Comparable<?> getValueWithType() {
-        if (boolean.class.getName().equals(type) || Boolean.class.getName().equals(type)) {
-            return Boolean.valueOf(literal);
-        }
-        if (int.class.getName().equals(type) || Integer.class.getName().equals(type)) {
-            return Integer.parseInt(literal);
-        }
-        if (long.class.getName().equals(type) || Long.class.getName().equals(type)) {
-            return Long.parseLong(literal);
-        }
-        if (double.class.getName().equals(type) || Double.class.getName().equals(type)) {
-            return Double.parseDouble(literal);
-        }
-        return literal;
-    }
+    @XmlElement(name = "value") 
+    private List<Value> values;
 }

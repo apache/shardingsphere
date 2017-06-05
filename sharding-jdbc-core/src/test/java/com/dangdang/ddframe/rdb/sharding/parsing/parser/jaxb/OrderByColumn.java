@@ -15,20 +15,32 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-
-import lombok.Getter;
+import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Conditions {
+public final class OrderByColumn {
     
-    @XmlElement(name = "condition")
-    private List<Condition> conditions;
+    @XmlAttribute
+    private String owner;
+    
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private Integer index;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute(name = "order-by-type") 
+    private String orderByType;
 }

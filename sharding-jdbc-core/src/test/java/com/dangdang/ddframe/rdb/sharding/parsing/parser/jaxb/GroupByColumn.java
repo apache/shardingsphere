@@ -15,20 +15,29 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
 import lombok.Getter;
+import lombok.Setter;
 
-@XmlRootElement(name = "asserts")
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 @Getter
-public final class Asserts {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class GroupByColumn {
     
-    @XmlElement(name = "assert")
-    private List<Assert> asserts = new ArrayList<>();
+    @XmlAttribute
+    private String owner;
+    
+    @XmlAttribute
+    private String name;
+    
+    @XmlAttribute
+    private String alias;
+    
+    @XmlAttribute(name = "order-by-type") 
+    private String orderByType;
 }

@@ -15,11 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
@@ -42,7 +41,7 @@ public final class MySQLStatementTest extends AbstractBaseParseTest {
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parsing/mysql/statement/");
+        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parsing/parser/dialect/mysql/statement/");
     }
     
     @Test

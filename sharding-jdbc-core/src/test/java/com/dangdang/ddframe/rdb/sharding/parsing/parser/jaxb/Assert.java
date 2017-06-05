@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,22 +24,41 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Condition {
-    
-    @XmlAttribute(name = "column-name")
-    private String columnName;
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
+public final class Assert {
     
     @XmlAttribute
-    private String operator;
+    private String id;
     
-    @XmlElement(name = "value") 
-    private List<Value> values;
+    @XmlAttribute
+    private String sql;
+    
+    @XmlAttribute(name = "expected-sql")
+    private String expectedSQL;
+    
+    @XmlElement(name = "tables") 
+    private Tables tables;
+    
+    @XmlElement(name = "conditions") 
+    private Conditions conditions;
+    
+    @XmlElementWrapper(name = "order-by-columns")
+    @XmlElement(name = "order-by-column") 
+    private List<OrderByColumn> orderByColumns;
+    
+    @XmlElementWrapper(name = "group-by-columns")
+    @XmlElement(name = "group-by-column") 
+    private List<GroupByColumn> groupByColumns;
+    
+    @XmlElementWrapper(name = "aggregation-select-items")
+    @XmlElement(name = "aggregation-select-item") 
+    private List<AggregationSelectItem> aggregationSelectItems;
+    
+    @XmlElement 
+    private Limit limit;
 }

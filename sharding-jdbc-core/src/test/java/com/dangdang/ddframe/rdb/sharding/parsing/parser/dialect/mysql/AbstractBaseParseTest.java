@@ -15,14 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Assert;
-import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Asserts;
-import com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
@@ -36,6 +33,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Function;
@@ -118,7 +118,7 @@ public abstract class AbstractBaseParseTest {
         result[3] = new Tables();
         if (null != assertObj.getTables()) {
             Tables tables = new Tables();
-            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Table each : assertObj.getTables().getTables()) {
+            for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Table each : assertObj.getTables().getTables()) {
                 Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias())); 
                 tables.add(table);
             }
@@ -127,7 +127,7 @@ public abstract class AbstractBaseParseTest {
         result[4] = new Conditions();
         if (null != assertObj.getConditions()) {
             Conditions conditions = new Conditions();
-            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.Condition each : assertObj.getConditions().getConditions()) {
+            for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Condition each : assertObj.getConditions().getConditions()) {
                 List<SQLExpression> sqlExpressions = new LinkedList<>();
                 for (Value value : each.getValues()) {
                     if (null != value.getIndex()) {
@@ -161,10 +161,10 @@ public abstract class AbstractBaseParseTest {
         }
         final SelectStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
-            List<OrderBy> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn, OrderBy>() {
+            List<OrderBy> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn, OrderBy>() {
         
                 @Override
-                public OrderBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn input) {
+                public OrderBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn input) {
                     return Strings.isNullOrEmpty(input.getName()) ? new OrderBy(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()))
                             : new OrderBy(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
@@ -172,10 +172,10 @@ public abstract class AbstractBaseParseTest {
             selectStatement.getOrderByList().addAll(orderBys);
         }
         if (null != assertObj.getGroupByColumns()) {
-            selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn, GroupBy>() {
+            selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn, GroupBy>() {
                 
                 @Override
-                public GroupBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn input) {
+                public GroupBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn input) {
                     return new GroupBy(
                             Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
@@ -183,16 +183,16 @@ public abstract class AbstractBaseParseTest {
         }
         if (null != assertObj.getAggregationSelectItems()) {
             List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
-                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem, AggregationSelectItem>() {
+                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem, AggregationSelectItem>() {
                 
                         @Override
-                        public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem input) {
+                        public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem input) {
                             AggregationSelectItem result = new AggregationSelectItem(input.getExpression(), Optional.fromNullable(input.getAlias()), -1,
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
-                            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
+                            for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
                                 result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getExpression(), Optional.fromNullable(each.getAlias()), -1,
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
@@ -226,7 +226,7 @@ public abstract class AbstractBaseParseTest {
         assertTrue(new ReflectionEquals(expectedTables).matches(actual.getTables()));
     }
     
-    private void assertExpectedConditions(SQLStatement actual) {
+    private void assertExpectedConditions(final SQLStatement actual) {
         assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
     }
     
@@ -237,7 +237,7 @@ public abstract class AbstractBaseParseTest {
         assertFalse(orderByColumns.hasNext());
     }
     
-    private void assertGroupBy(SQLStatement actual) {
+    private void assertGroupBy(final SQLStatement actual) {
         for (GroupBy each : actual.getGroupByList()) {
             assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
         }
@@ -256,7 +256,7 @@ public abstract class AbstractBaseParseTest {
         assertFalse(aggregationSelectItems.hasNext());
     }
     
-    private void assertLimit(SQLStatement actual) {
+    private void assertLimit(final SQLStatement actual) {
         assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
     }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,20 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        MySQLStatementTest.class,
-        MySQLPreparedStatementForOneParameterTest.class, 
-        MySQLPreparedStatementForTwoParametersTest.class,  
-        OrParseTest.class
-    })
-public class AllMySQLStatementTests {
+import lombok.Getter;
+
+@XmlRootElement(name = "asserts")
+@Getter
+public final class Asserts {
+    
+    @XmlElement(name = "assert")
+    private List<Assert> asserts = new ArrayList<>();
 }

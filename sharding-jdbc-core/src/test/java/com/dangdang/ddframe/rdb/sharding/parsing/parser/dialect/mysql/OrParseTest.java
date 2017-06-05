@@ -15,15 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.mysql;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 
 import com.dangdang.ddframe.rdb.sharding.api.fixture.ShardingRuleMockBuilder;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.parsing.AbstractBaseParseTest;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,9 +32,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBaseParseTest {
+public final class OrParseTest extends AbstractBaseParseTest {
     
-    public MySQLPreparedStatementForTwoParametersTest(
+    public OrParseTest(
             final String testCaseName, final String sql, final String expectedSQL,
             final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
@@ -42,12 +42,16 @@ public final class MySQLPreparedStatementForTwoParametersTest extends AbstractBa
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parsing/mysql/prepared_statement/two_params/");
+        return AbstractBaseParseTest.dataParameters("com/dangdang/ddframe/rdb/sharding/parsing/parser/dialect/mysql/or/");
     }
     
+    // TODO 归并字段，整合进mySQL测试
+    // TODO 暂时不支持or
     @Test
+    @Ignore
     public void assertParse() {
-        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder().addShardingColumns("user_id").addShardingColumns("order_id").addShardingColumns("state")
-                .addGenerateKeyColumn("order", "order_id").build()).parse());
+        assertSQLStatement(new SQLParsingEngine(DatabaseType.MySQL, getSql(), new ShardingRuleMockBuilder()
+                .addShardingColumns("id").addShardingColumns("user_id").addShardingColumns("name").addShardingColumns("age")
+                .addShardingColumns("days").addShardingColumns("fee").addShardingColumns("travel_date").addShardingColumns("long").build()).parse());
     }
 }

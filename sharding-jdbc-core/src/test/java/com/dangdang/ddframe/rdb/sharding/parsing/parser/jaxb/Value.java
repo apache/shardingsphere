@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,17 +27,30 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class Limit {
+public final class Value {
     
     @XmlAttribute
-    private Integer offset;
+    private Integer index;
     
-    @XmlAttribute(name = "row-count")
-    private Integer rowCount;
+    @XmlAttribute
+    private String literal;
     
-    @XmlAttribute(name = "offset-index")
-    private Integer offsetParameterIndex;
+    @XmlAttribute
+    private String type;
     
-    @XmlAttribute(name = "row-count-index")
-    private Integer rowCountParameterIndex;
+    public Comparable<?> getValueWithType() {
+        if (boolean.class.getName().equals(type) || Boolean.class.getName().equals(type)) {
+            return Boolean.valueOf(literal);
+        }
+        if (int.class.getName().equals(type) || Integer.class.getName().equals(type)) {
+            return Integer.parseInt(literal);
+        }
+        if (long.class.getName().equals(type) || Long.class.getName().equals(type)) {
+            return Long.parseLong(literal);
+        }
+        if (double.class.getName().equals(type) || Double.class.getName().equals(type)) {
+            return Double.parseDouble(literal);
+        }
+        return literal;
+    }
 }
