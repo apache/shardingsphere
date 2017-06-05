@@ -56,6 +56,7 @@ public class ShardingJdbcDataSourceBeanDefinitionParser extends AbstractBeanDefi
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
         factory.addConstructorArgValue(parseShardingRuleConfig(element, parserContext));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
+        factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
     

@@ -99,7 +99,7 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     protected void assertDataSet(final String expectedDataSetFile, final DynamicShardingValueHelper helper, 

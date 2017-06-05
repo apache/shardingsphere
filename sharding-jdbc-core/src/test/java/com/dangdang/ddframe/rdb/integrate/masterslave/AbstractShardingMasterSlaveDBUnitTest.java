@@ -176,6 +176,6 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }

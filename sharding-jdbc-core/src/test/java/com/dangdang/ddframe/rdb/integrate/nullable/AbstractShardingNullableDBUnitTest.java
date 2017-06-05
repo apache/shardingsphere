@@ -89,6 +89,6 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }

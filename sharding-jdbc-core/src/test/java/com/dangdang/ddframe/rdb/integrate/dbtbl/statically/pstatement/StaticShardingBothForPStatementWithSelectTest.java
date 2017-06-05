@@ -41,7 +41,7 @@ public final class StaticShardingBothForPStatementWithSelectTest extends Abstrac
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test

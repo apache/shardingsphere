@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @author gaohongtao
  */
 @Slf4j
-public final class ExecutorEngine {
+public final class ExecutorEngine implements AutoCloseable {
     
     private final ListeningExecutorService executorService;
     
@@ -115,10 +115,8 @@ public final class ExecutorEngine {
         return Futures.allAsList(result);
     }
     
-    /**
-     * 安全关闭执行器,并释放线程.
-     */
-    public void shutdown() {
+    @Override
+    public void close() {
         executorService.shutdownNow();
         try {
             executorService.awaitTermination(5, TimeUnit.SECONDS);

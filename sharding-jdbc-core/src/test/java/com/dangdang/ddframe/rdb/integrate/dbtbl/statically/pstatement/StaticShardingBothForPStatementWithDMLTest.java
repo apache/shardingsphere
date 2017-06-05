@@ -46,7 +46,7 @@ public final class StaticShardingBothForPStatementWithDMLTest extends AbstractSh
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test

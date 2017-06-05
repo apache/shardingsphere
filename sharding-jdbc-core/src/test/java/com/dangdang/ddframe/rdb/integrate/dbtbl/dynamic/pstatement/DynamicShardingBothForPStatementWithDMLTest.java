@@ -43,7 +43,7 @@ public final class DynamicShardingBothForPStatementWithDMLTest extends AbstractS
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test(expected = IllegalStateException.class)

@@ -52,6 +52,6 @@ public abstract class AbstractBaseExecutorTest {
         ExecutorTestUtil.clear();
         DMLExecutionEventBus.clearListener();
         DQLExecutionEventBus.clearListener();
-        executorEngine.shutdown();
+        executorEngine.close();
     }
 }
