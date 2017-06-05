@@ -62,4 +62,16 @@ public final class GroupBy implements IndexColumn {
     public Optional<String> getColumnName() {
         return Optional.of(name);
     }
+    
+    /**
+     * 获取列全名.
+     * 
+     * @return 列全名
+     */
+    public Optional<String> getQualifiedName() {
+        if (null == name) {
+            return Optional.absent();
+        }
+        return owner.isPresent() ? Optional.of(owner.get() + "." + name) : Optional.of(name);
+    }
 }

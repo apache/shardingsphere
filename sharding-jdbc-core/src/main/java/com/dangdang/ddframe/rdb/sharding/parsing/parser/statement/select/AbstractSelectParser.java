@@ -355,7 +355,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
         for (OrderBy each : selectStatement.getOrderByList()) {
-            if (!each.getIndex().isPresent() && !each.getAlias().isPresent() && !selectStatement.isContainStar()) {
+            if (!isContainItem(each)) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                 String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
@@ -367,12 +367,45 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
         for (GroupBy each : selectStatement.getGroupByList()) {
-            if (!each.getAlias().isPresent() && !selectStatement.isContainStar()) {
+            if (!isContainItem(each)) {
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
                 itemsToken.getItems().add(groupByExpression + " AS " + alias + " ");
             }
         }
+    }
+    
+    private boolean isContainItem(final OrderBy orderBy) {
+        if (selectStatement.isContainStar()) {
+            return true;
+        }
+        for (SelectItem each : selectStatement.getItems()) {
+            if (orderBy.getIndex().isPresent()) {
+                return true;
+            }
+            if (each.getAlias().isPresent() && orderBy.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderBy.getAlias().get())) {
+                return true;
+            }
+            if (orderBy.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderBy.getQualifiedName().get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isContainItem(final GroupBy groupBy) {
+        if (selectStatement.isContainStar()) {
+            return true;
+        }
+        for (SelectItem each : selectStatement.getItems()) {
+            if (each.getAlias().isPresent() && groupBy.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(groupBy.getAlias().get())) {
+                return true;
+            }
+            if (groupBy.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(groupBy.getQualifiedName().get())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -89,4 +89,16 @@ public final class OrderBy implements IndexColumn {
         }
         columnIndex = index;
     }
+    
+    /**
+     * 获取列全名.
+     *
+     * @return 列全名
+     */
+    public Optional<String> getQualifiedName() {
+        if (!name.isPresent()) {
+            return Optional.absent();
+        }
+        return owner.isPresent() ? Optional.of(owner.get() + "." + name.get()) : name;
+    }
 }
