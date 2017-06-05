@@ -202,8 +202,12 @@ public abstract class AbstractBaseParseTest {
             selectStatement.getItems().addAll(selectItems);
         }
         if (null != assertObj.getLimit()) {
-            selectStatement.setLimit(new Limit(
-                    assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
+            if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
+                selectStatement.setLimit(new Limit(
+                        assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
+            } else {
+                selectStatement.setLimit(new Limit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+            }
         }
         result[5] = selectStatement;
         return result;
@@ -218,7 +222,7 @@ public abstract class AbstractBaseParseTest {
         }
         assertFalse(groupByColumns.hasNext());
 //        assertAggregationSelectItem(actual);
-//        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
+        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
     }
     
     private void assertOrderBy(final SQLStatement actual) {

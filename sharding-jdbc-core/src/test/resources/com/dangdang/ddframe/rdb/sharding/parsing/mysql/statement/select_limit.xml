@@ -11,7 +11,7 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <limit offset="0" row-count="5" offset-index="-1" row-count-index="-1" />
+        <limit row-count="5" offset-index="-1" row-count-index="-1" />
     </assert>
 
     <assert id="assertSelectForLimitOffset" sql="SELECT * FROM order o LIMIT 5 OFFSET 4" expected-sql="SELECT * FROM [Token(order)] o LIMIT [limit_count(5)] OFFSET [limit_offset(4)]">
