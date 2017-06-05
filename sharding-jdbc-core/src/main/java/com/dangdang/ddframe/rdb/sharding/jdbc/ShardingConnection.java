@@ -61,40 +61,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @return 数据库连接
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        Connection result = getConnectionInternal(dataSourceName, sqlType);
-        replayMethodsInvocation(result);
-        return result;
-    }
-    
-    /**
-     * 释放缓存中已经中断的数据库连接.
-     * 
-     * @param brokenConnection 已经中断的数据库连接
-     */
-    public void releaseBrokenConnection(final Connection brokenConnection) {
-        Preconditions.checkNotNull(brokenConnection);
-        closeConnection(brokenConnection);
-        connectionMap.values().remove(brokenConnection);
-    }
-    
-    private void closeConnection(final Connection connection) {
-        if (null != connection) {
-            try {
-                connection.close();
-            } catch (final SQLException ignored) {
-            }
-        }
-    }
-    
-    @Override
-    public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.SELECT).getMetaData();
-    }
-    
-    private Connection getConnectionInternal(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        Optional<Connection> connectionOptional = fetchCachedConnectionBySQLType(dataSourceName, sqlType);
-        if (connectionOptional.isPresent()) {
-            return connectionOptional.get();
+        Optional<Connection> connection = fetchCachedConnection(dataSourceName, sqlType);
+        if (connection.isPresent()) {
+            return connection.get();
         }
         Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
@@ -107,19 +76,11 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         Connection result = dataSource.getConnection();
         MetricsContext.stop(metricsContext);
         connectionMap.put(realDataSourceName, result);
+        replayMethodsInvocation(result);
         return result;
     }
     
-    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
-        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (!MasterSlaveDataSource.isDML(sqlType)) {
-            return slaveDataSourceName;
-        }
-        closeConnection(connectionMap.remove(slaveDataSourceName));
-        return getMasterDataSourceName(dataSourceName);
-    }
-    
-    private Optional<Connection> fetchCachedConnectionBySQLType(final String dataSourceName, final SQLType sqlType) {
+    private Optional<Connection> fetchCachedConnection(final String dataSourceName, final SQLType sqlType) {
         if (connectionMap.containsKey(dataSourceName)) {
             return Optional.of(connectionMap.get(dataSourceName));
         }
@@ -137,12 +98,46 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return Optional.absent();
     }
     
+    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
+        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
+        if (!MasterSlaveDataSource.isDML(sqlType)) {
+            return slaveDataSourceName;
+        }
+        closeConnection(connectionMap.remove(slaveDataSourceName));
+        return getMasterDataSourceName(dataSourceName);
+    }
+    
     private String getMasterDataSourceName(final String dataSourceName) {
         return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "MASTER");
     }
     
     private String getSlaveDataSourceName(final String dataSourceName) {
         return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "SLAVE");
+    }
+    
+    /**
+     * 释放数据库连接.
+     *
+     * @param connection 待释放的数据库连接
+     */
+    public void release(final Connection connection) {
+        Preconditions.checkNotNull(connection);
+        closeConnection(connection);
+        connectionMap.values().remove(connection);
+    }
+    
+    private void closeConnection(final Connection connection) {
+        if (null != connection) {
+            try {
+                connection.close();
+            } catch (final SQLException ignored) {
+            }
+        }
+    }
+    
+    @Override
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.SELECT).getMetaData();
     }
     
     @Override

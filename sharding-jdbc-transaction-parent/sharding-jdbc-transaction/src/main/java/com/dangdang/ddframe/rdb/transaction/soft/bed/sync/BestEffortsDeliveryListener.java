@@ -75,7 +75,7 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                     try {
                         conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
                         if (!isValidConnection(conn)) {
-                            bedSoftTransaction.getConnection().releaseBrokenConnection(conn);
+                            bedSoftTransaction.getConnection().release(conn);
                             conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
                             isNewConnection = true;
                         }
