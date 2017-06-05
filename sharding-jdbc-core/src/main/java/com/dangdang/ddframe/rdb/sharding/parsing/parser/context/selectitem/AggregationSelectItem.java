@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.google.common.base.Optional;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,6 +34,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
+@EqualsAndHashCode
 @ToString
 public final class AggregationSelectItem implements SelectItem, IndexColumn {
     

@@ -51,6 +51,7 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.*;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractBaseParseTest {
@@ -64,11 +65,11 @@ public abstract class AbstractBaseParseTest {
     
     private final Conditions expectedConditions;
     
-    private final Iterator<OrderBy> orderByList;
+    private final Iterator<OrderBy> orderByColumns;
     
-    private final Iterator<GroupBy> groupByList;
+    private final Iterator<GroupBy> groupByColumns;
     
-    private final Iterator<AggregationSelectItem> aggregationColumns;
+    private final Iterator<AggregationSelectItem> aggregationSelectItems;
     
     private final Limit limit;
     
@@ -78,9 +79,9 @@ public abstract class AbstractBaseParseTest {
         this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
-        this.orderByList = expectedSQLStatement.getOrderByList().iterator();
-        this.groupByList = expectedSQLStatement.getGroupByList().iterator();
-        this.aggregationColumns = expectedSQLStatement.getAggregationSelectItems().iterator();
+        this.orderByColumns = expectedSQLStatement.getOrderByList().iterator();
+        this.groupByColumns = expectedSQLStatement.getGroupByList().iterator();
+        this.aggregationSelectItems = expectedSQLStatement.getAggregationSelectItems().iterator();
         this.limit = expectedSQLStatement.getLimit();
     }
     
@@ -158,16 +159,17 @@ public abstract class AbstractBaseParseTest {
             }
             result[4] = conditions;
         }
-        SQLStatement selectStatement = new SelectStatement();
+        final SelectStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
-            selectStatement.getOrderByList().addAll(Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn, OrderBy>() {
-                
+            List<OrderBy> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn, OrderBy>() {
+        
                 @Override
                 public OrderBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderBy(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase())) 
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderBy(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()))
                             : new OrderBy(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
-            }));
+            });
+            selectStatement.getOrderByList().addAll(orderBys);
         }
         if (null != assertObj.getGroupByColumns()) {
             selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.GroupByColumn, GroupBy>() {
@@ -179,24 +181,25 @@ public abstract class AbstractBaseParseTest {
                 }
             }));
         }
-        if (null != assertObj.getAggregationColumns()) {
-            selectStatement.getAggregationSelectItems().addAll(Lists.transform(assertObj.getAggregationColumns(), 
-                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn, AggregationSelectItem>() {
-                        
+        if (null != assertObj.getAggregationSelectItems()) {
+            List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
+                    new Function<com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem, AggregationSelectItem>() {
+                
                         @Override
-                        public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn input) {
-                            AggregationSelectItem result = new AggregationSelectItem(input.getExpression(), Optional.fromNullable(input.getAlias()), -1, 
+                        public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem input) {
+                            AggregationSelectItem result = new AggregationSelectItem(input.getExpression(), Optional.fromNullable(input.getAlias()), -1,
                                     AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             if (null != input.getIndex()) {
                                 result.setColumnIndex(input.getIndex());
                             }
-                            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationColumn each : input.getDerivedColumns()) {
-                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getExpression(), Optional.fromNullable(each.getAlias()), -1, 
+                            for (com.dangdang.ddframe.rdb.sharding.parsing.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
+                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getExpression(), Optional.fromNullable(each.getAlias()), -1,
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
                             return result;
                         }
-                }));
+                    });
+            selectStatement.getItems().addAll(selectItems);
         }
         if (null != assertObj.getLimit()) {
             selectStatement.setLimit(new Limit(
@@ -209,5 +212,31 @@ public abstract class AbstractBaseParseTest {
     protected final void assertSQLStatement(final SQLStatement actual) {
         assertTrue(new ReflectionEquals(expectedTables).matches(actual.getTables()));
         assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
+        assertOrderBy(actual);
+        for (GroupBy each : actual.getGroupByList()) {
+            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
+        }
+        assertFalse(groupByColumns.hasNext());
+//        assertAggregationSelectItem(actual);
+//        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
+    }
+    
+    private void assertOrderBy(final SQLStatement actual) {
+        for (OrderBy each : actual.getOrderByList()) {
+            assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
+        }
+        assertFalse(orderByColumns.hasNext());
+    }
+    
+    private void assertAggregationSelectItem(final SQLStatement actual) {
+        for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
+            AggregationSelectItem expected = aggregationSelectItems.next();
+            assertTrue(new ReflectionEquals(expected).matches(each));
+            //assertThat(each, new ReflectionEquals(expected, "derivedColumns"));
+//            for (int i = 0; i < each.getDerivedColumns().size(); i++) {
+//                assertThat(each.getDerivedColumns().get(i), new ReflectionEquals(expected.getDerivedColumns().get(i)));
+//            }
+        }
+        assertFalse(aggregationSelectItems.hasNext());
     }
 }

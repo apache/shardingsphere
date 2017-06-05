@@ -55,9 +55,9 @@ public final class Assert {
     @XmlElement(name = "group-by-column") 
     private List<GroupByColumn> groupByColumns;
     
-    @XmlElementWrapper(name = "aggregation-columns")
-    @XmlElement(name = "aggregation-column") 
-    private List<AggregationColumn> aggregationColumns;
+    @XmlElementWrapper(name = "aggregation-select-items")
+    @XmlElement(name = "aggregation-select-item") 
+    private List<AggregationSelectItem> aggregationSelectItems;
     
     @XmlElement 
     private Limit limit;

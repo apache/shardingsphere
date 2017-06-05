@@ -4,31 +4,31 @@
         <tables>
             <table name="order"/>
         </tables>
-        <aggregation-columns>
-            <aggregation-column expression="COUNT(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
-            <aggregation-column expression="MAX(MIN(date))" aggregation-type="MAX" index="3" />
-            <aggregation-column expression="MIN(time)" aggregation-type="MIN" alias="Time" index="4" />
-        </aggregation-columns>
+        <aggregation-select-items>
+            <aggregation-select-item expression="COUNT(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
+            <aggregation-select-item expression="MAX(MIN(date))" aggregation-type="MAX" index="3" />
+            <aggregation-select-item expression="MIN(time)" aggregation-type="MIN" alias="Time" index="4" />
+        </aggregation-select-items>
     </assert>
 
     <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order" expected-sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id , COUNT(MAX(date)) AS sharding_gen_1 , SUM(MAX(date)) AS sharding_gen_2 , COUNT(DISTINCT time) AS sharding_gen_3 , SUM(DISTINCT time) AS sharding_gen_4 FROM [Token(order)]">
         <tables>
             <table name="order"/>
         </tables>
-        <aggregation-columns>
-            <aggregation-column expression="AVG(MAX(date))" aggregation-type="AVG" alias="date" index="1">
+        <aggregation-select-items>
+            <aggregation-select-item expression="AVG(MAX(date))" aggregation-type="AVG" alias="date" index="1">
                 <derived-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1"/>
                 <derived-column expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
-            </aggregation-column>
-            <aggregation-column expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1" />
-            <aggregation-column expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
-            <aggregation-column expression="AVG(DISTINCT time)" aggregation-type="AVG" index="2">
+            </aggregation-select-item>
+            <aggregation-select-item expression="COUNT(MAX(date))" aggregation-type="COUNT" alias="sharding_gen_1" />
+            <aggregation-select-item expression="SUM(MAX(date))" aggregation-type="SUM" alias="sharding_gen_2" />
+            <aggregation-select-item expression="AVG(DISTINCT time)" aggregation-type="AVG" index="2">
                 <derived-column expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
                 <derived-column expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
-            </aggregation-column>
-            <aggregation-column expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
-            <aggregation-column expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
-        </aggregation-columns>
+            </aggregation-select-item>
+            <aggregation-select-item expression="COUNT(DISTINCT time)" aggregation-type="COUNT" alias="sharding_gen_3" />
+            <aggregation-select-item expression="SUM(DISTINCT time)" aggregation-type="SUM" alias="sharding_gen_4" />
+        </aggregation-select-items>
     </assert>
     
     <assert id="assertSelectWithAggregateAndGroupBy" sql="SELECT order_id, MAX(date) FROM order GROUP BY order_id" expected-sql="SELECT order_id, MAX(date) FROM [Token(order)] GROUP BY order_id">
@@ -36,11 +36,11 @@
             <table name="order"/>
         </tables>
         <group-by-columns>
-            <group-by-column name="order_id" order-by-type="ASC" />
+            <group-by-column name="order_id" alias="GROUP_BY_DERIVED_0" order-by-type="ASC" />
         </group-by-columns>
-        <aggregation-columns>
-            <aggregation-column expression="MAX(date)" aggregation-type="MAX" index="2" />
-        </aggregation-columns>
+        <aggregation-select-items>
+            <aggregation-select-item expression="MAX(date)" aggregation-type="MAX" index="2" />
+        </aggregation-select-items>
     </assert>
     
     <assert id="assertSelectWithUnsupportedFunction" sql="SELECT id, BIT_OR(date) FROM order" expected-sql="SELECT id, BIT_OR(date) FROM [Token(order)]">
@@ -54,8 +54,8 @@
         <tables>
             <table name="order"/>
         </tables>
-        <aggregation-columns>
-            <aggregation-column expression="COUNT(time)" aggregation-type="COUNT" index="2" />
-        </aggregation-columns>
+        <aggregation-select-items>
+            <aggregation-select-item expression="COUNT(time)" aggregation-type="COUNT" index="2" />
+        </aggregation-select-items>
     </assert>
 </asserts>

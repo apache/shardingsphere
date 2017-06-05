@@ -17,21 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.jaxb;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class AggregationColumn {
+public final class AggregationSelectItem {
     
     @XmlAttribute
     private String expression;
@@ -49,5 +48,5 @@ public final class AggregationColumn {
     private Integer index;
     
     @XmlElement(name = "derived-column") 
-    private List<AggregationColumn> derivedColumns = new ArrayList<>(2);
+    private List<AggregationSelectItem> derivedColumns = new ArrayList<>(2);
 }
