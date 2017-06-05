@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertDelete" sql="DELETE FROM `order` WHERE order_id IN (1, 2, 3)" expected-sql="DELETE FROM [Token(order)] WHERE order_id IN (1, 2, 3)">
+    <assert id="assertDelete" sql="DELETE FROM `order` WHERE order_id IN (1, 2, 3)">
         <tables>
             <table name="order" />
         </tables>
@@ -13,7 +13,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3" expected-sql="DELETE FROM [Token(order)] o WHERE order_id BETWEEN 1 AND 3">
+    <assert id="assertDeleteWithAlias" sql="DELETE FROM `order` o WHERE order_id BETWEEN 1 AND 3">
         <tables>
             <table name="order" alias="o" />
         </tables>

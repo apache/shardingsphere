@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertInsert" sql="insert into `order`('order_id','state') values (1,'RUNNING')" expected-sql="insert into [Token(order)]('order_id','state') values (1,'RUNNING')">
+    <assert id="assertInsert" sql="insert into `order`('order_id','state') values (1,'RUNNING')">
         <tables>
             <table name="order" />
         </tables>
@@ -14,7 +14,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertInsertWithGenerateKeyColumn" sql="insert into `order`('state') values('RUNNING')" expected-sql="insert into [Token(order)]('state', order_id) values('RUNNING', 1)">
+    <assert id="assertInsertWithGenerateKeyColumn" sql="insert into `order`('state') values('RUNNING')">
         <tables>
             <table name="order" />
         </tables>
@@ -25,7 +25,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertInsertWithoutGenerateKeyColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')" expected-sql="insert into [Token(user)]('user_id', 'state') values(1, 'RUNNING')">
+    <assert id="assertInsertWithoutGenerateKeyColumn" sql="insert into `user`('user_id', 'state') values(1, 'RUNNING')">
         <tables>
             <table name="user" />
         </tables>

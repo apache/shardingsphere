@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectForLimitWithOffsetAndRowCount" sql="SELECT * FROM order o LIMIT 4, 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT [limit_offset(4)], [limit_count(5)]">
+    <assert id="assertSelectForLimitWithOffsetAndRowCount" sql="SELECT * FROM order o LIMIT 4, 5">
         <tables>
             <table name="order" alias="o" />
         </tables>
         <limit offset="4" row-count="5" offset-index="-1" row-count-index="-1"/>
     </assert>
     
-    <assert id="assertSelectForLimitWithRowCountOnly" sql="SELECT * FROM order o LIMIT 5" expected-sql="SELECT * FROM [Token(order)] o LIMIT [limit_count(5)]">
+    <assert id="assertSelectForLimitWithRowCountOnly" sql="SELECT * FROM order o LIMIT 5">
         <tables>
             <table name="order" alias="o" />
         </tables>
         <limit row-count="5" offset-index="-1" row-count-index="-1" />
     </assert>
 
-    <assert id="assertSelectForLimitOffset" sql="SELECT * FROM order o LIMIT 5 OFFSET 4" expected-sql="SELECT * FROM [Token(order)] o LIMIT [limit_count(5)] OFFSET [limit_offset(4)]">
+    <assert id="assertSelectForLimitOffset" sql="SELECT * FROM order o LIMIT 5 OFFSET 4">
         <tables>
             <table name="order" alias="o" />
         </tables>

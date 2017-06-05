@@ -8,10 +8,10 @@
     </assert>
     -->
 
-    <assert id="assertSelectWithDatabaseName" sql="select * from db.order" expected-sql="SELECT * FROM [Token(db.order)]">
+    <assert id="assertSelectWithDatabaseName" sql="select * from db.order">
     </assert>
     
-    <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id = 1">
+    <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1">
         <tables>
             <table name="order" />
         </tables>
@@ -22,7 +22,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectWithAlias" sql="select * from order o where o.order_id = 1" expected-sql="select * from [Token(order)] o where o.order_id = 1">
+    <assert id="assertSelectWithAlias" sql="select * from order o where o.order_id = 1">
         <tables>
             <table name="order" alias="o" />
         </tables>
@@ -33,7 +33,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectWithCondition" sql="select * from order where order_id = 1 and state = 'RUNNING'" expected-sql="select * from [Token(order)] where order_id = 1 and state = 'RUNNING'">
+    <assert id="assertSelectWithCondition" sql="select * from order where order_id = 1 and state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -47,7 +47,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectForShardingKeySelectCondition" sql="select * from order where order_id = 1 and other_state = 'RUNNING'" expected-sql="select * from [Token(order)] where order_id = 1 and other_state = 'RUNNING'">
+    <assert id="assertSelectForShardingKeySelectCondition" sql="select * from order where order_id = 1 and other_state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -58,7 +58,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectForBetween" sql="select * from order where order_id between 1 and 10 and other_state = 'RUNNING'" expected-sql="select * from [Token(order)] where order_id between 1 and 10 and other_state = 'RUNNING'">
+    <assert id="assertSelectForBetween" sql="select * from order where order_id between 1 and 10 and other_state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -70,7 +70,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectForIn" sql="select * from order where order_id in (1,2,3) and other_state = 'RUNNING'" expected-sql="select * from [Token(order)] where order_id in (1,2,3) and other_state = 'RUNNING'">
+    <assert id="assertSelectForIn" sql="select * from order where order_id in (1,2,3) and other_state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -83,7 +83,7 @@
         </conditions>
     </assert>
 
-    <assert id="assertSelectForInWithTableName" sql="select * from order where order.order_id in (1,2,3) and order.other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id IN (1, 2, 3) AND [Token(order)].other_state = 'RUNNING'">
+    <assert id="assertSelectForInWithTableName" sql="select * from order where order.order_id in (1,2,3) and order.other_state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -96,7 +96,7 @@
         </conditions>
     </assert>
 
-    <assert id="assertSelectForBetweenWithTableName" sql="select * from order where order.order_id between 1 and 3 and order.other_state = 'RUNNING'" expected-sql="SELECT * FROM [Token(order)] WHERE [Token(order)].order_id BETWEEN 1 AND 3 AND [Token(order)].other_state = 'RUNNING'">
+    <assert id="assertSelectForBetweenWithTableName" sql="select * from order where order.order_id between 1 and 3 and order.other_state = 'RUNNING'">
         <tables>
             <table name="order" />
         </tables>
@@ -108,7 +108,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectWithDateFunction" sql="select * from order where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')" expected-sql="select * from [Token(order)] where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')">
+    <assert id="assertSelectWithDateFunction" sql="select * from order where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')">
         <tables>
             <table name="order" />
         </tables>

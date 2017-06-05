@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectWithRelationship" sql="SELECT * FROM user u, order o, order_item i WHERE u.user_id = o.user_id AND o.order_id = i.order_id AND u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u, [Token(order)] o, [Token(order_item)] i WHERE u.user_id = o.user_id AND o.order_id = i.order_id AND u.user_id = 1000">
+    <assert id="assertSelectWithRelationship" sql="SELECT * FROM user u, order o, order_item i WHERE u.user_id = o.user_id AND o.order_id = i.order_id AND u.user_id = 1000">
         <tables>
             <table name="user" alias="u" />
             <table name="order" alias="o" />
@@ -13,7 +13,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectWithJoin" sql="SELECT * FROM order INNER JOIN user u ON u.user_id = order.user_id JOIN order_item i ON u.user_id = i.user_id WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(order)] INNER JOIN [Token(user)] u ON u.user_id = [Token(order)].user_id JOIN [Token(order_item)] i ON u.user_id = i.user_id WHERE u.user_id = 1000">
+    <assert id="assertSelectWithJoin" sql="SELECT * FROM order INNER JOIN user u ON u.user_id = order.user_id JOIN order_item i ON u.user_id = i.user_id WHERE u.user_id = 1000">
         <tables>
             <table name="order" />
             <table name="user" alias="u" />
@@ -26,7 +26,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectWithJoinUsing" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
+    <assert id="assertSelectWithJoinUsing" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000">
         <tables>
             <table name="user" alias="u" />
             <table name="order" alias="o" />
@@ -39,7 +39,7 @@
         </conditions>
     </assert>
     
-    <assert id="assertSelectAmbiguousTableName" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000" expected-sql="SELECT * FROM [Token(user)] u JOIN [Token(order)] o USING(user_id) JOIN [Token(order_item)] USING(user_id) WHERE u.user_id = 1000">
+    <assert id="assertSelectAmbiguousTableName" sql="SELECT * FROM user u JOIN order o USING(user_id) JOIN order_item USING(user_id) WHERE u.user_id = 1000">
         <tables>
             <table name="user" alias="u" />
             <table name="order" alias="o" />
@@ -53,7 +53,7 @@
     </assert>
     
     <!-- // TODO 目前无法在条件中解析出来不同子关联对应的条件 -->
-    <assert id="assertSelectWithSelfJoin" sql="SELECT * FROM order, order_item WHERE order_id = 1" expected-sql="SELECT * FROM [Token(order)], [Token(order_item)] WHERE order_id = 1">
+    <assert id="assertSelectWithSelfJoin" sql="SELECT * FROM order, order_item WHERE order_id = 1">
         <tables>
             <table name="order" />
             <table name="order_item" />

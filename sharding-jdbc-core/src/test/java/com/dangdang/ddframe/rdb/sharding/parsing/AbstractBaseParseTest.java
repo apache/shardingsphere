@@ -214,15 +214,20 @@ public abstract class AbstractBaseParseTest {
     }
     
     protected final void assertSQLStatement(final SQLStatement actual) {
-        assertTrue(new ReflectionEquals(expectedTables).matches(actual.getTables()));
-        assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
+        assertExpectedTables(actual);
+        assertExpectedConditions(actual);
         assertOrderBy(actual);
-        for (GroupBy each : actual.getGroupByList()) {
-            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
-        }
-        assertFalse(groupByColumns.hasNext());
+        assertGroupBy(actual);
 //        assertAggregationSelectItem(actual);
-        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
+        assertLimit(actual);
+    }
+    
+    private void assertExpectedTables(final SQLStatement actual) {
+        assertTrue(new ReflectionEquals(expectedTables).matches(actual.getTables()));
+    }
+    
+    private void assertExpectedConditions(SQLStatement actual) {
+        assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
     }
     
     private void assertOrderBy(final SQLStatement actual) {
@@ -230,6 +235,13 @@ public abstract class AbstractBaseParseTest {
             assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
         }
         assertFalse(orderByColumns.hasNext());
+    }
+    
+    private void assertGroupBy(SQLStatement actual) {
+        for (GroupBy each : actual.getGroupByList()) {
+            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
+        }
+        assertFalse(groupByColumns.hasNext());
     }
     
     private void assertAggregationSelectItem(final SQLStatement actual) {
@@ -242,5 +254,9 @@ public abstract class AbstractBaseParseTest {
 //            }
         }
         assertFalse(aggregationSelectItems.hasNext());
+    }
+    
+    private void assertLimit(SQLStatement actual) {
+        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
     }
 }
