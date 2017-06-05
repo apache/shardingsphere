@@ -4,6 +4,6 @@
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <limit offset="1" row-count="2" offset-index="0" row-count-index="1"/>
+        <limit offset="-1" row-count="-1" offset-index="0" row-count-index="1"/>
     </assert>
 </asserts>
