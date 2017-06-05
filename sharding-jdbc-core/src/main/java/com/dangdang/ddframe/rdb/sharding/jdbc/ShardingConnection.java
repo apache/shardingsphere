@@ -61,7 +61,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @return 数据库连接
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        Optional<Connection> connection = fetchCachedConnection(dataSourceName, sqlType);
+        Optional<Connection> connection = getCachedConnection(dataSourceName, sqlType);
         if (connection.isPresent()) {
             return connection.get();
         }
@@ -80,27 +80,16 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         return result;
     }
     
-    private Optional<Connection> fetchCachedConnection(final String dataSourceName, final SQLType sqlType) {
+    private Optional<Connection> getCachedConnection(final String dataSourceName, final SQLType sqlType) {
         if (connectionMap.containsKey(dataSourceName)) {
             return Optional.of(connectionMap.get(dataSourceName));
         }
-        String masterDataSourceName = getMasterDataSourceName(dataSourceName);
-        if (connectionMap.containsKey(masterDataSourceName)) {
-            return Optional.of(connectionMap.get(masterDataSourceName));
-        }
-        if (MasterSlaveDataSource.isDML(sqlType)) {
-            return Optional.absent();
-        }
-        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (connectionMap.containsKey(slaveDataSourceName)) {
-            return Optional.of(connectionMap.get(slaveDataSourceName));
-        }
-        return Optional.absent();
+        return Optional.fromNullable(connectionMap.get(MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName)));
     }
     
     private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
         String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (!MasterSlaveDataSource.isDML(sqlType)) {
+        if (!MasterSlaveDataSource.isMasterRoute(sqlType)) {
             return slaveDataSourceName;
         }
         closeConnection(connectionMap.remove(slaveDataSourceName));
