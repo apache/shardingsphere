@@ -35,9 +35,9 @@ import java.util.Collection;
 public final class OrParseTest extends AbstractBaseParseTest {
     
     public OrParseTest(
-            final String testCaseName, final String sql, final String expectedSQL,
-            final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
+            final String testCaseName, final String sql, final Tables expectedTables, 
+            final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+        super(testCaseName, sql, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")

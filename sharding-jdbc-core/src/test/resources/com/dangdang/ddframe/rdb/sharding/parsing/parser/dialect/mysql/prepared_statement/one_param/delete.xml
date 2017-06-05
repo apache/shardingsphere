@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertDeleteWithParameter" sql="DELETE FROM `order` WHERE order_id IN (?)" expected-sql="DELETE FROM [Token(order)] WHERE order_id IN (?)">
+    <assert id="assertDeleteWithParameter" sql="DELETE FROM `order` WHERE order_id IN (?)">
         <tables>
             <table name="order" />
         </tables>

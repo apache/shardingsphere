@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertInsertWithParameter" sql="insert into `order`('order_id','state') values(?,'RUNNING')" expected-sql="insert into [Token(order)]('order_id','state') values(?,'RUNNING')">
+    <assert id="assertInsertWithParameter" sql="insert into `order`('order_id','state') values(?,'RUNNING')">
         <tables>
             <table name="order" />
         </tables>

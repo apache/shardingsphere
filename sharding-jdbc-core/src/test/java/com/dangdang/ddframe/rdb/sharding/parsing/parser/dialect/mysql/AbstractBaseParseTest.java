@@ -59,8 +59,6 @@ public abstract class AbstractBaseParseTest {
     @Getter(AccessLevel.PROTECTED)
     private final String sql;
     
-    private final String expectedSQL;
-    
     private final Tables expectedTables;
     
     private final Conditions expectedConditions;
@@ -73,10 +71,9 @@ public abstract class AbstractBaseParseTest {
     
     private final Limit limit;
     
-    protected AbstractBaseParseTest(final String testCaseName, final String sql, final String expectedSQL,
-                                    final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+    protected AbstractBaseParseTest(final String testCaseName, final String sql, final Tables expectedTables, 
+                                    final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         this.sql = sql;
-        this.expectedSQL = expectedSQL;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
         this.orderByColumns = expectedSQLStatement.getOrderByList().iterator();
@@ -111,20 +108,19 @@ public abstract class AbstractBaseParseTest {
     }
     
     private static Object[] getDataParameter(final Assert assertObj) {
-        final Object[] result = new Object[6];
+        final Object[] result = new Object[5];
         result[0] = assertObj.getId();
         result[1] = assertObj.getSql();
-        result[2] = assertObj.getExpectedSQL();
-        result[3] = new Tables();
+        result[2] = new Tables();
         if (null != assertObj.getTables()) {
             Tables tables = new Tables();
             for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Table each : assertObj.getTables().getTables()) {
                 Table table = new Table(each.getName(), Optional.fromNullable(each.getAlias())); 
                 tables.add(table);
             }
-            result[3] = tables;
+            result[2] = tables;
         }
-        result[4] = new Conditions();
+        result[3] = new Conditions();
         if (null != assertObj.getConditions()) {
             Conditions conditions = new Conditions();
             for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Condition each : assertObj.getConditions().getConditions()) {
@@ -157,7 +153,7 @@ public abstract class AbstractBaseParseTest {
                 }
                 conditions.add(condition);
             }
-            result[4] = conditions;
+            result[3] = conditions;
         }
         final SelectStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
@@ -209,7 +205,7 @@ public abstract class AbstractBaseParseTest {
                 selectStatement.setLimit(new Limit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
             }
         }
-        result[5] = selectStatement;
+        result[4] = selectStatement;
         return result;
     }
     

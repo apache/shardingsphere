@@ -33,9 +33,9 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class MySQLPreparedStatementForOneParameterTest extends AbstractBaseParseTest {
     
-    public MySQLPreparedStatementForOneParameterTest(final String testCaseName, final String sql, final String expectedSQL, final Tables expectedTables,
+    public MySQLPreparedStatementForOneParameterTest(final String testCaseName, final String sql, final Tables expectedTables,
                                                      final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
-        super(testCaseName, sql, expectedSQL, expectedTables, expectedConditions, expectedSQLStatement);
+        super(testCaseName, sql, expectedTables, expectedConditions, expectedSQLStatement);
     }
     
     @Parameters(name = "{0}")

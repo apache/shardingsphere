@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <assert id="assertSelectWithParameter" sql="SELECT * FROM order WHERE order_id BETWEEN ? AND ?" expected-sql="SELECT * FROM [Token(order)] WHERE order_id BETWEEN ? AND ?">
+    <assert id="assertSelectWithParameter" sql="SELECT * FROM order WHERE order_id BETWEEN ? AND ?">
         <tables>
             <table name="order" />
         </tables>

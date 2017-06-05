@@ -38,9 +38,6 @@ public final class Assert {
     @XmlAttribute
     private String sql;
     
-    @XmlAttribute(name = "expected-sql")
-    private String expectedSQL;
-    
     @XmlElement(name = "tables") 
     private Tables tables;
     
