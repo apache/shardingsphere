@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,23 +15,16 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.AllLexerTests;
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.analyzer.TokenizerTest;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.AllMySQLStatementTests;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AllStatementParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        TokenizerTest.class,
-        AllLexerTests.class,
-        AllStatementParserTests.class,
-        AllMySQLStatementTests.class,
-        SQLParsingEngineTest.class,
-        UnsupportedParseTest.class
+        InsertStatementParserTest.class,
+        UpdateStatementParserTest.class,
+        DeleteStatementParserTest.class,
     })
-public class AllParsingTests {
+public class AllStatementParserTests {
 }
