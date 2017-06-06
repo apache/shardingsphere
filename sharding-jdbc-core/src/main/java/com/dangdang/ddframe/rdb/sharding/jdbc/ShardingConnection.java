@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -68,10 +68,12 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
         DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        String realDataSourceName = dataSourceName;
+        String realDataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
             dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
-            realDataSourceName = getRealDataSourceName(dataSourceName, sqlType);
+            realDataSourceName = MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName);
+        } else {
+            realDataSourceName = dataSourceName;
         }
         Connection result = dataSource.getConnection();
         MetricsContext.stop(metricsContext);
@@ -85,15 +87,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
             return Optional.of(connectionMap.get(dataSourceName));
         }
         return Optional.fromNullable(connectionMap.get(MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName)));
-    }
-    
-    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
-        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (!MasterSlaveDataSource.isMasterRoute(sqlType)) {
-            return slaveDataSourceName;
-        }
-        closeConnection(connectionMap.remove(slaveDataSourceName));
-        return getMasterDataSourceName(dataSourceName);
     }
     
     private String getMasterDataSourceName(final String dataSourceName) {
@@ -181,8 +174,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
-        super.close();
         HintManagerHolder.clear();
         MasterSlaveDataSource.resetDMLFlag();
+        super.close();
     }
 }

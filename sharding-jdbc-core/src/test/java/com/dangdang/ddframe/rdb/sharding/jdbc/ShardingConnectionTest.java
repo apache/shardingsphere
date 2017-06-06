@@ -20,8 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,9 +34,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 public final class ShardingConnectionTest {
     
@@ -62,8 +62,8 @@ public final class ShardingConnectionTest {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule)
                 .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
-        ShardingContext sc = new ShardingContext(rule, null, null);
-        connection = new ShardingConnection(sc);
+        ShardingContext shardingContext = new ShardingContext(rule, null, null);
+        connection = new ShardingConnection(shardingContext);
     }
     
     @After
@@ -112,14 +112,11 @@ public final class ShardingConnectionTest {
         assertNotSame(conn, connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
-    @Test
+    @Test(expected = SQLException.class)
     public void assertCloseExceptionConnection() throws SQLException {
         connection.getConnection(DS_NAME, SQLType.SELECT);
         connection.getConnection(DS_NAME, SQLType.UPDATE);
-        try {
-            connection.close();
-        } catch (final SQLException exp) {
-            assertNotNull(exp.getNextException());
-        }
+        connection.close();
+        fail();
     }
 }
