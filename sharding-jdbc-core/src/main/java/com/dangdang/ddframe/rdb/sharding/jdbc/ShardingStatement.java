@@ -258,13 +258,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     protected BackendStatementWrapper generateStatement(final Connection connection, final String sql) throws SQLException {
-        Statement result;
-        if (0 == resultSetHoldability) {
-            result = connection.createStatement(resultSetType, resultSetConcurrency);
-        } else {
-            result = connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
-        }
-        return new BackendStatementWrapper(result);
+        return new BackendStatementWrapper(connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
     
     @Override

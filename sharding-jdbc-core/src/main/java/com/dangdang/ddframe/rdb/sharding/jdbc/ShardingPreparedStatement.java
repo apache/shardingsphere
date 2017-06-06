@@ -179,9 +179,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, Statement.RETURN_GENERATED_KEYS), shardingSql);
         }
-        if (0 != getResultSetHoldability()) {
-            return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), shardingSql);
-        }
-        return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, getResultSetType(), getResultSetConcurrency()), shardingSql);
+        return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), shardingSql);
     }
 }
