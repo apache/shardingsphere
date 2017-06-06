@@ -36,7 +36,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 
 public final class ShardingConnectionTest {
     
@@ -110,13 +109,5 @@ public final class ShardingConnectionTest {
         Connection conn = connection.getConnection(DS_NAME, SQLType.UPDATE);
         connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME, SQLType.UPDATE));
-    }
-    
-    @Test(expected = SQLException.class)
-    public void assertCloseExceptionConnection() throws SQLException {
-        connection.getConnection(DS_NAME, SQLType.SELECT);
-        connection.getConnection(DS_NAME, SQLType.UPDATE);
-        connection.close();
-        fail();
     }
 }

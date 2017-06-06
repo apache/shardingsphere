@@ -93,17 +93,10 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param connection 待释放的数据库连接
      */
     public void release(final Connection connection) {
-        Preconditions.checkNotNull(connection);
-        closeConnection(connection);
         connectionMap.values().remove(connection);
-    }
-    
-    private void closeConnection(final Connection connection) {
-        if (null != connection) {
-            try {
-                connection.close();
-            } catch (final SQLException ignored) {
-            }
+        try {
+            connection.close();
+        } catch (final SQLException ignored) {
         }
     }
     
