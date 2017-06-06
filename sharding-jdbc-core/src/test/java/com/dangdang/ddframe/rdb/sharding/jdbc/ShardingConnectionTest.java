@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
-public class ShardingConnectionTest {
+public final class ShardingConnectionTest {
     
     private static final DataSource MASTER_DATA_SOURCE = new TestDataSource("test_ds_master");
     
@@ -75,27 +75,27 @@ public class ShardingConnectionTest {
     }
     
     @Test
-    public void getConnectionSelectThenUpdate() throws Exception {
+    public void assertGetConnectionSelectThenUpdate() throws Exception {
         assertNotSame(connection.getConnection(DS_NAME, SQLType.SELECT), connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
-    public void getConnectionUpdateThenSelect() throws Exception {
+    public void assertGetConnectionUpdateThenSelect() throws Exception {
         assertSame(connection.getConnection(DS_NAME, SQLType.UPDATE), connection.getConnection(DS_NAME, SQLType.SELECT));
     }
     
     @Test
-    public void getConnectionBothSelect() throws Exception {
+    public void assertGetConnectionBothSelect() throws Exception {
         assertSame(connection.getConnection(DS_NAME, SQLType.SELECT), connection.getConnection(DS_NAME, SQLType.SELECT));
     }
     
     @Test
-    public void getConnectionBothUpdate() throws Exception {
+    public void assertGetConnectionBothUpdate() throws Exception {
         assertSame(connection.getConnection(DS_NAME, SQLType.UPDATE), connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
-    public void getConnectionMixed() throws Exception {
+    public void assertGetConnectionMixed() throws Exception {
         Connection slaveConnection = connection.getConnection(DS_NAME, SQLType.SELECT);
         Connection masterConnection = connection.getConnection(DS_NAME, SQLType.UPDATE);
         assertNotSame(slaveConnection, masterConnection);
@@ -106,14 +106,14 @@ public class ShardingConnectionTest {
     }
     
     @Test
-    public void releaseBrokenConnection() throws Exception {
+    public void assertRelease() throws Exception {
         Connection conn = connection.getConnection(DS_NAME, SQLType.UPDATE);
-        connection.releaseBrokenConnection(conn);
+        connection.release(conn);
         assertNotSame(conn, connection.getConnection(DS_NAME, SQLType.UPDATE));
     }
     
     @Test
-    public void closeExceptionConnection() throws SQLException {
+    public void assertCloseExceptionConnection() throws SQLException {
         connection.getConnection(DS_NAME, SQLType.SELECT);
         connection.getConnection(DS_NAME, SQLType.UPDATE);
         try {

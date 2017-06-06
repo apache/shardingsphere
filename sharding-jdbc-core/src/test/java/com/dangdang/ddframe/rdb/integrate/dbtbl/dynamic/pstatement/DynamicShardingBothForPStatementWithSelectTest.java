@@ -41,7 +41,7 @@ public final class DynamicShardingBothForPStatementWithSelectTest extends Abstra
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -55,12 +55,6 @@ public final class DynamicShardingBothForPStatementWithSelectTest extends Abstra
         String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status ORDER BY i.item_id";
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
     }
-    
-    
-    
-    
-    
-    
     
     @Test
     public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {

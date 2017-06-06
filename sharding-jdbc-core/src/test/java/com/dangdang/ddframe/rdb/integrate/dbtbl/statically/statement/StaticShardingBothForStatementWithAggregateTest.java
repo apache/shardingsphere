@@ -41,7 +41,7 @@ public final class StaticShardingBothForStatementWithAggregateTest extends Abstr
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Override

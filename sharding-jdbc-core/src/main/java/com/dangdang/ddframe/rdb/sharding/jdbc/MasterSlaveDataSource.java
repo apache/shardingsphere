@@ -54,8 +54,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
-    
-    static boolean isDML(final SQLType sqlType) {
+    static boolean isMasterRoute(final SQLType sqlType) {
         return SQLType.SELECT != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
@@ -66,7 +65,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * @return 主或从节点的数据源
      */
     public DataSource getDataSource(final SQLType sqlType) {
-        if (isDML(sqlType)) {
+        if (isMasterRoute(sqlType)) {
             DML_FLAG.set(true);
             return masterDataSource;
         }

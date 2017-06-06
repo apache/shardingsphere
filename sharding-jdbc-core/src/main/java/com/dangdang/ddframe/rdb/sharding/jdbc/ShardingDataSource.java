@@ -37,7 +37,7 @@ import java.util.Properties;
  * 
  * @author zhangliang
  */
-public class ShardingDataSource extends AbstractDataSourceAdapter {
+public class ShardingDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
     
     private final ShardingProperties shardingProperties;
     
@@ -85,10 +85,8 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         return new ShardingConnection(shardingContext);
     }
     
-    /**
-     * 关闭数据源,释放相关资源.
-     */
-    public void shutdown() {
-        executorEngine.shutdown();
+    @Override
+    public void close() {
+        executorEngine.close();
     }
 }

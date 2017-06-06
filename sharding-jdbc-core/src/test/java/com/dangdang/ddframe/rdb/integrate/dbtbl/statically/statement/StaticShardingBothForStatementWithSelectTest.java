@@ -42,7 +42,7 @@ public final class StaticShardingBothForStatementWithSelectTest extends Abstract
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test

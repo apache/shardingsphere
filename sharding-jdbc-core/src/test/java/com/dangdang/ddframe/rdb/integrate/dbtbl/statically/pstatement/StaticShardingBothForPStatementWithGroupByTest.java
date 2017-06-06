@@ -37,6 +37,6 @@ public final class StaticShardingBothForPStatementWithGroupByTest extends Abstra
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }

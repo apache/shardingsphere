@@ -41,7 +41,7 @@ public final class DynamicShardingBothForStatementWithSelectTest extends Abstrac
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test(expected = UnsupportedOperationException.class)

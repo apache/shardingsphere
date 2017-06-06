@@ -61,20 +61,58 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @return 数据库连接
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        Connection result = getConnectionInternal(dataSourceName, sqlType);
+        Optional<Connection> connection = getCachedConnection(dataSourceName, sqlType);
+        if (connection.isPresent()) {
+            return connection.get();
+        }
+        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
+        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
+        Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
+        String realDataSourceName = dataSourceName;
+        if (dataSource instanceof MasterSlaveDataSource) {
+            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
+            realDataSourceName = getRealDataSourceName(dataSourceName, sqlType);
+        }
+        Connection result = dataSource.getConnection();
+        MetricsContext.stop(metricsContext);
+        connectionMap.put(realDataSourceName, result);
         replayMethodsInvocation(result);
         return result;
     }
     
+    private Optional<Connection> getCachedConnection(final String dataSourceName, final SQLType sqlType) {
+        if (connectionMap.containsKey(dataSourceName)) {
+            return Optional.of(connectionMap.get(dataSourceName));
+        }
+        return Optional.fromNullable(connectionMap.get(MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName)));
+    }
+    
+    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
+        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
+        if (!MasterSlaveDataSource.isMasterRoute(sqlType)) {
+            return slaveDataSourceName;
+        }
+        closeConnection(connectionMap.remove(slaveDataSourceName));
+        return getMasterDataSourceName(dataSourceName);
+    }
+    
+    private String getMasterDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "MASTER");
+    }
+    
+    private String getSlaveDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "SLAVE");
+    }
+    
     /**
-     * 释放缓存中已经中断的数据库连接.
-     * 
-     * @param brokenConnection 已经中断的数据库连接
+     * 释放数据库连接.
+     *
+     * @param connection 待释放的数据库连接
      */
-    public void releaseBrokenConnection(final Connection brokenConnection) {
-        Preconditions.checkNotNull(brokenConnection);
-        closeConnection(brokenConnection);
-        connectionMap.values().remove(brokenConnection);
+    public void release(final Connection connection) {
+        Preconditions.checkNotNull(connection);
+        closeConnection(connection);
+        connectionMap.values().remove(connection);
     }
     
     private void closeConnection(final Connection connection) {
@@ -89,60 +127,6 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return getConnection(shardingContext.getShardingRule().getDataSourceRule().getDataSourceNames().iterator().next(), SQLType.SELECT).getMetaData();
-    }
-    
-    private Connection getConnectionInternal(final String dataSourceName, final SQLType sqlType) throws SQLException {
-        Optional<Connection> connectionOptional = fetchCachedConnectionBySQLType(dataSourceName, sqlType);
-        if (connectionOptional.isPresent()) {
-            return connectionOptional.get();
-        }
-        Context metricsContext = MetricsContext.start(Joiner.on("-").join("ShardingConnection-getConnection", dataSourceName));
-        DataSource dataSource = shardingContext.getShardingRule().getDataSourceRule().getDataSource(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the rule of %s in DataSourceRule", dataSourceName);
-        String realDataSourceName = dataSourceName;
-        if (dataSource instanceof MasterSlaveDataSource) {
-            dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
-            realDataSourceName = getRealDataSourceName(dataSourceName, sqlType);
-        }
-        Connection result = dataSource.getConnection();
-        MetricsContext.stop(metricsContext);
-        connectionMap.put(realDataSourceName, result);
-        return result;
-    }
-    
-    private String getRealDataSourceName(final String dataSourceName, final SQLType sqlType) {
-        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (!MasterSlaveDataSource.isDML(sqlType)) {
-            return slaveDataSourceName;
-        }
-        closeConnection(connectionMap.remove(slaveDataSourceName));
-        return getMasterDataSourceName(dataSourceName);
-    }
-    
-    private Optional<Connection> fetchCachedConnectionBySQLType(final String dataSourceName, final SQLType sqlType) {
-        if (connectionMap.containsKey(dataSourceName)) {
-            return Optional.of(connectionMap.get(dataSourceName));
-        }
-        String masterDataSourceName = getMasterDataSourceName(dataSourceName);
-        if (connectionMap.containsKey(masterDataSourceName)) {
-            return Optional.of(connectionMap.get(masterDataSourceName));
-        }
-        if (MasterSlaveDataSource.isDML(sqlType)) {
-            return Optional.absent();
-        }
-        String slaveDataSourceName = getSlaveDataSourceName(dataSourceName);
-        if (connectionMap.containsKey(slaveDataSourceName)) {
-            return Optional.of(connectionMap.get(slaveDataSourceName));
-        }
-        return Optional.absent();
-    }
-    
-    private String getMasterDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "MASTER");
-    }
-    
-    private String getSlaveDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "SLAVE");
     }
     
     @Override

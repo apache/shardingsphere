@@ -82,6 +82,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Override
     public void close() throws SQLException {
         SQLUtil.safeInvoke(getConnections(), new ThrowableSQLExceptionMethod<Connection>() {
+            
             @Override
             public void apply(final Connection object) throws SQLException {
                 object.close();
