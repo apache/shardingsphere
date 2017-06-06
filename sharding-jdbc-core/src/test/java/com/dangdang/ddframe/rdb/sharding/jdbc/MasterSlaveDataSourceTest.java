@@ -54,6 +54,29 @@ public final class MasterSlaveDataSourceTest {
     }
     
     @Test
+    public void assertGetDataSourceNameForSelect() {
+        assertThat(MasterSlaveDataSource.getDataSourceName("test_ds", SQLType.SELECT), is("test_ds-SLAVE"));
+    }
+    
+    @Test
+    public void assertGetDataSourceNameForInsert() {
+        assertThat(MasterSlaveDataSource.getDataSourceName("test_ds", SQLType.INSERT), is("test_ds-MASTER"));
+    }
+    
+    @Test
+    public void assertGetDataSourceNameForDmlFlagIsTrue() {
+        masterSlaveDataSource.getDataSource(SQLType.INSERT);
+        assertThat(MasterSlaveDataSource.getDataSourceName("test_ds", SQLType.SELECT), is("test_ds-MASTER"));
+    }
+    
+    @Test
+    public void assertGetDataSourceNameForMasterRouteOnly() {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.setMasterRouteOnly();
+        assertThat(MasterSlaveDataSource.getDataSourceName("test_ds", SQLType.SELECT), is("test_ds-MASTER"));
+    }
+    
+    @Test
     public void assertGetDataSourceForDML() {
         assertThat(masterSlaveDataSource.getDataSource(SQLType.INSERT), is(masterDataSource));
     }

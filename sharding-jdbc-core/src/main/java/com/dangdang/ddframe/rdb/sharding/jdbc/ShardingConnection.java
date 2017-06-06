@@ -71,7 +71,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         String realDataSourceName;
         if (dataSource instanceof MasterSlaveDataSource) {
             dataSource = ((MasterSlaveDataSource) dataSource).getDataSource(sqlType);
-            realDataSourceName = MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName);
+            realDataSourceName = MasterSlaveDataSource.getDataSourceName(dataSourceName, sqlType);
         } else {
             realDataSourceName = dataSourceName;
         }
@@ -83,18 +83,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     private Optional<Connection> getCachedConnection(final String dataSourceName, final SQLType sqlType) {
-        if (connectionMap.containsKey(dataSourceName)) {
-            return Optional.of(connectionMap.get(dataSourceName));
-        }
-        return Optional.fromNullable(connectionMap.get(MasterSlaveDataSource.isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName)));
-    }
-    
-    private String getMasterDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "MASTER");
-    }
-    
-    private String getSlaveDataSourceName(final String dataSourceName) {
-        return Joiner.on("-").join(dataSourceName, "SHARDING-JDBC", "SLAVE");
+        String key = connectionMap.containsKey(dataSourceName) ? dataSourceName : MasterSlaveDataSource.getDataSourceName(dataSourceName, sqlType);
+        return Optional.fromNullable(connectionMap.get(key));
     }
     
     /**

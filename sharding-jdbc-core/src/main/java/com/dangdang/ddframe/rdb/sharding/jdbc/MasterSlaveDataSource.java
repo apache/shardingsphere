@@ -19,9 +19,10 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
@@ -54,12 +55,31 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final SlaveLoadBalanceStrategy slaveLoadBalanceStrategy = new RoundRobinSlaveLoadBalanceStrategy();
     
-    static boolean isMasterRoute(final SQLType sqlType) {
+    /**
+     * 获取主或从节点的数据源名称.
+     *
+     * @param dataSourceName 数据源名称
+     * @param sqlType SQL类型
+     * @return 主或从节点的数据源名称
+     */
+    public static String getDataSourceName(final String dataSourceName, final SQLType sqlType) {
+        return isMasterRoute(sqlType) ? getMasterDataSourceName(dataSourceName) : getSlaveDataSourceName(dataSourceName);
+    }
+    
+    private static boolean isMasterRoute(final SQLType sqlType) {
         return SQLType.SELECT != sqlType || DML_FLAG.get() || HintManagerHolder.isMasterRouteOnly();
     }
     
+    private static String getMasterDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "MASTER");
+    }
+    
+    private static String getSlaveDataSourceName(final String dataSourceName) {
+        return Joiner.on("-").join(dataSourceName, "SLAVE");
+    }
+    
     /**
-     * 获取主或从节点的数据源名称.
+     * 获取主或从节点的数据源.
      *
      * @param sqlType SQL类型
      * @return 主或从节点的数据源
