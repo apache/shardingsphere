@@ -50,16 +50,16 @@ public abstract class AbstractShardingDataBasesOnlyHintDBUnitTest extends Abstra
     @Override
     protected List<String> getSchemaFiles() {
         return Arrays.asList(
-                "integrate/schema/db/db_0.sql",
-                "integrate/schema/db/db_1.sql",
-                "integrate/schema/db/db_2.sql",
-                "integrate/schema/db/db_3.sql",
-                "integrate/schema/db/db_4.sql",
-                "integrate/schema/db/db_5.sql",
-                "integrate/schema/db/db_6.sql",
-                "integrate/schema/db/db_7.sql",
-                "integrate/schema/db/db_8.sql",
-                "integrate/schema/db/db_9.sql");
+                "integrate/schema/" + currentDbType() + "/db/db_0.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_1.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_2.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_3.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_4.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_5.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_6.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_7.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_8.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_9.sql");
     }
     
     @Override

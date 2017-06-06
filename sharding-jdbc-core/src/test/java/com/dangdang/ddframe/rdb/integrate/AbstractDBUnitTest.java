@@ -21,12 +21,14 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
+import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.ext.h2.H2Connection;
 import org.dbunit.ext.mysql.MySqlConnection;
+import org.dbunit.ext.oracle.OracleConnection;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -76,6 +78,10 @@ public abstract class AbstractDBUnitTest {
     protected abstract List<String> getSchemaFiles();
     
     protected abstract List<String> getDataSetFiles();
+    
+    protected final String currentDbType() {
+        return DatabaseType.H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
+    }
     
     protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {
         Map<String, DataSource> result = new HashMap<>(getDataSetFiles().size());
@@ -136,6 +142,10 @@ public abstract class AbstractDBUnitTest {
                 return new H2Connection(connection, "PUBLIC");
             case MySQL: 
                 return new MySqlConnection(connection, "PUBLIC");
+            case PostgreSQL:
+                return new DatabaseConnection(connection);
+            case Oracle:
+                return new OracleConnection(connection, "PUBLIC");
             default: 
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }

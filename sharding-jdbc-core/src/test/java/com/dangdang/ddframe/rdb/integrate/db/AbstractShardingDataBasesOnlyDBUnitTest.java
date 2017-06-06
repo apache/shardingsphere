@@ -26,8 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import org.junit.AfterClass;
 
 import java.util.Arrays;
@@ -43,16 +43,16 @@ public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDB
     @Override
     protected List<String> getSchemaFiles() {
         return Arrays.asList(
-                "integrate/schema/db/db_0.sql", 
-                "integrate/schema/db/db_1.sql", 
-                "integrate/schema/db/db_2.sql", 
-                "integrate/schema/db/db_3.sql", 
-                "integrate/schema/db/db_4.sql", 
-                "integrate/schema/db/db_5.sql", 
-                "integrate/schema/db/db_6.sql", 
-                "integrate/schema/db/db_7.sql", 
-                "integrate/schema/db/db_8.sql", 
-                "integrate/schema/db/db_9.sql");
+                "integrate/schema/" + currentDbType() + "/db/db_0.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_1.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_2.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_3.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_4.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_5.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_6.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_7.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_8.sql",
+                "integrate/schema/" + currentDbType() + "/db/db_9.sql");
     }
     
     @Override

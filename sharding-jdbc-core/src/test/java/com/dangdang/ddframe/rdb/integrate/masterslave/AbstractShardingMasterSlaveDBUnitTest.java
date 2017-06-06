@@ -56,26 +56,26 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     @Override
     protected List<String> getSchemaFiles() {
         return Arrays.asList(
-                "integrate/schema/masterslave/master_0.sql",
-                "integrate/schema/masterslave/master_1.sql",
-                "integrate/schema/masterslave/master_2.sql",
-                "integrate/schema/masterslave/master_3.sql",
-                "integrate/schema/masterslave/master_4.sql",
-                "integrate/schema/masterslave/master_5.sql",
-                "integrate/schema/masterslave/master_6.sql",
-                "integrate/schema/masterslave/master_7.sql",
-                "integrate/schema/masterslave/master_8.sql",
-                "integrate/schema/masterslave/master_9.sql",
-                "integrate/schema/masterslave/slave_0.sql",
-                "integrate/schema/masterslave/slave_1.sql",
-                "integrate/schema/masterslave/slave_2.sql",
-                "integrate/schema/masterslave/slave_3.sql",
-                "integrate/schema/masterslave/slave_4.sql",
-                "integrate/schema/masterslave/slave_5.sql",
-                "integrate/schema/masterslave/slave_6.sql",
-                "integrate/schema/masterslave/slave_7.sql",
-                "integrate/schema/masterslave/slave_8.sql",
-                "integrate/schema/masterslave/slave_9.sql");
+                "integrate/schema/" + currentDbType() + "/masterslave/master_0.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_1.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_2.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_3.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_4.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_5.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_6.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_7.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_8.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/master_9.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_0.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_1.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_2.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_3.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_4.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_5.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_6.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_7.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_8.sql",
+                "integrate/schema/" + currentDbType() + "/masterslave/slave_9.sql");
     }
     
     @Override

@@ -41,7 +41,7 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
     
     @Override
     protected List<String> getSchemaFiles() {
-        return Collections.singletonList("integrate/schema/tbl/db_single.sql");
+        return Collections.singletonList("integrate/schema/" + currentDbType() + "/tbl/db_single.sql");
     }
     
     @Override

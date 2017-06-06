@@ -17,22 +17,23 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-
-import lombok.Getter;
-
 public final class DataBaseEnvironment {
     
-    private static final Map<DatabaseType, Class<?>> DRIVER_CLASS_NAME = new HashMap<>(2);
+    private static final int INIT_CAPACITY = 3;
     
-    private static final Map<DatabaseType, String> URL = new HashMap<>(2);
+    private static final Map<DatabaseType, Class<?>> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY);
     
-    private static final Map<DatabaseType, String> USERNAME = new HashMap<>(2);
+    private static final Map<DatabaseType, String> URL = new HashMap<>(INIT_CAPACITY);
     
-    private static final Map<DatabaseType, String> PASSWORD = new HashMap<>(2);
+    private static final Map<DatabaseType, String> USERNAME = new HashMap<>(INIT_CAPACITY);
+    
+    private static final Map<DatabaseType, String> PASSWORD = new HashMap<>(INIT_CAPACITY);
     
     @Getter
     private final DatabaseType databaseType;
@@ -44,13 +45,19 @@ public final class DataBaseEnvironment {
     
     private void fillData() {
         DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class);
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class);
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
         USERNAME.put(DatabaseType.H2, "sa");
-        USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.H2, "");
+        
+        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class);
+        URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
+        USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
+    
+        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class);
+        URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
+        USERNAME.put(DatabaseType.PostgreSQL, "postgres");
+        PASSWORD.put(DatabaseType.PostgreSQL, "");
     }
     
     public String getDriverClassName() {
