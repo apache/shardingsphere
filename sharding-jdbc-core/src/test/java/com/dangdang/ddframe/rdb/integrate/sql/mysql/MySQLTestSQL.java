@@ -52,15 +52,15 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     
     private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO `t_order` (`user_id`, `status`) VALUES (%s, %s)";
     
-    private static final String UPDATE_WITHOUT_ALIAS_SQL = "UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND `user_id` = ?";
+    private static final String UPDATE_WITHOUT_ALIAS_SQL = "UPDATE `t_order` SET `status` = %s WHERE `order_id` = %s AND `user_id` = %s";
     
     private static final String UPDATE_WITH_ALIAS_SQL = "UPDATE `t_order` AS o SET o.`status` = ? WHERE o.`order_id` = ? AND o.`user_id` = ?";
     
-    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE `t_order` SET `status` = ? WHERE `status` = ?";
+    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE `t_order` SET `status` = %s WHERE `status` = %s";
     
-    private static final String DELETE_WITHOUT_ALIAS_SQL = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
+    private static final String DELETE_WITHOUT_ALIAS_SQL = "DELETE FROM `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = %s";
     
-    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM `t_order` WHERE `status` = ?";
+    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM `t_order` WHERE `status` = %s";
     
     private static final String ASSERT_SELECT_WITH_STATUS_SQL = "SELECT * FROM `t_order` WHERE `status`=?";
     

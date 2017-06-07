@@ -17,13 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.integrate.db.pstatement.ShardingDataBasesOnlyForPStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.db.pstatement.ShardingDataBasesOnlyForPStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.db.pstatement.ShardingDataBasesOnlyForPStatementWithGroupByTest;
-import com.dangdang.ddframe.rdb.integrate.db.pstatement.ShardingDataBasesOnlyForPStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDataBasesOnlyForStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDataBasesOnlyForStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDataBasesOnlyForStatementWithSelectTest;
+import com.dangdang.ddframe.rdb.integrate.db.AllShardingDatabaseOnlyTests;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.pstatement.DynamicShardingBothForPStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.pstatement.DynamicShardingBothForPStatementWithSelectTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.statement.DynamicShardingBothForStatementWithAggregateTest;
@@ -70,13 +64,7 @@ import org.junit.runners.Suite.SuiteClasses;
     DynamicShardingBothForStatementWithAggregateTest.class,
     DynamicShardingBothForStatementWithDMLTest.class,
     DynamicShardingBothForStatementWithSelectTest.class, 
-    ShardingDataBasesOnlyForPStatementWithGroupByTest.class, 
-    ShardingDataBasesOnlyForPStatementWithSelectTest.class, 
-    ShardingDataBasesOnlyForPStatementWithAggregateTest.class, 
-    ShardingDataBasesOnlyForPStatementWithDMLTest.class, 
-    ShardingDataBasesOnlyForStatementWithSelectTest.class, 
-    ShardingDataBasesOnlyForStatementWithAggregateTest.class, 
-    ShardingDataBasesOnlyForStatementWithDMLTest.class, 
+    AllShardingDatabaseOnlyTests.class, 
     ShardingTablesOnlyForPStatementWithSelectTest.class, 
     ShardingTablesOnlyForPStatementWithAggregateTest.class, 
     ShardingTablesOnlyForPStatementWihGroupByTest.class, 

@@ -45,7 +45,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     }
     
     @Test
-    public void assertInsert() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);
@@ -71,12 +71,12 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     }
     
     @Test
-    public void assertUpdate() throws SQLException, DatabaseUnitException {
+    public void assertUpdateWithoutAliasSql() throws SQLException, DatabaseUnitException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format("UPDATE `t_order` SET `status` = '%s' WHERE `order_id` = %s AND `user_id` = %s", "updated", i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
                 }
             }
         }
@@ -87,18 +87,18 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format("UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'", "updated", "init")), is(40));
+            assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(40));
         }
         assertDataSet("update", "updated");
     }
     
     @Test
-    public void assertDelete() throws SQLException, DatabaseUnitException {
+    public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format("DELETE FROM `t_order` WHERE `order_id` = %s AND `user_id` = %s AND `status` = '%s'", i * 100 + j, i, "init")), is(1));
+                    assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
                 }
             }
         }
@@ -109,7 +109,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format("DELETE FROM `t_order` WHERE `status` = '%s'", "init")), is(40));
+            assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutShardingValueSql(), "'init'")), is(40));
         }
         assertDataSet("delete", "init");
     }
@@ -117,7 +117,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", "SELECT * FROM `t_order` WHERE `status`=?", status);
+                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", sql.getAssertSelectWithStatusSql(), status);
         }
     }
 }
