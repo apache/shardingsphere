@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.hint;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;

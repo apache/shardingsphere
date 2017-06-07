@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.RoundRobinSlaveLoadBalanceStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.slave.SlaveLoadBalanceStrategy;
@@ -92,7 +92,13 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         return slaveLoadBalanceStrategy.getDataSource(name, slaveDataSources);
     }
     
-    String getDatabaseProductName() throws SQLException {
+    /**
+     * 获取数据库名称.
+     * 
+     * @return 数据库名称
+     * @throws SQLException
+     */
+    public String getDatabaseProductName() throws SQLException {
         String result;
         try (Connection masterConnection = masterDataSource.getConnection()) {
             result = masterConnection.getMetaData().getDatabaseProductName();

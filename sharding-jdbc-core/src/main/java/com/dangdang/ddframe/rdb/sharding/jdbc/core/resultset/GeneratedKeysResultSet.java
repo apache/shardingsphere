@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
 import com.google.common.base.Preconditions;

@@ -27,8 +27,8 @@ import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingStatement;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
 
 /**
  * 声明不支持操作的预编译语句对象.

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import org.junit.Test;
 
 import javax.sql.DataSource;

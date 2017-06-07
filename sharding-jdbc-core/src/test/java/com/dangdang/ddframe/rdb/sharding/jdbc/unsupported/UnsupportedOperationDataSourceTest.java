@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     

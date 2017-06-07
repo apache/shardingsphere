@@ -15,11 +15,13 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
@@ -85,11 +87,11 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
     
-    ShardingStatement(final ShardingConnection shardingConnection) {
+    public ShardingStatement(final ShardingConnection shardingConnection) {
         this(shardingConnection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency) {
+    public ShardingStatement(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency) {
         this(shardingConnection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
@@ -110,14 +112,14 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
-        ResultSet rs;
+        ResultSet result;
         try {
-            rs = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlStatement());
+            result = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlStatement());
         } finally {
             clearRouteContext();
         }
-        setCurrentResultSet(rs);
-        return rs;
+        setCurrentResultSet(result);
+        return result;
     }
     
     @Override

@@ -26,7 +26,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.tools.RunScript;
 import org.junit.Before;

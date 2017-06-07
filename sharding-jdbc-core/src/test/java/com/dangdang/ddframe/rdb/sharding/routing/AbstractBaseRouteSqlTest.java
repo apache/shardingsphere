@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderAttrShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.routing.fixture.OrderShardingAlgorithm;
 import com.google.common.base.Function;

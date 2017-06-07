@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.fixture.MockRowSetResultSet;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.fixture.MockRowSetResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;

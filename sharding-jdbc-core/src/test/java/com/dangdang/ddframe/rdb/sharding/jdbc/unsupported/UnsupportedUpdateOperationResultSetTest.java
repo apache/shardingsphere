@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

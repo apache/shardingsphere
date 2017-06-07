@@ -24,6 +24,14 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTe
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.StatementAdapterTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnectionTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSourceTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSourceTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatementTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatementTableOnlyTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedGeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;
@@ -38,30 +46,30 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ShardingDataSourceTest.class,
-    ShardingStatementTest.class, 
-    ShardingPreparedStatementTest.class, 
-    UnsupportedOperationDataSourceTest.class, 
-    UnsupportedOperationConnectionTest.class, 
-    UnsupportedOperationStatementTest.class, 
-    UnsupportedOperationPreparedStatementTest.class, 
-    UnsupportedOperationResultSetTest.class,
-    UnsupportedUpdateOperationResultSetTest.class,
-    UnsupportedGeneratedKeysResultSetTest.class,
-    DataSourceAdapterTest.class, 
-    ConnectionAdapterTest.class, 
-    StatementAdapterTest.class, 
-    PreparedStatementAdapterTest.class, 
-    ResultSetGetterAdapterTest.class, 
-    ResultSetAdapterTest.class, 
-    JdbcMethodInvocationTest.class, 
-    MasterSlaveDataSourceTest.class, 
-    ParameterListTest.class, 
-    ParameterizedAbstractPreparedStatementAdapterTest.class,
-    ShardingConnectionTest.class, 
-    ShardingPreparedStatementTableOnlyTest.class,
-    GeneratedKeysResultSetTest.class,
-    GeneratedKeysResultSetMetaDataTest.class
+        UnsupportedOperationDataSourceTest.class, 
+        UnsupportedOperationConnectionTest.class, 
+        UnsupportedOperationStatementTest.class, 
+        UnsupportedOperationPreparedStatementTest.class, 
+        UnsupportedOperationResultSetTest.class, 
+        UnsupportedUpdateOperationResultSetTest.class, 
+        UnsupportedGeneratedKeysResultSetTest.class, 
+        DataSourceAdapterTest.class, 
+        ConnectionAdapterTest.class, 
+        StatementAdapterTest.class, 
+        PreparedStatementAdapterTest.class, 
+        ParameterizedAbstractPreparedStatementAdapterTest.class, 
+        ResultSetAdapterTest.class, 
+        ResultSetGetterAdapterTest.class,
+        ShardingDataSourceTest.class, 
+        MasterSlaveDataSourceTest.class, 
+        ShardingConnectionTest.class, 
+        ShardingStatementTest.class, 
+        ShardingPreparedStatementTest.class, 
+        ShardingPreparedStatementTableOnlyTest.class,
+        GeneratedKeysResultSetTest.class, 
+        GeneratedKeysResultSetMetaDataTest.class, 
+        JdbcMethodInvocationTest.class, 
+        ParameterListTest.class
     })
 public class AllJDBCTests {
 }

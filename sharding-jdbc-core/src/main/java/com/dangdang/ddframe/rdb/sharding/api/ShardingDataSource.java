@@ -32,7 +32,7 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Deprecated
-public class ShardingDataSource extends com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource {
+public class ShardingDataSource extends com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource {
     
     public ShardingDataSource(final ShardingRule shardingRule) {
         super(shardingRule);

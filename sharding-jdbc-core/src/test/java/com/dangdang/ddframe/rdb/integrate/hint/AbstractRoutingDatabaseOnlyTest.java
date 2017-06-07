@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.integrate.fixture.NoneKeyModuloDatabaseShardingA
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
 abstract class AbstractRoutingDatabaseOnlyTest extends AbstractShardingDataBasesOnlyHintDBUnitTest {
     

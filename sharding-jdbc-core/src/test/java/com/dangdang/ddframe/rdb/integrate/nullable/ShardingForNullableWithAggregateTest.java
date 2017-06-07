@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.nullable;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;

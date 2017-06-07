@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.fixture;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.AbstractMemoryResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.AbstractResultSetRow;

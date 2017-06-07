@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.GeneratedKeysResultSet;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.junit.Test;
 
 import java.sql.SQLException;

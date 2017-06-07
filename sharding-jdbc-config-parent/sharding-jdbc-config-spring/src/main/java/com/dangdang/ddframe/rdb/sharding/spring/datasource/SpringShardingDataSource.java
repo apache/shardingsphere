@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.spring.datasource;
 
 import com.dangdang.ddframe.rdb.sharding.config.common.api.ShardingRuleBuilder;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
 import java.util.Properties;
 

@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.ParameterList;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -49,7 +48,7 @@ import java.util.Calendar;
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
-    @Getter(AccessLevel.PROTECTED)
+    @Getter
     private final ParameterList parameters = new ParameterList(PreparedStatement.class);
     
     protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {

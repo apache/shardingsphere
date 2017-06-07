@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import lombok.NoArgsConstructor;
 
 /**

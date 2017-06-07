@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -86,7 +87,7 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     
     /**
      * 映射批量执行索引.
-     * 将{@linkplain com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement}批量执行索引映射为真实的{@linkplain PreparedStatement}批量执行索引.
+     * 将{@linkplain ShardingPreparedStatement}批量执行索引映射为真实的{@linkplain PreparedStatement}批量执行索引.
      * 
      * @param shardingBatchIndex 分片批量执行索引
      */

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 import com.google.common.base.Preconditions;
@@ -31,7 +31,7 @@ import java.sql.Types;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-class GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final String generatedKeyColumn;
     

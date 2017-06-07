@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

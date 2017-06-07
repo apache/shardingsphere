@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -33,8 +35,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 
 /**
  * 声明不支持更新操作的数据结果集对象.
