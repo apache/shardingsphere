@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.integrate.sql.mysql.MySQLTestSQL;
+import com.dangdang.ddframe.rdb.integrate.sql.postgresql.PostgreSQLTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -44,13 +47,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
+    protected static final DatabaseType CURRENT_DB_TYPE = H2;
     
-    protected static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
+    private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
     private final DataBaseEnvironment dbEnv = new DataBaseEnvironment(CURRENT_DB_TYPE);
     
@@ -80,7 +85,23 @@ public abstract class AbstractDBUnitTest {
     protected abstract List<String> getDataSetFiles();
     
     protected final String currentDbType() {
-        return DatabaseType.H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
+        return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
+    }
+    
+    protected final DatabaseTestSQL currentDatabaseSQL() {
+        switch (dbEnv.getDatabaseType()) {
+            case H2:
+            case MySQL:
+                return new MySQLTestSQL();
+            case PostgreSQL:
+                return new PostgreSQLTestSQL();
+            default:
+                throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
+        }
+    }
+    
+    protected final boolean isAggregationAliasSupport() {
+        return !PostgreSQL.equals(dbEnv.getDatabaseType());
     }
     
     protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {
@@ -141,7 +162,7 @@ public abstract class AbstractDBUnitTest {
             case H2: 
                 return new H2Connection(connection, "PUBLIC");
             case MySQL: 
-                return new MySqlConnection(connection, "PUBLIC");
+                return new MySqlConnection(connection, null);
             case PostgreSQL:
                 return new DatabaseConnection(connection);
             case Oracle:

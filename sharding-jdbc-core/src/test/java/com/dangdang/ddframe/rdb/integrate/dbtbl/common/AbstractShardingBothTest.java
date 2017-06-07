@@ -28,16 +28,16 @@ public abstract class AbstractShardingBothTest extends AbstractDBUnitTest {
     @Override
     protected List<String> getSchemaFiles() {
         return Arrays.asList(
-                "integrate/schema/mysql/dbtbl/dbtbl_0.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_1.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_2.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_3.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_4.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_5.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_6.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_7.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_8.sql",
-                "integrate/schema/mysql/dbtbl/dbtbl_9.sql");
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_0.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_1.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_2.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_3.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_4.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_5.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_6.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_7.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_8.sql",
+                "integrate/schema/" + currentDbType() + "/dbtbl/dbtbl_9.sql");
     }
     
     @Override

@@ -22,6 +22,7 @@ import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
+import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     
@@ -36,10 +37,13 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     @Override
     public IDatabaseConnection getConnection() throws Exception {
         IDatabaseConnection result = super.getConnection();
+        result.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
         if (org.h2.Driver.class.getName().equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
         } else if (com.mysql.jdbc.Driver.class.getName().equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+        } else if (org.postgresql.Driver.class.getName().equals(driverClass)) {
+            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
         }
         return result;
     }
