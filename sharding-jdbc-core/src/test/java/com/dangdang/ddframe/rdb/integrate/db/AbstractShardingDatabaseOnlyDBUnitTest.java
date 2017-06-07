@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractShardingDataBasesOnlyDBUnitTest extends AbstractDBUnitTest {
+public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBUnitTest {
     
     private static boolean isShutdown;
     

@@ -19,14 +19,14 @@ package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
 import java.sql.SQLException;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
-public final class ShardingDataBasesOnlyForPStatementWithSelectTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

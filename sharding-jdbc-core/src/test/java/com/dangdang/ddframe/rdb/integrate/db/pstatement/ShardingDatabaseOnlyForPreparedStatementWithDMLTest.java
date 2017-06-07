@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

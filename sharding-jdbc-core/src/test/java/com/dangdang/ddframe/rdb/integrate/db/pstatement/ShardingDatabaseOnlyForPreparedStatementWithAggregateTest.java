@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

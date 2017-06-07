@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +36,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     

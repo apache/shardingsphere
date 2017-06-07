@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-public final class ShardingDataBasesOnlyForStatementWithAggregateTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class ShardingDatabaseOnlyForStatementWithAggregateTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

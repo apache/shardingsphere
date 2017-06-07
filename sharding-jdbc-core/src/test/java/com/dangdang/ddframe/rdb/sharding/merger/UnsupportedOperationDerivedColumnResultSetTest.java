@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 
-public class UnsupportedOperationDerivedColumnResultSetTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public class UnsupportedOperationDerivedColumnResultSetTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ResultSet actual;
     
