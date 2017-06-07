@@ -28,10 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertS
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.StatementRoutingEngine;
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,14 +50,6 @@ import java.util.List;
  */
 public class ShardingStatement extends AbstractStatementAdapter {
     
-    private static final Function<BackendStatementWrapper, Statement> TRANSFORM_FUNCTION = new Function<BackendStatementWrapper, Statement>() {
-        
-        @Override
-        public Statement apply(final BackendStatementWrapper input) {
-            return input.getStatement();
-        }
-    };
-    
     @Getter(AccessLevel.PROTECTED)
     private final ShardingConnection shardingConnection;
     
@@ -77,7 +66,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private final int resultSetHoldability;
     
     @Getter
-    private final List<BackendStatementWrapper> cachedRoutedStatements = new LinkedList<>();
+    private final List<Statement> routedStatements = new LinkedList<>();
     
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
@@ -225,21 +214,13 @@ public class ShardingStatement extends AbstractStatementAdapter {
         sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
         Collection<StatementExecutorWrapper> statementExecutorWrappers = new LinkedList<>(); 
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
+            Statement statement = shardingConnection.getConnection(
+                    each.getDataSource(), sqlRouteResult.getSqlStatement().getType()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             replayMethodsInvocation(statement);
             statementExecutorWrappers.add(new StatementExecutorWrapper(statement, each));
+            routedStatements.add(statement);
         }
         return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), statementExecutorWrappers);
-    }
-    
-    protected Statement getStatement(final Connection connection, final String sql) throws SQLException {
-        BackendStatementWrapper statement = generateStatement(connection, sql);
-        cachedRoutedStatements.add(statement);
-        return statement.getStatement();
-    }
-    
-    protected BackendStatementWrapper generateStatement(final Connection connection, final String sql) throws SQLException {
-        return new BackendStatementWrapper(connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
     
     @Override
@@ -261,11 +242,6 @@ public class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     protected void clearRouteStatements() {
-        cachedRoutedStatements.clear();
-    }
-    
-    @Override
-    public Collection<? extends Statement> getRoutedStatements() {
-        return  Lists.newArrayList(Iterators.transform(cachedRoutedStatements.iterator(), TRANSFORM_FUNCTION));
+        routedStatements.clear();
     }
 }

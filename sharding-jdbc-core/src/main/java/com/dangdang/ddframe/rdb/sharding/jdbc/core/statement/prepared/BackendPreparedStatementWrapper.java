@@ -17,29 +17,33 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.BackendStatementWrapper;
+import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * 在PreparedStatement复用的时候，用Connection对象和SQL来区分同一个库的会话.
  * 
  * @author gaohongtao
  */
-public final class BackendPreparedStatementWrapper extends BackendStatementWrapper {
+public final class BackendPreparedStatementWrapper {
     
     private final String sql;
     
-    public BackendPreparedStatementWrapper(final PreparedStatement statement, final String sql) throws SQLException {
-        super(statement);
+    private final Connection connection;
+    
+    @Getter
+    private final PreparedStatement preparedStatement;
+    
+    public BackendPreparedStatementWrapper(final PreparedStatement preparedStatement, final String sql) throws SQLException {
         this.sql = sql;
+        connection = preparedStatement.getConnection();
+        this.preparedStatement = preparedStatement;
     }
     
-    @Override
     public boolean isBelongTo(final Connection connection, final String sql) {
-        return super.isBelongTo(connection, sql) && Objects.equals(sql, this.sql);
+        return this.connection == connection && this.sql.equals(sql);
     }
 }

@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.BackendStatementWrapper;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;
@@ -36,6 +35,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +49,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private final PreparedStatementRoutingEngine preparedStatementRoutingEngine;
     
-    private final List<PreparedStatementExecutorWrapper> cachedPreparedStatementWrappers = new ArrayList<>();
+    private final List<BackendPreparedStatementWrapper> cachedRoutedPreparedStatements = new LinkedList<>();
+    
+    private final List<PreparedStatementExecutorWrapper> cachedPreparedStatementWrappers = new LinkedList<>();
     
     private int batchIndex;
     
@@ -75,15 +77,15 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     @Override
     public ResultSet executeQuery() throws SQLException {
-        ResultSet rs;
+        ResultSet result;
         try {
-            rs = ResultSetFactory.getResultSet(
+            result = ResultSetFactory.getResultSet(
                     new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlRouteResult().getSqlStatement());
         } finally {
             clearRouteContext();
         }
-        setCurrentResultSet(rs);
-        return rs;
+        setCurrentResultSet(result);
+        return result;
     }
     
     @Override
@@ -147,11 +149,12 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         SQLRouteResult sqlRouteResult = preparedStatementRoutingEngine.route(getParameters());
         setSqlRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = (PreparedStatement) getStatement(
+            BackendPreparedStatementWrapper backendPreparedStatementWrapper = generateStatement(
                     getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
-            replayMethodsInvocation(preparedStatement);
-            getParameters().replayMethodsInvocation(preparedStatement);
-            result.add(wrap(preparedStatement, each));
+            getRoutedStatements().add(backendPreparedStatementWrapper.getPreparedStatement());
+            replayMethodsInvocation(backendPreparedStatementWrapper.getPreparedStatement());
+            getParameters().replayMethodsInvocation(backendPreparedStatementWrapper.getPreparedStatement());
+            result.add(wrap(backendPreparedStatementWrapper.getPreparedStatement(), each));
         }
         return result;
     }
@@ -171,14 +174,23 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     }
     
     private PreparedStatement getStatementForBatch(final Connection connection, final String sql) throws SQLException {
-        for  (BackendStatementWrapper each : getCachedRoutedStatements()) {
+        for  (BackendPreparedStatementWrapper each : cachedRoutedPreparedStatements) {
             if (each.isBelongTo(connection, sql)) {
-                return (PreparedStatement) each.getStatement();
+                return each.getPreparedStatement();
             }
         }
-        BackendStatementWrapper statement = generateStatement(connection, sql);
-        getCachedRoutedStatements().add(statement);
-        return (PreparedStatement) statement.getStatement();
+        BackendPreparedStatementWrapper statement = generateStatement(connection, sql);
+        getRoutedStatements().add(statement.getPreparedStatement());
+        cachedRoutedPreparedStatements.add(statement);
+        return statement.getPreparedStatement();
+    }
+    
+    private BackendPreparedStatementWrapper generateStatement(final Connection connection, final String sql) throws SQLException {
+        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
+            return new BackendPreparedStatementWrapper(connection.prepareStatement(sql, RETURN_GENERATED_KEYS), sql);
+        }
+        return new BackendPreparedStatementWrapper(connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), sql);
     }
     
     private PreparedStatementExecutorWrapper wrap(final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
@@ -195,14 +207,5 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         PreparedStatementExecutorWrapper result = new PreparedStatementExecutorWrapper(preparedStatement, getParameters(), sqlExecutionUnit);
         cachedPreparedStatementWrappers.add(result);
         return result;
-    }
-    
-    @Override
-    protected BackendPreparedStatementWrapper generateStatement(final Connection conn, final String shardingSql) throws SQLException {
-        Optional<GeneratedKey> generatedKey = getGeneratedKey();
-        if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
-            return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, RETURN_GENERATED_KEYS), shardingSql);
-        }
-        return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), shardingSql);
     }
 }
