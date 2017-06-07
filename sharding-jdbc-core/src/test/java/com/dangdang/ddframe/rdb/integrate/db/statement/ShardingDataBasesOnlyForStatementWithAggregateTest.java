@@ -17,28 +17,32 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 public final class ShardingDataBasesOnlyForStatementWithAggregateTest extends AbstractShardingDataBasesOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     
+    private DatabaseTestSQL sql;
+    
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
+        sql = currentDatabaseSQL();
     }
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s";
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
+                shardingDataSource.getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 10, 19, 1000, 1909));
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", 
+                shardingDataSource.getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909));
     }
 }
