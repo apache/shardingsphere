@@ -73,7 +73,7 @@ public final class StatementExecutor {
                 return Collections.singletonList(executeQueryInternal(statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap));
             }
             result = executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, ResultSet>() {
-        
+                
                 @Override
                 public ResultSet execute(final StatementExecutorWrapper input) throws Exception {
                     synchronized (input.getStatement().getConnection()) {
