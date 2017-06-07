@@ -49,6 +49,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
         SQLUtil.safeInvoke(getRoutedStatements(), new ThrowableSQLExceptionMethod() {
+            
             @Override
             public void apply(final Object object) throws SQLException {
                 ((Statement) object).close();

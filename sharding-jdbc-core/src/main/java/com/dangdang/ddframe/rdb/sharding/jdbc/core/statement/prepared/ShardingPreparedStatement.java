@@ -57,13 +57,11 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         this(shardingConnection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingPreparedStatement(final ShardingConnection shardingConnection, 
-            final String sql, final int resultSetType, final int resultSetConcurrency) {
+    public ShardingPreparedStatement(final ShardingConnection shardingConnection, final String sql, final int resultSetType, final int resultSetConcurrency) {
         this(shardingConnection, sql, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingPreparedStatement(final ShardingConnection shardingConnection, 
-            final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public ShardingPreparedStatement(final ShardingConnection shardingConnection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
         preparedStatementRoutingEngine = new PreparedStatementRoutingEngine(sql, shardingConnection.getShardingContext());
     }
@@ -200,7 +198,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     }
     
     @Override
-    protected BackendStatementWrapper generateStatement(final Connection conn, final String shardingSql) throws SQLException {
+    protected BackendPreparedStatementWrapper generateStatement(final Connection conn, final String shardingSql) throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new BackendPreparedStatementWrapper(conn.prepareStatement(shardingSql, RETURN_GENERATED_KEYS), shardingSql);
