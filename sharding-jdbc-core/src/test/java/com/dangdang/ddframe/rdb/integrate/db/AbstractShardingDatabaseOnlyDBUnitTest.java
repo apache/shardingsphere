@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.db;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -29,12 +30,16 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import org.junit.AfterClass;
+import org.junit.Before;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBUnitTest {
+    
+    protected static DatabaseTestSQL sql;
     
     private static boolean isShutdown;
     
@@ -68,6 +73,12 @@ public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBU
                 "integrate/dataset/db/init/db_7.xml", 
                 "integrate/dataset/db/init/db_8.xml", 
                 "integrate/dataset/db/init/db_9.xml");
+    }
+    
+    @Before
+    public void init() throws SQLException {
+        shardingDataSource = getShardingDataSource();
+        sql = currentDatabaseTestSQL();
     }
     
     protected final ShardingDataSource getShardingDataSource() {

@@ -24,13 +24,6 @@ import com.dangdang.ddframe.rdb.integrate.db.pstatement.ShardingDatabaseOnlyForP
 import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDatabaseOnlyForStatementWithAggregateTest;
 import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDatabaseOnlyForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.db.statement.ShardingDatabaseOnlyForStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWihGroupByTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithSelectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -40,16 +33,9 @@ import org.junit.runners.Suite;
         ShardingDatabaseOnlyForPreparedStatementWithSelectTest.class,
         ShardingDatabaseOnlyForPreparedStatementWithAggregateTest.class,
         ShardingDatabaseOnlyForPreparedStatementWithDMLTest.class,
-        ShardingDatabaseOnlyForStatementWithSelectTest.class,
         ShardingDatabaseOnlyForStatementWithAggregateTest.class,
         ShardingDatabaseOnlyForStatementWithDMLTest.class,
-        ShardingTablesOnlyForPStatementWithSelectTest.class,
-        ShardingTablesOnlyForPStatementWithAggregateTest.class,
-        ShardingTablesOnlyForPStatementWihGroupByTest.class,
-        ShardingTablesOnlyForPStatementWithDMLTest.class,
-        ShardingTablesOnlyForStatementWithSelectTest.class,
-        ShardingTablesOnlyForStatementWithAggregateTest.class,
-        ShardingTablesOnlyForStatementWithDMLTest.class
+        ShardingDatabaseOnlyForStatementWithSelectTest.class
 })
 public class AllShardingDatabaseOnlyTests {
 }

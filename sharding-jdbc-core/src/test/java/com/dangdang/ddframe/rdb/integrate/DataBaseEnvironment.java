@@ -45,7 +45,7 @@ public final class DataBaseEnvironment {
     
     private void fillData() {
         DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class);
-        URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
         

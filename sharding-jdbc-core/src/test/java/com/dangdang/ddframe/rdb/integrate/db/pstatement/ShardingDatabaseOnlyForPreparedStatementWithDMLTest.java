@@ -18,11 +18,8 @@
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -32,22 +29,12 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends AbstractShardingDatabaseOnlyDBUnitTest {
-    
-    private ShardingDataSource shardingDataSource;
-    
-    private DatabaseTestSQL sql;
-    
-    @Before
-    public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseTestSQL();
-    }
+public class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     @Test
     public void assertInsertWithAllPlaceholders() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
-            try (Connection connection = shardingDataSource.getConnection()) {
+            try (Connection connection = getShardingDataSource().getConnection()) {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql.getInsertWithAllPlaceholdersSql());
                 preparedStatement.setInt(1, i);
                 preparedStatement.setInt(2, i);
@@ -60,7 +47,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     
     @Test
     public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
-        try (Connection connection = shardingDataSource.getConnection();
+        try (Connection connection = getShardingDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithAutoIncrementColumnSql(), "?", "?"))) {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
@@ -74,7 +61,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     @Test
     public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
-            try (Connection connection = shardingDataSource.getConnection()) {
+            try (Connection connection = getShardingDataSource().getConnection()) {
                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithoutPlaceholderSql(), i, i));
                 preparedStatement.executeUpdate();
             }
@@ -85,7 +72,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     @Test
     public void assertInsertWithPartialPlaceholders() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
-            try (Connection connection = shardingDataSource.getConnection()) {
+            try (Connection connection = getShardingDataSource().getConnection()) {
                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithPartialPlaceholdersSql(), i, i));
                 preparedStatement.setString(1, "insert");
                 preparedStatement.executeUpdate();
@@ -98,7 +85,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     public void assertUpdateWithoutAlias() throws SQLException, DatabaseUnitException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
-                try (Connection connection = shardingDataSource.getConnection()) {
+                try (Connection connection = getShardingDataSource().getConnection()) {
                     PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getUpdateWithoutAliasSql(), "?", "?", "?"));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
@@ -115,7 +102,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
         if (isAliasSupport()) {
             for (int i = 10; i < 30; i++) {
                 for (int j = 0; j < 2; j++) {
-                    try (Connection connection = shardingDataSource.getConnection()) {
+                    try (Connection connection = getShardingDataSource().getConnection()) {
                         PreparedStatement preparedStatement = connection.prepareStatement(sql.getUpdateWithAliasSql());
                         preparedStatement.setString(1, "updated");
                         preparedStatement.setInt(2, i * 100 + j);
@@ -130,7 +117,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     
     @Test
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        try (Connection connection = shardingDataSource.getConnection()) {
+        try (Connection connection = getShardingDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getUpdateWithoutShardingValueSql(), "?", "?"));
             preparedStatement.setString(1, "updated");
             preparedStatement.setString(2, "init");
@@ -143,7 +130,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
-                try (Connection connection = shardingDataSource.getConnection()) {
+                try (Connection connection = getShardingDataSource().getConnection()) {
                     PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getDeleteWithoutAliasSql(), "?", "?", "?"));
                     preparedStatement.setInt(1, i * 100 + j);
                     preparedStatement.setInt(2, i);
@@ -157,7 +144,7 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        try (Connection connection = shardingDataSource.getConnection()) {
+        try (Connection connection = getShardingDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getDeleteWithoutShardingValueSql(), "?"));
             preparedStatement.setString(1, "init");
             assertThat(preparedStatement.executeUpdate(), is(40));
@@ -168,7 +155,8 @@ public final class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends A
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i), 
-                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", String.format(sql.getAssertSelectWithStatusSql(), "?"), status);
+                    getShardingDataSource().getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), 
+                    "t_order", String.format(sql.getAssertSelectWithStatusSql(), "?"), status);
         }
     }
 }

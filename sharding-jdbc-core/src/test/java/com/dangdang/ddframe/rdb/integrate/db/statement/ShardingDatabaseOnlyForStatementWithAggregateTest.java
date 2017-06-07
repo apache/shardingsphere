@@ -18,31 +18,18 @@
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
 public final class ShardingDatabaseOnlyForStatementWithAggregateTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
-    private ShardingDataSource shardingDataSource;
-    
-    private DatabaseTestSQL sql;
-    
-    @Before
-    public void init() throws SQLException {
-        shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseTestSQL();
-    }
-    
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
-                shardingDataSource.getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 10, 19, 1000, 1909));
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", 
-                shardingDataSource.getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909));
+                getShardingDataSource().getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 10, 19, 1000, 1909));
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml",
+                getShardingDataSource().getConnection(), "t_order_item", String.format(sql.getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909));
     }
 }

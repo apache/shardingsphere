@@ -143,7 +143,7 @@ public abstract class AbstractDBUnitTest {
             for (Object each : params) {
                 ps.setObject(i++, each);
             }
-            ITable actualTable = getConnection(connection).createTable(actualTableName, ps);
+            ITable actualTable = getITable(connection, ps, actualTableName, sql);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
@@ -155,6 +155,10 @@ public abstract class AbstractDBUnitTest {
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
+    }
+    
+    private ITable getITable(final Connection connection, final PreparedStatement preparedStatement, final String tableName, final String sql) throws SQLException, DatabaseUnitException {
+        return getConnection(connection).createTable(tableName, preparedStatement);
     }
     
     private IDatabaseConnection getConnection(final Connection connection) throws DatabaseUnitException {
