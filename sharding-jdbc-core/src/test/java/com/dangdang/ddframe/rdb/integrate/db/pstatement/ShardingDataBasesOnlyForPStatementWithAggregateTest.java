@@ -59,7 +59,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
              PreparedStatement ps = conn.prepareStatement(sql.getSelectCountSql());
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            if (isAggregationAliasSupport()) {
+            if (isAliasSupport()) {
                 assertThat(rs.getInt("COUNT(*)"), is(40));
             }
             assertThat(rs.getInt(1), is(40));
@@ -78,7 +78,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
              PreparedStatement ps = conn.prepareStatement(sql.getSelectSumSql());
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            if (isAggregationAliasSupport()) {
+            if (isAliasSupport()) {
                 assertThat(rs.getLong("SUM(`user_id`)"), is(780L));
             }
             assertThat(rs.getLong(1), is(780L));
@@ -97,7 +97,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
              PreparedStatement ps = conn.prepareStatement(sql.getSelectMaxSql());
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            if (isAggregationAliasSupport()) {
+            if (isAliasSupport()) {
                 assertThat(rs.getDouble("MAX(`user_id`)"), is(29D));
             }
             assertThat(rs.getDouble(1), is(29D));
@@ -116,7 +116,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
              PreparedStatement ps = conn.prepareStatement(sql.getSelectMinSql());
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            if (isAggregationAliasSupport()) {
+            if (isAliasSupport()) {
                 assertThat(rs.getFloat("MIN(`user_id`)"), is(10F));
             }
             assertThat(rs.getFloat(1), is(10F));
@@ -137,7 +137,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
              PreparedStatement ps = conn.prepareStatement(sql.getSelectAvgSql());
              ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            if (isAggregationAliasSupport()) {
+            if (isAliasSupport()) {
                 assertThat(rs.getObject("AVG(`user_id`)"), Is.<Object>is(new BigDecimal("19.5000")));
             }
             assertThat(rs.getBigDecimal(1), Is.<Object>is(new BigDecimal("19.5000")));
@@ -147,9 +147,11 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
+        System.out.println(sql.getSelectCountWithBindingTableSql());
+        String selectSql = String.format(sql.getSelectCountWithBindingTableSql(), "?", "?", "?", "?");
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
-                shardingDataSource.getConnection(), "t_order_item", sql.getSelectCountWithBindingTableSql(), 10, 19, 1000, 1909);
+                shardingDataSource.getConnection(), "t_order_item", selectSql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", 
-                shardingDataSource.getConnection(), "t_order_item", sql.getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909);
+                shardingDataSource.getConnection(), "t_order_item", selectSql, 1, 9, 1000, 1909);
     }
 }

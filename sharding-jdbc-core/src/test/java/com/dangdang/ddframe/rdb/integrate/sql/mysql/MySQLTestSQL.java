@@ -42,7 +42,27 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     private static final String SELECT_AVG_SQL = "SELECT AVG(`user_id`) FROM `t_order`";
     
     private static final String SELECT_COUNT_WITH_BINDING_TABLE_SQL = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i "
-            + "ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ?";
+            + "ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s";
+    
+    private static final String INSERT_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
+    
+    private static final String INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
+    
+    private static final String INSERT_WITHOUT_PLACEHOLDER_SQL = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, 'insert')";
+    
+    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO `t_order` (`user_id`, `status`) VALUES (?, ?)";
+    
+    private static final String UPDATE_WITHOUT_ALIAS_SQL = "UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND `user_id` = ?";
+    
+    private static final String UPDATE_WITH_ALIAS_SQL = "UPDATE `t_order` AS o SET o.`status` = ? WHERE o.`order_id` = ? AND o.`user_id` = ?";
+    
+    private static final String UPDATE_WITHOUT_SHARDING_VALUE_SQL = "UPDATE `t_order` SET `status` = ? WHERE `status` = ?";
+    
+    private static final String DELETE_WITHOUT_ALIAS_SQL = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ? AND `status` = ?";
+    
+    private static final String DELETE_WITHOUT_SHARDING_VALUE_SQL = "DELETE FROM `t_order` WHERE `status` = ?";
+    
+    private static final String ASSERT_SELECT_WITH_STATUS_SQL = "SELECT * FROM `t_order` WHERE `status`=?";
     
     @Override
     public String getSelectCountSql() {
@@ -97,5 +117,55 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectCountWithBindingTableSql() {
         return SELECT_COUNT_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getInsertWithAutoIncrementColumnSql() {
+        return INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL;
+    }
+    
+    @Override
+    public String getInsertWithAllPlaceholdersSql() {
+        return INSERT_WITH_ALL_PLACEHOLDERS_SQL;
+    }
+    
+    @Override
+    public String getInsertWithPartialPlaceholdersSql() {
+        return INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL;
+    }
+    
+    @Override
+    public String getInsertWithoutPlaceholderSql() {
+        return INSERT_WITHOUT_PLACEHOLDER_SQL;
+    }
+    
+    @Override
+    public String getUpdateWithoutAliasSql() {
+        return UPDATE_WITHOUT_ALIAS_SQL;
+    }
+    
+    @Override
+    public String getUpdateWithAliasSql() {
+        return UPDATE_WITH_ALIAS_SQL;
+    }
+    
+    @Override
+    public String getUpdateWithoutShardingValueSql() {
+        return UPDATE_WITHOUT_SHARDING_VALUE_SQL;
+    }
+    
+    @Override
+    public String getDeleteWithoutAliasSql() {
+        return DELETE_WITHOUT_ALIAS_SQL;
+    }
+    
+    @Override
+    public String getDeleteWithoutShardingValueSql() {
+        return DELETE_WITHOUT_SHARDING_VALUE_SQL;
+    }
+    
+    @Override
+    public String getAssertSelectWithStatusSql() {
+        return ASSERT_SELECT_WITH_STATUS_SQL;
     }
 }

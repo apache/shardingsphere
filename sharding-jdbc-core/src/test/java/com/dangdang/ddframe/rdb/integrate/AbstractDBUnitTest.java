@@ -100,7 +100,7 @@ public abstract class AbstractDBUnitTest {
         }
     }
     
-    protected final boolean isAggregationAliasSupport() {
+    protected final boolean isAliasSupport() {
         return !PostgreSQL.equals(dbEnv.getDatabaseType());
     }
     

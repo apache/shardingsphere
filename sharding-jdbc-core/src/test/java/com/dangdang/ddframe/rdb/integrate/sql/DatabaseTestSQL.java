@@ -40,4 +40,24 @@ public interface DatabaseTestSQL {
     String getSelectAvgAliasSql();
     
     String getSelectCountWithBindingTableSql();
+    
+    String getInsertWithAllPlaceholdersSql();
+    
+    String getInsertWithPartialPlaceholdersSql();
+    
+    String getInsertWithoutPlaceholderSql();
+    
+    String getInsertWithAutoIncrementColumnSql();
+    
+    String getUpdateWithoutAliasSql();
+    
+    String getUpdateWithAliasSql();
+    
+    String getUpdateWithoutShardingValueSql();
+    
+    String getDeleteWithoutAliasSql();
+    
+    String getDeleteWithoutShardingValueSql();
+    
+    String getAssertSelectWithStatusSql();
 }
