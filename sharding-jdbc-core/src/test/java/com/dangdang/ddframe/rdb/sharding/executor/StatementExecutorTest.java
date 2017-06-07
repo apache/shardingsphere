@@ -49,7 +49,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     
     @Test
     public void assertNoStatement() throws SQLException {
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.<StatementExecutorWrapper>emptyList());
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -58,11 +58,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteQueryForSingleStatementSuccess() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDQL(statement, "ds_0");
         ResultSet resultSet = mock(ResultSet.class);
         when(statement.executeQuery(SELECT_FROM_DUAL)).thenReturn(resultSet);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDQL(statement, "ds_0")));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(statement).executeQuery(SELECT_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -83,11 +81,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.executeQuery(SELECT_FROM_DUAL)).thenReturn(resultSet2);
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDQL(statement1, "ds_0"), createStatementExecutorWrapperForDQL(statement2, "ds_1")));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
@@ -108,10 +103,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void assertExecuteQueryForSingleStatementFailure() throws SQLException {
         Statement statement = mock(Statement.class);
         SQLException exp = new SQLException();
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDQL(statement, "ds_0");
         when(statement.executeQuery(SELECT_FROM_DUAL)).thenThrow(exp);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDQL(statement, "ds_0")));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(statement).executeQuery(SELECT_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -131,11 +124,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeQuery(SELECT_FROM_DUAL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDQL(statement1, "ds_0"), createStatementExecutorWrapperForDQL(statement2, "ds_1")));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(statement1).executeQuery(SELECT_FROM_DUAL);
@@ -154,10 +144,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateForSingleStatementSuccess() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.executeUpdate(DELETE_FROM_DUAL)).thenReturn(10);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertThat(actual.executeUpdate(), is(10));
         verify(statement).executeUpdate(DELETE_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -176,11 +164,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DELETE_FROM_DUAL)).thenReturn(20);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDML(statement1, "ds_0"), createStatementExecutorWrapperForDML(statement2, "ds_1")));
         assertThat(actual.executeUpdate(), is(30));
         verify(statement1).executeUpdate(DELETE_FROM_DUAL);
         verify(statement2).executeUpdate(DELETE_FROM_DUAL);
@@ -198,11 +183,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateForSingleStatementFailure() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         SQLException exp = new SQLException();
         when(statement.executeUpdate(DELETE_FROM_DUAL)).thenThrow(exp);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement).executeUpdate(DELETE_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -222,11 +205,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.executeUpdate(DELETE_FROM_DUAL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDML(statement1, "ds_0"), createStatementExecutorWrapperForDML(statement2, "ds_1")));
         assertThat(actual.executeUpdate(), is(0));
         verify(statement1).executeUpdate(DELETE_FROM_DUAL);
         verify(statement2).executeUpdate(DELETE_FROM_DUAL);
@@ -244,10 +224,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateWithAutoGeneratedKeys() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.executeUpdate(DELETE_FROM_DUAL, Statement.NO_GENERATED_KEYS)).thenReturn(10);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertThat(actual.executeUpdate(Statement.NO_GENERATED_KEYS), is(10));
         verify(statement).executeUpdate(DELETE_FROM_DUAL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -261,10 +239,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.executeUpdate(DELETE_FROM_DUAL, new int[] {1})).thenReturn(10);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertThat(actual.executeUpdate(new int[] {1}), is(10));
         verify(statement).executeUpdate(DELETE_FROM_DUAL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -278,10 +254,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteUpdateWithColumnNames() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.executeUpdate(DELETE_FROM_DUAL, new String[] {"col"})).thenReturn(10);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertThat(actual.executeUpdate(new String[] {"col"}), is(10));
         verify(statement).executeUpdate(DELETE_FROM_DUAL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -295,10 +269,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementSuccessWithDML() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.execute(DELETE_FROM_DUAL)).thenReturn(false);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertFalse(actual.execute());
         verify(statement).execute(DELETE_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -317,11 +289,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DELETE_FROM_DUAL)).thenReturn(false);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDML(statement1, "ds_0"), createStatementExecutorWrapperForDML(statement2, "ds_1")));
         assertFalse(actual.execute());
         verify(statement1).execute(DELETE_FROM_DUAL);
         verify(statement2).execute(DELETE_FROM_DUAL);
@@ -339,11 +308,9 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementFailureWithDML() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         SQLException exp = new SQLException();
         when(statement.execute(DELETE_FROM_DUAL)).thenThrow(exp);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertFalse(actual.execute());
         verify(statement).execute(DELETE_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -363,11 +330,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(DELETE_FROM_DUAL)).thenThrow(exp);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDML(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDML(statement2, "ds_1");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDML(statement1, "ds_0"), createStatementExecutorWrapperForDML(statement2, "ds_1")));
         assertFalse(actual.execute());
         verify(statement1).execute(DELETE_FROM_DUAL);
         verify(statement2).execute(DELETE_FROM_DUAL);
@@ -385,10 +349,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteForSingleStatementWithDQL() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDQL(statement, "ds_0");
         when(statement.execute(SELECT_FROM_DUAL)).thenReturn(true);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDQL(statement, "ds_0")));
         assertTrue(actual.execute());
         verify(statement).execute(SELECT_FROM_DUAL);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -407,11 +369,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(statement2.execute(SELECT_FROM_DUAL)).thenReturn(true);
         when(statement1.getConnection()).thenReturn(mock(Connection.class));
         when(statement2.getConnection()).thenReturn(mock(Connection.class));
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        StatementExecutorWrapper wrapper1 = createStatementExecutorWrapperForDQL(statement1, "ds_0");
-        actual.addStatement(wrapper1);
-        StatementExecutorWrapper wrapper2 = createStatementExecutorWrapperForDQL(statement2, "ds_0");
-        actual.addStatement(wrapper2);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), 
+                Arrays.asList(createStatementExecutorWrapperForDQL(statement1, "ds_0"), createStatementExecutorWrapperForDQL(statement2, "ds_0")));
         assertTrue(actual.execute());
         verify(statement1).execute(SELECT_FROM_DUAL);
         verify(statement2).execute(SELECT_FROM_DUAL);
@@ -428,10 +387,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteWithAutoGeneratedKeys() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.execute(DELETE_FROM_DUAL, Statement.NO_GENERATED_KEYS)).thenReturn(false);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertFalse(actual.execute(Statement.NO_GENERATED_KEYS));
         verify(statement).execute(DELETE_FROM_DUAL, Statement.NO_GENERATED_KEYS);
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -445,10 +402,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteWithColumnIndexes() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.execute(DELETE_FROM_DUAL, new int[] {1})).thenReturn(false);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertFalse(actual.execute(new int[] {1}));
         verify(statement).execute(DELETE_FROM_DUAL, new int[] {1});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -462,10 +417,8 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Test
     public void assertExecuteWithColumnNames() throws SQLException {
         Statement statement = mock(Statement.class);
-        StatementExecutorWrapper wrapper = createStatementExecutorWrapperForDML(statement, "ds_0");
         when(statement.execute(DELETE_FROM_DUAL, new String[] {"col"})).thenReturn(false);
-        StatementExecutor actual = new StatementExecutor(getExecutorEngine());
-        actual.addStatement(wrapper);
+        StatementExecutor actual = new StatementExecutor(getExecutorEngine(), Collections.singletonList(createStatementExecutorWrapperForDML(statement, "ds_0")));
         assertFalse(actual.execute(new String[] {"col"}));
         verify(statement).execute(DELETE_FROM_DUAL, new String[] {"col"});
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");

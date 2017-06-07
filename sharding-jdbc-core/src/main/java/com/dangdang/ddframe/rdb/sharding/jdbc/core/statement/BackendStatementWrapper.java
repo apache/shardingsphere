@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.sql.Connection;
@@ -35,7 +34,7 @@ public class BackendStatementWrapper {
     
     private final Connection connection;
     
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Statement statement;
     
     public BackendStatementWrapper(final Statement statement) throws SQLException {

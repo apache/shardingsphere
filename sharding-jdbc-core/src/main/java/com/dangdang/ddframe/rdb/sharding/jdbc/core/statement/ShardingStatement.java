@@ -76,6 +76,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     @Getter
     private final int resultSetHoldability;
     
+    @Getter
     private final List<BackendStatementWrapper> cachedRoutedStatements = new LinkedList<>();
     
     @Getter(AccessLevel.PROTECTED)
@@ -221,28 +222,17 @@ public class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
-        StatementExecutor result = new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine());
         sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
+        Collection<StatementExecutorWrapper> statementExecutorWrappers = new LinkedList<>(); 
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             Statement statement = getStatement(shardingConnection.getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
             replayMethodsInvocation(statement);
-            result.addStatement(new StatementExecutorWrapper(statement, each));
+            statementExecutorWrappers.add(new StatementExecutorWrapper(statement, each));
         }
-        return result;
+        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), statementExecutorWrappers);
     }
     
     protected Statement getStatement(final Connection connection, final String sql) throws SQLException {
-        BackendStatementWrapper statement = generateStatement(connection, sql);
-        cachedRoutedStatements.add(statement);
-        return statement.getStatement();
-    }
-    
-    protected Statement getStatementForBatch(final Connection connection, final String sql) throws SQLException {
-        for (BackendStatementWrapper each : cachedRoutedStatements) {
-            if (each.isBelongTo(connection, sql)) {
-                return each.getStatement();
-            }
-        }
         BackendStatementWrapper statement = generateStatement(connection, sql);
         cachedRoutedStatements.add(statement);
         return statement.getStatement();

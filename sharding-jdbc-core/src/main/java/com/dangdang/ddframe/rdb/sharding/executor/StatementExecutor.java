@@ -22,12 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -39,22 +37,18 @@ import java.util.Map;
  * @author gaohongtao
  * @author caohao
  */
-@RequiredArgsConstructor
 public final class StatementExecutor {
     
     private final ExecutorEngine executorEngine;
     
-    private final Collection<StatementExecutorWrapper> statementExecutorWrappers = new ArrayList<>();
+    private final Collection<StatementExecutorWrapper> statementExecutorWrappers;
     
-    private final EventPostman eventPostman = new EventPostman(statementExecutorWrappers);
+    private final EventPostman eventPostman;
     
-    /**
-     * 添加静态语句对象至执行上下文.
-     *
-     * @param statementExecutorWrapper 静态语句对象的执行上下文
-     */
-    public void addStatement(final StatementExecutorWrapper statementExecutorWrapper) {
-        statementExecutorWrappers.add(statementExecutorWrapper);
+    public StatementExecutor(final ExecutorEngine executorEngine, final Collection<StatementExecutorWrapper> statementExecutorWrappers) {
+        this.executorEngine = executorEngine;
+        this.statementExecutorWrappers = statementExecutorWrappers;
+        eventPostman = new EventPostman(statementExecutorWrappers);
     }
     
     /**
@@ -183,8 +177,7 @@ public final class StatementExecutor {
         }
     }
     
-    private int executeUpdateInternal(final Updater updater, final StatementExecutorWrapper statementExecutorWrapper,
-                                      final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdateInternal(final Updater updater, final StatementExecutorWrapper statementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -268,8 +261,7 @@ public final class StatementExecutor {
         }
     }
     
-    private boolean executeInternal(final Executor executor, final StatementExecutorWrapper statementExecutorWrapper,
-                                    final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private boolean executeInternal(final Executor executor, final StatementExecutorWrapper statementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);

@@ -80,8 +80,7 @@ public final class PreparedStatementExecutor {
         return result;
     }
     
-    private ResultSet executeQueryInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
-                                           final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private ResultSet executeQueryInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -137,8 +136,7 @@ public final class PreparedStatementExecutor {
         }
     }
     
-    private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
-                                      final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -183,8 +181,7 @@ public final class PreparedStatementExecutor {
         }
     }
     
-    private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper,
-                                    final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);

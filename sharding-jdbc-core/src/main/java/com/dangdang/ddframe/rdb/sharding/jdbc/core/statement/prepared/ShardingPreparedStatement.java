@@ -163,13 +163,24 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         SQLRouteResult sqlRouteResult = preparedStatementRoutingEngine.route(getParameters());
         setSqlRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
-            PreparedStatement preparedStatement = (PreparedStatement) getStatementForBatch(
+            PreparedStatement preparedStatement = getStatementForBatch(
                     getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
             result.add(wrap(preparedStatement, each));
         }
         return result;
+    }
+    
+    private PreparedStatement getStatementForBatch(final Connection connection, final String sql) throws SQLException {
+        for  (BackendStatementWrapper each : getCachedRoutedStatements()) {
+            if (each.isBelongTo(connection, sql)) {
+                return (PreparedStatement) each.getStatement();
+            }
+        }
+        BackendStatementWrapper statement = generateStatement(connection, sql);
+        getCachedRoutedStatements().add(statement);
+        return (PreparedStatement) statement.getStatement();
     }
     
     private PreparedStatementExecutorWrapper wrap(final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
