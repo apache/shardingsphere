@@ -62,6 +62,43 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     
     private static final String ASSERT_SELECT_WITH_STATUS_SQL = "SELECT * FROM t_order WHERE status = %s";
     
+    private static final String SELECT_SUM_WITH_GROUP_BY_SQL = "SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_SUM_WITH_ORDER_BY_AND_GROUP_BY_SQL = "SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id";
+    
+    private static final String SELECT_COUNT_WITH_GROUP_BY_SQL = "SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_MAX_WITH_GROUP_BY_SQL = "SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_MIN_WITH_GROUP_BY_SQL = "SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_AVG_WITH_GROUP_BY_SQL = "SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_SUM_WITH_ORDER_BY_DESC_AND_GROUP_BY_SQL = "SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC";
+    
+    private static final String SELECT_EQUALS_WITH_SINGLE_TABLE_SQL = "SELECT * FROM t_order WHERE user_id = %s AND order_id = %s";
+    
+    private static final String SELECT_BETWEEN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id";
+    
+    private static final String SELECT_IN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM t_order WHERE user_id IN (%s, %s, %s) AND order_id IN (%s, %s) ORDER BY user_id, order_id";
+    
+    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
+    
+    private static final String SELECT_ORDER_BY_WITH_ALIAS_SQL = "SELECT order_id as order_id_alias,user_id,status FROM t_order" 
+            + " WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id";
+    
+    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
+    
+    private static final String SELECT_GROUP_WITH_BINDING_TABLE_SQL = "SELECT count(*) as items_count, o.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id "
+            + "AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id";
+    
+    private static final String SELECT_GROUP_WITHOUT_GROUPED_COLUMN_SQL = "SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s GROUP BY o.user_id";
+    
+    private static final String SELECT_WITH_NO_SHARDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id";
+    
     @Override
     public String getSelectCountSql() {
         return SELECT_COUNT_SQL;
@@ -165,5 +202,85 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getAssertSelectWithStatusSql() {
         return ASSERT_SELECT_WITH_STATUS_SQL;
+    }
+    
+    @Override
+    public String getSelectSumWithGroupBySql() {
+        return SELECT_SUM_WITH_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectSumWithOrderByAndGroupBySql() {
+        return SELECT_SUM_WITH_ORDER_BY_AND_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectSumWithOrderByDescAndGroupBySql() {
+        return SELECT_SUM_WITH_ORDER_BY_DESC_AND_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectCountWithGroupBySql() {
+        return SELECT_COUNT_WITH_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectMaxWithGroupBySql() {
+        return SELECT_MAX_WITH_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectMinWithGroupBySql() {
+        return SELECT_MIN_WITH_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectAvgWithGroupBySql() {
+        return SELECT_AVG_WITH_GROUP_BY_SQL;
+    }
+    
+    @Override
+    public String getSelectEqualsWithSingleTableSql() {
+        return SELECT_EQUALS_WITH_SINGLE_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectBetweenWithSingleTableSql() {
+        return SELECT_BETWEEN_WITH_SINGLE_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectInWithSingleTableSql() {
+        return SELECT_IN_WITH_SINGLE_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectLimitWithBindingTableSql() {
+        return SELECT_LIMIT_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectOrderByWithAliasSql() {
+        return SELECT_ORDER_BY_WITH_ALIAS_SQL;
+    }
+    
+    @Override
+    public String getSelectLimitWithBindingTableWithoutOffsetSql() {
+        return SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL;
+    }
+    
+    @Override
+    public String getSelectGroupWithBindingTableSql() {
+        return SELECT_GROUP_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectGroupWithoutGroupedColumnSql() {
+        return SELECT_GROUP_WITHOUT_GROUPED_COLUMN_SQL;
+    }
+    
+    @Override
+    public String getSelectWithNoShardingTableSql() {
+        return SELECT_WITH_NO_SHARDING_TABLE_SQL;
     }
 }

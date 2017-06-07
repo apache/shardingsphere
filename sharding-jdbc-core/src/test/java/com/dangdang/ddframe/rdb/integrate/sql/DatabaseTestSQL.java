@@ -60,4 +60,36 @@ public interface DatabaseTestSQL {
     String getDeleteWithoutShardingValueSql();
     
     String getAssertSelectWithStatusSql();
+    
+    String getSelectSumWithGroupBySql();
+    
+    String getSelectSumWithOrderByAndGroupBySql();
+    
+    String getSelectSumWithOrderByDescAndGroupBySql();
+    
+    String getSelectCountWithGroupBySql();
+    
+    String getSelectMaxWithGroupBySql();
+    
+    String getSelectMinWithGroupBySql();
+    
+    String getSelectAvgWithGroupBySql();
+    
+    String getSelectEqualsWithSingleTableSql();
+    
+    String getSelectBetweenWithSingleTableSql();
+    
+    String getSelectInWithSingleTableSql();
+    
+    String getSelectLimitWithBindingTableSql();
+    
+    String getSelectOrderByWithAliasSql();
+    
+    String getSelectLimitWithBindingTableWithoutOffsetSql();
+    
+    String getSelectGroupWithBindingTableSql();
+    
+    String getSelectGroupWithoutGroupedColumnSql();
+    
+    String getSelectWithNoShardingTableSql();
 }
