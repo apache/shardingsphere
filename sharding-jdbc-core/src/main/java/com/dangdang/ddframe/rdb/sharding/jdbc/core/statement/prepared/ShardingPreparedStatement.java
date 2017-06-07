@@ -80,7 +80,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet result;
         try {
             result = ResultSetFactory.getResultSet(
-                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getSqlRouteResult().getSqlStatement());
+                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), routeSQL()).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
             clearRouteContext();
         }
@@ -147,7 +147,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     private List<PreparedStatementExecutorWrapper> routeSQL() throws SQLException {
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = preparedStatementRoutingEngine.route(getParameters());
-        setSqlRouteResult(sqlRouteResult);
+        setRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             BackendPreparedStatementWrapper backendPreparedStatementWrapper = generateStatement(
                     getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());
@@ -162,7 +162,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     private List<PreparedStatementExecutorWrapper> routeSQLForBatch() throws SQLException {
         List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
         SQLRouteResult sqlRouteResult = preparedStatementRoutingEngine.route(getParameters());
-        setSqlRouteResult(sqlRouteResult);
+        setRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = getStatementForBatch(
                     getShardingConnection().getConnection(each.getDataSource(), sqlRouteResult.getSqlStatement().getType()), each.getSql());

@@ -43,8 +43,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private int fetchSize;
     
-    protected abstract void clearRouteStatements();
-    
     @Override
     @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
@@ -56,7 +54,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             }
         });
         closed = true;
-        clearRouteStatements();
+        getRoutedStatements().clear();
     }
     
     @Override

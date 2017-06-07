@@ -47,6 +47,7 @@ import java.util.List;
  * 
  * @author gaohongtao
  * @author caohao
+ * @author zhangliang
  */
 public class ShardingStatement extends AbstractStatementAdapter {
     
@@ -66,11 +67,11 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private final int resultSetHoldability;
     
     @Getter
-    private final List<Statement> routedStatements = new LinkedList<>();
+    private final Collection<Statement> routedStatements = new LinkedList<>();
     
     @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PROTECTED)
-    private SQLRouteResult sqlRouteResult;
+    private SQLRouteResult routeResult;
     
     @Setter(AccessLevel.PROTECTED)
     private ResultSet currentResultSet;
@@ -100,7 +101,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet result;
         try {
-            result = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), sqlRouteResult.getSqlStatement());
+            result = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), routeResult.getSqlStatement());
         } finally {
             setCurrentResultSet(null);
         }
@@ -194,28 +195,13 @@ public class ShardingStatement extends AbstractStatementAdapter {
         returnGeneratedKeys = true;
     }
     
-    @Override
-    public ResultSet getGeneratedKeys() throws SQLException {
-        Optional<GeneratedKey> generatedKey = getGeneratedKey();
-        if (generatedKey.isPresent() && returnGeneratedKeys) {
-            return new GeneratedKeysResultSet(sqlRouteResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
-        }
-        return new GeneratedKeysResultSet();
-    }
-    
-    protected final Optional<GeneratedKey> getGeneratedKey() {
-        if (null != sqlRouteResult && sqlRouteResult.getSqlStatement() instanceof InsertStatement) {
-            return Optional.fromNullable(((InsertStatement) sqlRouteResult.getSqlStatement()).getGeneratedKey());
-        }
-        return Optional.absent();
-    }
-    
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
-        sqlRouteResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
-        Collection<StatementExecutorWrapper> statementExecutorWrappers = new LinkedList<>(); 
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
+        clearPrevious();
+        routeResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
+        Collection<StatementExecutorWrapper> statementExecutorWrappers = new LinkedList<>();
+        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = shardingConnection.getConnection(
-                    each.getDataSource(), sqlRouteResult.getSqlStatement().getType()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                    each.getDataSource(), routeResult.getSqlStatement().getType()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             replayMethodsInvocation(statement);
             statementExecutorWrappers.add(new StatementExecutorWrapper(statement, each));
             routedStatements.add(statement);
@@ -223,25 +209,43 @@ public class ShardingStatement extends AbstractStatementAdapter {
         return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), statementExecutorWrappers);
     }
     
+    private void clearPrevious() throws SQLException {
+        for (Statement each : routedStatements) {
+            each.close();
+        }
+        routedStatements.clear();
+    }
+    
+    @Override
+    public ResultSet getGeneratedKeys() throws SQLException {
+        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        if (generatedKey.isPresent() && returnGeneratedKeys) {
+            return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
+        }
+        return new GeneratedKeysResultSet();
+    }
+    
+    protected final Optional<GeneratedKey> getGeneratedKey() {
+        if (null != routeResult && routeResult.getSqlStatement() instanceof InsertStatement) {
+            return Optional.fromNullable(((InsertStatement) routeResult.getSqlStatement()).getGeneratedKey());
+        }
+        return Optional.absent();
+    }
+    
     @Override
     public ResultSet getResultSet() throws SQLException {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == getRoutedStatements().size()) {
-            currentResultSet = getRoutedStatements().iterator().next().getResultSet();
+        if (1 == routedStatements.size()) {
+            currentResultSet = routedStatements.iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(getRoutedStatements().size());
-        for (Statement each : getRoutedStatements()) {
+        List<ResultSet> resultSets = new ArrayList<>(routedStatements.size());
+        for (Statement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = ResultSetFactory.getResultSet(resultSets, sqlRouteResult.getSqlStatement());
+        currentResultSet = ResultSetFactory.getResultSet(resultSets, routeResult.getSqlStatement());
         return currentResultSet;
-    }
-    
-    @Override
-    protected void clearRouteStatements() {
-        routedStatements.clear();
     }
 }

@@ -154,10 +154,6 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
         AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
             
             @Override
-            protected void clearRouteStatements() {
-            }
-            
-            @Override
             protected Collection<? extends Statement> getRoutedStatements() {
                 return Lists.newArrayList(st1, st2);
             }
