@@ -48,7 +48,7 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     
     private static final String INSERT_WITHOUT_PLACEHOLDER_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')";
     
-    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+    private static final String INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL = "INSERT INTO t_order (user_id, status) VALUES (%s, %s)";
     
     private static final String UPDATE_WITHOUT_ALIAS_SQL = "UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?";
     

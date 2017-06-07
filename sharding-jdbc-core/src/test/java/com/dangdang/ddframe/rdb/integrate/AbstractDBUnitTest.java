@@ -88,7 +88,7 @@ public abstract class AbstractDBUnitTest {
         return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
     }
     
-    protected final DatabaseTestSQL currentDatabaseSQL() {
+    protected final DatabaseTestSQL currentDatabaseTestSQL() {
         switch (dbEnv.getDatabaseType()) {
             case H2:
             case MySQL:

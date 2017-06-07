@@ -35,7 +35,7 @@ public final class ShardingDataBasesOnlyForStatementWithAggregateTest extends Ab
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseSQL();
+        sql = currentDatabaseTestSQL();
     }
     
     @Test

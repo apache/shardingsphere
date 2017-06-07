@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,9 +36,12 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
     
     private ShardingDataSource shardingDataSource;
     
+    private DatabaseTestSQL sql;
+    
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
+        sql = currentDatabaseTestSQL();
     }
     
     @Test
@@ -45,7 +49,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, '%s')", i, i, "insert"));
+                connection.createStatement().executeUpdate(String.format(sql.getInsertWithoutPlaceholderSql(), i, i));
                 connection.commit();
                 connection.close();
             }
@@ -58,7 +62,7 @@ public class ShardingDataBasesOnlyForStatementWithDMLTest extends AbstractShardi
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection()) {
                 connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate(String.format("INSERT INTO `t_order` (`user_id`, `status`) VALUES (%s, '%s')", i, "insert"));
+                connection.createStatement().executeUpdate(String.format(sql.getInsertWithAutoIncrementColumnSql(), i, "'insert'"));
                 connection.commit();
                 connection.close();
             }

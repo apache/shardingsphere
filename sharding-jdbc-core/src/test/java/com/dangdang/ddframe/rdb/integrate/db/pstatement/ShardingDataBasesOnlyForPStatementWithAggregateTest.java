@@ -45,7 +45,7 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseSQL();
+        sql = currentDatabaseTestSQL();
     }
     
     @Test
@@ -147,7 +147,6 @@ public final class ShardingDataBasesOnlyForPStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        System.out.println(sql.getSelectCountWithBindingTableSql());
         String selectSql = String.format(sql.getSelectCountWithBindingTableSql(), "?", "?", "?", "?");
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
                 shardingDataSource.getConnection(), "t_order_item", selectSql, 10, 19, 1000, 1909);

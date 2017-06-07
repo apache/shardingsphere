@@ -41,7 +41,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseSQL();
+        sql = currentDatabaseTestSQL();
     }
     
     @Test
@@ -61,7 +61,7 @@ public final class ShardingDataBasesOnlyForPStatementWithDMLTest extends Abstrac
     @Test
     public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql.getInsertWithAutoIncrementColumnSql())) {
+             PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithAutoIncrementColumnSql(), "?", "?"))) {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
                 preparedStatement.setString(2, "insert");
