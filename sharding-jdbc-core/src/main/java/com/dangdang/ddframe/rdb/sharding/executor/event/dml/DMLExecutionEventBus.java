@@ -15,36 +15,37 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.event.dml;
 
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBusFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * DQL类SQL执行时的事件发布总线.
+ * DML类SQL执行时的事件发布总线.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DQLExecutionEventBus {
+public final class DMLExecutionEventBus {
     
-    private static final String NAME = "DQL-EventBus";
+    private static final String NAME = "DML-EventBus";
     
     /**
-     * 发布DQL类SQL执行事件.
+     * 发布DML类SQL执行事件.
      * 
-     * @param event DQL类SQL执行事件
+     * @param event DML类SQL执行事件
      */
-    public static void post(final DQLExecutionEvent event) {
+    public static void post(final DMLExecutionEvent event) {
         ExecutionEventBusFactory.getInstance(NAME).post(event);
     }
     
     /**
-     * 发布DQL类SQL执行事件监听器.
+     * 发布DML类SQL执行事件监听器.
      * 
-     * @param listener DQL类SQL执行事件监听器
+     * @param listener DML类SQL执行事件监听器
      */
-    public static void register(final DQLExecutionEventListener listener) {
+    public static void register(final DMLExecutionEventListener listener) {
         ExecutionEventBusFactory.getInstance(NAME).register(listener);
     }
     

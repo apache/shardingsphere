@@ -22,7 +22,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.event;
  * 
  * @author gaohongtao
  */
-interface ExecutionEventListener {
+public interface ExecutionEventListener {
     
     /**
      * SQL执行时事件监听器.
@@ -30,5 +30,4 @@ interface ExecutionEventListener {
      * @return SQL执行时事件监听器名称
      */
     String getName();
-    
 }

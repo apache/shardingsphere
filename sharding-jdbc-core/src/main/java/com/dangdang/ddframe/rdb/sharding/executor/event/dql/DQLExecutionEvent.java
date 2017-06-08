@@ -15,12 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.event.dql;
+
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 
 /**
- * DQL类SQL执行时事件监听器.
+ * DQL类SQL执行时事件.
  * 
  * @author gaohongtao
  */
-public interface DQLExecutionEventListener extends ExecutionEventListener {
+public final class DQLExecutionEvent extends ExecutionEvent {
+    
+    public DQLExecutionEvent(final String dataSource, final String sql) {
+        super(dataSource, sql);
+    }
 }

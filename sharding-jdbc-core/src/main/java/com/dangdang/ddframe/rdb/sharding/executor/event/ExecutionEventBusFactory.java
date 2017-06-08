@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author gaohongtao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class ExecutionEventBusFactory {
+public final class ExecutionEventBusFactory {
     
     private static final ConcurrentHashMap<String, ExecutionEventBus> CONTAINER = new ConcurrentHashMap<>();
     

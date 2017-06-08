@@ -15,16 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.event.dml;
+
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 
 /**
- * DQL类SQL执行时事件.
+ * DML类SQL执行时事件.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
-public final class DQLExecutionEvent extends ExecutionEvent {
+public final class DMLExecutionEvent extends ExecutionEvent {
     
-    public DQLExecutionEvent(final String dataSource, final String sql) {
+    public DMLExecutionEvent(final String dataSource, final String sql) {
         super(dataSource, sql);
     }
 }

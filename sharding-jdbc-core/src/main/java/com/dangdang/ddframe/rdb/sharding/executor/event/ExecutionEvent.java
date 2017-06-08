@@ -50,11 +50,11 @@ public class ExecutionEvent {
     @Setter
     private Optional<SQLException> exception;
     
-    ExecutionEvent(final String dataSource, final String sql) {
+    public ExecutionEvent(final String dataSource, final String sql) {
         this(dataSource, sql, Collections.emptyList());
     }
     
-    ExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+    public ExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
         // TODO 替换UUID为更有效率的id生成器
         id = UUID.randomUUID().toString();
         this.dataSource = dataSource;
