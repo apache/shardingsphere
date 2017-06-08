@@ -20,4 +20,12 @@ package com.dangdang.ddframe.rdb.integrate.sql.postgresql;
 import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 
 public final class PostgreSQLTestSQL extends AbstractDatabaseTestSQL {
+    
+    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s OFFSET %s";
+    
+    @Override
+    public String getSelectLimitWithBindingTableSql() {
+        return SELECT_LIMIT_WITH_BINDING_TABLE_SQL;
+    }
 }

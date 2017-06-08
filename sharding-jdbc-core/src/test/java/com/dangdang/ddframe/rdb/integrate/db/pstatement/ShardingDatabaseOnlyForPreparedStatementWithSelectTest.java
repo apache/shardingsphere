@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 
 public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
@@ -90,14 +91,16 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), 
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml" : "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
                 "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 1, 9, 1000, 1909);
     }
     
     @Test
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), 
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectNoShardingTable.xml" : "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
                 "t_order_item", sql.getSelectWithNoShardingTableSql());
     }
 }
