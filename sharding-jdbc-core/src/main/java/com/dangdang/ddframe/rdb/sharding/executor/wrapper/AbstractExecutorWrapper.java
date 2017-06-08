@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,11 +31,4 @@ import lombok.RequiredArgsConstructor;
 public abstract class AbstractExecutorWrapper {
     
     private final SQLExecutionUnit sqlExecutionUnit;
-    
-    /**
-     * 获取SQL执行时事件.
-     * 
-     * @return SQL执行时事件
-     */
-    public abstract Optional<? extends ExecutionEvent> getExecutionEvent();
 }

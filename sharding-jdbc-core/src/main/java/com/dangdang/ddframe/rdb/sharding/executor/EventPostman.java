@@ -22,12 +22,10 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.AbstractExecutorWrapper;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * 消息投递员.
@@ -35,39 +33,24 @@ import java.util.Collection;
  * 
  * @author gaohongtao
  */
-@RequiredArgsConstructor
 class EventPostman {
     
-    private final Collection<? extends AbstractExecutorWrapper> statementExecutorWrappers;
-    
-    void postExecutionEvents() {
-        for (AbstractExecutorWrapper each : statementExecutorWrappers) {
-            if (!each.getExecutionEvent().isPresent()) {
-                continue;
-            }
-            if (each.getExecutionEvent().get() instanceof DQLExecutionEvent) {
-                DQLExecutionEventBus.post((DQLExecutionEvent) each.getExecutionEvent().get());
-            } else if (each.getExecutionEvent().get() instanceof DMLExecutionEvent) {
-                DMLExecutionEventBus.post((DMLExecutionEvent) each.getExecutionEvent().get());
-            }
+    void post(final ExecutionEvent executionEvent) {
+        if (executionEvent instanceof DQLExecutionEvent) {
+            DQLExecutionEventBus.post((DQLExecutionEvent) executionEvent);
+        } else if (executionEvent instanceof DMLExecutionEvent) {
+            DMLExecutionEventBus.post((DMLExecutionEvent) executionEvent);
         }
     }
     
-    void postExecutionEventsAfterExecution(final AbstractExecutorWrapper statementExecutorWrapper) {
-        postExecutionEventsAfterExecution(statementExecutorWrapper, EventExecutionType.EXECUTE_SUCCESS, Optional.<SQLException>absent());
+    void postForExecuteSuccess(final ExecutionEvent executionEvent) {
+        executionEvent.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        post(executionEvent);
     }
     
-    void postExecutionEventsAfterExecution(final AbstractExecutorWrapper statementExecutorWrapper, final EventExecutionType eventExecutionType, final Optional<SQLException> exp) {
-        if (statementExecutorWrapper.getExecutionEvent().isPresent() && statementExecutorWrapper.getExecutionEvent().get() instanceof DMLExecutionEvent) {
-            DMLExecutionEvent event = (DMLExecutionEvent) statementExecutorWrapper.getExecutionEvent().get();
-            event.setEventExecutionType(eventExecutionType);
-            event.setExp(exp);
-            DMLExecutionEventBus.post(event);
-        } else if (statementExecutorWrapper.getExecutionEvent().isPresent() && statementExecutorWrapper.getExecutionEvent().get() instanceof DQLExecutionEvent) {
-            DQLExecutionEvent event = (DQLExecutionEvent) statementExecutorWrapper.getExecutionEvent().get();
-            event.setEventExecutionType(eventExecutionType);
-            event.setExp(exp);
-            DQLExecutionEventBus.post(event);
-        }
+    void postForExecuteFailure(final ExecutionEvent executionEvent, final SQLException cause) {
+        executionEvent.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+        executionEvent.setException(Optional.of(cause));
+        post(executionEvent);
     }
 }

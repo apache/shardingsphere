@@ -48,7 +48,7 @@ public class ExecutionEvent {
     private EventExecutionType eventExecutionType = EventExecutionType.BEFORE_EXECUTE;
     
     @Setter
-    private Optional<SQLException> exp;
+    private Optional<SQLException> exception;
     
     ExecutionEvent(final String dataSource, final String sql) {
         this(dataSource, sql, Collections.emptyList());

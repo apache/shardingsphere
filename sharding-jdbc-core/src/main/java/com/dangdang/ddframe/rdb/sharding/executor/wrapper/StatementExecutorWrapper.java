@@ -17,12 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Optional;
 import lombok.Getter;
 
 import java.sql.Statement;
@@ -37,27 +32,8 @@ public final class StatementExecutorWrapper extends AbstractExecutorWrapper {
     @Getter
     private final Statement statement;
     
-    private final Optional<? extends ExecutionEvent> executionEvent;
-    
-    public StatementExecutorWrapper(final SQLType sqlType, final Statement statement, final SQLExecutionUnit sqlExecutionUnit) {
+    public StatementExecutorWrapper(final Statement statement, final SQLExecutionUnit sqlExecutionUnit) {
         super(sqlExecutionUnit);
         this.statement = statement;
-        switch (sqlType) {
-            case SELECT:
-                executionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-                break;
-            case INSERT:
-            case UPDATE:
-            case DELETE:
-                executionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-                break;
-            default:
-                executionEvent = Optional.absent();
-        }
-    }
-    
-    @Override
-    public Optional<? extends ExecutionEvent> getExecutionEvent() {
-        return executionEvent;
     }
 }

@@ -18,15 +18,15 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +42,20 @@ public final class PreparedStatementExecutor {
     
     private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
     
+    private final Collection<ExecutionEvent> executionEvents;
+    
     private final EventPostman eventPostman;
     
     public PreparedStatementExecutor(final ExecutorEngine executorEngine, final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers) {
         this.executorEngine = executorEngine;
         this.preparedStatementExecutorWrappers = preparedStatementExecutorWrappers;
-        this.eventPostman = new EventPostman(preparedStatementExecutorWrappers);
+        executionEvents = new LinkedList<>();
+        for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
+            if (each.getExecutionEvent().isPresent()) {
+                executionEvents.add(each.getExecutionEvent().get());
+            }
+        }
+        eventPostman = new EventPostman();
     }
     
     /**
@@ -57,7 +65,9 @@ public final class PreparedStatementExecutor {
      */
     public List<ResultSet> executeQuery() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
-        eventPostman.postExecutionEvents();
+        for (ExecutionEvent each : executionEvents) {
+            eventPostman.post(each);
+        }
         List<ResultSet> result;
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -87,11 +97,15 @@ public final class PreparedStatementExecutor {
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().executeQuery();
         } catch (final SQLException ex) {
-            eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+                eventPostman.postForExecuteFailure(preparedStatementExecutorWrapper.getExecutionEvent().get(), ex);
+            }
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
+        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+            eventPostman.postForExecuteSuccess(preparedStatementExecutorWrapper.getExecutionEvent().get());
+        }
         return result;
     }
     
@@ -102,7 +116,9 @@ public final class PreparedStatementExecutor {
      */
     public int executeUpdate() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        eventPostman.postExecutionEvents();
+        for (ExecutionEvent each : executionEvents) {
+            eventPostman.post(each);
+        }
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
@@ -143,11 +159,15 @@ public final class PreparedStatementExecutor {
         try {
             result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
         } catch (final SQLException ex) {
-            eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+                eventPostman.postForExecuteFailure(preparedStatementExecutorWrapper.getExecutionEvent().get(), ex);
+            }
             ExecutorExceptionHandler.handleException(ex);
             return 0;
         }
-        eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
+        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+            eventPostman.postForExecuteSuccess(preparedStatementExecutorWrapper.getExecutionEvent().get());
+        }
         return result;
     }
     
@@ -158,7 +178,9 @@ public final class PreparedStatementExecutor {
      */
     public boolean execute() {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
-        eventPostman.postExecutionEvents();
+        for (ExecutionEvent each : executionEvents) {
+            eventPostman.post(each);
+        }
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
@@ -188,11 +210,15 @@ public final class PreparedStatementExecutor {
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
         } catch (final SQLException ex) {
-            eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+                eventPostman.postForExecuteFailure(preparedStatementExecutorWrapper.getExecutionEvent().get(), ex);
+            }
             ExecutorExceptionHandler.handleException(ex);
             return false;
         }
-        eventPostman.postExecutionEventsAfterExecution(preparedStatementExecutorWrapper);
+        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+            eventPostman.postForExecuteSuccess(preparedStatementExecutorWrapper.getExecutionEvent().get());
+        }
         return result;
     }
     
@@ -205,7 +231,9 @@ public final class PreparedStatementExecutor {
      */
     public int[] executeBatch(final int batchSize) {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        eventPostman.postExecutionEvents();
+        for (ExecutionEvent each : executionEvents) {
+            eventPostman.post(each);
+        }
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
@@ -250,11 +278,15 @@ public final class PreparedStatementExecutor {
         try {
             result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
         } catch (final SQLException ex) {
-            eventPostman.postExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper, EventExecutionType.EXECUTE_FAILURE, Optional.of(ex));
+            if (batchPreparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+                eventPostman.postForExecuteFailure(batchPreparedStatementExecutorWrapper.getExecutionEvent().get(), ex);
+            }
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        eventPostman.postExecutionEventsAfterExecution(batchPreparedStatementExecutorWrapper);
+        if (batchPreparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
+            eventPostman.postForExecuteSuccess(batchPreparedStatementExecutorWrapper.getExecutionEvent().get());
+        }
         return result;
     }
 }

@@ -65,11 +65,9 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
         }
     }
     
-    @Override
     public Optional<? extends ExecutionEvent> getExecutionEvent() {
         return executionEvent;
     }
-    
     
     /**
      * 增加批量参数.
