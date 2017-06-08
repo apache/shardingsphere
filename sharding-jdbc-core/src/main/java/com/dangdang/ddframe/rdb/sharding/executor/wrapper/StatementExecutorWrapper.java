@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -39,18 +40,23 @@ public final class StatementExecutorWrapper extends AbstractExecutorWrapper {
     
     private final Optional<DQLExecutionEvent> dqlExecutionEvent;
     
-    public StatementExecutorWrapper(final Statement statement, final SQLExecutionUnit sqlExecutionUnit) {
+    public StatementExecutorWrapper(final SQLType sqlType, final Statement statement, final SQLExecutionUnit sqlExecutionUnit) {
         super(sqlExecutionUnit);
         this.statement = statement;
-        if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-            dqlExecutionEvent = Optional.absent();
-        } else if (isDQL()) {
-            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-            dmlExecutionEvent = Optional.absent();
-        } else {
-            dmlExecutionEvent = Optional.absent();
-            dqlExecutionEvent = Optional.absent();
+        switch (sqlType) {
+            case SELECT:
+                dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                dmlExecutionEvent = Optional.absent();
+                break;
+            case INSERT:
+            case UPDATE:
+            case DELETE:
+                dqlExecutionEvent = Optional.absent();
+                dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                break;
+            default:
+                dqlExecutionEvent = Optional.absent();
+                dmlExecutionEvent = Optional.absent();
         }
     }
     

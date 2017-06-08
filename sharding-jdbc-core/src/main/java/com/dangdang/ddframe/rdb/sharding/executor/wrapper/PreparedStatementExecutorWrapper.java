@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 
@@ -49,19 +49,23 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     
     private int batchIndex;
     
-    public PreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final List<Object> parameters,
-                                            final SQLExecutionUnit sqlExecutionUnit) {
+    public PreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final List<Object> parameters, final SQLExecutionUnit sqlExecutionUnit) {
         super(sqlExecutionUnit);
         this.preparedStatement = preparedStatement;
-        if (isDML()) {
-            dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
-            dqlExecutionEvent = Optional.absent();
-        } else if (isDQL()) {
-            dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql(), Lists.newArrayList(parameters)));
-            dmlExecutionEvent = Optional.absent();
-        } else {
-            dmlExecutionEvent = Optional.absent();
-            dqlExecutionEvent = Optional.absent();
+        switch (sqlType) {
+            case SELECT:
+                dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                dmlExecutionEvent = Optional.absent();
+                break;
+            case INSERT:
+            case UPDATE:
+            case DELETE:
+                dqlExecutionEvent = Optional.absent();
+                dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                break;
+            default:
+                dqlExecutionEvent = Optional.absent();
+                dmlExecutionEvent = Optional.absent();
         }
     }
     
@@ -81,8 +85,9 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
      * @param parameters 参数列表
      */
     public void addBatchParameters(final List<Object> parameters) {
-        Preconditions.checkArgument(isDML() && dmlExecutionEvent.isPresent());
-        dmlExecutionEvent.get().addBatchParameters(Lists.newArrayList(parameters));
+        if (dmlExecutionEvent.isPresent()) {
+            dmlExecutionEvent.get().addBatchParameters(Lists.newArrayList(parameters));
+        }
     }
     
     /**

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
@@ -432,12 +433,12 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     private StatementExecutorWrapper createStatementExecutorWrapperForDQL(final Statement statement, final String dataSource) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(SELECT_FROM_DUAL);
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
+        return new StatementExecutorWrapper(SQLType.SELECT, statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
     }
     
     private StatementExecutorWrapper createStatementExecutorWrapperForDML(final Statement statement, final String dataSource) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(DELETE_FROM_DUAL);
-        return new StatementExecutorWrapper(statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
+        return new StatementExecutorWrapper(SQLType.DELETE, statement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
     }
 }

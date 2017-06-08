@@ -36,25 +36,6 @@ public abstract class AbstractExecutorWrapper {
     private final SQLExecutionUnit sqlExecutionUnit;
     
     /**
-     * 判断SQL是否为DML语句.
-     * 
-     * @return 是否为DML语句
-     */
-    final boolean isDML() {
-        String sql = sqlExecutionUnit.getSql();
-        return sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update") || sql.toLowerCase().startsWith("delete");
-    }
-    
-    /**
-     * 判断SQL是否为DQL语句.
-     * 
-     * @return 是否为DQL语句
-     */
-    final boolean isDQL() {
-        return sqlExecutionUnit.getSql().toLowerCase().startsWith("select");
-    }
-    
-    /**
      * 获取DML类SQL执行时事件.
      * 
      * @return DML类SQL执行时事件

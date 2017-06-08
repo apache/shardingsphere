@@ -151,7 +151,7 @@ public final class StatementExecutor {
                 return executeUpdateInternal(updater, statementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
             }
             return executorEngine.execute(statementExecutorWrappers, new ExecuteUnit<StatementExecutorWrapper, Integer>() {
-        
+                
                 @Override
                 public Integer execute(final StatementExecutorWrapper input) throws Exception {
                     synchronized (input.getStatement().getConnection()) {
@@ -159,7 +159,7 @@ public final class StatementExecutor {
                     }
                 }
             }, new MergeUnit<Integer, Integer>() {
-        
+                
                 @Override
                 public Integer merge(final List<Integer> results) {
                     if (null == results) {
