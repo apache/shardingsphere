@@ -30,8 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatementTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatementTableOnlyTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatementTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTableOnlyTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedGeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;

@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatement;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

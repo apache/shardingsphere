@@ -65,14 +65,14 @@ public final class StatementExecutor {
         try {
             if (1 == statements.size()) {
                 Entry<SQLExecutionUnit, Statement> entry = statements.entrySet().iterator().next();
-                return Collections.singletonList(executeQueryInternal(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap));
+                return Collections.singletonList(executeQuery(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap));
             }
             result = executorEngine.execute(statements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, Statement>, ResultSet>() {
                 
                 @Override
                 public ResultSet execute(final Entry<SQLExecutionUnit, Statement> input) throws Exception {
                     synchronized (input.getValue().getConnection()) {
-                        return executeQueryInternal(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
+                        return executeQuery(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -82,7 +82,7 @@ public final class StatementExecutor {
         return result;
     }
     
-    private ResultSet executeQueryInternal(final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private ResultSet executeQuery(final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -151,14 +151,14 @@ public final class StatementExecutor {
         try {
             if (1 == statements.size()) {
                 Entry<SQLExecutionUnit, Statement> entry = statements.entrySet().iterator().next();
-                return executeUpdateInternal(updater, entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
+                return executeUpdate(updater, entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
             return executorEngine.execute(statements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, Statement>, Integer>() {
                 
                 @Override
                 public Integer execute(final Entry<SQLExecutionUnit, Statement> input) throws Exception {
                     synchronized (input.getValue().getConnection()) {
-                        return executeUpdateInternal(updater, input.getKey(), input.getValue(), isExceptionThrown, dataMap);
+                        return executeUpdate(updater, input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             }, new MergeUnit<Integer, Integer>() {
@@ -180,7 +180,7 @@ public final class StatementExecutor {
         }
     }
     
-    private int executeUpdateInternal(final Updater updater, final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdate(final Updater updater, final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -249,14 +249,14 @@ public final class StatementExecutor {
         try {
             if (1 == statements.size()) {
                 Entry<SQLExecutionUnit, Statement> entry = statements.entrySet().iterator().next();
-                return executeInternal(executor, entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
+                return execute(executor, entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
             List<Boolean> result = executorEngine.execute(statements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, Statement>, Boolean>() {
         
                 @Override
                 public Boolean execute(final Entry<SQLExecutionUnit, Statement> input) throws Exception {
                     synchronized (input.getValue().getConnection()) {
-                        return executeInternal(executor, input.getKey(), input.getValue(), isExceptionThrown, dataMap);
+                        return StatementExecutor.this.execute(executor, input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -266,7 +266,7 @@ public final class StatementExecutor {
         }
     }
     
-    private boolean executeInternal(final Executor executor, final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private boolean execute(final Executor executor, final SQLExecutionUnit sqlExecutionUnit, final Statement statement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
@@ -284,13 +284,10 @@ public final class StatementExecutor {
     }
     
     private ExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
-        ExecutionEvent event;
         if (SQLType.SELECT == sqlType) {
-            event = new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
-        } else {
-            event = new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
         }
-        return event;
+        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
     }
     
     private interface Updater {

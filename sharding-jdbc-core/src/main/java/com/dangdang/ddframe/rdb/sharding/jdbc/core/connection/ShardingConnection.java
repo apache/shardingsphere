@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractConnectionAdapter;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared.ShardingPreparedStatement;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;

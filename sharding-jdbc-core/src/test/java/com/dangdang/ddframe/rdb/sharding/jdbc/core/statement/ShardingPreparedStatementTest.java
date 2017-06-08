@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.prepared;
+package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;

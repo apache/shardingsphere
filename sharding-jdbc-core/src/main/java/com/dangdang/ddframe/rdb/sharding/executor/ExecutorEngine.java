@@ -47,15 +47,14 @@ public final class ExecutorEngine implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     public ExecutorEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder()
-                        .setDaemon(true).setNameFormat("ShardingJDBC-%d").build()));
+        executorService = MoreExecutors.listeningDecorator(new ThreadPoolExecutor(
+                executorSize, executorSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingJDBC-%d").build()));
         MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
     }
     
     /**
      * 多线程执行任务.
      * 一组任务中,将第一个任务放在当前线程中执行,其余的任务放到线程池中运行.
-     * 
      * 
      * @param inputs 输入参数
      * @param executeUnit 执行单元
