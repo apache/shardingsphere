@@ -78,26 +78,26 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     
     private static final String SELECT_SUM_WITH_ORDER_BY_DESC_AND_GROUP_BY_SQL = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id` ORDER BY orders_sum DESC";
     
-    private static final String SELECT_EQUALS_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?";
+    private static final String SELECT_EQUALS_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` = %s AND `order_id` = %s";
     
-    private static final String SELECT_BETWEEN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
+    private static final String SELECT_BETWEEN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN %s AND %s AND `order_id` BETWEEN %s AND %s ORDER BY user_id, order_id";
     
-    private static final String SELECT_IN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` IN (?, ?, ?) AND `order_id` IN (?, ?) ORDER BY user_id, order_id";
+    private static final String SELECT_IN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` IN (%s, %s, %s) AND `order_id` IN (%s, %s) ORDER BY user_id, order_id";
     
     private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?, ?";
+            + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
     
     private static final String SELECT_ORDER_BY_WITH_ALIAS_SQL = "SELECT order_id as `order_id_alias`,user_id,status FROM `t_order` " 
-            + "WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
+            + "WHERE `user_id` BETWEEN %s AND %s AND `order_id` BETWEEN %s AND %s ORDER BY user_id, order_id";
     
     private static final String SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?";
+            + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
     
     private static final String SELECT_GROUP_WITH_BINDING_TABLE_SQL = "SELECT count(*) as items_count, o.`user_id` FROM `t_order` o JOIN `t_order_item` i " 
-            + "ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? GROUP BY o.`user_id`";
+            + "ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
     
     private static final String SELECT_GROUP_WITHOUT_GROUPED_COLUMN_SQL = "SELECT count(*) as items_count FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? GROUP BY o.`user_id`";
+            + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
     
     private static final String SELECT_WITH_NO_SHARDING_TABLE_SQL = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id";
     

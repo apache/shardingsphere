@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
+import com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import org.dbunit.DatabaseUnitException;
@@ -104,7 +105,8 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    getShardingDataSource().getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", sql.getAssertSelectWithStatusSql(), status);
+                    getShardingDataSource().getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), 
+                    "t_order", SqlPlaceholderUtil.replacePreparedStatement(sql.getAssertSelectWithStatusSql()), status);
         }
     }
 }

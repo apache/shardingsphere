@@ -66,12 +66,12 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     
     @Test
     public void assertSelectOrderByWithAlias() throws SQLException, DatabaseUnitException {
-        if (isAliasSupport()) {
-            assertDataSet("integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml", getShardingDataSource().getConnection(),
-                    "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1001, 1200);
-            assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
-                    "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1309, 1408);
-        }
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectOrderByWithAlias.xml" 
+                : "integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml";
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1001, 1200);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
+                "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1309, 1408);
     }
     
     @Test
@@ -91,7 +91,8 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml" : "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml" 
+                : "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
                 "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 1, 9, 1000, 1909);
@@ -99,7 +100,8 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     
     @Test
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectNoShardingTable.xml" : "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectNoShardingTable.xml" 
+                : "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
                 "t_order_item", sql.getSelectWithNoShardingTableSql());
     }

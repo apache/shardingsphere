@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
+import com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import org.dbunit.DatabaseUnitException;
 import org.hamcrest.core.Is;
@@ -28,8 +29,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
 
 public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
@@ -43,12 +44,12 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
         try (Connection conn = getShardingDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.getSelectCountSql());
              ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next());
+            assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
                 assertThat(rs.getInt("COUNT(*)"), is(40));
             }
             assertThat(rs.getInt(1), is(40));
-            assertFalse(rs.next());
+            assertThat(rs.next(), is(false));
         }
     }
     
@@ -62,12 +63,12 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
         try (Connection conn = getShardingDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.getSelectSumSql());
              ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next());
+            assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
                 assertThat(rs.getLong("SUM(`user_id`)"), is(780L));
             }
             assertThat(rs.getLong(1), is(780L));
-            assertFalse(rs.next());
+            assertThat(rs.next(), is(false));
         }
     }
     
@@ -81,12 +82,12 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
         try (Connection conn = getShardingDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.getSelectMaxSql());
              ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next());
+            assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
                 assertThat(rs.getDouble("MAX(`user_id`)"), is(29D));
             }
             assertThat(rs.getDouble(1), is(29D));
-            assertFalse(rs.next());
+            assertThat(rs.next(), is(false));
         }
     }
     
@@ -100,12 +101,12 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
         try (Connection conn = getShardingDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.getSelectMinSql());
              ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next());
+            assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
                 assertThat(rs.getFloat("MIN(`user_id`)"), is(10F));
             }
             assertThat(rs.getFloat(1), is(10F));
-            assertFalse(rs.next());
+            assertThat(rs.next(), is(false));
         }
     }
     
@@ -121,18 +122,18 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
         try (Connection conn = getShardingDataSource().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.getSelectAvgSql());
              ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next());
+            assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
                 assertThat(rs.getObject("AVG(`user_id`)"), Is.<Object>is(new BigDecimal("19.5000")));
             }
             assertThat(rs.getBigDecimal(1), Is.<Object>is(new BigDecimal("19.5000")));
-            assertFalse(rs.next());
+            assertThat(rs.next(), is(false));
         }
     }
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        String selectSql = String.format(sql.getSelectCountWithBindingTableSql(), "?", "?", "?", "?");
+        String selectSql = SqlPlaceholderUtil.replacePreparedStatement(sql.getSelectCountWithBindingTableSql());
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
                 getShardingDataSource().getConnection(), "t_order_item", selectSql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", 
