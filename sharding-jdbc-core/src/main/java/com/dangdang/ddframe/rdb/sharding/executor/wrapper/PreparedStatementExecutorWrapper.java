@@ -36,7 +36,10 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
+public final class PreparedStatementExecutorWrapper {
+    
+    @Getter
+    private final SQLExecutionUnit sqlExecutionUnit;
     
     @Getter
     private final PreparedStatement preparedStatement;
@@ -49,7 +52,7 @@ public class PreparedStatementExecutorWrapper extends AbstractExecutorWrapper {
     private int batchIndex;
     
     public PreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
-        super(sqlExecutionUnit);
+        this.sqlExecutionUnit = sqlExecutionUnit;
         this.preparedStatement = preparedStatement;
         switch (sqlType) {
             case SELECT:
