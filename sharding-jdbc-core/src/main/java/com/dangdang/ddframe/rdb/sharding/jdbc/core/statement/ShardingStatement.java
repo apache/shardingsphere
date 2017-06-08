@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.StatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -39,8 +38,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 支持分片的静态语句对象.
@@ -198,15 +199,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         routeResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
-        Collection<StatementExecutorWrapper> statementExecutorWrappers = new LinkedList<>();
+        Map<SQLExecutionUnit, Statement> statements = new HashMap<>(routeResult.getExecutionUnits().size(), 1);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = shardingConnection.getConnection(
                     each.getDataSource(), routeResult.getSqlStatement().getType()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             replayMethodsInvocation(statement);
-            statementExecutorWrappers.add(new StatementExecutorWrapper(statement, each));
+            statements.put(each, statement);
             routedStatements.add(statement);
         }
-        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementExecutorWrappers);
+        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statements);
     }
     
     private void clearPrevious() throws SQLException {

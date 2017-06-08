@@ -195,6 +195,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private PreparedStatementExecutorWrapper wrap(final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
         Optional<PreparedStatementExecutorWrapper> wrapperOptional = Iterators.tryFind(cachedPreparedStatementWrappers.iterator(), new Predicate<PreparedStatementExecutorWrapper>() {
+            
             @Override
             public boolean apply(final PreparedStatementExecutorWrapper input) {
                 return Objects.equals(input.getPreparedStatement(), preparedStatement);
