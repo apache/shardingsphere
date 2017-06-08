@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -36,16 +35,9 @@ public abstract class AbstractExecutorWrapper {
     private final SQLExecutionUnit sqlExecutionUnit;
     
     /**
-     * 获取DML类SQL执行时事件.
+     * 获取SQL执行时事件.
      * 
-     * @return DML类SQL执行时事件
+     * @return SQL执行时事件
      */
-    public abstract Optional<DMLExecutionEvent> getDMLExecutionEvent();
-    
-    /**
-     * 获取DML类SQL执行时事件.
-     * 
-     * @return DQL类SQL执行时事件
-     */
-    public abstract Optional<DQLExecutionEvent> getDQLExecutionEvent();
+    public abstract Optional<? extends ExecutionEvent> getExecutionEvent();
 }

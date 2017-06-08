@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -36,37 +37,27 @@ public final class StatementExecutorWrapper extends AbstractExecutorWrapper {
     @Getter
     private final Statement statement;
     
-    private final Optional<DMLExecutionEvent> dmlExecutionEvent;
-    
-    private final Optional<DQLExecutionEvent> dqlExecutionEvent;
+    private final Optional<? extends ExecutionEvent> executionEvent;
     
     public StatementExecutorWrapper(final SQLType sqlType, final Statement statement, final SQLExecutionUnit sqlExecutionUnit) {
         super(sqlExecutionUnit);
         this.statement = statement;
         switch (sqlType) {
             case SELECT:
-                dqlExecutionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-                dmlExecutionEvent = Optional.absent();
+                executionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             case INSERT:
             case UPDATE:
             case DELETE:
-                dqlExecutionEvent = Optional.absent();
-                dmlExecutionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                executionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             default:
-                dqlExecutionEvent = Optional.absent();
-                dmlExecutionEvent = Optional.absent();
+                executionEvent = Optional.absent();
         }
     }
     
     @Override
-    public Optional<DMLExecutionEvent> getDMLExecutionEvent() {
-        return dmlExecutionEvent;
-    }
-    
-    @Override
-    public Optional<DQLExecutionEvent> getDQLExecutionEvent() {
-        return dqlExecutionEvent;
+    public Optional<? extends ExecutionEvent> getExecutionEvent() {
+        return executionEvent;
     }
 }

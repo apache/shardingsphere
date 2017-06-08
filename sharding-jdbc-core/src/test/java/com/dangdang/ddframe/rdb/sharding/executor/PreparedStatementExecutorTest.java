@@ -362,6 +362,6 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final String dataSource, final String sql) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        return new PreparedStatementExecutorWrapper(sqlType, preparedStatement, Collections.emptyList(), new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
+        return new PreparedStatementExecutorWrapper(sqlType, preparedStatement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
     }
 }

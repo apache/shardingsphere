@@ -42,10 +42,13 @@ class EventPostman {
     
     void postExecutionEvents() {
         for (AbstractExecutorWrapper each : statementExecutorWrappers) {
-            if (each.getDMLExecutionEvent().isPresent()) {
-                DMLExecutionEventBus.post(each.getDMLExecutionEvent().get());
-            } else if (each.getDQLExecutionEvent().isPresent()) {
-                DQLExecutionEventBus.post(each.getDQLExecutionEvent().get());
+            if (!each.getExecutionEvent().isPresent()) {
+                continue;
+            }
+            if (each.getExecutionEvent().get() instanceof DQLExecutionEvent) {
+                DQLExecutionEventBus.post((DQLExecutionEvent) each.getExecutionEvent().get());
+            } else if (each.getExecutionEvent().get() instanceof DMLExecutionEvent) {
+                DMLExecutionEventBus.post((DMLExecutionEvent) each.getExecutionEvent().get());
             }
         }
     }
@@ -55,13 +58,13 @@ class EventPostman {
     }
     
     void postExecutionEventsAfterExecution(final AbstractExecutorWrapper statementExecutorWrapper, final EventExecutionType eventExecutionType, final Optional<SQLException> exp) {
-        if (statementExecutorWrapper.getDMLExecutionEvent().isPresent()) {
-            DMLExecutionEvent event = statementExecutorWrapper.getDMLExecutionEvent().get();
+        if (statementExecutorWrapper.getExecutionEvent().isPresent() && statementExecutorWrapper.getExecutionEvent().get() instanceof DMLExecutionEvent) {
+            DMLExecutionEvent event = (DMLExecutionEvent) statementExecutorWrapper.getExecutionEvent().get();
             event.setEventExecutionType(eventExecutionType);
             event.setExp(exp);
             DMLExecutionEventBus.post(event);
-        } else if (statementExecutorWrapper.getDQLExecutionEvent().isPresent()) {
-            DQLExecutionEvent event = statementExecutorWrapper.getDQLExecutionEvent().get();
+        } else if (statementExecutorWrapper.getExecutionEvent().isPresent() && statementExecutorWrapper.getExecutionEvent().get() instanceof DQLExecutionEvent) {
+            DQLExecutionEvent event = (DQLExecutionEvent) statementExecutorWrapper.getExecutionEvent().get();
             event.setEventExecutionType(eventExecutionType);
             event.setExp(exp);
             DQLExecutionEventBus.post(event);
