@@ -42,10 +42,10 @@ public final class PreparedBatchStatement {
     
     private final PreparedStatement preparedStatement;
     
-    private final Map<Integer, List<Integer>> batchIndexes = new HashMap<>();
+    private final Map<Integer, List<Integer>> innerBatchCounts = new HashMap<>();
     
     @Getter(AccessLevel.NONE)
-    private int batchIndex;
+    private int innerBatchCount;
     
     /**
      * 映射批量执行索引.
@@ -54,9 +54,9 @@ public final class PreparedBatchStatement {
      * @param addBatchCount 分片批量执行索引
      */
     public void mapBatchIndex(final int addBatchCount) {
-        if (!batchIndexes.containsKey(addBatchCount)) {
-            batchIndexes.put(addBatchCount, new LinkedList<Integer>());
+        if (!innerBatchCounts.containsKey(addBatchCount)) {
+            innerBatchCounts.put(addBatchCount, new LinkedList<Integer>());
         }
-        batchIndexes.get(addBatchCount).add(batchIndex++);
+        innerBatchCounts.get(addBatchCount).add(innerBatchCount++);
     }
 }
