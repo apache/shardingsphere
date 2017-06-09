@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.util;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.Getter;
@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-public final class JdbcMethodInvocation {
+public class JdbcMethodInvocation {
     
     @Getter
     private final Method method;

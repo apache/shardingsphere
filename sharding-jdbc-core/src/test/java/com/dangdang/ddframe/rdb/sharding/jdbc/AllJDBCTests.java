@@ -19,9 +19,11 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.JdbcMethodInvocationTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.SetParameterMethodInvocationTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.StatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSourceTest;
@@ -38,7 +40,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationPr
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedUpdateOperationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -62,10 +63,11 @@ import org.junit.runners.Suite;
         ShardingConnectionTest.class, 
         ShardingStatementTest.class, 
         ShardingPreparedStatementTest.class, 
-        ShardingPreparedStatementTableOnlyTest.class,
+        ShardingPreparedStatementTableOnlyTest.class, 
         GeneratedKeysResultSetTest.class, 
         GeneratedKeysResultSetMetaDataTest.class, 
-        JdbcMethodInvocationTest.class
+        JdbcMethodInvocationTest.class, 
+        SetParameterMethodInvocationTest.class
     })
 public class AllJDBCTests {
 }

@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -52,7 +51,7 @@ import java.util.Objects;
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
-    private final List<JdbcMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
+    private final List<SetParameterMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
     
     @Getter
     private final List<Object> parameters = new ArrayList<>();
@@ -67,13 +66,13 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {
         setParameter(parameterIndex, null);
-        recordSetParameter("setNull", new Class[]{int.class, int.class}, parameterIndex, sqlType);
+        recordSetParameterForNull(new Class[]{int.class, int.class}, parameterIndex, sqlType);
     }
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType, final String typeName) throws SQLException {
         setParameter(parameterIndex, null);
-        recordSetParameter("setNull", new Class[]{int.class, int.class, String.class}, parameterIndex, sqlType, typeName);
+        recordSetParameterForNull(new Class[]{int.class, int.class, String.class}, parameterIndex, sqlType, typeName);
     }
     
     @Override
@@ -330,7 +329,15 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     private void recordSetParameter(final String methodName, final Class[] argumentTypes, final Object... arguments) {
         try {
-            setParameterMethodInvocations.add(new JdbcMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments));
+            setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments, arguments[1]));
+        } catch (final NoSuchMethodException ex) {
+            throw new ShardingJdbcException(ex);
+        }
+    }
+    
+    private void recordSetParameterForNull(final Class[] argumentTypes, final Object... arguments) {
+        try {
+            setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setNull", argumentTypes), arguments, null));
         } catch (final NoSuchMethodException ex) {
             throw new ShardingJdbcException(ex);
         }
@@ -339,7 +346,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     protected void replaySetParameter(final PreparedStatement preparedStatement) {
         addParameters();
         int count = 0;
-        for (JdbcMethodInvocation each : setParameterMethodInvocations) {
+        for (SetParameterMethodInvocation each : setParameterMethodInvocations) {
             updateParameterValues(each, parameters.get(count));
             each.invoke(preparedStatement);
             count++;
@@ -352,9 +359,9 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
     }
     
-    private void updateParameterValues(final JdbcMethodInvocation jdbcMethodInvocation, final Object value) {
-        if (!jdbcMethodInvocation.getMethod().getName().equals("setNull") && !Objects.equals(jdbcMethodInvocation.getArguments()[1], value)) {
-            jdbcMethodInvocation.getArguments()[1] = value;
+    private void updateParameterValues(final SetParameterMethodInvocation setParameterMethodInvocation, final Object value) {
+        if (!Objects.equals(setParameterMethodInvocation.getValue(), value)) {
+            setParameterMethodInvocation.changeValueArgument(value);
         }
     }
     

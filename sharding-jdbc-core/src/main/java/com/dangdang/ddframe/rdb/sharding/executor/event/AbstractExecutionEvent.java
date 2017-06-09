@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,10 +45,6 @@ public abstract class AbstractExecutionEvent {
     private EventExecutionType eventExecutionType;
     
     private Optional<SQLException> exception;
-    
-    public AbstractExecutionEvent(final String dataSource, final String sql) {
-        this(dataSource, sql, Collections.emptyList());
-    }
     
     public AbstractExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
         // TODO 替换UUID为更有效率的id生成器

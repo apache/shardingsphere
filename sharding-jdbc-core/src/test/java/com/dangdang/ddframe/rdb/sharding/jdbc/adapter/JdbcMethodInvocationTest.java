@@ -15,11 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.util;
-
-import org.junit.Test;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import org.junit.Test;
 
 public final class JdbcMethodInvocationTest {
     

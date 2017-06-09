@@ -15,18 +15,33 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import java.util.List;
+import lombok.Getter;
+
+import java.lang.reflect.Method;
 
 /**
- * DML类SQL执行时事件.
+ * 反射调用参数设置方法的工具类.
  * 
  * @author zhangliang
  */
-public final class DMLExecutionEvent extends AbstractExecutionEvent {
+public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     
-    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
-        super(dataSource, sql, parameters);
+    @Getter
+    private final Object value;
+    
+    public SetParameterMethodInvocation(final Method method, final Object[] arguments, final Object value) {
+        super(method, arguments);
+        this.value = value;
+    }
+    
+    /**
+     * 设置参数值.
+     * 
+     * @param value 参数值
+     */
+    public void changeValueArgument(final Object value) {
+        getArguments()[1] = value;
     }
 }
