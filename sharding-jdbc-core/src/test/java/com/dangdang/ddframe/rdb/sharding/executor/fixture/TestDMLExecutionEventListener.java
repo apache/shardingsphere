@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
+import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public final class TestDMLExecutionEventListener implements DMLExecutionEventListener {
+public final class TestDMLExecutionEventListener implements ExecutionEventListener {
     
     private final EventCaller eventCaller;
     

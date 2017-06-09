@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -217,7 +217,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertAddBatch() throws SQLException {
-        DMLExecutionEventBus.register(new DMLExecutionEventListener() {
+        DMLExecutionEventBus.register(new ExecutionEventListener() {
     
             private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
             

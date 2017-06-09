@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
+import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -43,7 +43,7 @@ import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactio
  * @author zhangliang
  */
 @Slf4j
-public final class BestEffortsDeliveryListener implements DMLExecutionEventListener {
+public final class BestEffortsDeliveryListener implements ExecutionEventListener {
     
     @Subscribe
     @AllowConcurrentEvents

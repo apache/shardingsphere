@@ -19,6 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.executor.event.dml;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 
+import java.util.List;
+
 /**
  * DML类SQL执行时事件.
  * 
@@ -28,5 +30,9 @@ public final class DMLExecutionEvent extends ExecutionEvent {
     
     public DMLExecutionEvent(final String dataSource, final String sql) {
         super(dataSource, sql);
+    }
+    
+    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+        super(dataSource, sql, parameters);
     }
 }

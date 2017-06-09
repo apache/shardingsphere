@@ -18,14 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 /**
- * 事件监听器.
+ * SQL执行时事件监听器.
  * 
  * @author gaohongtao
  */
 public interface ExecutionEventListener {
     
     /**
-     * SQL执行时事件监听器.
+     * 获取SQL执行时事件监听器名称.
      *
      * @return SQL执行时事件监听器名称
      */

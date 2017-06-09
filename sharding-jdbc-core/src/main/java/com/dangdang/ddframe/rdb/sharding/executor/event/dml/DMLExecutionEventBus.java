@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event.dml;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBusFactory;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -45,7 +46,7 @@ public final class DMLExecutionEventBus {
      * 
      * @param listener DML类SQL执行事件监听器
      */
-    public static void register(final DMLExecutionEventListener listener) {
+    public static void register(final ExecutionEventListener listener) {
         ExecutionEventBusFactory.getInstance(NAME).register(listener);
     }
     

@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 import com.google.common.eventbus.EventBus;
+import lombok.Getter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,8 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @author gaohongtao
  */
-public class ExecutionEventBus {
+public final class ExecutionEventBus {
     
+    @Getter
     private final EventBus instance = new EventBus();
     
     private final ConcurrentHashMap<String, ExecutionEventListener> listeners = new ConcurrentHashMap<>();
@@ -38,22 +40,20 @@ public class ExecutionEventBus {
      * @param event SQL执行事件
      */
     public void post(final ExecutionEvent event) {
-        if (listeners.isEmpty()) {
-            return;
+        if (!listeners.isEmpty()) {
+            instance.post(event);
         }
-        instance.post(event);
     }
     
     /**
      * 注册事件监听器.
      *
-     * @param listener DML类SQL执行事件监听器
+     * @param listener SQL执行事件监听器
      */
     public void register(final ExecutionEventListener listener) {
-        if (null != listeners.putIfAbsent(listener.getName(), listener)) {
-            return;
+        if (null == listeners.putIfAbsent(listener.getName(), listener)) {
+            instance.register(listener);
         }
-        instance.register(listener);
     }
     
     /**
