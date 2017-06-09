@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ParameterizedAbstractPreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
@@ -29,9 +28,9 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSou
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSourceTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTableOnlyTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedGeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationDataSourceTest;
@@ -40,7 +39,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationRe
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedOperationStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.UnsupportedUpdateOperationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocationTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.ParameterListTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -57,7 +55,6 @@ import org.junit.runners.Suite;
         ConnectionAdapterTest.class, 
         StatementAdapterTest.class, 
         PreparedStatementAdapterTest.class, 
-        ParameterizedAbstractPreparedStatementAdapterTest.class, 
         ResultSetAdapterTest.class, 
         ResultSetGetterAdapterTest.class,
         ShardingDataSourceTest.class, 
@@ -68,8 +65,7 @@ import org.junit.runners.Suite;
         ShardingPreparedStatementTableOnlyTest.class,
         GeneratedKeysResultSetTest.class, 
         GeneratedKeysResultSetMetaDataTest.class, 
-        JdbcMethodInvocationTest.class, 
-        ParameterListTest.class
+        JdbcMethodInvocationTest.class
     })
 public class AllJDBCTests {
 }

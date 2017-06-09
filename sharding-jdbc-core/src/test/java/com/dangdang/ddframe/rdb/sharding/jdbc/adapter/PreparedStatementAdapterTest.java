@@ -242,6 +242,8 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDatabase
         Object obj = "value";
         actual.setObject(1, obj);
         actual.setObject(2, obj, 0);
+        actual.setObject(3, null);
+        actual.setObject(4, null);
         actual.setObject(5, obj, 0, 0);
         assertParameter(actual, 1, obj);
         assertParameter(actual, 2, obj);
@@ -255,6 +257,8 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDatabase
         Object obj = new Object();
         actual.setObject(1, obj);
         actual.setObject(2, obj, 0);
+        actual.setObject(3, null);
+        actual.setObject(4, null);
         actual.setObject(5, obj, 0, 0);
         assertThat(((ShardingPreparedStatement) actual).getParameters().size(), is(5));
         actual.clearParameters();

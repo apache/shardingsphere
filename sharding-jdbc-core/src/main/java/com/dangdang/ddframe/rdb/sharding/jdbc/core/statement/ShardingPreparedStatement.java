@@ -150,8 +150,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
             PreparedStatement preparedStatement = generateStatement(each);
             getRoutedStatements().add(preparedStatement);
-            replayMethodsInvocation(preparedStatement);
-            getParameters().replayMethodsInvocation(preparedStatement);
+            replaySetParameter(preparedStatement);
             result.put(each, preparedStatement);
         }
         return result;
@@ -163,8 +162,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         setRouteResult(sqlRouteResult);
         for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
             PreparedStatement preparedStatement = getStatementForBatch(each);
-            replayMethodsInvocation(preparedStatement);
-            getParameters().replayMethodsInvocation(preparedStatement);
+            replaySetParameter(preparedStatement);
             result.add(wrap(preparedStatement, each));
         }
         return result;

@@ -17,9 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.ParameterList;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -29,11 +30,16 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 预编译语句对象的适配类.
@@ -46,8 +52,13 @@ import java.util.Calendar;
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
+    private final List<JdbcMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
+    
     @Getter
-    private final ParameterList parameters = new ParameterList();
+    private final List<Object> parameters = new ArrayList<>();
+    
+    @Getter
+    private boolean isPostExecuteEvent = true;
     
     protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -55,205 +66,301 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {
-        setParameter(true, parameterIndex, "setNull", new Class[]{int.class, int.class}, parameterIndex, sqlType);
+        setParameter(parameterIndex, null);
+        recordSetParameter("setNull", new Class[]{int.class, int.class}, parameterIndex, sqlType);
     }
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType, final String typeName) throws SQLException {
-        setParameter(true, parameterIndex, "setNull", new Class[]{int.class, int.class, String.class}, parameterIndex, sqlType, typeName);
+        setParameter(parameterIndex, null);
+        recordSetParameter("setNull", new Class[]{int.class, int.class, String.class}, parameterIndex, sqlType, typeName);
     }
     
     @Override
     public final void setBoolean(final int parameterIndex, final boolean x) throws SQLException {
-        setParameter(true, parameterIndex, "setBoolean", new Class[]{int.class, boolean.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBoolean", new Class[]{int.class, boolean.class}, parameterIndex, x);
     }
     
     @Override
     public final void setByte(final int parameterIndex, final byte x) throws SQLException {
-        setParameter(true, parameterIndex, "setByte", new Class[]{int.class, byte.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setByte", new Class[]{int.class, byte.class}, parameterIndex, x);
     }
     
     @Override
     public final void setShort(final int parameterIndex, final short x) throws SQLException {
-        setParameter(true, parameterIndex, "setShort", new Class[]{int.class, short.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setShort", new Class[]{int.class, short.class}, parameterIndex, x);
     }
     
     @Override
     public final void setInt(final int parameterIndex, final int x) throws SQLException {
-        setParameter(true, parameterIndex, "setInt", new Class[]{int.class, int.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setInt", new Class[]{int.class, int.class}, parameterIndex, x);
     }
     
     @Override
     public final void setLong(final int parameterIndex, final long x) throws SQLException {
-        setParameter(true, parameterIndex, "setLong", new Class[]{int.class, long.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setLong", new Class[]{int.class, long.class}, parameterIndex, x);
     }
     
     @Override
     public final void setFloat(final int parameterIndex, final float x) throws SQLException {
-        setParameter(true, parameterIndex, "setFloat", new Class[]{int.class, float.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setFloat", new Class[]{int.class, float.class}, parameterIndex, x);
     }
     
     @Override
     public final void setDouble(final int parameterIndex, final double x) throws SQLException {
-        setParameter(true, parameterIndex, "setDouble", new Class[]{int.class, double.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setDouble", new Class[]{int.class, double.class}, parameterIndex, x);
     }
     
     @Override
     public final void setString(final int parameterIndex, final String x) throws SQLException {
-        setParameter(true, parameterIndex, "setString", new Class[]{int.class, String.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setString", new Class[]{int.class, String.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBigDecimal(final int parameterIndex, final BigDecimal x) throws SQLException {
-        setParameter(true, parameterIndex, "setBigDecimal", new Class[]{int.class, BigDecimal.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBigDecimal", new Class[]{int.class, BigDecimal.class}, parameterIndex, x);
     }
     
     @Override
     public final void setDate(final int parameterIndex, final Date x) throws SQLException {
-        setParameter(true, parameterIndex, "setDate", new Class[]{int.class, Date.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setDate", new Class[]{int.class, Date.class}, parameterIndex, x);
     }
     
     @Override
     public final void setDate(final int parameterIndex, final Date x, final Calendar cal) throws SQLException {
-        setParameter(true, parameterIndex, "setDate", new Class[]{int.class, Date.class, Calendar.class}, parameterIndex, x, cal);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setDate", new Class[]{int.class, Date.class, Calendar.class}, parameterIndex, x, cal);
     }
     
     @Override
     public final void setTime(final int parameterIndex, final Time x) throws SQLException {
-        setParameter(true, parameterIndex, "setTime", new Class[]{int.class, Time.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setTime", new Class[]{int.class, Time.class}, parameterIndex, x);
     }
     
     @Override
     public final void setTime(final int parameterIndex, final Time x, final Calendar cal) throws SQLException {
-        setParameter(true, parameterIndex, "setTime", new Class[]{int.class, Time.class, Calendar.class}, parameterIndex, x, cal);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setTime", new Class[]{int.class, Time.class, Calendar.class}, parameterIndex, x, cal);
     }
     
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x) throws SQLException {
-        setParameter(true, parameterIndex, "setTimestamp", new Class[]{int.class, Timestamp.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setTimestamp", new Class[]{int.class, Timestamp.class}, parameterIndex, x);
     }
     
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) throws SQLException {
-        setParameter(true, parameterIndex, "setTimestamp", new Class[]{int.class, Timestamp.class, Calendar.class}, parameterIndex, x, cal);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setTimestamp", new Class[]{int.class, Timestamp.class, Calendar.class}, parameterIndex, x, cal);
     }
     
     @Override
     public final void setBytes(final int parameterIndex, final byte[] x) throws SQLException {
-        setParameter(true, parameterIndex, "setBytes", new Class[]{int.class, byte[].class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBytes", new Class[]{int.class, byte[].class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final Blob x) throws SQLException {
-        setParameter(false, parameterIndex, "setBlob", new Class[]{int.class, Blob.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBlob", new Class[]{int.class, Blob.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x) throws SQLException {
-        setParameter(false, parameterIndex, "setBlob", new Class[]{int.class, InputStream.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBlob", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        setParameter(false, parameterIndex, "setBlob", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBlob", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Clob x) throws SQLException {
-        setParameter(false, parameterIndex, "setClob", new Class[]{int.class, Clob.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setClob", new Class[]{int.class, Clob.class}, parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x) throws SQLException {
-        setParameter(false, parameterIndex, "setClob", new Class[]{int.class, Reader.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setClob", new Class[]{int.class, Reader.class}, parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        setParameter(false, parameterIndex, "setClob", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setClob", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x) throws SQLException {
-        setParameter(false, parameterIndex, "setAsciiStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        setParameter(false, parameterIndex, "setAsciiStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        setParameter(false, parameterIndex, "setAsciiStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        setParameter(false, parameterIndex, "setUnicodeStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setUnicodeStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x) throws SQLException {
-        setParameter(false, parameterIndex, "setBinaryStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        setParameter(false, parameterIndex, "setBinaryStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        setParameter(false, parameterIndex, "setBinaryStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x) throws SQLException {
-        setParameter(false, parameterIndex, "setCharacterStream", new Class[]{int.class, Reader.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class}, parameterIndex, x);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) throws SQLException {
-        setParameter(false, parameterIndex, "setCharacterStream", new Class[]{int.class, Reader.class, int.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        setParameter(false, parameterIndex, "setCharacterStream", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setURL(final int parameterIndex, final URL x) throws SQLException {
-        setParameter(false, parameterIndex, "setURL", new Class[]{int.class, URL.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setURL", new Class[]{int.class, URL.class}, parameterIndex, x);
     }
     
     @Override
     public final void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
-        setParameter(false, parameterIndex, "setSQLXML", new Class[]{int.class, SQLXML.class}, parameterIndex, x);
+        isPostExecuteEvent = false;
+        setParameter(parameterIndex, x);
+        recordSetParameter("setSQLXML", new Class[]{int.class, SQLXML.class}, parameterIndex, x);
     }
     
     @Override
     public final void setObject(final int parameterIndex, final Object x) throws SQLException {
-        setParameter(true, parameterIndex, "setObject", new Class[]{int.class, Object.class}, parameterIndex, x);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setObject", new Class[]{int.class, Object.class}, parameterIndex, x);
     }
     
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
-        setParameter(true, parameterIndex, "setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex,  x, targetSqlType);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class}, parameterIndex,  x, targetSqlType);
     }
     
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
-        setParameter(true, parameterIndex, "setObject", new Class[]{int.class, Object.class, int.class, int.class}, parameterIndex, x, targetSqlType, scaleOrLength);
+        setParameter(parameterIndex, x);
+        recordSetParameter("setObject", new Class[]{int.class, Object.class, int.class, int.class}, parameterIndex, x, targetSqlType, scaleOrLength);
     }
     
-    private void setParameter(final boolean isPostExecuteEvent, final int parameterIndex, final String methodName, final Class[] argumentTypes, final Object... arguments) {
-        parameters.recordMethodInvocation(isPostExecuteEvent, parameterIndex, methodName, argumentTypes, arguments);
+    private void setParameter(final int parameterIndex, final Object value) {
+        if (parameters.size() == parameterIndex - 1) {
+            parameters.add(value);
+            return;
+        }
+        for (int i = parameters.size(); i < parameterIndex - 1; i++) {
+            parameters.add(null);
+        }
+        parameters.set(parameterIndex - 1, value);
+    }
+    
+    private void recordSetParameter(final String methodName, final Class[] argumentTypes, final Object... arguments) {
+        try {
+            setParameterMethodInvocations.add(new JdbcMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments));
+        } catch (final NoSuchMethodException ex) {
+            throw new ShardingJdbcException(ex);
+        }
+    }
+    
+    protected void replaySetParameter(final PreparedStatement preparedStatement) {
+        addParameters();
+        int count = 0;
+        for (JdbcMethodInvocation each : setParameterMethodInvocations) {
+            updateParameterValues(each, parameters.get(count));
+            each.invoke(preparedStatement);
+            count++;
+        }
+    }
+    
+    private void addParameters() {
+        for (int i = setParameterMethodInvocations.size(); i < parameters.size(); i++) {
+            recordSetParameter("setObject", new Class[]{int.class, Object.class}, i + 1, parameters.get(i));
+        }
+    }
+    
+    private void updateParameterValues(final JdbcMethodInvocation jdbcMethodInvocation, final Object value) {
+        if (!jdbcMethodInvocation.getMethod().getName().equals("setNull") && !Objects.equals(jdbcMethodInvocation.getArguments()[1], value)) {
+            jdbcMethodInvocation.getArguments()[1] = value;
+        }
     }
     
     @Override
     public final void clearParameters() throws SQLException {
         parameters.clear();
+        setParameterMethodInvocations.clear();
     }
 }
