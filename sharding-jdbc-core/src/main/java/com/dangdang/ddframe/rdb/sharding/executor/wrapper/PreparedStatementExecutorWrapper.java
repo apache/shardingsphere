@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -55,12 +55,12 @@ public final class PreparedStatementExecutorWrapper {
         this.preparedStatement = preparedStatement;
         switch (sqlType) {
             case SELECT:
-                executionEvent = Optional.of(new DQLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                executionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             case INSERT:
             case UPDATE:
             case DELETE:
-                executionEvent = Optional.of(new DMLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                executionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             default:
                 executionEvent = Optional.absent();

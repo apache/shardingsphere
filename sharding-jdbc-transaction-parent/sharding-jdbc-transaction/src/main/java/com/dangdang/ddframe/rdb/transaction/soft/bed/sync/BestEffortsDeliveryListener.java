@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -47,7 +47,7 @@ public final class BestEffortsDeliveryListener implements ExecutionEventListener
     
     @Subscribe
     @AllowConcurrentEvents
-    public void listen(final DMLAbstractExecutionEvent event) {
+    public void listen(final DMLExecutionEvent event) {
         if (!isProcessContinuously()) {
             return;
         }

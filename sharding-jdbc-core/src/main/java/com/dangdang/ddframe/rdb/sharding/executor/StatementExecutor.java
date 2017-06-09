@@ -21,8 +21,8 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -295,9 +295,9 @@ public final class StatementExecutor {
     
     private AbstractExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
         if (SQLType.SELECT == sqlType) {
-            return new DQLAbstractExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
         }
-        return new DMLAbstractExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
     }
     
     private interface Updater {
