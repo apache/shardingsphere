@@ -20,14 +20,10 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -85,12 +81,12 @@ public final class PreparedStatementExecutor {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
         ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().executeQuery();
         } catch (final SQLException ex) {
-            handleException(event, ex);
+            ExecutorUtils.handleException(event, ex);
             return null;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
@@ -142,12 +138,12 @@ public final class PreparedStatementExecutor {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
         ExecutionEventBus.getInstance().post(event);
         try {
             result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
         } catch (final SQLException ex) {
-            handleException(event, ex);
+            ExecutorUtils.handleException(event, ex);
             return 0;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
@@ -188,92 +184,16 @@ public final class PreparedStatementExecutor {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
         ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
         } catch (final SQLException ex) {
-            handleException(event, ex);
+            ExecutorUtils.handleException(event, ex);
             return false;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
         ExecutionEventBus.getInstance().post(event);
         return result;
-    }
-    
-    /**
-     * 执行批量接口.
-     *
-     * @return 每个
-     * @param batchSize 批量执行语句总数
-     */
-    public int[] executeBatch(final int batchSize) {
-        Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                return executeBatchInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
-            }
-            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
-                
-                @Override
-                public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeBatchInternal(input, isExceptionThrown, dataMap);
-                    }
-                }
-            }, new MergeUnit<int[], int[]>() {
-                
-                @Override
-                public int[] merge(final List<int[]> results) {
-                    if (null == results) {
-                        return new int[]{0};
-                    }
-                    int[] result = new int[batchSize];
-                    int i = 0;
-                    for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
-                        for (Integer[] indices : each.getBatchIndices()) {
-                            result[indices[0]] += results.get(i)[indices[1]];
-                        }
-                        i++;
-                    }
-                    return result;
-                }
-            });
-        } finally {
-            MetricsContext.stop(context);
-        }
-    }
-    
-    private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        int[] result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(batchPreparedStatementExecutorWrapper.getSqlExecutionUnit());
-        ExecutionEventBus.getInstance().post(event);
-        try {
-            result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
-        } catch (final SQLException ex) {
-            handleException(event, ex);
-            return null;
-        }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        ExecutionEventBus.getInstance().post(event);
-        return result;
-    }
-    
-    private AbstractExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
-        if (SQLType.SELECT == sqlType) {
-            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
-        }
-        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
-    }
-    
-    private void handleException(final AbstractExecutionEvent event, final SQLException cause) {
-        event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-        event.setException(Optional.of(cause));
-        ExecutionEventBus.getInstance().post(event);
-        ExecutorExceptionHandler.handleException(cause);
     }
 }

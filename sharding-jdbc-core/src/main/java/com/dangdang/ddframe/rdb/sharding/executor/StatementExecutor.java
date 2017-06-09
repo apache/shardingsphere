@@ -19,14 +19,11 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -87,15 +84,12 @@ public final class StatementExecutor {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = statement.executeQuery(sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-            event.setException(Optional.of(ex));
-            ExecutionEventBus.getInstance().post(event);
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return null;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
@@ -188,15 +182,12 @@ public final class StatementExecutor {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = updater.executeUpdate(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-            event.setException(Optional.of(ex));
-            ExecutionEventBus.getInstance().post(event);
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return 0;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
@@ -277,27 +268,17 @@ public final class StatementExecutor {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = executor.execute(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-            event.setException(Optional.of(ex));
-            ExecutionEventBus.getInstance().post(event);
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return false;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
         ExecutionEventBus.getInstance().post(event);
         return result;
-    }
-    
-    private AbstractExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
-        if (SQLType.SELECT == sqlType) {
-            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
-        }
-        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
     }
     
     private interface Updater {

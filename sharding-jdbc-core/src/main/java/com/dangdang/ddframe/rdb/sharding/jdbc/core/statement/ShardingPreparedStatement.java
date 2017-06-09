@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
+import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementBatchExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
@@ -139,7 +140,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new PreparedStatementExecutor(
+            return new PreparedStatementBatchExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), cachedPreparedStatementWrappers).executeBatch(batchIndex);
         } finally {
             clearRouteContext();
