@@ -84,7 +84,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
             result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), preparedStatements).executeQuery(), getRouteResult().getSqlStatement());
+                    getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
             clearBatch();
         }
@@ -96,7 +96,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public int executeUpdate() throws SQLException {
         try {
             Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
-            return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).executeUpdate();
+            return new PreparedStatementExecutor(
+                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).executeUpdate();
         } finally {
             clearBatch();
         }
@@ -106,7 +107,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public boolean execute() throws SQLException {
         try {
             Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
-            return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).execute();
+            return new PreparedStatementExecutor(
+                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).execute();
         } finally {
             clearBatch();
         }

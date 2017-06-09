@@ -49,6 +49,8 @@ public final class PreparedStatementExecutor {
     
     private final Map<SQLExecutionUnit, PreparedStatement> preparedStatements;
     
+    private final List<Object> parameters;
+    
     /**
      * 执行SQL查询.
      * 
@@ -82,7 +84,7 @@ public final class PreparedStatementExecutor {
     private ResultSet executeQueryInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit, parameters);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatement.executeQuery();
@@ -139,7 +141,7 @@ public final class PreparedStatementExecutor {
     private int executeUpdateInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit, parameters);
         ExecutionEventBus.getInstance().post(event);
         try {
             result =  preparedStatement.executeUpdate();
@@ -184,7 +186,7 @@ public final class PreparedStatementExecutor {
     private boolean executeInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit, parameters);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatement.execute();

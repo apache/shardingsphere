@@ -29,6 +29,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,10 +42,14 @@ import java.util.Map;
 final class ExecutorUtils {
     
     static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit) {
+        return getExecutionEvent(sqlType, sqlExecutionUnit, Collections.emptyList());
+    }
+    
+    static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit, final List<Object> parameters) {
         if (SQLType.SELECT == sqlType) {
-            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql(), parameters);
         }
-        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql(), parameters);
     }
     
     static void handleException(final AbstractExecutionEvent event, final SQLException cause) {
