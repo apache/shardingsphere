@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.integrate.db;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -38,8 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBUnitTest {
-    
-    protected static DatabaseTestSQL sql;
     
     private static boolean isShutdown;
     
@@ -78,7 +75,6 @@ public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBU
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
-        sql = currentDatabaseTestSQL();
     }
     
     protected final ShardingDataSource getShardingDataSource() {
