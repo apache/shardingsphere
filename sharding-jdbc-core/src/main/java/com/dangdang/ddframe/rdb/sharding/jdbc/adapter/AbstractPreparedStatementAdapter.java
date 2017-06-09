@@ -57,9 +57,6 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Getter
     private final List<Object> parameters = new ArrayList<>();
     
-    @Getter
-    private boolean isPostExecuteEvent = true;
-    
     protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
@@ -168,133 +165,114 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     @Override
     public final void setBytes(final int parameterIndex, final byte[] x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBytes", new Class[]{int.class, byte[].class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final Blob x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBlob", new Class[]{int.class, Blob.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBlob", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBlob", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Clob x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setClob", new Class[]{int.class, Clob.class}, parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setClob", new Class[]{int.class, Reader.class}, parameterIndex, x);
     }
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setClob", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setAsciiStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setUnicodeStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class}, parameterIndex, x);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setBinaryStream", new Class[]{int.class, InputStream.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class}, parameterIndex, x);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class, int.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setCharacterStream", new Class[]{int.class, Reader.class, long.class}, parameterIndex, x, length);
     }
     
     @Override
     public final void setURL(final int parameterIndex, final URL x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setURL", new Class[]{int.class, URL.class}, parameterIndex, x);
     }
     
     @Override
     public final void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
-        isPostExecuteEvent = false;
         setParameter(parameterIndex, x);
         recordSetParameter("setSQLXML", new Class[]{int.class, SQLXML.class}, parameterIndex, x);
     }
