@@ -18,12 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import org.junit.Before;
 import org.junit.Test;
@@ -227,7 +226,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             }
             
             @Subscribe
-            @AllowConcurrentEvents
             public void subscribe(final DMLExecutionEvent event) {
                 if (event.getEventExecutionType().equals(EventExecutionType.BEFORE_EXECUTE)) {
                     beforeEvents.add(event);

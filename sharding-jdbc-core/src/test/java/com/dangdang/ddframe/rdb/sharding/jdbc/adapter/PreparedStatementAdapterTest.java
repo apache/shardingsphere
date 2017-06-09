@@ -238,12 +238,6 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDatabase
     }
     
     @Test
-    public void assertSetRef() throws SQLException {
-        actual.setRef(1, null);
-        assertParameter(actual, 1, null);
-    }
-    
-    @Test
     public void assertSetObject() throws SQLException {
         Object obj = "value";
         actual.setObject(1, obj);

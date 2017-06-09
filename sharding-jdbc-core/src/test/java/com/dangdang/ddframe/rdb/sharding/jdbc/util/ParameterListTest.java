@@ -20,13 +20,12 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.util;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import org.junit.Test;
 
-
-public class ParameterListTest {
+public final class ParameterListTest {
     
     @Test(expected = ShardingJdbcException.class)
     public void recordMethodInvocation() throws Exception {
         ParameterList list = new ParameterList();
-        list.recordMethodInvocation(1, "noThatMethod", null, null);
+        list.recordMethodInvocation(false, 1, "noThatMethod", null, null);
     }
     
 }

@@ -96,4 +96,9 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     public void assertSetRowId() throws SQLException {
         actual.setRowId(1, null);
     }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertSetRef() throws SQLException {
+        actual.setRef(1, null);
+    }
 }

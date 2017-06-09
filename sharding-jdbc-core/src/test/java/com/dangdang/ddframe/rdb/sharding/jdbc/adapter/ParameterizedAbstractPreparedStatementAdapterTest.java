@@ -35,7 +35,6 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.Ref;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -99,7 +98,6 @@ public class ParameterizedAbstractPreparedStatementAdapterTest {
                 {"setCharacterStream", new Class[]{int.class, Reader.class, long.class}, new Object[] {1, Mockito.mock(Reader.class), 10000121221L}},
                 {"setURL", new Class[]{int.class, URL.class}, new Object[] {1, new URL("http://www.dangdang.com/test")}},
                 {"setSQLXML", new Class[]{int.class, SQLXML.class}, new Object[] {1, Mockito.mock(SQLXML.class)}},
-                {"setRef", new Class[]{int.class, Ref.class}, new Object[] {1, Mockito.mock(Ref.class)}},
                 {"setObject", new Class[]{int.class, Object.class}, new Object[] {1, new Object()}},
                 {"setObject", new Class[]{int.class, Object.class, int.class}, new Object[] {1, new Object(), Types.BLOB}},
                 {"setObject", new Class[]{int.class, Object.class, int.class, int.class}, new Object[] {1, new Object(), Types.DECIMAL, 10}},

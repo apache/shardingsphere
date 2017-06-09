@@ -23,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
 import java.util.AbstractList;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 参数列表.
@@ -32,10 +33,12 @@ import java.util.ArrayList;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
+@Getter
 public final class ParameterList extends AbstractList<Object> {
     
-    @Getter
-    private final ArrayList<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
+    private boolean isPostExecuteEvent = true;
+    
+    private final List<JdbcMethodInvocation> jdbcMethodInvocations = new LinkedList<>();
     
     /**
      * 使用索引记录方法调用.
@@ -44,9 +47,10 @@ public final class ParameterList extends AbstractList<Object> {
      * @param methodName 方法名称
      * @param argumentTypes 参数类型
      * @param arguments 参数
+     * @param isPostEvent 是否发生SQL执行事件
      */
-    public void recordMethodInvocation(final int index, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        jdbcMethodInvocations.ensureCapacity(index);
+    public void recordMethodInvocation(final boolean isPostEvent, final int index, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+        this.isPostExecuteEvent = isPostEvent;
         int max = jdbcMethodInvocations.size();
         while (max++ <= index - 1) {
             jdbcMethodInvocations.add(null);
@@ -72,7 +76,7 @@ public final class ParameterList extends AbstractList<Object> {
     @Override
     public boolean add(final Object o) {
         int index = jdbcMethodInvocations.size() + 1;
-        recordMethodInvocation(index, "setObject", new Class[]{int.class, Object.class}, new Object[]{index, o});
+        recordMethodInvocation(true, index, "setObject", new Class[]{int.class, Object.class}, new Object[]{index, o});
         return true;
     }
     
