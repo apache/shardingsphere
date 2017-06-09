@@ -24,6 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
@@ -75,7 +77,7 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new Limit(value, valueIndex);
+        return new Limit(new RowCountLimit(value, valueIndex));
     }
     
     private Limit getLimitWithComma(
@@ -102,7 +104,7 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForRowCount) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
-        return new Limit(value, rowCount, valueIndex, rowCountIndex);
+        return new Limit(new OffsetLimit(value, valueIndex), new RowCountLimit(rowCount, rowCountIndex));
     }
     
     private Limit getLimitWithOffset(
@@ -129,6 +131,6 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new Limit(offset, value, offsetIndex, valueIndex);
+        return new Limit(new OffsetLimit(offset, offsetIndex), new RowCountLimit(value, valueIndex));
     }
 }

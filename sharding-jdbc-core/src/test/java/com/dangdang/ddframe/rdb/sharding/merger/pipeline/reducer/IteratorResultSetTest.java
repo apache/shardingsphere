@@ -20,6 +20,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import org.junit.Test;
@@ -47,7 +49,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForAllData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
-        selectStatement.setLimit(new Limit(1, 10, -1, -1));
+        selectStatement.setLimit(new Limit(new OffsetLimit(1, -1), new RowCountLimit(10, -1)));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {
@@ -59,7 +61,7 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForPartData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
-        selectStatement.setLimit(new Limit(1, 1, -1, -1));
+        selectStatement.setLimit(new Limit(new OffsetLimit(1, -1), new RowCountLimit(1, -1)));
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {

@@ -26,6 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
@@ -200,9 +202,9 @@ public abstract class AbstractBaseParseTest {
         if (null != assertObj.getLimit()) {
             if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
                 selectStatement.setLimit(new Limit(
-                        assertObj.getLimit().getOffset(), assertObj.getLimit().getRowCount(), assertObj.getLimit().getOffsetParameterIndex(), assertObj.getLimit().getRowCountParameterIndex()));
+                        new OffsetLimit(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()), new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             } else {
-                selectStatement.setLimit(new Limit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+                selectStatement.setLimit(new Limit(new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             }
         }
         result[4] = selectStatement;
@@ -252,6 +254,13 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertLimit(final SQLStatement actual) {
-        assertTrue(new ReflectionEquals(limit).matches(actual.getLimit()));
+        if (null != actual.getLimit()) {
+            if (null != actual.getLimit().getOffsetLimit()) {
+                assertTrue(new ReflectionEquals(limit.getOffsetLimit()).matches(actual.getLimit().getOffsetLimit()));
+            }
+            if (null != actual.getLimit().getRowCountLimit()) {
+                assertTrue(new ReflectionEquals(limit.getRowCountLimit()).matches(actual.getLimit().getRowCountLimit()));
+            }
+        }
     }
 }

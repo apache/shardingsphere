@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.google.common.base.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,31 +28,23 @@ import java.util.List;
  * 分页对象.
  *
  * @author zhangliang
+ * @author caohao
  */
+@AllArgsConstructor
 @Getter
 @Setter
 public final class Limit {
     
-    private int rowCount;
+    private OffsetLimit offsetLimit;
     
-    private Optional<Integer> offset;
+    private RowCountLimit rowCountLimit;
     
-    private final int rowCountParameterIndex;
-    
-    private final int offsetParameterIndex;
-    
-    public Limit(final int rowCount, final int rowCountParameterIndex) {
-        this.rowCount = rowCount;
-        offset = Optional.absent();
-        this.offsetParameterIndex = -1;
-        this.rowCountParameterIndex = rowCountParameterIndex;
+    public Limit(final RowCountLimit rowCount) {
+        this.rowCountLimit = rowCount;
     }
     
-    public Limit(final int offset, final int rowCount, final int offsetParameterIndex, final int rowCountParameterIndex) {
-        this.offset = Optional.of(offset);
-        this.rowCount = rowCount;
-        this.offsetParameterIndex = offsetParameterIndex;
-        this.rowCountParameterIndex = rowCountParameterIndex;
+    public Limit(final OffsetLimit offsetLimit) {
+        this.offsetLimit = offsetLimit;
     }
     
     /**
@@ -61,7 +53,16 @@ public final class Limit {
      * @return 分页偏移量
      */
     public int getOffset() {
-        return offset.isPresent() ? offset.get() : 0;
+        return null != offsetLimit ? offsetLimit.getOffset() : 0;
+    }
+    
+    /**
+     * 获取分页行数.
+     *
+     * @return 分页行数
+     */
+    public int getRowCount() {
+        return null != rowCountLimit ? rowCountLimit.getRowCount() : 0;
     }
     
     /**
@@ -78,10 +79,16 @@ public final class Limit {
     }
     
     private void fill(final List<Object> parameters) {
-        int offset = -1 == offsetParameterIndex ? getOffset() : (int) parameters.get(offsetParameterIndex);
-        int rowCount = -1 == rowCountParameterIndex ? this.rowCount : (int) parameters.get(rowCountParameterIndex);
-        this.offset = Optional.of(offset);
-        this.rowCount = rowCount;
+        int offset = 0;
+        if (null != offsetLimit) {
+            offset = -1 == offsetLimit.getOffsetParameterIndex() ? getOffset() : (int) parameters.get(offsetLimit.getOffsetParameterIndex());
+            offsetLimit.setOffset(offset);
+        }
+        int rowCount = 0;
+        if (null != rowCountLimit) {
+            rowCount = -1 == rowCountLimit.getRowCountParameterIndex() ? getRowCount() : (int) parameters.get(rowCountLimit.getRowCountParameterIndex());
+            rowCountLimit.setRowCount(rowCount);
+        }
         if (offset < 0 || rowCount < 0) {
             throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
         }
@@ -89,12 +96,12 @@ public final class Limit {
     
     private void rewrite(final List<Object> parameters) {
         int rewriteOffset = 0;
-        int rewriteRowCount = getOffset() + rowCount;
-        if (offsetParameterIndex > -1) {
-            parameters.set(offsetParameterIndex, rewriteOffset);
+        int rewriteRowCount = getOffset() + rowCountLimit.getRowCount();
+        if (null != offsetLimit && offsetLimit.getOffsetParameterIndex() > -1) {
+            parameters.set(offsetLimit.getOffsetParameterIndex(), rewriteOffset);
         }
-        if (rowCountParameterIndex > -1) {
-            parameters.set(rowCountParameterIndex, rewriteRowCount);
+        if (null != rowCountLimit && rowCountLimit.getRowCountParameterIndex() > -1) {
+            parameters.set(rowCountLimit.getRowCountParameterIndex(), rewriteRowCount);
         }
     }
 }

@@ -23,13 +23,15 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 
-import java.math.BigDecimal;
+import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
 
 public class PostgreSQLSelectParser extends AbstractSelectParser {
     
@@ -86,7 +88,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                     getSqlParser().getLexer().nextToken();
                 } else {
                     if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                        rowCount = new BigDecimal(getSqlParser().getLexer().getCurrentToken().getLiterals()).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                        rowCount = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
                         valueBeginPosition = valueBeginPosition - (rowCount + "").length();
                         getSelectStatement().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, rowCount));
                     } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
@@ -102,7 +104,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                 hasOffset = true;
                 int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
                 if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                    offset = new BigDecimal(getSqlParser().getLexer().getCurrentToken().getLiterals()).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                    offset = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
                     offsetBeginPosition = offsetBeginPosition - (offset + "").length();
                     getSelectStatement().getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
                 } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
@@ -122,9 +124,9 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             Limit limit;
             // TODO 需处理只有OFFSET情况
             if (hasOffset && hasLimit) {
-                limit = new Limit(offset, rowCount, offsetParameterIndex, rowCountParameterIndex);
+                limit = new Limit(new OffsetLimit(offset, offsetParameterIndex), new RowCountLimit(rowCount, rowCountParameterIndex));
             } else {
-                limit = new Limit(rowCount, rowCountParameterIndex);
+                limit = new Limit(new RowCountLimit(rowCount, rowCountParameterIndex));
             }
             getSelectStatement().setLimit(limit);
         }
