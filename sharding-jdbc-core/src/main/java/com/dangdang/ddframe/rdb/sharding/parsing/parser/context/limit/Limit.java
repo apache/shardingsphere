@@ -24,6 +24,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
+
 /**
  * 分页对象.
  *
@@ -81,12 +83,12 @@ public final class Limit {
     private void fill(final List<Object> parameters) {
         int offset = 0;
         if (null != offsetLimit) {
-            offset = -1 == offsetLimit.getOffsetParameterIndex() ? getOffset() : (int) parameters.get(offsetLimit.getOffsetParameterIndex());
+            offset = -1 == offsetLimit.getOffsetParameterIndex() ? getOffset() : roundHalfUp(parameters.get(offsetLimit.getOffsetParameterIndex()));
             offsetLimit.setOffset(offset);
         }
         int rowCount = 0;
         if (null != rowCountLimit) {
-            rowCount = -1 == rowCountLimit.getRowCountParameterIndex() ? getRowCount() : (int) parameters.get(rowCountLimit.getRowCountParameterIndex());
+            rowCount = -1 == rowCountLimit.getRowCountParameterIndex() ? getRowCount() : roundHalfUp(parameters.get(rowCountLimit.getRowCountParameterIndex()));
             rowCountLimit.setRowCount(rowCount);
         }
         if (offset < 0 || rowCount < 0) {
