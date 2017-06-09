@@ -40,7 +40,7 @@ public final class PreparedStatementExecutorWrapper {
     
     private final PreparedStatement preparedStatement;
     
-    private final List<Integer[]> batchIndices = new ArrayList<>();
+    private final List<Integer[]> batchIndexes = new ArrayList<>();
     
     @Getter(AccessLevel.NONE)
     private int batchIndex;
@@ -52,6 +52,6 @@ public final class PreparedStatementExecutorWrapper {
      * @param shardingBatchIndex 分片批量执行索引
      */
     public void mapBatchIndex(final int shardingBatchIndex) {
-        batchIndices.add(new Integer[]{shardingBatchIndex, this.batchIndex++});
+        batchIndexes.add(new Integer[]{shardingBatchIndex, this.batchIndex++});
     }
 }

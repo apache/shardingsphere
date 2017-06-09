@@ -58,8 +58,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    private int batchIndex;
-    
     public ShardingPreparedStatement(final ShardingConnection shardingConnection, final String sql) {
         this(shardingConnection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -122,7 +120,6 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         clearParameters();
         cachedPreparedStatementWrappers.clear();
         parameterSets.clear();
-        batchIndex = 0;
     }
     
     @Override
@@ -130,10 +127,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             for (PreparedStatementExecutorWrapper each : routeSQLForBatch()) {
                 each.getPreparedStatement().addBatch();
-                each.mapBatchIndex(batchIndex);
-                parameterSets.add(getParameters());
+                each.mapBatchIndex(parameterSets.size());
             }
-            batchIndex++;
+            parameterSets.add(getParameters());
         } finally {
             setCurrentResultSet(null);
             clearParameters();
@@ -144,7 +140,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public int[] executeBatch() throws SQLException {
         try {
             return new PreparedStatementBatchExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), cachedPreparedStatementWrappers, parameterSets).executeBatch(batchIndex);
+                    getRouteResult().getSqlStatement().getType(), cachedPreparedStatementWrappers, parameterSets).executeBatch();
         } finally {
             clearBatch();
         }

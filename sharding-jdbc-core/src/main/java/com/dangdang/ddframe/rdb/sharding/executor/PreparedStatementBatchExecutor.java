@@ -51,10 +51,9 @@ public final class PreparedStatementBatchExecutor {
     /**
      * 执行批量接口.
      *
-     * @return 每个
-     * @param batchSize 批量执行语句总数
+     * @return 执行结果
      */
-    public int[] executeBatch(final int batchSize) {
+    public int[] executeBatch() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -77,11 +76,11 @@ public final class PreparedStatementBatchExecutor {
                     if (null == results) {
                         return new int[]{0};
                     }
-                    int[] result = new int[batchSize];
+                    int[] result = new int[parameterSets.size()];
                     int i = 0;
                     for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
-                        for (Integer[] indices : each.getBatchIndices()) {
-                            result[indices[0]] += results.get(i)[indices[1]];
+                        for (Integer[] indexes : each.getBatchIndexes()) {
+                            result[indexes[0]] += results.get(i)[indexes[1]];
                         }
                         i++;
                     }
