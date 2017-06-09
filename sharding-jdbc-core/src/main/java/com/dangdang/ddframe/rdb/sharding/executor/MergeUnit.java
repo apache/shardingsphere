@@ -27,7 +27,7 @@ import java.util.List;
  * 
  * @author gaohongtao
  */
-interface MergeUnit<I, O> {
+public interface MergeUnit<I, O> {
     
     /**
      * 合并执行结果.

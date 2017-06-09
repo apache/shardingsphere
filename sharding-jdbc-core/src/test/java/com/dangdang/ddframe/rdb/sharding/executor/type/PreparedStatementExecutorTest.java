@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor;
+package com.dangdang.ddframe.rdb.sharding.executor.type;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import org.junit.Test;

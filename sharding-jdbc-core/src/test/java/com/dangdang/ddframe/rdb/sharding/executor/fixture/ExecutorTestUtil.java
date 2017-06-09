@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
 import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
-import com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

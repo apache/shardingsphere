@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.sharding.executor.StatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.StatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;

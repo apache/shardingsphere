@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;

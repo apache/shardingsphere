@@ -15,7 +15,7 @@
     <logger name="org.dbunit" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler" level="off">
+    <logger name="com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler" level="off">
     </logger>
     <!-- 日志级别 -->
     <root>

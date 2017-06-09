@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
+package com.dangdang.ddframe.rdb.sharding.executor.type;
 
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.AccessLevel;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.eventbus.event;
 
 /**
  * 事件触发类型.

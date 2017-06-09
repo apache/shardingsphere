@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementBatchExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedBatchStatement;
+import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedStatementBatchExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedStatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedBatchStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;

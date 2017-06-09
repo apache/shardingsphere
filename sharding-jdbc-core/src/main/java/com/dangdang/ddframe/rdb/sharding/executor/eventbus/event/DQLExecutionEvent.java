@@ -15,19 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.eventbus.event;
+
+import java.util.List;
 
 /**
- * SQL执行时事件监听器.
+ * DQL类SQL执行时事件.
  * 
  * @author gaohongtao
  */
-public interface ExecutionEventListener {
+public final class DQLExecutionEvent extends AbstractExecutionEvent {
     
-    /**
-     * 获取SQL执行时事件监听器名称.
-     *
-     * @return SQL执行时事件监听器名称
-     */
-    String getName();
+    public DQLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+        super(dataSource, sql, parameters);
+    }
 }

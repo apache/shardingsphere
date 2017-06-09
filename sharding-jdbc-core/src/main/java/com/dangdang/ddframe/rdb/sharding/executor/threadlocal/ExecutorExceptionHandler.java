@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor;
+package com.dangdang.ddframe.rdb.sharding.executor.threadlocal;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.AccessLevel;

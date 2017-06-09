@@ -15,8 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event;
+package com.dangdang.ddframe.rdb.sharding.executor.eventbus;
 
+import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.AbstractExecutionEvent;
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor;
+package com.dangdang.ddframe.rdb.sharding.executor.threadlocal;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
