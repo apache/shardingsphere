@@ -55,9 +55,16 @@ public abstract class AbstractDBUnitTest {
     
     protected static final DatabaseType CURRENT_DB_TYPE = H2;
     
+    protected static DatabaseTestSQL sql;
+    
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
     private final DataBaseEnvironment dbEnv = new DataBaseEnvironment(CURRENT_DB_TYPE);
+    
+    @Before
+    public void createSql() {
+        sql = currentDatabaseTestSQL();
+    }
     
     @Before
     public void createSchema() throws SQLException {
@@ -88,7 +95,7 @@ public abstract class AbstractDBUnitTest {
         return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
     }
     
-    protected final DatabaseTestSQL currentDatabaseTestSQL() {
+    private DatabaseTestSQL currentDatabaseTestSQL() {
         switch (dbEnv.getDatabaseType()) {
             case H2:
             case MySQL:
