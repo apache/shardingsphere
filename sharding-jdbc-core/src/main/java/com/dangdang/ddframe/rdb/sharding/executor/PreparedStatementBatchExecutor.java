@@ -92,8 +92,7 @@ public final class PreparedStatementBatchExecutor {
     
     private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
+        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedStatementExecutorWrapper.getSqlExecutionUnit());
         ExecutionEventBus.getInstance().post(event);
         try {

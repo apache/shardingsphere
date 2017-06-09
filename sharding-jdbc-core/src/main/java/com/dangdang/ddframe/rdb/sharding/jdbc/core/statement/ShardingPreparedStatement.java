@@ -82,9 +82,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public ResultSet executeQuery() throws SQLException {
         ResultSet result;
         try {
-            List<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers = routeSQL();
+            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
             result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), preparedStatementExecutorWrappers).executeQuery(), getRouteResult().getSqlStatement());
+                    getRouteResult().getSqlStatement().getType(), preparedStatements).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
             clearRouteContext();
         }
@@ -95,9 +95,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int executeUpdate() throws SQLException {
         try {
-            List<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers = routeSQL();
-            return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementExecutorWrappers).executeUpdate();
+            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
+            return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).executeUpdate();
         } finally {
             clearRouteContext();
         }
@@ -106,9 +105,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public boolean execute() throws SQLException {
         try {
-            List<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers = routeSQL();
-            return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementExecutorWrappers).execute();
+            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
+            return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).execute();
         } finally {
             clearRouteContext();
         }
@@ -153,15 +151,15 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         batchIndex = 0;
     }
     
-    private List<PreparedStatementExecutorWrapper> routeSQL() throws SQLException {
-        List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
+    private Map<SQLExecutionUnit, PreparedStatement> routeSQL() throws SQLException {
+        Map<SQLExecutionUnit, PreparedStatement> result = new HashMap<>();
         setRouteResult(preparedStatementRoutingEngine.route(getParameters()));
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
             PreparedStatement preparedStatement = generateStatement(each);
             getRoutedStatements().add(preparedStatement);
             replayMethodsInvocation(preparedStatement);
             getParameters().replayMethodsInvocation(preparedStatement);
-            result.add(wrap(preparedStatement, each));
+            result.put(each, preparedStatement);
         }
         return result;
     }

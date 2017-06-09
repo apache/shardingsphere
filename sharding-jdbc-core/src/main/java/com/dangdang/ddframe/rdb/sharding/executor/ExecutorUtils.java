@@ -29,6 +29,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * 执行器工具类.
@@ -50,5 +51,10 @@ final class ExecutorUtils {
         event.setException(Optional.of(cause));
         ExecutionEventBus.getInstance().post(event);
         ExecutorExceptionHandler.handleException(cause);
+    }
+    
+    static void setThreadLocalData(final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
+        ExecutorDataMap.setDataMap(dataMap);
     }
 }

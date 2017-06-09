@@ -22,16 +22,17 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 多线程执行预编译语句对象请求的执行器.
@@ -46,7 +47,7 @@ public final class PreparedStatementExecutor {
     
     private final SQLType sqlType;
     
-    private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
+    private final Map<SQLExecutionUnit, PreparedStatement> preparedStatements;
     
     /**
      * 执行SQL查询.
@@ -59,15 +60,16 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                return Collections.singletonList(executeQueryInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap));
+            if (1 == preparedStatements.size()) {
+                Map.Entry<SQLExecutionUnit, PreparedStatement> entry = preparedStatements.entrySet().iterator().next();
+                return Collections.singletonList(executeQueryInternal(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap));
             }
-            result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, ResultSet>() {
-        
+            result = executorEngine.execute(preparedStatements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, PreparedStatement>, ResultSet>() {
+                
                 @Override
-                public ResultSet execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeQueryInternal(input, isExceptionThrown, dataMap);
+                public ResultSet execute(final Entry<SQLExecutionUnit, PreparedStatement> input) throws Exception {
+                    synchronized (input.getValue().getConnection()) {
+                        return executeQueryInternal(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -77,14 +79,13 @@ public final class PreparedStatementExecutor {
         return result;
     }
     
-    private ResultSet executeQueryInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private ResultSet executeQueryInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
-            result = preparedStatementExecutorWrapper.getPreparedStatement().executeQuery();
+            result = preparedStatement.executeQuery();
         } catch (final SQLException ex) {
             ExecutorUtils.handleException(event, ex);
             return null;
@@ -104,15 +105,16 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                return executeUpdateInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
+            if (1 == preparedStatements.size()) {
+                Map.Entry<SQLExecutionUnit, PreparedStatement> entry = preparedStatements.entrySet().iterator().next();
+                return executeUpdateInternal(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
-            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Integer>() {
+            return executorEngine.execute(preparedStatements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, PreparedStatement>, Integer>() {
         
                 @Override
-                public Integer execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeUpdateInternal(input, isExceptionThrown, dataMap);
+                public Integer execute(final Entry<SQLExecutionUnit, PreparedStatement> input) throws Exception {
+                    synchronized (input.getValue().getConnection()) {
+                        return executeUpdateInternal(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             }, new MergeUnit<Integer, Integer>() {
@@ -134,14 +136,13 @@ public final class PreparedStatementExecutor {
         }
     }
     
-    private int executeUpdateInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdateInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
-            result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
+            result =  preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
             ExecutorUtils.handleException(event, ex);
             return 0;
@@ -161,16 +162,16 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                PreparedStatementExecutorWrapper preparedStatementExecutorWrapper = preparedStatementExecutorWrappers.iterator().next();
-                return executeInternal(preparedStatementExecutorWrapper, isExceptionThrown, dataMap);
+            if (1 == preparedStatements.size()) {
+                Map.Entry<SQLExecutionUnit, PreparedStatement> entry = preparedStatements.entrySet().iterator().next();
+                return executeInternal(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
-            List<Boolean> result = executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, Boolean>() {
-        
+            List<Boolean> result = executorEngine.execute(preparedStatements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, PreparedStatement>, Boolean>() {
+                
                 @Override
-                public Boolean execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeInternal(input, isExceptionThrown, dataMap);
+                public Boolean execute(final Entry<SQLExecutionUnit, PreparedStatement> input) throws Exception {
+                    synchronized (input.getValue().getConnection()) {
+                        return executeInternal(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -180,14 +181,13 @@ public final class PreparedStatementExecutor {
         }
     }
     
-    private boolean executeInternal(final PreparedStatementExecutorWrapper preparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private boolean executeInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
-            result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
+            result = preparedStatement.execute();
         } catch (final SQLException ex) {
             ExecutorUtils.handleException(event, ex);
             return false;
