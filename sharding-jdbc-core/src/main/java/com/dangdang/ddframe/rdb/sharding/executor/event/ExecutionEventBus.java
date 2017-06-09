@@ -52,7 +52,7 @@ public final class ExecutionEventBus {
      *
      * @param event SQL执行事件
      */
-    public void post(final ExecutionEvent event) {
+    public void post(final AbstractExecutionEvent event) {
         if (!listeners.isEmpty()) {
             instance.post(event);
         }

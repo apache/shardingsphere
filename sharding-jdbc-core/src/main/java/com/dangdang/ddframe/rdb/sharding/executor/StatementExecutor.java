@@ -21,9 +21,9 @@ import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
@@ -87,7 +87,7 @@ public final class StatementExecutor {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = statement.executeQuery(sqlExecutionUnit.getSql());
@@ -188,7 +188,7 @@ public final class StatementExecutor {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = updater.executeUpdate(statement, sqlExecutionUnit.getSql());
@@ -277,7 +277,7 @@ public final class StatementExecutor {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
-        ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
+        AbstractExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
         ExecutionEventBus.getInstance().post(event);
         try {
             result = executor.execute(statement, sqlExecutionUnit.getSql());
@@ -293,11 +293,11 @@ public final class StatementExecutor {
         return result;
     }
     
-    private ExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
+    private AbstractExecutionEvent getExecutionEvent(final SQLExecutionUnit sqlExecutionUnit) {
         if (SQLType.SELECT == sqlType) {
-            return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+            return new DQLAbstractExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
         }
-        return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
+        return new DMLAbstractExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql());
     }
     
     private interface Updater {

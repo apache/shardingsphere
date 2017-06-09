@@ -18,13 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLAbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.sql.PreparedStatement;
@@ -44,7 +43,7 @@ public final class PreparedStatementExecutorWrapper {
     @Getter
     private final PreparedStatement preparedStatement;
     
-    private final Optional<? extends ExecutionEvent> executionEvent;
+    private final Optional<? extends AbstractExecutionEvent> executionEvent;
     
     @Getter
     private final List<Integer[]> batchIndices = new ArrayList<>();
@@ -56,31 +55,20 @@ public final class PreparedStatementExecutorWrapper {
         this.preparedStatement = preparedStatement;
         switch (sqlType) {
             case SELECT:
-                executionEvent = Optional.of(new DQLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                executionEvent = Optional.of(new DQLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             case INSERT:
             case UPDATE:
             case DELETE:
-                executionEvent = Optional.of(new DMLExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
+                executionEvent = Optional.of(new DMLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
                 break;
             default:
                 executionEvent = Optional.absent();
         }
     }
     
-    public Optional<? extends ExecutionEvent> getExecutionEvent() {
+    public Optional<? extends AbstractExecutionEvent> getExecutionEvent() {
         return executionEvent;
-    }
-    
-    /**
-     * 增加批量参数.
-     * 
-     * @param parameters 参数列表
-     */
-    public void addBatchParameters(final List<Object> parameters) {
-        if (executionEvent.isPresent() && executionEvent.get() instanceof DMLExecutionEvent) {
-            executionEvent.get().addBatchParameters(Lists.newArrayList(parameters));
-        }
     }
     
     /**

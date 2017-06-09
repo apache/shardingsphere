@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitT
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -219,7 +219,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     public void assertAddBatch() throws SQLException {
         ExecutionEventBus.getInstance().register(new ExecutionEventListener() {
     
-            private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
+            private List<DMLAbstractExecutionEvent> beforeEvents = new ArrayList<>();
             
             @Override
             public String getName() {
@@ -228,9 +228,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             
             @Subscribe
             @AllowConcurrentEvents
-            public void subscribe(final DMLExecutionEvent event) {
-                assertTrue(event.isBatch());
-                assertThat(event.getBatchParameters().size(), is(2));
+            public void subscribe(final DMLAbstractExecutionEvent event) {
                 if (event.getEventExecutionType().equals(EventExecutionType.BEFORE_EXECUTE)) {
                     beforeEvents.add(event);
                 } else if (event.getEventExecutionType().equals(EventExecutionType.EXECUTE_SUCCESS)) {
