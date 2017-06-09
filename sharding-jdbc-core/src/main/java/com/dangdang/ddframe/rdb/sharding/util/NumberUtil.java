@@ -39,4 +39,24 @@ public final class NumberUtil {
     public static int roundHalfUp(final String str) {
         return new BigDecimal(str).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
     }
+    
+    /**
+     * 将数字类型对象四舍五入并转换为整形.
+     *
+     * @param obj 待转换的对象
+     * @return 四舍五入后的整形值
+     */
+    public static int roundHalfUp(final Object obj) {
+        if (obj instanceof Double) {
+            return new BigDecimal((double) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        } else if (obj instanceof Integer) {
+            return new BigDecimal((int) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        } else if (obj instanceof Float) {
+            return new BigDecimal((float) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        } else if (obj instanceof String) {
+            return new BigDecimal((String) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        } else {
+            throw new RuntimeException("Wrong number type to transfer.");
+        }
+    }
 }

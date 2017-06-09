@@ -60,8 +60,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
         String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectLimitWithBindingTable.xml"
                 : "integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml";
-        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
-                "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
+        if (PostgreSQL.name().equalsIgnoreCase(currentDbType())) {
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 1.5, 2.4);
+        } else {
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
+        }
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
                 "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 10000, 2);
     }
