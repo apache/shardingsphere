@@ -17,14 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
-import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLAbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DQLAbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.google.common.base.Optional;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -35,41 +32,18 @@ import java.util.List;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
+@Getter
 public final class PreparedStatementExecutorWrapper {
     
-    @Getter
     private final SQLExecutionUnit sqlExecutionUnit;
     
-    @Getter
     private final PreparedStatement preparedStatement;
     
-    private final Optional<? extends AbstractExecutionEvent> executionEvent;
-    
-    @Getter
     private final List<Integer[]> batchIndices = new ArrayList<>();
     
+    @Getter(AccessLevel.NONE)
     private int batchIndex;
-    
-    public PreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
-        this.sqlExecutionUnit = sqlExecutionUnit;
-        this.preparedStatement = preparedStatement;
-        switch (sqlType) {
-            case SELECT:
-                executionEvent = Optional.of(new DQLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-                break;
-            case INSERT:
-            case UPDATE:
-            case DELETE:
-                executionEvent = Optional.of(new DMLAbstractExecutionEvent(getSqlExecutionUnit().getDataSource(), getSqlExecutionUnit().getSql()));
-                break;
-            default:
-                executionEvent = Optional.absent();
-        }
-    }
-    
-    public Optional<? extends AbstractExecutionEvent> getExecutionEvent() {
-        return executionEvent;
-    }
     
     /**
      * 映射批量执行索引.

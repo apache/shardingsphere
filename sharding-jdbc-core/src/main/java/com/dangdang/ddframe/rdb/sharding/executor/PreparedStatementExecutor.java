@@ -18,18 +18,18 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.codahale.metrics.Timer.Context;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,24 +39,14 @@ import java.util.Map;
  * @author zhangliang
  * @author caohao
  */
+@RequiredArgsConstructor
 public final class PreparedStatementExecutor {
     
     private final ExecutorEngine executorEngine;
     
+    private final SQLType sqlType;
+    
     private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
-    
-    private final Collection<AbstractExecutionEvent> abstractExecutionEvents;
-    
-    public PreparedStatementExecutor(final ExecutorEngine executorEngine, final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers) {
-        this.executorEngine = executorEngine;
-        this.preparedStatementExecutorWrappers = preparedStatementExecutorWrappers;
-        abstractExecutionEvents = new LinkedList<>();
-        for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
-            if (each.getExecutionEvent().isPresent()) {
-                abstractExecutionEvents.add(each.getExecutionEvent().get());
-            }
-        }
-    }
     
     /**
      * 执行SQL查询.
@@ -65,9 +55,6 @@ public final class PreparedStatementExecutor {
      */
     public List<ResultSet> executeQuery() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
-        for (AbstractExecutionEvent each : abstractExecutionEvents) {
-            ExecutionEventBus.getInstance().post(each);
-        }
         List<ResultSet> result;
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -94,23 +81,16 @@ public final class PreparedStatementExecutor {
         ResultSet result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().executeQuery();
         } catch (final SQLException ex) {
-            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-                AbstractExecutionEvent event = preparedStatementExecutorWrapper.getExecutionEvent().get();
-                event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                event.setException(Optional.of(ex));
-                ExecutionEventBus.getInstance().post(event);
-            }
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return null;
         }
-        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-            AbstractExecutionEvent abstractExecutionEvent = preparedStatementExecutorWrapper.getExecutionEvent().get();
-            abstractExecutionEvent.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            ExecutionEventBus.getInstance().post(abstractExecutionEvent);
-        }
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
     
@@ -121,9 +101,6 @@ public final class PreparedStatementExecutor {
      */
     public int executeUpdate() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        for (AbstractExecutionEvent each : abstractExecutionEvents) {
-            ExecutionEventBus.getInstance().post(each);
-        }
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
@@ -161,23 +138,16 @@ public final class PreparedStatementExecutor {
         int result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutionEventBus.getInstance().post(event);
         try {
             result =  preparedStatementExecutorWrapper.getPreparedStatement().executeUpdate();
         } catch (final SQLException ex) {
-            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-                AbstractExecutionEvent event = preparedStatementExecutorWrapper.getExecutionEvent().get();
-                event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                event.setException(Optional.of(ex));
-                ExecutionEventBus.getInstance().post(event);
-            }
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return 0;
         }
-        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-            AbstractExecutionEvent abstractExecutionEvent = preparedStatementExecutorWrapper.getExecutionEvent().get();
-            abstractExecutionEvent.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            ExecutionEventBus.getInstance().post(abstractExecutionEvent);
-        }
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
     
@@ -188,9 +158,6 @@ public final class PreparedStatementExecutor {
      */
     public boolean execute() {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
-        for (AbstractExecutionEvent each : abstractExecutionEvents) {
-            ExecutionEventBus.getInstance().post(each);
-        }
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
@@ -217,96 +184,16 @@ public final class PreparedStatementExecutor {
         boolean result;
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
+        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, preparedStatementExecutorWrapper.getSqlExecutionUnit());
+        ExecutionEventBus.getInstance().post(event);
         try {
             result = preparedStatementExecutorWrapper.getPreparedStatement().execute();
         } catch (final SQLException ex) {
-            if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-                AbstractExecutionEvent event = preparedStatementExecutorWrapper.getExecutionEvent().get();
-                event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                event.setException(Optional.of(ex));
-                ExecutionEventBus.getInstance().post(event);
-            }
-            ExecutorExceptionHandler.handleException(ex);
+            ExecutorUtils.handleException(event, ex);
             return false;
         }
-        if (preparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-            AbstractExecutionEvent abstractExecutionEvent = preparedStatementExecutorWrapper.getExecutionEvent().get();
-            abstractExecutionEvent.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            ExecutionEventBus.getInstance().post(abstractExecutionEvent);
-        }
-        return result;
-    }
-    
-    
-    /**
-     * 执行批量接口.
-     *
-     * @return 每个
-     * @param batchSize 批量执行语句总数
-     */
-    public int[] executeBatch(final int batchSize) {
-        Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
-        for (AbstractExecutionEvent each : abstractExecutionEvents) {
-            ExecutionEventBus.getInstance().post(each);
-        }
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                return executeBatchInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
-            }
-            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
-                
-                @Override
-                public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeBatchInternal(input, isExceptionThrown, dataMap);
-                    }
-                }
-            }, new MergeUnit<int[], int[]>() {
-                
-                @Override
-                public int[] merge(final List<int[]> results) {
-                    if (null == results) {
-                        return new int[]{0};
-                    }
-                    int[] result = new int[batchSize];
-                    int i = 0;
-                    for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
-                        for (Integer[] indices : each.getBatchIndices()) {
-                            result[indices[0]] += results.get(i)[indices[1]];
-                        }
-                        i++;
-                    }
-                    return result;
-                }
-            });
-        } finally {
-            MetricsContext.stop(context);
-        }
-    }
-    
-    private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        int[] result;
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        ExecutorDataMap.setDataMap(dataMap);
-        try {
-            result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
-        } catch (final SQLException ex) {
-            if (batchPreparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-                AbstractExecutionEvent event = batchPreparedStatementExecutorWrapper.getExecutionEvent().get();
-                event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                event.setException(Optional.of(ex));
-                ExecutionEventBus.getInstance().post(event);
-            }
-            ExecutorExceptionHandler.handleException(ex);
-            return null;
-        }
-        if (batchPreparedStatementExecutorWrapper.getExecutionEvent().isPresent()) {
-            AbstractExecutionEvent abstractExecutionEvent = batchPreparedStatementExecutorWrapper.getExecutionEvent().get();
-            abstractExecutionEvent.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            ExecutionEventBus.getInstance().post(abstractExecutionEvent);
-        }
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
 }

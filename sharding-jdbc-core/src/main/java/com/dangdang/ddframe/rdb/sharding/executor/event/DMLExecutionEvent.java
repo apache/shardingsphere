@@ -20,17 +20,17 @@ package com.dangdang.ddframe.rdb.sharding.executor.event;
 import java.util.List;
 
 /**
- * DQL类SQL执行时事件.
+ * DML类SQL执行时事件.
  * 
- * @author gaohongtao
+ * @author zhangliang
  */
-public final class DQLAbstractExecutionEvent extends AbstractExecutionEvent {
+public final class DMLExecutionEvent extends AbstractExecutionEvent {
     
-    public DQLAbstractExecutionEvent(final String dataSource, final String sql) {
+    public DMLExecutionEvent(final String dataSource, final String sql) {
         super(dataSource, sql);
     }
     
-    public DQLAbstractExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+    public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
         super(dataSource, sql, parameters);
     }
 }

@@ -47,7 +47,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @SuppressWarnings("unchecked")
     @Test
     public void assertNoStatement() throws SQLException {
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.EMPTY_LIST);
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Collections.EMPTY_LIST);
         assertFalse(actual.execute());
         assertThat(actual.executeUpdate(), is(0));
         assertThat(actual.executeQuery().size(), is(0));
@@ -59,7 +59,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         ResultSet resultSet = mock(ResultSet.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Collections.singleton(wrapper));
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -82,7 +82,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeQuery()).thenReturn(resultSet2);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Arrays.asList(wrapper1, wrapper2));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, hasItem(resultSet1));
         assertThat(actualResultSets, hasItem(resultSet2));
@@ -105,7 +105,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Collections.singleton(wrapper));
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
         verify(preparedStatement).executeQuery();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -127,7 +127,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeQuery()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Arrays.asList(wrapper1, wrapper2));
         List<ResultSet> actualResultSets = actual.executeQuery();
         assertThat(actualResultSets, is(Arrays.asList((ResultSet) null, null)));
         verify(preparedStatement1).executeQuery();
@@ -148,7 +148,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         when(preparedStatement.executeUpdate()).thenReturn(10);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Collections.singleton(wrapper));
         assertThat(actual.executeUpdate(), is(10));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -169,7 +169,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeUpdate()).thenReturn(20);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Arrays.asList(wrapper1, wrapper2));
         assertThat(actual.executeUpdate(), is(30));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
@@ -190,7 +190,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Collections.singleton(wrapper));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement).executeUpdate();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -212,7 +212,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.executeUpdate()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Arrays.asList(wrapper1, wrapper2));
         assertThat(actual.executeUpdate(), is(0));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
@@ -232,7 +232,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         when(preparedStatement.execute()).thenReturn(false);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Collections.singleton(wrapper));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -253,7 +253,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.execute()).thenReturn(false);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Arrays.asList(wrapper1, wrapper2));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
@@ -274,7 +274,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDML(preparedStatement, "ds_0");
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Collections.singleton(wrapper));
         assertFalse(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -296,7 +296,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.execute()).thenThrow(exp);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, Arrays.asList(wrapper1, wrapper2));
         assertFalse(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
@@ -316,7 +316,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         PreparedStatementExecutorWrapper wrapper = createPreparedStatementExecutorWrapperForDQL(preparedStatement, "ds_0");
         when(preparedStatement.execute()).thenReturn(true);
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Collections.singleton(wrapper));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Collections.singleton(wrapper));
         assertTrue(actual.execute());
         verify(preparedStatement).execute();
         verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
@@ -337,7 +337,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement2.execute()).thenReturn(true);
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
-        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), Arrays.asList(wrapper1, wrapper2));
+        PreparedStatementExecutor actual = new PreparedStatementExecutor(getExecutorEngine(), SQLType.SELECT, Arrays.asList(wrapper1, wrapper2));
         assertTrue(actual.execute());
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
@@ -352,16 +352,16 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapperForDQL(final PreparedStatement preparedStatement, final String dataSource) {
-        return createPreparedStatementExecutorWrapper(SQLType.SELECT, preparedStatement, dataSource, "SELECT * FROM dual");
+        return createPreparedStatementExecutorWrapper(preparedStatement, dataSource, "SELECT * FROM dual");
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapperForDML(final PreparedStatement preparedStatement, final String dataSource) {
-        return createPreparedStatementExecutorWrapper(SQLType.DELETE, preparedStatement, dataSource, "DELETE FROM dual");
+        return createPreparedStatementExecutorWrapper(preparedStatement, dataSource, "DELETE FROM dual");
     }
     
-    private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final String dataSource, final String sql) {
+    private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final String dataSource, final String sql) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        return new PreparedStatementExecutorWrapper(sqlType, preparedStatement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
+        return new PreparedStatementExecutorWrapper(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())), preparedStatement);
     }
 }
