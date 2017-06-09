@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,8 @@ public final class PreparedStatementBatchExecutor {
     private final SQLType sqlType;
     
     private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
+    
+    private final List<List<Object>> parameterSets;
     
     /**
      * 执行批量接口.
@@ -93,16 +96,24 @@ public final class PreparedStatementBatchExecutor {
     private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedStatementExecutorWrapper.getSqlExecutionUnit());
-        ExecutionEventBus.getInstance().post(event);
+        List<AbstractExecutionEvent> events = new LinkedList<>();
+        for (List<Object> each : parameterSets) {
+            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedStatementExecutorWrapper.getSqlExecutionUnit(), each);
+            events.add(event);
+            ExecutionEventBus.getInstance().post(event);
+        }
         try {
             result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
         } catch (final SQLException ex) {
-            ExecutorUtils.handleException(event, ex);
+            for (AbstractExecutionEvent each : events) {
+                ExecutorUtils.handleException(each, ex);
+            }
             return null;
         }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        ExecutionEventBus.getInstance().post(event);
+        for (AbstractExecutionEvent each : events) {
+            each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+            ExecutionEventBus.getInstance().post(each);
+        }
         return result;
     }
 }
