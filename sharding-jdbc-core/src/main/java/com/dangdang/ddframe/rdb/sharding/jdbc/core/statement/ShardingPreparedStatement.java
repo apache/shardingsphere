@@ -209,7 +209,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             // TODO add batch parameters
             return wrapperOptional.get();
         }
-        PreparedStatementExecutorWrapper result = new PreparedStatementExecutorWrapper(getRouteResult().getSqlStatement().getType(), preparedStatement, sqlExecutionUnit);
+        PreparedStatementExecutorWrapper result = new PreparedStatementExecutorWrapper(sqlExecutionUnit, preparedStatement);
         cachedPreparedStatementWrappers.add(result);
         return result;
     }

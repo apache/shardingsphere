@@ -352,16 +352,16 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapperForDQL(final PreparedStatement preparedStatement, final String dataSource) {
-        return createPreparedStatementExecutorWrapper(SQLType.SELECT, preparedStatement, dataSource, "SELECT * FROM dual");
+        return createPreparedStatementExecutorWrapper(preparedStatement, dataSource, "SELECT * FROM dual");
     }
     
     private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapperForDML(final PreparedStatement preparedStatement, final String dataSource) {
-        return createPreparedStatementExecutorWrapper(SQLType.DELETE, preparedStatement, dataSource, "DELETE FROM dual");
+        return createPreparedStatementExecutorWrapper(preparedStatement, dataSource, "DELETE FROM dual");
     }
     
-    private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final SQLType sqlType, final PreparedStatement preparedStatement, final String dataSource, final String sql) {
+    private PreparedStatementExecutorWrapper createPreparedStatementExecutorWrapper(final PreparedStatement preparedStatement, final String dataSource, final String sql) {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals(sql);
-        return new PreparedStatementExecutorWrapper(sqlType, preparedStatement, new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())));
+        return new PreparedStatementExecutorWrapper(new SQLExecutionUnit(dataSource, sqlBuilder.toSQL(Collections.<String, String>emptyMap())), preparedStatement);
     }
 }
