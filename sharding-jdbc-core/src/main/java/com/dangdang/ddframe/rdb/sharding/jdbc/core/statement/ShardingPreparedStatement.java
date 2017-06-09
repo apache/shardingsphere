@@ -19,14 +19,13 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementBatchExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.PreparedStatementExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
+import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedBatchStatement;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
-import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
@@ -54,7 +53,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private final Map<SQLExecutionUnit, PreparedStatement> cachedPreparedStatements = new HashMap<>();
     
-    private final List<PreparedStatementExecutorWrapper> cachedPreparedStatementWrappers = new LinkedList<>();
+    private final List<PreparedBatchStatement> preparedBatchStatements = new LinkedList<>();
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
@@ -118,14 +117,14 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public void clearBatch() throws SQLException {
         setCurrentResultSet(null);
         clearParameters();
-        cachedPreparedStatementWrappers.clear();
+        preparedBatchStatements.clear();
         parameterSets.clear();
     }
     
     @Override
     public void addBatch() throws SQLException {
         try {
-            for (PreparedStatementExecutorWrapper each : routeSQLForBatch()) {
+            for (PreparedBatchStatement each : routeSQLForBatch()) {
                 each.getPreparedStatement().addBatch();
                 each.mapBatchIndex(parameterSets.size());
             }
@@ -140,7 +139,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public int[] executeBatch() throws SQLException {
         try {
             return new PreparedStatementBatchExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), cachedPreparedStatementWrappers, parameterSets).executeBatch();
+                    getRouteResult().getSqlStatement().getType(), preparedBatchStatements, parameterSets).executeBatch();
         } finally {
             clearBatch();
         }
@@ -158,11 +157,10 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         return result;
     }
     
-    private List<PreparedStatementExecutorWrapper> routeSQLForBatch() throws SQLException {
-        List<PreparedStatementExecutorWrapper> result = new ArrayList<>();
-        SQLRouteResult sqlRouteResult = routingEngine.route(getParameters());
-        setRouteResult(sqlRouteResult);
-        for (SQLExecutionUnit each : sqlRouteResult.getExecutionUnits()) {
+    private List<PreparedBatchStatement> routeSQLForBatch() throws SQLException {
+        List<PreparedBatchStatement> result = new ArrayList<>();
+        setRouteResult(routingEngine.route(getParameters()));
+        for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
             PreparedStatement preparedStatement = getStatementForBatch(each);
             replaySetParameter(preparedStatement);
             result.add(wrap(preparedStatement, each));
@@ -189,20 +187,19 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         return connection.prepareStatement(sqlExecutionUnit.getSql(), getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
     }
     
-    private PreparedStatementExecutorWrapper wrap(final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
-        Optional<PreparedStatementExecutorWrapper> wrapperOptional = Iterators.tryFind(cachedPreparedStatementWrappers.iterator(), new Predicate<PreparedStatementExecutorWrapper>() {
+    private PreparedBatchStatement wrap(final PreparedStatement preparedStatement, final SQLExecutionUnit sqlExecutionUnit) {
+        Optional<PreparedBatchStatement> preparedBatchStatement = Iterators.tryFind(preparedBatchStatements.iterator(), new Predicate<PreparedBatchStatement>() {
             
             @Override
-            public boolean apply(final PreparedStatementExecutorWrapper input) {
+            public boolean apply(final PreparedBatchStatement input) {
                 return Objects.equals(input.getPreparedStatement(), preparedStatement);
             }
         });
-        if (wrapperOptional.isPresent()) {
-            // TODO add batch parameters
-            return wrapperOptional.get();
+        if (preparedBatchStatement.isPresent()) {
+            return preparedBatchStatement.get();
         }
-        PreparedStatementExecutorWrapper result = new PreparedStatementExecutorWrapper(sqlExecutionUnit, preparedStatement);
-        cachedPreparedStatementWrappers.add(result);
+        PreparedBatchStatement result = new PreparedBatchStatement(sqlExecutionUnit, preparedStatement);
+        preparedBatchStatements.add(result);
         return result;
     }
 }

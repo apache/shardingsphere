@@ -24,8 +24,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 预编译语句对象的执行上下文.
@@ -34,13 +36,13 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreparedStatementExecutorWrapper {
+public final class PreparedBatchStatement {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     
     private final PreparedStatement preparedStatement;
     
-    private final List<Integer[]> batchIndexes = new ArrayList<>();
+    private final Map<Integer, List<Integer>> batchIndexes = new HashMap<>();
     
     @Getter(AccessLevel.NONE)
     private int batchIndex;
@@ -49,9 +51,12 @@ public final class PreparedStatementExecutorWrapper {
      * 映射批量执行索引.
      * 将{@linkplain ShardingPreparedStatement}批量执行索引映射为真实的{@linkplain PreparedStatement}批量执行索引.
      * 
-     * @param shardingBatchIndex 分片批量执行索引
+     * @param addBatchCount 分片批量执行索引
      */
-    public void mapBatchIndex(final int shardingBatchIndex) {
-        batchIndexes.add(new Integer[]{shardingBatchIndex, this.batchIndex++});
+    public void mapBatchIndex(final int addBatchCount) {
+        if (!batchIndexes.containsKey(addBatchCount)) {
+            batchIndexes.put(addBatchCount, new LinkedList<Integer>());
+        }
+        batchIndexes.get(addBatchCount).add(batchIndex++);
     }
 }

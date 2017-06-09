@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedStatementExecutorWrapper;
+import com.dangdang.ddframe.rdb.sharding.executor.wrapper.PreparedBatchStatement;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +44,7 @@ public final class PreparedStatementBatchExecutor {
     
     private final SQLType sqlType;
     
-    private final Collection<PreparedStatementExecutorWrapper> preparedStatementExecutorWrappers;
+    private final Collection<PreparedBatchStatement> preparedBatchStatements;
     
     private final List<List<Object>> parameterSets;
     
@@ -58,13 +58,13 @@ public final class PreparedStatementBatchExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementExecutorWrappers.size()) {
-                return executeBatchInternal(preparedStatementExecutorWrappers.iterator().next(), isExceptionThrown, dataMap);
+            if (1 == preparedBatchStatements.size()) {
+                return executeBatchInternal(preparedBatchStatements.iterator().next(), isExceptionThrown, dataMap);
             }
-            return executorEngine.execute(preparedStatementExecutorWrappers, new ExecuteUnit<PreparedStatementExecutorWrapper, int[]>() {
+            return executorEngine.execute(preparedBatchStatements, new ExecuteUnit<PreparedBatchStatement, int[]>() {
                 
                 @Override
-                public int[] execute(final PreparedStatementExecutorWrapper input) throws Exception {
+                public int[] execute(final PreparedBatchStatement input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
                         return executeBatchInternal(input, isExceptionThrown, dataMap);
                     }
@@ -77,12 +77,14 @@ public final class PreparedStatementBatchExecutor {
                         return new int[]{0};
                     }
                     int[] result = new int[parameterSets.size()];
-                    int i = 0;
-                    for (PreparedStatementExecutorWrapper each : preparedStatementExecutorWrappers) {
-                        for (Integer[] indexes : each.getBatchIndexes()) {
-                            result[indexes[0]] += results.get(i)[indexes[1]];
+                    int count = 0;
+                    for (PreparedBatchStatement each : preparedBatchStatements) {
+                        for (Map.Entry<Integer, List<Integer>> entry : each.getBatchIndexes().entrySet()) {
+                            for (int index : entry.getValue()) {
+                                result[entry.getKey()] += results.get(count)[index];
+                            }
                         }
-                        i++;
+                        count++;
                     }
                     return result;
                 }
@@ -92,17 +94,17 @@ public final class PreparedStatementBatchExecutor {
         }
     }
     
-    private int[] executeBatchInternal(final PreparedStatementExecutorWrapper batchPreparedStatementExecutorWrapper, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int[] executeBatchInternal(final PreparedBatchStatement batchPreparedBatchStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         List<AbstractExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : parameterSets) {
-            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedStatementExecutorWrapper.getSqlExecutionUnit(), each);
+            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedBatchStatement.getSqlExecutionUnit(), each);
             events.add(event);
             ExecutionEventBus.getInstance().post(event);
         }
         try {
-            result = batchPreparedStatementExecutorWrapper.getPreparedStatement().executeBatch();
+            result = batchPreparedBatchStatement.getPreparedStatement().executeBatch();
         } catch (final SQLException ex) {
             for (AbstractExecutionEvent each : events) {
                 ExecutorUtils.handleException(each, ex);
