@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.Getter;

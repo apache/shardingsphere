@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation;
 
 import org.junit.Test;
 

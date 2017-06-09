@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.JdbcMethodInvocation;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;

@@ -19,11 +19,11 @@ package com.dangdang.ddframe.rdb.sharding.jdbc;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ConnectionAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.DataSourceAdapterTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.JdbcMethodInvocationTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.JdbcMethodInvocationTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.PreparedStatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.ResultSetGetterAdapterTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.SetParameterMethodInvocationTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.SetParameterMethodInvocationTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.StatementAdapterTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnectionTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSourceTest;
