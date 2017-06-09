@@ -17,32 +17,20 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 /**
- * 事件总线工厂.
+ * DQL类SQL执行时事件.
  * 
  * @author gaohongtao
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutionEventBusFactory {
+public final class DQLExecutionEvent extends ExecutionEvent {
     
-    private static final ConcurrentHashMap<String, ExecutionEventBus> CONTAINER = new ConcurrentHashMap<>();
+    public DQLExecutionEvent(final String dataSource, final String sql) {
+        super(dataSource, sql);
+    }
     
-    /**
-     * 获取事件总线实例.
-     * 
-     * @param name 事件总线名称
-     * @return 事件总线实例
-     */
-    public static ExecutionEventBus getInstance(final String name) {
-        if (CONTAINER.containsKey(name)) {
-            return CONTAINER.get(name);
-        }
-        CONTAINER.putIfAbsent(name, new ExecutionEventBus());
-        return CONTAINER.get(name);
+    public DQLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
+        super(dataSource, sql, parameters);
     }
 }

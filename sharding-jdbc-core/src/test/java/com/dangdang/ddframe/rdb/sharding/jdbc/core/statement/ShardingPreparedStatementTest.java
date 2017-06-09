@@ -19,9 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -217,7 +217,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertAddBatch() throws SQLException {
-        DMLExecutionEventBus.register(new ExecutionEventListener() {
+        ExecutionEventBus.getInstance().register(new ExecutionEventListener() {
     
             private List<DMLExecutionEvent> beforeEvents = new ArrayList<>();
             
@@ -263,7 +263,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
                 assertThat(each, is(1));
             }
         } finally {
-            DMLExecutionEventBus.clearListener();
+            ExecutionEventBus.getInstance().clearListener();
         }
     }
     
@@ -397,7 +397,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             assertThat(result[1], is(0));
             assertThat(result[2], is(40));
         } finally {
-            DMLExecutionEventBus.clearListener();
+            ExecutionEventBus.getInstance().clearListener();
         }
     }
     

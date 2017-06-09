@@ -15,9 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.event.dml;
-
-import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
+package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 import java.util.List;
 

@@ -19,11 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dml.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dql.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -49,8 +52,6 @@ public final class StatementExecutor {
     private final SQLType sqlType;
     
     private final Map<SQLExecutionUnit, Statement> statements;
-    
-    private final EventPostman eventPostman = new EventPostman();
     
     /**
      * 执行SQL查询.
@@ -87,15 +88,18 @@ public final class StatementExecutor {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
-        eventPostman.post(event);
+        ExecutionEventBus.getInstance().post(event);
         try {
             result = statement.executeQuery(sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            eventPostman.postForExecuteFailure(event, ex);
+            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+            event.setException(Optional.of(ex));
+            ExecutionEventBus.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        eventPostman.postForExecuteSuccess(event);
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
     
@@ -185,15 +189,18 @@ public final class StatementExecutor {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
-        eventPostman.post(event);
+        ExecutionEventBus.getInstance().post(event);
         try {
             result = updater.executeUpdate(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            eventPostman.postForExecuteFailure(event, ex);
+            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+            event.setException(Optional.of(ex));
+            ExecutionEventBus.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return 0;
         }
-        eventPostman.postForExecuteSuccess(event);
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
     
@@ -271,15 +278,18 @@ public final class StatementExecutor {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
         ExecutionEvent event = getExecutionEvent(sqlExecutionUnit);
-        eventPostman.post(event);
+        ExecutionEventBus.getInstance().post(event);
         try {
             result = executor.execute(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
-            eventPostman.postForExecuteFailure(event, ex);
+            event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
+            event.setException(Optional.of(ex));
+            ExecutionEventBus.getInstance().post(event);
             ExecutorExceptionHandler.handleException(ex);
             return false;
         }
-        eventPostman.postForExecuteSuccess(event);
+        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
+        ExecutionEventBus.getInstance().post(event);
         return result;
     }
     

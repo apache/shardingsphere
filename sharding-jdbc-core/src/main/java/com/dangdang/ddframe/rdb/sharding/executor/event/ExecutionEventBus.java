@@ -18,7 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 import com.google.common.eventbus.EventBus;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,13 +27,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * 事件总线.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutionEventBus {
     
-    @Getter
+    private static final ExecutionEventBus INSTANCE = new ExecutionEventBus();
+    
     private final EventBus instance = new EventBus();
     
     private final ConcurrentHashMap<String, ExecutionEventListener> listeners = new ConcurrentHashMap<>();
+    
+    /**
+     * 获取事件总线实例.
+     * 
+     * @return 事件总线实例
+     */
+    public static ExecutionEventBus getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * SQL执行事件.
@@ -59,7 +72,7 @@ public final class ExecutionEventBus {
     /**
      * 清除监听器.
      */
-    public synchronized void clearListener() {
+    public void clearListener() {
         for (ExecutionEventListener each : listeners.values()) {
             instance.unregister(each);
         }

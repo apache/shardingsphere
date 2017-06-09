@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.dql.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.AllArgsConstructor;
