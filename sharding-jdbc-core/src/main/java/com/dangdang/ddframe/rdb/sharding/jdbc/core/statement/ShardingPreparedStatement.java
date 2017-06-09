@@ -86,7 +86,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
                     getRouteResult().getSqlStatement().getType(), preparedStatements).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
-            clearRouteContext();
+            clearBatch();
         }
         setCurrentResultSet(result);
         return result;
@@ -98,7 +98,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
             return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).executeUpdate();
         } finally {
-            clearRouteContext();
+            clearBatch();
         }
     }
     
@@ -108,13 +108,16 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSQL();
             return new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements).execute();
         } finally {
-            clearRouteContext();
+            clearBatch();
         }
     }
     
     @Override
     public void clearBatch() throws SQLException {
-        clearRouteContext();
+        setCurrentResultSet(null);
+        clearParameters();
+        cachedPreparedStatementWrappers.clear();
+        batchIndex = 0;
     }
     
     @Override
@@ -126,13 +129,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             }
             batchIndex++;
         } finally {
-            resetBatch();
+            setCurrentResultSet(null);
+            clearParameters();
         }
-    }
-    
-    private void resetBatch() throws SQLException {
-        setCurrentResultSet(null);
-        clearParameters();
     }
     
     @Override
@@ -141,14 +140,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
             return new PreparedStatementBatchExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), cachedPreparedStatementWrappers).executeBatch(batchIndex);
         } finally {
-            clearRouteContext();
+            clearBatch();
         }
-    }
-    
-    private void clearRouteContext() throws SQLException {
-        resetBatch();
-        cachedPreparedStatementWrappers.clear();
-        batchIndex = 0;
     }
     
     private Map<SQLExecutionUnit, PreparedStatement> routeSQL() throws SQLException {

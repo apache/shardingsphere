@@ -35,7 +35,6 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.SQLXML;
 import java.sql.Time;
@@ -113,7 +112,7 @@ public class ParameterizedAbstractPreparedStatementAdapterTest {
         Class<AbstractPreparedStatementAdapter> clazz = AbstractPreparedStatementAdapter.class;
         Field containerField = clazz.getDeclaredField("parameters");
         containerField.setAccessible(true);
-        ParameterList container = new ParameterList(PreparedStatement.class);
+        ParameterList container = new ParameterList();
         containerField.set(ps, container);
         clazz.getMethod(methodName, parameterClasses).invoke(ps, parameters);
         Field invocationListField = ParameterList.class.getDeclaredField("jdbcMethodInvocations");

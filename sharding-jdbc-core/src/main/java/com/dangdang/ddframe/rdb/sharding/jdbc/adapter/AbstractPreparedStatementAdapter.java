@@ -29,7 +29,6 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -49,7 +48,7 @@ import java.util.Calendar;
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
     @Getter
-    private final ParameterList parameters = new ParameterList(PreparedStatement.class);
+    private final ParameterList parameters = new ParameterList();
     
     protected AbstractPreparedStatementAdapter(final ShardingConnection shardingConnection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(shardingConnection, resultSetType, resultSetConcurrency, resultSetHoldability);

@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.PreparedStatement;
 import java.util.AbstractList;
 import java.util.ArrayList;
 
@@ -31,12 +32,10 @@ import java.util.ArrayList;
  * @author gaohongtao
  */
 @RequiredArgsConstructor
-public class ParameterList extends AbstractList<Object> {
+public final class ParameterList extends AbstractList<Object> {
     
     @Getter
     private final ArrayList<JdbcMethodInvocation> jdbcMethodInvocations = new ArrayList<>();
-    
-    private final Class<?> targetClass;
     
     /**
      * 使用索引记录方法调用.
@@ -46,14 +45,14 @@ public class ParameterList extends AbstractList<Object> {
      * @param argumentTypes 参数类型
      * @param arguments 参数
      */
-    public final void recordMethodInvocation(final int index, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+    public void recordMethodInvocation(final int index, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
         jdbcMethodInvocations.ensureCapacity(index);
         int max = jdbcMethodInvocations.size();
         while (max++ <= index - 1) {
             jdbcMethodInvocations.add(null);
         }
         try {
-            jdbcMethodInvocations.set(index - 1, new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+            jdbcMethodInvocations.set(index - 1, new JdbcMethodInvocation(PreparedStatement.class.getMethod(methodName, argumentTypes), arguments));
         } catch (final NoSuchMethodException ex) {
             throw new ShardingJdbcException(ex);
         }
@@ -64,7 +63,7 @@ public class ParameterList extends AbstractList<Object> {
      *
      * @param target 目标对象
      */
-    public final void replayMethodsInvocation(final Object target) {
+    public void replayMethodsInvocation(final Object target) {
         for (JdbcMethodInvocation each : jdbcMethodInvocations) {
             each.invoke(target);
         }
