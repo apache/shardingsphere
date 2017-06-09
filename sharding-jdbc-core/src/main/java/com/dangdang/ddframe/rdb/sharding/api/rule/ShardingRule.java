@@ -263,7 +263,7 @@ public final class ShardingRule {
     /**
      * 获取自增主键.
      *
-     * @return 自增列与主键映射表
+     * @return 生成的自增主键
      */
     public Number generateKey(final String tableName) {
         Optional<TableRule> tableRule = tryFindTableRule(tableName);
