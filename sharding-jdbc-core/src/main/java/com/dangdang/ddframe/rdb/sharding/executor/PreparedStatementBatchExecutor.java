@@ -79,10 +79,8 @@ public final class PreparedStatementBatchExecutor {
                     int[] result = new int[parameterSets.size()];
                     int count = 0;
                     for (PreparedBatchStatement each : preparedBatchStatements) {
-                        for (Map.Entry<Integer, List<Integer>> entry : each.getInnerBatchCounts().entrySet()) {
-                            for (int index : entry.getValue()) {
-                                result[entry.getKey()] += results.get(count)[index];
-                            }
+                        for (Map.Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
+                            result[entry.getKey()] += results.get(count)[entry.getValue()];
                         }
                         count++;
                     }

@@ -145,7 +145,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         try {
             for (PreparedBatchStatement each : routeBatch()) {
                 each.getPreparedStatement().addBatch();
-                each.mapBatchIndex(parameterSets.size());
+                each.mapAddBatchCount(parameterSets.size());
             }
             parameterSets.add(getParameters());
         } finally {

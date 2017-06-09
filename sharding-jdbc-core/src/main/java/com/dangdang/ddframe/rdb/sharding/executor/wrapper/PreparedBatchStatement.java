@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.wrapper;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,8 +24,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,21 +39,17 @@ public final class PreparedBatchStatement {
     
     private final PreparedStatement preparedStatement;
     
-    private final Map<Integer, List<Integer>> innerBatchCounts = new HashMap<>();
+    private final Map<Integer, Integer> outerAndInnerAddBatchCountMap = new HashMap<>();
     
     @Getter(AccessLevel.NONE)
-    private int innerBatchCount;
+    private int innerAddBatchCount;
     
     /**
-     * 映射批量执行索引.
-     * 将{@linkplain ShardingPreparedStatement}批量执行索引映射为真实的{@linkplain PreparedStatement}批量执行索引.
+     * 映射外部addBatch与内部addBatch的调用次数.
      * 
-     * @param addBatchCount 分片批量执行索引
+     * @param outerAddBatchCount 外部addBatch的调用次数
      */
-    public void mapBatchIndex(final int addBatchCount) {
-        if (!innerBatchCounts.containsKey(addBatchCount)) {
-            innerBatchCounts.put(addBatchCount, new LinkedList<Integer>());
-        }
-        innerBatchCounts.get(addBatchCount).add(innerBatchCount++);
+    public void mapAddBatchCount(final int outerAddBatchCount) {
+        outerAndInnerAddBatchCountMap.put(outerAddBatchCount, innerAddBatchCount++);
     }
 }
