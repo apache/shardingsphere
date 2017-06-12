@@ -86,21 +86,6 @@ public final class ExecutorEngine implements AutoCloseable {
         return result;
     }
     
-    /**
-     * 多线程执行任务并归并结果.
-     * 
-     * @param inputs 执行入参
-     * @param executeUnit 执行单元
-     * @param mergeUnit 合并结果单元
-     * @param <I> 入参类型
-     * @param <M> 中间结果类型
-     * @param <O> 最终结果类型
-     * @return 执行结果
-     */
-    public <I, M, O> O execute(final Collection<I> inputs, final ExecuteUnit<I, M> executeUnit, final MergeUnit<M, O> mergeUnit) {
-        return mergeUnit.merge(execute(inputs, executeUnit));
-    }
-    
     private <I, O> ListenableFuture<List<O>> asyncRun(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         List<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
         for (final I each : inputs) {

@@ -20,15 +20,14 @@ package com.dangdang.ddframe.rdb.sharding.executor.type;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.executor.MergeUnit;
-import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.PreparedStatement;
@@ -114,36 +113,24 @@ public final class PreparedStatementExecutor {
         try {
             if (1 == preparedStatements.size()) {
                 Map.Entry<SQLExecutionUnit, PreparedStatement> entry = preparedStatements.entrySet().iterator().next();
-                return executeUpdateInternal(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
+                return executeUpdate(entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
-            return executorEngine.execute(preparedStatements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, PreparedStatement>, Integer>() {
-        
+            List<Integer> results = executorEngine.execute(preparedStatements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, PreparedStatement>, Integer>() {
+                
                 @Override
                 public Integer execute(final Entry<SQLExecutionUnit, PreparedStatement> input) throws Exception {
                     synchronized (input.getValue().getConnection()) {
-                        return executeUpdateInternal(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
+                        return executeUpdate(input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
-                }
-            }, new MergeUnit<Integer, Integer>() {
-        
-                @Override
-                public Integer merge(final List<Integer> results) {
-                    if (null == results) {
-                        return 0;
-                    }
-                    int result = 0;
-                    for (Integer each : results) {
-                        result += each;
-                    }
-                    return result;
                 }
             });
+            return accumulate(results);
         } finally {
             MetricsContext.stop(context);
         }
     }
     
-    private int executeUpdateInternal(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdate(final SQLExecutionUnit sqlExecutionUnit, final PreparedStatement preparedStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit, parameters);
@@ -156,6 +143,14 @@ public final class PreparedStatementExecutor {
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
         EventBusInstance.getInstance().post(event);
+        return result;
+    }
+    
+    private int accumulate(final List<Integer> results) {
+        int result = 0;
+        for (int each : results) {
+            result += each;
+        }
         return result;
     }
     

@@ -20,14 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.executor.type;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.executor.MergeUnit;
-import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -35,6 +34,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 多线程执行预编译语句对象批量请求的执行器.
@@ -63,40 +63,24 @@ public final class PreparedStatementBatchExecutor {
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
             if (1 == preparedBatchStatements.size()) {
-                return executeBatchInternal(preparedBatchStatements.iterator().next(), isExceptionThrown, dataMap);
+                return executeBatch(preparedBatchStatements.iterator().next(), isExceptionThrown, dataMap);
             }
-            return executorEngine.execute(preparedBatchStatements, new ExecuteUnit<PreparedBatchStatement, int[]>() {
+            List<int[]> results = executorEngine.execute(preparedBatchStatements, new ExecuteUnit<PreparedBatchStatement, int[]>() {
                 
                 @Override
                 public int[] execute(final PreparedBatchStatement input) throws Exception {
                     synchronized (input.getPreparedStatement().getConnection()) {
-                        return executeBatchInternal(input, isExceptionThrown, dataMap);
+                        return executeBatch(input, isExceptionThrown, dataMap);
                     }
-                }
-            }, new MergeUnit<int[], int[]>() {
-                
-                @Override
-                public int[] merge(final List<int[]> results) {
-                    if (null == results) {
-                        return new int[]{0};
-                    }
-                    int[] result = new int[parameterSets.size()];
-                    int count = 0;
-                    for (PreparedBatchStatement each : preparedBatchStatements) {
-                        for (Map.Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
-                            result[entry.getKey()] += results.get(count)[entry.getValue()];
-                        }
-                        count++;
-                    }
-                    return result;
                 }
             });
+            return accumulate(results);
         } finally {
             MetricsContext.stop(context);
         }
     }
     
-    private int[] executeBatchInternal(final PreparedBatchStatement batchPreparedBatchStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int[] executeBatch(final PreparedBatchStatement batchPreparedBatchStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         List<AbstractExecutionEvent> events = new LinkedList<>();
@@ -116,6 +100,18 @@ public final class PreparedStatementBatchExecutor {
         for (AbstractExecutionEvent each : events) {
             each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
             EventBusInstance.getInstance().post(each);
+        }
+        return result;
+    }
+    
+    private int[] accumulate(final List<int[]> results) {
+        int[] result = new int[parameterSets.size()];
+        int count = 0;
+        for (PreparedBatchStatement each : preparedBatchStatements) {
+            for (Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
+                result[entry.getKey()] += results.get(count)[entry.getValue()];
+            }
+            count++;
         }
         return result;
     }

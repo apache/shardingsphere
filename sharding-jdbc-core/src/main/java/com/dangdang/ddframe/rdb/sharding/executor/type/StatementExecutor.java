@@ -20,15 +20,14 @@ package com.dangdang.ddframe.rdb.sharding.executor.type;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.executor.MergeUnit;
-import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -155,7 +154,7 @@ public final class StatementExecutor {
                 Entry<SQLExecutionUnit, Statement> entry = statements.entrySet().iterator().next();
                 return executeUpdate(updater, entry.getKey(), entry.getValue(), isExceptionThrown, dataMap);
             }
-            return executorEngine.execute(statements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, Statement>, Integer>() {
+            List<Integer> results = executorEngine.execute(statements.entrySet(), new ExecuteUnit<Entry<SQLExecutionUnit, Statement>, Integer>() {
                 
                 @Override
                 public Integer execute(final Entry<SQLExecutionUnit, Statement> input) throws Exception {
@@ -163,20 +162,8 @@ public final class StatementExecutor {
                         return executeUpdate(updater, input.getKey(), input.getValue(), isExceptionThrown, dataMap);
                     }
                 }
-            }, new MergeUnit<Integer, Integer>() {
-                
-                @Override
-                public Integer merge(final List<Integer> results) {
-                    if (null == results) {
-                        return 0;
-                    }
-                    int result = 0;
-                    for (int each : results) {
-                        result += each;
-                    }
-                    return result;
-                }
             });
+            return accumulate(results);
         } finally {
             MetricsContext.stop(context);
         }
@@ -195,6 +182,14 @@ public final class StatementExecutor {
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
         EventBusInstance.getInstance().post(event);
+        return result;
+    }
+    
+    private int accumulate(final List<Integer> results) {
+        int result = 0;
+        for (int each : results) {
+            result += each;
+        }
         return result;
     }
     
