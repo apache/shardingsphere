@@ -41,27 +41,27 @@ import java.util.Map;
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class ExecutorUtils {
+public final class ExecutorUtils {
     
-    static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit) {
+    public static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit) {
         return getExecutionEvent(sqlType, sqlExecutionUnit, Collections.emptyList());
     }
     
-    static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit, final List<Object> parameters) {
+    public static AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final SQLExecutionUnit sqlExecutionUnit, final List<Object> parameters) {
         if (SQLType.SELECT == sqlType) {
             return new DQLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql(), parameters);
         }
         return new DMLExecutionEvent(sqlExecutionUnit.getDataSource(), sqlExecutionUnit.getSql(), parameters);
     }
     
-    static void handleException(final AbstractExecutionEvent event, final SQLException cause) {
+    public static void handleException(final AbstractExecutionEvent event, final SQLException cause) {
         event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
         event.setException(Optional.of(cause));
         EventBusInstance.getInstance().post(event);
         ExecutorExceptionHandler.handleException(cause);
     }
     
-    static void setThreadLocalData(final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    public static void setThreadLocalData(final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         ExecutorDataMap.setDataMap(dataMap);
     }

@@ -17,9 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedStatementBatchExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedStatementExecutor;
-import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedBatchStatement;
+import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
@@ -35,10 +36,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -51,7 +51,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     private final PreparedStatementRoutingEngine routingEngine;
     
-    private final List<PreparedBatchStatement> preparedBatchStatements = new LinkedList<>();
+    private final List<BatchPreparedStatementUnit> batchStatementUnits = new LinkedList<>();
     
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
@@ -79,9 +79,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public ResultSet executeQuery() throws SQLException {
         ResultSet result;
         try {
-            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
             result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
+                    getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
             clearBatch();
         }
@@ -92,9 +92,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int executeUpdate() throws SQLException {
         try {
-            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
             return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).executeUpdate();
+                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeUpdate();
         } finally {
             clearBatch();
         }
@@ -103,22 +103,22 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public boolean execute() throws SQLException {
         try {
-            Map<SQLExecutionUnit, PreparedStatement> preparedStatements = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
             return new PreparedStatementExecutor(
-                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatements, getParameters()).execute();
+                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).execute();
         } finally {
             clearBatch();
         }
     }
     
-    private Map<SQLExecutionUnit, PreparedStatement> routeSingle() throws SQLException {
-        Map<SQLExecutionUnit, PreparedStatement> result = new HashMap<>();
+    private Collection<PreparedStatementUnit> routeSingle() throws SQLException {
+        Collection<PreparedStatementUnit> result = new LinkedList<>();
         setRouteResult(routingEngine.route(getParameters()));
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
             PreparedStatement preparedStatement = generatePreparedStatement(each);
             getRoutedStatements().add(preparedStatement);
             replaySetParameter(preparedStatement);
-            result.put(each, preparedStatement);
+            result.add(new PreparedStatementUnit(each, preparedStatement));
         }
         return result;
     }
@@ -136,15 +136,15 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public void clearBatch() throws SQLException {
         setCurrentResultSet(null);
         clearParameters();
-        preparedBatchStatements.clear();
+        batchStatementUnits.clear();
         parameterSets.clear();
     }
     
     @Override
     public void addBatch() throws SQLException {
         try {
-            for (PreparedBatchStatement each : routeBatch()) {
-                each.getPreparedStatement().addBatch();
+            for (BatchPreparedStatementUnit each : routeBatch()) {
+                each.getStatement().addBatch();
                 each.mapAddBatchCount(parameterSets.size());
             }
             parameterSets.add(getParameters());
@@ -157,37 +157,37 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new PreparedStatementBatchExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), preparedBatchStatements, parameterSets).executeBatch();
+            return new BatchPreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
+                    getRouteResult().getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
         } finally {
             clearBatch();
         }
     }
     
-    private List<PreparedBatchStatement> routeBatch() throws SQLException {
-        List<PreparedBatchStatement> result = new ArrayList<>();
+    private List<BatchPreparedStatementUnit> routeBatch() throws SQLException {
+        List<BatchPreparedStatementUnit> result = new ArrayList<>();
         setRouteResult(routingEngine.route(getParameters()));
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
-            PreparedBatchStatement preparedBatchStatement = getPreparedBatchStatement(each);
-            replaySetParameter(preparedBatchStatement.getPreparedStatement());
-            result.add(preparedBatchStatement);
+            BatchPreparedStatementUnit batchStatementUnit = getPreparedBatchStatement(each);
+            replaySetParameter(batchStatementUnit.getStatement());
+            result.add(batchStatementUnit);
         }
         return result;
     }
     
-    private PreparedBatchStatement getPreparedBatchStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
-        Optional<PreparedBatchStatement> preparedBatchStatement = Iterators.tryFind(preparedBatchStatements.iterator(), new Predicate<PreparedBatchStatement>() {
+    private BatchPreparedStatementUnit getPreparedBatchStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
+        Optional<BatchPreparedStatementUnit> preparedBatchStatement = Iterators.tryFind(batchStatementUnits.iterator(), new Predicate<BatchPreparedStatementUnit>() {
             
             @Override
-            public boolean apply(final PreparedBatchStatement input) {
+            public boolean apply(final BatchPreparedStatementUnit input) {
                 return Objects.equals(input.getSqlExecutionUnit(), sqlExecutionUnit);
             }
         });
         if (preparedBatchStatement.isPresent()) {
             return preparedBatchStatement.get();
         }
-        PreparedBatchStatement result = new PreparedBatchStatement(sqlExecutionUnit, generatePreparedStatement(sqlExecutionUnit));
-        preparedBatchStatements.add(result);
+        BatchPreparedStatementUnit result = new BatchPreparedStatementUnit(sqlExecutionUnit, generatePreparedStatement(sqlExecutionUnit));
+        batchStatementUnits.add(result);
         return result;
     }
 }

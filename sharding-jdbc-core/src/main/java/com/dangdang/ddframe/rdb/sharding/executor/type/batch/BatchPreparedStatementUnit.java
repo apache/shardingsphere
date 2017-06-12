@@ -15,8 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.type;
+package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
+import com.dangdang.ddframe.rdb.sharding.executor.type.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,11 +34,11 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PreparedBatchStatement {
+public final class BatchPreparedStatementUnit implements BaseStatementUnit {
     
     private final SQLExecutionUnit sqlExecutionUnit;
     
-    private final PreparedStatement preparedStatement;
+    private final PreparedStatement statement;
     
     private final Map<Integer, Integer> outerAndInnerAddBatchCountMap = new HashMap<>();
     

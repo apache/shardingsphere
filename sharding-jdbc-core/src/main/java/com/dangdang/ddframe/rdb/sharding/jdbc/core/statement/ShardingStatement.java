@@ -17,7 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
-import com.dangdang.ddframe.rdb.sharding.executor.type.StatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.statement.StatementExecutor;
+import com.dangdang.ddframe.rdb.sharding.executor.type.statement.StatementUnit;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -38,10 +39,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 支持分片的静态语句对象.
@@ -199,15 +198,15 @@ public class ShardingStatement extends AbstractStatementAdapter {
     private StatementExecutor generateExecutor(final String sql) throws SQLException {
         clearPrevious();
         routeResult = new StatementRoutingEngine(shardingConnection.getShardingContext()).route(sql);
-        Map<SQLExecutionUnit, Statement> statements = new HashMap<>(routeResult.getExecutionUnits().size(), 1);
+        Collection<StatementUnit> statementUnits = new LinkedList<>();
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             Statement statement = shardingConnection.getConnection(
                     each.getDataSource(), routeResult.getSqlStatement().getType()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             replayMethodsInvocation(statement);
-            statements.put(each, statement);
+            statementUnits.add(new StatementUnit(each, statement));
             routedStatements.add(statement);
         }
-        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statements);
+        return new StatementExecutor(shardingConnection.getShardingContext().getExecutorEngine(), routeResult.getSqlStatement().getType(), statementUnits);
     }
     
     private void clearPrevious() throws SQLException {

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.type;
+package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
 import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
+import com.dangdang.ddframe.rdb.sharding.executor.type.ExecutorUtils;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +43,13 @@ import java.util.Map.Entry;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class PreparedStatementBatchExecutor {
+public final class BatchPreparedStatementExecutor {
     
     private final ExecutorEngine executorEngine;
     
     private final SQLType sqlType;
     
-    private final Collection<PreparedBatchStatement> preparedBatchStatements;
+    private final Collection<BatchPreparedStatementUnit> batchStatementUnits;
     
     private final List<List<Object>> parameterSets;
     
@@ -62,14 +63,14 @@ public final class PreparedStatementBatchExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedBatchStatements.size()) {
-                return executeBatch(preparedBatchStatements.iterator().next(), isExceptionThrown, dataMap);
+            if (1 == batchStatementUnits.size()) {
+                return executeBatch(batchStatementUnits.iterator().next(), isExceptionThrown, dataMap);
             }
-            List<int[]> results = executorEngine.execute(preparedBatchStatements, new ExecuteUnit<PreparedBatchStatement, int[]>() {
+            List<int[]> results = executorEngine.execute(batchStatementUnits, new ExecuteUnit<BatchPreparedStatementUnit, int[]>() {
                 
                 @Override
-                public int[] execute(final PreparedBatchStatement input) throws Exception {
-                    synchronized (input.getPreparedStatement().getConnection()) {
+                public int[] execute(final BatchPreparedStatementUnit input) throws Exception {
+                    synchronized (input.getStatement().getConnection()) {
                         return executeBatch(input, isExceptionThrown, dataMap);
                     }
                 }
@@ -80,17 +81,17 @@ public final class PreparedStatementBatchExecutor {
         }
     }
     
-    private int[] executeBatch(final PreparedBatchStatement batchPreparedBatchStatement, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int[] executeBatch(final BatchPreparedStatementUnit batchBatchStatementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         List<AbstractExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : parameterSets) {
-            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedBatchStatement.getSqlExecutionUnit(), each);
+            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchBatchStatementUnit.getSqlExecutionUnit(), each);
             events.add(event);
             EventBusInstance.getInstance().post(event);
         }
         try {
-            result = batchPreparedBatchStatement.getPreparedStatement().executeBatch();
+            result = batchBatchStatementUnit.getStatement().executeBatch();
         } catch (final SQLException ex) {
             for (AbstractExecutionEvent each : events) {
                 ExecutorUtils.handleException(each, ex);
@@ -107,7 +108,7 @@ public final class PreparedStatementBatchExecutor {
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[parameterSets.size()];
         int count = 0;
-        for (PreparedBatchStatement each : preparedBatchStatements) {
+        for (BatchPreparedStatementUnit each : batchStatementUnits) {
             for (Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
                 result[entry.getKey()] += results.get(count)[entry.getValue()];
             }
