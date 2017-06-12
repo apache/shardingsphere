@@ -49,7 +49,7 @@ public class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends Abstrac
     @Test
     public void assertInsertWithAutoIncrementColumn() throws SQLException, DatabaseUnitException {
         try (Connection connection = getShardingDataSource().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(String.format(replacePreparedStatement(sql.getInsertWithAutoIncrementColumnSql())))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getInsertWithAutoIncrementColumnSql()))) {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
                 preparedStatement.setString(2, "insert");
@@ -87,7 +87,7 @@ public class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends Abstrac
         for (int i = 10; i < 30; i++) {
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(replacePreparedStatement(sql.getUpdateWithoutAliasSql())));
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getUpdateWithoutAliasSql()));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -146,7 +146,7 @@ public class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends Abstrac
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = getShardingDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement((sql.getDeleteWithoutShardingValueSql())));
+            PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getDeleteWithoutShardingValueSql()));
             preparedStatement.setString(1, "init");
             assertThat(preparedStatement.executeUpdate(), is(40));
         }
@@ -157,7 +157,7 @@ public class ShardingDatabaseOnlyForPreparedStatementWithDMLTest extends Abstrac
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i), 
                     getShardingDataSource().getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), 
-                    "t_order", String.format(sql.getAssertSelectWithStatusSql(), "?"), status);
+                    "t_order", replacePreparedStatement(sql.getAssertSelectWithStatusSql()), status);
         }
     }
 }

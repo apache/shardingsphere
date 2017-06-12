@@ -96,18 +96,20 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     
     @Test
     public void assertUpdateWithAlias() throws SQLException, DatabaseUnitException {
-        try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql.getUpdateWithAliasSql())) {
-            for (int i = 10; i < 12; i++) {
-                for (int j = 0; j < 10; j++) {
-                    preparedStatement.setString(1, "updated");
-                    preparedStatement.setInt(2, i * 100 + j);
-                    preparedStatement.setInt(3, i);
-                    assertThat(preparedStatement.executeUpdate(), is(1));
+        if (isAliasSupport()) {
+            try (Connection connection = shardingDataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql.getUpdateWithAliasSql())) {
+                for (int i = 10; i < 12; i++) {
+                    for (int j = 0; j < 10; j++) {
+                        preparedStatement.setString(1, "updated");
+                        preparedStatement.setInt(2, i * 100 + j);
+                        preparedStatement.setInt(3, i);
+                        assertThat(preparedStatement.executeUpdate(), is(1));
+                    }
                 }
             }
+            assertDataSet("update", "updated");
         }
-        assertDataSet("update", "updated");
     }
     
     @Test
@@ -152,7 +154,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern), 
                     shardingDataSource.getConnection().getConnection("dataSource_db_single", SQLType.SELECT), 
-                    String.format("t_order_%s", i), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", i), status);
+                    String.format("t_order_%s", i), String.format(sql.getAssertSelectShardingTablesWithStatusSql(), i), status);
         }
     }
 }
