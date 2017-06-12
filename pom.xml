@@ -32,6 +32,7 @@
         <springframework.version>4.1.1.RELEASE</springframework.version>
         <mysql-connector-java.version>5.1.30</mysql-connector-java.version>
         <h2.version>1.4.184</h2.version>
+        <oracle14.version>10.2.0.3.0</oracle14.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
         <junit.version>4.12</junit.version>
         <system-rules.version>1.16.0</system-rules.version>
@@ -187,6 +188,12 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc14</artifactId>
+                <version>${oracle14.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

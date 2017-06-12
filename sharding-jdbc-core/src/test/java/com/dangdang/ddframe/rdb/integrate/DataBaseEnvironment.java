@@ -35,6 +35,8 @@ public final class DataBaseEnvironment {
     
     private static final Map<DatabaseType, String> PASSWORD = new HashMap<>(INIT_CAPACITY);
     
+    private static final Map<DatabaseType, String> SCHEMA = new HashMap<>(INIT_CAPACITY);
+    
     @Getter
     private final DatabaseType databaseType;
     
@@ -48,16 +50,25 @@ public final class DataBaseEnvironment {
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
+        SCHEMA.put(DatabaseType.H2, null);
         
         DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class);
         URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
-    
+        SCHEMA.put(DatabaseType.MySQL, null);
+        
         DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class);
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
+        SCHEMA.put(DatabaseType.PostgreSQL, null);
+        
+        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, oracle.jdbc.driver.OracleDriver.class);
+        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:db_0");
+        USERNAME.put(DatabaseType.Oracle, "jdbc");
+        PASSWORD.put(DatabaseType.Oracle, "jdbc");
+        SCHEMA.put(DatabaseType.Oracle, "JDBC");
     }
     
     public String getDriverClassName() {
@@ -74,5 +85,9 @@ public final class DataBaseEnvironment {
     
     public String getPassword() {
         return PASSWORD.get(databaseType);
+    }
+    
+    public String getSchema() {
+        return SCHEMA.get(databaseType);
     }
 }

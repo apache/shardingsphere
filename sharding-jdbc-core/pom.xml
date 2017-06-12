@@ -47,6 +47,10 @@
             <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

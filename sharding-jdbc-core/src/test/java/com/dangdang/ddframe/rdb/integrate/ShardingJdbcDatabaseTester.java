@@ -22,6 +22,7 @@ import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
+import org.dbunit.ext.oracle.Oracle10DataTypeFactory;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
@@ -29,8 +30,8 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     private String driverClass;
     
     public ShardingJdbcDatabaseTester(final String driverClass, final String connectionUrl, final String username,
-            final String password) throws ClassNotFoundException {
-        super(driverClass, connectionUrl, username, password, null);
+            final String password, final String schema) throws ClassNotFoundException {
+        super(driverClass, connectionUrl, username, password, schema);
         this.driverClass = driverClass;
     }
     
@@ -38,12 +39,15 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     public IDatabaseConnection getConnection() throws Exception {
         IDatabaseConnection result = super.getConnection();
         result.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
+        result.getConfig().setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
         if (org.h2.Driver.class.getName().equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
         } else if (com.mysql.jdbc.Driver.class.getName().equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
         } else if (org.postgresql.Driver.class.getName().equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
+        } else if (oracle.jdbc.driver.OracleDriver.class.getName().equals(driverClass)) {
+            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
         }
         return result;
     }
