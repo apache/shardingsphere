@@ -80,7 +80,7 @@ public abstract class AbstractDBUnitTest {
         for (String each : getDataSetFiles()) {
             InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
             IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getFileName(each)), dbEnv.getUsername(), dbEnv.getPassword());
+            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getFileName(each)), dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema());
             databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
@@ -101,6 +101,7 @@ public abstract class AbstractDBUnitTest {
             case MySQL:
                 return new MySQLTestSQL();
             case PostgreSQL:
+            case Oracle:
                 return new PostgreSQLTestSQL();
             default:
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
@@ -177,7 +178,7 @@ public abstract class AbstractDBUnitTest {
             case PostgreSQL:
                 return new DatabaseConnection(connection);
             case Oracle:
-                return new OracleConnection(connection, "PUBLIC");
+                return new OracleConnection(connection, "JDBC");
             default: 
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }
