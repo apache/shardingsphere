@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingTablesOnlyForPStatementWithDMLTest extends AbstractShardingTablesOnlyDBUnitTest {
+public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends AbstractShardingTablesOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

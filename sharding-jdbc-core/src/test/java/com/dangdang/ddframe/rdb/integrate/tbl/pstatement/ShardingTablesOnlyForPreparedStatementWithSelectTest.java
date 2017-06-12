@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-public final class ShardingTablesOnlyForPStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
+public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     

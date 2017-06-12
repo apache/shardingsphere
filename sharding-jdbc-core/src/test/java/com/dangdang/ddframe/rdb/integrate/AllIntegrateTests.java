@@ -39,13 +39,7 @@ import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterS
 import com.dangdang.ddframe.rdb.integrate.masterslave.statement.ShardingMasterSlaveForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.statement.ShardingMasterSlaveForStatementWithSelectTest;
 import com.dangdang.ddframe.rdb.integrate.nullable.ShardingForNullableWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWihGroupByTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.pstatement.ShardingTablesOnlyForPStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithAggregateTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithDMLTest;
-import com.dangdang.ddframe.rdb.integrate.tbl.statement.ShardingTablesOnlyForStatementWithSelectTest;
+import com.dangdang.ddframe.rdb.integrate.tbl.AllShardingTablesOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -65,13 +59,7 @@ import org.junit.runners.Suite.SuiteClasses;
     DynamicShardingBothForStatementWithDMLTest.class,
     DynamicShardingBothForStatementWithSelectTest.class, 
     AllShardingDatabaseOnlyTests.class, 
-    ShardingTablesOnlyForPStatementWithSelectTest.class, 
-    ShardingTablesOnlyForPStatementWithAggregateTest.class, 
-    ShardingTablesOnlyForPStatementWihGroupByTest.class, 
-    ShardingTablesOnlyForPStatementWithDMLTest.class, 
-    ShardingTablesOnlyForStatementWithSelectTest.class, 
-    ShardingTablesOnlyForStatementWithAggregateTest.class, 
-    ShardingTablesOnlyForStatementWithDMLTest.class, 
+    AllShardingTablesOnlyTests.class, 
     ShardingDataBasesOnlyWithHintForDMLTest.class, 
     ShardingDataBasesOnlyWithHintForSelectTest.class, 
     ShardingForNullableWithAggregateTest.class, 
