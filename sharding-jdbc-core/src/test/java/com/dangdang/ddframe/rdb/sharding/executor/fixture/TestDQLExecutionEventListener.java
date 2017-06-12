@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -31,12 +30,6 @@ public final class TestDQLExecutionEventListener {
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DQLExecutionEvent event) {
-        eventCaller.verifyDataSource(event.getDataSource());
-        eventCaller.verifySQL(event.getSql());
-        eventCaller.verifyParameters(event.getParameters());
-        eventCaller.verifyEventExecutionType(event.getEventExecutionType());
-        if (EventExecutionType.EXECUTE_FAILURE.equals(event.getEventExecutionType()) && event.getException().isPresent()) {
-            eventCaller.verifyException(event.getException().get());
-        }
+        ExecutorTestUtil.listen(eventCaller, event);
     }
 }

@@ -254,7 +254,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
                 assertThat(each, is(1));
             }
         } finally {
-            EventBusInstance.getInstance().clear();
+            EventBusInstance.getInstance().unregister(listener);
         }
     }
     
@@ -387,8 +387,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             assertThat(result[0], is(40));
             assertThat(result[1], is(0));
             assertThat(result[2], is(40));
-        } finally {
-            EventBusInstance.getInstance().clear();
         }
     }
     

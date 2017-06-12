@@ -39,19 +39,26 @@ public abstract class AbstractBaseExecutorTest {
     @Mock
     private EventCaller eventCaller;
     
+    private TestDQLExecutionEventListener dqlExecutionEventListener;
+    
+    private TestDMLExecutionEventListener dmlExecutionEventListener;
+    
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
-        EventBusInstance.getInstance().register(new TestDQLExecutionEventListener(eventCaller));
-        EventBusInstance.getInstance().register(new TestDMLExecutionEventListener(eventCaller));
+        dqlExecutionEventListener = new TestDQLExecutionEventListener(eventCaller);
+        dmlExecutionEventListener = new TestDMLExecutionEventListener(eventCaller);
+        EventBusInstance.getInstance().register(dqlExecutionEventListener);
+        EventBusInstance.getInstance().register(dmlExecutionEventListener);
     }
     
     @After
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
         ExecutorTestUtil.clear();
-        EventBusInstance.getInstance().clear();
+        EventBusInstance.getInstance().unregister(dqlExecutionEventListener);
+        EventBusInstance.getInstance().unregister(dmlExecutionEventListener);
         executorEngine.close();
     }
 }

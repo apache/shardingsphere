@@ -21,9 +21,6 @@ import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * 事件总线.
  * 
@@ -32,50 +29,14 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventBusInstance {
     
-    private static final EventBusInstance INSTANCE = new EventBusInstance();
-    
-    private final EventBus instance = new EventBus();
-    
-    private final Set<Object> listeners = new HashSet<>();
+    private static final EventBus INSTANCE = new EventBus();
     
     /**
      * 获取事件总线实例.
      * 
      * @return 事件总线实例
      */
-    public static EventBusInstance getInstance() {
+    public static EventBus getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * 投递事件.
-     *
-     * @param event 事件
-     */
-    public void post(final Object event) {
-        if (!listeners.isEmpty()) {
-            instance.post(event);
-        }
-    }
-    
-    /**
-     * 注册事件监听器.
-     *
-     * @param listener 事件监听器
-     */
-    public synchronized void register(final Object listener) {
-        if (listeners.add(listener)) {
-            instance.register(listener);
-        }
-    }
-    
-    /**
-     * 清除事件监听器.
-     */
-    public synchronized void clear() {
-        for (Object each : listeners) {
-            instance.unregister(each);
-        }
-        listeners.clear();
     }
 }
