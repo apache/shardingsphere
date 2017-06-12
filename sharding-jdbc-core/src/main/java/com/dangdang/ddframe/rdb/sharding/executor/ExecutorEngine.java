@@ -55,8 +55,11 @@ public final class ExecutorEngine implements AutoCloseable {
     
     /**
      * 多线程执行任务.
-     * 一组任务中,将第一个任务放在当前线程中执行,其余的任务放到线程池中运行.
      * 
+     * <p>
+     * 一组任务中, 将第一个任务放在当前线程执行, 其余的任务放到线程池中运行.
+     * </p>
+     *  
      * @param inputs 输入参数
      * @param executeUnit 执行单元
      * @param <I> 入参类型
@@ -64,17 +67,17 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return 执行结果
      */
     public <I, O> List<O> execute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
-        Iterator<I> iterator = inputs.iterator();
-        if (!iterator.hasNext()) {
+        if (inputs.isEmpty()) {
             return Collections.emptyList();
         }
+        Iterator<I> iterator = inputs.iterator();
         I firstInput = iterator.next();
-        ListenableFuture<List<O>> restListFuture = asyncRun(Lists.newArrayList(iterator), executeUnit);
+        ListenableFuture<List<O>> restFutures = asyncExecute(Lists.newArrayList(iterator), executeUnit);
         O firstOutput;
         List<O> restOutputs;
         try {
-            firstOutput = executeUnit.execute(firstInput);
-            restOutputs = restListFuture.get();
+            firstOutput = syncExecute(firstInput, executeUnit);
+            restOutputs = restFutures.get();
             //CHECKSTYLE:OFF
         } catch (final Exception ex) {
             //CHECKSTYLE:ON
@@ -86,7 +89,7 @@ public final class ExecutorEngine implements AutoCloseable {
         return result;
     }
     
-    private <I, O> ListenableFuture<List<O>> asyncRun(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
+    private <I, O> ListenableFuture<List<O>> asyncExecute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
         List<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
         for (final I each : inputs) {
             result.add(executorService.submit(new Callable<O>() {
@@ -98,6 +101,10 @@ public final class ExecutorEngine implements AutoCloseable {
             }));
         }
         return Futures.allAsList(result);
+    }
+    
+    private <I, O> O syncExecute(final I input, final ExecuteUnit<I, O> executeUnit) throws Exception {
+        return executeUnit.execute(input);
     }
     
     @Override
