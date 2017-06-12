@@ -61,6 +61,8 @@ public interface DatabaseTestSQL {
     
     String getAssertSelectWithStatusSql();
     
+    String getAssertSelectShardingTablesWithStatusSql();
+    
     String getSelectSumWithGroupBySql();
     
     String getSelectSumWithOrderByAndGroupBySql();

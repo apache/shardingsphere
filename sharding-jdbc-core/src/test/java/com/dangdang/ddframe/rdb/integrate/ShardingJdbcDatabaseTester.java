@@ -40,13 +40,13 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
         IDatabaseConnection result = super.getConnection();
         result.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
         result.getConfig().setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
-        if (org.h2.Driver.class.getName().equals(driverClass)) {
+        if ("org.h2.Driver".equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
-        } else if (com.mysql.jdbc.Driver.class.getName().equals(driverClass)) {
+        } else if ("com.mysql.jdbc.Driver".equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
-        } else if (org.postgresql.Driver.class.getName().equals(driverClass)) {
+        } else if ("org.postgresql.Driver".equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
-        } else if (oracle.jdbc.driver.OracleDriver.class.getName().equals(driverClass)) {
+        } else if ("oracle.jdbc.driver.OracleDriver".equals(driverClass)) {
             result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
         }
         return result;

@@ -25,9 +25,9 @@ import java.util.Map;
 
 public final class DataBaseEnvironment {
     
-    private static final int INIT_CAPACITY = 3;
+    private static final int INIT_CAPACITY = 4;
     
-    private static final Map<DatabaseType, Class<?>> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY);
+    private static final Map<DatabaseType, String> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY);
     
     private static final Map<DatabaseType, String> URL = new HashMap<>(INIT_CAPACITY);
     
@@ -46,25 +46,25 @@ public final class DataBaseEnvironment {
     }
     
     private void fillData() {
-        DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class);
+        DRIVER_CLASS_NAME.put(DatabaseType.H2, "org.h2.Driver");
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
         SCHEMA.put(DatabaseType.H2, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class);
+        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, "com.mysql.jdbc.Driver");
         URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class);
+        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver.class");
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
         SCHEMA.put(DatabaseType.PostgreSQL, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, oracle.jdbc.driver.OracleDriver.class);
+        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
         URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:db_0");
         USERNAME.put(DatabaseType.Oracle, "jdbc");
         PASSWORD.put(DatabaseType.Oracle, "jdbc");
@@ -72,7 +72,7 @@ public final class DataBaseEnvironment {
     }
     
     public String getDriverClassName() {
-        return DRIVER_CLASS_NAME.get(databaseType).getName();
+        return DRIVER_CLASS_NAME.get(databaseType);
     }
     
     public String getURL(final String dbName) {

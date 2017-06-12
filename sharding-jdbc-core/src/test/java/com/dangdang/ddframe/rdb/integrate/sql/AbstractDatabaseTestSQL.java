@@ -62,6 +62,8 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     
     private static final String ASSERT_SELECT_WITH_STATUS_SQL = "SELECT * FROM t_order WHERE status = %s";
     
+    private static final String ASSERT_SELECT_SHARDING_TABLES_WITH_STATUS_SQL = "SELECT * FROM t_order_%s WHERE status = ?";
+    
     private static final String SELECT_SUM_WITH_GROUP_BY_SQL = "SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id";
     
     private static final String SELECT_SUM_WITH_ORDER_BY_AND_GROUP_BY_SQL = "SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id";
@@ -205,6 +207,11 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getAssertSelectWithStatusSql() {
         return ASSERT_SELECT_WITH_STATUS_SQL;
+    }
+    
+    @Override
+    public String getAssertSelectShardingTablesWithStatusSql() {
+        return ASSERT_SELECT_SHARDING_TABLES_WITH_STATUS_SQL;
     }
     
     @Override
