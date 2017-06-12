@@ -96,6 +96,9 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     private static final String SELECT_GROUP_WITH_BINDING_TABLE_SQL = "SELECT count(*) as items_count, o.`user_id` FROM `t_order` o JOIN `t_order_item` i " 
             + "ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
     
+    private static final String SELECT_GROUP_WITH_BINDING_TABLE_AND_CONFIG_SQL = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id "
+            + "JOIN `t_config` c ON o.status = c.status WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id";
+    
     private static final String SELECT_GROUP_WITHOUT_GROUPED_COLUMN_SQL = "SELECT count(*) as items_count FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
     
@@ -274,6 +277,11 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectGroupWithBindingTableSql() {
         return SELECT_GROUP_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectGroupWithBindingTableAndConfigSql() {
+        return SELECT_GROUP_WITH_BINDING_TABLE_AND_CONFIG_SQL;
     }
     
     @Override

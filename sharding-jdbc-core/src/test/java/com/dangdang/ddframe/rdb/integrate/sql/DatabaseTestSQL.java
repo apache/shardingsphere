@@ -89,6 +89,8 @@ public interface DatabaseTestSQL {
     
     String getSelectGroupWithBindingTableSql();
     
+    String getSelectGroupWithBindingTableAndConfigSql();
+    
     String getSelectGroupWithoutGroupedColumnSql();
     
     String getSelectWithNoShardingTableSql();
