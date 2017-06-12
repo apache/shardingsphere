@@ -18,8 +18,7 @@
 package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -43,7 +42,7 @@ import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactio
  * @author zhangliang
  */
 @Slf4j
-public final class BestEffortsDeliveryListener implements ExecutionEventListener {
+public final class BestEffortsDeliveryListener {
     
     @Subscribe
     @AllowConcurrentEvents
@@ -129,10 +128,5 @@ public final class BestEffortsDeliveryListener implements ExecutionEventListener
                 log.error("Connection closed error:", ex);
             }
         }
-    }
-    
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 }

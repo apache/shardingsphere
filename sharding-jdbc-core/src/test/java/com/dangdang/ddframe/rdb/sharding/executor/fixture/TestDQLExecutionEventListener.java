@@ -17,22 +17,16 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public final class TestDQLExecutionEventListener implements ExecutionEventListener {
+public final class TestDQLExecutionEventListener {
     
     private final EventCaller eventCaller;
-    
-    @Override
-    public String getName() {
-        return "test_listener" + System.nanoTime();
-    }
     
     @Subscribe
     @AllowConcurrentEvents

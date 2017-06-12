@@ -20,11 +20,11 @@ package com.dangdang.ddframe.rdb.sharding.executor.type;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.AbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.DQLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.DQLExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -57,7 +57,7 @@ final class ExecutorUtils {
     static void handleException(final AbstractExecutionEvent event, final SQLException cause) {
         event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
         event.setException(Optional.of(cause));
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         ExecutorExceptionHandler.handleException(cause);
     }
     

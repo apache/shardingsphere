@@ -18,12 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.executor.type;
 
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventBus;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.EventCaller;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.ExecutorTestUtil;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDMLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.fixture.TestDQLExecutionEventListener;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;
@@ -44,14 +44,14 @@ public abstract class AbstractBaseExecutorTest {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
-        ExecutionEventBus.getInstance().register(new TestDMLExecutionEventListener(eventCaller));
-        ExecutionEventBus.getInstance().register(new TestDQLExecutionEventListener(eventCaller));
+        EventBusInstance.getInstance().register(new TestDQLExecutionEventListener(eventCaller));
+        EventBusInstance.getInstance().register(new TestDMLExecutionEventListener(eventCaller));
     }
     
     @After
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
         ExecutorTestUtil.clear();
-        ExecutionEventBus.getInstance().clearListener();
+        EventBusInstance.getInstance().clear();
         executorEngine.close();
     }
 }

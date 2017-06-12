@@ -15,45 +15,44 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.eventbus;
+package com.dangdang.ddframe.rdb.sharding.util;
 
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.AbstractExecutionEvent;
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 事件总线.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutionEventBus {
+public final class EventBusInstance {
     
-    private static final ExecutionEventBus INSTANCE = new ExecutionEventBus();
+    private static final EventBusInstance INSTANCE = new EventBusInstance();
     
     private final EventBus instance = new EventBus();
     
-    private final ConcurrentHashMap<String, ExecutionEventListener> listeners = new ConcurrentHashMap<>();
+    private final Set<Object> listeners = new HashSet<>();
     
     /**
      * 获取事件总线实例.
      * 
      * @return 事件总线实例
      */
-    public static ExecutionEventBus getInstance() {
+    public static EventBusInstance getInstance() {
         return INSTANCE;
     }
     
     /**
-     * SQL执行事件.
+     * 投递事件.
      *
-     * @param event SQL执行事件
+     * @param event 事件
      */
-    public void post(final AbstractExecutionEvent event) {
+    public void post(final Object event) {
         if (!listeners.isEmpty()) {
             instance.post(event);
         }
@@ -62,19 +61,19 @@ public final class ExecutionEventBus {
     /**
      * 注册事件监听器.
      *
-     * @param listener SQL执行事件监听器
+     * @param listener 事件监听器
      */
-    public void register(final ExecutionEventListener listener) {
-        if (null == listeners.putIfAbsent(listener.getName(), listener)) {
+    public synchronized void register(final Object listener) {
+        if (listeners.add(listener)) {
             instance.register(listener);
         }
     }
     
     /**
-     * 清除监听器.
+     * 清除事件监听器.
      */
-    public void clearListener() {
-        for (ExecutionEventListener each : listeners.values()) {
+    public synchronized void clear() {
+        for (Object each : listeners) {
             instance.unregister(each);
         }
         listeners.clear();

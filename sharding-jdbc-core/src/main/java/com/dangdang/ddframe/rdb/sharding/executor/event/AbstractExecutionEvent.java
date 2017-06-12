@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.eventbus.event;
+package com.dangdang.ddframe.rdb.sharding.executor.event;
 
 import com.google.common.base.Optional;
 import lombok.Getter;

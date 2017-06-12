@@ -24,9 +24,9 @@ import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.executor.MergeUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.AbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
 
@@ -103,7 +103,7 @@ public final class PreparedStatementBatchExecutor {
         for (List<Object> each : parameterSets) {
             AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedBatchStatement.getSqlExecutionUnit(), each);
             events.add(event);
-            ExecutionEventBus.getInstance().post(event);
+            EventBusInstance.getInstance().post(event);
         }
         try {
             result = batchPreparedBatchStatement.getPreparedStatement().executeBatch();
@@ -115,7 +115,7 @@ public final class PreparedStatementBatchExecutor {
         }
         for (AbstractExecutionEvent each : events) {
             each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            ExecutionEventBus.getInstance().post(each);
+            EventBusInstance.getInstance().post(each);
         }
         return result;
     }

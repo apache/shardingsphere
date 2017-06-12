@@ -24,9 +24,9 @@ import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.executor.MergeUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.ExecutionEventBus;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.AbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.eventbus.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +89,7 @@ public final class StatementExecutor {
         ResultSet result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         try {
             result = statement.executeQuery(sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
@@ -97,7 +97,7 @@ public final class StatementExecutor {
             return null;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         return result;
     }
     
@@ -186,7 +186,7 @@ public final class StatementExecutor {
         int result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         try {
             result = updater.executeUpdate(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
@@ -194,7 +194,7 @@ public final class StatementExecutor {
             return 0;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         return result;
     }
     
@@ -271,7 +271,7 @@ public final class StatementExecutor {
         boolean result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, sqlExecutionUnit);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         try {
             result = executor.execute(statement, sqlExecutionUnit.getSql());
         } catch (final SQLException ex) {
@@ -279,7 +279,7 @@ public final class StatementExecutor {
             return false;
         }
         event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        ExecutionEventBus.getInstance().post(event);
+        EventBusInstance.getInstance().post(event);
         return result;
     }
     
