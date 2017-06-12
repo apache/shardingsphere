@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 
 public final class ShardingTablesOnlyForStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
@@ -65,12 +66,14 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectLimitWithBindingTable.xml"
-                : "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
-        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
-        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
+        if (!Oracle.name().equalsIgnoreCase(currentDbType())) {
+            String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectLimitWithBindingTable.xml"
+                    : "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
+            assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
+                    "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
+            assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
+                    "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
+        }
     }
     
     @Test
@@ -83,7 +86,9 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml", shardingDataSource.getConnection(),
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
+                : "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
+        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithoutGroupedColumnSql(), 10, 11, 1000, 1109));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithoutGroupedColumnSql(), 1, 9, 1000, 1909));
@@ -91,7 +96,9 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml", shardingDataSource.getConnection(),
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
+                : "integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml";
+        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'init'"));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'none'"));

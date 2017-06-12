@@ -58,7 +58,7 @@ public final class DataBaseEnvironment {
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver.class");
+        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver");
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
