@@ -60,21 +60,20 @@ public final class ExecutorEngine implements AutoCloseable {
      * 一组任务中, 将第一个任务放在当前线程执行, 其余的任务放到线程池中运行.
      * </p>
      *  
-     * @param inputs 输入参数
+     * @param baseStatementUnits 输入参数
      * @param executeUnit 执行单元
-     * @param <I> 入参类型
-     * @param <O> 出参类型
+     * @param <T> 返回值类型
      * @return 执行结果
      */
-    public <I, O> List<O> execute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
-        if (inputs.isEmpty()) {
+    public <T> List<T> execute(final Collection<? extends BaseStatementUnit> baseStatementUnits, final ExecuteUnit<T> executeUnit) {
+        if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
-        Iterator<I> iterator = inputs.iterator();
-        I firstInput = iterator.next();
-        ListenableFuture<List<O>> restFutures = asyncExecute(Lists.newArrayList(iterator), executeUnit);
-        O firstOutput;
-        List<O> restOutputs;
+        Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
+        BaseStatementUnit firstInput = iterator.next();
+        ListenableFuture<List<T>> restFutures = asyncExecute(Lists.newArrayList(iterator), executeUnit);
+        T firstOutput;
+        List<T> restOutputs;
         try {
             firstOutput = syncExecute(firstInput, executeUnit);
             restOutputs = restFutures.get();
@@ -84,18 +83,18 @@ public final class ExecutorEngine implements AutoCloseable {
             ExecutorExceptionHandler.handleException(ex);
             return null;
         }
-        List<O> result = Lists.newLinkedList(restOutputs);
+        List<T> result = Lists.newLinkedList(restOutputs);
         result.add(0, firstOutput);
         return result;
     }
     
-    private <I, O> ListenableFuture<List<O>> asyncExecute(final Collection<I> inputs, final ExecuteUnit<I, O> executeUnit) {
-        List<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
-        for (final I each : inputs) {
-            result.add(executorService.submit(new Callable<O>() {
+    private <T> ListenableFuture<List<T>> asyncExecute(final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteUnit<T> executeUnit) {
+        List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
+        for (final BaseStatementUnit each : baseStatementUnits) {
+            result.add(executorService.submit(new Callable<T>() {
                 
                 @Override
-                public O call() throws Exception {
+                public T call() throws Exception {
                     return executeUnit.execute(each);
                 }
             }));
@@ -103,8 +102,8 @@ public final class ExecutorEngine implements AutoCloseable {
         return Futures.allAsList(result);
     }
     
-    private <I, O> O syncExecute(final I input, final ExecuteUnit<I, O> executeUnit) throws Exception {
-        return executeUnit.execute(input);
+    private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit) throws Exception {
+        return executeUnit.execute(baseStatementUnit);
     }
     
     @Override

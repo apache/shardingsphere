@@ -20,19 +20,19 @@ package com.dangdang.ddframe.rdb.sharding.executor;
 /**
  * 执行单元.
  * 
- * @param <I> 入参类型
- * @param <O> 出参类型
+ * @param <T> 返回值类型
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
-public interface ExecuteUnit<I, O> {
+public interface ExecuteUnit<T> {
     
     /**
      * 执行任务.
      * 
-     * @param input 输入待处理数据
-     * @return 返回处理结果
+     * @param baseStatementUnit 语句对象执行单元
+     * @return 处理结果
      * @throws Exception 执行期异常
      */
-    O execute(I input) throws Exception;
+    T execute(BaseStatementUnit baseStatementUnit) throws Exception;
 }

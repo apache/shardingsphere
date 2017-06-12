@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
@@ -66,12 +67,12 @@ public final class BatchPreparedStatementExecutor {
             if (1 == batchStatementUnits.size()) {
                 return executeBatch(batchStatementUnits.iterator().next(), isExceptionThrown, dataMap);
             }
-            List<int[]> results = executorEngine.execute(batchStatementUnits, new ExecuteUnit<BatchPreparedStatementUnit, int[]>() {
+            List<int[]> results = executorEngine.execute(batchStatementUnits, new ExecuteUnit<int[]>() {
                 
                 @Override
-                public int[] execute(final BatchPreparedStatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return executeBatch(input, isExceptionThrown, dataMap);
+                public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return executeBatch(baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -81,17 +82,17 @@ public final class BatchPreparedStatementExecutor {
         }
     }
     
-    private int[] executeBatch(final BatchPreparedStatementUnit batchBatchStatementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int[] executeBatch(final BaseStatementUnit batchPreparedStatementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int[] result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         List<AbstractExecutionEvent> events = new LinkedList<>();
         for (List<Object> each : parameterSets) {
-            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchBatchStatementUnit.getSqlExecutionUnit(), each);
+            AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, batchPreparedStatementUnit.getSqlExecutionUnit(), each);
             events.add(event);
             EventBusInstance.getInstance().post(event);
         }
         try {
-            result = batchBatchStatementUnit.getStatement().executeBatch();
+            result = batchPreparedStatementUnit.getStatement().executeBatch();
         } catch (final SQLException ex) {
             for (AbstractExecutionEvent each : events) {
                 ExecutorUtils.handleException(each, ex);

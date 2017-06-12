@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.type.statement;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
@@ -69,12 +70,12 @@ public final class StatementExecutor {
                 StatementUnit statementUnit = statementUnits.iterator().next();
                 return Collections.singletonList(executeQuery(statementUnit, isExceptionThrown, dataMap));
             }
-            result = executorEngine.execute(statementUnits, new ExecuteUnit<StatementUnit, ResultSet>() {
+            result = executorEngine.execute(statementUnits, new ExecuteUnit<ResultSet>() {
                 
                 @Override
-                public ResultSet execute(final StatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return executeQuery(input, isExceptionThrown, dataMap);
+                public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return executeQuery(baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -84,7 +85,7 @@ public final class StatementExecutor {
         return result;
     }
     
-    private ResultSet executeQuery(final StatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private ResultSet executeQuery(final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         ResultSet result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());
@@ -154,12 +155,12 @@ public final class StatementExecutor {
                 StatementUnit statementUnit = statementUnits.iterator().next();
                 return executeUpdate(updater, statementUnit, isExceptionThrown, dataMap);
             }
-            List<Integer> results = executorEngine.execute(statementUnits, new ExecuteUnit<StatementUnit, Integer>() {
+            List<Integer> results = executorEngine.execute(statementUnits, new ExecuteUnit<Integer>() {
                 
                 @Override
-                public Integer execute(final StatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return executeUpdate(updater, input, isExceptionThrown, dataMap);
+                public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return executeUpdate(updater, baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -169,7 +170,7 @@ public final class StatementExecutor {
         }
     }
     
-    private int executeUpdate(final Updater updater, final StatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private int executeUpdate(final Updater updater, final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         int result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());
@@ -247,12 +248,12 @@ public final class StatementExecutor {
                 StatementUnit statementUnit = statementUnits.iterator().next();
                 return execute(executor, statementUnit, isExceptionThrown, dataMap);
             }
-            List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteUnit<StatementUnit, Boolean>() {
+            List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteUnit<Boolean>() {
         
                 @Override
-                public Boolean execute(final StatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return StatementExecutor.this.execute(executor, input, isExceptionThrown, dataMap);
+                public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return StatementExecutor.this.execute(executor, baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -262,7 +263,7 @@ public final class StatementExecutor {
         }
     }
     
-    private boolean execute(final Executor executor, final StatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
+    private boolean execute(final Executor executor, final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
         boolean result;
         ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
         AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());

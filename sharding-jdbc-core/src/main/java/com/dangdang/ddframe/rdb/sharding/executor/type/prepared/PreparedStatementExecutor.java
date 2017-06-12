@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.type.prepared;
 
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
@@ -69,12 +70,12 @@ public final class PreparedStatementExecutor {
                 PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
                 return Collections.singletonList(executeQuery(preparedStatementUnit, isExceptionThrown, dataMap));
             }
-            result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<PreparedStatementUnit, ResultSet>() {
+            result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<ResultSet>() {
                 
                 @Override
-                public ResultSet execute(final PreparedStatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return executeQuery(input, isExceptionThrown, dataMap);
+                public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return executeQuery((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -114,12 +115,12 @@ public final class PreparedStatementExecutor {
                 PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
                 return executeUpdate(preparedStatementUnit, isExceptionThrown, dataMap);
             }
-            List<Integer> results = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<PreparedStatementUnit, Integer>() {
+            List<Integer> results = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<Integer>() {
                 
                 @Override
-                public Integer execute(final PreparedStatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return executeUpdate(input, isExceptionThrown, dataMap);
+                public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return executeUpdate((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });
@@ -167,12 +168,12 @@ public final class PreparedStatementExecutor {
                 PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
                 return execute(preparedStatementUnit, isExceptionThrown, dataMap);
             }
-            List<Boolean> result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<PreparedStatementUnit, Boolean>() {
+            List<Boolean> result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<Boolean>() {
                 
                 @Override
-                public Boolean execute(final PreparedStatementUnit input) throws Exception {
-                    synchronized (input.getStatement().getConnection()) {
-                        return PreparedStatementExecutor.this.execute(input, isExceptionThrown, dataMap);
+                public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    synchronized (baseStatementUnit.getStatement().getConnection()) {
+                        return PreparedStatementExecutor.this.execute((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                     }
                 }
             });

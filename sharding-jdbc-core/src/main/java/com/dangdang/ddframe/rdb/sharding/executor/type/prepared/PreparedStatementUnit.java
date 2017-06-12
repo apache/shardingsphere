@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.type.prepared;
 
-import com.dangdang.ddframe.rdb.sharding.executor.type.BaseStatementUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.executor.type;
+package com.dangdang.ddframe.rdb.sharding.executor;
 
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 
