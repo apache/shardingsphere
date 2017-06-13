@@ -30,10 +30,7 @@ import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.pstatement.StaticShar
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithAggregateTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.statement.StaticShardingBothForStatementWithSelectTest;
-import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForDMLTest;
-import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForSelectTest;
-import com.dangdang.ddframe.rdb.integrate.hint.ShardingDataBasesOnlyWithHintForDMLTest;
-import com.dangdang.ddframe.rdb.integrate.hint.ShardingDataBasesOnlyWithHintForSelectTest;
+import com.dangdang.ddframe.rdb.integrate.hint.AllHintDatabaseOnlyTests;
 import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterSlaveForPStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterSlaveForPStatementWithSelectTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.statement.ShardingMasterSlaveForStatementWithDMLTest;
@@ -60,15 +57,12 @@ import org.junit.runners.Suite.SuiteClasses;
     DynamicShardingBothForStatementWithSelectTest.class, 
     AllShardingDatabaseOnlyTests.class, 
     AllShardingTablesOnlyTests.class, 
-    ShardingDataBasesOnlyWithHintForDMLTest.class, 
-    ShardingDataBasesOnlyWithHintForSelectTest.class, 
+    AllHintDatabaseOnlyTests.class,
     ShardingForNullableWithAggregateTest.class, 
     ShardingMasterSlaveForPStatementWithDMLTest.class,
     ShardingMasterSlaveForPStatementWithSelectTest.class,
     ShardingMasterSlaveForStatementWithDMLTest.class, 
-    ShardingMasterSlaveForStatementWithSelectTest.class,
-    RoutingDatabaseOnlyWithHintForDMLTest.class,
-    RoutingDatabaseOnlyWithHintForSelectTest.class
+    ShardingMasterSlaveForStatementWithSelectTest.class
     })
 public class AllIntegrateTests {
 }

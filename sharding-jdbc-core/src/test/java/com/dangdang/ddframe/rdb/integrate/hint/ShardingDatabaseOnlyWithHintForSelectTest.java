@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-public final class ShardingDataBasesOnlyWithHintForSelectTest extends AbstractShardingDataBasesOnlyHintDBUnitTest {
+public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
     
