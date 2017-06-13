@@ -65,6 +65,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.SELECT, createPreparedStatementUnits(SELECT_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeQuery(), is(Collections.singletonList(resultSet)));
@@ -110,6 +111,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeQuery()).thenThrow(exp);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.SELECT, createPreparedStatementUnits(SELECT_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeQuery(), is(Collections.singletonList((ResultSet) null)));
@@ -152,6 +154,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteUpdateForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.executeUpdate()).thenReturn(10);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.DELETE, createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeUpdate(), is(10));
@@ -193,6 +196,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.DELETE, createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertThat(actual.executeUpdate(), is(0));
@@ -234,6 +238,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteForSinglePreparedStatementSuccessWithDML() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.execute()).thenReturn(false);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.DELETE, createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertFalse(actual.execute());
@@ -275,6 +280,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.DELETE, createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertFalse(actual.execute());
@@ -316,6 +322,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     public void assertExecuteForSinglePreparedStatementWithDQL() throws SQLException {
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.execute()).thenReturn(true);
+        when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         PreparedStatementExecutor actual = new PreparedStatementExecutor(
                 getExecutorEngine(), SQLType.SELECT, createPreparedStatementUnits(SELECT_FROM_DUAL, preparedStatement, "ds_0"), Collections.emptyList());
         assertTrue(actual.execute());

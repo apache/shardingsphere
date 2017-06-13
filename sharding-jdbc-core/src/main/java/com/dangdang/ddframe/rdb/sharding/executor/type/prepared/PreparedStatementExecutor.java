@@ -34,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,10 +65,6 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementUnits.size()) {
-                PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
-                return Collections.singletonList(executeQuery(preparedStatementUnit, isExceptionThrown, dataMap));
-            }
             result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<ResultSet>() {
                 
                 @Override
@@ -111,10 +106,6 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementUnits.size()) {
-                PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
-                return executeUpdate(preparedStatementUnit, isExceptionThrown, dataMap);
-            }
             List<Integer> results = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<Integer>() {
                 
                 @Override
@@ -164,10 +155,6 @@ public final class PreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == preparedStatementUnits.size()) {
-                PreparedStatementUnit preparedStatementUnit = preparedStatementUnits.iterator().next();
-                return execute(preparedStatementUnit, isExceptionThrown, dataMap);
-            }
             List<Boolean> result = executorEngine.execute(preparedStatementUnits, new ExecuteUnit<Boolean>() {
                 
                 @Override

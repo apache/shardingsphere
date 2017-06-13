@@ -35,7 +35,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,10 +65,6 @@ public final class StatementExecutor {
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<ResultSet> result;
         try {
-            if (1 == statementUnits.size()) {
-                StatementUnit statementUnit = statementUnits.iterator().next();
-                return Collections.singletonList(executeQuery(statementUnit, isExceptionThrown, dataMap));
-            }
             result = executorEngine.execute(statementUnits, new ExecuteUnit<ResultSet>() {
                 
                 @Override
@@ -151,10 +146,6 @@ public final class StatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == statementUnits.size()) {
-                StatementUnit statementUnit = statementUnits.iterator().next();
-                return executeUpdate(updater, statementUnit, isExceptionThrown, dataMap);
-            }
             List<Integer> results = executorEngine.execute(statementUnits, new ExecuteUnit<Integer>() {
                 
                 @Override
@@ -244,10 +235,6 @@ public final class StatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == statementUnits.size()) {
-                StatementUnit statementUnit = statementUnits.iterator().next();
-                return execute(executor, statementUnit, isExceptionThrown, dataMap);
-            }
             List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteUnit<Boolean>() {
         
                 @Override

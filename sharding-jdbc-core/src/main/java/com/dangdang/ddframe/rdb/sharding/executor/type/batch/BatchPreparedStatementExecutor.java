@@ -64,9 +64,6 @@ public final class BatchPreparedStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            if (1 == batchStatementUnits.size()) {
-                return executeBatch(batchStatementUnits.iterator().next(), isExceptionThrown, dataMap);
-            }
             List<int[]> results = executorEngine.execute(batchStatementUnits, new ExecuteUnit<int[]>() {
                 
                 @Override
