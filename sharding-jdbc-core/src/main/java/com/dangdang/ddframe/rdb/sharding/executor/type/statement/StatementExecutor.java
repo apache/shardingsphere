@@ -69,9 +69,7 @@ public final class StatementExecutor {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return executeQuery(baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return executeQuery(baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
         } finally {
@@ -150,9 +148,7 @@ public final class StatementExecutor {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return executeUpdate(updater, baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return executeUpdate(updater, baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
             return accumulate(results);
@@ -239,9 +235,7 @@ public final class StatementExecutor {
         
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return StatementExecutor.this.execute(executor, baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return StatementExecutor.this.execute(executor, baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
             return (null == result || result.isEmpty()) ? false : result.get(0);

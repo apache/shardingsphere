@@ -69,9 +69,7 @@ public final class PreparedStatementExecutor {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return executeQuery((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return executeQuery((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
         } finally {
@@ -110,9 +108,7 @@ public final class PreparedStatementExecutor {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return executeUpdate((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return executeUpdate((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
             return accumulate(results);
@@ -159,9 +155,7 @@ public final class PreparedStatementExecutor {
                 
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return PreparedStatementExecutor.this.execute((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return PreparedStatementExecutor.this.execute((PreparedStatementUnit) baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
             return (null == result || result.isEmpty()) ? false : result.get(0);

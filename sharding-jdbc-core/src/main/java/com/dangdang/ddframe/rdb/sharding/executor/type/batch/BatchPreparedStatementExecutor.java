@@ -68,9 +68,7 @@ public final class BatchPreparedStatementExecutor {
                 
                 @Override
                 public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    synchronized (baseStatementUnit.getStatement().getConnection()) {
-                        return executeBatch(baseStatementUnit, isExceptionThrown, dataMap);
-                    }
+                    return executeBatch(baseStatementUnit, isExceptionThrown, dataMap);
                 }
             });
             return accumulate(results);

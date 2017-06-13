@@ -95,7 +95,9 @@ public final class ExecutorEngine implements AutoCloseable {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeUnit.execute(each);
+                    synchronized (each.getStatement().getConnection()) {
+                        return executeUnit.execute(each);
+                    }
                 }
             }));
         }
@@ -103,7 +105,9 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit) throws Exception {
-        return executeUnit.execute(baseStatementUnit);
+        synchronized (baseStatementUnit.getStatement().getConnection()) {
+            return executeUnit.execute(baseStatementUnit);
+        }
     }
     
     @Override
