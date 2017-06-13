@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.statement;
 
+import com.codahale.metrics.Timer;
 import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementExecutor;
 import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
+import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -156,10 +157,11 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     
     @Override
     public int[] executeBatch() throws SQLException {
+        Timer.Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         try {
-            return new BatchPreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-                    getRouteResult().getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
+            return getShardingConnection().getShardingContext().getExecutorEngine().executeBatch(batchStatementUnits, parameterSets);
         } finally {
+            MetricsContext.stop(context);
             clearBatch();
         }
     }

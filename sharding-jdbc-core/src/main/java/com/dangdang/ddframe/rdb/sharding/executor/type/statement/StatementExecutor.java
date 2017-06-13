@@ -22,21 +22,15 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
-import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
-import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.executor.type.ExecutorUtils;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 多线程执行静态语句对象请求的执行器.
@@ -61,36 +55,18 @@ public final class StatementExecutor {
      */
     public List<ResultSet> executeQuery() {
         Context context = MetricsContext.start("ShardingStatement-executeQuery");
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         List<ResultSet> result;
         try {
-            result = executorEngine.execute(statementUnits, new ExecuteUnit<ResultSet>() {
+            result = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<ResultSet>() {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return executeQuery(baseStatementUnit, isExceptionThrown, dataMap);
+                    return baseStatementUnit.getStatement().executeQuery(baseStatementUnit.getSqlExecutionUnit().getSql());
                 }
             });
         } finally {
             MetricsContext.stop(context);
         }
-        return result;
-    }
-    
-    private ResultSet executeQuery(final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        ResultSet result;
-        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());
-        EventBusInstance.getInstance().post(event);
-        try {
-            result = statementUnit.getStatement().executeQuery(statementUnit.getSqlExecutionUnit().getSql());
-        } catch (final SQLException ex) {
-            ExecutorUtils.handleException(event, ex);
-            return null;
-        }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
         return result;
     }
     
@@ -141,14 +117,12 @@ public final class StatementExecutor {
     
     private int executeUpdate(final Updater updater) {
         Context context = MetricsContext.start("ShardingStatement-executeUpdate");
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            List<Integer> results = executorEngine.execute(statementUnits, new ExecuteUnit<Integer>() {
+            List<Integer> results = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<Integer>() {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return executeUpdate(updater, baseStatementUnit, isExceptionThrown, dataMap);
+                    return updater.executeUpdate(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
                 }
             });
             return accumulate(results);
@@ -157,26 +131,10 @@ public final class StatementExecutor {
         }
     }
     
-    private int executeUpdate(final Updater updater, final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        int result;
-        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());
-        EventBusInstance.getInstance().post(event);
-        try {
-            result = updater.executeUpdate(statementUnit.getStatement(), statementUnit.getSqlExecutionUnit().getSql());
-        } catch (final SQLException ex) {
-            ExecutorUtils.handleException(event, ex);
-            return 0;
-        }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
-        return result;
-    }
-    
     private int accumulate(final List<Integer> results) {
         int result = 0;
-        for (int each : results) {
-            result += each;
+        for (Integer each : results) {
+            result += null == each ? 0 : each;
         }
         return result;
     }
@@ -228,36 +186,21 @@ public final class StatementExecutor {
     
     private boolean execute(final Executor executor) {
         Context context = MetricsContext.start("ShardingStatement-execute");
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
         try {
-            List<Boolean> result = executorEngine.execute(statementUnits, new ExecuteUnit<Boolean>() {
-        
+            List<Boolean> result = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<Boolean>() {
+                
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
-                    return StatementExecutor.this.execute(executor, baseStatementUnit, isExceptionThrown, dataMap);
+                    return executor.execute(baseStatementUnit.getStatement(), baseStatementUnit.getSqlExecutionUnit().getSql());
                 }
             });
-            return (null == result || result.isEmpty()) ? false : result.get(0);
+            if (null == result || result.isEmpty() || null == result.get(0)) {
+                return false;
+            }
+            return result.get(0);
         } finally {
             MetricsContext.stop(context);
         }
-    }
-    
-    private boolean execute(final Executor executor, final BaseStatementUnit statementUnit, final boolean isExceptionThrown, final Map<String, Object> dataMap) {
-        boolean result;
-        ExecutorUtils.setThreadLocalData(isExceptionThrown, dataMap);
-        AbstractExecutionEvent event = ExecutorUtils.getExecutionEvent(sqlType, statementUnit.getSqlExecutionUnit());
-        EventBusInstance.getInstance().post(event);
-        try {
-            result = executor.execute(statementUnit.getStatement(), statementUnit.getSqlExecutionUnit().getSql());
-        } catch (final SQLException ex) {
-            ExecutorUtils.handleException(event, ex);
-            return false;
-        }
-        event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-        EventBusInstance.getInstance().post(event);
-        return result;
     }
     
     private interface Updater {
