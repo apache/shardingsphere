@@ -82,6 +82,7 @@ public class SQLParser extends AbstractParser {
      *
      * @return 表达式
      */
+    // TODO 完善Expression解析的各种场景
     public final SQLExpression parseExpression() {
         String literals = getLexer().getCurrentToken().getLiterals();
         final SQLExpression expression = getExpression(literals);

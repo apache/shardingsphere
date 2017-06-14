@@ -221,10 +221,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 sqlParser.getLexer().nextToken();
             }
             if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-                sqlParser.parseExpression(selectStatement);
+                throw new UnsupportedOperationException("Cannot support Having");
             }
         } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
-            sqlParser.parseExpression(selectStatement);
+            throw new UnsupportedOperationException("Cannot support Having");
         }
     }
     

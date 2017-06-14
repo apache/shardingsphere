@@ -86,7 +86,8 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType())
+                ? "integrate/dataset/tbl/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
                 : "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithoutGroupedColumnSql(), 10, 11, 1000, 1109));
@@ -96,7 +97,8 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType())
+                ? "integrate/dataset/tbl/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
                 : "integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
                 "t_order_item", String.format(sql.getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'init'"));

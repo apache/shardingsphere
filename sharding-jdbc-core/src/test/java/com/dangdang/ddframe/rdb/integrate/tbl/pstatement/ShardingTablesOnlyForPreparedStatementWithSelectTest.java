@@ -107,7 +107,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType())  || Oracle.name().equalsIgnoreCase(currentDbType()) 
+                ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
                 : TABLE_ONLY_PREFIX + "/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                 "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 10, 11, 1000, 1109);
@@ -116,7 +117,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectNoShardingTable.xml"
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType()) 
+                ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectNoShardingTable.xml"
                 : TABLE_ONLY_PREFIX + "/expect/select/SelectNoShardingTable.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                 "t_order_item", sql.getSelectWithNoShardingTableSql());
@@ -124,7 +126,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType())
+                ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
                 : TABLE_ONLY_PREFIX + "/expect/select/SelectWithBindingTableAndConfigTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(), 
                 "t_order_item", replacePreparedStatement(sql.getSelectGroupWithBindingTableAndConfigSql()), 10, 11, 1009, 1108, "init");

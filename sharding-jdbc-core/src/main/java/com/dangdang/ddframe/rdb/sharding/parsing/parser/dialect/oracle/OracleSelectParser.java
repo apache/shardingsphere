@@ -170,40 +170,23 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseGroupBy() {
-        // TODO
-//        if (getSqlParser().equalAny(DefaultKeyword.GROUP)) {
-//            getSqlParser().getLexer().nextToken();
-//            getSqlParser().accept(DefaultKeyword.BY);
-//            while (true) {
-//                if (getSqlParser().getLexer().identifierEquals("GROUPING")) {
-//                    throw new UnsupportedOperationException("Cannot support GROUPING SETS");
-//                } 
-//                addGroupByItem(getSqlParser().expr());
-//                if (!getSqlParser().equalAny(Symbol.COMMA)) {
-//                    break;
-//                }
-//                getSqlParser().getLexer().nextToken();
-//            }
-//            if (getSqlParser().skipIfEqual(Token.HAVING)) {
-//                getSqlParser().expr();
-//            }
-//        } else if (getSqlParser().skipIfEqual(Token.HAVING)) {
-//            SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
-//            groupBy.setHaving(getSqlParser().expr());
-//            if (getSqlParser().skipIfEqual(DefaultKeyword.GROUP)) {
-//                getSqlParser().accept(DefaultKeyword.BY);
-//                while (true) {
-//                    if (getSqlParser().getLexer().identifierEquals("GROUPING")) {
-//                        throw new UnsupportedOperationException("Cannot support GROUPING SETS");
-//                    }
-//                    addGroupByItem(getSqlParser().expr());
-//                    if (!getSqlParser().equalAny(Symbol.COMMA)) {
-//                        break;
-//                    }
-//                    getSqlParser().getLexer().nextToken();
-//                }
-//            }
-//        }
+        if (getSqlParser().equalAny(DefaultKeyword.GROUP)) {
+            getSqlParser().getLexer().nextToken();
+            getSqlParser().accept(DefaultKeyword.BY);
+            while (true) {
+                if (getSqlParser().equalAny(OracleKeyword.ROLLUP, OracleKeyword.CUBE, OracleKeyword.GROUPING)) {
+                    throw new UnsupportedOperationException("Cannot support ROLLUP, CUBE, GROUPING SETS");
+                } 
+                addGroupByItem(getSqlParser().parseExpression());
+                if (!getSqlParser().equalAny(Symbol.COMMA)) {
+                    break;
+                }
+                getSqlParser().getLexer().nextToken();
+            }
+            if (getSqlParser().skipIfEqual(DefaultKeyword.HAVING)) {
+                throw new UnsupportedOperationException("Cannot support Having");
+            }
+        }
     }
     
     @Override
