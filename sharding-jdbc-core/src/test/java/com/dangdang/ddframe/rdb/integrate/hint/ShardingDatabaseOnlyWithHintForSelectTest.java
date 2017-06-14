@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil.replacePreparedStatement;
+
 public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
@@ -37,30 +39,34 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?";
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicShardingValueHelper(10, 1000), shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicShardingValueHelper(12, 1201), shardingDataSource.getConnection(), "t_order", sql, 12, 1201);
-        assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(12, 1000), shardingDataSource.getConnection(), "t_order", sql, 12, 1000);
+        String statement = replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql());
+        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", 
+                new DynamicShardingValueHelper(10, 1000), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
+        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", 
+                new DynamicShardingValueHelper(12, 1201), shardingDataSource.getConnection(), "t_order", statement, 12, 1201);
+        assertDataSet("integrate/dataset/Empty.xml", 
+                new DynamicShardingValueHelper(12, 1000), shardingDataSource.getConnection(), "t_order", statement, 12, 1000);
     }
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
+        String statement = replacePreparedStatement(sql.getSelectBetweenWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12),
-                ShardingOperator.BETWEEN, Lists.newArrayList(1001, 1200), ShardingOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1001, 1200);
+                ShardingOperator.BETWEEN, Lists.newArrayList(1001, 1200), ShardingOperator.BETWEEN), shardingDataSource.getConnection(), 
+                "t_order", statement, 10, 12, 1001, 1200);
         assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12),
-                ShardingOperator.BETWEEN, Lists.newArrayList(1309, 1408), ShardingOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
+                ShardingOperator.BETWEEN, Lists.newArrayList(1309, 1408), ShardingOperator.BETWEEN), shardingDataSource.getConnection(), "t_order", statement, 10, 12, 1309, 1408);
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` IN (?, ?, ?) AND `order_id` IN (?, ?) ORDER BY user_id, order_id";
+        String statement = replacePreparedStatement(sql.getSelectInWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                ShardingOperator.IN, Lists.newArrayList(1000, 1201), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1201);
+                ShardingOperator.IN, Lists.newArrayList(1000, 1201), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", statement, 10, 12, 15, 1000, 1201);
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                ShardingOperator.IN, Lists.newArrayList(1000, 1101), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1000, 1101);
+                ShardingOperator.IN, Lists.newArrayList(1000, 1101), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", statement, 10, 12, 15, 1000, 1101);
         assertDataSet("integrate/dataset/Empty.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
-                ShardingOperator.IN, Lists.newArrayList(1309, 1408), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1309, 1408);
+                ShardingOperator.IN, Lists.newArrayList(1309, 1408), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", statement, 10, 12, 15, 1309, 1408);
     }
     
 }

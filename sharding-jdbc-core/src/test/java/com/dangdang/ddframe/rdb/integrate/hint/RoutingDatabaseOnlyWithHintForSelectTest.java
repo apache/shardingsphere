@@ -24,6 +24,8 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil.replacePreparedStatement;
+
 public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDatabaseOnlyTest {
     
     private ShardingDataSource shardingDataSource;
@@ -35,11 +37,11 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?";
+        String statement = replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new AbstractRoutingDatabaseOnlyTest
-                .DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
+                .DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new AbstractRoutingDatabaseOnlyTest
-                .DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", sql, 12, 1201);
-        assertDataSet("integrate/dataset/Empty.xml", new AbstractRoutingDatabaseOnlyTest.DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", sql, 12, 1000);
+                .DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1201);
+        assertDataSet("integrate/dataset/Empty.xml", new AbstractRoutingDatabaseOnlyTest.DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1000);
     }
 }
