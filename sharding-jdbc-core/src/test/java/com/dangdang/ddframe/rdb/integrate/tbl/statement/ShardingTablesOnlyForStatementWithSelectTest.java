@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 
 public final class ShardingTablesOnlyForStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
@@ -66,7 +67,7 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        if (!Oracle.name().equalsIgnoreCase(currentDbType())) {
+        if (!Oracle.name().equalsIgnoreCase(currentDbType()) && !SQLServer.name().equalsIgnoreCase(currentDbType())) {
             String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectLimitWithBindingTable.xml"
                     : "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
             assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
@@ -86,7 +87,7 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType())
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType()) || SQLServer.name().equalsIgnoreCase(currentDbType())
                 ? "integrate/dataset/tbl/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
                 : "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
@@ -97,7 +98,7 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType())
+        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) || Oracle.name().equalsIgnoreCase(currentDbType()) || SQLServer.name().equalsIgnoreCase(currentDbType())
                 ? "integrate/dataset/tbl/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
                 : "integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),

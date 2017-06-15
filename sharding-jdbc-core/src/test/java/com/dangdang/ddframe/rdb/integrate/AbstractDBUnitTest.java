@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.integrate.sql.mysql.MySQLTestSQL;
 import com.dangdang.ddframe.rdb.integrate.sql.oracle.OracleSQLTestSQL;
 import com.dangdang.ddframe.rdb.integrate.sql.postgresql.PostgreSQLTestSQL;
+import com.dangdang.ddframe.rdb.integrate.sql.sqlserver.SQLServerSQLTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
@@ -31,6 +32,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.ext.h2.H2Connection;
+import org.dbunit.ext.mssql.MsSqlConnection;
 import org.dbunit.ext.mysql.MySqlConnection;
 import org.dbunit.ext.oracle.OracleConnection;
 import org.dbunit.operation.DatabaseOperation;
@@ -104,6 +106,8 @@ public abstract class AbstractDBUnitTest {
                 return new PostgreSQLTestSQL();
             case Oracle:
                 return new OracleSQLTestSQL();
+            case SQLServer:
+                return new SQLServerSQLTestSQL();
             default:
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }
@@ -180,6 +184,8 @@ public abstract class AbstractDBUnitTest {
                 return new DatabaseConnection(connection);
             case Oracle:
                 return new OracleConnection(connection, "JDBC");
+            case SQLServer:
+                return new MsSqlConnection(connection);
             default: 
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }
