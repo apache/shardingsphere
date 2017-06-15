@@ -31,7 +31,7 @@ next = "/02-guide/transaction"
 TableRule.builder("t_order").generateKeyColumns("order_id");
 ```
 
-设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.KeyGenerator接口。
+设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator接口。
 
 配置全局生成器(com.xx.xx.KeyGenerator):
 
@@ -61,20 +61,11 @@ TableRule.builder("t_order_item").generateKeyColumns("order_item_id", com.xx.xx.
 关于Spring，YAML，MyBatis和JPA（Hibernate）的配置请参考
 [示例工程](https://github.com/dangdangdotcom/sharding-jdbc/tree/master/sharding-jdbc-example)。
 
-# 通用的分布式主键生成器
+# 默认的分布式主键生成器
 
-需要引入以下依赖
+类名称：com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator
 
-```xml
-<dependency>
-    <groupId>com.dangdang</groupId>
-    <artifactId>sharding-jdbc-self-id-generator</artifactId>
-    <version>${sharding-jdbc.version}</version>
-</dependency>
-```
-类名称：com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfKeyGenerator
-
-该生成器作为默认的生成器实现提供，生成的数据为64bit的long型数据。
+该生成器采用snowflake算法实现，生成的数据为64bit的long型数据。
 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
 
 其二进制表示形式包含四部分，从高位到低位分表为：1bit符号位(为0)，41bit时间位，10bit工作进程位，12bit序列位。
