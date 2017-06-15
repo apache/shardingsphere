@@ -50,9 +50,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 多线程执行框架.
+ * SQL执行引擎.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
 @Slf4j
 public final class ExecutorEngine implements AutoCloseable {
@@ -111,7 +112,7 @@ public final class ExecutorEngine implements AutoCloseable {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeInternal(each, executeUnit, sqlType, isExceptionThrown, dataMap, parameters);
+                    return executeInternal(each, executeUnit, sqlType, parameters, isExceptionThrown, dataMap);
                 }
             }));
         }
@@ -119,11 +120,11 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit, final SQLType sqlType, final List<Object> parameters) throws Exception {
-        return executeInternal(baseStatementUnit, executeUnit, sqlType, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap(), parameters);
+        return executeInternal(baseStatementUnit, executeUnit, sqlType, parameters, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
     }
     
-    private <T> T executeInternal(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit, final SQLType sqlType, 
-                          final boolean isExceptionThrown, final Map<String, Object> dataMap, final List<Object> parameters) throws Exception {
+    private <T> T executeInternal(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit, final SQLType sqlType, final List<Object> parameters,  
+                          final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
         synchronized (baseStatementUnit.getStatement().getConnection()) {
             T result;
             ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
@@ -161,9 +162,9 @@ public final class ExecutorEngine implements AutoCloseable {
      * @param parameterSets 参数集
      * @return 执行结果
      */
-    public int[] executeBatch(final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets) {
+    public List<int[]> executeBatch(final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets) {
         if (batchPreparedStatementUnits.isEmpty()) {
-            return new int[0];
+            return Collections.singletonList(new int[0]);
         }
         Iterator<BatchPreparedStatementUnit> iterator = batchPreparedStatementUnits.iterator();
         BatchPreparedStatementUnit firstInput = iterator.next();
@@ -177,11 +178,11 @@ public final class ExecutorEngine implements AutoCloseable {
         } catch (final Exception ex) {
             //CHECKSTYLE:ON
             ExecutorExceptionHandler.handleException(ex);
-            return new int[0];
+            return Collections.singletonList(new int[0]);
         }
         List<int[]> result = Lists.newLinkedList(restOutputs);
         result.add(0, firstOutput);
-        return accumulateBatchResults(batchPreparedStatementUnits, parameterSets, result);
+        return result;
     }
     
     private ListenableFuture<List<int[]>> asyncExecuteBatch(final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets) {
@@ -233,18 +234,6 @@ public final class ExecutorEngine implements AutoCloseable {
             }
             return result;
         }
-    }
-    
-    private int[] accumulateBatchResults(final Collection<BatchPreparedStatementUnit> baseStatementUnits, final List<List<Object>> parameterSets, final List<int[]> results) {
-        int[] result = new int[parameterSets.size()];
-        int count = 0;
-        for (BatchPreparedStatementUnit each : baseStatementUnits) {
-            for (Map.Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
-                result[entry.getKey()] += results.get(count)[entry.getValue()];
-            }
-            count++;
-        }
-        return result;
     }
     
     @Override
