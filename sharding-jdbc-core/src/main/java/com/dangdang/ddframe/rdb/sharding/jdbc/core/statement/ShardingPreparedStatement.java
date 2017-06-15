@@ -157,7 +157,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int[] executeBatch() throws SQLException {
         try {
-            return new BatchPreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), batchStatementUnits, parameterSets).executeBatch();
+            return new BatchPreparedStatementExecutor(
+                    getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), batchStatementUnits, parameterSets).executeBatch();
         } finally {
             clearBatch();
         }

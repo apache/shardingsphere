@@ -26,6 +26,8 @@ import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
 import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import com.dangdang.ddframe.rdb.sharding.executor.type.batch.BatchPreparedStatementUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatementUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.type.statement.StatementUnit;
 import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -67,30 +69,58 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     /**
-     * 多线程执行任务.
-     * 
-     * <p>
-     * 一组任务中, 将第一个任务放在当前线程执行, 其余的任务放到线程池中运行.
-     * </p>
-     *  
+     * 执行Statement.
+     *
      * @param sqlType SQL类型
-     * @param baseStatementUnits 语句对象执行单元集合
-     * @param parameters 参数
+     * @param statementUnits 语句对象执行单元集合
      * @param executeUnit 执行单元
      * @param <T> 返回值类型
      * @return 执行结果
      */
-    public <T> List<T> execute(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final List<Object> parameters, final ExecuteUnit<T> executeUnit) {
+    public <T> List<T> executeStatement(final SQLType sqlType, final Collection<StatementUnit> statementUnits, final ExecuteUnit<T> executeUnit) {
+        return execute(sqlType, statementUnits, Collections.<List<Object>>emptyList(), executeUnit);
+    }
+    
+    /**
+     * 执行PreparedStatement.
+     *
+     * @param sqlType SQL类型
+     * @param preparedStatementUnits 语句对象执行单元集合
+     * @param parameters 参数列表
+     * @param executeUnit 执行单元
+     * @param <T> 返回值类型
+     * @return 执行结果
+     */
+    public <T> List<T> executePreparedStatement(
+            final SQLType sqlType, final Collection<PreparedStatementUnit> preparedStatementUnits, final List<Object> parameters, final ExecuteUnit<T> executeUnit) {
+        return execute(sqlType, preparedStatementUnits, Collections.singletonList(parameters), executeUnit);
+    }
+    
+    /**
+     * 执行Batch.
+     *
+     * @param sqlType SQL类型
+     * @param batchPreparedStatementUnits 语句对象执行单元集合
+     * @param parameterSets 参数列表集
+     * @param executeUnit 执行单元
+     * @return 执行结果
+     */
+    public List<int[]> executeBatch(
+            final SQLType sqlType, final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets, final ExecuteUnit<int[]> executeUnit) {
+        return execute(sqlType, batchPreparedStatementUnits, parameterSets, executeUnit);
+    }
+    
+    private  <T> List<T> execute(final SQLType sqlType, final Collection<? extends BaseStatementUnit> baseStatementUnits, final List<List<Object>> parameterSets, final ExecuteUnit<T> executeUnit) {
         if (baseStatementUnits.isEmpty()) {
             return Collections.emptyList();
         }
         Iterator<? extends BaseStatementUnit> iterator = baseStatementUnits.iterator();
         BaseStatementUnit firstInput = iterator.next();
-        ListenableFuture<List<T>> restFutures = asyncExecute(Lists.newArrayList(iterator), executeUnit, sqlType, parameters);
+        ListenableFuture<List<T>> restFutures = asyncExecute(sqlType, Lists.newArrayList(iterator), parameterSets, executeUnit);
         T firstOutput;
         List<T> restOutputs;
         try {
-            firstOutput = syncExecute(firstInput, executeUnit, sqlType, parameters);
+            firstOutput = syncExecute(sqlType, firstInput, parameterSets, executeUnit);
             restOutputs = restFutures.get();
             //CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -103,7 +133,8 @@ public final class ExecutorEngine implements AutoCloseable {
         return result;
     }
     
-    private <T> ListenableFuture<List<T>> asyncExecute(final Collection<BaseStatementUnit> baseStatementUnits, final ExecuteUnit<T> executeUnit, final SQLType sqlType, final List<Object> parameters) {
+    private <T> ListenableFuture<List<T>> asyncExecute(
+            final SQLType sqlType, final Collection<BaseStatementUnit> baseStatementUnits, final List<List<Object>> parameterSets, final ExecuteUnit<T> executeUnit) {
         List<ListenableFuture<T>> result = new ArrayList<>(baseStatementUnits.size());
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
@@ -112,113 +143,35 @@ public final class ExecutorEngine implements AutoCloseable {
                 
                 @Override
                 public T call() throws Exception {
-                    return executeInternal(each, executeUnit, sqlType, parameters, isExceptionThrown, dataMap);
+                    return executeInternal(sqlType, each, parameterSets, executeUnit, isExceptionThrown, dataMap);
                 }
             }));
         }
         return Futures.allAsList(result);
     }
     
-    private <T> T syncExecute(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit, final SQLType sqlType, final List<Object> parameters) throws Exception {
-        return executeInternal(baseStatementUnit, executeUnit, sqlType, parameters, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
+    private <T> T syncExecute(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<List<Object>> parameterSets, final ExecuteUnit<T> executeUnit) throws Exception {
+        return executeInternal(sqlType, baseStatementUnit, parameterSets, executeUnit, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
     }
     
-    private <T> T executeInternal(final BaseStatementUnit baseStatementUnit, final ExecuteUnit<T> executeUnit, final SQLType sqlType, final List<Object> parameters,  
+    private <T> T executeInternal(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<List<Object>> parameterSets, final ExecuteUnit<T> executeUnit, 
                           final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
         synchronized (baseStatementUnit.getStatement().getConnection()) {
             T result;
             ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
             ExecutorDataMap.setDataMap(dataMap);
-            AbstractExecutionEvent event;
-            if (SQLType.SELECT == sqlType) {
-                event = new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);
-            } else {
-                event = new DMLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);
+            List<AbstractExecutionEvent> events = new LinkedList<>();
+            if (parameterSets.isEmpty()) {
+                events.add(getExecutionEvent(sqlType, baseStatementUnit, Collections.emptyList()));
             }
-            EventBusInstance.getInstance().post(event);
+            for (List<Object> each : parameterSets) {
+                events.add(getExecutionEvent(sqlType, baseStatementUnit, each));
+            }
+            for (AbstractExecutionEvent event : events) {
+                EventBusInstance.getInstance().post(event);
+            }
             try {
                 result = executeUnit.execute(baseStatementUnit);
-            } catch (final SQLException ex) {
-                event.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
-                event.setException(Optional.of(ex));
-                EventBusInstance.getInstance().post(event);
-                ExecutorExceptionHandler.handleException(ex);
-                return null;
-            }
-            event.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
-            EventBusInstance.getInstance().post(event);
-            return result;
-        }
-    }
-    
-    /**
-     * 多线程执行批量任务.
-     *
-     * <p>
-     * 一组任务中, 将第一个任务放在当前线程执行, 其余的任务放到线程池中运行.
-     * </p>
-     *
-     * @param batchPreparedStatementUnits 批量语句对象执行单元集合
-     * @param parameterSets 参数集
-     * @return 执行结果
-     */
-    public List<int[]> executeBatch(final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets) {
-        if (batchPreparedStatementUnits.isEmpty()) {
-            return Collections.singletonList(new int[0]);
-        }
-        Iterator<BatchPreparedStatementUnit> iterator = batchPreparedStatementUnits.iterator();
-        BatchPreparedStatementUnit firstInput = iterator.next();
-        ListenableFuture<List<int[]>> restFutures = asyncExecuteBatch(Lists.newArrayList(iterator), parameterSets);
-        int[] firstOutput;
-        List<int[]> restOutputs;
-        try {
-            firstOutput = syncExecuteBatch(firstInput, parameterSets);
-            restOutputs = restFutures.get();
-            //CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            //CHECKSTYLE:ON
-            ExecutorExceptionHandler.handleException(ex);
-            return Collections.singletonList(new int[0]);
-        }
-        List<int[]> result = Lists.newLinkedList(restOutputs);
-        result.add(0, firstOutput);
-        return result;
-    }
-    
-    private ListenableFuture<List<int[]>> asyncExecuteBatch(final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits, final List<List<Object>> parameterSets) {
-        List<ListenableFuture<int[]>> result = new ArrayList<>(batchPreparedStatementUnits.size());
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        final Map<String, Object> dataMap = ExecutorDataMap.getDataMap();
-        for (final BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
-            result.add(executorService.submit(new Callable<int[]>() {
-                
-                @Override
-                public int[] call() throws Exception {
-                    return executeBatchInternal(each, parameterSets, isExceptionThrown, dataMap);
-                }
-            }));
-        }
-        return Futures.allAsList(result);
-    }
-    
-    private int[] syncExecuteBatch(final BatchPreparedStatementUnit batchPreparedStatementUnit, final List<List<Object>> parameterSets) throws Exception {
-        return executeBatchInternal(batchPreparedStatementUnit, parameterSets, ExecutorExceptionHandler.isExceptionThrown(), ExecutorDataMap.getDataMap());
-    }
-    
-    private int[] executeBatchInternal(
-            final BatchPreparedStatementUnit batchPreparedStatementUnit, final List<List<Object>> parameterSets, final boolean isExceptionThrown, final Map<String, Object> dataMap) throws Exception {
-        synchronized (batchPreparedStatementUnit.getStatement().getConnection()) {
-            int[] result;
-            ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-            ExecutorDataMap.setDataMap(dataMap);
-            List<AbstractExecutionEvent> events = new LinkedList<>();
-            for (List<Object> each : parameterSets) {
-                AbstractExecutionEvent event = new DMLExecutionEvent(batchPreparedStatementUnit.getSqlExecutionUnit().getDataSource(), batchPreparedStatementUnit.getSqlExecutionUnit().getSql(), each);
-                events.add(event);
-                EventBusInstance.getInstance().post(event);
-            }
-            try {
-                result = batchPreparedStatementUnit.getStatement().executeBatch();
             } catch (final SQLException ex) {
                 for (AbstractExecutionEvent each : events) {
                     each.setEventExecutionType(EventExecutionType.EXECUTE_FAILURE);
@@ -226,7 +179,7 @@ public final class ExecutorEngine implements AutoCloseable {
                     EventBusInstance.getInstance().post(each);
                     ExecutorExceptionHandler.handleException(ex);
                 }
-                return new int[0];
+                return null;
             }
             for (AbstractExecutionEvent each : events) {
                 each.setEventExecutionType(EventExecutionType.EXECUTE_SUCCESS);
@@ -234,6 +187,16 @@ public final class ExecutorEngine implements AutoCloseable {
             }
             return result;
         }
+    }
+    
+    private AbstractExecutionEvent getExecutionEvent(final SQLType sqlType, final BaseStatementUnit baseStatementUnit, final List<Object> parameters) {
+        AbstractExecutionEvent result;
+        if (SQLType.SELECT == sqlType) {
+            result = new DQLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);
+        } else {
+            result = new DMLExecutionEvent(baseStatementUnit.getSqlExecutionUnit().getDataSource(), baseStatementUnit.getSqlExecutionUnit().getSql(), parameters);
+        }
+        return result;
     }
     
     @Override

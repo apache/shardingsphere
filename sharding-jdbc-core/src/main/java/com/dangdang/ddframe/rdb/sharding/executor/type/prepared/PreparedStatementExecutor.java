@@ -56,7 +56,7 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
         List<ResultSet> result;
         try {
-            result = executorEngine.execute(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<ResultSet>() {
+            result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<ResultSet>() {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -77,7 +77,7 @@ public final class PreparedStatementExecutor {
     public int executeUpdate() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         try {
-            List<Integer> results = executorEngine.execute(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Integer>() {
+            List<Integer> results = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Integer>() {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -106,7 +106,7 @@ public final class PreparedStatementExecutor {
     public boolean execute() {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
         try {
-            List<Boolean> result = executorEngine.execute(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Boolean>() {
+            List<Boolean> result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Boolean>() {
                 
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {

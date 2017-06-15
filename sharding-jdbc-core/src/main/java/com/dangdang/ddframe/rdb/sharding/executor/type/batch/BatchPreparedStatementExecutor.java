@@ -18,6 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 
 import com.codahale.metrics.Timer.Context;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,8 @@ public final class BatchPreparedStatementExecutor {
     
     private final ExecutorEngine executorEngine;
     
+    private final SQLType sqlType;
+    
     private final Collection<BatchPreparedStatementUnit> batchPreparedStatementUnits;
     
     private final List<List<Object>> parameterSets;
@@ -48,7 +53,13 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeBatch");
         try {
-            return accumulate(executorEngine.executeBatch(batchPreparedStatementUnits, parameterSets));
+            return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteUnit<int[]>() {
+                
+                @Override
+                public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {
+                    return baseStatementUnit.getStatement().executeBatch();
+                }
+            }));
         } finally {
             MetricsContext.stop(context);
         }
@@ -59,7 +70,7 @@ public final class BatchPreparedStatementExecutor {
         int count = 0;
         for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
             for (Map.Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
-                result[entry.getKey()] += results.get(count)[entry.getValue()];
+                result[entry.getKey()] += null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
             }
             count++;
         }

@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ public final class StatementExecutor {
         Context context = MetricsContext.start("ShardingStatement-executeQuery");
         List<ResultSet> result;
         try {
-            result = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<ResultSet>() {
+            result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteUnit<ResultSet>() {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -118,7 +117,7 @@ public final class StatementExecutor {
     private int executeUpdate(final Updater updater) {
         Context context = MetricsContext.start("ShardingStatement-executeUpdate");
         try {
-            List<Integer> results = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<Integer>() {
+            List<Integer> results = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteUnit<Integer>() {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -187,7 +186,7 @@ public final class StatementExecutor {
     private boolean execute(final Executor executor) {
         Context context = MetricsContext.start("ShardingStatement-execute");
         try {
-            List<Boolean> result = executorEngine.execute(sqlType, statementUnits, Collections.emptyList(), new ExecuteUnit<Boolean>() {
+            List<Boolean> result = executorEngine.executeStatement(sqlType, statementUnits, new ExecuteUnit<Boolean>() {
                 
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
