@@ -38,6 +38,8 @@ public final class Tables {
     
     /**
      * 添加表解析对象.
+     * 
+     * @param table 表对象
      */
     public void add(final Table table) {
         tables.add(table);

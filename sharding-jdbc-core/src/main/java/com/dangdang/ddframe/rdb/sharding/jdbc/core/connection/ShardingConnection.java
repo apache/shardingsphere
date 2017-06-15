@@ -62,6 +62,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
      * @param dataSourceName 数据源名称
      * @param sqlType SQL语句类型
      * @return 数据库连接
+     * @throws SQLException SQL异常
      */
     public Connection getConnection(final String dataSourceName, final SQLType sqlType) throws SQLException {
         Optional<Connection> connection = getCachedConnection(dataSourceName, sqlType);
