@@ -375,7 +375,7 @@
 <li><a href="#其他框架配置">其他框架配置</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#通用的分布式主键生成器">通用的分布式主键生成器</a>
+<li><a href="#默认的分布式主键生成器">默认的分布式主键生成器</a>
 <ul>
 <li>
 <ul>
@@ -420,23 +420,23 @@
 
 <p>配置自增列：</p>
 
-<pre><code class="language-java">TableRule.builder(&quot;t_order&quot;).autoIncrementColumns(&quot;order_id&quot;);
+<pre><code class="language-java">TableRule.builder(&quot;t_order&quot;).generateKeyColumns(&quot;order_id&quot;);
 </code></pre>
 
-<p>设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator接口。</p>
+<p>设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator接口。</p>
 
-<p>配置全局生成器(com.x.x.AIdGenerator):</p>
+<p>配置全局生成器(com.xx.xx.KeyGenerator):</p>
 
-<pre><code class="language-java">ShardingRule.builder().idGenerator(com.x.x.AIdGenerator.class);
+<pre><code class="language-java">ShardingRule.builder().keyGenerator(com.xx.xx.KeyGenerator.class);
 
 </code></pre>
 
-<p>有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.x.x.BIdGenerator来生成Id:</p>
+<p>有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.xx.xx.OtherKeyGenerator来生成Id:</p>
 
-<pre><code class="language-java">TableRule.builder(&quot;t_order_item&quot;).autoIncrementColumns(&quot;order_item_id&quot;, com.x.x.BIdGenerator.class);
+<pre><code class="language-java">TableRule.builder(&quot;t_order_item&quot;).generateKeyColumns(&quot;order_item_id&quot;, com.xx.xx.OtherKeyGenerator.class);
 </code></pre>
 
-<p>这样t_order就使用com.x.x.AIdGenerator生成Id，而t_order_item使用com.x.x.BIdGenerator生成Id。</p>
+<p>这样t_order就使用com.xx.xx.KeyGenerator生成Id，而t_order_item使用com.xx.xx.OtherKeyGenerator生成Id。</p>
 
 <h3 id="获取自动生成键">获取自动生成键</h3>
 
@@ -450,20 +450,11 @@
 <p>关于Spring，YAML，MyBatis和JPA（Hibernate）的配置请参考
 <a href="https://github.com/dangdangdotcom/sharding-jdbc/tree/master/sharding-jdbc-example">示例工程</a>。</p>
 
-<h1 id="通用的分布式主键生成器">通用的分布式主键生成器</h1>
+<h1 id="默认的分布式主键生成器">默认的分布式主键生成器</h1>
 
-<p>需要引入以下依赖</p>
+<p>类名称：com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator</p>
 
-<pre><code class="language-xml">&lt;dependency&gt;
-    &lt;groupId&gt;com.dangdang&lt;/groupId&gt;
-    &lt;artifactId&gt;sharding-jdbc-self-id-generator&lt;/artifactId&gt;
-    &lt;version&gt;${sharding-jdbc.version}&lt;/version&gt;
-&lt;/dependency&gt;
-</code></pre>
-
-<p>类名称：com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator</p>
-
-<p>该生成器作为默认的生成器实现提供，生成的数据为64bit的long型数据。
+<p>该生成器采用snowflake算法实现，生成的数据为64bit的long型数据。
 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。</p>
 
 <p>其二进制表示形式包含四部分，从高位到低位分表为：1bit符号位(为0)，41bit时间位，10bit工作进程位，12bit序列位。</p>
@@ -477,9 +468,9 @@
 <p>该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个进程的工作进程Id是不同的。该值默认为0，目前可以通过三种方式设置。</p>
 
 <ol>
-<li>调用静态方法CommonSelfIdGenerator.setWorkerId(&ldquo;xxxx&rdquo;)设置。</li>
-<li>设置Java的系统变量，也就是再启动命令行中设置-Dsjdbc.self.id.generator.worker.id=xxx设置。</li>
-<li>设置系统环境变量，通过SJDBC_SELF_ID_GENERATOR_WORKER_ID=xxx设置。</li>
+<li>调用静态方法DefaultKeyGenerator.setWorkerId(&ldquo;xxxx&rdquo;)设置。</li>
+<li>设置Java的系统变量，也就是再启动命令行中设置-Dsharding-jdbc.default.key.generator.worker.id=xxx设置。</li>
+<li>设置系统环境变量，通过SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID=xxx设置。</li>
 </ol>
 
 <h3 id="序列位-12bit">序列位(12bit)</h3>

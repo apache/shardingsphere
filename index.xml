@@ -156,7 +156,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/limitations/</guid>
       <description> JDBC未支持列表 Sharding-JDBC暂时未支持不常用的JDBC方法。
 DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
-SQL语句限制 不支持DDL语句 不支持子语句 不支持UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
+SQL语句限制 不支持DDL语句 不支持子语句 不支持HAVING 不支持UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
 不支持DISTINCT聚合 不支持dual虚拟表 </description>
     </item>
     
@@ -227,20 +227,19 @@ String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try ( HintManager hintMa
 基于以上的原因，最终采用了以JDBC接口来实现对于生成Id的访问，而将底层具体的Id生成实现分离出来。
 使用方法 使用方法分为设置自动生成键和获取生成键两部分
 设置自动生成键 配置自增列：
-TableRule.builder(&amp;quot;t_order&amp;quot;).autoIncrementColumns(&amp;quot;order_id&amp;quot;);  设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator接口。
-配置全局生成器(com.x.x.AIdGenerator):
-ShardingRule.builder().idGenerator(com.x.x.AIdGenerator.class);  有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.x.x.BIdGenerator来生成Id:
-TableRule.builder(&amp;quot;t_order_item&amp;quot;).autoIncrementColumns(&amp;quot;order_item_id&amp;quot;, com.x.x.BIdGenerator.class);  这样t_order就使用com.x.x.AIdGenerator生成Id，而t_order_item使用com.x.x.BIdGenerator生成Id。
+TableRule.builder(&amp;quot;t_order&amp;quot;).generateKeyColumns(&amp;quot;order_id&amp;quot;);  设置Id生成器的实现类，该类必须实现com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator接口。
+配置全局生成器(com.xx.xx.KeyGenerator):
+ShardingRule.builder().keyGenerator(com.xx.xx.KeyGenerator.class);  有时候我们希望部分表的Id生成器与全局Id生成器不同，比如t_order_item表希望使用com.xx.xx.OtherKeyGenerator来生成Id:
+TableRule.builder(&amp;quot;t_order_item&amp;quot;).generateKeyColumns(&amp;quot;order_item_id&amp;quot;, com.xx.xx.OtherKeyGenerator.class);  这样t_order就使用com.xx.xx.KeyGenerator生成Id，而t_order_item使用com.xx.xx.OtherKeyGenerator生成Id。
 获取自动生成键 通过JDBC提供的API来获取。对于Statement来说调用statement.execute(&amp;quot;INSERT ...&amp;quot;, Statement.RETURN_GENERATED_KEYS) 来通知需要返回的生成的键值。对于PreparedStatement则是connection.prepareStatement(&amp;quot;INSERT ...&amp;quot;, Statement.RETURN_GENERATED_KEYS)
 调用statement.getGeneratedKeys()来获取键值的ResultSet。
 其他框架配置 关于Spring，YAML，MyBatis和JPA（Hibernate）的配置请参考 示例工程。
-通用的分布式主键生成器 需要引入以下依赖
-&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-self-id-generator&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-jdbc.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  类名称：com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator
-该生成器作为默认的生成器实现提供，生成的数据为64bit的long型数据。 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
+默认的分布式主键生成器 类名称：com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator
+该生成器采用snowflake算法实现，生成的数据为64bit的long型数据。 在数据库中应该用大于等于64bit的数字类型的字段来保存该值，比如在MySQL中应该使用BIGINT。
 其二进制表示形式包含四部分，从高位到低位分表为：1bit符号位(为0)，41bit时间位，10bit工作进程位，12bit序列位。
 时间位(41bit) 从2016年11月1日零点到现在的毫秒数，时间可以使用到2156年，满足大部分系统的要求。
 工作进程位(10bit) 该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个进程的工作进程Id是不同的。该值默认为0，目前可以通过三种方式设置。
- 调用静态方法CommonSelfIdGenerator.setWorkerId(&amp;ldquo;xxxx&amp;rdquo;)设置。 设置Java的系统变量，也就是再启动命令行中设置-Dsjdbc.self.id.generator.worker.id=xxx设置。 设置系统环境变量，通过SJDBC_SELF_ID_GENERATOR_WORKER_ID=xxx设置。  序列位(12bit) 该序列是用来在同一个毫秒内生成不同的Id。如果在这个毫秒内生成的数量超过4096(2的12次方)，那么生成器会等待到下个毫秒继续生成。
+ 调用静态方法DefaultKeyGenerator.setWorkerId(&amp;ldquo;xxxx&amp;rdquo;)设置。 设置Java的系统变量，也就是再启动命令行中设置-Dsharding-jdbc.default.key.generator.worker.id=xxx设置。 设置系统环境变量，通过SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID=xxx设置。  序列位(12bit) 该序列是用来在同一个毫秒内生成不同的Id。如果在这个毫秒内生成的数量超过4096(2的12次方)，那么生成器会等待到下个毫秒继续生成。
 总结 从Id的组成部分看，不同进程的Id肯定是不同的，同一个进程首先是通过时间位保证不重复，如果时间相同则是通过序列位保证。 同时由于时间位是单调递增的，且各个服务器如果大体做了时间同步，那么生成的Id在分布式环境可以认为是总体有序的。 这就保证了对索引字段的插入的高效性。例如MySQL的Innodb存储引擎的主键。</description>
     </item>
     
