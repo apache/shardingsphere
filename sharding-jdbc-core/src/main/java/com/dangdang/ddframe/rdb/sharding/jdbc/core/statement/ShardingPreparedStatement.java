@@ -79,7 +79,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     public ResultSet executeQuery() throws SQLException {
         ResultSet result;
         try {
-            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = route();
             result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
                     getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
@@ -92,7 +92,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public int executeUpdate() throws SQLException {
         try {
-            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeUpdate();
         } finally {
@@ -103,7 +103,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     @Override
     public boolean execute() throws SQLException {
         try {
-            Collection<PreparedStatementUnit> preparedStatementUnits = routeSingle();
+            Collection<PreparedStatementUnit> preparedStatementUnits = route();
             return new PreparedStatementExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).execute();
         } finally {
@@ -111,7 +111,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         }
     }
     
-    private Collection<PreparedStatementUnit> routeSingle() throws SQLException {
+    private Collection<PreparedStatementUnit> route() throws SQLException {
         Collection<PreparedStatementUnit> result = new LinkedList<>();
         setRouteResult(routingEngine.route(getParameters()));
         for (SQLExecutionUnit each : getRouteResult().getExecutionUnits()) {
