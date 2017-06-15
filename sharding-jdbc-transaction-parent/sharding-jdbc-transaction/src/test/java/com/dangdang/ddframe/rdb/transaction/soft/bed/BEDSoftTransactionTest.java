@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.transaction.soft.bed;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.SQLException;
