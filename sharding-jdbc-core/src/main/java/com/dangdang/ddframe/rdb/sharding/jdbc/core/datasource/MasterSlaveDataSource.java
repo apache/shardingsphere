@@ -96,7 +96,7 @@ public final class MasterSlaveDataSource extends AbstractDataSourceAdapter {
      * 获取数据库名称.
      * 
      * @return 数据库名称
-     * @throws SQLException
+     * @throws SQLException SQL异常
      */
     public String getDatabaseProductName() throws SQLException {
         String result;

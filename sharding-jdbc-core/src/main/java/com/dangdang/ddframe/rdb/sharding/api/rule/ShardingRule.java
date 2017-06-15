@@ -71,6 +71,12 @@ public final class ShardingRule {
      * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
      * 
      * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
+     * @param dataSourceRule 数据源配置规则
+     * @param tableRules 表配置规则
+     * @param bindingTableRules 绑定表配置规则
+     * @param databaseShardingStrategy 默认分库策略
+     * @param tableShardingStrategy 默认分表策略
+     * @param keyGenerator 默认主键生成器
      */
     @Deprecated
     public ShardingRule(
@@ -263,6 +269,7 @@ public final class ShardingRule {
     /**
      * 获取自增主键.
      *
+     * @param tableName 表名称
      * @return 生成的自增主键
      */
     public Number generateKey(final String tableName) {

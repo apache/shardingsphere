@@ -48,6 +48,7 @@ public final class ResultSetFactory {
      * @param resultSets 结果集列表
      * @param sqlStatement SQL语句对象
      * @return 结果集包装
+     * @throws SQLException SQL异常
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
         ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);

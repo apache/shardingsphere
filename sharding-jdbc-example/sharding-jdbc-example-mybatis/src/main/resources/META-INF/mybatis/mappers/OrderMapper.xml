@@ -21,7 +21,7 @@
         #{orderId,jdbcType=INTEGER},
         #{userId,jdbcType=INTEGER},
         #{status,jdbcType=VARCHAR}
-        );
+        )
     </insert>
     
     <update id="update">

@@ -63,6 +63,15 @@ public final class TableRule {
      * <p>未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.</p>
      *
      * @deprecated 未来将改为private权限, 不在对外公开, 不建议使用非Spring命名空间的配置.
+     * @param logicTable 逻辑表名称
+     * @param dynamic 是否为动态表
+     * @param actualTables 真实表集合
+     * @param dataSourceRule 数据源分片规则
+     * @param dataSourceNames 数据源名称集合
+     * @param databaseShardingStrategy 数据库分片策略
+     * @param tableShardingStrategy 表分片策略
+     * @param generateKeyColumn 自增列名称
+     * @param keyGenerator 列主键生成器
      */
     @Deprecated
     public TableRule(final String logicTable, final boolean dynamic, final List<String> actualTables, final DataSourceRule dataSourceRule, final Collection<String> dataSourceNames,
