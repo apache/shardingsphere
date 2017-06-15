@@ -43,7 +43,7 @@ import java.util.Date;
  * 
  * <p>
  * 工作进程Id获取优先级: 系统变量{@code sharding-jdbc.default.key.generator.worker.id} 大于 环境变量{@code SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID}
- * ,另外可以调用@{@code CommonSelfKeyGenerator.setWorkerId}进行设置
+ * ,另外可以调用@{@code DefaultKeyGenerator.setWorkerId}进行设置
  * </p>
  * 
  * @author gaohongtao
