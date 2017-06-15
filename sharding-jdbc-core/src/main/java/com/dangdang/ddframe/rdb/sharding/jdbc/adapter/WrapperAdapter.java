@@ -74,4 +74,15 @@ public class WrapperAdapter implements Wrapper {
             each.invoke(target);
         }
     }
+    
+    protected void throwSQLExceptionIfNessesary(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        throw ex;
+    }
 }

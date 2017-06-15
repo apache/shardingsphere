@@ -18,8 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +26,8 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,13 +64,16 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void close() throws SQLException {
-        SQLUtil.safeInvoke(resultSets, new ThrowableSQLExceptionMethod<ResultSet>() {
-            @Override
-            public void apply(final ResultSet object) throws SQLException {
-                object.close();
-            }
-        });
         closed = true;
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (ResultSet each : resultSets) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNessesary(exceptions);
     }
     
     @Override

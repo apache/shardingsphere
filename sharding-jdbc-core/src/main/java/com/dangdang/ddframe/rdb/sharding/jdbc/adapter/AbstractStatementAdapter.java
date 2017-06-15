@@ -18,14 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * 静态语句对象适配类.
@@ -46,15 +45,17 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
-        SQLUtil.safeInvoke(getRoutedStatements(), new ThrowableSQLExceptionMethod() {
-            
-            @Override
-            public void apply(final Object object) throws SQLException {
-                ((Statement) object).close();
-            }
-        });
         closed = true;
         getRoutedStatements().clear();
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Statement each : getRoutedStatements()) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNessesary(exceptions);
     }
     
     @Override
