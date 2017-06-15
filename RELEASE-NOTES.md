@@ -8,6 +8,28 @@ next = "/00-overview/contribution/"
 
 +++
 
+## 1.5.0.M1
+
+### 里程碑
+
+1. 全新的SQL解析模块，去掉对Druid的依赖。仅解析分片上下文，对于SQL采用"半理解"理念，极大提升性能和兼容性，并降低代码复杂度
+1. 提供对MySQL的全方位支持的同时，增加了对Oracle，SQLServer和PostgreSQL的基本支持
+1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列
+
+### 不支持项
+
+1. 当前仍然不支持子查询，因此对Oracle以及SQLServer的分页并不支持
+2. 暂时去掉对OR的支持
+
+### 开发中
+
+1. ShardingRule简化，每个ShardingRule仅支持单TableRule
+1. BindingTableRule增强，每个TableRule可以支持多个不同分片策略的BindingTableRule
+1. 子查询支持
+1. OR支持
+1. 包括分页的Oracle和SQLServer全语法支持
+1. 内置分片策略支持
+
 ## 1.4.2
 
 ### 功能提升
