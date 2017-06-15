@@ -54,9 +54,9 @@ public final class ShardingResultSets {
     }
     
     private Type generateType() {
-        if (this.resultSets.isEmpty()) {
+        if (resultSets.isEmpty()) {
             return Type.EMPTY;
-        } else if (1 == this.resultSets.size()) {
+        } else if (1 == resultSets.size()) {
             return Type.SINGLE;
         } else {
             return Type.MULTIPLE;
