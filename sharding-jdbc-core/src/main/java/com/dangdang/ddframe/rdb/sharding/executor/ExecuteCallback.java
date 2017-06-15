@@ -18,14 +18,14 @@
 package com.dangdang.ddframe.rdb.sharding.executor;
 
 /**
- * 执行单元.
+ * 执行回调函数.
  * 
  * @param <T> 返回值类型
  * 
  * @author gaohongtao
  * @author zhangliang
  */
-public interface ExecuteUnit<T> {
+public interface ExecuteCallback<T> {
     
     /**
      * 执行任务.

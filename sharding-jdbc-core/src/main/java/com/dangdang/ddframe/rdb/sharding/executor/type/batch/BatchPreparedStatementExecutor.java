@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.type.batch;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecuteCallback;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeBatch");
         try {
-            return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteUnit<int[]>() {
+            return accumulate(executorEngine.executeBatch(sqlType, batchPreparedStatementUnits, parameterSets, new ExecuteCallback<int[]>() {
                 
                 @Override
                 public int[] execute(final BaseStatementUnit baseStatementUnit) throws Exception {

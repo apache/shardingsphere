@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.executor.type.prepared;
 import com.codahale.metrics.Timer.Context;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.BaseStatementUnit;
-import com.dangdang.ddframe.rdb.sharding.executor.ExecuteUnit;
+import com.dangdang.ddframe.rdb.sharding.executor.ExecuteCallback;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public final class PreparedStatementExecutor {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeQuery");
         List<ResultSet> result;
         try {
-            result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<ResultSet>() {
+            result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<ResultSet>() {
                 
                 @Override
                 public ResultSet execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -77,7 +77,7 @@ public final class PreparedStatementExecutor {
     public int executeUpdate() {
         Context context = MetricsContext.start("ShardingPreparedStatement-executeUpdate");
         try {
-            List<Integer> results = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Integer>() {
+            List<Integer> results = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<Integer>() {
                 
                 @Override
                 public Integer execute(final BaseStatementUnit baseStatementUnit) throws Exception {
@@ -106,7 +106,7 @@ public final class PreparedStatementExecutor {
     public boolean execute() {
         Context context = MetricsContext.start("ShardingPreparedStatement-execute");
         try {
-            List<Boolean> result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteUnit<Boolean>() {
+            List<Boolean> result = executorEngine.executePreparedStatement(sqlType, preparedStatementUnits, parameters, new ExecuteCallback<Boolean>() {
                 
                 @Override
                 public Boolean execute(final BaseStatementUnit baseStatementUnit) throws Exception {
