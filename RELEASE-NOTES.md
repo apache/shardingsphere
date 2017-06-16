@@ -8,6 +8,12 @@ next = "/00-overview/contribution/"
 
 +++
 
+## 1.5.0.M2
+
+### 缺陷修正
+
+1. [ISSUE #263](https://github.com/dangdangdotcom/sharding-jdbc/issues/263) 分片列和逻辑表配置可忽略大小写
+
 ## 1.5.0.M1
 
 ### 里程碑
