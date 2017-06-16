@@ -33,7 +33,7 @@ public final class ExecutorTestUtil {
         eventCaller.verifySQL(event.getSql());
         eventCaller.verifyParameters(event.getParameters());
         eventCaller.verifyEventExecutionType(event.getEventExecutionType());
-        if (EventExecutionType.EXECUTE_FAILURE.equals(event.getEventExecutionType()) && event.getException().isPresent()) {
+        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType() && event.getException().isPresent()) {
             eventCaller.verifyException(event.getException().get());
         }
     }

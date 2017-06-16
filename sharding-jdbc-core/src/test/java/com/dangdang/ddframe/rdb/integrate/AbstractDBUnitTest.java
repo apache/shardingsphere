@@ -115,7 +115,7 @@ public abstract class AbstractDBUnitTest {
     }
     
     protected final boolean isAliasSupport() {
-        return H2.equals(dbEnv.getDatabaseType()) || MySQL.equals(dbEnv.getDatabaseType());
+        return H2 == dbEnv.getDatabaseType() || MySQL == dbEnv.getDatabaseType();
     }
     
     protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {

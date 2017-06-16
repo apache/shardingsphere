@@ -147,7 +147,7 @@ public final class ShardingRuleBuilder {
     
     private TableRule findTableRuleByLogicTableName(final Collection<TableRule> tableRules, final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (logicTableName.equals(each.getLogicTable())) {
+            if (logicTableName.equalsIgnoreCase(each.getLogicTable())) {
                 return each;
             }
         }

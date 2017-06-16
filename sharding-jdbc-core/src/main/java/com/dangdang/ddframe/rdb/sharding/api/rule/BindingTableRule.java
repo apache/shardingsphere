@@ -45,7 +45,7 @@ public final class BindingTableRule {
      */
     public boolean hasLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTableName)) {
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
                 return true;
             }
         }
@@ -73,7 +73,7 @@ public final class BindingTableRule {
         }
         Preconditions.checkState(-1 != index, String.format("Actual table [%s].[%s] is not in table config", dataSource, otherActualTable));
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTable)) {
+            if (each.getLogicTable().equalsIgnoreCase(logicTable)) {
                 return each.getActualTables().get(index).getTableName();
             }
         }

@@ -221,9 +221,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
             @Subscribe
             public void subscribe(final DMLExecutionEvent event) {
-                if (event.getEventExecutionType().equals(EventExecutionType.BEFORE_EXECUTE)) {
+                if (event.getEventExecutionType() == EventExecutionType.BEFORE_EXECUTE) {
                     beforeEvents.add(event);
-                } else if (event.getEventExecutionType().equals(EventExecutionType.EXECUTE_SUCCESS)) {
+                } else if (event.getEventExecutionType() == EventExecutionType.EXECUTE_SUCCESS) {
                     assertThat(beforeEvents, hasItem(event));
                 }
             }

@@ -45,7 +45,7 @@ public final class CartesianRoutingResult extends RoutingResult {
     
     private void merge(final String dataSource, final CartesianTableReference routingTableReference) {
         for (CartesianDataSource each : routingDataSources) {
-            if (each.getDataSource().equals(dataSource)) {
+            if (each.getDataSource().equalsIgnoreCase(dataSource)) {
                 each.getRoutingTableReferences().add(routingTableReference);
                 return;
             }

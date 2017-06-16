@@ -202,7 +202,7 @@ public final class TableRule {
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         int result = 0;
         for (DataNode each : actualTables) {
-            if (each.getDataSourceName().equals(dataSourceName) && each.getTableName().equals(actualTableName)) {
+            if (each.getDataSourceName().equalsIgnoreCase(dataSourceName) && each.getTableName().equalsIgnoreCase(actualTableName)) {
                 return result;
             }
             result++;

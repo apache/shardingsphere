@@ -83,7 +83,7 @@ public final class MergerTestUtil {
     
     public static AggregationSelectItem createAggregationColumn(final AggregationType aggregationType, final String name, final String alias, final int index) {
         AggregationSelectItem result = new AggregationSelectItem(name, Optional.fromNullable(alias), index, aggregationType);
-        if (AggregationType.AVG.equals(aggregationType)) {
+        if (AggregationType.AVG == aggregationType) {
             result.getDerivedAggregationSelectItems().add(
                     new AggregationSelectItem(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationType.COUNT));
             result.getDerivedAggregationSelectItems().add(

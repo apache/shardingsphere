@@ -107,6 +107,6 @@ public class ShardingStrategy {
     }
     
     private boolean isInsertMultiple(final SQLType sqlType, final Collection<String> availableTargetNames) {
-        return SQLType.INSERT.equals(sqlType) && availableTargetNames.size() > 1;
+        return SQLType.INSERT == sqlType && availableTargetNames.size() > 1;
     }
 }

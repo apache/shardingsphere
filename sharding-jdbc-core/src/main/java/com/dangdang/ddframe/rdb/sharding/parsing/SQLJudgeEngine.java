@@ -52,17 +52,17 @@ public final class SQLJudgeEngine {
         while (true) {
             TokenType tokenType = lexer.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
-                if (tokenType.equals(DefaultKeyword.SELECT)) {
+                if (DefaultKeyword.SELECT == tokenType) {
                     return new SelectStatement();
-                } else if (tokenType.equals(DefaultKeyword.UPDATE)) {
+                } else if (DefaultKeyword.UPDATE == tokenType) {
                     return new UpdateStatement();
-                } else if (tokenType.equals(DefaultKeyword.INSERT)) {
+                } else if (DefaultKeyword.INSERT == tokenType) {
                     return new InsertStatement();
-                } else if (tokenType.equals(DefaultKeyword.DELETE)) {
+                } else if (DefaultKeyword.DELETE == tokenType) {
                     return new DeleteStatement();
                 }
             }
-            if (tokenType instanceof Assist && tokenType.equals(Assist.END)) {
+            if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
             lexer.nextToken();
