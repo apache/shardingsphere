@@ -25,7 +25,7 @@ import java.util.Map;
 
 public final class DataBaseEnvironment {
     
-    private static final int INIT_CAPACITY = 4;
+    private static final int INIT_CAPACITY = 5;
     
     private static final Map<DatabaseType, String> DRIVER_CLASS_NAME = new HashMap<>(INIT_CAPACITY);
     
@@ -46,19 +46,19 @@ public final class DataBaseEnvironment {
     }
     
     private void fillData() {
-        DRIVER_CLASS_NAME.put(DatabaseType.H2, "org.h2.Driver");
+        DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class.getName());
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
         SCHEMA.put(DatabaseType.H2, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, "com.mysql.jdbc.Driver");
+        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class.getName());
         URL.put(DatabaseType.MySQL, "jdbc:mysql://localhost:3306/%s");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
         SCHEMA.put(DatabaseType.MySQL, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver");
+        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class.getName());
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://localhost:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");

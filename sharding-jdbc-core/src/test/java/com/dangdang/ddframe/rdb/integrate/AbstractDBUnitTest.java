@@ -35,6 +35,7 @@ import org.dbunit.ext.h2.H2Connection;
 import org.dbunit.ext.mssql.MsSqlConnection;
 import org.dbunit.ext.mysql.MySqlConnection;
 import org.dbunit.ext.oracle.OracleConnection;
+import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -181,7 +182,9 @@ public abstract class AbstractDBUnitTest {
             case MySQL: 
                 return new MySqlConnection(connection, null);
             case PostgreSQL:
-                return new DatabaseConnection(connection);
+                DatabaseConnection databaseConnection = new DatabaseConnection(connection);
+                databaseConnection.getConfig().setProperty("http://www.dbunit.org/properties/datatypeFactory", new PostgresqlDataTypeFactory());
+                return databaseConnection;
             case Oracle:
                 return new OracleConnection(connection, "JDBC");
             case SQLServer:
