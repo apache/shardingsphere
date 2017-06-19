@@ -98,7 +98,7 @@ public final class Limit {
     
     private void rewrite(final List<Object> parameters) {
         int rewriteOffset = 0;
-        int rewriteRowCount = getOffset() + rowCountLimit.getRowCount();
+        int rewriteRowCount = null == rowCountLimit ? -1 : getOffset() + rowCountLimit.getRowCount();
         if (null != offsetLimit && offsetLimit.getOffsetParameterIndex() > -1) {
             parameters.set(offsetLimit.getOffsetParameterIndex(), rewriteOffset);
         }

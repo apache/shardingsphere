@@ -30,6 +30,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.google.common.base.Optional;
 
 import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
 
@@ -47,8 +48,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             if (getSqlParser().skipIfEqual(DefaultKeyword.INTO)) {
                 getSqlParser().skipIfEqual(PostgreSQLKeyword.TEMPORARY, PostgreSQLKeyword.TEMP, PostgreSQLKeyword.UNLOGGED);
                 getSqlParser().skipIfEqual(DefaultKeyword.TABLE);
-                // TODO
-                // getSqlParser().name();
             }
         }
         parseFrom();
@@ -73,62 +72,73 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseLimit() {
-        int rowCount = -1;
-        int offset = -1;
-        int rowCountParameterIndex = -1;
-        int offsetParameterIndex = -1;
-        boolean hasLimit = false;
-        boolean hasOffset = false;
+        Optional<OffsetLimit> offsetLimit = Optional.absent();
+        Optional<RowCountLimit> rowCountLimit = Optional.absent();
         while (true) {
-            int parameterIndex = getParametersIndex();
             if (getSqlParser().skipIfEqual(PostgreSQLKeyword.LIMIT)) {
-                hasLimit = true;
-                int valueBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
-                if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
-                    getSqlParser().getLexer().nextToken();
-                } else {
-                    if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                        rowCount = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-                        valueBeginPosition = valueBeginPosition - (rowCount + "").length();
-                        getSelectStatement().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, rowCount));
-                    } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                        rowCountParameterIndex = parameterIndex++;
-                        setParametersIndex(parameterIndex);
-                        rowCount = -1;
-                    } else {
-                        throw new SQLParsingException(getSqlParser().getLexer());
-                    }
-                    getSqlParser().getLexer().nextToken();
-                }
+                rowCountLimit = buildRowCount();
             } else if (getSqlParser().skipIfEqual(PostgreSQLKeyword.OFFSET)) {
-                hasOffset = true;
-                int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
-                if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                    offset = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-                    offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-                    getSelectStatement().getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
-                } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                    offsetParameterIndex = parameterIndex++;
-                    setParametersIndex(parameterIndex);
-                    offset = -1;
-                } else {
-                    throw new SQLParsingException(getSqlParser().getLexer());
-                }
-                getSqlParser().getLexer().nextToken();
-                getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
+                offsetLimit = buildOffsetLimit();
             } else {
                 break;
             }
         }
-        if (hasLimit || hasOffset) {
-            Limit limit;
-            // TODO 需处理只有OFFSET情况
-            if (hasOffset && hasLimit) {
-                limit = new Limit(new OffsetLimit(offset, offsetParameterIndex), new RowCountLimit(rowCount, rowCountParameterIndex));
+        setLimit(offsetLimit, rowCountLimit);
+    }
+    
+    private Optional<RowCountLimit> buildRowCount() {
+        int parameterIndex = getParametersIndex();
+        int rowCount = -1;
+        int rowCountParameterIndex = -1;
+        int valueBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
+        if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
+            getSqlParser().getLexer().nextToken();
+        } else {
+            if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
+                rowCount = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                valueBeginPosition = valueBeginPosition - (rowCount + "").length();
+                getSelectStatement().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, rowCount));
+            } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+                rowCountParameterIndex = parameterIndex++;
+                setParametersIndex(parameterIndex);
+                rowCount = -1;
             } else {
-                limit = new Limit(new RowCountLimit(rowCount, rowCountParameterIndex));
+                throw new SQLParsingException(getSqlParser().getLexer());
             }
-            getSelectStatement().setLimit(limit);
+            getSqlParser().getLexer().nextToken();
+        }
+        return Optional.of(new RowCountLimit(rowCount, rowCountParameterIndex));
+    }
+    
+    private Optional<OffsetLimit> buildOffsetLimit() {
+        int parameterIndex = getParametersIndex();
+        int offset = -1;
+        int offsetParameterIndex = -1;
+        int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
+        if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
+            offset = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+            offsetBeginPosition = offsetBeginPosition - (offset + "").length();
+            getSelectStatement().getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+        } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
+            offsetParameterIndex = parameterIndex++;
+            setParametersIndex(parameterIndex);
+            offset = -1;
+        } else {
+            throw new SQLParsingException(getSqlParser().getLexer());
+        }
+        getSqlParser().getLexer().nextToken();
+        getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
+        return Optional.of(new OffsetLimit(offset, offsetParameterIndex));
+    }
+    
+    
+    private void setLimit(final Optional<OffsetLimit> offsetLimit, final Optional<RowCountLimit> rowCountLimit) {
+        if (offsetLimit.isPresent() && rowCountLimit.isPresent()) {
+            getSelectStatement().setLimit(new Limit(offsetLimit.get(), rowCountLimit.get()));
+        } else if (offsetLimit.isPresent()) {
+            getSelectStatement().setLimit(new Limit(offsetLimit.get()));
+        } else if (rowCountLimit.isPresent()) {
+            getSelectStatement().setLimit(new Limit(rowCountLimit.get()));
         }
     }
     

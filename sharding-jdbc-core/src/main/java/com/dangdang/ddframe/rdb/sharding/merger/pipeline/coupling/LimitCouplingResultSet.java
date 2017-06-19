@@ -62,6 +62,9 @@ public final class LimitCouplingResultSet extends AbstractDelegateResultSet {
     }
     
     private boolean doNext() throws SQLException {
-        return ++rowNumber <= limit.getRowCount() && getDelegate().next();
+        if (limit.getRowCount() > 0) {
+            return ++rowNumber <= limit.getRowCount() && getDelegate().next();
+        }
+        return getDelegate().next();
     }
 }
