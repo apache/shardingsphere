@@ -37,7 +37,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = getShardingDataSource().getConnection()) {
                 connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate(String.format(sql.getInsertWithoutPlaceholderSql(), i, i));
+                connection.createStatement().executeUpdate(String.format(getDatabaseTestSQL().getInsertWithoutPlaceholderSql(), i, i));
                 connection.commit();
                 connection.close();
             }
@@ -50,7 +50,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = getShardingDataSource().getConnection()) {
                 connection.setAutoCommit(false);
-                connection.createStatement().executeUpdate(String.format(sql.getInsertWithAutoIncrementColumnSql(), i, "'insert'"));
+                connection.createStatement().executeUpdate(String.format(getDatabaseTestSQL().getInsertWithAutoIncrementColumnSql(), i, "'insert'"));
                 connection.commit();
                 connection.close();
             }
@@ -64,7 +64,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
                 }
             }
         }
@@ -75,7 +75,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(40));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(40));
         }
         assertDataSet("update", "updated");
     }
@@ -86,7 +86,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
             for (int j = 0; j < 2; j++) {
                 try (Connection connection = getShardingDataSource().getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
                 }
             }
         }
@@ -97,7 +97,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutShardingValueSql(), "'init'")), is(40));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'")), is(40));
         }
         assertDataSet("delete", "init");
     }
@@ -106,7 +106,7 @@ public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardin
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
                     getShardingDataSource().getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), 
-                    "t_order", SqlPlaceholderUtil.replacePreparedStatement(sql.getAssertSelectWithStatusSql()), status);
+                    "t_order", SqlPlaceholderUtil.replacePreparedStatement(getDatabaseTestSQL().getAssertSelectWithStatusSql()), status);
         }
     }
 }

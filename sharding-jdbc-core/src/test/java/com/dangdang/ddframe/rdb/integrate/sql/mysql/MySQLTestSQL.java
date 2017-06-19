@@ -282,6 +282,11 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     }
     
     @Override
+    public String getSelectLimitWithBindingTableWithOffsetSql() {
+        return SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL;
+    }
+    
+    @Override
     public String getSelectGroupWithBindingTableSql() {
         return SELECT_GROUP_WITH_BINDING_TABLE_SQL;
     }

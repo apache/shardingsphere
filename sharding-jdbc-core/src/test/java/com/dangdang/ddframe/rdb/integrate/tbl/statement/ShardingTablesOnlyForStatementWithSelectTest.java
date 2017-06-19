@@ -41,28 +41,28 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/tbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectEqualsWithSingleTableSql(), 10, 1000));
+                "t_order", String.format(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql(), 10, 1000));
         assertDataSet("integrate/dataset/tbl/expect/select/SelectEqualsWithSingleTable_1.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectEqualsWithSingleTableSql(), 11, 1109));
-        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", String.format(sql.getSelectEqualsWithSingleTableSql(), 12, 1000));
+                "t_order", String.format(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql(), 11, 1109));
+        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", String.format(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql(), 12, 1000));
     }
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/tbl/expect/select/SelectBetweenWithSingleTable.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectBetweenWithSingleTableSql(), 10, 12, 1009, 1108));
+                "t_order", String.format(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql(), 10, 12, 1009, 1108));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectBetweenWithSingleTableSql(), 10, 12, 1309, 1408));
+                "t_order", String.format(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql(), 10, 12, 1309, 1408));
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/tbl/expect/select/SelectInWithSingleTable_0.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectInWithSingleTableSql(), 10, 11, 15, 1009, 1108));
+                "t_order", String.format(getDatabaseTestSQL().getSelectInWithSingleTableSql(), 10, 11, 15, 1009, 1108));
         assertDataSet("integrate/dataset/tbl/expect/select/SelectInWithSingleTable_1.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectInWithSingleTableSql(), 10, 12, 15, 1009, 1108));
+                "t_order", String.format(getDatabaseTestSQL().getSelectInWithSingleTableSql(), 10, 12, 15, 1009, 1108));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), 
-                "t_order", String.format(sql.getSelectInWithSingleTableSql(), 10, 12, 15, 1309, 1408));
+                "t_order", String.format(getDatabaseTestSQL().getSelectInWithSingleTableSql(), 10, 12, 15, 1309, 1408));
     }
     
     @Test
@@ -71,18 +71,18 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
             String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/tbl/expect/select/postgresql/SelectLimitWithBindingTable.xml"
                     : "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
             assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                    "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
+                    "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
             assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                    "t_order_item", String.format(sql.getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
+                    "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
         }
     }
     
     @Test
     public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/tbl/expect/select/SelectGroupByWithBindingTable.xml", shardingDataSource.getConnection(), 
-                "t_order_item", String.format(sql.getSelectGroupWithBindingTableSql(), 10, 11, 1000, 1109));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableSql(), 10, 11, 1000, 1109));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), 
-                "t_order_item", String.format(sql.getSelectGroupWithBindingTableSql(), 1, 9, 1000, 1909));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableSql(), 1, 9, 1000, 1909));
     }
     
     @Test
@@ -91,9 +91,9 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
                 ? "integrate/dataset/tbl/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml"
                 : "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectGroupWithoutGroupedColumnSql(), 10, 11, 1000, 1109));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql(), 10, 11, 1000, 1109));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectGroupWithoutGroupedColumnSql(), 1, 9, 1000, 1909));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql(), 1, 9, 1000, 1909));
     }
     
     @Test
@@ -102,8 +102,8 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
                 ? "integrate/dataset/tbl/expect/select/postgresql/SelectWithBindingTableAndConfigTable.xml"
                 : "integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'init'"));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'init'"));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(sql.getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'none'"));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableAndConfigSql(), 10, 11, 1009, 1108, "'none'"));
     }
 }

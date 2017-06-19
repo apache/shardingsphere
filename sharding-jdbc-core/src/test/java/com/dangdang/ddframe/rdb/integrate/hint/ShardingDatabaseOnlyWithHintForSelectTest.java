@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.integrate.hint;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
@@ -39,7 +39,7 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String statement = replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql());
+        String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", 
                 new DynamicShardingValueHelper(10, 1000), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", 
@@ -50,7 +50,7 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
-        String statement = replacePreparedStatement(sql.getSelectBetweenWithSingleTableSql());
+        String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12),
                 ShardingOperator.BETWEEN, Lists.newArrayList(1001, 1200), ShardingOperator.BETWEEN), shardingDataSource.getConnection(), 
                 "t_order", statement, 10, 12, 1001, 1200);
@@ -60,7 +60,7 @@ public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractSha
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
-        String statement = replacePreparedStatement(sql.getSelectInWithSingleTableSql());
+        String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),
                 ShardingOperator.IN, Lists.newArrayList(1000, 1201), ShardingOperator.IN), shardingDataSource.getConnection(), "t_order", statement, 10, 12, 15, 1000, 1201);
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", new DynamicShardingValueHelper(Lists.newArrayList(10, 12, 15),

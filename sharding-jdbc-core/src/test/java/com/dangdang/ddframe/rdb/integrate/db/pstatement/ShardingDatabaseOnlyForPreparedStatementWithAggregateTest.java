@@ -36,13 +36,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectCountAlias() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCount.xml", getShardingDataSource().getConnection(), "t_order", sql.getSelectCountAliasSql());
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCount.xml", getShardingDataSource().getConnection(), "t_order", getDatabaseTestSQL().getSelectCountAliasSql());
     }
     
     @Test
     public void assertSelectCount() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.getSelectCountSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectCountSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
@@ -55,13 +55,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectSumAlias() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectSum.xml", getShardingDataSource().getConnection(), "t_order", sql.getSelectSumAliasSql());
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectSum.xml", getShardingDataSource().getConnection(), "t_order", getDatabaseTestSQL().getSelectSumAliasSql());
     }
     
     @Test
     public void assertSelectSum() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.getSelectSumSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectSumSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
@@ -74,13 +74,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectMaxAlias() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectMax.xml", getShardingDataSource().getConnection(), "t_order", sql.getSelectMaxAliasSql());
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectMax.xml", getShardingDataSource().getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxAliasSql());
     }
     
     @Test
     public void assertSelectMax() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.getSelectMaxSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMaxSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
@@ -93,13 +93,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectMinAlias() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectMin.xml", getShardingDataSource().getConnection(), "t_order", sql.getSelectMinAliasSql());
+        assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectMin.xml", getShardingDataSource().getConnection(), "t_order", getDatabaseTestSQL().getSelectMinAliasSql());
     }
     
     @Test
     public void assertSelectMin() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.getSelectMinSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMinSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
@@ -114,13 +114,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
     public void assertSelectAvgAlias() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectAvg.xml", getShardingDataSource().getConnection(), 
-                "t_order", sql.getSelectAvgAliasSql());
+                "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());
     }
     
     @Test
     public void assertSelectAvgByName() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.getSelectAvgSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectAvgSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
@@ -133,7 +133,7 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        String selectSql = SqlPlaceholderUtil.replacePreparedStatement(sql.getSelectCountWithBindingTableSql());
+        String selectSql = SqlPlaceholderUtil.replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableSql());
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_0.xml", 
                 getShardingDataSource().getConnection(), "t_order_item", selectSql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectCountWithBindingTable_1.xml", 

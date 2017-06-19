@@ -44,7 +44,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     @Test
     public void assertInsertWithAllPlaceholders() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql.getInsertWithAllPlaceholdersSql())) {
+             PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getInsertWithAllPlaceholdersSql())) {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
                 preparedStatement.setInt(2, i);
@@ -59,7 +59,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithoutPlaceholderSql(), i, i))) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(getDatabaseTestSQL().getInsertWithoutPlaceholderSql(), i, i))) {
                 preparedStatement.executeUpdate();
             }
         }
@@ -70,7 +70,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     public void assertInsertWithPartialPlaceholders() throws SQLException, DatabaseUnitException {
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql.getInsertWithPartialPlaceholdersSql(), i, i))) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(getDatabaseTestSQL().getInsertWithPartialPlaceholdersSql(), i, i))) {
                 preparedStatement.setString(1, "insert");
                 preparedStatement.executeUpdate();
             }
@@ -81,7 +81,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     @Test
     public void assertUpdateWithoutAlias() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getUpdateWithoutAliasSql()))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutAliasSql()))) {
             for (int i = 10; i < 12; i++) {
                 for (int j = 0; j < 10; j++) {
                     preparedStatement.setString(1, "updated");
@@ -98,7 +98,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     public void assertUpdateWithAlias() throws SQLException, DatabaseUnitException {
         if (isAliasSupport()) {
             try (Connection connection = shardingDataSource.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql.getUpdateWithAliasSql())) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getUpdateWithAliasSql())) {
                 for (int i = 10; i < 12; i++) {
                     for (int j = 0; j < 10; j++) {
                         preparedStatement.setString(1, "updated");
@@ -116,7 +116,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         ShardingDataSource shardingDataSource = getShardingDataSource();
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getUpdateWithoutShardingValueSql()))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutShardingValueSql()))) {
             preparedStatement.setString(1, "updated");
             preparedStatement.setString(2, "init");
             assertThat(preparedStatement.executeUpdate(), is(20));
@@ -127,7 +127,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getDeleteWithoutAliasSql()))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutAliasSql()))) {
             for (int i = 10; i < 12; i++) {
                 for (int j = 0; j < 10; j++) {
                     preparedStatement.setInt(1, i * 100 + j);
@@ -143,7 +143,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql.getDeleteWithoutShardingValueSql()))) {
+             PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutShardingValueSql()))) {
             preparedStatement.setString(1, "init");
             assertThat(preparedStatement.executeUpdate(), is(20));
         }
@@ -154,7 +154,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern), 
                     shardingDataSource.getConnection().getConnection("dataSource_db_single", SQLType.SELECT), 
-                    String.format("t_order_%s", i), String.format(sql.getAssertSelectShardingTablesWithStatusSql(), i), status);
+                    String.format("t_order_%s", i), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), i), status);
         }
     }
 }

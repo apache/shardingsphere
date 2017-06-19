@@ -37,7 +37,7 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String statement = replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql());
+        String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new AbstractRoutingDatabaseOnlyTest
                 .DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new AbstractRoutingDatabaseOnlyTest

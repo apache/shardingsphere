@@ -45,7 +45,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
         for (int i = 1; i <= 10; i++) {
             try (Connection connection = shardingDataSource.getConnection();
                  Statement stmt = connection.createStatement()) {
-                stmt.executeUpdate(String.format(sql.getInsertWithoutPlaceholderSql(), i, i, "'insert'"));
+                stmt.executeUpdate(String.format(getDatabaseTestSQL().getInsertWithoutPlaceholderSql(), i, i, "'insert'"));
             }
         }
         assertDataSet("insert", "insert");
@@ -57,7 +57,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection();
                      Statement stmt = connection.createStatement()) {
-                    assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
                 }
             }
         }
@@ -68,7 +68,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            assertThat(stmt.executeUpdate(String.format(sql.getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(20));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(20));
         }
         assertDataSet("update", "updated");
     }
@@ -79,7 +79,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection();
                      Statement stmt = connection.createStatement()) {
-                    assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
                 }
             }   
         }
@@ -90,7 +90,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            assertThat(stmt.executeUpdate(String.format(sql.getDeleteWithoutShardingValueSql(), "'init'")), is(20));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'")), is(20));
         }
         assertDataSet("delete", "init");
     }
@@ -99,7 +99,7 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/tbl/expect/%s/db_single.xml", expectedDataSetPattern),
                     shardingDataSource.getConnection().getConnection("dataSource_db_single", SQLType.SELECT), 
-                    String.format("t_order_%s", i), String.format(sql.getAssertSelectShardingTablesWithStatusSql(), i), status);
+                    String.format("t_order_%s", i), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), i), status);
         }
     }
 }

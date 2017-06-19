@@ -23,6 +23,8 @@ import com.dangdang.ddframe.rdb.integrate.sql.oracle.OracleSQLTestSQL;
 import com.dangdang.ddframe.rdb.integrate.sql.postgresql.PostgreSQLTestSQL;
 import com.dangdang.ddframe.rdb.integrate.sql.sqlserver.SQLServerSQLTestSQL;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
@@ -58,7 +60,8 @@ public abstract class AbstractDBUnitTest {
     
     protected static final DatabaseType CURRENT_DB_TYPE = H2;
     
-    protected static DatabaseTestSQL sql;
+    @Getter(AccessLevel.PROTECTED)
+    private static DatabaseTestSQL databaseTestSQL;
     
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
@@ -66,7 +69,7 @@ public abstract class AbstractDBUnitTest {
     
     @Before
     public void createSql() {
-        sql = currentDatabaseTestSQL();
+        databaseTestSQL = currentDatabaseTestSQL();
     }
     
     @Before

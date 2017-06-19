@@ -31,29 +31,29 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql()), 10, 1000);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql()), 10, 1000);
         assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql()), 12, 1201);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql()), 12, 1201);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectEqualsWithSingleTableSql()), 12, 1000);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql()), 12, 1000);
     }
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select/SelectBetweenWithSingleTable.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectBetweenWithSingleTableSql()), 10, 12, 1001, 1200);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql()), 10, 12, 1001, 1200);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectBetweenWithSingleTableSql()), 10, 12, 1309, 1408);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql()), 10, 12, 1309, 1408);
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_0.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectInWithSingleTableSql()), 10, 12, 15, 1000, 1201);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql()), 10, 12, 15, 1000, 1201);
         assertDataSet("integrate/dataset/db/expect/select/SelectInWithSingleTable_1.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectInWithSingleTableSql()), 10, 12, 15, 1000, 1101);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql()), 10, 12, 15, 1000, 1101);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
-                "t_order", replacePreparedStatement(sql.getSelectInWithSingleTableSql()), 10, 12, 15, 1309, 1408);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql()), 10, 12, 15, 1309, 1408);
     }
     
     @Test
@@ -62,13 +62,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
                 : "integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml";
         if (PostgreSQL.name().equalsIgnoreCase(currentDbType())) {
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                    "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 1.5, 2.4);
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 1.5, 2.4);
         } else {
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                    "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
         }
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
-                "t_order_item", replacePreparedStatement(sql.getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 10000, 2);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 10000, 2);
     }
     
     @Test
@@ -76,9 +76,9 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
         String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectOrderByWithAlias.xml" 
                 : "integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1001, 1200);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectOrderByWithAliasSql()), 10, 12, 1001, 1200);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
-                "t_order", replacePreparedStatement(sql.getSelectOrderByWithAliasSql()), 10, 12, 1309, 1408);
+                "t_order", replacePreparedStatement(getDatabaseTestSQL().getSelectOrderByWithAliasSql()), 10, 12, 1309, 1408);
     }
     
     @Test
@@ -86,16 +86,17 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
         String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectLimitWithBindingTableWithoutOffset.xml"
                 : "integrate/dataset/db/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item", 
-                replacePreparedStatement(sql.getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 2);
+                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
-                replacePreparedStatement(sql.getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 0);
+                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 0);
     }
     
     @Test
     public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), 
-                "t_order_item", replacePreparedStatement(sql.getSelectGroupWithBindingTableSql()), 10, 19, 1000, 1909);
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql.getSelectGroupWithBindingTableSql()), 1, 9, 1000, 1909);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql()), 10, 19, 1000, 1909);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql()), 1, 9, 1000, 1909);
     }
     
     @Test
@@ -103,8 +104,9 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
         String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml" 
                 : "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
-                "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 10, 19, 1000, 1909);
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql.getSelectGroupWithoutGroupedColumnSql()), 1, 9, 1000, 1909);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql()), 10, 19, 1000, 1909);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql()), 1, 9, 1000, 1909);
     }
     
     @Test
@@ -112,6 +114,6 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
         String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectNoShardingTable.xml" 
                 : "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
-                "t_order_item", sql.getSelectWithNoShardingTableSql());
+                "t_order_item", getDatabaseTestSQL().getSelectWithNoShardingTableSql());
     }
 }
