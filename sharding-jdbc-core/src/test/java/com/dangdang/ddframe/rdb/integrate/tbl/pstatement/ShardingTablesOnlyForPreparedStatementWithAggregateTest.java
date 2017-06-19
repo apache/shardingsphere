@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl.pstatement;
 
-import com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil;
+import com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;

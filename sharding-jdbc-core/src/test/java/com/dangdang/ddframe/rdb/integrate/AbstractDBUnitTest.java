@@ -18,26 +18,18 @@
 package com.dangdang.ddframe.rdb.integrate;
 
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.mysql.MySQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.oracle.OracleSQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.postgresql.PostgreSQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.sqlserver.SQLServerSQLTestSQL;
+import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.ext.h2.H2Connection;
-import org.dbunit.ext.mssql.MsSqlConnection;
-import org.dbunit.ext.mysql.MySqlConnection;
-import org.dbunit.ext.oracle.OracleConnection;
-import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -53,7 +45,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.*;
+import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
@@ -69,7 +63,7 @@ public abstract class AbstractDBUnitTest {
     
     @Before
     public void createSql() {
-        databaseTestSQL = currentDatabaseTestSQL();
+        databaseTestSQL = currentDatabaseTestSQL(dbEnv);
     }
     
     @Before
@@ -99,22 +93,6 @@ public abstract class AbstractDBUnitTest {
     
     protected final String currentDbType() {
         return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
-    }
-    
-    private DatabaseTestSQL currentDatabaseTestSQL() {
-        switch (dbEnv.getDatabaseType()) {
-            case H2:
-            case MySQL:
-                return new MySQLTestSQL();
-            case PostgreSQL:
-                return new PostgreSQLTestSQL();
-            case Oracle:
-                return new OracleSQLTestSQL();
-            case SQLServer:
-                return new SQLServerSQLTestSQL();
-            default:
-                throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
-        }
     }
     
     protected final boolean isAliasSupport() {
@@ -168,32 +146,14 @@ public abstract class AbstractDBUnitTest {
     
     protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql) throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
-            ITable actualTable = getConnection(conn).createQueryTable(actualTableName, sql);
+            ITable actualTable = DBUnitUtil.getConnection(dbEnv, conn).createQueryTable(actualTableName, sql);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
     }
     
     private ITable getITable(final Connection connection, final PreparedStatement preparedStatement, final String tableName, final String sql) throws SQLException, DatabaseUnitException {
-        return getConnection(connection).createTable(tableName, preparedStatement);
+        return DBUnitUtil.getConnection(dbEnv, connection).createTable(tableName, preparedStatement);
     }
     
-    private IDatabaseConnection getConnection(final Connection connection) throws DatabaseUnitException {
-        switch (dbEnv.getDatabaseType()) {
-            case H2: 
-                return new H2Connection(connection, "PUBLIC");
-            case MySQL: 
-                return new MySqlConnection(connection, null);
-            case PostgreSQL:
-                DatabaseConnection databaseConnection = new DatabaseConnection(connection);
-                databaseConnection.getConfig().setProperty("http://www.dbunit.org/properties/datatypeFactory", new PostgresqlDataTypeFactory());
-                return databaseConnection;
-            case Oracle:
-                return new OracleConnection(connection, "JDBC");
-            case SQLServer:
-                return new MsSqlConnection(connection);
-            default: 
-                throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
-        }
-    }
 }

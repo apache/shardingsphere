@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 
 public final class ShardingDatabaseOnlyWithHintForSelectTest extends AbstractShardingDatabaseOnlyHintDBUnitTest {
     

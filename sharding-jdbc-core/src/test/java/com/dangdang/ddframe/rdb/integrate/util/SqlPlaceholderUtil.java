@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate;
+package com.dangdang.ddframe.rdb.integrate.util;
 
 public class SqlPlaceholderUtil {
     

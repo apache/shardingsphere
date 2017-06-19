@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.pstatement;
 
-import com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil;
+import com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import org.dbunit.DatabaseUnitException;
 import org.hamcrest.core.Is;

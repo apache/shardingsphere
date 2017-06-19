@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.db.statement;
 
-import com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil;
+import com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import org.dbunit.DatabaseUnitException;

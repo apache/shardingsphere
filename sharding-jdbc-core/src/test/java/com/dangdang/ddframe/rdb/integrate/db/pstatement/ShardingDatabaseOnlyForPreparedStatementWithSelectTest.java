@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.integrate.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 
 public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends AbstractShardingDatabaseOnlyDBUnitTest {
