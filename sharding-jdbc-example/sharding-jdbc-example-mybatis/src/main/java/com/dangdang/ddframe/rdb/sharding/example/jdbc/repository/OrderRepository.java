@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.jdbc.repository;
 
-import java.util.List;
-
 import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
+
+import java.util.List;
 
 public interface OrderRepository {
     

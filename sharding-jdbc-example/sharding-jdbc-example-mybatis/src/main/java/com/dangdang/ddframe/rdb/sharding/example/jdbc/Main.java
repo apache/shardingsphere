@@ -34,7 +34,6 @@ public class Main {
         orderService.clear();
         orderService.fooService();
         orderService.select();
-    
         //[order_id: , user_id: 10, status: UPDATED, order_id: , user_id: 11, status: UPDATED]
         orderService.clear();
         try {

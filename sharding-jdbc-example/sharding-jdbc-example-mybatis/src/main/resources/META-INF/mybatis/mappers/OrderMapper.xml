@@ -13,12 +13,11 @@
         status
     </sql>
     
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="orderId">
         INSERT INTO `t_order` (
-          <include refid="baseColumnList"/>
+          user_id, status
         )
         VALUES (
-        #{orderId,jdbcType=INTEGER},
         #{userId,jdbcType=INTEGER},
         #{status,jdbcType=VARCHAR}
         )
@@ -33,11 +32,9 @@
         </foreach>
     </update>
     
-    
     <delete id="deleteAll">
         DELETE FROM `t_order`
     </delete>
-    
     
     <select id="selectAll" resultMap="baseResultMap">
         SELECT
