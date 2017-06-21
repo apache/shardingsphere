@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,10 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.example.jdbc;
+package com.dangdang.ddframe.rdb.sharding.example.jpa;
 
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.entity.Order;
-import com.dangdang.ddframe.rdb.sharding.example.jdbc.repository.OrderRepository;
+import com.dangdang.ddframe.rdb.sharding.example.jpa.entity.Order;
+import com.dangdang.ddframe.rdb.sharding.example.jpa.repository.OrderRepository;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.ArrayList;
@@ -31,19 +31,9 @@ public final class Main {
         // CHECKSTYLE:ON
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpaContext.xml");
         OrderRepository orderRepository = applicationContext.getBean(OrderRepository.class);
-        System.out.println(orderRepository.selectById(1000));
-        System.out.println("--------------");
-    
-        System.out.println(orderRepository.selectAll());
-        System.out.println("--------------");
-    
-        System.out.println(orderRepository.selectOrderBy());
-        System.out.println("--------------");
-    
         List<Long> orderIds = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             Order order = new Order();
-            order.setOrderId(i + 1);
             order.setUserId(51);
             order.setStatus("INSERT_TEST");
             orderRepository.create(order);

@@ -20,13 +20,14 @@
         <property name="password" value=""/>
     </bean>
     
-    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloDatabaseShardingAlgorithm"/>
-    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jdbc.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
+    <rdb:strategy id="databaseShardingStrategy" sharding-columns="user_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jpa.algorithm.SingleKeyModuloDatabaseShardingAlgorithm"/>
+    <rdb:strategy id="tableShardingStrategy" sharding-columns="order_id" algorithm-class="com.dangdang.ddframe.rdb.sharding.example.jpa.algorithm.SingleKeyModuloTableShardingAlgorithm"/>
 
     <rdb:data-source id="shardingDataSource">
         <rdb:sharding-rule data-sources="ds_0, ds_1" key-generator-class="com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator">
             <rdb:table-rules>
                 <rdb:table-rule logic-table="t_order" actual-tables="t_order_${0..1}" database-strategy="databaseShardingStrategy" table-strategy="tableShardingStrategy">
+                    <rdb:generate-key-column column-name="order_id"/>
                 </rdb:table-rule>
             </rdb:table-rules>
         </rdb:sharding-rule>
