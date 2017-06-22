@@ -29,7 +29,7 @@ public final class Main {
     
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpaContext.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/jpa/mysql/jpaContext.xml");
         OrderRepository orderRepository = applicationContext.getBean(OrderRepository.class);
         List<Long> orderIds = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
@@ -45,13 +45,13 @@ public final class Main {
             System.out.println(orderRepository.selectById(order.getOrderId()));
             System.out.println("--------------");
         }
-    
+
         System.out.println(orderRepository.selectAll());
         System.out.println("--------------");
-    
+
         System.out.println(orderRepository.selectOrderBy());
         System.out.println("--------------");
-    
+
         for (Long each : orderIds) {
             orderRepository.delete(each);
         }
