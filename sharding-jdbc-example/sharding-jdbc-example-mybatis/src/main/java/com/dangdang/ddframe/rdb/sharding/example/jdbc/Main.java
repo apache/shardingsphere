@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class Main {
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatisContext.xml");
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/mybatis/mysql/mybatisContext.xml");
         OrderService orderService = applicationContext.getBean(OrderService.class);
         orderService.clear();
         orderService.fooService();
