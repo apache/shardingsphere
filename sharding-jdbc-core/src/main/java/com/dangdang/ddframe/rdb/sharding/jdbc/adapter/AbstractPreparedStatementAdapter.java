@@ -300,7 +300,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             parameters.add(value);
             return;
         }
-        for (int i = parameters.size(); i < parameterIndex - 1; i++) {
+        for (int i = parameters.size(); i <= parameterIndex - 1; i++) {
             parameters.add(null);
         }
         parameters.set(parameterIndex - 1, value);
@@ -324,11 +324,9 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     protected void replaySetParameter(final PreparedStatement preparedStatement) {
         addParameters();
-        int count = 0;
         for (SetParameterMethodInvocation each : setParameterMethodInvocations) {
-            updateParameterValues(each, parameters.get(count));
+            updateParameterValues(each, parameters.get(each.getIndex() - 1));
             each.invoke(preparedStatement);
-            count++;
         }
     }
     

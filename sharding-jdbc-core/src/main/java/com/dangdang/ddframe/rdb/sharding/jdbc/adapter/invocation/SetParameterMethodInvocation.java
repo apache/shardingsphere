@@ -29,10 +29,14 @@ import java.lang.reflect.Method;
 public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     
     @Getter
+    private final int index;
+    
+    @Getter
     private final Object value;
     
     public SetParameterMethodInvocation(final Method method, final Object[] arguments, final Object value) {
         super(method, arguments);
+        this.index = (int) arguments[0];
         this.value = value;
     }
     

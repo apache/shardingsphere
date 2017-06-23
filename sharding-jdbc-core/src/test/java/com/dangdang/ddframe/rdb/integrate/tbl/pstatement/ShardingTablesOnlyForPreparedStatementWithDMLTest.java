@@ -47,8 +47,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
              PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getInsertWithAllPlaceholdersSql())) {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setInt(1, i);
-                preparedStatement.setInt(2, i);
                 preparedStatement.setString(3, "insert");
+                preparedStatement.setInt(2, i);
                 preparedStatement.executeUpdate();
             }
         }
