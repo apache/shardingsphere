@@ -25,7 +25,6 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -59,7 +58,7 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     
     public AbstractMemoryResultSet(final List<ResultSet> resultSets) throws SQLException {
         super(resultSets);
-        LoggerFactory.getLogger(this.getClass().getName()).debug("{} join pipeline", this.hashCode());
+        log.debug("{} join pipeline", hashCode());
     }
     
     @Override
