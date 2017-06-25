@@ -34,19 +34,19 @@ import java.util.List;
  */
 public final class OrderByResultSetRow extends AbstractResultSetRow implements Comparable<OrderByResultSetRow> {
     
-    private final List<OrderBy> orderBies;
+    private final List<OrderBy> orderByList;
     
     private final List<Comparable<?>> orderByValues;
     
-    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderBy> orderBies) throws SQLException {
+    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderBy> orderByList) throws SQLException {
         super(resultSet);
-        this.orderBies = orderBies;
-        orderByValues = loadOrderByValues();
+        this.orderByList = orderByList;
+        orderByValues = getOrderByValues();
     }
     
-    private List<Comparable<?>> loadOrderByValues() {
-        List<Comparable<?>> result = new ArrayList<>(orderBies.size());
-        for (OrderBy each : orderBies) {
+    private List<Comparable<?>> getOrderByValues() {
+        List<Comparable<?>> result = new ArrayList<>(orderByList.size());
+        for (OrderBy each : orderByList) {
             Object value = getCell(each.getColumnIndex());
             Preconditions.checkState(value instanceof Comparable, "Sharding-JDBC: order by value must extends Comparable");
             result.add((Comparable<?>) value);
@@ -56,8 +56,8 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     
     @Override
     public int compareTo(final OrderByResultSetRow otherOrderByValue) {
-        for (int i = 0; i < orderBies.size(); i++) {
-            OrderBy thisOrderBy = orderBies.get(i);
+        for (int i = 0; i < orderByList.size(); i++) {
+            OrderBy thisOrderBy = orderByList.get(i);
             int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderBy.getOrderByType());
             if (0 != result) {
                 return result;
