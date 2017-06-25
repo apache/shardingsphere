@@ -47,7 +47,7 @@ public final class ShardingResultSets {
         List<ResultSet> result = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             if (each.next()) {
-                result.add(new WrapperResultSet(each));
+                result.add(new FilteredResultSet(each));
             }
         }
         return result;
@@ -67,9 +67,9 @@ public final class ShardingResultSets {
         EMPTY, SINGLE, MULTIPLE
     }
     
-    private static final class WrapperResultSet extends AbstractDelegateResultSet {
+    private static final class FilteredResultSet extends AbstractDelegateResultSet {
         
-        private WrapperResultSet(final ResultSet resultSetWhenNextOnce) throws SQLException {
+        private FilteredResultSet(final ResultSet resultSetWhenNextOnce) throws SQLException {
             super(Collections.singletonList(resultSetWhenNextOnce));
         }
         
