@@ -24,10 +24,9 @@ import java.sql.SQLException;
 
 public final class SingleResultSetWithPreparedStatementTest extends AbstractSingleResultSetDBUnitTest {
     
-    private String sql = "SELECT o.* FROM t_order o WHERE o.user_id = ? ORDER BY o.order_id limit ?, ?";
-    
     @Test
     public void assertSelectWithRowCountAndOffset() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT o.* FROM t_order o WHERE o.user_id = ? ORDER BY o.order_id limit ?, ?";
         String expectedDataSetFile = "integrate/dataset/single/expect/SelectWithLimit.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order", sql, 10, 2, 4);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order",

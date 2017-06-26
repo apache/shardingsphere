@@ -17,24 +17,18 @@
 
 package com.dangdang.ddframe.rdb.integrate.single;
 
-import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
 import org.dbunit.DatabaseUnitException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
-public final class SingleResultSetWithStatementTest extends AbstractShardingTablesOnlyDBUnitTest {
-    
-    private String sql = "SELECT o.* FROM t_order o WHERE o.user_id = %s ORDER BY o.order_id limit %s, %s";
+public final class SingleResultSetWithStatementTest extends AbstractSingleResultSetDBUnitTest {
     
     @Test
-    @Ignore
     public void assertSelectWithRowCountAndOffset() throws SQLException, DatabaseUnitException {
+        String sql = "SELECT o.* FROM t_order o WHERE o.user_id = %s ORDER BY o.order_id limit %s, %s";
         String expectedDataSetFile = "integrate/dataset/single/expect/SelectWithLimit.xml";
-        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), 
-                "t_order", String.format(sql, 10, 2, 4));
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
-                "t_order", String.format(sql, 10, 4, 4));
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order", String.format(sql, 10, 2, 4));
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order", String.format(sql, 10, 4, 4));
     }
 }
