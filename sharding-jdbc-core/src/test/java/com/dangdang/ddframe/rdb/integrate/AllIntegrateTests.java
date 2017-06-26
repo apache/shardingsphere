@@ -36,6 +36,7 @@ import com.dangdang.ddframe.rdb.integrate.masterslave.pstatement.ShardingMasterS
 import com.dangdang.ddframe.rdb.integrate.masterslave.statement.ShardingMasterSlaveForStatementWithDMLTest;
 import com.dangdang.ddframe.rdb.integrate.masterslave.statement.ShardingMasterSlaveForStatementWithSelectTest;
 import com.dangdang.ddframe.rdb.integrate.nullable.ShardingForNullableWithAggregateTest;
+import com.dangdang.ddframe.rdb.integrate.single.AllSingleResultSetTests;
 import com.dangdang.ddframe.rdb.integrate.tbl.AllShardingTablesOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -57,7 +58,8 @@ import org.junit.runners.Suite.SuiteClasses;
     DynamicShardingBothForStatementWithSelectTest.class, 
     AllShardingDatabaseOnlyTests.class, 
     AllShardingTablesOnlyTests.class, 
-    AllHintDatabaseOnlyTests.class,
+    AllHintDatabaseOnlyTests.class, 
+    AllSingleResultSetTests.class,
     ShardingForNullableWithAggregateTest.class, 
     ShardingMasterSlaveForPStatementWithDMLTest.class,
     ShardingMasterSlaveForPStatementWithSelectTest.class,
