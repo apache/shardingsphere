@@ -36,11 +36,8 @@ public final class ShardingResultSets {
     
     private final List<ResultSet> resultSets;
     
-    private final Type type;
-    
     public ShardingResultSets(final List<ResultSet> resultSets) throws SQLException {
         this.resultSets = filterResultSets(resultSets);
-        type = generateType();
     }
     
     private List<ResultSet> filterResultSets(final List<ResultSet> resultSets) throws SQLException {
@@ -51,20 +48,6 @@ public final class ShardingResultSets {
             }
         }
         return result;
-    }
-    
-    private Type generateType() {
-        if (resultSets.isEmpty()) {
-            return Type.EMPTY;
-        } else if (1 == resultSets.size()) {
-            return Type.SINGLE;
-        } else {
-            return Type.MULTIPLE;
-        }
-    }
-    
-    enum Type {
-        EMPTY, SINGLE, MULTIPLE
     }
     
     private static final class FilteredResultSet extends AbstractDelegateResultSet {

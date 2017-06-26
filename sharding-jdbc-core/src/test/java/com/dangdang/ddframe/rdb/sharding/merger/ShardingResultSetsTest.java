@@ -25,9 +25,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,7 +35,7 @@ public final class ShardingResultSetsTest {
     @Test
     public void assertEmptyShardingResultSets() throws SQLException {
         ShardingResultSets actual = new ShardingResultSets(Arrays.asList(mock(ResultSet.class), mock(ResultSet.class)));
-        assertThat(actual.getType(), is(ShardingResultSets.Type.EMPTY));
+        assertTrue(actual.getResultSets().isEmpty());
     }
     
     @Test
@@ -45,7 +43,6 @@ public final class ShardingResultSetsTest {
         ResultSet resultSet = MergerTestUtil.mockResult(Collections.<String>emptyList());
         when(resultSet.next()).thenReturn(true, false);
         ShardingResultSets actual = new ShardingResultSets(Arrays.asList(resultSet, mock(ResultSet.class)));
-        assertThat(actual.getType(), is(ShardingResultSets.Type.SINGLE));
         assertTrue(actual.getResultSets().get(0).next());
         assertFalse(actual.getResultSets().get(0).next());
     }
@@ -57,7 +54,6 @@ public final class ShardingResultSetsTest {
         ResultSet resultSet2 = MergerTestUtil.mockResult(Collections.<String>emptyList());
         when(resultSet2.next()).thenReturn(true, false);
         ShardingResultSets actual = new ShardingResultSets(Arrays.asList(resultSet1, resultSet2));
-        assertThat(actual.getType(), is(ShardingResultSets.Type.MULTIPLE));
         assertTrue(actual.getResultSets().get(0).next());
         assertFalse(actual.getResultSets().get(0).next());
         assertTrue(actual.getResultSets().get(1).next());

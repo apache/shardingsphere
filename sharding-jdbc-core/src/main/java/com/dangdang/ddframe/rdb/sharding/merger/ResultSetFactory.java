@@ -52,28 +52,13 @@ public final class ResultSetFactory {
      */
     public static ResultSet getResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
         ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);
-        log.debug("Sharding-JDBC: Sharding result sets type is '{}'", shardingResultSets.getType().toString());
-        switch (shardingResultSets.getType()) {
-            case EMPTY:
-                return buildEmpty(resultSets);
-            case SINGLE:
-                return buildSingle(shardingResultSets);
-            case MULTIPLE:
-                return buildMultiple(shardingResultSets, sqlStatement);
-            default:
-                throw new UnsupportedOperationException(shardingResultSets.getType().toString());
+        if (shardingResultSets.getResultSets().isEmpty()) {
+            return resultSets.get(0);
         }
+        return buildResultSet(shardingResultSets, sqlStatement);
     }
     
-    private static ResultSet buildEmpty(final List<ResultSet> resultSets) {
-        return resultSets.get(0);
-    }
-    
-    private static ResultSet buildSingle(final ShardingResultSets shardingResultSets) {
-        return shardingResultSets.getResultSets().get(0);
-    }
-    
-    private static ResultSet buildMultiple(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
+    private static ResultSet buildResultSet(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlStatement);
         return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
     }

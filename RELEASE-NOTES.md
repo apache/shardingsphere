@@ -12,6 +12,7 @@ next = "/00-overview/contribution/"
 
 ### 缺陷修正
 
+1. [ISSUE #239](https://github.com/dangdangdotcom/sharding-jdbc/issues/239) LIMIT路由至多查询结果集，若只有一个不为空的结果集，分页结果不正确
 1. [ISSUE #263](https://github.com/dangdangdotcom/sharding-jdbc/issues/263) 分片列和逻辑表配置可忽略大小写
 
 ## 1.5.0.M1
