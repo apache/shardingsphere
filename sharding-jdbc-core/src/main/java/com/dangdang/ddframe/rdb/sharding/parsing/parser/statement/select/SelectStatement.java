@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Selec
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@ToString
 public final class SelectStatement extends AbstractSQLStatement {
     
     private boolean distinct;

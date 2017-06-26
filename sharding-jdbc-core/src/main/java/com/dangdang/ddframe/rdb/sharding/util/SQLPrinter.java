@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,24 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
+package com.dangdang.ddframe.rdb.sharding.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * 自动生成键.
- * 
- * @author zhangliang
- */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class GeneratedKey {
+public class SQLPrinter {
     
-    private final String column;
+    private static Logger log = LoggerFactory.getLogger("Sharding-JDBC-SQL");
     
-    private final int index;
+    private static boolean showSql;
     
-    private final Number value;
+    public static void init(final boolean showSql) {
+        SQLPrinter.showSql = showSql;
+    } 
+    
+    public static void print(final String format, final Object... arguments) {
+        if (showSql) {
+            log.info(format, arguments);
+        }
+    }
 }

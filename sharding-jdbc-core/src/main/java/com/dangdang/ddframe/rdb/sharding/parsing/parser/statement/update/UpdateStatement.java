@@ -19,12 +19,14 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import lombok.ToString;
 
 /**
  * Update SQL语句对象.
  *
  * @author zhangliang
  */
+@ToString
 public final class UpdateStatement extends AbstractSQLStatement {
     
     public UpdateStatement() {

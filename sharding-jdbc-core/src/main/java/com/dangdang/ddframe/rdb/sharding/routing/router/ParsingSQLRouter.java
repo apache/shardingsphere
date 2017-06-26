@@ -38,6 +38,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianRoutingRe
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.ComplexRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.util.SQLPrinter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -67,7 +68,6 @@ public final class ParsingSQLRouter implements SQLRouter {
     public SQLStatement parse(final String logicSQL, final int parametersSize) {
         SQLParsingEngine parsingEngine = new SQLParsingEngine(databaseType, logicSQL, shardingRule);
         Context context = MetricsContext.start("Parse SQL");
-        log.debug("Logic SQL: {}", logicSQL);
         SQLStatement result = parsingEngine.parse();
         if (result instanceof InsertStatement) {
             ((InsertStatement) result).appendGenerateKeyToken(shardingRule, parametersSize);
@@ -102,7 +102,7 @@ public final class ParsingSQLRouter implements SQLRouter {
             }
         }
         MetricsContext.stop(context);
-        logSQLRouteResult(result, parameters);
+        logSQLRouteResult(result, logicSQL, sqlStatement, parameters);
         return result;
     }
     
@@ -118,10 +118,15 @@ public final class ParsingSQLRouter implements SQLRouter {
         return routingEngine.route();
     }
     
-    private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {
-        log.debug("final route result is {} target", routeResult.getExecutionUnits().size());
+    private void logSQLRouteResult(final SQLRouteResult routeResult, final String logicSQL, final SQLStatement sqlStatement, final List<Object> parameters) {
+        SQLPrinter.print("Logic SQL: {}", logicSQL);
+        SQLPrinter.print("SQLStatement: {}", sqlStatement);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
+            if (parameters.size() > 0) {
+                SQLPrinter.print("Actual SQL: {} :: {} :: {}", each.getDataSource(), each.getSql(), parameters);
+            } else {
+                SQLPrinter.print("Actual SQL: {} :: {}", each.getDataSource(), each.getSql());
+            }
         }
     }
     

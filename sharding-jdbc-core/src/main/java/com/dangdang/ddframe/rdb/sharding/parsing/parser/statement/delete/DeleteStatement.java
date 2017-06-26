@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Delete SQL语句对象.
@@ -27,6 +28,7 @@ import lombok.Getter;
  * @author zhangliang
  */
 @Getter
+@ToString
 public final class DeleteStatement extends AbstractSQLStatement {
     
     public DeleteStatement() {

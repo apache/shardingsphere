@@ -24,14 +24,24 @@ import lombok.RequiredArgsConstructor;
  * 配置项常量.
  * 
  * @author gaohongtao
+ * @author caohao
  */
 @RequiredArgsConstructor
 @Getter
 public enum ShardingPropertiesConstant {
     
     /**
-     * 是否开启度量采集.
+     * 是否开启显示SQL.
      * 
+     * <p>
+     * 默认值: 关闭
+     * </p>
+     */
+    SQL_SHOW("sql.show", Boolean.FALSE.toString(), boolean.class),
+    
+    /**
+     * 是否开启SQL.
+     *
      * <p>
      * 默认值: 关闭
      * </p>
@@ -47,15 +57,6 @@ public enum ShardingPropertiesConstant {
      * </p>
      */
     METRICS_MILLISECONDS_PERIOD("metrics.millisecond.period", "30000", long.class),
-    
-    /**
-     * 度量输出在日志中的标识名称.
-     * 
-     * <p>
-     * 默认值: com.dangdang.ddframe.rdb.sharding.metrics
-     * </p>
-     */
-    METRICS_LOGGER_NAME("metrics.logger.name", "com.dangdang.ddframe.rdb.sharding.metrics", String.class),
     
     /**
      * 工作线程数量.

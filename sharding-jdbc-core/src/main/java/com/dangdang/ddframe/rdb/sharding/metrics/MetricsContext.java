@@ -43,6 +43,8 @@ public final class MetricsContext {
     
     private static final ThreadLocal<MetricRegistry> HOLDER = new ThreadLocal<>();
     
+    private static final String LOGGER_NAME = "Sharding-JDBC-Metrics";
+    
     /**
      * 初始化度量上下文持有者.
      * 
@@ -55,10 +57,9 @@ public final class MetricsContext {
             return;
         }
         long period = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_MILLISECONDS_PERIOD);
-        String loggerName = shardingProperties.getValue(ShardingPropertiesConstant.METRICS_LOGGER_NAME);
         MetricRegistry metricRegistry = new MetricRegistry();
         Slf4jReporter.forRegistry(metricRegistry)
-                .outputTo(LoggerFactory.getLogger(loggerName))
+                .outputTo(LoggerFactory.getLogger(LOGGER_NAME))
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .withLoggingLevel(Slf4jReporter.LoggingLevel.DEBUG)

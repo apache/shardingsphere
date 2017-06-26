@@ -32,6 +32,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
+@ToString
 public final class InsertStatement extends AbstractSQLStatement {
     
     private final Collection<Column> columns = new LinkedList<>();
