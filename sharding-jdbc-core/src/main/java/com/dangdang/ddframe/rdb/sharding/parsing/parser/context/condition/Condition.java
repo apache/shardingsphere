@@ -12,8 +12,9 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -28,6 +29,7 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
+@ToString
 public final class Condition {
     
     @Getter

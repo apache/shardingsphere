@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 分页偏移量对象.
@@ -29,6 +30,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class OffsetLimit {
     
     private int offset;

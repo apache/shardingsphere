@@ -28,7 +28,7 @@ import lombok.ToString;
  * @author zhangliang
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class DeleteStatement extends AbstractSQLStatement {
     
     public DeleteStatement() {

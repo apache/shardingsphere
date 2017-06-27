@@ -26,7 +26,7 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@ToString
+@ToString(callSuper = true)
 public final class UpdateStatement extends AbstractSQLStatement {
     
     public UpdateStatement() {

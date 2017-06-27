@@ -38,7 +38,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SelectStatement extends AbstractSQLStatement {
     
     private boolean distinct;

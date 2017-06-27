@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
  * 表标记对象.
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class TableToken implements SQLToken {
     
     private final int beginPosition;

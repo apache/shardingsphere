@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingExce
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class Limit {
     
     private OffsetLimit offsetLimit;

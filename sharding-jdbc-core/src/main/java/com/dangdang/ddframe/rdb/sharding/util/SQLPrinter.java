@@ -17,12 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j(topic = "Sharding-JDBC-SQL")
 public class SQLPrinter {
-    
-    private static Logger log = LoggerFactory.getLogger("Sharding-JDBC-SQL");
     
     private static boolean showSql;
     

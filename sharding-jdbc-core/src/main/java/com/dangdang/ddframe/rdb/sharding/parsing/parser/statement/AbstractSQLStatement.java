@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,6 +40,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final SQLType type;

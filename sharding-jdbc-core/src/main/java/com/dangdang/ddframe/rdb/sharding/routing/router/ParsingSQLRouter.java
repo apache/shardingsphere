@@ -123,9 +123,9 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLPrinter.print("SQLStatement: {}", sqlStatement);
         for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
             if (parameters.size() > 0) {
-                SQLPrinter.print("Actual SQL: {} :: {} :: {}", each.getDataSource(), each.getSql(), parameters);
+                SQLPrinter.print("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSql(), parameters);
             } else {
-                SQLPrinter.print("Actual SQL: {} :: {}", each.getDataSource(), each.getSql());
+                SQLPrinter.print("Actual SQL: {} ::: {}", each.getDataSource(), each.getSql());
             }
         }
     }
