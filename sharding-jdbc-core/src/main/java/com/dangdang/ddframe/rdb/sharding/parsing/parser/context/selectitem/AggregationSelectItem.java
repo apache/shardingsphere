@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -42,8 +41,7 @@ public final class AggregationSelectItem implements SelectItem, IndexColumn {
     
     private final Optional<String> alias;
     
-    @Setter
-    private int columnIndex = -1;
+    private final int columnIndex;
     
     private final AggregationType aggregationType;
     
@@ -54,6 +52,11 @@ public final class AggregationSelectItem implements SelectItem, IndexColumn {
         this.alias = alias;
         this.columnIndex = columnIndex;
         this.aggregationType = aggregationType;
+    }
+    
+    @Override
+    public void setColumnIndex(final int index) {
+        throw new UnsupportedOperationException();
     }
     
     @Override

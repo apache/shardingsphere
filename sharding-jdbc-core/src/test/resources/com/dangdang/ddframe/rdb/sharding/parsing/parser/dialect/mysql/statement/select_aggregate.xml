@@ -10,19 +10,19 @@
             <aggregation-select-item inner-expression="(time)" aggregation-type="MIN" alias="Time" index="4" />
         </aggregation-select-items>
     </assert>
-
+    
     <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order">
         <tables>
             <table name="order"/>
         </tables>
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(MAX(date))" aggregation-type="AVG" alias="date" index="1">
-                <derived-column inner-expression="(MAX(date))" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0"/>
-                <derived-column inner-expression="(MAX(date))" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" />
+                <derived-column inner-expression="(MAX(date))" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" index="4" />
+                <derived-column inner-expression="(MAX(date))" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" index="5" />
             </aggregation-select-item>
             <aggregation-select-item inner-expression="(DISTINCT time)" aggregation-type="AVG" index="2">
-                <derived-column inner-expression="(DISTINCT time)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_1" />
-                <derived-column inner-expression="(DISTINCT time)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_1" />
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_1" index="6" />
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_1" index="7" />
             </aggregation-select-item>
         </aggregation-select-items>
     </assert>

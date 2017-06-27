@@ -51,7 +51,12 @@ import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -73,8 +78,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Limit limit;
     
-    protected AbstractBaseParseTest(final String testCaseName, final String sql, final Tables expectedTables, 
-                                    final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+    protected AbstractBaseParseTest(final String testCaseName, final String sql, final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         this.sql = sql;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
@@ -182,16 +186,13 @@ public abstract class AbstractBaseParseTest {
         if (null != assertObj.getAggregationSelectItems()) {
             List<AggregationSelectItem> selectItems = Lists.transform(assertObj.getAggregationSelectItems(),
                     new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem, AggregationSelectItem>() {
-                
+                        
                         @Override
                         public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem input) {
-                            AggregationSelectItem result = new AggregationSelectItem(input.getInnerExpression(), Optional.fromNullable(input.getAlias()), -1,
-                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()));
-                            if (null != input.getIndex()) {
-                                result.setColumnIndex(input.getIndex());
-                            }
+                            AggregationSelectItem result = new AggregationSelectItem(
+                                    input.getInnerExpression(), Optional.fromNullable(input.getAlias()), input.getIndex(), AggregationType.valueOf(input.getAggregationType().toUpperCase()));
                             for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
-                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getInnerExpression(), Optional.fromNullable(each.getAlias()), -1,
+                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getInnerExpression(), Optional.fromNullable(each.getAlias()), each.getIndex(),
                                         AggregationType.valueOf(each.getAggregationType().toUpperCase())));
                             }
                             return result;
@@ -201,8 +202,8 @@ public abstract class AbstractBaseParseTest {
         }
         if (null != assertObj.getLimit()) {
             if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
-                selectStatement.setLimit(new Limit(
-                        new OffsetLimit(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()), new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
+                selectStatement.setLimit(new Limit(new OffsetLimit(assertObj.getLimit().getOffset(), 
+                        assertObj.getLimit().getOffsetParameterIndex()), new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             } else {
                 selectStatement.setLimit(new Limit(new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             }
@@ -245,7 +246,7 @@ public abstract class AbstractBaseParseTest {
     private void assertAggregationSelectItem(final SQLStatement actual) {
         for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
             AggregationSelectItem expected = aggregationSelectItems.next();
-            assertTrue(new ReflectionEquals(expected, "derivedColumns").matches(each));
+            assertTrue(new ReflectionEquals(expected, "derivedAggregationSelectItems").matches(each));
             for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
                 assertTrue(new ReflectionEquals(expected.getDerivedAggregationSelectItems().get(i)).matches(each.getDerivedAggregationSelectItems().get(i)));
             }

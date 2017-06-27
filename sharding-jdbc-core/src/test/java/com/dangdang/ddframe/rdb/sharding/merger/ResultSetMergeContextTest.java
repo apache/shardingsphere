@@ -56,8 +56,8 @@ public final class ResultSetMergeContextTest {
         SelectStatement result = new SelectStatement();
         result.getOrderByList().add(new OrderBy("order_col", OrderType.ASC, Optional.<String>absent()));
         result.getGroupByList().add(new GroupBy(Optional.<String>absent(), "group_col", OrderType.ASC, Optional.<String>absent()));
-        result.getItems().add(MergerTestUtil.createAggregationColumn(AggregationType.COUNT, "count_col", "count_col", -1));
-        result.getItems().add(MergerTestUtil.createAggregationColumn(AggregationType.AVG, "avg_col", "avg_col", -1));
+        result.getItems().add(MergerTestUtil.createAggregationColumn(AggregationType.COUNT, "count_col", "count_col", 3, -1, -1));
+        result.getItems().add(MergerTestUtil.createAggregationColumn(AggregationType.AVG, "avg_col", "avg_col", 4, 5, 6));
         return result;
     }
     

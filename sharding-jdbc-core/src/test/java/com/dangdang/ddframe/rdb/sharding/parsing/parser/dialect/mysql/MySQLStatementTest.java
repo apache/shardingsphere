@@ -33,9 +33,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class MySQLStatementTest extends AbstractBaseParseTest {
     
-    public MySQLStatementTest(
-            final String testCaseName, final String sql, final Tables expectedTables, 
-            final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
+    public MySQLStatementTest(final String testCaseName, final String sql, final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         super(testCaseName, sql, expectedTables, expectedConditions, expectedSQLStatement);
     }
     

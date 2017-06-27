@@ -81,13 +81,12 @@ public final class MergerTestUtil {
         return result;
     }
     
-    public static AggregationSelectItem createAggregationColumn(final AggregationType aggregationType, final String name, final String alias, final int index) {
+    public static AggregationSelectItem createAggregationColumn(
+            final AggregationType aggregationType, final String name, final String alias, final int index, final int avgDerivedCountIndex, final int avgDerivedSumIndex) {
         AggregationSelectItem result = new AggregationSelectItem(name, Optional.fromNullable(alias), index, aggregationType);
         if (AggregationType.AVG == aggregationType) {
-            result.getDerivedAggregationSelectItems().add(
-                    new AggregationSelectItem(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), -1, AggregationType.COUNT));
-            result.getDerivedAggregationSelectItems().add(
-                    new AggregationSelectItem(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), -1, AggregationType.SUM));
+            result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), avgDerivedCountIndex, AggregationType.COUNT));
+            result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), avgDerivedSumIndex, AggregationType.SUM));
         }
         return result;
     }

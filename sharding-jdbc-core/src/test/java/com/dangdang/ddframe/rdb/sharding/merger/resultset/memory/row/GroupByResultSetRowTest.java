@@ -57,7 +57,6 @@ public final class GroupByResultSetRowTest {
         GroupBy groupBy = new GroupBy(Optional.<String>absent(), "user_id", OrderType.ASC, Optional.<String>absent());
         groupBy.setColumnIndex(1);
         AggregationSelectItem aggregationColumn = new AggregationSelectItem("SUM(0)",  Optional.<String>absent(), 2, AggregationType.SUM);
-        aggregationColumn.setColumnIndex(2);
         GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(groupBy), Collections.singletonList(aggregationColumn));
         row.aggregate();
         assertTrue(rs.next());

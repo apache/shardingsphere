@@ -334,15 +334,16 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendAvgDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
+        int selectItemSize = selectStatement.getItems().size();
         for (SelectItem each : selectStatement.getItems()) {
             if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getAggregationType()) {
                 continue;
             }
             AggregationSelectItem avgItem = (AggregationSelectItem) each;
             String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
-            AggregationSelectItem countItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(countAlias), -1, AggregationType.COUNT);
+            AggregationSelectItem countItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(countAlias), ++selectItemSize, AggregationType.COUNT);
             String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
-            AggregationSelectItem sumItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(sumAlias), -1, AggregationType.SUM);
+            AggregationSelectItem sumItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(sumAlias), ++selectItemSize, AggregationType.SUM);
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数
