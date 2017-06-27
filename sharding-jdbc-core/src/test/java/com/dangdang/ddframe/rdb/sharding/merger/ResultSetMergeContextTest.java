@@ -45,10 +45,10 @@ public final class ResultSetMergeContextTest {
                 createSQLStatement());
         assertThat(actual.getSqlStatement().getOrderByList().get(0).getColumnIndex(), is(1));
         assertThat(actual.getSqlStatement().getGroupByList().get(0).getColumnIndex(), is(2));
-        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(0).getColumnIndex(), is(3));
-        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getColumnIndex(), is(4));
-        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getDerivedAggregationSelectItems().get(0).getColumnIndex(), is(5));
-        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getDerivedAggregationSelectItems().get(1).getColumnIndex(), is(6));
+        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(0).getIndex(), is(3));
+        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getIndex(), is(4));
+        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getDerivedAggregationSelectItems().get(0).getIndex(), is(5));
+        assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getDerivedAggregationSelectItems().get(1).getIndex(), is(6));
         assertThat(actual.getCurrentOrderByKeys(), is(actual.getSqlStatement().getOrderByList()));
     }
     

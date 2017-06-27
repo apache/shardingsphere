@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
@@ -69,14 +68,6 @@ public final class ResultSetMergeContext {
         List<IndexColumn> result = new LinkedList<>();
         result.addAll(sqlStatement.getGroupByList());
         result.addAll(sqlStatement.getOrderByList());
-        LinkedList<AggregationSelectItem> allAggregationColumns = Lists.newLinkedList(sqlStatement.getAggregationSelectItems());
-        while (!allAggregationColumns.isEmpty()) {
-            AggregationSelectItem firstElement = allAggregationColumns.poll();
-            result.add(firstElement);
-            if (!firstElement.getDerivedAggregationSelectItems().isEmpty()) {
-                allAggregationColumns.addAll(firstElement.getDerivedAggregationSelectItems());
-            }
-        }
         return result;
     }
     

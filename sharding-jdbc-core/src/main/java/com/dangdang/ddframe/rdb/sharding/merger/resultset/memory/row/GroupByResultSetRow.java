@@ -74,7 +74,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItem> aggregationColumns) throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(aggregationColumns.size());
         for (AggregationSelectItem each : aggregationColumns) {
-            result.add((Comparable<?>) resultSet.getObject(each.getColumnIndex()));
+            result.add((Comparable<?>) resultSet.getObject(each.getIndex()));
         }
         return result;
     }
@@ -84,7 +84,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      */
     public void generateResult() {
         for (AggregationSelectItem each : aggregationUnitMap.keySet()) {
-            setCell(each.getColumnIndex(), aggregationUnitMap.get(each).getResult());
+            setCell(each.getIndex(), aggregationUnitMap.get(each).getResult());
         }
     }
     
@@ -119,9 +119,9 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
             
             @Override
             public String apply(final AggregationSelectItem input) {
-                Object value = getCell(input.getColumnIndex());
+                Object value = getCell(input.getIndex());
                 value = null == value ? "null" : value;
-                return String.format("{index:%d, type:%s, value:%s}", input.getColumnIndex(), input.getAggregationType(), value);
+                return String.format("{index:%d, type:%s, value:%s}", input.getIndex(), input.getAggregationType(), value);
             }
         }));
         return result.toString();

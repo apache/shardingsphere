@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -32,40 +32,24 @@ import java.util.List;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class AggregationSelectItem implements SelectItem, IndexColumn {
+public final class AggregationSelectItem implements SelectItem {
     
     private final String innerExpression;
     
     private final Optional<String> alias;
     
-    private final int columnIndex;
+    private final int index;
     
     private final AggregationType aggregationType;
     
     private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
     
-    public AggregationSelectItem(final String innerExpression, final Optional<String> alias, final int columnIndex, final AggregationType aggregationType) {
-        this.innerExpression = innerExpression;
-        this.alias = alias;
-        this.columnIndex = columnIndex;
-        this.aggregationType = aggregationType;
-    }
-    
-    @Override
-    public void setColumnIndex(final int index) {
-        throw new UnsupportedOperationException();
-    }
-    
     @Override
     public String getExpression() {
         return aggregationType.name() + innerExpression;
-    }
-    
-    @Override
-    public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : getExpression();
     }
 }
