@@ -62,12 +62,7 @@ public final class AggregationSelectItem implements SelectItem, IndexColumn {
     }
     
     @Override
-    public Optional<String> getColumnLabel() {
-        return alias;
-    }
-    
-    @Override
-    public Optional<String> getColumnName() {
-        return Optional.of(getExpression());
+    public String getColumnLabel() {
+        return alias.isPresent() ? alias.get() : getExpression();
     }
 }

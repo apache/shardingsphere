@@ -49,13 +49,8 @@ public final class ResultSetMergeContext {
     public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
         this.shardingResultSets = shardingResultSets;
         this.sqlStatement = sqlStatement;
-        currentOrderByKeys = new LinkedList<>();
-        init();
-    }
-    
-    private void init() {
+        currentOrderByKeys = new LinkedList<>(sqlStatement.getOrderByList());
         setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
-        currentOrderByKeys.addAll(sqlStatement.getOrderByList());
     }
     
     private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
@@ -63,12 +58,9 @@ public final class ResultSetMergeContext {
             if (each.getColumnIndex() > 0) {
                 continue;
             }
-            Preconditions.checkState(
-                    columnLabelIndexMap.containsKey(each.getColumnLabel().orNull()) || columnLabelIndexMap.containsKey(each.getColumnName().orNull()), String.format("%s has not index", each));
-            if (each.getColumnLabel().isPresent() && columnLabelIndexMap.containsKey(each.getColumnLabel().get())) {
-                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnLabel().get()));
-            } else if (each.getColumnName().isPresent() && columnLabelIndexMap.containsKey(each.getColumnName().get())) {
-                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnName().get()));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("%s has not index", each));
+            if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
+                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
     }

@@ -54,13 +54,8 @@ public final class GroupBy implements IndexColumn {
     }
     
     @Override
-    public Optional<String> getColumnLabel() {
-        return alias;
-    }
-    
-    @Override
-    public Optional<String> getColumnName() {
-        return Optional.of(name);
+    public String getColumnLabel() {
+        return alias.isPresent() ? alias.get() : name;
     }
     
     /**

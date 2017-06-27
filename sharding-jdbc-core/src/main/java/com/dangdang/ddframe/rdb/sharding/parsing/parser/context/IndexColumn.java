@@ -17,8 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context;
 
-import com.google.common.base.Optional;
-
 /**
  * 基于索引的列.
  *
@@ -30,7 +28,5 @@ public interface IndexColumn {
     
     int getColumnIndex();
     
-    Optional<String> getColumnLabel();
-    
-    Optional<String> getColumnName();
+    String getColumnLabel();
 }

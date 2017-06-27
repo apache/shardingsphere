@@ -96,7 +96,7 @@ public final class ResultSetMergeContextTest {
                 new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col")))), selectStatement);
         actual.setGroupByKeysToCurrentOrderByKeys();
         assertThat(actual.getCurrentOrderByKeys().size(), is(1));
-        assertThat(actual.getCurrentOrderByKeys().get(0).getColumnName().get(), is("group_col"));
+        assertThat(actual.getCurrentOrderByKeys().get(0).getColumnLabel(), is("group_col"));
     }
     
     @Test
@@ -136,6 +136,6 @@ public final class ResultSetMergeContextTest {
         actual.setGroupByKeysToCurrentOrderByKeys();
         actual.setOrderByKeysToCurrentOrderByKeys();
         assertThat(actual.getCurrentOrderByKeys().size(), is(1));
-        assertThat(actual.getCurrentOrderByKeys().get(0).getColumnName().get(), is("order_col"));
+        assertThat(actual.getCurrentOrderByKeys().get(0).getColumnLabel(), is("order_col"));
     }
 }

@@ -73,13 +73,8 @@ public final class OrderBy implements IndexColumn {
     }
     
     @Override
-    public Optional<String> getColumnLabel() {
-        return alias;
-    }
-    
-    @Override
-    public Optional<String> getColumnName() {
-        return name;
+    public String getColumnLabel() {
+        return alias.isPresent() ? alias.get() : name.orNull();
     }
     
     @Override
