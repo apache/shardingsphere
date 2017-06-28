@@ -356,7 +356,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
         for (OrderBy each : selectStatement.getOrderByList()) {
-            if (!isContainItem(each)) {
+            if (!isContainsItem(each)) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                 String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
@@ -368,7 +368,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
         for (GroupBy each : selectStatement.getGroupByList()) {
-            if (!isContainItem(each)) {
+            if (!isContainsItem(each)) {
                 String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
                 String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
@@ -377,7 +377,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    private boolean isContainItem(final OrderBy orderBy) {
+    private boolean isContainsItem(final OrderBy orderBy) {
         if (selectStatement.isContainStar()) {
             return true;
         }
@@ -395,7 +395,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return false;
     }
     
-    private boolean isContainItem(final GroupBy groupBy) {
+    private boolean isContainsItem(final GroupBy groupBy) {
         if (selectStatement.isContainStar()) {
             return true;
         }
