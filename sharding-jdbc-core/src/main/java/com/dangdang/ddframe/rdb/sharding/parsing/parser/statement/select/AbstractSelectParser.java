@@ -364,7 +364,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return true;
         }
         for (SelectItem each : selectStatement.getItems()) {
-            if (orderItem.getIndex().isPresent()) {
+            if (-1 != orderItem.getIndex()) {
                 return true;
             }
             if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {

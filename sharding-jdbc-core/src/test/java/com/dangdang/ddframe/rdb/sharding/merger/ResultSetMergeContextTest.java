@@ -42,8 +42,8 @@ public final class ResultSetMergeContextTest {
         ResultSetMergeContext actual = new ResultSetMergeContext(
                 new ShardingResultSets(Collections.singletonList(MergerTestUtil.mockResult(Arrays.asList("order_col", "group_col", "count_col", "avg_col", "sharding_gen_1", "sharding_gen_2")))), 
                 createSQLStatement());
-        assertThat(actual.getSqlStatement().getOrderByList().get(0).getColumnIndex(), is(1));
-        assertThat(actual.getSqlStatement().getGroupByList().get(0).getColumnIndex(), is(2));
+        assertThat(actual.getSqlStatement().getOrderByList().get(0).getIndex(), is(1));
+        assertThat(actual.getSqlStatement().getGroupByList().get(0).getIndex(), is(2));
         assertThat(actual.getSqlStatement().getAggregationSelectItems().get(0).getIndex(), is(3));
         assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getIndex(), is(4));
         assertThat(actual.getSqlStatement().getAggregationSelectItems().get(1).getDerivedAggregationSelectItems().get(0).getIndex(), is(5));

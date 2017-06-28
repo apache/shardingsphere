@@ -40,7 +40,8 @@ public final class OrderItem {
     
     private final OrderType orderByType;
     
-    private Optional<Integer> index;
+    @Setter
+    private int index = -1;
     
     @Setter
     private Optional<String> alias;
@@ -48,7 +49,6 @@ public final class OrderItem {
     public OrderItem(final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
-        index = Optional.absent();
         this.orderByType = orderByType;
         this.alias = alias;
     }
@@ -56,7 +56,6 @@ public final class OrderItem {
     public OrderItem(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
-        index = Optional.absent();
         this.orderByType = orderByType;
         this.alias = alias;
     }
@@ -64,24 +63,18 @@ public final class OrderItem {
     public OrderItem(final int index, final OrderType orderByType) {
         owner = Optional.absent();
         name = Optional.absent();
-        this.index = Optional.of(index);
+        this.index = index;
         this.orderByType = orderByType;
         alias = Optional.absent();
     }
     
+    /**
+     * 获取列标签.
+     *
+     * @return 列标签
+     */
     public String getColumnLabel() {
         return alias.isPresent() ? alias.get() : name.orNull();
-    }
-    
-    public void setColumnIndex(final int index) {
-        if (this.index.isPresent()) {
-            return;
-        }
-        this.index = Optional.of(index);
-    }
-    
-    public int getColumnIndex() {
-        return index.isPresent() ? index.get() : -1;
     }
     
     /**

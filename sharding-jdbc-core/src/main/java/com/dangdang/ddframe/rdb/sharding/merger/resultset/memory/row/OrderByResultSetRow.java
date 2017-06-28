@@ -47,7 +47,7 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     private List<Comparable<?>> getOrderByValues() {
         List<Comparable<?>> result = new ArrayList<>(orderItems.size());
         for (OrderItem each : orderItems) {
-            Object value = getCell(each.getColumnIndex());
+            Object value = getCell(each.getIndex());
             Preconditions.checkState(value instanceof Comparable, "Sharding-JDBC: order by value must extends Comparable");
             result.add((Comparable<?>) value);
         }

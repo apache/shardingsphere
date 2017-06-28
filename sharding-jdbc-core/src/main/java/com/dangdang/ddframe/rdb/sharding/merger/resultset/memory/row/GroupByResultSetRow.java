@@ -97,7 +97,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     public List<Object> getGroupByValues() throws SQLException {
         List<Object> result = new ArrayList<>(groupByList.size());
         for (OrderItem each : groupByList) {
-            result.add(resultSet.getObject(each.getColumnIndex()));
+            result.add(resultSet.getObject(each.getIndex()));
         }
         return result;
     }
@@ -109,7 +109,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
             
             @Override
             public Object apply(final OrderItem input) {
-                return getCell(input.getColumnIndex());
+                return getCell(input.getIndex());
             }
         }));
         if (aggregationUnitMap.isEmpty()) {

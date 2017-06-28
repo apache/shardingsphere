@@ -65,12 +65,12 @@ public final class ResultSetMergeContext {
     
     private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
         for (OrderItem each : orderItems) {
-            if (each.getColumnIndex() > 0) {
+            if (-1 != each.getIndex()) {
                 continue;
             }
             Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("%s has not index", each));
             if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
-                each.setColumnIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+                each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
     }

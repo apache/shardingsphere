@@ -55,7 +55,7 @@ public final class GroupByResultSetRowTest {
         ResultSet rs = MergerTestUtil.mockResult(Arrays.asList("user_id", "number"), Arrays.<ResultSetRow>asList(new TestResultSetRow(1, 10), new TestResultSetRow(1, 20)));
         assertTrue(rs.next());
         OrderItem orderItem = new OrderItem("user_id", OrderType.ASC, Optional.<String>absent());
-        orderItem.setColumnIndex(1);
+        orderItem.setIndex(1);
         AggregationSelectItem aggregationColumn = new AggregationSelectItem(AggregationType.SUM, "SUM(0)", Optional.<String>absent());
         aggregationColumn.setIndex(2);
         GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(orderItem), Collections.singletonList(aggregationColumn));
@@ -66,9 +66,9 @@ public final class GroupByResultSetRowTest {
         assertFalse(rs.next());
     }
     
-    private OrderItem createOrderItem(final String columnName, final int columnIndex) {
+    private OrderItem createOrderItem(final String columnName, final int index) {
         OrderItem result = new OrderItem(columnName, OrderType.ASC, Optional.<String>absent());
-        result.setColumnIndex(columnIndex);
+        result.setIndex(index);
         return result;
     }
 }
