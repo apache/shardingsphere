@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.Column;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import org.junit.Test;
 
 import javax.sql.DataSource;
