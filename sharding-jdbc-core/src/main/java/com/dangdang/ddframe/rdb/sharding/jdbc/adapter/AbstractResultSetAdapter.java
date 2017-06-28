@@ -73,7 +73,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
                 exceptions.add(ex);
             }
         }
-        throwSQLExceptionIfNessesary(exceptions);
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override

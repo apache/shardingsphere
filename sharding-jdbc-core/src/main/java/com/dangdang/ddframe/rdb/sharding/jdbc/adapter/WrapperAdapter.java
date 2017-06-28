@@ -75,7 +75,7 @@ public class WrapperAdapter implements Wrapper {
         }
     }
     
-    protected void throwSQLExceptionIfNessesary(final Collection<SQLException> exceptions) throws SQLException {
+    protected void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
         if (exceptions.isEmpty()) {
             return;
         }

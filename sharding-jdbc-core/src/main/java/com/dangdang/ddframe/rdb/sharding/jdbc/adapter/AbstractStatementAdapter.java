@@ -55,7 +55,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
                 exceptions.add(ex);
             }
         }
-        throwSQLExceptionIfNessesary(exceptions);
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override

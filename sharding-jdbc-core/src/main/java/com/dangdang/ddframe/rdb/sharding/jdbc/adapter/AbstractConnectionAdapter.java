@@ -78,7 +78,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 exceptions.add(ex);
             }
         }
-        throwSQLExceptionIfNessesary(exceptions);
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 exceptions.add(ex);
             }
         }
-        throwSQLExceptionIfNessesary(exceptions);
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
