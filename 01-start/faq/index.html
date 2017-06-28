@@ -433,13 +433,18 @@
 
 <p>回答：</p>
 
-<p>使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在获取连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次都只从一个数据源中获取连接。
-以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：</p>
+<p>使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在获取连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次都只从一个数据源中获取连接。</p>
+
+<p>以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：</p>
 
 <pre><code class="language-java">    if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
         this.registerPool();
     }
 </code></pre>
+
+<p>更多关于alias使用方法请参考<a href="http://proxool.sourceforge.net/configure.html">Proxool官网</a>。</p>
+
+<p>PS:sourceforge网站需要翻墙访问。</p>
 
 
       
