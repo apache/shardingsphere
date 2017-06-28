@@ -38,7 +38,7 @@ public final class OrderItem {
     
     private final Optional<String> name;
     
-    private final OrderType orderByType;
+    private final OrderType type;
     
     @Setter
     private int index = -1;
@@ -46,25 +46,25 @@ public final class OrderItem {
     @Setter
     private Optional<String> alias;
     
-    public OrderItem(final String name, final OrderType orderByType, final Optional<String> alias) {
+    public OrderItem(final String name, final OrderType type, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
-        this.orderByType = orderByType;
+        this.type = type;
         this.alias = alias;
     }
     
-    public OrderItem(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
+    public OrderItem(final String owner, final String name, final OrderType type, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
-        this.orderByType = orderByType;
+        this.type = type;
         this.alias = alias;
     }
     
-    public OrderItem(final int index, final OrderType orderByType) {
+    public OrderItem(final int index, final OrderType type) {
         owner = Optional.absent();
         name = Optional.absent();
         this.index = index;
-        this.orderByType = orderByType;
+        this.type = type;
         alias = Optional.absent();
     }
     

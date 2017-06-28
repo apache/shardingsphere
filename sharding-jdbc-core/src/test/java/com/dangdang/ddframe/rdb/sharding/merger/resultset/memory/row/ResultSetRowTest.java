@@ -27,9 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ResultSetRowTest {
     
@@ -37,8 +35,7 @@ public final class ResultSetRowTest {
     
     @Before
     public void setUp() throws SQLException {
-        resultSetRow = new AbstractResultSetRow(MergerTestUtil.mockResult(Arrays.asList("col_1", "col_2"),
-                Collections.<ResultSetRow>singletonList(new TestResultSetRow("1", 2)))) { };
+        resultSetRow = new AbstractResultSetRow(MergerTestUtil.mockResult(Arrays.asList("col_1", "col_2"), Collections.<ResultSetRow>singletonList(new TestResultSetRow("1", 2)))) { };
     }
     
     @Test
@@ -56,26 +53,5 @@ public final class ResultSetRowTest {
     public void assertSetCell() {
         resultSetRow.setCell(1, "new");
         assertThat(resultSetRow.getCell(1), is((Object) "new"));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertSetCellWhenOutOfRange() {
-        resultSetRow.setCell(0, "new");
-    }
-    
-    @Test
-    public void assertInRange() {
-        assertTrue(resultSetRow.inRange(1));
-    }
-    
-    @Test
-    public void assertOutOfRangeWhenLessThanOne() {
-        assertFalse(resultSetRow.inRange(0));
-        assertFalse(resultSetRow.inRange(-1));
-    }
-    
-    @Test
-    public void assertOutOfRangeWhenGreatThanMaxSize() {
-        assertFalse(resultSetRow.inRange(3));
     }
 }

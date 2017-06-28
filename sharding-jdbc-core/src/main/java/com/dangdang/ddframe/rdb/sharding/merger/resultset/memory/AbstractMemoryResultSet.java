@@ -99,7 +99,6 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
         Preconditions.checkState(!isClosed(), "Result set is closed");
         Preconditions.checkState(!beforeFirst, "Before start of result set");
         Preconditions.checkState(null != currentRow, "After end of result set");
-        Preconditions.checkArgument(currentRow.inRange(columnIndex), String.format("Column Index %d out of range", columnIndex));
         Object result = currentRow.getCell(columnIndex);
         wasNull = null == result;
         return result;

@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
-import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
 
@@ -36,29 +36,29 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     
     private final List<OrderItem> orderItems;
     
-    private final List<Comparable<?>> orderByValues;
+    private final List<Comparable<?>> orderValues;
     
     public OrderByResultSetRow(final ResultSet resultSet, final List<OrderItem> orderItems) throws SQLException {
         super(resultSet);
         this.orderItems = orderItems;
-        orderByValues = getOrderByValues();
+        orderValues = getOrderValues();
     }
     
-    private List<Comparable<?>> getOrderByValues() {
+    private List<Comparable<?>> getOrderValues() {
         List<Comparable<?>> result = new ArrayList<>(orderItems.size());
         for (OrderItem each : orderItems) {
             Object value = getCell(each.getIndex());
-            Preconditions.checkState(value instanceof Comparable, "Sharding-JDBC: order by value must extends Comparable");
+            Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
         return result;
     }
     
     @Override
-    public int compareTo(final OrderByResultSetRow otherOrderByValue) {
+    public int compareTo(final OrderByResultSetRow o) {
         for (int i = 0; i < orderItems.size(); i++) {
             OrderItem thisOrderBy = orderItems.get(i);
-            int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderBy.getOrderByType());
+            int result = compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType());
             if (0 != result) {
                 return result;
             }
@@ -66,8 +66,8 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
         return 0;
     }
     
-    @Override
-    public String toString() {
-        return String.format("Order by columns value is %s", orderByValues);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+        return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

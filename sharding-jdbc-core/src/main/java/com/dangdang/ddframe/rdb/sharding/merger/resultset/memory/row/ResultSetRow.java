@@ -41,12 +41,4 @@ public interface ResultSetRow {
      * @return 数据行数据
      */
     Object getCell(int columnIndex);
-    
-    /**
-     * 判断列索引是否在数据行范围.
-     * 
-     * @param columnIndex 列索引, 与JDBC保持一致, 从1开始计数
-     * @return 列索引是否在数据行范围
-     */
-    boolean inRange(int columnIndex);
 }

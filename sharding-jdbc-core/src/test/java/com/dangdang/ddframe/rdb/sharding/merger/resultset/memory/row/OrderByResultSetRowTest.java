@@ -36,34 +36,27 @@ public final class OrderByResultSetRowTest {
     
     @Test
     public void assertCompareToForAsc() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other_1"), 
-                Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
-        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(createResultSet("order_3", "order_4", "other_2"), 
-                Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
+        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(
+                createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
+        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(
+                createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
         assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) < 0);
     }
     
     @Test
     public void assertCompareToForDesc() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other_1"), 
-                Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(createResultSet("order_3", "order_4", "other_2"), 
-                Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
+        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(
+                createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
+        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(
+                createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
         assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) > 0);
     }
     
     @Test
     public void assertCompareToWhenEqual() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow = new OrderByResultSetRow(createResultSet("order_1", "order_2", "other"), 
-                Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
+        OrderByResultSetRow orderByResultSetRow = new OrderByResultSetRow(
+                createResultSet("order_1", "order_2", "other"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
         assertThat(orderByResultSetRow.compareTo(orderByResultSetRow), is(0));
-    }
-    
-    @Test
-    public void assertToString() throws SQLException {
-        assertThat(new OrderByResultSetRow(createResultSet("order_1", "order_2", "other"), 
-                Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC))).toString(), 
-                is("Order by columns value is [order_1, order_2]"));
     }
     
     private ResultSet createResultSet(final Object... values) throws SQLException {

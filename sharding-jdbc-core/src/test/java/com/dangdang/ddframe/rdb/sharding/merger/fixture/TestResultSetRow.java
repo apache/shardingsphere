@@ -36,9 +36,4 @@ public final class TestResultSetRow implements ResultSetRow {
     public Object getCell(final int columnIndex) {
         return dataRow[columnIndex - 1];
     }
-    
-    @Override
-    public boolean inRange(final int columnIndex) {
-        return columnIndex > 0 && columnIndex < dataRow.length + 1;
-    }
 }

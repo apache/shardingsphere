@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 import com.google.common.base.Preconditions;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
@@ -31,16 +30,16 @@ import java.sql.SQLException;
  */
 public abstract class AbstractResultSetRow implements ResultSetRow {
     
-    private final Object[] rowData;
+    private final Object[] data;
     
     public AbstractResultSetRow(final ResultSet resultSet) throws SQLException {
-        rowData = loadData(resultSet);
+        data = load(resultSet);
     }
     
-    private Object[] loadData(final ResultSet resultSet) throws SQLException {
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        Object[] result = new Object[resultSetMetaData.getColumnCount()];
-        for (int i = 0; i < resultSetMetaData.getColumnCount(); i++) {
+    private Object[] load(final ResultSet resultSet) throws SQLException {
+        int columnCount = resultSet.getMetaData().getColumnCount();
+        Object[] result = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
             result[i] = resultSet.getObject(i + 1);
         }
         return result;
@@ -48,18 +47,12 @@ public abstract class AbstractResultSetRow implements ResultSetRow {
     
     @Override
     public final void setCell(final int columnIndex, final Object value) {
-        Preconditions.checkArgument(inRange(columnIndex));
-        rowData[columnIndex - 1] = value;
+        data[columnIndex - 1] = value;
     }
     
     @Override
     public final Object getCell(final int columnIndex) {
-        Preconditions.checkArgument(inRange(columnIndex));
-        return rowData[columnIndex - 1];
-    }
-    
-    @Override
-    public final boolean inRange(final int columnIndex) {
-        return columnIndex > 0 && columnIndex < rowData.length + 1;
+        Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);
+        return data[columnIndex - 1];
     }
 }

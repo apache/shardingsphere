@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.Ag
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import java.sql.ResultSet;
@@ -66,15 +66,17 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      */
     public void aggregate() throws SQLException {
         for (Map.Entry<AggregationSelectItem, AggregationUnit> each : aggregationUnitMap.entrySet()) {
-            each.getValue().merge(getAggregationValues(each.getKey().getDerivedAggregationSelectItems().isEmpty()
-                    ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedAggregationSelectItems()));
+            each.getValue().merge(getAggregationValues(
+                    each.getKey().getDerivedAggregationSelectItems().isEmpty() ? Collections.singletonList(each.getKey()) : each.getKey().getDerivedAggregationSelectItems()));
         }
     }
     
-    private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItem> aggregationColumns) throws SQLException {
-        List<Comparable<?>> result = new ArrayList<>(aggregationColumns.size());
-        for (AggregationSelectItem each : aggregationColumns) {
-            result.add((Comparable<?>) resultSet.getObject(each.getIndex()));
+    private List<Comparable<?>> getAggregationValues(final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {
+        List<Comparable<?>> result = new ArrayList<>(aggregationSelectItems.size());
+        for (AggregationSelectItem each : aggregationSelectItems) {
+            Object value = resultSet.getObject(each.getIndex());
+            Preconditions.checkState(null == value || value instanceof Comparable, "Aggregation value must implements Comparable");
+            result.add((Comparable<?>) value);
         }
         return result;
     }
@@ -94,36 +96,11 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @return 分组值集合
      * @throws SQLException SQL异常
      */
-    public List<Object> getGroupByValues() throws SQLException {
+    public List<Object> getGroupValues() throws SQLException {
         List<Object> result = new ArrayList<>(groupByList.size());
         for (OrderItem each : groupByList) {
             result.add(resultSet.getObject(each.getIndex()));
         }
         return result;
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder("GroupByKey is: ");
-        result.append(Lists.transform(groupByList, new Function<OrderItem, Object>() {
-            
-            @Override
-            public Object apply(final OrderItem input) {
-                return getCell(input.getIndex());
-            }
-        }));
-        if (aggregationUnitMap.isEmpty()) {
-            return result.toString();
-        }
-        result.append("; Aggregation result is: ").append(Lists.transform(new ArrayList<>(aggregationUnitMap.keySet()), new Function<AggregationSelectItem, String>() {
-            
-            @Override
-            public String apply(final AggregationSelectItem input) {
-                Object value = getCell(input.getIndex());
-                value = null == value ? "null" : value;
-                return String.format("{index:%d, type:%s, value:%s}", input.getIndex(), input.getType(), value);
-            }
-        }));
-        return result.toString();
     }
 }

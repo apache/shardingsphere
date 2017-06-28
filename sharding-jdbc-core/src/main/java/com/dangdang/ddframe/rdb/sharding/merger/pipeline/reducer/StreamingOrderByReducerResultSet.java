@@ -59,11 +59,11 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
         }
         return doNext();
     }
-
+    
     @Override
     protected boolean afterFirstNext() throws SQLException {
         ResultSetOrderByWrapper firstResultSet = delegateResultSetQueue.poll();
-        setDelegate(firstResultSet.delegate);
+        setDelegate(firstResultSet.resultSet);
         if (firstResultSet.next()) {
             delegateResultSetQueue.offer(firstResultSet);
         }
@@ -74,7 +74,7 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
         if (delegateResultSetQueue.isEmpty()) {
             return false;
         }
-        setDelegate(delegateResultSetQueue.peek().delegate);
+        setDelegate(delegateResultSetQueue.peek().resultSet);
         log.trace("Chosen order by value: {}, current result set hashcode: {}", delegateResultSetQueue.peek().row, getDelegate().hashCode());
         return true;
     }
@@ -82,14 +82,14 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
     @RequiredArgsConstructor
     private class ResultSetOrderByWrapper implements Comparable<ResultSetOrderByWrapper> {
         
-        private final ResultSet delegate;
+        private final ResultSet resultSet;
         
         private OrderByResultSetRow row;
         
         boolean next() throws SQLException {
-            boolean result = delegate.next();
+            boolean result = resultSet.next();
             if (result) {
-                row = new OrderByResultSetRow(delegate, orderItems);
+                row = new OrderByResultSetRow(resultSet, orderItems);
             }
             return result;
         }

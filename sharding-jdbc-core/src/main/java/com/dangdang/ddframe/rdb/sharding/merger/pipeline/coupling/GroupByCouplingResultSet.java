@@ -64,8 +64,8 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
             return Optional.absent();
         }
         GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByList, aggregationColumns);
-        List<Object> groupByValues = result.getGroupByValues();
-        while (hasNext && (groupByList.isEmpty() || groupByValues.equals(result.getGroupByValues()))) {
+        List<Object> groupByValues = result.getGroupValues();
+        while (hasNext && (groupByList.isEmpty() || groupByValues.equals(result.getGroupValues()))) {
             result.aggregate();
             hasNext = resultSet.next();
         }
