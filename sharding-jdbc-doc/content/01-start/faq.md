@@ -51,6 +51,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 回答：
 
 使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在使用连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次获取都只从一个数据源中获取连接。
+以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：
 ```java
     if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
         this.registerPool();
