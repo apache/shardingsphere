@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Preconditions;
@@ -50,7 +49,7 @@ public final class ResultSetMergeContext {
     }
     
     private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
-        for (IndexColumn each : getAllFocusedColumns()) {
+        for (OrderItem each : getAllFocusedColumns()) {
             if (each.getColumnIndex() > 0) {
                 continue;
             }
@@ -61,8 +60,8 @@ public final class ResultSetMergeContext {
         }
     }
     
-    private List<IndexColumn> getAllFocusedColumns() {
-        List<IndexColumn> result = new LinkedList<>();
+    private List<OrderItem> getAllFocusedColumns() {
+        List<OrderItem> result = new LinkedList<>();
         result.addAll(sqlStatement.getGroupByList());
         result.addAll(sqlStatement.getOrderByList());
         return result;

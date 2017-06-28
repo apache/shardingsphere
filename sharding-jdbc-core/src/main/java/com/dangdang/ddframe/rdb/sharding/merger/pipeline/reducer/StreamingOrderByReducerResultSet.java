@@ -41,12 +41,12 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
     
     private final Queue<ResultSetOrderByWrapper> delegateResultSetQueue;
     
-    private final List<OrderItem> orderByKeys;
+    private final List<OrderItem> orderItems;
     
     public StreamingOrderByReducerResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(resultSetMergeContext.getShardingResultSets().getResultSets());
         delegateResultSetQueue = new PriorityQueue<>(getResultSets().size());
-        orderByKeys = resultSetMergeContext.getCurrentOrderByKeys();
+        orderItems = resultSetMergeContext.getCurrentOrderByKeys();
     }
     
     @Override
@@ -89,7 +89,7 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
         boolean next() throws SQLException {
             boolean result = delegate.next();
             if (result) {
-                row = new OrderByResultSetRow(delegate, orderByKeys);
+                row = new OrderByResultSetRow(delegate, orderItems);
             }
             return result;
         }

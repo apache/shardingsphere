@@ -32,7 +32,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class OrderItem implements IndexColumn {
+public final class OrderItem {
     
     private final Optional<String> owner;
     

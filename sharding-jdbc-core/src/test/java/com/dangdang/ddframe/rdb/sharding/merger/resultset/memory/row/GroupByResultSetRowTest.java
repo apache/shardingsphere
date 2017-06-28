@@ -43,7 +43,7 @@ public final class GroupByResultSetRowTest {
     public void assertGetGroupByValues() throws SQLException {
         ResultSet resultSet = MergerTestUtil.mockResult(Arrays.asList("group_col_1", "group_col_2", "other_col"),
                 Collections.<ResultSetRow>singletonList(new TestResultSetRow("group_1", "group_2", "other")));
-        List<Object> actual = new GroupByResultSetRow(resultSet, Arrays.asList(createGroupBy("group_col_1", 1), createGroupBy("group_col_2", 2)),
+        List<Object> actual = new GroupByResultSetRow(resultSet, Arrays.asList(createOrderItem("group_col_1", 1), createOrderItem("group_col_2", 2)),
                 Collections.singletonList(new AggregationSelectItem("SUM(0)", Optional.<String>absent(), -1, AggregationType.SUM))).getGroupByValues();
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).toString(), is("group_1"));
@@ -54,10 +54,10 @@ public final class GroupByResultSetRowTest {
     public void assertToString() throws Exception {
         ResultSet rs = MergerTestUtil.mockResult(Arrays.asList("user_id", "number"), Arrays.<ResultSetRow>asList(new TestResultSetRow(1, 10), new TestResultSetRow(1, 20)));
         assertTrue(rs.next());
-        OrderItem groupBy = new OrderItem("user_id", OrderType.ASC, Optional.<String>absent());
-        groupBy.setColumnIndex(1);
+        OrderItem orderItem = new OrderItem("user_id", OrderType.ASC, Optional.<String>absent());
+        orderItem.setColumnIndex(1);
         AggregationSelectItem aggregationColumn = new AggregationSelectItem("SUM(0)",  Optional.<String>absent(), 2, AggregationType.SUM);
-        GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(groupBy), Collections.singletonList(aggregationColumn));
+        GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(orderItem), Collections.singletonList(aggregationColumn));
         row.aggregate();
         assertTrue(rs.next());
         row.aggregate();
@@ -65,7 +65,7 @@ public final class GroupByResultSetRowTest {
         assertFalse(rs.next());
     }
     
-    private OrderItem createGroupBy(final String columnName, final int columnIndex) {
+    private OrderItem createOrderItem(final String columnName, final int columnIndex) {
         OrderItem result = new OrderItem(columnName, OrderType.ASC, Optional.<String>absent());
         result.setColumnIndex(columnIndex);
         return result;

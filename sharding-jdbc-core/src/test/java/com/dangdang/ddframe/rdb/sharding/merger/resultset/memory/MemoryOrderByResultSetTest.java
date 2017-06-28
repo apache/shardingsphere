@@ -84,12 +84,12 @@ public class MemoryOrderByResultSetTest {
         rs3.put("name", "dbc");
         rs3.put("time", cal.getTime());
         rs3.put("id", 13);
-        OrderItem orderBy1 = new OrderItem("name", OrderType.ASC, Optional.<String>absent());
-        orderBy1.setColumnIndex(1);
-        OrderItem orderBy2 = new OrderItem("time", OrderType.DESC, Optional.<String>absent());
-        orderBy2.setColumnIndex(2);
+        OrderItem orderItem1 = new OrderItem("name", OrderType.ASC, Optional.<String>absent());
+        orderItem1.setColumnIndex(1);
+        OrderItem orderItem2 = new OrderItem("time", OrderType.DESC, Optional.<String>absent());
+        orderItem2.setColumnIndex(2);
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(
-                Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))), Arrays.asList(orderBy1, orderBy2)) { };
+                Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))), Arrays.asList(orderItem1, orderItem2)) { };
         List<Map<String, Object>> actualList = new ArrayList<>();
         while (rs.next()) {
             Map<String, Object> map = new TreeMap<>();

@@ -164,7 +164,7 @@ public abstract class AbstractBaseParseTest {
         }
         final SelectStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
-            List<OrderItem> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumn, OrderItem>() {
+            List<OrderItem> orderItems = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumn, OrderItem>() {
                 
                 @Override
                 public OrderItem apply(final OrderByColumn input) {
@@ -172,7 +172,7 @@ public abstract class AbstractBaseParseTest {
                             : new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             });
-            selectStatement.getOrderByList().addAll(orderBys);
+            selectStatement.getOrderByList().addAll(orderItems);
         }
         if (null != assertObj.getGroupByColumns()) {
             selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumn, OrderItem>() {
