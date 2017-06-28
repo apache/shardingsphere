@@ -18,10 +18,12 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -38,18 +40,28 @@ import java.util.List;
 @ToString
 public final class AggregationSelectItem implements SelectItem {
     
+    private final AggregationType type;
+    
     private final String innerExpression;
     
     private final Optional<String> alias;
     
-    private final int index;
-    
-    private final AggregationType aggregationType;
-    
     private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
+    
+    @Setter
+    private int index = -1;
     
     @Override
     public String getExpression() {
-        return aggregationType.name() + innerExpression;
+        return SQLUtil.getExactlyValue(type.name() + innerExpression);
+    }
+    
+    /**
+     * 获取列标签.
+     * 
+     * @return 列标签
+     */
+    public String getColumnLabel() {
+        return alias.isPresent() ? alias.get() : getExpression();
     }
 }

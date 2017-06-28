@@ -109,19 +109,17 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     protected final void parseSelectList() {
-        int index = 1;
         do {
-            SelectItem selectItem = parseSelectItem(index);
+            SelectItem selectItem = parseSelectItem();
             selectStatement.getItems().add(selectItem);
             if (selectItem instanceof CommonSelectItem && ((CommonSelectItem) selectItem).isStar()) {
                 selectStatement.setContainStar(true);
             }
-            index++;
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
-    private SelectItem parseSelectItem(final int index) {
+    private SelectItem parseSelectItem() {
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         if (sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
@@ -129,7 +127,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias(), true);
         }
         if (sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItem(sqlParser.skipParentheses(), sqlParser.parseAlias(), index, AggregationType.valueOf(literals.toUpperCase()));
+            return new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias());
         }
         StringBuilder expression = new StringBuilder();
         // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItem类型并不关注expression和alias
@@ -332,16 +330,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendAvgDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        int selectItemSize = selectStatement.getItems().size();
         for (SelectItem each : selectStatement.getItems()) {
-            if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getAggregationType()) {
+            if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getType()) {
                 continue;
             }
             AggregationSelectItem avgItem = (AggregationSelectItem) each;
             String countAlias = String.format(DERIVED_COUNT_ALIAS, derivedColumnOffset);
-            AggregationSelectItem countItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(countAlias), ++selectItemSize, AggregationType.COUNT);
+            AggregationSelectItem countItem = new AggregationSelectItem(AggregationType.COUNT, avgItem.getInnerExpression(), Optional.of(countAlias));
             String sumAlias = String.format(DERIVED_SUM_ALIAS, derivedColumnOffset);
-            AggregationSelectItem sumItem = new AggregationSelectItem(avgItem.getInnerExpression(), Optional.of(sumAlias), ++selectItemSize, AggregationType.SUM);
+            AggregationSelectItem sumItem = new AggregationSelectItem(AggregationType.SUM, avgItem.getInnerExpression(), Optional.of(sumAlias));
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO 将AVG列替换成常数，避免数据库再计算无用的AVG函数

@@ -44,7 +44,7 @@ public final class GroupByResultSetRowTest {
         ResultSet resultSet = MergerTestUtil.mockResult(Arrays.asList("group_col_1", "group_col_2", "other_col"),
                 Collections.<ResultSetRow>singletonList(new TestResultSetRow("group_1", "group_2", "other")));
         List<Object> actual = new GroupByResultSetRow(resultSet, Arrays.asList(createOrderItem("group_col_1", 1), createOrderItem("group_col_2", 2)),
-                Collections.singletonList(new AggregationSelectItem("SUM(0)", Optional.<String>absent(), -1, AggregationType.SUM))).getGroupByValues();
+                Collections.singletonList(new AggregationSelectItem(AggregationType.SUM, "SUM(0)", Optional.<String>absent()))).getGroupByValues();
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).toString(), is("group_1"));
         assertThat(actual.get(1).toString(), is("group_2"));
@@ -56,7 +56,8 @@ public final class GroupByResultSetRowTest {
         assertTrue(rs.next());
         OrderItem orderItem = new OrderItem("user_id", OrderType.ASC, Optional.<String>absent());
         orderItem.setColumnIndex(1);
-        AggregationSelectItem aggregationColumn = new AggregationSelectItem("SUM(0)",  Optional.<String>absent(), 2, AggregationType.SUM);
+        AggregationSelectItem aggregationColumn = new AggregationSelectItem(AggregationType.SUM, "SUM(0)", Optional.<String>absent());
+        aggregationColumn.setIndex(2);
         GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(orderItem), Collections.singletonList(aggregationColumn));
         row.aggregate();
         assertTrue(rs.next());

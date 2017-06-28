@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -45,11 +46,25 @@ public final class ResultSetMergeContext {
         this.shardingResultSets = shardingResultSets;
         this.sqlStatement = sqlStatement;
         currentOrderByKeys = new LinkedList<>(sqlStatement.getOrderByList());
-        setColumnIndex(((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap());
+        Map<String, Integer> columnLabelIndexMap = ((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap();
+        setIndexForAggregationItem(columnLabelIndexMap);
+        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByList());
+        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getGroupByList());
     }
     
-    private void setColumnIndex(final Map<String, Integer> columnLabelIndexMap) {
-        for (OrderItem each : getAllFocusedColumns()) {
+    private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
+        for (AggregationSelectItem each : sqlStatement.getAggregationSelectItems()) {
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("%s has not index", each));
+            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("%s has not index", derived));
+                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
+            }
+        }
+    }
+    
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
+        for (OrderItem each : orderItems) {
             if (each.getColumnIndex() > 0) {
                 continue;
             }
@@ -58,13 +73,6 @@ public final class ResultSetMergeContext {
                 each.setColumnIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
-    }
-    
-    private List<OrderItem> getAllFocusedColumns() {
-        List<OrderItem> result = new LinkedList<>();
-        result.addAll(sqlStatement.getGroupByList());
-        result.addAll(sqlStatement.getOrderByList());
-        return result;
     }
     
     /**

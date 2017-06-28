@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -75,18 +76,23 @@ public final class MergerTestUtil {
         when(resultSetMetaData.getColumnCount()).thenReturn(columnNames.size());
         int count = 1;
         for (String each : columnNames) {
-            when(resultSetMetaData.getColumnLabel(count)).thenReturn(each);
+            when(resultSetMetaData.getColumnLabel(count)).thenReturn(SQLUtil.getExactlyValue(each));
             count++;
         }
         return result;
     }
     
     public static AggregationSelectItem createAggregationColumn(
-            final AggregationType aggregationType, final String name, final String alias, final int index, final int avgDerivedCountIndex, final int avgDerivedSumIndex) {
-        AggregationSelectItem result = new AggregationSelectItem(name, Optional.fromNullable(alias), index, aggregationType);
+            final AggregationType aggregationType, final String innerExpression, final String alias, final int index, final int avgDerivedCountIndex, final int avgDerivedSumIndex) {
+        AggregationSelectItem result = new AggregationSelectItem(aggregationType, innerExpression, Optional.fromNullable(alias));
+        result.setIndex(index);
         if (AggregationType.AVG == aggregationType) {
-            result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.COUNT.name(), Optional.of("sharding_gen_1"), avgDerivedCountIndex, AggregationType.COUNT));
-            result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.SUM.name(), Optional.of("sharding_gen_2"), avgDerivedSumIndex, AggregationType.SUM));
+            AggregationSelectItem derivedCount = new AggregationSelectItem(AggregationType.COUNT, AggregationType.COUNT.name(), Optional.of("sharding_gen_1"));
+            derivedCount.setIndex(avgDerivedCountIndex);
+            result.getDerivedAggregationSelectItems().add(derivedCount);
+            AggregationSelectItem derivedSum = new AggregationSelectItem(AggregationType.SUM, AggregationType.SUM.name(), Optional.of("sharding_gen_2"));
+            derivedSum.setIndex(avgDerivedSumIndex);
+            result.getDerivedAggregationSelectItems().add(derivedSum);
         }
         return result;
     }

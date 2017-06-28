@@ -193,10 +193,10 @@ public abstract class AbstractBaseParseTest {
                         @Override
                         public AggregationSelectItem apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem input) {
                             AggregationSelectItem result = new AggregationSelectItem(
-                                    input.getInnerExpression(), Optional.fromNullable(input.getAlias()), input.getIndex(), AggregationType.valueOf(input.getAggregationType().toUpperCase()));
+                                    AggregationType.valueOf(input.getAggregationType().toUpperCase()), input.getInnerExpression(), Optional.fromNullable(input.getAlias()));
                             for (com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.AggregationSelectItem each : input.getDerivedColumns()) {
-                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(each.getInnerExpression(), Optional.fromNullable(each.getAlias()), each.getIndex(),
-                                        AggregationType.valueOf(each.getAggregationType().toUpperCase())));
+                                result.getDerivedAggregationSelectItems().add(new AggregationSelectItem(
+                                        AggregationType.valueOf(each.getAggregationType().toUpperCase()), each.getInnerExpression(), Optional.fromNullable(each.getAlias())));
                             }
                             return result;
                         }

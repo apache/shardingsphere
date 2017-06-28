@@ -54,7 +54,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
             
             @Override
             public AggregationUnit apply(final AggregationSelectItem input) {
-                return AggregationUnitFactory.create(input.getAggregationType());
+                return AggregationUnitFactory.create(input.getType());
             }
         });
     }
@@ -121,7 +121,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
             public String apply(final AggregationSelectItem input) {
                 Object value = getCell(input.getIndex());
                 value = null == value ? "null" : value;
-                return String.format("{index:%d, type:%s, value:%s}", input.getIndex(), input.getAggregationType(), value);
+                return String.format("{index:%d, type:%s, value:%s}", input.getIndex(), input.getType(), value);
             }
         }));
         return result.toString();
