@@ -69,7 +69,7 @@ Sharding-JDBC功能灵活且全面：
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/faq/</guid>
-      <description>1. 阅读源码时为什么会出现编译错误? 回答：
+      <description> 1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
 2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
 目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是1.0.12版本。
@@ -79,7 +79,10 @@ sharding-jdbc-config-spring的jar包中META-INF\spring.schemas配置了xsd文件
 4. Cloud not resolve placeholder &amp;hellip; in string value &amp;hellip;异常的解决方法? 回答：
 在Spring的配置文件中，由于inline表达式使用了Groovy语法，Groovy语法的变量符与Spring默认占位符同为${}，因此需要在配置文件中增加：
 &amp;lt;context:property-placeholder location=&amp;quot;classpath:conf/rdb/conf.properties&amp;quot; ignore-unresolvable=&amp;quot;true&amp;quot;/&amp;gt;  5. inline表达式返回结果为何出现浮点数？ 回答：
-Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。 想获得除法整数结果需要将A/B改为A.intdiv(B)。</description>
+Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。 想获得除法整数结果需要将A/B改为A.intdiv(B)。
+6. 使用Proxool时分库结果不正确？ 回答：
+使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在获取连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次都只从一个数据源中获取连接。 以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：
+if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) { this.registerPool(); }  </description>
     </item>
     
     <item>
@@ -117,7 +120,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/module/</guid>
-      <description>sharding-jdbc ├──sharding-jdbc-core 分库分表核心模块，可直接使用 ├──sharding-jdbc-config-parent 配置父模块，不应直接使用 ├ ├──sharding-jdbc-config-common 配置公共模块，不应直接使用 ├ ├──sharding-jdbc-config-spring Spring命名空间支持模块，可直接使用 ├ ├──sharding-jdbc-config-yaml YAML配置，可直接使用 ├──sharding-jdbc-transaction-parent 柔性事务父模块，不应直接使用 ├ ├──sharding-jdbc-transaction 柔性事务核心模块，可直接使用 ├ ├──sharding-jdbc-transaction-storage 柔性事务存储模块，不应直接使用 ├ ├──sharding-jdbc-transaction-async-job 柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可 ├──sharding-jdbc-id-generator-parent 分布式主键父模块，不可直接使用 ├ ├──sharding-jdbc-self-id-generator 分布式自增主键，可直接使用 ├──sharding-jdbc-example 使用示例 ├ ├──sharding-jdbc-example-jdbc 基于JDBC的使用示例 ├ ├──sharding-jdbc-example-jpa 基于JPA的使用示例 ├ ├──sharding-jdbc-example-mybatis 基于MyBatis的使用示例 ├ ├──sharding-jdbc-example-config-spring 基于Spring命名空间配置的使用示例 ├ ├──sharding-jdbc-example-config-yaml 基于YAML配置的使用示例 ├ ├──sharding-jdbc-example-jdbc-transaction 柔性事务的使用示例 ├ ├──sharding-jdbc-example-id-generator 分布式主键生成器的使用示例 ├──sharding-jdbc-doc markdown生成文档的项目，使用方无需关注  </description>
+      <description>sharding-jdbc ├──sharding-jdbc-core 分库分表核心模块，可直接使用 ├──sharding-jdbc-config-parent 配置父模块，不应直接使用 ├ ├──sharding-jdbc-config-common 配置公共模块，不应直接使用 ├ ├──sharding-jdbc-config-spring Spring命名空间支持模块，可直接使用 ├ ├──sharding-jdbc-config-yaml YAML配置，可直接使用 ├──sharding-jdbc-transaction-parent 柔性事务父模块，不应直接使用 ├ ├──sharding-jdbc-transaction 柔性事务核心模块，可直接使用 ├ ├──sharding-jdbc-transaction-storage 柔性事务存储模块，不应直接使用 ├ ├──sharding-jdbc-transaction-async-job 柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可 ├──sharding-jdbc-plugin 插件模块，目前包含自定义分布式自增主键，可直接使用 ├──sharding-jdbc-example 使用示例 ├ ├──sharding-jdbc-example-jdbc 基于JDBC的使用示例 ├ ├──sharding-jdbc-example-jpa 基于JPA的使用示例 ├ ├──sharding-jdbc-example-mybatis 基于MyBatis的使用示例 ├ ├──sharding-jdbc-example-config-spring 基于Spring命名空间配置的使用示例 ├ ├──sharding-jdbc-example-config-yaml 基于YAML配置的使用示例 ├ ├──sharding-jdbc-example-jdbc-transaction 柔性事务的使用示例 ├──sharding-jdbc-doc markdown生成文档的项目，使用方无需关注  </description>
     </item>
     
     <item>
@@ -218,10 +221,10 @@ String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try ( HintManager hintMa
     
     <item>
       <title>分布式主键</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/</link>
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/</guid>
       <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各大数据库对于该需求也提供了相应的支持，比如MySQL的自增键。 对于MySQL而言，分库分表之后，不同表生成全局唯一的Id是非常棘手的问题。因为同一个逻辑表内的不同实际表之间的自增键是无法互相感知的， 这样会造成重复Id的生成。我们当然可以通过约束表生成键的规则来达到数据的不重复，但是这需要引入额外的运维力量来解决重复性问题，并使框架缺乏扩展性。
 目前有许多第三方解决方案可以完美解决这个问题，比如UUID等依靠特定算法自生成不重复键，或者通过引入Id生成服务等。 但也正因为这种多样性导致了Sharding-JDBC如果强依赖于任何一种方案就会限制其自身的发展。
 基于以上的原因，最终采用了以JDBC接口来实现对于生成Id的访问，而将底层具体的Id生成实现分离出来。

@@ -85,10 +85,10 @@ String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try ( HintManager hintMa
     
     <item>
       <title>分布式主键</title>
-      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/</link>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/</link>
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
-      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/</guid>
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/</guid>
       <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各大数据库对于该需求也提供了相应的支持，比如MySQL的自增键。 对于MySQL而言，分库分表之后，不同表生成全局唯一的Id是非常棘手的问题。因为同一个逻辑表内的不同实际表之间的自增键是无法互相感知的， 这样会造成重复Id的生成。我们当然可以通过约束表生成键的规则来达到数据的不重复，但是这需要引入额外的运维力量来解决重复性问题，并使框架缺乏扩展性。
 目前有许多第三方解决方案可以完美解决这个问题，比如UUID等依靠特定算法自生成不重复键，或者通过引入Id生成服务等。 但也正因为这种多样性导致了Sharding-JDBC如果强依赖于任何一种方案就会限制其自身的发展。
 基于以上的原因，最终采用了以JDBC接口来实现对于生成Id的访问，而将底层具体的Id生成实现分离出来。

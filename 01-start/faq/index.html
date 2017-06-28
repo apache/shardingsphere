@@ -255,8 +255,8 @@
               </a>
             </li>
           
-            <li class="dd-item " data-nav-id="/02-guide/id-generator/">
-              <a href="http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/">
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/">
                 <span>分布式主键     </i></span>
               </a>
             </li>
@@ -374,6 +374,7 @@
 <li><a href="#3-使用spring命名空间时在网上相应地址找不到xsd">3. 使用Spring命名空间时在网上相应地址找不到xsd?</a></li>
 <li><a href="#4-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">4. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</a></li>
 <li><a href="#5-inline表达式返回结果为何出现浮点数">5. inline表达式返回结果为何出现浮点数？</a></li>
+<li><a href="#6-使用proxool时分库结果不正确">6. 使用Proxool时分库结果不正确？</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -427,6 +428,18 @@
 
 <p>Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
 想获得除法整数结果需要将A/B改为A.intdiv(B)。</p>
+
+<h3 id="6-使用proxool时分库结果不正确">6. 使用Proxool时分库结果不正确？</h3>
+
+<p>回答：</p>
+
+<p>使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在获取连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次都只从一个数据源中获取连接。
+以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：</p>
+
+<pre><code class="language-java">    if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
+        this.registerPool();
+    }
+</code></pre>
 
 
       

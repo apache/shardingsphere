@@ -255,8 +255,8 @@
               </a>
             </li>
           
-            <li class="dd-item " data-nav-id="/02-guide/id-generator/">
-              <a href="http://dangdangdotcom.github.io/sharding-jdbc/02-guide/id-generator/">
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://dangdangdotcom.github.io/sharding-jdbc/02-guide/key-generator/">
                 <span>分布式主键     </i></span>
               </a>
             </li>
@@ -519,8 +519,9 @@ defaultTableStrategy: 默认数据表分片策略
 
 props: 属性配置(可选)
     metrics.enable: 是否开启度量采集，默认值: false
+    sql.show: 是否开启SQL显示，默认值: false
     metrics.millisecond.period: 度量输出周期，单位: 毫秒，默认值: 30000毫秒
-    metrics.logger.name: 度量输出在日志中的标识名称，默认值: com.dangdang.ddframe.rdb.sharding.metrics
+    
     executor.min.idle.size: 最小空闲工作线程数量，默认值: 0
     executor.max.size: 最大工作线程数量，默认值: CPU核数乘2
     executor.max.idle.timeout.millisecond: 工作线程空闲时超时时间，单位: 毫秒，默认值: 60000毫秒
@@ -997,19 +998,19 @@ props: 属性配置(可选)
 </tr>
 
 <tr>
+<td>sql.show</td>
+<td>属性</td>
+<td>boolean</td>
+<td>是</td>
+<td>是否开启SQL显示，默认为true开启</td>
+</tr>
+
+<tr>
 <td>metrics.millisecond.period</td>
 <td>属性</td>
 <td>String</td>
 <td>否</td>
 <td>度量输出周期，单位为毫秒</td>
-</tr>
-
-<tr>
-<td>metrics.logger.name</td>
-<td>属性</td>
-<td>String</td>
-<td>否</td>
-<td>度量输出在日志中的标识名称</td>
 </tr>
 
 <tr>
