@@ -20,9 +20,9 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -37,6 +37,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholde
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -70,7 +71,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Conditions expectedConditions;
     
-    private final Iterator<OrderBy> orderByColumns;
+    private final Iterator<OrderItem> orderByColumns;
     
     private final Iterator<GroupBy> groupByColumns;
     
@@ -163,12 +164,12 @@ public abstract class AbstractBaseParseTest {
         }
         final SelectStatement selectStatement = new SelectStatement();
         if (null != assertObj.getOrderByColumns()) {
-            List<OrderBy> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn, OrderBy>() {
-        
+            List<OrderItem> orderBys = Lists.transform(assertObj.getOrderByColumns(), new Function<OrderByColumn, OrderItem>() {
+                
                 @Override
-                public OrderBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderBy(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()))
-                            : new OrderBy(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                public OrderItem apply(final OrderByColumn input) {
+                    return Strings.isNullOrEmpty(input.getName()) ? new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()))
+                            : new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             });
             selectStatement.getOrderByList().addAll(orderBys);
@@ -230,7 +231,7 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertOrderBy(final SQLStatement actual) {
-        for (OrderBy each : actual.getOrderByList()) {
+        for (OrderItem each : actual.getOrderByList()) {
             assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
         }
         assertFalse(orderByColumns.hasNext());

@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -43,7 +43,7 @@ public final class ResultSetMergeContext {
     
     private final SQLStatement sqlStatement;
     
-    private final List<OrderBy> currentOrderByKeys;
+    private final List<OrderItem> currentOrderByKeys;
     
     public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
         this.shardingResultSets = shardingResultSets;
@@ -88,13 +88,13 @@ public final class ResultSetMergeContext {
         currentOrderByKeys.addAll(transformGroupByColumnsToOrderByColumns());
     }
     
-    private List<OrderBy> transformGroupByColumnsToOrderByColumns() {
-        return Lists.transform(sqlStatement.getGroupByList(), new Function<GroupBy, OrderBy>() {
+    private List<OrderItem> transformGroupByColumnsToOrderByColumns() {
+        return Lists.transform(sqlStatement.getGroupByList(), new Function<GroupBy, OrderItem>() {
             
             @Override
-            public OrderBy apply(final GroupBy input) {
-                OrderBy result = input.getOwner().isPresent() ? new OrderBy(input.getOwner().get(), input.getName(), input.getOrderByType(), input.getAlias())
-                        : new OrderBy(input.getName(), input.getOrderByType(), input.getAlias());
+            public OrderItem apply(final GroupBy input) {
+                OrderItem result = input.getOwner().isPresent() ? new OrderItem(input.getOwner().get(), input.getName(), input.getOrderByType(), input.getAlias())
+                        : new OrderItem(input.getName(), input.getOrderByType(), input.getAlias());
                 result.setColumnIndex(input.getColumnIndex());
                 return result;
             }

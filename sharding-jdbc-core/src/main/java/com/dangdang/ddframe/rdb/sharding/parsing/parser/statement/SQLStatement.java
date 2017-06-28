@@ -18,11 +18,11 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 
@@ -61,7 +61,7 @@ public interface SQLStatement {
      * 
      * @return 排序集合
      */
-    List<OrderBy> getOrderByList();
+    List<OrderItem> getOrderByList();
     
     /**
      * 获取分组集合.

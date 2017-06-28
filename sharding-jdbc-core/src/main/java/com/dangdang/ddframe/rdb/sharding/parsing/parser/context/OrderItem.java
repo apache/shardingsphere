@@ -25,29 +25,27 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 排序对象.
+ * 排序项.
  *
  * @author zhangliang
  */
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class OrderBy implements IndexColumn {
+public final class OrderItem implements IndexColumn {
     
     private final Optional<String> owner;
     
     private final Optional<String> name;
     
-    private final Optional<Integer> index;
-    
     private final OrderType orderByType;
+    
+    private Optional<Integer> index;
     
     @Setter
     private Optional<String> alias;
     
-    private int columnIndex;
-    
-    public OrderBy(final String name, final OrderType orderByType, final Optional<String> alias) {
+    public OrderItem(final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.absent();
         this.name = Optional.of(name);
         index = Optional.absent();
@@ -55,7 +53,7 @@ public final class OrderBy implements IndexColumn {
         this.alias = alias;
     }
     
-    public OrderBy(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
+    public OrderItem(final String owner, final String name, final OrderType orderByType, final Optional<String> alias) {
         this.owner = Optional.of(owner);
         this.name = Optional.of(name);
         index = Optional.absent();
@@ -63,26 +61,27 @@ public final class OrderBy implements IndexColumn {
         this.alias = alias;
     }
     
-    public OrderBy(final int index, final OrderType orderByType) {
+    public OrderItem(final int index, final OrderType orderByType) {
         owner = Optional.absent();
         name = Optional.absent();
         this.index = Optional.of(index);
         this.orderByType = orderByType;
         alias = Optional.absent();
-        columnIndex = index;
     }
     
-    @Override
     public String getColumnLabel() {
         return alias.isPresent() ? alias.get() : name.orNull();
     }
     
-    @Override
     public void setColumnIndex(final int index) {
         if (this.index.isPresent()) {
             return;
         }
-        columnIndex = index;
+        this.index = Optional.of(index);
+    }
+    
+    public int getColumnIndex() {
+        return index.isPresent() ? index.get() : -1;
     }
     
     /**

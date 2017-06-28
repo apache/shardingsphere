@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
@@ -69,7 +69,7 @@ public final class OrderByResultSetTest {
     
     private SQLStatement createSQLStatement(final OrderType orderType) {
         SQLStatement result = new SelectStatement();
-        result.getOrderByList().add(new OrderBy("name", orderType, Optional.<String>absent()));
+        result.getOrderByList().add(new OrderItem("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

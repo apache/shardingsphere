@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMergeContext;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.delegate.AbstractDelegateResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
     
     private final Queue<ResultSetOrderByWrapper> delegateResultSetQueue;
     
-    private final List<OrderBy> orderByKeys;
+    private final List<OrderItem> orderByKeys;
     
     public StreamingOrderByReducerResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(resultSetMergeContext.getShardingResultSets().getResultSets());

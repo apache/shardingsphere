@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
@@ -37,11 +37,11 @@ import java.util.List;
  */
 public abstract class AbstractMemoryOrderByResultSet extends AbstractMemoryResultSet {
     
-    private final List<OrderBy> orderByList;
+    private final List<OrderItem> orderByList;
     
     private Iterator<OrderByResultSetRow> orderByResultSetRowIterator;
     
-    public AbstractMemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderBy> orderByList) throws SQLException {
+    public AbstractMemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderItem> orderByList) throws SQLException {
         super(resultSets);
         this.orderByList = orderByList;
     }

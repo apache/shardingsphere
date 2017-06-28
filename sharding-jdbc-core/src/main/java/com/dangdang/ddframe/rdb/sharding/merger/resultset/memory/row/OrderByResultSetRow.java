@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
 
 import java.sql.ResultSet;
@@ -34,11 +34,11 @@ import java.util.List;
  */
 public final class OrderByResultSetRow extends AbstractResultSetRow implements Comparable<OrderByResultSetRow> {
     
-    private final List<OrderBy> orderByList;
+    private final List<OrderItem> orderByList;
     
     private final List<Comparable<?>> orderByValues;
     
-    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderBy> orderByList) throws SQLException {
+    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderItem> orderByList) throws SQLException {
         super(resultSet);
         this.orderByList = orderByList;
         orderByValues = getOrderByValues();
@@ -46,7 +46,7 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     
     private List<Comparable<?>> getOrderByValues() {
         List<Comparable<?>> result = new ArrayList<>(orderByList.size());
-        for (OrderBy each : orderByList) {
+        for (OrderItem each : orderByList) {
             Object value = getCell(each.getColumnIndex());
             Preconditions.checkState(value instanceof Comparable, "Sharding-JDBC: order by value must extends Comparable");
             result.add((Comparable<?>) value);
@@ -57,7 +57,7 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     @Override
     public int compareTo(final OrderByResultSetRow otherOrderByValue) {
         for (int i = 0; i < orderByList.size(); i++) {
-            OrderBy thisOrderBy = orderByList.get(i);
+            OrderItem thisOrderBy = orderByList.get(i);
             int result = ResultSetUtil.compareTo(orderByValues.get(i), otherOrderByValue.orderByValues.get(i), thisOrderBy.getOrderByType());
             if (0 != result) {
                 return result;

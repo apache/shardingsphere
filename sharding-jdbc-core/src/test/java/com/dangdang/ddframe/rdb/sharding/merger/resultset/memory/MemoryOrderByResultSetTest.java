@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory;
 
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public class MemoryOrderByResultSetTest {
     @Test
     public void assertSort() throws SQLException {
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderBy(1, OrderType.ASC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
         List<Integer> actualList = new ArrayList<>();
         while (rs.next()) {
             actualList.add(rs.getInt(1));
@@ -55,7 +55,7 @@ public class MemoryOrderByResultSetTest {
         assertTrue(rs.isClosed());
         
         rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderBy(1, OrderType.DESC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.DESC))) { };
         actualList.clear();
         while (rs.next()) {
             actualList.add(rs.getInt("nAmE"));
@@ -84,9 +84,9 @@ public class MemoryOrderByResultSetTest {
         rs3.put("name", "dbc");
         rs3.put("time", cal.getTime());
         rs3.put("id", 13);
-        OrderBy orderBy1 = new OrderBy("name", OrderType.ASC, Optional.<String>absent());
+        OrderItem orderBy1 = new OrderItem("name", OrderType.ASC, Optional.<String>absent());
         orderBy1.setColumnIndex(1);
-        OrderBy orderBy2 = new OrderBy("time", OrderType.DESC, Optional.<String>absent());
+        OrderItem orderBy2 = new OrderItem("time", OrderType.DESC, Optional.<String>absent());
         orderBy2.setColumnIndex(2);
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(
                 Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))), Arrays.asList(orderBy1, orderBy2)) { };
@@ -104,14 +104,14 @@ public class MemoryOrderByResultSetTest {
     @Test
     public void assertFindColumnSuccess() throws SQLException {
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderBy(1, OrderType.ASC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
         assertThat(rs.findColumn("name"), is(1));
     }
     
     @Test(expected = SQLException.class)
     public void assertFindColumnError() throws SQLException {
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderBy(1, OrderType.ASC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
         rs.findColumn("unknown");
     }
     
@@ -121,7 +121,7 @@ public class MemoryOrderByResultSetTest {
         rs1.put("name", "name");
         rs1.put("time", null);
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))), 
-                Collections.singletonList(new OrderBy(1, OrderType.ASC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
         assertTrue(rs.next());
         assertThat(rs.getObject(2), nullValue());
         assertTrue(rs.wasNull());
@@ -130,7 +130,7 @@ public class MemoryOrderByResultSetTest {
     @Test
     public void assertOthers() throws SQLException {
         AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderBy(1, OrderType.ASC))) { };
+                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
         assertTrue(rs.next());
         assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
         assertThat(rs.getFetchSize(), is(9));

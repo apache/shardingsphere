@@ -23,10 +23,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -34,9 +34,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -166,15 +166,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
      *
      * @return 排序上下文
      */
-    public final List<OrderBy> parseOrderBy() {
+    public final List<OrderItem> parseOrderBy() {
         if (!sqlParser.skipIfEqual(DefaultKeyword.ORDER)) {
             return Collections.emptyList();
         }
-        List<OrderBy> result = new LinkedList<>();
+        List<OrderItem> result = new LinkedList<>();
         sqlParser.skipIfEqual(DefaultKeyword.SIBLINGS);
         sqlParser.accept(DefaultKeyword.BY);
         do {
-            Optional<OrderBy> orderBy = parseSelectOrderByItem();
+            Optional<OrderItem> orderBy = parseSelectOrderByItem();
             if (orderBy.isPresent()) {
                 result.add(orderBy.get());
             }
@@ -183,7 +183,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return result;
     }
     
-    protected Optional<OrderBy> parseSelectOrderByItem() {
+    protected Optional<OrderItem> parseSelectOrderByItem() {
         SQLExpression sqlExpression = sqlParser.parseExpression(selectStatement);
         OrderType orderByType = OrderType.ASC;
         if (sqlParser.skipIfEqual(DefaultKeyword.ASC)) {
@@ -191,15 +191,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        OrderBy result;
+        OrderItem result;
         if (sqlExpression instanceof SQLNumberExpression) {
-            result = new OrderBy(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
+            result = new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderByType);
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
-            result = new OrderBy(
+            result = new OrderItem(
                     SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), orderByType, getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName())));
         } else if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            result = new OrderBy(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
+            result = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType, 
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName())));
         } else {
             return Optional.absent();
@@ -355,7 +355,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
         int derivedColumnOffset = 0;
-        for (OrderBy each : selectStatement.getOrderByList()) {
+        for (OrderItem each : selectStatement.getOrderByList()) {
             if (!isContainsItem(each)) {
                 String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
                 String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
@@ -377,7 +377,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    private boolean isContainsItem(final OrderBy orderBy) {
+    private boolean isContainsItem(final OrderItem orderBy) {
         if (selectStatement.isContainStar()) {
             return true;
         }
