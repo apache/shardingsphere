@@ -20,7 +20,6 @@
         
         <lombok.version>1.16.4</lombok.version>
         <guava.version>18.0</guava.version>
-        <commons-collections4.version>4.1</commons-collections4.version>
         <commons-pool.version>1.6</commons-pool.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <gson.version>2.6.1</gson.version>
@@ -80,18 +79,8 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
@@ -155,6 +144,7 @@
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -166,6 +156,7 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -213,6 +204,7 @@
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

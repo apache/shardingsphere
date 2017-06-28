@@ -21,7 +21,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOpe
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 代理结果集适配器.
@@ -55,7 +55,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private Map<String, Integer> generateColumnLabelIndexMap() throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSets.get(0).getMetaData();
-        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount());
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             result.put(resultSetMetaData.getColumnLabel(i), i);
         }

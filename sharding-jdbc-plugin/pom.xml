@@ -11,8 +11,6 @@
     <properties>
         <sharding-jdbc.version>1.5.0.M2</sharding-jdbc.version>
         <junit.version>4.12</junit.version>
-        <system-rules.version>1.16.0</system-rules.version>
-        <mockito.version>1.10.19</mockito.version>
         <powermock.version>1.6.6</powermock.version>
         <java.version>1.7</java.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -31,30 +29,22 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-rules</artifactId>
-            <version>${system-rules.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>${powermock.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
-
+    
     <build>
         <plugins>
             <plugin>
