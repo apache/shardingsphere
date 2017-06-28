@@ -45,3 +45,14 @@ sharding-jdbc-config-spring的jar包中`META-INF\spring.schemas`配置了xsd文�
 Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
 想获得除法整数结果需要将A/B改为A.intdiv(B)。
 
+
+### 6. 使用Proxool时分库结果不正确？
+
+回答：
+
+使用Proxool配置多个数据源时，应该为每个数据源设置alias，因为Proxool在使用连接时会判断连接池中是否包含已存在的alias，不配置alias会造成每次获取都只从一个数据源中获取连接。
+```java
+    if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
+        this.registerPool();
+    }
+```
