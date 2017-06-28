@@ -81,7 +81,7 @@ public final class ResultSetMergeContext {
      * @return 分组归并是否需要内存排序
      */
     public boolean isNeedMemorySortForGroupBy() {
-        return !sqlStatement.getGroupByList().isEmpty() && !currentOrderByKeys.equals(sqlStatement.getGroupByList());
+        return !sqlStatement.getGroupByList().isEmpty() && !sqlStatement.getOrderByList().equals(sqlStatement.getGroupByList());
     }
     
     /**
