@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -68,7 +67,7 @@ public interface SQLStatement {
      * 
      * @return 分组集合
      */
-    List<GroupBy> getGroupByList();
+    List<OrderItem> getGroupByList();
     
     /**
      * 获取聚合选择项集合.

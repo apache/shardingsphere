@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -60,7 +59,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return Collections.emptyList();
     }
     
-    public List<GroupBy> getGroupByList() {
+    public List<OrderItem> getGroupByList() {
         return Collections.emptyList();
     }
     

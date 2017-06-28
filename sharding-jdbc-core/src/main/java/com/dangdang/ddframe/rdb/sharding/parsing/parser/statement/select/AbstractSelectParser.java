@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
@@ -235,15 +234,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else if (sqlParser.skipIfEqual(DefaultKeyword.DESC)) {
             orderByType = OrderType.DESC;
         }
-        GroupBy groupBy;
+        OrderItem groupBy;
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            groupBy = new GroupBy(Optional.of(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName())), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
+            groupBy = new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderByType,
                     getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner() + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
         } else if (sqlExpression instanceof SQLIdentifierExpression) {
             SQLIdentifierExpression sqlIdentifierExpression = (SQLIdentifierExpression) sqlExpression;
-            groupBy = new GroupBy(
-                    Optional.<String>absent(), SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
+            groupBy = new OrderItem(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName()), orderByType, getAlias(SQLUtil.getExactlyValue(sqlIdentifierExpression.getName())));
         } else {
             return;
         }
@@ -325,8 +323,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     private void appendDerivedColumns() {
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken);
-        appendOrderByDerivedColumns(itemsToken);
-        appendGroupByDerivedColumns(itemsToken);
+        appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByList(), ORDER_BY_DERIVED_ALIAS);
+        appendDerivedOrderColumns(itemsToken, selectStatement.getGroupByList(), GROUP_BY_DERIVED_ALIAS);
         if (!itemsToken.getItems().isEmpty()) {
             selectStatement.getSqlTokens().add(itemsToken);
         }
@@ -353,57 +351,29 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
     }
     
-    private void appendOrderByDerivedColumns(final ItemsToken itemsToken) {
+    private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final String aliasPattern) {
         int derivedColumnOffset = 0;
-        for (OrderItem each : selectStatement.getOrderByList()) {
+        for (OrderItem each : orderItems) {
             if (!isContainsItem(each)) {
-                String orderByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName().get() : each.getName().get();
-                String alias = String.format(ORDER_BY_DERIVED_ALIAS, derivedColumnOffset++);
+                String alias = String.format(aliasPattern, derivedColumnOffset++);
                 each.setAlias(Optional.of(alias));
-                itemsToken.getItems().add(orderByExpression + " AS " + alias + " ");
+                itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
     }
     
-    private void appendGroupByDerivedColumns(final ItemsToken itemsToken) {
-        int derivedColumnOffset = 0;
-        for (GroupBy each : selectStatement.getGroupByList()) {
-            if (!isContainsItem(each)) {
-                String groupByExpression = each.getOwner().isPresent() ? each.getOwner().get() + "." + each.getName() : each.getName();
-                String alias = String.format(GROUP_BY_DERIVED_ALIAS, derivedColumnOffset++);
-                each.setAlias(Optional.of(alias));
-                itemsToken.getItems().add(groupByExpression + " AS " + alias + " ");
-            }
-        }
-    }
-    
-    private boolean isContainsItem(final OrderItem orderBy) {
+    private boolean isContainsItem(final OrderItem orderItem) {
         if (selectStatement.isContainStar()) {
             return true;
         }
         for (SelectItem each : selectStatement.getItems()) {
-            if (orderBy.getIndex().isPresent()) {
+            if (orderItem.getIndex().isPresent()) {
                 return true;
             }
-            if (each.getAlias().isPresent() && orderBy.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderBy.getAlias().get())) {
+            if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
                 return true;
             }
-            if (orderBy.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderBy.getQualifiedName().get())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isContainsItem(final GroupBy groupBy) {
-        if (selectStatement.isContainStar()) {
-            return true;
-        }
-        for (SelectItem each : selectStatement.getItems()) {
-            if (each.getAlias().isPresent() && groupBy.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(groupBy.getAlias().get())) {
-                return true;
-            }
-            if (groupBy.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(groupBy.getQualifiedName().get())) {
+            if (orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
                 return true;
             }
         }

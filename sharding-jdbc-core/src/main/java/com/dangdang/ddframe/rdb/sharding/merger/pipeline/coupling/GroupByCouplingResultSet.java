@@ -21,8 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMergeContext;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.AbstractMemoryResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.GroupByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
-    private final List<GroupBy> groupByList;
+    private final List<OrderItem> groupByList;
     
     private final List<AggregationSelectItem> aggregationColumns;
     

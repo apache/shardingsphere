@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
@@ -37,6 +36,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholde
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Assert;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Asserts;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.OrderByColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.Value;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
@@ -73,7 +73,7 @@ public abstract class AbstractBaseParseTest {
     
     private final Iterator<OrderItem> orderByColumns;
     
-    private final Iterator<GroupBy> groupByColumns;
+    private final Iterator<OrderItem> groupByColumns;
     
     private final Iterator<AggregationSelectItem> aggregationSelectItems;
     
@@ -175,12 +175,14 @@ public abstract class AbstractBaseParseTest {
             selectStatement.getOrderByList().addAll(orderBys);
         }
         if (null != assertObj.getGroupByColumns()) {
-            selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn, GroupBy>() {
+            selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumn, OrderItem>() {
                 
                 @Override
-                public GroupBy apply(final com.dangdang.ddframe.rdb.sharding.parsing.parser.jaxb.GroupByColumn input) {
-                    return new GroupBy(
-                            Optional.fromNullable(input.getOwner()), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                public OrderItem apply(final GroupByColumn input) {
+                    if (null == input.getOwner()) {
+                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    }
+                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias())); 
                 }
             }));
         }
@@ -238,7 +240,7 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertGroupBy(final SQLStatement actual) {
-        for (GroupBy each : actual.getGroupByList()) {
+        for (OrderItem each : actual.getGroupByList()) {
             assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
         }
         assertFalse(groupByColumns.hasNext());

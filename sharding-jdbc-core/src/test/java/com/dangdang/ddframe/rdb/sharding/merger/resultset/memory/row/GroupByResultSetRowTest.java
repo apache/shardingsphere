@@ -17,12 +17,12 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public final class GroupByResultSetRowTest {
     public void assertToString() throws Exception {
         ResultSet rs = MergerTestUtil.mockResult(Arrays.asList("user_id", "number"), Arrays.<ResultSetRow>asList(new TestResultSetRow(1, 10), new TestResultSetRow(1, 20)));
         assertTrue(rs.next());
-        GroupBy groupBy = new GroupBy(Optional.<String>absent(), "user_id", OrderType.ASC, Optional.<String>absent());
+        OrderItem groupBy = new OrderItem("user_id", OrderType.ASC, Optional.<String>absent());
         groupBy.setColumnIndex(1);
         AggregationSelectItem aggregationColumn = new AggregationSelectItem("SUM(0)",  Optional.<String>absent(), 2, AggregationType.SUM);
         GroupByResultSetRow row = new GroupByResultSetRow(rs, Collections.singletonList(groupBy), Collections.singletonList(aggregationColumn));
@@ -65,8 +65,8 @@ public final class GroupByResultSetRowTest {
         assertFalse(rs.next());
     }
     
-    private GroupBy createGroupBy(final String columnName, final int columnIndex) {
-        GroupBy result = new GroupBy(Optional.<String>absent(), columnName, OrderType.ASC, Optional.<String>absent());
+    private OrderItem createGroupBy(final String columnName, final int columnIndex) {
+        OrderItem result = new OrderItem(columnName, OrderType.ASC, Optional.<String>absent());
         result.setColumnIndex(columnIndex);
         return result;
     }

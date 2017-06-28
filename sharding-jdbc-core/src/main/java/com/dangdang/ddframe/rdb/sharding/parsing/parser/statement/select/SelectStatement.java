@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -49,7 +48,7 @@ public final class SelectStatement extends AbstractSQLStatement {
     
     private final List<SelectItem> items = new LinkedList<>();
     
-    private final List<GroupBy> groupByList = new LinkedList<>();
+    private final List<OrderItem> groupByList = new LinkedList<>();
     
     private final List<OrderItem> orderByList = new LinkedList<>();
     

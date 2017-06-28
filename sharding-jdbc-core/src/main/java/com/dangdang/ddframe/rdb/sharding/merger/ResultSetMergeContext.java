@@ -18,13 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.IndexColumn;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.LinkedList;
@@ -77,7 +74,7 @@ public final class ResultSetMergeContext {
      * @return 分组归并是否需要内存排序
      */
     public boolean isNeedMemorySortForGroupBy() {
-        return !sqlStatement.getGroupByList().isEmpty() && !currentOrderByKeys.equals(transformGroupByColumnsToOrderByColumns());
+        return !sqlStatement.getGroupByList().isEmpty() && !currentOrderByKeys.equals(sqlStatement.getGroupByList());
     }
     
     /**
@@ -85,20 +82,7 @@ public final class ResultSetMergeContext {
      */
     public void setGroupByKeysToCurrentOrderByKeys() {
         currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(transformGroupByColumnsToOrderByColumns());
-    }
-    
-    private List<OrderItem> transformGroupByColumnsToOrderByColumns() {
-        return Lists.transform(sqlStatement.getGroupByList(), new Function<GroupBy, OrderItem>() {
-            
-            @Override
-            public OrderItem apply(final GroupBy input) {
-                OrderItem result = input.getOwner().isPresent() ? new OrderItem(input.getOwner().get(), input.getName(), input.getOrderByType(), input.getAlias())
-                        : new OrderItem(input.getName(), input.getOrderByType(), input.getAlias());
-                result.setColumnIndex(input.getColumnIndex());
-                return result;
-            }
-        });
+        currentOrderByKeys.addAll(sqlStatement.getGroupByList());
     }
     
     /**

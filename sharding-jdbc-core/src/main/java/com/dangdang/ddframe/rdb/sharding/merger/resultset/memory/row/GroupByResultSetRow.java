@@ -19,8 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GroupBy;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,11 +42,11 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     
     private final ResultSet resultSet;
     
-    private final List<GroupBy> groupByList;
+    private final List<OrderItem> groupByList;
     
     private final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(final ResultSet resultSet, final List<GroupBy> groupByList, final List<AggregationSelectItem> aggregationColumns) throws SQLException {
+    public GroupByResultSetRow(final ResultSet resultSet, final List<OrderItem> groupByList, final List<AggregationSelectItem> aggregationColumns) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
         this.groupByList = groupByList;
@@ -96,7 +96,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      */
     public List<Object> getGroupByValues() throws SQLException {
         List<Object> result = new ArrayList<>(groupByList.size());
-        for (GroupBy each : groupByList) {
+        for (OrderItem each : groupByList) {
             result.add(resultSet.getObject(each.getColumnIndex()));
         }
         return result;
@@ -105,10 +105,10 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("GroupByKey is: ");
-        result.append(Lists.transform(groupByList, new Function<GroupBy, Object>() {
+        result.append(Lists.transform(groupByList, new Function<OrderItem, Object>() {
             
             @Override
-            public Object apply(final GroupBy input) {
+            public Object apply(final OrderItem input) {
                 return getCell(input.getColumnIndex());
             }
         }));
