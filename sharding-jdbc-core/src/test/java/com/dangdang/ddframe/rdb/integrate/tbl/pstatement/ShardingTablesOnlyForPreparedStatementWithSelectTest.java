@@ -72,7 +72,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        if (!Oracle.name().equalsIgnoreCase(currentDbType()) && !SQLServer.name().equalsIgnoreCase(currentDbType())) {
+        if (!SQLServer.name().equalsIgnoreCase(currentDbType())) {
             String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectLimitWithBindingTable.xml"
                     : TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTable.xml";
             if (PostgreSQL.name().equalsIgnoreCase(currentDbType())) {

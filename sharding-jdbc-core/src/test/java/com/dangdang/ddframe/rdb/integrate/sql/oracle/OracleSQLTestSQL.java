@@ -21,8 +21,10 @@ import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 
 public final class OracleSQLTestSQL extends AbstractDatabaseTestSQL {
     
-    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s LIMIT %s";
+    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT" 
+            + " order0_.order_id as order_id1_0_, order0_.status as status2_0_, order0_.user_id as user_id3_0_" 
+            + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
+            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= ?) WHERE rownum > ?";
     
     @Override
     public String getSelectLimitWithBindingTableSql() {
