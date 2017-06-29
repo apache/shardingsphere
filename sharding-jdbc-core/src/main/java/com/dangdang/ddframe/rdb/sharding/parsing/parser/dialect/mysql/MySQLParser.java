@@ -77,7 +77,9 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new Limit(true, new RowCountLimit(value, valueIndex));
+        Limit result = new Limit(true);
+        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
+        return result;
     }
     
     private Limit getLimitWithComma(
@@ -104,7 +106,10 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForRowCount) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
-        return new Limit(true, new OffsetLimit(value, valueIndex), new RowCountLimit(rowCount, rowCountIndex));
+        Limit result = new Limit(true);
+        result.setRowCountLimit(new RowCountLimit(rowCount, rowCountIndex));
+        result.setOffsetLimit(new OffsetLimit(value, valueIndex));
+        return result;
     }
     
     private Limit getLimitWithOffset(
@@ -131,6 +136,9 @@ public final class MySQLParser extends SQLParser {
         if (!isParameterForValue) {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
-        return new Limit(true, new OffsetLimit(offset, offsetIndex), new RowCountLimit(value, valueIndex));
+        Limit result = new Limit(true);
+        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
+        result.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
+        return result;
     }
 }

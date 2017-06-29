@@ -49,7 +49,10 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForAllData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
-        selectStatement.setLimit(new Limit(true, new OffsetLimit(1, -1), new RowCountLimit(10, -1)));
+        Limit limit = new Limit(true);
+        limit.setRowCountLimit(new RowCountLimit(10, -1));
+        limit.setOffsetLimit(new OffsetLimit(1, -1));
+        selectStatement.setLimit(limit);
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {
@@ -61,7 +64,10 @@ public final class IteratorResultSetTest {
     @Test
     public void assertNextWithLimitForPartData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
-        selectStatement.setLimit(new Limit(true, new OffsetLimit(1, -1), new RowCountLimit(1, -1)));
+        Limit limit = new Limit(true);
+        limit.setRowCountLimit(new RowCountLimit(1, -1));
+        limit.setOffsetLimit(new OffsetLimit(1, -1));
+        selectStatement.setLimit(limit);
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {

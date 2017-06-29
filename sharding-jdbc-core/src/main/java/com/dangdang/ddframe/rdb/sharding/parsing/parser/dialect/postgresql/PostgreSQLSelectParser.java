@@ -122,7 +122,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
             offsetParameterIndex = parameterIndex++;
             setParametersIndex(parameterIndex);
-            offset = -1;
         } else {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
@@ -133,13 +132,14 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     
     
     private void setLimit(final Optional<OffsetLimit> offsetLimit, final Optional<RowCountLimit> rowCountLimit) {
-        if (offsetLimit.isPresent() && rowCountLimit.isPresent()) {
-            getSelectStatement().setLimit(new Limit(true, offsetLimit.get(), rowCountLimit.get()));
-        } else if (offsetLimit.isPresent()) {
-            getSelectStatement().setLimit(new Limit(true, offsetLimit.get()));
-        } else if (rowCountLimit.isPresent()) {
-            getSelectStatement().setLimit(new Limit(true, rowCountLimit.get()));
+        Limit limit = new Limit(true);
+        if (offsetLimit.isPresent()) {
+            limit.setOffsetLimit(offsetLimit.get());
         }
+        if (rowCountLimit.isPresent()) {
+            limit.setRowCountLimit(rowCountLimit.get());
+        }
+        getSelectStatement().setLimit(limit);
     }
     
     protected boolean hasDistinctOn() {

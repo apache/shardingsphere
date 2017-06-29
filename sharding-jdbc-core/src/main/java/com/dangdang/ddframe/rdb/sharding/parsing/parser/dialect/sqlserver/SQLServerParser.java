@@ -74,7 +74,9 @@ public final class SQLServerParser extends SQLParser {
                 throw new SQLParsingException(getLexer());
             }
             if (null == sqlStatement.getLimit()) {
-                sqlStatement.setLimit(new Limit(false, rowCountLimit));
+                Limit limit = new Limit(false);
+                limit.setRowCountLimit(rowCountLimit);
+                sqlStatement.setLimit(limit);
             } else {
                 sqlStatement.getLimit().setRowCountLimit(rowCountLimit);
             }
@@ -102,7 +104,7 @@ public final class SQLServerParser extends SQLParser {
             throw new SQLParsingException(getLexer());
         }
         getLexer().nextToken();
-        Limit limit;
+        Limit limit = new Limit(true);
         if (skipIfEqual(DefaultKeyword.FETCH)) {
             getLexer().nextToken();
             int rowCount;
@@ -119,9 +121,10 @@ public final class SQLServerParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limit = new Limit(true, new OffsetLimit(offset, offsetIndex), new RowCountLimit(rowCount, rowCountIndex));
+            limit.setRowCountLimit(new RowCountLimit(rowCount, rowCountIndex));
+            limit.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
         } else {
-            limit = new Limit(true, new OffsetLimit(offset, offsetIndex));
+            limit.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
         }
         selectStatement.setLimit(limit);
     }

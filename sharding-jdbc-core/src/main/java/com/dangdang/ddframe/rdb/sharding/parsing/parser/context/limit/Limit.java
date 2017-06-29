@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -35,7 +34,6 @@ import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
  * @author caohao
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -46,16 +44,6 @@ public final class Limit {
     private OffsetLimit offsetLimit;
     
     private RowCountLimit rowCountLimit;
-    
-    public Limit(final boolean rowCountRewriteFlag, final RowCountLimit rowCount) {
-        this.rowCountRewriteFlag = rowCountRewriteFlag;
-        this.rowCountLimit = rowCount;
-    }
-    
-    public Limit(final boolean rowCountRewriteFlag, final OffsetLimit offsetLimit) {
-        this.rowCountRewriteFlag = rowCountRewriteFlag;
-        this.offsetLimit = offsetLimit;
-    }
     
     /**
      * 获取分页偏移量.
