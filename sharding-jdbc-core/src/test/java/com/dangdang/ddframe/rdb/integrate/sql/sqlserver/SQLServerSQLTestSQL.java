@@ -22,7 +22,7 @@ import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 public final class SQLServerSQLTestSQL extends AbstractDatabaseTestSQL {
     
     private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT * FROM"
-            + " (SELECT TOP %s row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, o.order_id as order_id, o.status as status, o.user_id as user_id"
             + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_"
             + " WHERE row_.rownum_ > %s";

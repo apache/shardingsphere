@@ -30,7 +30,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLi
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
 
@@ -47,19 +50,34 @@ public final class SQLServerParser extends SQLParser {
     }
     
     @Override
-    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final SQLIdentifierExpression expression) {
+    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final String columnLabel) {
         Optional<String> rowNumberAlias = Optional.absent();
         for (SelectItem each : selectStatement.getItems()) {
             if (each.getAlias().isPresent() && "ROW_NUMBER".equalsIgnoreCase(each.getExpression())) {
                 rowNumberAlias = each.getAlias();
             }
         }
-        return expression.getName().equalsIgnoreCase(rowNumberAlias.orNull());
+        return columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
     }
     
-    public void skipTop() {
+    public void parseTop(final SQLStatement sqlStatement) {
         if (skipIfEqual(SQLServerKeyword.TOP)) {
-            parseExpression();
+            skipIfEqual(Symbol.LEFT_PAREN);
+            SQLExpression sqlExpression = parseExpression();
+            skipIfEqual(Symbol.RIGHT_PAREN);
+            RowCountLimit rowCountLimit;
+            if (sqlExpression instanceof SQLNumberExpression) {
+                rowCountLimit = new RowCountLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
+            } else if (sqlExpression instanceof SQLPlaceholderExpression) {
+                rowCountLimit = new RowCountLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+            } else {
+                throw new SQLParsingException(getLexer());
+            }
+            if (null == sqlStatement.getLimit()) {
+                sqlStatement.setLimit(new Limit(false, rowCountLimit));
+            } else {
+                sqlStatement.getLimit().setRowCountLimit(rowCountLimit);
+            }
             skipIfEqual(SQLServerKeyword.PERCENT);
         }
     }

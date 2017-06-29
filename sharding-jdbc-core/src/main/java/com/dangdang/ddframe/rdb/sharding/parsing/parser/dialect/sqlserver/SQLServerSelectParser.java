@@ -48,7 +48,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
             parseDistinct();
             if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
-                ((SQLServerParser) getSqlParser()).skipTop();
+                ((SQLServerParser) getSqlParser()).parseTop(getSelectStatement());
             }
             parseSelectList();
         }
@@ -68,6 +68,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     
     @Override
     protected SelectItem parseRowNumberSelectItem() {
+        getSqlParser().getLexer().nextToken();
         if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
             getSqlParser().skipUntil(DefaultKeyword.AS);
             getSqlParser().getLexer().nextToken();

@@ -250,6 +250,7 @@ public class SQLParser extends AbstractParser {
      * @param sqlStatement SQL语句对象
      */
     public final void parseWhere(final SQLStatement sqlStatement) {
+        parseAlias();
         if (skipIfEqual(DefaultKeyword.WHERE)) {
             parseConditions(sqlStatement);
         }
@@ -281,7 +282,11 @@ public class SQLParser extends AbstractParser {
             return;
         }
         if (equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
-            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement && isRowNumberCondition((SelectStatement) sqlStatement, (SQLIdentifierExpression) left)) {
+            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement
+                    && isRowNumberCondition((SelectStatement) sqlStatement, ((SQLIdentifierExpression) left).getName())) {
+                parseRowNumberCondition((SelectStatement) sqlStatement);
+            } else if (left instanceof SQLPropertyExpression && sqlStatement instanceof SelectStatement
+                    && isRowNumberCondition((SelectStatement) sqlStatement, ((SQLPropertyExpression) left).getName())) {
                 parseRowNumberCondition((SelectStatement) sqlStatement);
             } else {
                 parseOtherCondition(sqlStatement);
@@ -332,7 +337,7 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final SQLIdentifierExpression left) {
+    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final String columnLabel) {
         return false;
     }
     

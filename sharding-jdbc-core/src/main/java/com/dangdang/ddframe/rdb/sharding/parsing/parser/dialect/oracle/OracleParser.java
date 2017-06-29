@@ -22,7 +22,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
 
@@ -47,13 +46,13 @@ public final class OracleParser extends SQLParser {
     }
     
     @Override
-    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final SQLIdentifierExpression expression) {
+    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final String columnLabel) {
         Optional<String> rowNumberAlias = Optional.absent();
         for (SelectItem each : selectStatement.getItems()) {
             if (each.getAlias().isPresent() && "rownum".equalsIgnoreCase(each.getExpression())) {
                 rowNumberAlias = each.getAlias();
             }
         }
-        return "rownum".equalsIgnoreCase(expression.getName()) || expression.getName().equalsIgnoreCase(rowNumberAlias.orNull());
+        return "rownum".equalsIgnoreCase(columnLabel) || columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
     }
 }

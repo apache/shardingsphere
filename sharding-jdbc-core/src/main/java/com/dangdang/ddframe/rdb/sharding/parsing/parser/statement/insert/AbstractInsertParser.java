@@ -23,9 +23,10 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
@@ -53,7 +54,7 @@ import java.util.Set;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractInsertParser implements SQLStatementParser {
     
-    private final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser;
+    private final SQLParser sqlParser;
     
     private final ShardingRule shardingRule;
     
@@ -61,7 +62,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private int generateKeyColumnIndex = -1;
     
-    public AbstractInsertParser(final ShardingRule shardingRule, final com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser sqlParser) {
+    public AbstractInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         this.shardingRule = shardingRule;
         insertStatement = new InsertStatement();
