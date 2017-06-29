@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -34,22 +34,26 @@ import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
  * @author zhangliang
  * @author caohao
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 public final class Limit {
     
+    private final boolean rowCountRewriteFlag;
+    
     private OffsetLimit offsetLimit;
     
     private RowCountLimit rowCountLimit;
     
-    public Limit(final RowCountLimit rowCount) {
+    public Limit(final boolean rowCountRewriteFlag, final RowCountLimit rowCount) {
+        this.rowCountRewriteFlag = rowCountRewriteFlag;
         this.rowCountLimit = rowCount;
     }
     
-    public Limit(final OffsetLimit offsetLimit) {
+    public Limit(final boolean rowCountRewriteFlag, final OffsetLimit offsetLimit) {
+        this.rowCountRewriteFlag = rowCountRewriteFlag;
         this.offsetLimit = offsetLimit;
     }
     
@@ -102,7 +106,12 @@ public final class Limit {
     
     private void rewrite(final List<Object> parameters) {
         int rewriteOffset = 0;
-        int rewriteRowCount = null == rowCountLimit ? -1 : getOffset() + rowCountLimit.getRowCount();
+        int rewriteRowCount;
+        if (rowCountRewriteFlag) {
+            rewriteRowCount = null == rowCountLimit ? -1 : getOffset() + rowCountLimit.getRowCount();
+        } else {
+            rewriteRowCount = rowCountLimit.getRowCount();
+        }
         if (null != offsetLimit && offsetLimit.getOffsetParameterIndex() > -1) {
             parameters.set(offsetLimit.getOffsetParameterIndex(), rewriteOffset);
         }

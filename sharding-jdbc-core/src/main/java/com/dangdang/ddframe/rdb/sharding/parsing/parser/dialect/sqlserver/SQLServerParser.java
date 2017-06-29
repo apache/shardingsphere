@@ -109,9 +109,9 @@ public final class SQLServerParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limit = new Limit(new OffsetLimit(offset, offsetIndex), new RowCountLimit(rowCount, rowCountIndex));
+            limit = new Limit(true, new OffsetLimit(offset, offsetIndex), new RowCountLimit(rowCount, rowCountIndex));
         } else {
-            limit = new Limit(new OffsetLimit(offset, offsetIndex));
+            limit = new Limit(true, new OffsetLimit(offset, offsetIndex));
         }
         selectStatement.setLimit(limit);
     }

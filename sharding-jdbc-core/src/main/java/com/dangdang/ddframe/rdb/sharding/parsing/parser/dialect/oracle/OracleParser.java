@@ -70,7 +70,7 @@ public final class OracleParser extends SQLParser {
         getLexer().nextToken();
         SQLExpression sqlExpression = parseExpression(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit());
+            selectStatement.setLimit(new Limit(false));
         }
         if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {

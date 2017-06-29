@@ -205,10 +205,10 @@ public abstract class AbstractBaseParseTest {
         }
         if (null != assertObj.getLimit()) {
             if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
-                selectStatement.setLimit(new Limit(new OffsetLimit(assertObj.getLimit().getOffset(), 
+                selectStatement.setLimit(new Limit(true, new OffsetLimit(assertObj.getLimit().getOffset(), 
                         assertObj.getLimit().getOffsetParameterIndex()), new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             } else {
-                selectStatement.setLimit(new Limit(new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
+                selectStatement.setLimit(new Limit(true, new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex())));
             }
         }
         result[4] = selectStatement;
