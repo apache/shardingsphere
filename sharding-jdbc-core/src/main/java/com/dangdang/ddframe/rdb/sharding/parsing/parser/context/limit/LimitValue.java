@@ -23,17 +23,17 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 分页行数对象.
+ * 分页值对象.
  *
- * @author caohao
+ * @author zhangliang
  */
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class RowCountLimit {
+public final class LimitValue {
     
-    private int rowCount;
+    private int value;
     
-    private int rowCountParameterIndex;
+    private int index;
 }

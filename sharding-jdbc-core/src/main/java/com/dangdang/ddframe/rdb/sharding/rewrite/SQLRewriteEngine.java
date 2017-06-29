@@ -125,7 +125,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffset()) : String.valueOf(rowCountLimitToken.getRowCount()));
+        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffsetValue()) : String.valueOf(rowCountLimitToken.getRowCount()));
         int beginPosition = rowCountLimitToken.getBeginPosition() + String.valueOf(rowCountLimitToken.getRowCount()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));

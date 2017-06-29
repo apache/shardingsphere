@@ -23,8 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
@@ -72,8 +71,8 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseLimit() {
-        Optional<OffsetLimit> offsetLimit = Optional.absent();
-        Optional<RowCountLimit> rowCountLimit = Optional.absent();
+        Optional<LimitValue> offsetLimit = Optional.absent();
+        Optional<LimitValue> rowCountLimit = Optional.absent();
         while (true) {
             if (getSqlParser().skipIfEqual(PostgreSQLKeyword.LIMIT)) {
                 rowCountLimit = buildRowCount();
@@ -86,7 +85,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         setLimit(offsetLimit, rowCountLimit);
     }
     
-    private Optional<RowCountLimit> buildRowCount() {
+    private Optional<LimitValue> buildRowCount() {
         int parameterIndex = getParametersIndex();
         int rowCount = -1;
         int rowCountParameterIndex = -1;
@@ -107,10 +106,10 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             }
             getSqlParser().getLexer().nextToken();
         }
-        return Optional.of(new RowCountLimit(rowCount, rowCountParameterIndex));
+        return Optional.of(new LimitValue(rowCount, rowCountParameterIndex));
     }
     
-    private Optional<OffsetLimit> buildOffsetLimit() {
+    private Optional<LimitValue> buildOffsetLimit() {
         int parameterIndex = getParametersIndex();
         int offset = -1;
         int offsetParameterIndex = -1;
@@ -127,11 +126,11 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         }
         getSqlParser().getLexer().nextToken();
         getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
-        return Optional.of(new OffsetLimit(offset, offsetParameterIndex));
+        return Optional.of(new LimitValue(offset, offsetParameterIndex));
     }
     
     
-    private void setLimit(final Optional<OffsetLimit> offsetLimit, final Optional<RowCountLimit> rowCountLimit) {
+    private void setLimit(final Optional<LimitValue> offsetLimit, final Optional<LimitValue> rowCountLimit) {
         Limit limit = new Limit(true);
         if (offsetLimit.isPresent()) {
             limit.setOffsetLimit(offsetLimit.get());

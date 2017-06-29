@@ -48,7 +48,7 @@ public final class LimitCouplingResultSet extends AbstractDelegateResultSet {
     }
     
     private boolean skipOffset() throws SQLException {
-        for (int i = 0; i < limit.getOffset(); i++) {
+        for (int i = 0; i < limit.getOffsetValue(); i++) {
             if (!getDelegate().next()) {
                 return false;
             }
@@ -62,8 +62,8 @@ public final class LimitCouplingResultSet extends AbstractDelegateResultSet {
     }
     
     private boolean doNext() throws SQLException {
-        if (limit.getRowCount() > 0) {
-            return ++rowNumber <= limit.getRowCount() && getDelegate().next();
+        if (limit.getRowCountValue() > 0) {
+            return ++rowNumber <= limit.getRowCountValue() && getDelegate().next();
         }
         return getDelegate().next();
     }

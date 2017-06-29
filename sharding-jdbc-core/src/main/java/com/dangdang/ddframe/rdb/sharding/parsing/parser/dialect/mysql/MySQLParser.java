@@ -24,10 +24,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
 
@@ -78,7 +77,7 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
+        result.setRowCountLimit(new LimitValue(value, valueIndex));
         return result;
     }
     
@@ -107,8 +106,8 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(rowCount, rowCountIndex));
-        result.setOffsetLimit(new OffsetLimit(value, valueIndex));
+        result.setRowCountLimit(new LimitValue(rowCount, rowCountIndex));
+        result.setOffsetLimit(new LimitValue(value, valueIndex));
         return result;
     }
     
@@ -137,8 +136,8 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
-        result.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
+        result.setRowCountLimit(new LimitValue(value, valueIndex));
+        result.setOffsetLimit(new LimitValue(offset, offsetIndex));
         return result;
     }
 }

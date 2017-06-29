@@ -25,8 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -65,11 +64,11 @@ public final class SQLServerParser extends SQLParser {
             skipIfEqual(Symbol.LEFT_PAREN);
             SQLExpression sqlExpression = parseExpression();
             skipIfEqual(Symbol.RIGHT_PAREN);
-            RowCountLimit rowCountLimit;
+            LimitValue rowCountLimit;
             if (sqlExpression instanceof SQLNumberExpression) {
-                rowCountLimit = new RowCountLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
+                rowCountLimit = new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                rowCountLimit = new RowCountLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+                rowCountLimit = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
             } else {
                 throw new SQLParsingException(getLexer());
             }
@@ -121,10 +120,10 @@ public final class SQLServerParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limit.setRowCountLimit(new RowCountLimit(rowCount, rowCountIndex));
-            limit.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
+            limit.setRowCountLimit(new LimitValue(rowCount, rowCountIndex));
+            limit.setOffsetLimit(new LimitValue(offset, offsetIndex));
         } else {
-            limit.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
+            limit.setOffsetLimit(new LimitValue(offset, offsetIndex));
         }
         selectStatement.setLimit(limit);
     }
