@@ -64,22 +64,24 @@ public final class SQLServerParser extends SQLParser {
             skipIfEqual(Symbol.LEFT_PAREN);
             SQLExpression sqlExpression = parseExpression();
             skipIfEqual(Symbol.RIGHT_PAREN);
-            LimitValue rowCountLimit;
+            LimitValue rowCount;
             if (sqlExpression instanceof SQLNumberExpression) {
-                rowCountLimit = new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
+                rowCount = new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                rowCountLimit = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+                rowCount = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
             } else {
                 throw new SQLParsingException(getLexer());
             }
+            if (skipIfEqual(SQLServerKeyword.PERCENT)) {
+                return;
+            }
             if (null == sqlStatement.getLimit()) {
                 Limit limit = new Limit(false);
-                limit.setRowCount(rowCountLimit);
+                limit.setRowCount(rowCount);
                 sqlStatement.setLimit(limit);
             } else {
-                sqlStatement.getLimit().setRowCount(rowCountLimit);
+                sqlStatement.getLimit().setRowCount(rowCount);
             }
-            skipIfEqual(SQLServerKeyword.PERCENT);
         }
     }
     
