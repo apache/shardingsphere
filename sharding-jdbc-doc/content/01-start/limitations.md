@@ -41,7 +41,7 @@ Sharding-JDBC暂时未支持不常用的JDBC方法。
 ## SQL语句限制
 
 ###  不支持DDL语句
-###  不支持子语句
+###  有限支持子查询
 ###  不支持HAVING
 ###  不支持UNION 和 UNION ALL
 ###  不支持特殊INSERT
