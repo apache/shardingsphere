@@ -269,8 +269,15 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     public void parseTable() {
-        if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
+        if (sqlParser.skipIfEqual(Symbol.LEFT_PAREN)) {
+            if (!selectStatement.getTables().isEmpty()) {
+                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
+            }
+            query();
+            sqlParser.accept(Symbol.RIGHT_PAREN);
+            if (sqlParser.equalAny(Assist.END)) {
+                return;
+            }
         }
         parseTableFactor();
         parseJoinTable();
