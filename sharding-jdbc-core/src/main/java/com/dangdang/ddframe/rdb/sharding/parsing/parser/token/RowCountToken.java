@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RowCountLimitToken implements SQLToken {
+public final class RowCountToken implements SQLToken {
     
     private final int beginPosition;
     

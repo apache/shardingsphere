@@ -23,8 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
@@ -86,10 +86,10 @@ public final class SQLRewriteEngine {
                 appendTableToken(result, (TableToken) each, count, sqlTokens);
             } else if (each instanceof ItemsToken) {
                 appendItemsToken(result, (ItemsToken) each, count, sqlTokens);
-            } else if (each instanceof RowCountLimitToken) {
-                appendLimitRowCount(result, (RowCountLimitToken) each, count, sqlTokens, isRewriteLimit);
-            } else if (each instanceof OffsetLimitToken) {
-                appendLimitOffsetToken(result, (OffsetLimitToken) each, count, sqlTokens, isRewriteLimit);
+            } else if (each instanceof RowCountToken) {
+                appendLimitRowCount(result, (RowCountToken) each, count, sqlTokens, isRewriteLimit);
+            } else if (each instanceof OffsetToken) {
+                appendLimitOffsetToken(result, (OffsetToken) each, count, sqlTokens, isRewriteLimit);
             }
             count++;
         }
@@ -124,16 +124,16 @@ public final class SQLRewriteEngine {
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
-    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountLimitToken rowCountLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountLimitToken.getRowCount() + limit.getOffsetValue()) : String.valueOf(rowCountLimitToken.getRowCount()));
-        int beginPosition = rowCountLimitToken.getBeginPosition() + String.valueOf(rowCountLimitToken.getRowCount()).length();
+    private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
+        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountToken.getRowCount() + limit.getOffsetValue()) : String.valueOf(rowCountToken.getRowCount()));
+        int beginPosition = rowCountToken.getBeginPosition() + String.valueOf(rowCountToken.getRowCount()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }
     
-    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetLimitToken offsetLimitToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetLimitToken.getOffset()));
-        int beginPosition = offsetLimitToken.getBeginPosition() + String.valueOf(offsetLimitToken.getOffset()).length();
+    private void appendLimitOffsetToken(final SQLBuilder sqlBuilder, final OffsetToken offsetToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
+        sqlBuilder.appendLiterals(isRewrite ? "0" : String.valueOf(offsetToken.getOffset()));
+        int beginPosition = offsetToken.getBeginPosition() + String.valueOf(offsetToken.getOffset()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
     }

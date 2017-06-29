@@ -27,8 +27,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
 /**
  * MySQL解析器.
@@ -74,7 +74,7 @@ public final class MySQLParser extends SQLParser {
             return getLimitWithOffset(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
         }
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
         result.setRowCount(new LimitValue(value, valueIndex));
@@ -100,10 +100,10 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
         }
         if (!isParameterForRowCount) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
+            sqlStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCount));
         }
         Limit result = new Limit(true);
         result.setRowCount(new LimitValue(rowCount, rowCountIndex));
@@ -130,10 +130,10 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForOffset) {
-            sqlStatement.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+            sqlStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offset));
         }
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
         result.setRowCount(new LimitValue(value, valueIndex));
