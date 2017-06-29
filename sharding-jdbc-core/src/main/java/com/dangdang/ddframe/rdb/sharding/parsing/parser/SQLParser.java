@@ -349,15 +349,15 @@ public class SQLParser extends AbstractParser {
         }
         if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
-                selectStatement.getLimit().setRowCountLimit(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+                selectStatement.getLimit().setRowCount(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                selectStatement.getLimit().setRowCountLimit(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+                selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
         } else if (Symbol.GT == symbol || Symbol.GT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
-                selectStatement.getLimit().setOffsetLimit(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+                selectStatement.getLimit().setOffset(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                selectStatement.getLimit().setOffsetLimit(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+                selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
         }
     }

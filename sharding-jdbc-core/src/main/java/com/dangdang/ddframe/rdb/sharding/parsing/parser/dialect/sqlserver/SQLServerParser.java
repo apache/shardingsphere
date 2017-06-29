@@ -74,10 +74,10 @@ public final class SQLServerParser extends SQLParser {
             }
             if (null == sqlStatement.getLimit()) {
                 Limit limit = new Limit(false);
-                limit.setRowCountLimit(rowCountLimit);
+                limit.setRowCount(rowCountLimit);
                 sqlStatement.setLimit(limit);
             } else {
-                sqlStatement.getLimit().setRowCountLimit(rowCountLimit);
+                sqlStatement.getLimit().setRowCount(rowCountLimit);
             }
             skipIfEqual(SQLServerKeyword.PERCENT);
         }
@@ -120,10 +120,10 @@ public final class SQLServerParser extends SQLParser {
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limit.setRowCountLimit(new LimitValue(rowCount, rowCountIndex));
-            limit.setOffsetLimit(new LimitValue(offset, offsetIndex));
+            limit.setRowCount(new LimitValue(rowCount, rowCountIndex));
+            limit.setOffset(new LimitValue(offset, offsetIndex));
         } else {
-            limit.setOffsetLimit(new LimitValue(offset, offsetIndex));
+            limit.setOffset(new LimitValue(offset, offsetIndex));
         }
         selectStatement.setLimit(limit);
     }

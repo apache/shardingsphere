@@ -77,7 +77,7 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new LimitValue(value, valueIndex));
+        result.setRowCount(new LimitValue(value, valueIndex));
         return result;
     }
     
@@ -106,8 +106,8 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new LimitValue(rowCount, rowCountIndex));
-        result.setOffsetLimit(new LimitValue(value, valueIndex));
+        result.setRowCount(new LimitValue(rowCount, rowCountIndex));
+        result.setOffset(new LimitValue(value, valueIndex));
         return result;
     }
     
@@ -136,8 +136,8 @@ public final class MySQLParser extends SQLParser {
             sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new LimitValue(value, valueIndex));
-        result.setOffsetLimit(new LimitValue(offset, offsetIndex));
+        result.setRowCount(new LimitValue(value, valueIndex));
+        result.setOffset(new LimitValue(offset, offsetIndex));
         return result;
     }
 }

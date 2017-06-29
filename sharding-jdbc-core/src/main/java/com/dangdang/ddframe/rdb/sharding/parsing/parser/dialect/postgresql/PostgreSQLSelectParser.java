@@ -133,10 +133,10 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     private void setLimit(final Optional<LimitValue> offsetLimit, final Optional<LimitValue> rowCountLimit) {
         Limit limit = new Limit(true);
         if (offsetLimit.isPresent()) {
-            limit.setOffsetLimit(offsetLimit.get());
+            limit.setOffset(offsetLimit.get());
         }
         if (rowCountLimit.isPresent()) {
-            limit.setRowCountLimit(rowCountLimit.get());
+            limit.setRowCount(rowCountLimit.get());
         }
         getSelectStatement().setLimit(limit);
     }

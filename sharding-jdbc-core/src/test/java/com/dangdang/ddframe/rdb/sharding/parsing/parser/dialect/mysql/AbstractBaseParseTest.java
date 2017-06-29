@@ -205,10 +205,10 @@ public abstract class AbstractBaseParseTest {
         if (null != assertObj.getLimit()) {
             Limit limit = new Limit(true);
             if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
-                limit.setRowCountLimit(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
-                limit.setOffsetLimit(new LimitValue(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()));
+                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+                limit.setOffset(new LimitValue(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()));
             } else {
-                limit.setRowCountLimit(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
             }
             selectStatement.setLimit(limit);
         }
@@ -260,11 +260,11 @@ public abstract class AbstractBaseParseTest {
     
     private void assertLimit(final SQLStatement actual) {
         if (null != actual.getLimit()) {
-            if (null != actual.getLimit().getOffsetLimit()) {
-                assertTrue(new ReflectionEquals(expectedLimit.getOffsetLimit()).matches(actual.getLimit().getOffsetLimit()));
+            if (null != actual.getLimit().getOffset()) {
+                assertTrue(new ReflectionEquals(expectedLimit.getOffset()).matches(actual.getLimit().getOffset()));
             }
-            if (null != actual.getLimit().getRowCountLimit()) {
-                assertTrue(new ReflectionEquals(expectedLimit.getRowCountLimit()).matches(actual.getLimit().getRowCountLimit()));
+            if (null != actual.getLimit().getRowCount()) {
+                assertTrue(new ReflectionEquals(expectedLimit.getRowCount()).matches(actual.getLimit().getRowCount()));
             }
         }
     }
