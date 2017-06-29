@@ -45,8 +45,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
         if (getSqlParser().skipIfEqual(DefaultKeyword.SELECT)) {
             parseDistinct();
             if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
-                // TODO save topContext
-                ((SQLServerParser) getSqlParser()).parseTop();
+                ((SQLServerParser) getSqlParser()).skipTop();
             }
             parseSelectList();
         }

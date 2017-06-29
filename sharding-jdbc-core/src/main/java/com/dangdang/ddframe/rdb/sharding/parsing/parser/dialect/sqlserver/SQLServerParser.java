@@ -27,7 +27,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Top;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -44,32 +43,11 @@ public final class SQLServerParser extends SQLParser {
         getLexer().nextToken();
     }
     
-    public Top parseTop() {
-        // TODO
-//        if (getLexer().equalAny(SQLServerKeyword.TOP)) {
-//            SQLServerTop top = new SQLServerTop();
-//            getLexer().nextToken();
-//            
-//            boolean paren = false;
-//            if (getLexer().equalAny(Symbol.LEFT_PAREN)) {
-//                paren = true;
-//                getLexer().nextToken();
-//            }
-//            
-//            top.setExpr(primary());
-//            
-//            if (paren) {
-//                getLexer().accept(Symbol.RIGHT_PAREN);
-//            }
-//            
-//            if (getLexer().equalAny(SQLServerKeyword.PERCENT)) {
-//                getLexer().nextToken();
-//                top.setPercent(true);
-//            }
-//            
-//            return top;
-//        }
-        return null;
+    public void skipTop() {
+        if (skipIfEqual(SQLServerKeyword.TOP)) {
+            parseExpression();
+            skipIfEqual(SQLServerKeyword.PERCENT);
+        }
     }
     
     protected void skipOutput() {

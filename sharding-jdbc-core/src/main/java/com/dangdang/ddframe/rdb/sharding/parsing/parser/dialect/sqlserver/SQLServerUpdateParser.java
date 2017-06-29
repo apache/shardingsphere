@@ -33,6 +33,6 @@ public final class SQLServerUpdateParser extends AbstractUpdateParser {
     
     @Override
     protected void skipBetweenUpdateAndTable() {
-        ((SQLServerParser) getSqlParser()).parseTop();
+        ((SQLServerParser) getSqlParser()).skipTop();
     }
 }
