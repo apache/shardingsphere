@@ -24,6 +24,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -278,8 +281,8 @@ public class SQLParser extends AbstractParser {
             return;
         }
         if (equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
-            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement && isSpecialCondition((SelectStatement) sqlStatement, (SQLIdentifierExpression) left)) {
-                parseSpecialCondition((SelectStatement) sqlStatement);
+            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement && isRowNumberCondition((SelectStatement) sqlStatement, (SQLIdentifierExpression) left)) {
+                parseRowNumberCondition((SelectStatement) sqlStatement);
             } else {
                 parseOtherCondition(sqlStatement);
             }
@@ -329,11 +332,30 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    protected boolean isSpecialCondition(final SelectStatement selectStatement, final SQLIdentifierExpression left) {
+    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final SQLIdentifierExpression left) {
         return false;
     }
     
-    protected void parseSpecialCondition(final SelectStatement selectStatement) {
+    private void parseRowNumberCondition(final SelectStatement selectStatement) {
+        Symbol symbol = (Symbol) getLexer().getCurrentToken().getType();
+        getLexer().nextToken();
+        SQLExpression sqlExpression = parseExpression(selectStatement);
+        if (null == selectStatement.getLimit()) {
+            selectStatement.setLimit(new Limit(false));
+        }
+        if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
+            if (sqlExpression instanceof SQLNumberExpression) {
+                selectStatement.getLimit().setRowCountLimit(new RowCountLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+            } else if (sqlExpression instanceof SQLPlaceholderExpression) {
+                selectStatement.getLimit().setRowCountLimit(new RowCountLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+            }
+        } else if (Symbol.GT == symbol || Symbol.GT_EQ == symbol) {
+            if (sqlExpression instanceof SQLNumberExpression) {
+                selectStatement.getLimit().setOffsetLimit(new OffsetLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+            } else if (sqlExpression instanceof SQLPlaceholderExpression) {
+                selectStatement.getLimit().setOffsetLimit(new OffsetLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+            }
+        }
     }
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {

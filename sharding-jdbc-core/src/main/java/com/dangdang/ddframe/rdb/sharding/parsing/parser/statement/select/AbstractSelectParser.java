@@ -122,6 +122,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private SelectItem parseSelectItem() {
+        if (isRowNumberSelectItem()) {
+            return parseRowNumberSelectItem();
+        }
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         if (sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
@@ -144,6 +147,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
         }
         return new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
+    }
+    
+    protected boolean isRowNumberSelectItem() {
+        return false;
+    }
+    
+    protected SelectItem parseRowNumberSelectItem() {
+        throw new UnsupportedOperationException("Cannot support special select item.");
     }
     
     protected void queryRest() {

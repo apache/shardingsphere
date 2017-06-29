@@ -27,9 +27,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.google.common.base.Optional;
 
 /**
  * SQLServer解析器.
@@ -41,6 +44,17 @@ public final class SQLServerParser extends SQLParser {
     public SQLServerParser(final String sql, final ShardingRule shardingRule) {
         super(new SQLServerLexer(sql), shardingRule);
         getLexer().nextToken();
+    }
+    
+    @Override
+    protected boolean isRowNumberCondition(final SelectStatement selectStatement, final SQLIdentifierExpression expression) {
+        Optional<String> rowNumberAlias = Optional.absent();
+        for (SelectItem each : selectStatement.getItems()) {
+            if (each.getAlias().isPresent() && "ROW_NUMBER".equalsIgnoreCase(each.getExpression())) {
+                rowNumberAlias = each.getAlias();
+            }
+        }
+        return expression.getName().equalsIgnoreCase(rowNumberAlias.orNull());
     }
     
     public void skipTop() {
