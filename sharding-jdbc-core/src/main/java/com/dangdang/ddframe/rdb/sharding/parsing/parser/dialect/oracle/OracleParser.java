@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyw
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleLexer;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
@@ -68,6 +69,9 @@ public final class OracleParser extends SQLParser {
         Symbol symbol = (Symbol) getLexer().getCurrentToken().getType();
         getLexer().nextToken();
         SQLExpression sqlExpression = parseExpression(selectStatement);
+        if (null == selectStatement.getLimit()) {
+            selectStatement.setLimit(new Limit());
+        }
         if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
                 selectStatement.getLimit().setRowCountLimit(new RowCountLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));

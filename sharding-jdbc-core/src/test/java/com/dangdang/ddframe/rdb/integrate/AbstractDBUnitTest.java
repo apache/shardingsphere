@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.integrate;
 
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
-import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import lombok.AccessLevel;

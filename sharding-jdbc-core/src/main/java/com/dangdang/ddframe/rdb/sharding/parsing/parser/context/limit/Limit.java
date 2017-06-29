@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -33,6 +34,7 @@ import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
  * @author zhangliang
  * @author caohao
  */
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter

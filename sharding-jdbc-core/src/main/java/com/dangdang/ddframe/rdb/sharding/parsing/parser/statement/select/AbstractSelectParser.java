@@ -64,6 +64,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Setter
     private int parametersIndex;
     
+    private boolean appendDerivedColumnsFlag;
+    
     public AbstractSelectParser(final SQLParser sqlParser) {
         this.sqlParser = sqlParser;
         selectStatement = new SelectStatement();
@@ -273,7 +275,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             if (!selectStatement.getTables().isEmpty()) {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
             }
-            query();
+            selectStatement.setContainStar(false);
+            parse();
             sqlParser.accept(Symbol.RIGHT_PAREN);
             if (sqlParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
@@ -326,6 +329,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     }
     
     private void appendDerivedColumns() {
+        if (appendDerivedColumnsFlag) {
+            return;
+        }
+        appendDerivedColumnsFlag = true;
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken);
         appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByList(), ORDER_BY_DERIVED_ALIAS);

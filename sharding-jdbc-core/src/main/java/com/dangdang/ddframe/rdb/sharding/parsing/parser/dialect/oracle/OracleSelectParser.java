@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
@@ -191,11 +192,16 @@ public class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     public final void parseTable() {
-        if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
-            throw new UnsupportedOperationException("Cannot support subquery");
-        }
-        if (getSqlParser().equalAny(DefaultKeyword.SELECT)) {
-            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+        if (getSqlParser().skipIfEqual(Symbol.LEFT_PAREN)) {
+            if (!getSelectStatement().getTables().isEmpty()) {
+                throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
+            }
+            getSelectStatement().setContainStar(false);
+            parse();
+            getSqlParser().accept(Symbol.RIGHT_PAREN);
+            if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
+                return;
+            }
         }
         if (getSqlParser().skipIfEqual(OracleKeyword.ONLY)) {
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
