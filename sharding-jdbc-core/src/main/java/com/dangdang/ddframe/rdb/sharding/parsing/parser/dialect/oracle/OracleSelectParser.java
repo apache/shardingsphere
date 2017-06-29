@@ -65,7 +65,6 @@ public class OracleSelectParser extends AbstractSelectParser {
         }
     }
     
-    
     private void skipHierarchicalQueryClause() {
         skipConnect();
         skipStart();

@@ -93,13 +93,12 @@ public final class SQLServerParser extends SQLParser {
     
     public void parseOffset(final SelectStatement selectStatement) {
         getLexer().nextToken();
-        int offset;
+        int offsetValue = -1;
         int offsetIndex = -1;
         if (equalAny(Literals.INT)) {
-            offset = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
+            offsetValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
         } else if (equalAny(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
-            offset = -1;
             setParametersIndex(offsetIndex + 1);
         } else {
             throw new SQLParsingException(getLexer());
@@ -108,24 +107,23 @@ public final class SQLServerParser extends SQLParser {
         Limit limit = new Limit(true);
         if (skipIfEqual(DefaultKeyword.FETCH)) {
             getLexer().nextToken();
-            int rowCount;
+            int rowCountValue = -1;
             int rowCountIndex = -1;
             getLexer().nextToken();
             if (equalAny(Literals.INT)) {
-                rowCount = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
+                rowCountValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             } else if (equalAny(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
-                rowCount = -1;
                 setParametersIndex(rowCountIndex + 1);
             } else {
                 throw new SQLParsingException(getLexer());
             }
             getLexer().nextToken();
             getLexer().nextToken();
-            limit.setRowCount(new LimitValue(rowCount, rowCountIndex));
-            limit.setOffset(new LimitValue(offset, offsetIndex));
+            limit.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
         } else {
-            limit.setOffset(new LimitValue(offset, offsetIndex));
+            limit.setOffset(new LimitValue(offsetValue, offsetIndex));
         }
         selectStatement.setLimit(limit);
     }

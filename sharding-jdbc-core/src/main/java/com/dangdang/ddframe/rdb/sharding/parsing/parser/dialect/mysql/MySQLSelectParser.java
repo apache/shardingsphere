@@ -54,7 +54,7 @@ public class MySQLSelectParser extends AbstractSelectParser {
     
     private void parseLimit() {
         if (getSqlParser().equalAny(MySQLKeyword.LIMIT)) {
-            getSelectStatement().setLimit(((MySQLParser) getSqlParser()).parseLimit(getSelectStatement(), getParametersIndex()));
+            ((MySQLParser) getSqlParser()).parseLimit(getSelectStatement(), getParametersIndex());
         }
     }
     

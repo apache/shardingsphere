@@ -87,46 +87,46 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private Optional<LimitValue> buildRowCount() {
         int parameterIndex = getParametersIndex();
-        int rowCount = -1;
-        int rowCountParameterIndex = -1;
+        int rowCountValue = -1;
+        int rowCountIndex = -1;
         int valueBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
             getSqlParser().getLexer().nextToken();
         } else {
             if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                rowCount = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-                valueBeginPosition = valueBeginPosition - (rowCount + "").length();
-                getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCount));
+                rowCountValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
+                getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                rowCountParameterIndex = parameterIndex++;
+                rowCountIndex = parameterIndex++;
                 setParametersIndex(parameterIndex);
-                rowCount = -1;
+                rowCountValue = -1;
             } else {
                 throw new SQLParsingException(getSqlParser().getLexer());
             }
             getSqlParser().getLexer().nextToken();
         }
-        return Optional.of(new LimitValue(rowCount, rowCountParameterIndex));
+        return Optional.of(new LimitValue(rowCountValue, rowCountIndex));
     }
     
     private Optional<LimitValue> buildOffset() {
         int parameterIndex = getParametersIndex();
-        int offset = -1;
-        int offsetParameterIndex = -1;
+        int offsetValue = -1;
+        int offsetIndex = -1;
         int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-            offset = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-            offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-            getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offset));
+            offsetValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+            offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
+            getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-            offsetParameterIndex = parameterIndex++;
+            offsetIndex = parameterIndex++;
             setParametersIndex(parameterIndex);
         } else {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
         getSqlParser().getLexer().nextToken();
         getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
-        return Optional.of(new LimitValue(offset, offsetParameterIndex));
+        return Optional.of(new LimitValue(offsetValue, offsetIndex));
     }
     
     
