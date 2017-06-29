@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <asserts>
-    <!--
-    <assert id="assertSelectWithOrderByForAliasAndSubQuery" sql="SELECT price FROM (SELECT o.user_id,o.price FROM order o WHERE o.order_id = 1 ORDER BY o.order_id) order by user_id" expected-sql="SELECT price[sharding_auto_gen_0(, user_id AS sharding_gen_1)] FROM (SELECT [Token(o)].user_id, [Token(o)].price[sharding_auto_gen_1(, o.order_id AS sharding_gen_1)] FROM [Token(order)] o WHERE o.order_id = 1 ORDER BY o.order_id ) ORDER BY user_id">
+    
+    <assert id="assertSelectWithOrderByForAliasAndSubQuery" sql="SELECT price FROM (SELECT o.user_id,o.price FROM order o WHERE o.order_id = 1 ORDER BY o.order_id)" expected-sql="SELECT price[sharding_auto_gen_0(, user_id AS sharding_gen_1)] FROM (SELECT [Token(o)].user_id, [Token(o)].price[sharding_auto_gen_1(, o.order_id AS sharding_gen_1)] FROM [Token(order)] o WHERE o.order_id = 1 ORDER BY o.order_id ) ORDER BY user_id">
         <tables>
             <table name="order" alias="o" />
         </tables>
-        <condition-contexts>
-            <condition-context>
-                <condition column-name="order_id" table-name="order" operator="EQUAL">
-                    <value literal="1" type="java.lang.Integer" />
-                </condition>
-            </condition-context>
-        </condition-contexts>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
+        </conditions>
         <order-by-columns>
-            <order-by-column owner="o" name="user_id" alias="sharding_gen_1" order-by-type="ASC" />
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
         </order-by-columns>
     </assert>
+    <!--
     <assert id="assertSelectWithGroupByAndSubQuery" sql="SELECT AVG(i.SUM_PRICE) avg FROM (SELECT o.order_id,SUM(o.price) AS SUM_PRICE FROM order o WHERE o.order_id = 1 GROUP BY o.order_id) i" expected-sql="SELECT AVG(i.SUM_PRICE) AS avg[sharding_auto_gen_0(, COUNT(i.SUM_PRICE) AS sharding_gen_1, SUM(i.SUM_PRICE) AS sharding_gen_2)] FROM (SELECT [Token(o)].order_id, SUM(o.price) AS SUM_PRICE FROM [Token(order)] o WHERE o.order_id = 1 GROUP BY o.order_id ) i">
         <tables>
             <table name="order" alias="o" />

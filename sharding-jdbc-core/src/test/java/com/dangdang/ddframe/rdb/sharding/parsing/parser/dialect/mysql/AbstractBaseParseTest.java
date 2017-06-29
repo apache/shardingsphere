@@ -71,22 +71,22 @@ public abstract class AbstractBaseParseTest {
     
     private final Conditions expectedConditions;
     
-    private final Iterator<OrderItem> orderByColumns;
+    private final Iterator<OrderItem> expectedOrderByColumns;
     
-    private final Iterator<OrderItem> groupByColumns;
+    private final Iterator<OrderItem> expectedGroupByColumns;
     
-    private final Iterator<AggregationSelectItem> aggregationSelectItems;
+    private final Iterator<AggregationSelectItem> expectedAggregationSelectItems;
     
-    private final Limit limit;
+    private final Limit expectedLimit;
     
     protected AbstractBaseParseTest(final String testCaseName, final String sql, final Tables expectedTables, final Conditions expectedConditions, final SQLStatement expectedSQLStatement) {
         this.sql = sql;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
-        this.orderByColumns = expectedSQLStatement.getOrderByList().iterator();
-        this.groupByColumns = expectedSQLStatement.getGroupByList().iterator();
-        this.aggregationSelectItems = expectedSQLStatement.getAggregationSelectItems().iterator();
-        this.limit = expectedSQLStatement.getLimit();
+        this.expectedOrderByColumns = expectedSQLStatement.getOrderByList().iterator();
+        this.expectedGroupByColumns = expectedSQLStatement.getGroupByList().iterator();
+        this.expectedAggregationSelectItems = expectedSQLStatement.getAggregationSelectItems().iterator();
+        this.expectedLimit = expectedSQLStatement.getLimit();
     }
     
     protected static Collection<Object[]> dataParameters(final String path) {
@@ -234,36 +234,36 @@ public abstract class AbstractBaseParseTest {
     
     private void assertOrderBy(final SQLStatement actual) {
         for (OrderItem each : actual.getOrderByList()) {
-            assertTrue(new ReflectionEquals(orderByColumns.next()).matches(each));
+            assertTrue(new ReflectionEquals(expectedOrderByColumns.next()).matches(each));
         }
-        assertFalse(orderByColumns.hasNext());
+        assertFalse(expectedOrderByColumns.hasNext());
     }
     
     private void assertGroupBy(final SQLStatement actual) {
         for (OrderItem each : actual.getGroupByList()) {
-            assertTrue(new ReflectionEquals(groupByColumns.next()).matches(each));
+            assertTrue(new ReflectionEquals(expectedGroupByColumns.next()).matches(each));
         }
-        assertFalse(groupByColumns.hasNext());
+        assertFalse(expectedGroupByColumns.hasNext());
     }
     
     private void assertAggregationSelectItem(final SQLStatement actual) {
         for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
-            AggregationSelectItem expected = aggregationSelectItems.next();
+            AggregationSelectItem expected = expectedAggregationSelectItems.next();
             assertTrue(new ReflectionEquals(expected, "derivedAggregationSelectItems").matches(each));
             for (int i = 0; i < each.getDerivedAggregationSelectItems().size(); i++) {
                 assertTrue(new ReflectionEquals(expected.getDerivedAggregationSelectItems().get(i)).matches(each.getDerivedAggregationSelectItems().get(i)));
             }
         }
-        assertFalse(aggregationSelectItems.hasNext());
+        assertFalse(expectedAggregationSelectItems.hasNext());
     }
     
     private void assertLimit(final SQLStatement actual) {
         if (null != actual.getLimit()) {
             if (null != actual.getLimit().getOffsetLimit()) {
-                assertTrue(new ReflectionEquals(limit.getOffsetLimit()).matches(actual.getLimit().getOffsetLimit()));
+                assertTrue(new ReflectionEquals(expectedLimit.getOffsetLimit()).matches(actual.getLimit().getOffsetLimit()));
             }
             if (null != actual.getLimit().getRowCountLimit()) {
-                assertTrue(new ReflectionEquals(limit.getRowCountLimit()).matches(actual.getLimit().getRowCountLimit()));
+                assertTrue(new ReflectionEquals(expectedLimit.getRowCountLimit()).matches(actual.getLimit().getRowCountLimit()));
             }
         }
     }

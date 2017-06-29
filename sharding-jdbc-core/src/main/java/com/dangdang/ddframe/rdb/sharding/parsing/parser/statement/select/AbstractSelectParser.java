@@ -289,7 +289,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             selectStatement.setContainStar(false);
             parse();
             sqlParser.accept(Symbol.RIGHT_PAREN);
-            if (sqlParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
+            if (!selectStatement.getTables().isEmpty()) {
                 return;
             }
         }
