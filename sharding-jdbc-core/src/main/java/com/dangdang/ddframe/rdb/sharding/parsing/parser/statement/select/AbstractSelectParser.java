@@ -275,7 +275,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
             query();
             sqlParser.accept(Symbol.RIGHT_PAREN);
-            if (sqlParser.equalAny(Assist.END)) {
+            if (sqlParser.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
         }

@@ -35,6 +35,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholde
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -276,8 +277,12 @@ public class SQLParser extends AbstractParser {
             parseBetweenCondition(sqlStatement, left);
             return;
         }
-        if (equalAny(Symbol.LT) || equalAny(Symbol.GT) || equalAny(Symbol.LT_EQ) || equalAny(Symbol.GT_EQ)) {
-            parserOtherCondition(sqlStatement);
+        if (equalAny(Symbol.LT, Symbol.GT, Symbol.LT_EQ, Symbol.GT_EQ)) {
+            if (left instanceof SQLIdentifierExpression && sqlStatement instanceof SelectStatement && isSpecialCondition((SelectStatement) sqlStatement, (SQLIdentifierExpression) left)) {
+                parseSpecialCondition((SelectStatement) sqlStatement);
+            } else {
+                parseOtherCondition(sqlStatement);
+            }
         }
         skipIfEqual(Symbol.LEFT_PAREN);
     }
@@ -324,7 +329,14 @@ public class SQLParser extends AbstractParser {
         }
     }
     
-    private void parserOtherCondition(final SQLStatement sqlStatement) {
+    protected boolean isSpecialCondition(final SelectStatement selectStatement, final SQLIdentifierExpression left) {
+        return false;
+    }
+    
+    protected void parseSpecialCondition(final SelectStatement selectStatement) {
+    }
+    
+    private void parseOtherCondition(final SQLStatement sqlStatement) {
         getLexer().nextToken();
         parseExpression(sqlStatement);
     }
