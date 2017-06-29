@@ -68,6 +68,7 @@ public final class YamlWithAssignedDataSourceMain {
             preparedStatement.execute();
         }
     }
+    
     private static void printSimpleSelect(final DataSource dataSource) throws SQLException {
         String sql = "SELECT c.* FROM t_config c";
         try (

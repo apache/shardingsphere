@@ -62,8 +62,8 @@ public abstract class AbstractSingleResultSetDBUnitTest extends AbstractDBUnitTe
                 "t_order_3")).dataSourceRule(dataSourceRule).build();
         ShardingRule shardingRule = ShardingRule.builder()
                 .dataSourceRule(dataSourceRule)
-                .tableRules(Arrays.asList(orderTableRule))
-                .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule))))
+                .tableRules(Collections.singletonList(orderTableRule))
+                .bindingTableRules(Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))))
                 .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
                 .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
         shardingDataSource = new ShardingDataSource(shardingRule);

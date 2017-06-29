@@ -24,7 +24,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         InsertStatementParserTest.class,
         UpdateStatementParserTest.class,
-        DeleteStatementParserTest.class,
+        DeleteStatementParserTest.class
     })
 public class AllStatementParserTests {
 }

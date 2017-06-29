@@ -92,7 +92,7 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     }
     
     @Test
-    public void assertparseWithGenerateKeyColumnsWithParameter() throws SQLException {
+    public void assertParseWithGenerateKeyColumnsWithParameter() throws SQLException {
         String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);

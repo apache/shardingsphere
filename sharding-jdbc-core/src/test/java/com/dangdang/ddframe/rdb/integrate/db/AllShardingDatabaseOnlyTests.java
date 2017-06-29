@@ -36,6 +36,6 @@ import org.junit.runners.Suite;
         ShardingDatabaseOnlyForStatementWithAggregateTest.class,
         ShardingDatabaseOnlyForStatementWithDMLTest.class,
         ShardingDatabaseOnlyForStatementWithSelectTest.class
-})
+    })
 public class AllShardingDatabaseOnlyTests {
 }

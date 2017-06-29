@@ -27,7 +27,11 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabase
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.*;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
@@ -42,7 +46,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
