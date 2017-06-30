@@ -31,7 +31,7 @@ import java.sql.SQLException;
  */
 public final class IteratorReducerResultSet extends AbstractDelegateResultSet {
     
-    private int resultSetIndex = 1;
+    private int index = 1;
     
     public IteratorReducerResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(resultSetMergeContext.getShardingResultSets().getResultSets());
@@ -44,19 +44,18 @@ public final class IteratorReducerResultSet extends AbstractDelegateResultSet {
     
     @Override
     protected boolean afterFirstNext() throws SQLException {
-        return processCurrent() || (!isOutOfIndex() && processNext());
+        return processCurrent() || processNext();
     }
     
     private boolean processCurrent() throws SQLException {
         return getDelegate().next();
     }
     
-    private boolean isOutOfIndex() {
-        return resultSetIndex >= getResultSets().size();
-    }
-    
     private boolean processNext() throws SQLException {
-        ResultSet resultSet = getResultSets().get(resultSetIndex++);
+        if (index == getResultSets().size()) {
+            return false;
+        }
+        ResultSet resultSet = getResultSets().get(index++);
         setDelegate(resultSet);
         return resultSet.next();
     }
