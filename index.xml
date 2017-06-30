@@ -161,7 +161,7 @@ TableRule orderTableRule = TableRule.builder(&amp;quot;t_order&amp;quot;).actual
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/limitations/</guid>
       <description> JDBC未支持列表 Sharding-JDBC暂时未支持不常用的JDBC方法。
 DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读com.dangdang.ddframe.rdb.sharding.jdbc.unsupported包。
-SQL语句限制 不支持DDL语句 不支持子语句 不支持HAVING 不支持UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
+SQL语句限制 不支持DDL语句 有限支持子查询 不支持HAVING 不支持UNION 和 UNION ALL 不支持特殊INSERT 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
 不支持DISTINCT聚合 不支持dual虚拟表 </description>
     </item>
     
@@ -171,7 +171,7 @@ SQL语句限制 不支持DDL语句 不支持子语句 不支持HAVING 不支持U
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/03-design/roadmap/</guid>
-      <description>已完成 分库分表  SQL解析 (完成) SQL改写 (完成) 访问路由 (完成) 结果归并 (完成)  读写分离  一主多从的读写分离，可配合分库分表使用 (完成) 同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 (完成) Spring命名空间 (完成) Hint强制主库路由 (完成)  配置2.0  动态表配置 (完成) 简化只分库配置，无需配置逻辑表和真实表对应关系 (完成) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule (完成)  分布式主键  JDBC接口改写 分布式主键策略接口制定 基于snowflake的分布式主键算法实现 基于groupsequence的分布式主键算法实现 基于数据库的分布式主键算法实现  柔性事务  sharding-jdbc-core发送SQL执行事件 (完成) BED类型事务日志存储设计 (完成) BED类型事务同步尝试 (完成) 基于elastic-job的BED类型事务异步尝试 (完成)  进行中 SQL解析2.0  使用全新的自研SQL解析引擎替换druid的SQL解析引擎 判断不支持SQL并直接报错 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv) 支持通过SQL注释指定SQL Hint SQL重写优化，进一步提升性能  计划中 结果归并2.0  管道化结果归并 (完成) 支持OR语句根据row的唯一标识去重 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv)  访问路由2.</description>
+      <description>已完成 分库分表  SQL解析 (完成) SQL改写 (完成) 访问路由 (完成) 结果归并 (完成)  读写分离  一主多从的读写分离，可配合分库分表使用 (完成) 同一线程且同一数据库连接内，写入操作后读操作均从主库读取，用于保证数据一致性 (完成) Spring命名空间 (完成) Hint强制主库路由 (完成)  配置2.0  动态表配置 (完成) 简化只分库配置，无需配置逻辑表和真实表对应关系 (完成) 简化包含不分片库表的配置，可指定默认数据源，不分片无需配置TableRule (完成)  分布式主键  JDBC接口改写 (完成) 分布式主键策略接口制定 (完成) 基于snowflake的分布式主键算法实现 (完成)  柔性事务  sharding-jdbc-core发送SQL执行事件 (完成) BED类型事务日志存储设计 (完成) BED类型事务同步尝试 (完成) 基于elastic-job的BED类型事务异步尝试 (完成)  进行中 SQL解析2.0  使用全新的自研SQL解析引擎替换druid的SQL解析引擎 (完成) 其他数据库支持 (完成) 判断不支持SQL并直接报错 (部分完成) 支持DISTINCT 支持GROUP BY聚合之后进行HAVING 支持计算表达式，如：SUM(pv) / COUNT(uv) 支持通过SQL注释指定SQL Hint SQL重写优化，进一步提升性能  计划中 结果归并2.</description>
     </item>
     
     <item>
@@ -183,7 +183,8 @@ SQL语句限制 不支持DDL语句 不支持子语句 不支持HAVING 不支持U
       <description>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。 本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
 全局不支持项 动态表 未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。 原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。
 除DQL和DML以外的语句 Sharding-JDBC定位于CRUD操作，目前仅针对DQL和DML语句进行支持。
-子查询未详细测试 支持的SQL DQL SELECT主语句 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...] [WHERE where_condition] [GROUP BY {col_name | position} [ASC | DESC]] [ORDER BY {col_name | position} [ASC | DESC], ...] [LIMIT {[offset,] row_count | row_count OFFSET offset}]  select_expr * | COLUMN_NAME [AS] [alias] | (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | COUNT(* | COLUMN_NAME | alias) [AS] [alias]  table_reference tbl_name [AS] alias] [index_hint_list] | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] |  示例    SQL 无条件支持 必要条件     SELECT * FROM tbl_name 是    SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit 是    SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1 是    SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit 是    SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2 是     DML INSERT    SQL 无条件支持 必要条件     INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.</description>
+有限支持子查询 子查询支持详情请参考分页及子查询。
+支持的SQL DQL SELECT主语句 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...] [WHERE where_condition] [GROUP BY {col_name | position} [ASC | DESC]] [ORDER BY {col_name | position} [ASC | DESC], ...] [LIMIT {[offset,] row_count | row_count OFFSET offset}]  select_expr * | COLUMN_NAME [AS] [alias] | (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | COUNT(* | COLUMN_NAME | alias) [AS] [alias]  table_reference tbl_name [AS] alias] [index_hint_list] | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] |  示例    SQL 无条件支持 必要条件     SELECT * FROM tbl_name 是    SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit 是    SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1 是    SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit 是    SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2 是     DML INSERT    SQL 无条件支持 必要条件     INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.</description>
     </item>
     
     <item>
@@ -266,6 +267,24 @@ TableRule.builder(&amp;quot;t_order_item&amp;quot;).generateKeyColumns(&amp;quot
     </item>
     
     <item>
+      <title>分页及子查询</title>
+      <link>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/subquery/</link>
+      <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
+      
+      <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/subquery/</guid>
+      <description>Sharding-JDBC完全支持MySQL、PostgreSQL和Oracle的分页查询，SQLServer由于分页查询较为复杂，仅部分支持。
+分页性能 性能瓶颈 查询偏移量过大的分页会导致数据库获取数据性能低下，以MySQL为例：
+SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  这句SQL会使得MySQL在无法利用索引的情况下跳过1000000条记录后，再获取10条记录，其性能可想而知。而在分库分表的情况下（假设分为2个库），为了保证数据的正确性，SQL会改写为：
+SELECT * FROM t_order ORDER BY id LIMIT 0, 1000010  即将偏移量前的记录全部取出，并仅获取排序后的最后10条记录。这会在数据库本身就执行很慢的情况下，进一步加剧性能瓶颈。因为原SQL仅需要传输10条记录至客户端，而改写之后的SQL则会传输1000010*2的记录至客户端。
+Sharding-JDBC的优化 Sharding-JDBC进行了2个方面的优化。
+首先，Sharding-JDBC采用流式处理 + 归并排序的方式来避免内存的过量占用。Sharding-JDBC的SQL改写，不可避免的占用了额外的带宽，但并不会导致内存暴涨。 与直觉不同，大多数人认为Sharding-JDBC会将1000010*2记录全部加载至内存，进而占用大量内存而导致内存溢出。 但由于每个结果集的记录是有序的，因此Sharding-JDBC每次比较仅获取各个分片的当前结果集记录，驻留在内存中的记录仅为当前路由到的分片的结果集的当前游标指向而已。 对于本身即有序的待排序对象，归并排序的时间复杂度仅为O(n)，性能损耗很小。
+其次，Sharding-JDBC对仅落至单分片的查询进行进一步优化。落至单分片查询的请求并不需要改写SQL也可以保证记录的正确性，因此在此种情况下，Sharding-JDBC并未进行SQL改写，从而达到节省带宽的目的。
+更好的分页解决方案 由于LIMIT并不能通过索引查询数据，因此如果可以保证ID的连续性，通过ID进行分页是比较好的解决方案：
+SELECT * FROM t_order WHERE id &amp;gt; 100000 AND id &amp;lt;= 100010 ORDER BY id  或通过记录上次查询结果的最后一条记录的ID进行下一页的查询：
+SELECT * FROM t_order WHERE id &amp;gt; 100000 LIMIT 10  分页子查询 Oracle和SQLServer的分页都需要通过子查询来处理，Sharding-JDBC支持分页相关的子查询。</description>
+    </item>
+    
+    <item>
       <title>概览</title>
       <link>http://dangdangdotcom.github.io/sharding-jdbc/00-overview/</link>
       <pubDate>Wed, 12 Apr 2017 16:06:17 +0800</pubDate>
@@ -284,7 +303,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
       <pubDate>Mon, 12 Dec 2016 16:06:17 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/02-guide/</guid>
-      <description> 本章导航  想一览基本的概念，请阅读基本概念。 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读如何分库分表章节。 分库分表后，要进一步提高性能，可以使用读写分离功能。 配置手册介绍了如何通过YAML和Spring两种方式配置。 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，但也可以使用强制路由方式来设置分片数据。该模式非常适合存量系统扩容。 分库分表后主键如何生成？分布式主键将给你答案。 分库后事务如何保证？事务支持将介绍Sharding-JDBC如何通过使用柔性事务的方式来实现分布式事务。  </description>
+      <description> 本章导航  想一览基本的概念，请阅读基本概念。 想通过一个完整的例子使用Sharding-JDBC进行分库分表，请阅读如何分库分表章节。 分库分表后，要进一步提高性能，可以使用读写分离功能。 配置手册介绍了如何通过YAML和Spring两种方式配置。 一般情况Sharding-JDBC是通过SQL解析来获取数据路由数据的，但也可以使用强制路由方式来设置分片数据。该模式非常适合存量系统扩容。 分库分表后主键如何生成？分布式主键将给你答案。 分库后事务如何保证？事务支持将介绍Sharding-JDBC如何通过使用柔性事务的方式来实现分布式事务。 分页是否影响性能？Oracle和SQLServer的分页涉及到子查询又该如何处理？请阅读分页及子查询。  </description>
     </item>
     
     <item>
