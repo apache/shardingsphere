@@ -10,7 +10,7 @@ next = "/00-overview/contribution/"
 
 ## 1.5.0.M2
 
-1. 简单子查询支持
+1. 非功能型子查询支持
 1. Oracle与SQLServer分页支持
 
 ### 缺陷修正
