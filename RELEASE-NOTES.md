@@ -10,8 +10,11 @@ next = "/00-overview/contribution/"
 
 ## 1.5.0.M2
 
+### 功能提升
+
 1. 非功能型子查询支持
 1. Oracle与SQLServer分页支持
+1. 数据库执行SQL显示支持
 
 ### 缺陷修正
 
