@@ -65,7 +65,7 @@ public final class StaticShardingBothForStatementWithSelectTest extends Abstract
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
         String sql = "SELECT count(*) as items_count FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
                 + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
     }
     
