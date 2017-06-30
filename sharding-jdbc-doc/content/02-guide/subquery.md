@@ -82,6 +82,7 @@ SELECT * FROM t_order o ORDER BY id OFFSET ? ROW FETCH NEXT ? ROWS ONLY
 ```
 
 目前不支持使用WITH xxx AS (SELECT ...)的方式进行分页。由于Hibernate自动生成的SQLServer分页语句使用了WITH语句，因此目前并不支持基于Hibernate的SQLServer分页。
+目前也不支持使用两个TOP + 子查询的方式实现分页。
 
 ## MySQL, PostgreSQL
 
