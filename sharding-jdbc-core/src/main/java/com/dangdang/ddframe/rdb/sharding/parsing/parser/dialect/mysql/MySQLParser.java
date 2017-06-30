@@ -24,12 +24,11 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
 /**
  * MySQL解析器.
@@ -48,9 +47,8 @@ public final class MySQLParser extends SQLParser {
      * 
      * @param sqlStatement SQL语句对象
      * @param parametersIndex 参数索引
-     * @return 分页
      */
-    public Limit parseLimit(final SQLStatement sqlStatement, final int parametersIndex) {
+    public void parseLimit(final SQLStatement sqlStatement, final int parametersIndex) {
         skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentToken().getEndPosition();
@@ -69,31 +67,32 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (skipIfEqual(Symbol.COMMA)) {
-            return getLimitWithComma(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
+            sqlStatement.setLimit(getLimitWithComma(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
+            return;
         }
         if (skipIfEqual(MySQLKeyword.OFFSET)) {
-            return getLimitWithOffset(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue);
+            sqlStatement.setLimit(getLimitWithOffset(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
+            return;
         }
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
-        Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
-        return result;
+        Limit limit = new Limit(true);
+        limit.setRowCount(new LimitValue(value, valueIndex));
+        sqlStatement.setLimit(limit);
     }
     
-    private Limit getLimitWithComma(
-            final SQLStatement sqlStatement, final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithComma(final SQLStatement sqlStatement, final int parametersIndex, final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int rowCountBeginPosition = getLexer().getCurrentToken().getEndPosition();
-        int rowCount;
+        int rowCountValue;
         int rowCountIndex = -1;
         boolean isParameterForRowCount = false;
         if (equalAny(Literals.INT)) {
-            rowCount = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
-            rowCountBeginPosition = rowCountBeginPosition - (rowCount + "").length();
+            rowCountValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
+            rowCountBeginPosition = rowCountBeginPosition - (rowCountValue + "").length();
         } else if (equalAny(Symbol.QUESTION)) {
-            rowCountIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-            rowCount = -1;
+            rowCountIndex = -1 == index ? parametersIndex : index + 1;
+            rowCountValue = -1;
             rowCountBeginPosition--;
             isParameterForRowCount = true;
         } else {
@@ -101,29 +100,27 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new OffsetLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new OffsetToken(valueBeginPosition, value));
         }
         if (!isParameterForRowCount) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(rowCountBeginPosition, rowCount));
+            sqlStatement.getSqlTokens().add(new RowCountToken(rowCountBeginPosition, rowCountValue));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(rowCount, rowCountIndex));
-        result.setOffsetLimit(new OffsetLimit(value, valueIndex));
+        result.setRowCount(new LimitValue(rowCountValue, rowCountIndex));
+        result.setOffset(new LimitValue(value, index));
         return result;
     }
     
-    private Limit getLimitWithOffset(
-            final SQLStatement sqlStatement, final int parametersIndex, final int valueIndex, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
+    private Limit getLimitWithOffset(final SQLStatement sqlStatement, final int parametersIndex, final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue) {
         int offsetBeginPosition = getLexer().getCurrentToken().getEndPosition();
-        int offset;
+        int offsetValue = -1;
         int offsetIndex = -1;
         boolean isParameterForOffset = false;
         if (equalAny(Literals.INT)) {
-            offset = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
-            offsetBeginPosition = offsetBeginPosition - (offset + "").length();
+            offsetValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
+            offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
         } else if (equalAny(Symbol.QUESTION)) {
-            offsetIndex = -1 == valueIndex ? parametersIndex : valueIndex + 1;
-            offset = -1;
+            offsetIndex = -1 == index ? parametersIndex : index + 1;
             offsetBeginPosition--;
             isParameterForOffset = true;
         } else {
@@ -131,14 +128,14 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (!isParameterForOffset) {
-            sqlStatement.getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+            sqlStatement.getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         }
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, value));
+            sqlStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit result = new Limit(true);
-        result.setRowCountLimit(new RowCountLimit(value, valueIndex));
-        result.setOffsetLimit(new OffsetLimit(offset, offsetIndex));
+        result.setRowCount(new LimitValue(value, index));
+        result.setOffset(new LimitValue(offsetValue, offsetIndex));
         return result;
     }
 }

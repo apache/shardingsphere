@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OffsetLimitToken implements SQLToken {
+public final class OffsetToken implements SQLToken {
     
     private final int beginPosition;
     

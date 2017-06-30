@@ -25,8 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
@@ -350,15 +349,15 @@ public class SQLParser extends AbstractParser {
         }
         if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
-                selectStatement.getLimit().setRowCountLimit(new RowCountLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+                selectStatement.getLimit().setRowCount(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                selectStatement.getLimit().setRowCountLimit(new RowCountLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+                selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
         } else if (Symbol.GT == symbol || Symbol.GT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
-                selectStatement.getLimit().setOffsetLimit(new OffsetLimit(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+                selectStatement.getLimit().setOffset(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                selectStatement.getLimit().setOffsetLimit(new OffsetLimit(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
+                selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }
         }
     }

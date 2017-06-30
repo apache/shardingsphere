@@ -25,8 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
@@ -206,10 +205,10 @@ public abstract class AbstractBaseParseTest {
         if (null != assertObj.getLimit()) {
             Limit limit = new Limit(true);
             if (null != assertObj.getLimit().getOffset() && null != assertObj.getLimit().getOffsetParameterIndex()) {
-                limit.setRowCountLimit(new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
-                limit.setOffsetLimit(new OffsetLimit(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()));
+                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+                limit.setOffset(new LimitValue(assertObj.getLimit().getOffset(), assertObj.getLimit().getOffsetParameterIndex()));
             } else {
-                limit.setRowCountLimit(new RowCountLimit(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
+                limit.setRowCount(new LimitValue(assertObj.getLimit().getRowCount(), assertObj.getLimit().getRowCountParameterIndex()));
             }
             selectStatement.setLimit(limit);
         }
@@ -261,11 +260,11 @@ public abstract class AbstractBaseParseTest {
     
     private void assertLimit(final SQLStatement actual) {
         if (null != actual.getLimit()) {
-            if (null != actual.getLimit().getOffsetLimit()) {
-                assertTrue(new ReflectionEquals(expectedLimit.getOffsetLimit()).matches(actual.getLimit().getOffsetLimit()));
+            if (null != actual.getLimit().getOffset()) {
+                assertTrue(new ReflectionEquals(expectedLimit.getOffset()).matches(actual.getLimit().getOffset()));
             }
-            if (null != actual.getLimit().getRowCountLimit()) {
-                assertTrue(new ReflectionEquals(expectedLimit.getRowCountLimit()).matches(actual.getLimit().getRowCountLimit()));
+            if (null != actual.getLimit().getRowCount()) {
+                assertTrue(new ReflectionEquals(expectedLimit.getRowCount()).matches(actual.getLimit().getRowCount()));
             }
         }
     }

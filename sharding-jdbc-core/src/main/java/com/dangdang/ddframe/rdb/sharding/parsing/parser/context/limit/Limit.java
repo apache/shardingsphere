@@ -41,17 +41,17 @@ public final class Limit {
     
     private final boolean rowCountRewriteFlag;
     
-    private OffsetLimit offsetLimit;
+    private LimitValue offset;
     
-    private RowCountLimit rowCountLimit;
+    private LimitValue rowCount;
     
     /**
      * 获取分页偏移量.
      * 
      * @return 分页偏移量
      */
-    public int getOffset() {
-        return null != offsetLimit ? offsetLimit.getOffset() : 0;
+    public int getOffsetValue() {
+        return null != offset ? offset.getValue() : 0;
     }
     
     /**
@@ -59,8 +59,8 @@ public final class Limit {
      *
      * @return 分页行数
      */
-    public int getRowCount() {
-        return null != rowCountLimit ? rowCountLimit.getRowCount() : 0;
+    public int getRowCountValue() {
+        return null != rowCount ? rowCount.getValue() : 0;
     }
     
     /**
@@ -78,14 +78,14 @@ public final class Limit {
     
     private void fill(final List<Object> parameters) {
         int offset = 0;
-        if (null != offsetLimit) {
-            offset = -1 == offsetLimit.getOffsetParameterIndex() ? getOffset() : roundHalfUp(parameters.get(offsetLimit.getOffsetParameterIndex()));
-            offsetLimit.setOffset(offset);
+        if (null != this.offset) {
+            offset = -1 == this.offset.getIndex() ? getOffsetValue() : roundHalfUp(parameters.get(this.offset.getIndex()));
+            this.offset.setValue(offset);
         }
         int rowCount = 0;
-        if (null != rowCountLimit) {
-            rowCount = -1 == rowCountLimit.getRowCountParameterIndex() ? getRowCount() : roundHalfUp(parameters.get(rowCountLimit.getRowCountParameterIndex()));
-            rowCountLimit.setRowCount(rowCount);
+        if (null != this.rowCount) {
+            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : roundHalfUp(parameters.get(this.rowCount.getIndex()));
+            this.rowCount.setValue(rowCount);
         }
         if (offset < 0 || rowCount < 0) {
             throw new SQLParsingException("LIMIT offset and row count can not be a negative value.");
@@ -96,15 +96,15 @@ public final class Limit {
         int rewriteOffset = 0;
         int rewriteRowCount;
         if (rowCountRewriteFlag) {
-            rewriteRowCount = null == rowCountLimit ? -1 : getOffset() + rowCountLimit.getRowCount();
+            rewriteRowCount = null == rowCount ? -1 : getOffsetValue() + rowCount.getValue();
         } else {
-            rewriteRowCount = rowCountLimit.getRowCount();
+            rewriteRowCount = rowCount.getValue();
         }
-        if (null != offsetLimit && offsetLimit.getOffsetParameterIndex() > -1) {
-            parameters.set(offsetLimit.getOffsetParameterIndex(), rewriteOffset);
+        if (null != offset && offset.getIndex() > -1) {
+            parameters.set(offset.getIndex(), rewriteOffset);
         }
-        if (null != rowCountLimit && rowCountLimit.getRowCountParameterIndex() > -1) {
-            parameters.set(rowCountLimit.getRowCountParameterIndex(), rewriteRowCount);
+        if (null != rowCount && rowCount.getIndex() > -1) {
+            parameters.set(rowCount.getIndex(), rewriteRowCount);
         }
     }
 }

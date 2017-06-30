@@ -20,8 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import org.junit.Test;
@@ -50,8 +49,8 @@ public final class IteratorResultSetTest {
     public void assertNextWithLimitForAllData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
         Limit limit = new Limit(true);
-        limit.setRowCountLimit(new RowCountLimit(10, -1));
-        limit.setOffsetLimit(new OffsetLimit(1, -1));
+        limit.setRowCount(new LimitValue(10, -1));
+        limit.setOffset(new LimitValue(1, -1));
         selectStatement.setLimit(limit);
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
@@ -65,8 +64,8 @@ public final class IteratorResultSetTest {
     public void assertNextWithLimitForPartData() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
         Limit limit = new Limit(true);
-        limit.setRowCountLimit(new RowCountLimit(1, -1));
-        limit.setOffsetLimit(new OffsetLimit(1, -1));
+        limit.setRowCount(new LimitValue(1, -1));
+        limit.setOffset(new LimitValue(1, -1));
         selectStatement.setLimit(limit);
         ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;

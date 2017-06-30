@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,21 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
+package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 分页偏移量对象.
+ * 分页长度标记对象.
  *
- * @author caohao
+ * @author zhangliang
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public class OffsetLimit {
+public final class RowCountToken implements SQLToken {
     
-    private int offset;
+    private final int beginPosition;
     
-    private int offsetParameterIndex;
+    private final int rowCount;
 }

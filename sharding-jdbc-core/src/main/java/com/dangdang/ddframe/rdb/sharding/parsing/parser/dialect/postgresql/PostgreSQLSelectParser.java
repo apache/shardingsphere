@@ -23,13 +23,12 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.OffsetLimit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.RowCountLimit;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetLimitToken;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountLimitToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.google.common.base.Optional;
 
 import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
@@ -72,72 +71,72 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
     }
     
     private void parseLimit() {
-        Optional<OffsetLimit> offsetLimit = Optional.absent();
-        Optional<RowCountLimit> rowCountLimit = Optional.absent();
+        Optional<LimitValue> offset = Optional.absent();
+        Optional<LimitValue> rowCount = Optional.absent();
         while (true) {
             if (getSqlParser().skipIfEqual(PostgreSQLKeyword.LIMIT)) {
-                rowCountLimit = buildRowCount();
+                rowCount = buildRowCount();
             } else if (getSqlParser().skipIfEqual(PostgreSQLKeyword.OFFSET)) {
-                offsetLimit = buildOffsetLimit();
+                offset = buildOffset();
             } else {
                 break;
             }
         }
-        setLimit(offsetLimit, rowCountLimit);
+        setLimit(offset, rowCount);
     }
     
-    private Optional<RowCountLimit> buildRowCount() {
+    private Optional<LimitValue> buildRowCount() {
         int parameterIndex = getParametersIndex();
-        int rowCount = -1;
-        int rowCountParameterIndex = -1;
+        int rowCountValue = -1;
+        int rowCountIndex = -1;
         int valueBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         if (getSqlParser().equalAny(DefaultKeyword.ALL)) {
             getSqlParser().getLexer().nextToken();
         } else {
             if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                rowCount = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-                valueBeginPosition = valueBeginPosition - (rowCount + "").length();
-                getSelectStatement().getSqlTokens().add(new RowCountLimitToken(valueBeginPosition, rowCount));
+                rowCountValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
+                getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-                rowCountParameterIndex = parameterIndex++;
+                rowCountIndex = parameterIndex++;
                 setParametersIndex(parameterIndex);
-                rowCount = -1;
+                rowCountValue = -1;
             } else {
                 throw new SQLParsingException(getSqlParser().getLexer());
             }
             getSqlParser().getLexer().nextToken();
         }
-        return Optional.of(new RowCountLimit(rowCount, rowCountParameterIndex));
+        return Optional.of(new LimitValue(rowCountValue, rowCountIndex));
     }
     
-    private Optional<OffsetLimit> buildOffsetLimit() {
+    private Optional<LimitValue> buildOffset() {
         int parameterIndex = getParametersIndex();
-        int offset = -1;
-        int offsetParameterIndex = -1;
+        int offsetValue = -1;
+        int offsetIndex = -1;
         int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-            offset = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
-            offsetBeginPosition = offsetBeginPosition - (offset + "").length();
-            getSelectStatement().getSqlTokens().add(new OffsetLimitToken(offsetBeginPosition, offset));
+            offsetValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+            offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
+            getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
-            offsetParameterIndex = parameterIndex++;
+            offsetIndex = parameterIndex++;
             setParametersIndex(parameterIndex);
         } else {
             throw new SQLParsingException(getSqlParser().getLexer());
         }
         getSqlParser().getLexer().nextToken();
         getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
-        return Optional.of(new OffsetLimit(offset, offsetParameterIndex));
+        return Optional.of(new LimitValue(offsetValue, offsetIndex));
     }
     
     
-    private void setLimit(final Optional<OffsetLimit> offsetLimit, final Optional<RowCountLimit> rowCountLimit) {
+    private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount) {
         Limit limit = new Limit(true);
-        if (offsetLimit.isPresent()) {
-            limit.setOffsetLimit(offsetLimit.get());
+        if (offset.isPresent()) {
+            limit.setOffset(offset.get());
         }
-        if (rowCountLimit.isPresent()) {
-            limit.setRowCountLimit(rowCountLimit.get());
+        if (rowCount.isPresent()) {
+            limit.setRowCount(rowCount.get());
         }
         getSelectStatement().setLimit(limit);
     }

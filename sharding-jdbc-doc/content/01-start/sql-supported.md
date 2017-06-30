@@ -21,7 +21,8 @@ next = "/01-start/stress-test"
 ### 除DQL和DML以外的语句
 Sharding-JDBC定位于CRUD操作，目前仅针对DQL和DML语句进行支持。
 
-### 子查询未详细测试
+### 有限支持子查询
+子查询支持详情请参考[分页及子查询](/02-guide/subquery/)。
 
 ## 支持的SQL
 
