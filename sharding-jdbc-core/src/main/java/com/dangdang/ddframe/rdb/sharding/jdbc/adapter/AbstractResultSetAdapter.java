@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +58,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         ResultSetMetaData resultSetMetaData = resultSets.get(0).getMetaData();
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(resultSetMetaData.getColumnLabel(i), i);
+            result.put(SQLUtil.getExactlyValue(resultSetMetaData.getColumnLabel(i)), i);
         }
         return result;
     }
