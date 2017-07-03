@@ -43,21 +43,6 @@ public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBU
     private static ShardingDataSource shardingDataSource;
     
     @Override
-    protected List<String> getSchemaFiles() {
-        return Arrays.asList(
-                "integrate/schema/" + currentDbType() + "/db/db_0.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_1.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_2.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_3.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_4.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_5.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_6.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_7.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_8.sql",
-                "integrate/schema/" + currentDbType() + "/db/db_9.sql");
-    }
-    
-    @Override
     protected List<String> getDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/db/init/db_0.xml", 

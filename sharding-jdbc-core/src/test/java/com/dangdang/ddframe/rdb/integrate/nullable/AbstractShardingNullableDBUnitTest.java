@@ -40,21 +40,6 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
     private static ShardingDataSource shardingDataSource;
     
     @Override
-    protected List<String> getSchemaFiles() {
-        return Arrays.asList(
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_0.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_1.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_2.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_3.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_4.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_5.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_6.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_7.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_8.sql",
-                "integrate/schema/" + currentDbType() + "/nullable/nullable_9.sql");
-    }
-    
-    @Override
     protected List<String> getDataSetFiles() {
         return Arrays.asList(
                 "integrate/dataset/nullable/init/nullable_0.xml",
