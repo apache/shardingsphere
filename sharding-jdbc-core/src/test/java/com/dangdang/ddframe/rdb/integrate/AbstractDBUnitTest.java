@@ -30,7 +30,6 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 
@@ -81,7 +80,6 @@ public abstract class AbstractDBUnitTest {
             InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
             IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
             IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getFileName(each)), dbEnv.getUsername(), dbEnv.getPassword(), dbEnv.getSchema());
-            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
         }
@@ -138,7 +136,7 @@ public abstract class AbstractDBUnitTest {
             for (Object each : params) {
                 ps.setObject(i++, each);
             }
-            ITable actualTable = getITable(connection, ps, actualTableName, sql);
+            ITable actualTable = DBUnitUtil.getConnection(dbEnv, connection).createTable(actualTableName, ps); 
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
@@ -151,9 +149,4 @@ public abstract class AbstractDBUnitTest {
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
     }
-    
-    private ITable getITable(final Connection connection, final PreparedStatement preparedStatement, final String tableName, final String sql) throws SQLException, DatabaseUnitException {
-        return DBUnitUtil.getConnection(dbEnv, connection).createTable(tableName, preparedStatement);
-    }
-    
 }
