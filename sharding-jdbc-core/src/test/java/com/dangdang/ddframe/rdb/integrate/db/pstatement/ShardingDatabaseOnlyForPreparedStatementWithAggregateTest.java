@@ -42,11 +42,11 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     @Test
     public void assertSelectCount() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectCountSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectCountAliasSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
-                assertThat(rs.getInt("COUNT(*)"), is(40));
+                assertThat(rs.getInt("orders_count"), is(40));
             }
             assertThat(rs.getInt(1), is(40));
             assertThat(rs.next(), is(false));
@@ -61,11 +61,11 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     @Test
     public void assertSelectSum() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectSumSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectSumAliasSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
-                assertThat(rs.getLong("SUM(`user_id`)"), is(780L));
+                assertThat(rs.getLong("user_id_sum"), is(780L));
             }
             assertThat(rs.getLong(1), is(780L));
             assertThat(rs.next(), is(false));
@@ -80,11 +80,11 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     @Test
     public void assertSelectMax() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMaxSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMaxAliasSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
-                assertThat(rs.getDouble("MAX(`user_id`)"), is(29D));
+                assertThat(rs.getDouble("max_user_id"), is(29D));
             }
             assertThat(rs.getDouble(1), is(29D));
             assertThat(rs.next(), is(false));
@@ -99,11 +99,11 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     @Test
     public void assertSelectMin() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMinSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectMinAliasSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
-                assertThat(rs.getFloat("MIN(`user_id`)"), is(10F));
+                assertThat(rs.getFloat("mIN_user_id"), is(10F));
             }
             assertThat(rs.getFloat(1), is(10F));
             assertThat(rs.next(), is(false));
@@ -120,11 +120,11 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     @Test
     public void assertSelectAvgByName() throws SQLException {
         try (Connection conn = getShardingDataSource().getConnection();
-             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectAvgSql());
+             PreparedStatement ps = conn.prepareStatement(getDatabaseTestSQL().getSelectAvgAliasSql());
              ResultSet rs = ps.executeQuery()) {
             assertThat(rs.next(), is(true));
             if (isAliasSupport()) {
-                assertThat(rs.getObject("AVG(`user_id`)"), Is.<Object>is(new BigDecimal("19.5000")));
+                assertThat(rs.getObject("user_id_avg"), Is.<Object>is(new BigDecimal("19.5000")));
             }
             assertThat(rs.getBigDecimal(1), Is.<Object>is(new BigDecimal("19.5000")));
             assertThat(rs.next(), is(false));

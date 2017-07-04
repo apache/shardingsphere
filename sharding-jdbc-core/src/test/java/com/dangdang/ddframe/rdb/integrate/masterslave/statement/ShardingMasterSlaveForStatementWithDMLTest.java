@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.integrate.masterslave.statement;
 
 import com.dangdang.ddframe.rdb.integrate.masterslave.AbstractShardingMasterSlaveDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,38 +44,31 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
     
     @Test
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        assertSelectBeforeUpdate();
-        String sql = "UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'";
+        assertSelectUpdate(false);
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql, "updated", "init_master")), is(100));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'updated'", "'init_master'")), is(100));
         }
         assertDataSet("update", "updated");
-        assertSelectAfterUpdate();
+        assertSelectUpdate(true);
     }
     
-    private void assertSelectBeforeUpdate() throws SQLException {
-        String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
+    private void assertSelectUpdate(final boolean updated) throws SQLException {
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertFalse(stmt.executeQuery(String.format(sql, "updated")).next());
-        }
-    }
-    
-    private void assertSelectAfterUpdate() throws SQLException {
-        String sql = "SELECT * FROM `t_order` WHERE `status` = '%s'";
-        try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.createStatement();
-            assertTrue(stmt.executeQuery(String.format(sql, "updated")).next());
+            if (updated) {
+                assertTrue(stmt.executeQuery(String.format(getDatabaseTestSQL().getAssertSelectWithStatusSql(), "'updated'")).next());
+            } else {
+                assertFalse(stmt.executeQuery(String.format(getDatabaseTestSQL().getAssertSelectWithStatusSql(), "'updated'")).next());
+            }
         }
     }
     
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql, "init_master")), is(100));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init_master'")), is(100));
         }
         assertDataSet("delete", "init");
     }
@@ -85,7 +78,7 @@ public final class ShardingMasterSlaveForStatementWithDMLTest extends AbstractSh
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/masterslave/expect/%s/master_%s.xml", expectedDataSetPattern, i),
                         shardingDataSource.getConnection().getConnection(String.format("ms_%s", i), SQLType.INSERT),
-                        String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
+                        String.format("t_order_%s", j), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), j), status);
             }
         }
     }

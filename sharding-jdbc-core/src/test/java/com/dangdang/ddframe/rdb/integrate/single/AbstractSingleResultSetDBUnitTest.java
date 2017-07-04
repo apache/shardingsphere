@@ -69,6 +69,8 @@ public abstract class AbstractSingleResultSetDBUnitTest extends AbstractDBUnitTe
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.close();
+        if (null != shardingDataSource) {
+            shardingDataSource.close();
+        }
     }
 }
