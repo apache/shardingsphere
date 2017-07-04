@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -45,11 +46,10 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertInsertWithAllPlaceholders() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (?, ?, ?)";
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getInsertWithAllPlaceholdersSql());
                     preparedStatement.setInt(1, i);
                     preparedStatement.setInt(2, j);
                     preparedStatement.setString(3, "insert");
@@ -66,7 +66,7 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, j));
+                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(getDatabaseTestSQL().getInsertWithoutPlaceholderSql(), i, j));
                     preparedStatement.executeUpdate();
                 }
             }
@@ -75,27 +75,12 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     }
     
     @Test
-    public void assertInsertWithPlaceholdersForShardingKeys() throws SQLException, DatabaseUnitException {
+    public void assertInsertWithPartialPlaceholdersSql() throws SQLException, DatabaseUnitException {
         String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, j));
-                    preparedStatement.setString(1, "insert");
-                    preparedStatement.executeUpdate();
-                }
-            }
-        }
-        assertDataSet("insert", "insert");
-    }
-    
-    @Test
-    public void assertInsertWithPlaceholdersForNotShardingKeys() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
-        for (int i = 1; i <= 10; i++) {
-            for (int j = 1; j <= 10; j++) {
-                try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, i, j));
+                    PreparedStatement preparedStatement = connection.prepareStatement(String.format(getDatabaseTestSQL().getInsertWithPartialPlaceholdersSql(), i, j));
                     preparedStatement.setString(1, "insert");
                     preparedStatement.executeUpdate();
                 }
@@ -106,11 +91,10 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertUpdateWithoutAlias() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND `user_id` = ?";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutAliasSql()));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -123,11 +107,10 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertUpdateWithAlias() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` AS o SET o.`status` = ? WHERE o.`order_id` = ? AND o.`user_id` = ?";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithAliasSql()));
                     preparedStatement.setString(1, "updated");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
@@ -140,13 +123,13 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertDeleteWithoutAlias() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE FROM `t_order` WHERE `order_id` = ? AND `user_id` = ?";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutAliasSql()));
                     preparedStatement.setInt(1, i * 100 + j);
                     preparedStatement.setInt(2, i);
+                    preparedStatement.setString(3, "init");
                     assertThat(preparedStatement.executeUpdate(), is(1));
                 }
             }

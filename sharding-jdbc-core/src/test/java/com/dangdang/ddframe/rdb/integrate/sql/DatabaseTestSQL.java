@@ -98,4 +98,6 @@ public interface DatabaseTestSQL {
     String getSelectGroupWithoutGroupedColumnSql();
     
     String getSelectWithNoShardingTableSql();
+    
+    String getSelectForFullTableNameWithSingleTableSql();
 }

@@ -104,6 +104,9 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     
     private static final String SELECT_WITH_NO_SHARDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id";
     
+    private static final String SELECT_FOR_FULL_TABLE_NAME_WITH_SINGLE_TABLE_SQL = 
+            "SELECT t_order.order_id, t_order.user_id, t_order.status FROM t_order WHERE t_order.user_id = ? AND t_order.order_id = ?";
+    
     @Override
     public abstract String getSelectLimitWithBindingTableSql();
     
@@ -300,5 +303,10 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectWithNoShardingTableSql() {
         return SELECT_WITH_NO_SHARDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectForFullTableNameWithSingleTableSql() {
+        return SELECT_FOR_FULL_TABLE_NAME_WITH_SINGLE_TABLE_SQL;
     }
 }
