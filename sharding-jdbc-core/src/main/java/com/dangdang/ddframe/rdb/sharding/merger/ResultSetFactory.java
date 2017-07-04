@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByCouplingResultSet;
@@ -46,22 +45,21 @@ public final class ResultSetFactory {
     /**
      * 获取结果集.
      *
-     * @param dbType 数据库类型
      * @param resultSets 结果集列表
      * @param sqlStatement SQL语句对象
      * @return 结果集包装
      * @throws SQLException SQL异常
      */
-    public static ResultSet getResultSet(final DatabaseType dbType, final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+    public static ResultSet getResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
         ShardingResultSets shardingResultSets = new ShardingResultSets(resultSets);
         if (shardingResultSets.getResultSets().isEmpty()) {
             return resultSets.get(0);
         }
-        return buildResultSet(dbType, shardingResultSets, sqlStatement);
+        return buildResultSet(shardingResultSets, sqlStatement);
     }
     
-    private static ResultSet buildResultSet(final DatabaseType dbType, final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
-        ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(dbType, shardingResultSets, sqlStatement);
+    private static ResultSet buildResultSet(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
+        ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlStatement);
         return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
     }
     

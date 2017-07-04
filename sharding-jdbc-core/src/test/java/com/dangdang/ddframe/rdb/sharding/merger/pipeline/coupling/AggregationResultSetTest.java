@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -70,7 +69,7 @@ public final class AggregationResultSetTest {
     public void assertNext() throws SQLException {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getItems().add(MergerTestUtil.createAggregationColumn(aggregationType, columnNames.get(0).replaceFirst(aggregationType.name(), ""), null, 1, 2, 3));
-        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL, Arrays.asList(
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.asList(
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData1))),
                 MergerTestUtil.mockResult(columnNames, Collections.<ResultSetRow>singletonList(new TestResultSetRow(resultSetData2))),
                 MergerTestUtil.mockResult(Collections.<String>emptyList())), selectStatement);

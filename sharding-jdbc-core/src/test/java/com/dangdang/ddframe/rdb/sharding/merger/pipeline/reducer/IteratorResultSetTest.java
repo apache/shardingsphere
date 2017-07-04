@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -37,8 +36,7 @@ public final class IteratorResultSetTest {
     
     @Test
     public void assertNext() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL,
-                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SelectStatement());
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SelectStatement());
         int count = 0;
         while (resultSet.next()) {
             count++;
@@ -53,8 +51,7 @@ public final class IteratorResultSetTest {
         limit.setRowCount(new LimitValue(10, -1));
         limit.setOffset(new LimitValue(1, -1));
         selectStatement.setLimit(limit);
-        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL, 
-                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {
             count++;
@@ -69,8 +66,7 @@ public final class IteratorResultSetTest {
         limit.setRowCount(new LimitValue(1, -1));
         limit.setOffset(new LimitValue(1, -1));
         selectStatement.setLimit(limit);
-        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL, 
-                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), selectStatement);
         int count = 0;
         while (resultSet.next()) {
             count++;

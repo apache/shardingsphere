@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +66,7 @@ public class NullableAggregationResultSetTest {
         }
         when(resultSet1.next()).thenReturn(true, false);
         when(resultSet2.next()).thenReturn(true, false);
-        ResultSet actual = ResultSetFactory.getResultSet(DatabaseType.MySQL, Arrays.asList(resultSet1, resultSet2), selectStatement);
+        ResultSet actual = ResultSetFactory.getResultSet(Arrays.asList(resultSet1, resultSet2), selectStatement);
         assertTrue(actual.next());
         assertNull(actual.getObject(1));
         assertThat(actual.getInt(1), is(0));
