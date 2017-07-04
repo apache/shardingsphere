@@ -56,8 +56,6 @@ public abstract class AbstractDelegateResultSet extends AbstractResultSetAdapter
     
     private boolean beforeFirst = true;
     
-    private int offset;
-    
     public AbstractDelegateResultSet(final List<ResultSet> resultSets) throws SQLException {
         super(resultSets);
         delegate = resultSets.get(0);
@@ -68,9 +66,6 @@ public abstract class AbstractDelegateResultSet extends AbstractResultSetAdapter
     public final boolean next() throws SQLException {
         boolean result = beforeFirst ? firstNext() : afterFirstNext();
         beforeFirst = false;
-        if (result) {
-            log.trace("Access result set, total size is: {}, result set hashcode is: {}, offset is: {}", getResultSets().size(), delegate.hashCode(), ++offset);
-        }
         return result;
     }
     
