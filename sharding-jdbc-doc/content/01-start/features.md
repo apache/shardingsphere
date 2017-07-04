@@ -22,7 +22,6 @@ next = "/01-start/limitations/"
 9. 支持ORDER BY结果归并
 10. 支持GROUP BY结果归并
 11. 支持LIMIT分页查询以及多库表结果改写及归并
-12. 支持OR查询
 
 ### 柔性事务
 1. 最大努力送达型

@@ -62,7 +62,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 | SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit                                 | 是        |         |
 | SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1             | 是        |         |
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit | 是        |         |
-| SELECT * FROM tbl_name WHERE col1 = val1 OR col2 = val2                                                 | 是        |         |
 
 ### DML
 

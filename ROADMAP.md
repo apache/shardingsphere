@@ -24,7 +24,7 @@
     - [x] Cartesian Product
 - [ ] DDL
 - [ ] Complicated SQL
-    - [x] OR
+    - [ ] OR
     - [ ] UNION / UNION ALL
     - [ ] Subquery
 
