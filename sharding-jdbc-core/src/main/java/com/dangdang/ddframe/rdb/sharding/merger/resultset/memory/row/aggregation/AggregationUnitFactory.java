@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.aggregation;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import lombok.AccessLevel;

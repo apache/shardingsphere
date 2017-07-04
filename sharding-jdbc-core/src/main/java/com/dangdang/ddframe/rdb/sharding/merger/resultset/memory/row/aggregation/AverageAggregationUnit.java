@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.aggregation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

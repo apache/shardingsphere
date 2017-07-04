@@ -45,8 +45,7 @@ public abstract class AbstractResultSetRow implements ResultSetRow {
         return result;
     }
     
-    @Override
-    public final void setCell(final int columnIndex, final Object value) {
+    protected final void setCell(final int columnIndex, final Object value) {
         data[columnIndex - 1] = value;
     }
     

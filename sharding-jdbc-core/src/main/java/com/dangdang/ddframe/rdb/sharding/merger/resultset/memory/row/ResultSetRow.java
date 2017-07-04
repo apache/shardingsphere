@@ -27,14 +27,6 @@ package com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row;
 public interface ResultSetRow {
     
     /**
-     * 设置数据行数据.
-     * 
-     * @param columnIndex 列索引, 与JDBC保持一致, 从1开始计数
-     * @param value 数据行数据
-     */
-    void setCell(int columnIndex, Object value);
-    
-    /**
      * 通过列索引访问数据行数据.
      * 
      * @param columnIndex 列索引, 与JDBC保持一致, 从1开始计数

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ResultSetRowTest {
     
-    private ResultSetRow resultSetRow;
+    private AbstractResultSetRow resultSetRow;
     
     @Before
     public void setUp() throws SQLException {

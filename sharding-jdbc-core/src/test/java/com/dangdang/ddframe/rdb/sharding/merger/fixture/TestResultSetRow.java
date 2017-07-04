@@ -28,11 +28,6 @@ public final class TestResultSetRow implements ResultSetRow {
     }
     
     @Override
-    public void setCell(final int columnIndex, final Object value) {
-        dataRow[columnIndex - 1] = value;
-    }
-    
-    @Override
     public Object getCell(final int columnIndex) {
         return dataRow[columnIndex - 1];
     }
