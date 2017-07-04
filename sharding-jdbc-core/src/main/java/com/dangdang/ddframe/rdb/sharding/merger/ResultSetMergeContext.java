@@ -54,10 +54,10 @@ public final class ResultSetMergeContext {
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationSelectItem each : sqlStatement.getAggregationSelectItems()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("%s has not index, please add alias for aggregate selections", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("%s has not index", derived));
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("Can't find index: %s", derived));
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }
         }
@@ -68,7 +68,7 @@ public final class ResultSetMergeContext {
             if (-1 != each.getIndex()) {
                 continue;
             }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("%s has not index", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s", each));
             if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
