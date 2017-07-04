@@ -51,20 +51,18 @@ public final class StaticShardingBothForStatementWithDMLTest extends AbstractSha
     
     @Test
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql, "updated", "init")), is(100));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(100));
         }
         assertDataSet("update", "updated");
     }
     
     @Test
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE FROM `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
             Statement stmt = connection.createStatement();
-            assertThat(stmt.executeUpdate(String.format(sql, "init")), is(100));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'")), is(100));
         }
         assertDataSet("delete", "init");
     }

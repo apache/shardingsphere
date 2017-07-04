@@ -36,7 +36,7 @@ public abstract class AbstractShardingBothForPStatementWithGroupByTest extends A
     
     @Test
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumAliasSql());
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumWithGroupBySql());
     }
     
     @Test
@@ -61,6 +61,7 @@ public abstract class AbstractShardingBothForPStatementWithGroupByTest extends A
     
     @Test
     public void assertSelectOrderByDesc() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectOrderByWithAliasSql());
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), 
+                "t_order", getDatabaseTestSQL().getSelectSumWithOrderByDescAndGroupBySql());
     }
 }

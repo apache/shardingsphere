@@ -62,7 +62,6 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertInsertWithoutPlaceholder() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, 'insert')";
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
@@ -76,7 +75,6 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertInsertWithPartialPlaceholdersSql() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, ?)";
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
@@ -107,18 +105,20 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     
     @Test
     public void assertUpdateWithAlias() throws SQLException, DatabaseUnitException {
-        for (int i = 10; i < 20; i++) {
-            for (int j = 0; j < 10; j++) {
-                try (Connection connection = shardingDataSource.getConnection()) {
-                    PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithAliasSql()));
-                    preparedStatement.setString(1, "updated");
-                    preparedStatement.setInt(2, i * 100 + j);
-                    preparedStatement.setInt(3, i);
-                    assertThat(preparedStatement.executeUpdate(), is(1));
+        if (isAliasSupport()) {
+            for (int i = 10; i < 20; i++) {
+                for (int j = 0; j < 10; j++) {
+                    try (Connection connection = shardingDataSource.getConnection()) {
+                        PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithAliasSql()));
+                        preparedStatement.setString(1, "updated");
+                        preparedStatement.setInt(2, i * 100 + j);
+                        preparedStatement.setInt(3, i);
+                        assertThat(preparedStatement.executeUpdate(), is(1));
+                    }
                 }
             }
+            assertDataSet("update", "updated");
         }
-        assertDataSet("update", "updated");
     }
     
     @Test
@@ -142,7 +142,7 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i),
                         shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i), SQLType.SELECT), 
-                        String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
+                        String.format("t_order_%s", j), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), j), status);
             }
         }
     }

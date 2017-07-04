@@ -25,6 +25,8 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+
 public abstract class AbstractShardingBothForPStatementWithAggregateTest extends AbstractShardingBothTest {
     
     private ShardingDataSource shardingDataSource;
@@ -35,36 +37,36 @@ public abstract class AbstractShardingBothForPStatementWithAggregateTest extends
     }
     
     @Test
-    public void assertSelectCount() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectCountSql());
+    public void assertSelectCountAliasSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectCountAliasSql());
     }
     
     @Test
-    public void assertSelectSum() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumSql());
+    public void assertSelectSumAliasSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumAliasSql());
     }
     
     @Test
-    public void assertSelectMax() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxSql());
+    public void assertSelectMaxAliasSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxAliasSql());
     }
     
     @Test
-    public void assertSelectMin() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinSql());
+    public void assertSelectMinAliasSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinAliasSql());
     }
     
     @Test
     // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
-    public void assertSelectAvg() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgSql());
+    public void assertSelectAvgAliasSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());
     }
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), 
-                "t_order_item", getDatabaseTestSQL().getSelectCountWithBindingTableSql(), 10, 19, 1000, 1909);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableSql()), 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), 
-                "t_order_item", getDatabaseTestSQL().getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableSql()), 1, 9, 1000, 1909);
     }
 }

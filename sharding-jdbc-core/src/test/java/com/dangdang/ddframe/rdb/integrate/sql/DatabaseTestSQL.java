@@ -100,4 +100,6 @@ public interface DatabaseTestSQL {
     String getSelectWithNoShardingTableSql();
     
     String getSelectForFullTableNameWithSingleTableSql();
+    
+    String getSelectWithBindingTableSql();
 }

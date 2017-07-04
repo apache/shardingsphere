@@ -48,19 +48,17 @@ public final class DynamicShardingBothForStatementWithDMLTest extends AbstractSh
     
     @Test(expected = IllegalStateException.class)
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` SET `status` = '%s' WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
-            stmt.executeUpdate(String.format(sql, "updated", "init"));
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "updated", "init"));
         }
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `status` = '%s'";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            Statement stmt = connection.prepareStatement(sql);
-            stmt.executeUpdate(String.format(sql, "init"));
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "init"));
         }
     }
 }

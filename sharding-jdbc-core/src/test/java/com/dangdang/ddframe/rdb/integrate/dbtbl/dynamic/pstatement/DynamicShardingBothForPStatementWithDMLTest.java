@@ -28,6 +28,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+
 public final class DynamicShardingBothForPStatementWithDMLTest extends AbstractShardingBothForPStatementWithDMLTest {
     
     private static ShardingDataSource shardingDataSource;
@@ -48,9 +50,8 @@ public final class DynamicShardingBothForPStatementWithDMLTest extends AbstractS
     
     @Test(expected = IllegalStateException.class)
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` SET `status` = ? WHERE `status` = ?";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutShardingValueSql()));
             preparedStatement.setString(1, "updated");
             preparedStatement.setString(2, "init");
             preparedStatement.executeUpdate();
@@ -59,9 +60,8 @@ public final class DynamicShardingBothForPStatementWithDMLTest extends AbstractS
     
     @Test(expected = IllegalStateException.class)
     public void assertDeleteWithoutShardingValue() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `status` = ?";
         try (Connection connection = getShardingDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutShardingValueSql()));
             preparedStatement.setString(1, "init");
             preparedStatement.executeUpdate();
         }
