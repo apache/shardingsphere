@@ -80,7 +80,8 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet result;
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-            result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
+            result = ResultSetFactory.getResultSet(getShardingConnection().getShardingContext().getDatabaseType(), 
+                    new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
                     getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
         } finally {
             clearBatch();

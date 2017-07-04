@@ -101,7 +101,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet result;
         try {
-            result = ResultSetFactory.getResultSet(generateExecutor(sql).executeQuery(), routeResult.getSqlStatement());
+            result = ResultSetFactory.getResultSet(shardingConnection.getShardingContext().getDatabaseType(), generateExecutor(sql).executeQuery(), routeResult.getSqlStatement());
         } finally {
             setCurrentResultSet(null);
         }
@@ -245,7 +245,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = ResultSetFactory.getResultSet(resultSets, routeResult.getSqlStatement());
+        currentResultSet = ResultSetFactory.getResultSet(shardingConnection.getShardingContext().getDatabaseType(), resultSets, routeResult.getSqlStatement());
         return currentResultSet;
     }
 }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -36,13 +37,16 @@ import java.util.Map;
 @Getter
 public final class ResultSetMergeContext {
     
+    private final DatabaseType dbType;
+    
     private final ShardingResultSets shardingResultSets;
     
     private final SQLStatement sqlStatement;
     
     private final List<OrderItem> currentOrderByKeys;
     
-    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
+    public ResultSetMergeContext(final DatabaseType dbType, final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
+        this.dbType = dbType;
         this.shardingResultSets = shardingResultSets;
         this.sqlStatement = sqlStatement;
         currentOrderByKeys = new LinkedList<>(sqlStatement.getOrderByList());

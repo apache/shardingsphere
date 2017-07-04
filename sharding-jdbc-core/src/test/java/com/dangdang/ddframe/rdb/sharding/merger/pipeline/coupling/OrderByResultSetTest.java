@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetFactory;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MockResultSet;
@@ -39,8 +40,8 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForAsc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLStatement(OrderType.ASC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL, 
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLStatement(OrderType.ASC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
         assertTrue(resultSet.next());
@@ -54,7 +55,7 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForDesc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(
+        ResultSet resultSet = ResultSetFactory.getResultSet(DatabaseType.MySQL,
                 Arrays.<ResultSet>asList(new MockResultSet<>(4, 1), new MockResultSet<>(4, 2), new MockResultSet<Integer>()), createSQLStatement(OrderType.DESC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(4));
