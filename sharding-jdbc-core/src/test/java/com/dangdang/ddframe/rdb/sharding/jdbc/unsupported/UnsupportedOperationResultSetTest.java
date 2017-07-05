@@ -40,7 +40,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
         statement = shardingConnection.createStatement();
-        actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusSql());
     }
     
     @After

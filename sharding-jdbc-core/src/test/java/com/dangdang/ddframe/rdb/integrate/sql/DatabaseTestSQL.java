@@ -19,23 +19,13 @@ package com.dangdang.ddframe.rdb.integrate.sql;
 
 public interface DatabaseTestSQL {
     
-    String getSelectCountSql();
-    
     String getSelectCountAliasSql();
-    
-    String getSelectSumSql();
     
     String getSelectSumAliasSql();
     
-    String getSelectMaxSql();
-    
     String getSelectMaxAliasSql();
     
-    String getSelectMinSql();
-    
     String getSelectMinAliasSql();
-    
-    String getSelectAvgSql();
     
     String getSelectAvgAliasSql();
     
@@ -102,4 +92,8 @@ public interface DatabaseTestSQL {
     String getSelectForFullTableNameWithSingleTableSql();
     
     String getSelectWithBindingTableSql();
+    
+    String getSelectGroupByUserIdSql();
+    
+    String getSelectUserIdByStatusSql();
 }

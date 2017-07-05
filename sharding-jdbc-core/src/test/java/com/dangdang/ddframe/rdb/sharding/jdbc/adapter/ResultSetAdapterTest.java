@@ -50,7 +50,7 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
         ShardingDataSource shardingDataSource = getShardingDataSource();
         shardingConnection = shardingDataSource.getConnection();
         statement = shardingConnection.createStatement();
-        actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusSql());
     }
     
     @After
