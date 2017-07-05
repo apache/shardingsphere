@@ -27,16 +27,19 @@ import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 分组的连接结果集.
+ * 分组的内存结果集.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
-public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
+public final class GroupByMemoryResultSet extends AbstractMemoryResultSet {
     
     private final List<OrderItem> groupByItems;
     
@@ -44,35 +47,42 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
     private final List<AggregationSelectItem> aggregationColumns;
     
-    private ResultSet resultSet;
+    private final Map<List<Comparable<?>>, GroupByResultSetRow> dataMap;
     
-    private boolean hasNext;
+    private Iterator<GroupByResultSetRow> data;
     
-    public GroupByCouplingResultSet(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        super(Collections.singletonList(resultSet));
+    public GroupByMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        super(resultSetMergeContext.getShardingResultSets().getResultSets());
         groupByItems = resultSetMergeContext.getSqlStatement().getGroupByItems();
         orderByItems = resultSetMergeContext.getSqlStatement().getOrderByItems();
         aggregationColumns = resultSetMergeContext.getSqlStatement().getAggregationSelectItems();
+        dataMap = new HashMap<>(1024);
     }
     
     @Override
     protected void initRows(final List<ResultSet> resultSets) throws SQLException {
-        resultSet = resultSets.get(0);
-        hasNext = resultSet.next();
+        for (ResultSet each : resultSets) {
+            while (each.next()) {
+                GroupByResultSetRow groupByResultSetRow = new GroupByResultSetRow(each, groupByItems, orderByItems, aggregationColumns);
+                if (!dataMap.containsKey(groupByResultSetRow.getGroupItemValues())) {
+                    dataMap.put(groupByResultSetRow.getGroupItemValues(), groupByResultSetRow);
+                }
+                dataMap.get(groupByResultSetRow.getGroupItemValues()).aggregate(each);
+            }
+        }
+        for (GroupByResultSetRow each : dataMap.values()) {
+            each.generateResult();
+        }
+        List<GroupByResultSetRow> data = new ArrayList<>(dataMap.values());
+        Collections.sort(data);
+        this.data = data.iterator();
     }
     
     @Override
     protected Optional<? extends ResultSetRow> nextRow() throws SQLException {
-        if (!hasNext) {
-            return Optional.absent();
+        if (data.hasNext()) {
+            return Optional.of(data.next());
         }
-        GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByItems, orderByItems, aggregationColumns);
-        List<Comparable<?>> groupByValues = result.getGroupItemValues();
-        while (hasNext && (groupByItems.isEmpty() || groupByValues.equals(result.getGroupItemValues()))) {
-            result.aggregate(resultSet);
-            hasNext = resultSet.next();
-        }
-        result.generateResult();
-        return Optional.of(result);
+        return Optional.absent();
     }
 }

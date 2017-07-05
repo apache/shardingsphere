@@ -34,19 +34,19 @@ import java.util.List;
  */
 public final class OrderByResultSetRow extends AbstractResultSetRow implements Comparable<OrderByResultSetRow> {
     
-    private final List<OrderItem> orderItems;
+    private final List<OrderItem> orderByItems;
     
     private final List<Comparable<?>> orderValues;
     
-    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderItem> orderItems) throws SQLException {
+    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderItem> orderByItems) throws SQLException {
         super(resultSet);
-        this.orderItems = orderItems;
+        this.orderByItems = orderByItems;
         orderValues = getOrderValues();
     }
     
     private List<Comparable<?>> getOrderValues() {
-        List<Comparable<?>> result = new ArrayList<>(orderItems.size());
-        for (OrderItem each : orderItems) {
+        List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
+        for (OrderItem each : orderByItems) {
             Object value = getCell(each.getIndex());
             Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -56,8 +56,8 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     
     @Override
     public int compareTo(final OrderByResultSetRow o) {
-        for (int i = 0; i < orderItems.size(); i++) {
-            OrderItem thisOrderBy = orderItems.get(i);
+        for (int i = 0; i < orderByItems.size(); i++) {
+            OrderItem thisOrderBy = orderByItems.get(i);
             int result = compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType());
             if (0 != result) {
                 return result;

@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByMemoryResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemorySortResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -73,10 +72,7 @@ public final class ResultSetFactory {
     }
     
     private static ResultSet buildMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        ResultSet result = new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByItems());
-        result = new GroupByCouplingResultSet(result, resultSetMergeContext);
-        result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByItems());
-        return result;
+        return new GroupByMemoryResultSet(resultSetMergeContext);
     }
     
     private static ResultSet buildStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
