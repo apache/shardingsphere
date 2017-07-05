@@ -32,7 +32,6 @@ import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.h2.tools.RunScript;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -67,19 +66,26 @@ public abstract class AbstractDBUnitTest {
         databaseTestSQL = currentDatabaseTestSQL(DB_ENV);
     }
     
-    @BeforeClass
-    public static void createSchema() throws SQLException {
-        Connection conn;
-        for (int i = 0; i < 10; i++) {
-            for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                conn = createDataSource(database + "_" + i).getConnection();
-                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                conn.close();
+    static {
+        createSchema();
+    }
+    
+    private static void createSchema() {
+        try {
+            Connection conn;
+            for (int i = 0; i < 10; i++) {
+                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
+                    conn = createDataSource(database + "_" + i).getConnection();
+                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                    conn.close();
+                }
             }
+            conn = createDataSource("tbl").getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+            conn.close();
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
         }
-        conn = createDataSource("tbl").getConnection();
-        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-        conn.close();
     }
     
     @Before
