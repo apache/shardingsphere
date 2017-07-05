@@ -73,20 +73,20 @@ public final class ResultSetFactory {
     }
     
     private static ResultSet buildMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        ResultSet result = new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByList());
+        ResultSet result = new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByItems());
         result = new GroupByCouplingResultSet(result, resultSetMergeContext);
-        result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByList());
+        result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByItems());
         return result;
     }
     
     private static ResultSet buildStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         ResultSet result;
-        if (resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() && resultSetMergeContext.getSqlStatement().getOrderByList().isEmpty()) {
+        if (resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() && resultSetMergeContext.getSqlStatement().getOrderByItems().isEmpty()) {
             result = new IteratorReducerResultSet(resultSetMergeContext);
         } else {
             result = new StreamingOrderByReducerResultSet(resultSetMergeContext);
         }
-        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
+        if (!resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
             result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
         return result;

@@ -48,9 +48,9 @@ public final class SelectStatement extends AbstractSQLStatement {
     
     private final List<SelectItem> items = new LinkedList<>();
     
-    private final List<OrderItem> groupByList = new LinkedList<>();
+    private final List<OrderItem> groupByItems = new LinkedList<>();
     
-    private final List<OrderItem> orderByList = new LinkedList<>();
+    private final List<OrderItem> orderByItems = new LinkedList<>();
     
     private Limit limit;
     

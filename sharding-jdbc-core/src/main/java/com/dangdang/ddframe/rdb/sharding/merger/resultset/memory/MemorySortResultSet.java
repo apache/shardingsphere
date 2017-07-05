@@ -37,13 +37,13 @@ import java.util.List;
  */
 public final class MemorySortResultSet extends AbstractMemoryResultSet {
     
-    private final List<OrderItem> orderByList;
+    private final List<OrderItem> orderByItems;
     
     private Iterator<OrderByResultSetRow> orderByResultSetRows;
     
-    public MemorySortResultSet(final List<ResultSet> resultSets, final List<OrderItem> orderByList) throws SQLException {
+    public MemorySortResultSet(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
         super(resultSets);
-        this.orderByList = orderByList;
+        this.orderByItems = orderByItems;
     }
     
     @Override
@@ -51,7 +51,7 @@ public final class MemorySortResultSet extends AbstractMemoryResultSet {
         List<OrderByResultSetRow> orderByResultSetRows = new LinkedList<>();
         for (ResultSet each : resultSets) {
             while (each.next()) {
-                orderByResultSetRows.add(new OrderByResultSetRow(each, orderByList));
+                orderByResultSetRows.add(new OrderByResultSetRow(each, orderByItems));
             }
         }
         Collections.sort(orderByResultSetRows);

@@ -45,8 +45,8 @@ public final class ResultSetMergeContext {
         this.sqlStatement = sqlStatement;
         Map<String, Integer> columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(shardingResultSets.getResultSets().get(0));
         setIndexForAggregationItem(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByList());
-        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getGroupByList());
+        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByItems());
+        setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getGroupByItems());
     }
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {

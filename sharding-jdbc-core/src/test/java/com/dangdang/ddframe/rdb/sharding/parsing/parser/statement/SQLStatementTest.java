@@ -38,16 +38,16 @@ public final class SQLStatementTest {
     @Test
     public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderBySame() throws SQLException {
         SQLStatement actual = new SelectStatement();
-        actual.getOrderByList().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByList().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
         assertFalse(actual.isGroupByAndOrderByDifferent());
     }
     
     @Test
     public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderByDifferent() throws SQLException {
         SQLStatement actual = new SelectStatement();
-        actual.getOrderByList().add(new OrderItem("order_col", OrderType.ASC, Optional.<String>absent()));
-        actual.getGroupByList().add(new OrderItem("group_col", OrderType.ASC, Optional.<String>absent()));
+        actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, Optional.<String>absent()));
+        actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, Optional.<String>absent()));
         assertTrue(actual.isGroupByAndOrderByDifferent());
     }
 }

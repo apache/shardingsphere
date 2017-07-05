@@ -55,7 +55,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         if (getSqlParser().equalAny(PostgreSQLKeyword.WINDOW)) {
             throw new SQLParsingUnsupportedException(PostgreSQLKeyword.WINDOW);
         }
-        getSelectStatement().getOrderByList().addAll(parseOrderBy());
+        getSelectStatement().getOrderByItems().addAll(parseOrderBy());
         parseLimit();
         if (getSqlParser().skipIfEqual(DefaultKeyword.FETCH)) {
             throw new SQLParsingUnsupportedException(DefaultKeyword.FETCH);

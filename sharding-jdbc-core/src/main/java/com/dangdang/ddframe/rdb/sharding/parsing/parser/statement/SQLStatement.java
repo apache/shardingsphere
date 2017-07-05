@@ -60,14 +60,14 @@ public interface SQLStatement {
      * 
      * @return 排序集合
      */
-    List<OrderItem> getOrderByList();
+    List<OrderItem> getOrderByItems();
     
     /**
      * 获取分组集合.
      * 
      * @return 分组集合
      */
-    List<OrderItem> getGroupByList();
+    List<OrderItem> getGroupByItems();
     
     /**
      * 获取聚合选择项集合.

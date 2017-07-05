@@ -46,7 +46,7 @@ public final class StreamingOrderByReducerResultSet extends AbstractDelegateResu
     public StreamingOrderByReducerResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(resultSetMergeContext.getShardingResultSets().getResultSets());
         priorityQueue = new PriorityQueue<>(getResultSets().size());
-        orderItems = resultSetMergeContext.getSqlStatement().getOrderByList();
+        orderItems = resultSetMergeContext.getSqlStatement().getOrderByItems();
     }
     
     @Override

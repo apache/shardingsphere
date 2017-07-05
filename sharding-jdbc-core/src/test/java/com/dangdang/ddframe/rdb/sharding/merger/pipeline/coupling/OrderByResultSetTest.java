@@ -69,7 +69,7 @@ public final class OrderByResultSetTest {
     
     private SQLStatement createSQLStatement(final OrderType orderType) {
         SQLStatement result = new SelectStatement();
-        result.getOrderByList().add(new OrderItem("name", orderType, Optional.<String>absent()));
+        result.getOrderByItems().add(new OrderItem("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

@@ -38,8 +38,8 @@ public class OracleSelectParser extends AbstractSelectParser {
         if (getSqlParser().equalAny(DefaultKeyword.FOR)) {
             skipForUpdate();
         }
-        if (getSelectStatement().getOrderByList().isEmpty()) {
-            getSelectStatement().getOrderByList().addAll(parseOrderBy());
+        if (getSelectStatement().getOrderByItems().isEmpty()) {
+            getSelectStatement().getOrderByItems().addAll(parseOrderBy());
         }
     }
     

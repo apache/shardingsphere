@@ -38,7 +38,7 @@ import java.util.List;
  */
 public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
-    private final List<OrderItem> groupByList;
+    private final List<OrderItem> groupByItems;
     
     private final List<AggregationSelectItem> aggregationColumns;
     
@@ -48,7 +48,7 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
     
     public GroupByCouplingResultSet(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         super(Collections.singletonList(resultSet));
-        groupByList = resultSetMergeContext.getSqlStatement().getGroupByList();
+        groupByItems = resultSetMergeContext.getSqlStatement().getGroupByItems();
         aggregationColumns = resultSetMergeContext.getSqlStatement().getAggregationSelectItems();
     }
     
@@ -63,9 +63,9 @@ public final class GroupByCouplingResultSet extends AbstractMemoryResultSet {
         if (!hasNext) {
             return Optional.absent();
         }
-        GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByList, aggregationColumns);
+        GroupByResultSetRow result = new GroupByResultSetRow(resultSet, groupByItems, aggregationColumns);
         List<Object> groupByValues = result.getGroupValues();
-        while (hasNext && (groupByList.isEmpty() || groupByValues.equals(result.getGroupValues()))) {
+        while (hasNext && (groupByItems.isEmpty() || groupByValues.equals(result.getGroupValues()))) {
             result.aggregate();
             hasNext = resultSet.next();
         }

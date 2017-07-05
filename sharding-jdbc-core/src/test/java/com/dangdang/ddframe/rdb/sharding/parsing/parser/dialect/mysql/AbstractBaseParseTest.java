@@ -82,8 +82,8 @@ public abstract class AbstractBaseParseTest {
         this.sql = sql;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
-        this.expectedOrderByColumns = expectedSQLStatement.getOrderByList().iterator();
-        this.expectedGroupByColumns = expectedSQLStatement.getGroupByList().iterator();
+        this.expectedOrderByColumns = expectedSQLStatement.getOrderByItems().iterator();
+        this.expectedGroupByColumns = expectedSQLStatement.getGroupByItems().iterator();
         this.expectedAggregationSelectItems = expectedSQLStatement.getAggregationSelectItems().iterator();
         this.expectedLimit = expectedSQLStatement.getLimit();
     }
@@ -171,10 +171,10 @@ public abstract class AbstractBaseParseTest {
                             : new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             });
-            selectStatement.getOrderByList().addAll(orderItems);
+            selectStatement.getOrderByItems().addAll(orderItems);
         }
         if (null != assertObj.getGroupByColumns()) {
-            selectStatement.getGroupByList().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumn, OrderItem>() {
+            selectStatement.getGroupByItems().addAll(Lists.transform(assertObj.getGroupByColumns(), new Function<GroupByColumn, OrderItem>() {
                 
                 @Override
                 public OrderItem apply(final GroupByColumn input) {
@@ -234,14 +234,14 @@ public abstract class AbstractBaseParseTest {
     }
     
     private void assertOrderBy(final SQLStatement actual) {
-        for (OrderItem each : actual.getOrderByList()) {
+        for (OrderItem each : actual.getOrderByItems()) {
             assertTrue(new ReflectionEquals(expectedOrderByColumns.next()).matches(each));
         }
         assertFalse(expectedOrderByColumns.hasNext());
     }
     
     private void assertGroupBy(final SQLStatement actual) {
-        for (OrderItem each : actual.getGroupByList()) {
+        for (OrderItem each : actual.getGroupByItems()) {
             assertTrue(new ReflectionEquals(expectedGroupByColumns.next()).matches(each));
         }
         assertFalse(expectedGroupByColumns.hasNext());

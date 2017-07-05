@@ -43,14 +43,14 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
     
     private final ResultSet resultSet;
     
-    private final List<OrderItem> groupByList;
+    private final List<OrderItem> groupByItems;
     
     private final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(final ResultSet resultSet, final List<OrderItem> groupByList, final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {
+    public GroupByResultSetRow(final ResultSet resultSet, final List<OrderItem> groupByItems, final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {
         super(resultSet);
         this.resultSet = resultSet;
-        this.groupByList = groupByList;
+        this.groupByItems = groupByItems;
         aggregationUnitMap = Maps.toMap(aggregationSelectItems, new Function<AggregationSelectItem, AggregationUnit>() {
             
             @Override
@@ -67,8 +67,8 @@ public final class GroupByResultSetRow extends AbstractResultSetRow {
      * @throws SQLException SQL异常
      */
     public List<Object> getGroupValues() throws SQLException {
-        List<Object> result = new ArrayList<>(groupByList.size());
-        for (OrderItem each : groupByList) {
+        List<Object> result = new ArrayList<>(groupByItems.size());
+        for (OrderItem each : groupByItems) {
             result.add(resultSet.getObject(each.getIndex()));
         }
         return result;
