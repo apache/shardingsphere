@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,23 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.jdbc;
+package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AllAdapterTests;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.AllCoreTests;
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AllUnsupportedTests;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.JdbcMethodInvocationTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.SetParameterMethodInvocationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AllUnsupportedTests.class,
-        AllAdapterTests.class,
-        AllCoreTests.class
-    })
-public class AllJDBCTests {
+        DataSourceAdapterTest.class,
+        ConnectionAdapterTest.class,
+        StatementAdapterTest.class,
+        PreparedStatementAdapterTest.class,
+        ResultSetAdapterTest.class,
+        ResultSetGetterAdapterTest.class,
+        JdbcMethodInvocationTest.class,
+        SetParameterMethodInvocationTest.class
+})
+public class AllAdapterTests {
 }

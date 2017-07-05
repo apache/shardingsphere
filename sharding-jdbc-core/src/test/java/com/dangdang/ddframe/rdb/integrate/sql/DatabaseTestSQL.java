@@ -96,4 +96,12 @@ public interface DatabaseTestSQL {
     String getSelectGroupByUserIdSql();
     
     String getSelectUserIdByStatusSql();
+    
+    String getSelectUserIdByInStatusSql();
+    
+    String getSelectUserIdByStatusOrderByUserIdSql();
+    
+    String getSelectAllOrderSql();
+    
+    String getSelectUserIdWhereOrderIdInSql();
 }

@@ -54,7 +54,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDatabase
     @Before
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
-        actual = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` IN (? ,? ,? ,? ,?)");
+        actual = shardingConnection.prepareStatement(getDatabaseTestSQL().getSelectUserIdByInStatusSql());
     }
     
     @After

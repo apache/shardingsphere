@@ -81,6 +81,8 @@ public abstract class AbstractShardingDatabaseOnlyDBUnitTest extends AbstractDBU
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.close();
+        if (null != shardingDataSource) {
+            shardingDataSource.close();
+        }
     }
 }

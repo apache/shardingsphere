@@ -131,19 +131,19 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertGetUpdateCount() throws SQLException {
-        actual.execute("DELETE FROM `t_order` WHERE `status` = 'init'");
+        actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'"));
         assertThat(actual.getUpdateCount(), is(40));
     }
     
     @Test
     public void assertGetUpdateCountNoData() throws SQLException {
-        actual.execute("DELETE FROM `t_order` WHERE `status` = 'none'");
+        actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'none'"));
         assertThat(actual.getUpdateCount(), is(0));
     }
     
     @Test
     public void assertGetUpdateCountSelect() throws SQLException {
-        actual.execute("SELECT * FROM `t_order`");
+        actual.execute(getDatabaseTestSQL().getSelectAllOrderSql());
         assertThat(actual.getUpdateCount(), is(-1));
     }
     
@@ -314,7 +314,7 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertGetGeneratedKeysForSingleRoutedStatement() throws SQLException {
-        actual.executeUpdate("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
+        actual.executeUpdate(String.format(getDatabaseTestSQL().getInsertWithAutoIncrementColumnSql(), 1, "'init'"), Statement.RETURN_GENERATED_KEYS);
         ResultSet generatedKeysResult = actual.getGeneratedKeys();
         assertTrue(generatedKeysResult.next());
         assertTrue(generatedKeysResult.getInt(1) > 0);
@@ -322,7 +322,7 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `order_id` IN (1, 2)");
+        actual.executeQuery(String.format(getDatabaseTestSQL().getSelectUserIdWhereOrderIdInSql(), 1, 2));
         assertFalse(actual.getGeneratedKeys().next());
     }
 }

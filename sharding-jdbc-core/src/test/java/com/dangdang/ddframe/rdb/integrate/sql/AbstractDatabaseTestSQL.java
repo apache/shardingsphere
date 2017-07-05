@@ -100,9 +100,17 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_WITH_BINDING_TABLE_SQL =
             "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?";
     
-    private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order group by uid";
+    private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY uid";
     
     private static final String SELECT_USER_ID_BY_STATUS_SQL = "SELECT user_id AS uid FROM t_order WHERE status = 'init'";
+    
+    private static final String SELECT_USER_ID_BY_IN_STATUS_SQL = "SELECT user_id AS uid FROM t_order WHERE status IN (? ,? ,? ,? ,?)";
+    
+    private static final String SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order WHERE status = 'init' ORDER BY user_id";
+    
+    private static final String SELECT_ALL_ORDER_SQL = "SELECT * FROM t_order";
+    
+    private static final String SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL = "SELECT user_id AS uid FROM t_order WHERE order_id IN (%s, %s)";
     
     @Override
     public abstract String getSelectLimitWithBindingTableSql();
@@ -295,5 +303,25 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectUserIdByStatusSql() {
         return SELECT_USER_ID_BY_STATUS_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdByInStatusSql() {
+        return SELECT_USER_ID_BY_IN_STATUS_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdByStatusOrderByUserIdSql() {
+        return SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL;
+    }
+    
+    @Override
+    public String getSelectAllOrderSql() {
+        return SELECT_ALL_ORDER_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdWhereOrderIdInSql() {
+        return SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL;
     }
 }
