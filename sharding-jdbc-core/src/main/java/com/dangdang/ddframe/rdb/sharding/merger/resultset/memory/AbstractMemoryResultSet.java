@@ -39,6 +39,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 内存结果集抽象类.
@@ -56,8 +57,11 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     
     private boolean wasNull;
     
+    private final Map<String, Integer> columnLabelIndexMap;
+    
     public AbstractMemoryResultSet(final List<ResultSet> resultSets) throws SQLException {
         super(resultSets);
+        columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(getResultSets().get(0));
         log.debug("{} join pipeline", hashCode());
     }
     
@@ -87,11 +91,11 @@ public abstract class AbstractMemoryResultSet extends AbstractUnsupportedOperati
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
-        String formattedColumnLabel = getColumnLabelIndexMap().containsKey(columnLabel) ? columnLabel : SQLUtil.getExactlyValue(columnLabel);
-        if (!getColumnLabelIndexMap().containsKey(formattedColumnLabel)) {
+        String formattedColumnLabel = ResultSetUtil.getColumnLabelIndexMap(getResultSets().get(0)).containsKey(columnLabel) ? columnLabel : SQLUtil.getExactlyValue(columnLabel);
+        if (!columnLabelIndexMap.containsKey(formattedColumnLabel)) {
             throw new SQLException(String.format("Column label %s does not exist", formattedColumnLabel));
         }
-        return getColumnLabelIndexMap().get(formattedColumnLabel);
+        return columnLabelIndexMap.get(formattedColumnLabel);
     }
     
     @Override

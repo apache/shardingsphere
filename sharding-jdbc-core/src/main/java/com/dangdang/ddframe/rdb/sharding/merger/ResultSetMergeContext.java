@@ -17,13 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
+import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +43,11 @@ public final class ResultSetMergeContext {
     
     private final List<OrderItem> currentOrderByKeys;
     
-    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) {
+    public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         this.shardingResultSets = shardingResultSets;
         this.sqlStatement = sqlStatement;
         currentOrderByKeys = new LinkedList<>(sqlStatement.getOrderByList());
-        Map<String, Integer> columnLabelIndexMap = ((AbstractResultSetAdapter) shardingResultSets.getResultSets().get(0)).getColumnLabelIndexMap();
+        Map<String, Integer> columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(shardingResultSets.getResultSets().get(0));
         setIndexForAggregationItem(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByList());
         setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getGroupByList());
