@@ -18,13 +18,19 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
+import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 结果集工具类.
@@ -118,5 +124,21 @@ public final class ResultSetUtil {
             default:
                 throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
         }
+    }
+    
+    /**
+     * 获取结果集的列标签与索引的映射.
+     * 
+     * @param resultSet 结果集对象
+     * @return 列标签与索引的映射
+     * @throws SQLException SQL异常
+     */
+    public static Map<String, Integer> getColumnLabelIndexMap(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+            result.put(SQLUtil.getExactlyValue(resultSetMetaData.getColumnLabel(i)), i);
+        }
+        return result;
     }
 }

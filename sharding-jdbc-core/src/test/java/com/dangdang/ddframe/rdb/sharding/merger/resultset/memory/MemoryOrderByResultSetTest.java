@@ -44,8 +44,8 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void assertSort() throws SQLException {
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
+        MemorySortResultSet rs = new MemorySortResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), Collections.singletonList(new OrderItem(1, OrderType.ASC)));
         List<Integer> actualList = new ArrayList<>();
         while (rs.next()) {
             actualList.add(rs.getInt(1));
@@ -53,9 +53,8 @@ public class MemoryOrderByResultSetTest {
         assertThat(actualList, is(Arrays.asList(1, 2, 3, 4, 5, 6, 6, 6, 8)));
         rs.close();
         assertTrue(rs.isClosed());
-        
-        rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderItem(1, OrderType.DESC))) { };
+        rs = new MemorySortResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), Collections.singletonList(new OrderItem(1, OrderType.DESC)));
         actualList.clear();
         while (rs.next()) {
             actualList.add(rs.getInt("nAmE"));
@@ -88,8 +87,7 @@ public class MemoryOrderByResultSetTest {
         orderItem1.setIndex(1);
         OrderItem orderItem2 = new OrderItem("time", OrderType.DESC, Optional.<String>absent());
         orderItem2.setIndex(2);
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(
-                Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))), Arrays.asList(orderItem1, orderItem2)) { };
+        MemorySortResultSet rs = new MemorySortResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Arrays.asList(rs1, rs2, rs3))), Arrays.asList(orderItem1, orderItem2));
         List<Map<String, Object>> actualList = new ArrayList<>();
         while (rs.next()) {
             Map<String, Object> map = new TreeMap<>();
@@ -103,15 +101,15 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void assertFindColumnSuccess() throws SQLException {
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
+        MemorySortResultSet rs = new MemorySortResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), Collections.singletonList(new OrderItem(1, OrderType.ASC)));
         assertThat(rs.findColumn("name"), is(1));
     }
     
     @Test(expected = SQLException.class)
     public void assertFindColumnError() throws SQLException {
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
+        MemorySortResultSet rs = new MemorySortResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), Collections.singletonList(new OrderItem(1, OrderType.ASC)));
         rs.findColumn("unknown");
     }
     
@@ -120,8 +118,8 @@ public class MemoryOrderByResultSetTest {
         Map<String, Object> rs1 = new TreeMap<>();
         rs1.put("name", "name");
         rs1.put("time", null);
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))), 
-                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
+        MemorySortResultSet rs = new MemorySortResultSet(
+                Collections.<ResultSet>singletonList(new MockResultSet<>(Collections.singletonList(rs1))), Collections.singletonList(new OrderItem(1, OrderType.ASC)));
         assertTrue(rs.next());
         assertThat(rs.getObject(2), nullValue());
         assertTrue(rs.wasNull());
@@ -129,8 +127,8 @@ public class MemoryOrderByResultSetTest {
     
     @Test
     public void assertOthers() throws SQLException {
-        AbstractMemoryOrderByResultSet rs = new AbstractMemoryOrderByResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), 
-                Collections.singletonList(new OrderItem(1, OrderType.ASC))) { };
+        MemorySortResultSet rs = new MemorySortResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 3, 5, 6, 6), new MockResultSet<>(8, 6, 4, 2)), Collections.singletonList(new OrderItem(1, OrderType.ASC)));
         assertTrue(rs.next());
         assertThat(rs.getFetchDirection(), is(ResultSet.FETCH_FORWARD));
         assertThat(rs.getFetchSize(), is(9));

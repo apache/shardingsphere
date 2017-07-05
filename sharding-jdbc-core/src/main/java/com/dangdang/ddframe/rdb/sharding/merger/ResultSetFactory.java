@@ -19,10 +19,9 @@ package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByCouplingResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemorySortResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,9 +64,8 @@ public final class ResultSetFactory {
     }
     
     private static ResultSet buildReducer(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        if (resultSetMergeContext.isNeedMemorySortForGroupBy()) {
-            resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
-            return new MemoryOrderByReducerResultSet(resultSetMergeContext);
+        if (resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent()) {
+            return new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByList());
         }
         if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getOrderByList().isEmpty()) {
             return new StreamingOrderByReducerResultSet(resultSetMergeContext);
@@ -79,9 +78,8 @@ public final class ResultSetFactory {
         if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
             result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
-        if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
-            resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
-            result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
+        if (resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent()) {
+            result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByList());
         }
         if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
             result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlStatement());
