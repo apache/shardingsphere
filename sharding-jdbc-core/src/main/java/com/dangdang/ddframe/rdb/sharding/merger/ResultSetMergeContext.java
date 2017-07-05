@@ -25,7 +25,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +40,9 @@ public final class ResultSetMergeContext {
     
     private final SQLStatement sqlStatement;
     
-    private final List<OrderItem> currentOrderByKeys;
-    
     public ResultSetMergeContext(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         this.shardingResultSets = shardingResultSets;
         this.sqlStatement = sqlStatement;
-        currentOrderByKeys = new LinkedList<>(sqlStatement.getOrderByList());
         Map<String, Integer> columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(shardingResultSets.getResultSets().get(0));
         setIndexForAggregationItem(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByList());
@@ -74,39 +70,5 @@ public final class ResultSetMergeContext {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
         }
-    }
-    
-    /**
-     * 判断分组归并是否需要内存排序.
-     *
-     * @return 分组归并是否需要内存排序
-     */
-    public boolean isNeedMemorySortForGroupBy() {
-        return !sqlStatement.getGroupByList().isEmpty() && !sqlStatement.getOrderByList().equals(sqlStatement.getGroupByList());
-    }
-    
-    /**
-     * 将分组顺序设置为排序序列.
-     */
-    public void setGroupByKeysToCurrentOrderByKeys() {
-        currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(sqlStatement.getGroupByList());
-    }
-    
-    /**
-     * 判断排序归并是否需要内存排序.
-     *
-     * @return 排序归并是否需要内存排序
-     */
-    public boolean isNeedMemorySortForOrderBy() {
-        return !sqlStatement.getOrderByList().isEmpty() && !currentOrderByKeys.equals(sqlStatement.getOrderByList());
-    }
-    
-    /**
-     * 将排序顺序设置为排序序列.
-     */
-    public void setOrderByKeysToCurrentOrderByKeys() {
-        currentOrderByKeys.clear();
-        currentOrderByKeys.addAll(sqlStatement.getOrderByList());
     }
 }

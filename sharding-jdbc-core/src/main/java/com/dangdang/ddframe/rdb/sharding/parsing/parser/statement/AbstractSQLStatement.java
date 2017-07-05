@@ -74,4 +74,13 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     public void setLimit(final Limit limit) {
     }
+    
+    /**
+     * 判断是否需要内存排序.
+     *
+     * @return 是否需要内存排序
+     */
+    public boolean isGroupByAndOrderByDifferent() {
+        return !getGroupByList().isEmpty() && !getOrderByList().equals(getGroupByList());
+    }
 }

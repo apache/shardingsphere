@@ -35,13 +35,13 @@ import java.util.List;
  * @author gaohongtao
  * @author zhangliang
  */
-public abstract class AbstractMemoryOrderByResultSet extends AbstractMemoryResultSet {
+public final class MemorySortResultSet extends AbstractMemoryResultSet {
     
     private final List<OrderItem> orderByList;
     
-    private Iterator<OrderByResultSetRow> orderByResultSetRowIterator;
+    private Iterator<OrderByResultSetRow> orderByResultSetRows;
     
-    public AbstractMemoryOrderByResultSet(final List<ResultSet> resultSets, final List<OrderItem> orderByList) throws SQLException {
+    public MemorySortResultSet(final List<ResultSet> resultSets, final List<OrderItem> orderByList) throws SQLException {
         super(resultSets);
         this.orderByList = orderByList;
     }
@@ -55,13 +55,13 @@ public abstract class AbstractMemoryOrderByResultSet extends AbstractMemoryResul
             }
         }
         Collections.sort(orderByResultSetRows);
-        orderByResultSetRowIterator = orderByResultSetRows.iterator();
+        this.orderByResultSetRows = orderByResultSetRows.iterator();
     }
     
     @Override
     protected Optional<? extends ResultSetRow> nextRow() throws SQLException {
-        if (orderByResultSetRowIterator.hasNext()) {
-            return Optional.of(orderByResultSetRowIterator.next());
+        if (orderByResultSetRows.hasNext()) {
+            return Optional.of(orderByResultSetRows.next());
         }
         return Optional.absent();
     }
