@@ -87,7 +87,7 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     private static final String SELECT_IN_WITH_SINGLE_TABLE_SQL = "SELECT * FROM `t_order` WHERE `user_id` IN (%s, %s, %s) AND `order_id` IN (%s, %s) ORDER BY user_id, order_id";
     
     private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
+            + " WHERE o.status LIKE CONCAT('%%', 'i', '%%') AND o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
     
     private static final String SELECT_ORDER_BY_WITH_ALIAS_SQL = "SELECT order_id as `order_id_alias`,user_id,status FROM `t_order` " 
             + "WHERE `user_id` BETWEEN %s AND %s AND `order_id` BETWEEN %s AND %s ORDER BY user_id, order_id";
