@@ -60,29 +60,34 @@ public final class ResultSetFactory {
     
     private static ResultSet buildResultSet(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlStatement);
-        return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
-    }
-    
-    private static ResultSet buildReducer(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        ResultSet result;
         if (resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent()) {
-            return new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByList());
-        }
-        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getOrderByList().isEmpty()) {
-            return new StreamingOrderByReducerResultSet(resultSetMergeContext);
-        }
-        return new IteratorReducerResultSet(resultSetMergeContext);
-    }
-    
-    private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        ResultSet result = resultSet;
-        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
-            result = new GroupByCouplingResultSet(result, resultSetMergeContext);
-        }
-        if (resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent()) {
-            result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByList());
+            result = buildMemoryResultSet(resultSetMergeContext);
+        } else {
+            result = buildStreamResultSet(resultSetMergeContext);
         }
         if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
             result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlStatement());
+        }
+        return result;
+    }
+    
+    private static ResultSet buildMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        ResultSet result = new MemorySortResultSet(resultSetMergeContext.getShardingResultSets().getResultSets(), resultSetMergeContext.getSqlStatement().getGroupByList());
+        result = new GroupByCouplingResultSet(result, resultSetMergeContext);
+        result = new MemorySortResultSet(Collections.singletonList(result), resultSetMergeContext.getSqlStatement().getOrderByList());
+        return result;
+    }
+    
+    private static ResultSet buildStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        ResultSet result;
+        if (resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() && resultSetMergeContext.getSqlStatement().getOrderByList().isEmpty()) {
+            result = new IteratorReducerResultSet(resultSetMergeContext);
+        } else {
+            result = new StreamingOrderByReducerResultSet(resultSetMergeContext);
+        }
+        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
+            result = new GroupByCouplingResultSet(result, resultSetMergeContext);
         }
         return result;
     }
