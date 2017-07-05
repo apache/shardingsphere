@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByMemoryResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.GroupByStreamResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.GroupByMemoryResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.IteratorStreamResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByStreamResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +66,7 @@ public final class ResultSetFactory {
             result = buildStreamResultSet(resultSetMergeContext);
         }
         if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
-            result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlStatement());
+            result = new LimitResultSet(result, resultSetMergeContext.getSqlStatement());
         }
         return result;
     }
@@ -78,12 +78,12 @@ public final class ResultSetFactory {
     private static ResultSet buildStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
         ResultSet result;
         if (resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() && resultSetMergeContext.getSqlStatement().getOrderByItems().isEmpty()) {
-            result = new IteratorReducerResultSet(resultSetMergeContext);
+            result = new IteratorStreamResultSet(resultSetMergeContext);
         } else {
-            result = new StreamingOrderByReducerResultSet(resultSetMergeContext);
+            result = new OrderByStreamResultSet(resultSetMergeContext);
         }
         if (!resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
-            result = new GroupByCouplingResultSet(result, resultSetMergeContext);
+            result = new GroupByStreamResultSet(result, resultSetMergeContext);
         }
         return result;
     }

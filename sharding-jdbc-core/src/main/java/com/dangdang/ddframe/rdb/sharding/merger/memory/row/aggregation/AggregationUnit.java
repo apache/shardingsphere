@@ -15,20 +15,28 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.fixture;
+package com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
+import java.util.List;
 
-public final class TestResultSetRow implements ResultSetRow {
+/**
+ * 归并计算单元接口.
+ * 
+ * @author gaohongtao
+ */
+public interface AggregationUnit {
     
-    private final Object[] dataRow;
+    /**
+     * 归并聚合值.
+     * 
+     * @param values 聚合数值
+     */
+    void merge(List<Comparable<?>> values);
     
-    public TestResultSetRow(final Object... dataRow) {
-        this.dataRow = dataRow;
-    }
-    
-    @Override
-    public Object getCell(final int columnIndex) {
-        return dataRow[columnIndex - 1];
-    }
+    /**
+     * 获取计算结果.
+     * 
+     * @return 计算结果
+     */
+    Comparable<?> getResult();
 }
