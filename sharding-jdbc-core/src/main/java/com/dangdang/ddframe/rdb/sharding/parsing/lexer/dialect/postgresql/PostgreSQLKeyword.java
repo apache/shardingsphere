@@ -47,6 +47,7 @@ public enum PostgreSQLKeyword implements Keyword {
     RESTRICT,
     NOWAIT,
     TYPE,
+    OUTPUT,
     UNLOGGED,
     CONTINUE,
     RETURNING,

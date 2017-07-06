@@ -87,23 +87,30 @@ public class SQLParser extends AbstractParser {
      */
     // TODO 完善Expression解析的各种场景
     public final SQLExpression parseExpression() {
-        String literals = getLexer().getCurrentToken().getLiterals();
-        final SQLExpression expression = getExpression(literals);
-        if (skipIfEqual(Literals.IDENTIFIER)) {
-            if (skipIfEqual(Symbol.DOT)) {
-                String property = getLexer().getCurrentToken().getLiterals();
-                getLexer().nextToken();
-                return skipIfCompositeExpression() ? new SQLIgnoreExpression() : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
+      //start update by boddi
+      SQLExpression expression;
+        do {
+            String literals = getLexer().getCurrentToken().getLiterals();
+            expression = getExpression(literals);
+            if (skipIfEqual(Literals.IDENTIFIER)) {
+                if (skipIfEqual(Symbol.DOT)) {
+                    String property = getLexer().getCurrentToken().getLiterals();
+                    getLexer().nextToken();
+                    skipAll(DefaultKeyword.IS, DefaultKeyword.NOT, DefaultKeyword.NULL);
+                    return skipIfCompositeExpression() ? new SQLIgnoreExpression() : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
+                }
+                if (equalAny(Symbol.LEFT_PAREN)) {
+                    skipParentheses();
+                    skipRestCompositeExpression();
+                    return new SQLIgnoreExpression();
+                }
+                return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
             }
-            if (equalAny(Symbol.LEFT_PAREN)) {
-                skipParentheses();
-                skipRestCompositeExpression();
-                return new SQLIgnoreExpression();
-            }
-            return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
-        }
-        getLexer().nextToken();
-        return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
+
+            getLexer().nextToken();
+        } while (skipIfEqual(Literals.IDENTIFIER));
+      //end update by boddi
+      return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
     }
     
     private SQLExpression getExpression(final String literals) {
@@ -258,8 +265,8 @@ public class SQLParser extends AbstractParser {
     private void parseConditions(final SQLStatement sqlStatement) {
         do {
             parseComparisonCondition(sqlStatement);
-        } while (skipIfEqual(DefaultKeyword.AND));
-        if (equalAny(DefaultKeyword.OR)) {
+        } while (skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR)); //update by boddi
+      if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
         }
     }
