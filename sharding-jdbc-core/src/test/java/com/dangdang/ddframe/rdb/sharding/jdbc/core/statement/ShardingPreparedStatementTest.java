@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -44,6 +45,10 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     private ShardingDataSource shardingDataSource;
     
+    private String sql = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
+    
+    private String sql2 = "SELECT order_id from t_order where user_id = %d and status = 'BATCH'";
+    
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
@@ -51,7 +56,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithParameter() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -72,7 +76,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithoutParameter() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = 'init'";
+        String sql = getDatabaseTestSQL().getSelectCountAliasSql();
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -90,7 +94,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteUpdateWithParameter() throws SQLException {
-        String sql = "DELETE FROM `t_order` WHERE `status` = ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getDeleteWithoutShardingValueSql());
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -105,7 +109,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteUpdateWithoutParameter() throws SQLException {
-        String sql = "DELETE FROM `t_order` WHERE `status` = 'init'";
+        String sql = String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'");
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -117,7 +121,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteWithParameter() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -138,7 +141,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteWithoutParameter() throws SQLException {
-        String sql = "DELETE FROM `t_order` WHERE `status` = 'init'";
+        String sql = String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'");
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -150,7 +153,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
@@ -163,7 +165,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
@@ -176,7 +177,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithAutoGeneratedKeys() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS)) {
@@ -189,7 +189,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithColumnIndexes() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, new int[] {1})) {
@@ -202,7 +201,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertExecuteQueryWithColumnNames() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[] {"orders_count"})) {
@@ -229,7 +227,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             }
         };
         EventBusInstance.getInstance().register(listener);
-        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -260,7 +258,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        String sql = "INSERT INTO `t_order`(`user_id`, `status`) VALUES (?,?)";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getInsertWithAutoIncrementColumnSql());
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -291,19 +289,19 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(4L));
             assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 11")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 11))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(1));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 12")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 12))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(2));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 21")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 21))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(3));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 22")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 22))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(4));
             }
@@ -312,7 +310,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
-        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -347,19 +345,19 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(4L));
             assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 11")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 11))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(1));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 12")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 12))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(2));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 21")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 21))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(3));
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `order_id` from `t_order` where `user_id` = 22")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 22))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(4));
             }
@@ -368,7 +366,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = "UPDATE `t_order` SET `status` = ? WHERE  `status` = ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutShardingValueSql());
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -392,7 +390,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingDatabas
     
     @Test
     public void assertClearBatch() throws SQLException {
-        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
+        String sql = getDatabaseTestSQL().getInsertWithAllPlaceholdersSql();
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

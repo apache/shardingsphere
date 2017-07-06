@@ -36,6 +36,10 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
     
     private ShardingDataSource shardingDataSource;
     
+    private String sql = "SELECT COUNT(*) AS orders_count FROM t_order WHERE status = ?";
+    
+    private String sql2 = "SELECT user_id from t_order where order_id = %d";
+    
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
@@ -43,7 +47,6 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
     
     @Test
     public void assertExecuteQueryWithParameter() throws SQLException {
-        String sql = "SELECT COUNT(*) AS `orders_count` FROM `t_order` WHERE `status` = ?";
         try (
                 Connection connection = shardingDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -58,10 +61,9 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
     
     @Test
     public void assertAddBatch() throws SQLException {
-        String sql = "INSERT INTO `t_order`(`order_id`, `user_id`, `status`) VALUES (?,?,?)";
         try (
                 Connection connection = shardingDataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getInsertWithAllPlaceholdersSql());
                 java.sql.Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
@@ -84,22 +86,22 @@ public final class ShardingPreparedStatementTableOnlyTest extends AbstractShardi
                 assertThat(each, is(1));
             }
     
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3101")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 3101))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(11));
                 assertFalse(rs.next());
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3102")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 3102))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(12));
                 assertFalse(rs.next());
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3111")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 3111))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(21));
                 assertFalse(rs.next());
             }
-            try (ResultSet rs = queryStatement.executeQuery("SELECT `user_id` from `t_order` where `order_id` = 3112")) {
+            try (ResultSet rs = queryStatement.executeQuery(String.format(sql2, 3112))) {
                 assertTrue(rs.next());
                 assertThat(rs.getInt(1), is(22));
                 assertFalse(rs.next());
