@@ -17,26 +17,26 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.update.UpdateStatement;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.google.common.collect.Range;
-import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public final class UpdateStatementParserTest extends AbstractStatementParserTest {
     
@@ -116,7 +116,7 @@ public final class UpdateStatementParserTest extends AbstractStatementParserTest
         assertThat(shardingValue3.upperEndpoint(), is((Comparable) 80));
     }
     
-//    @Test(expected = SQLParsingUnsupportedException.class)
+    @Test()
     public void parseWithOr() {
         ShardingRule shardingRule = createShardingRule();
         new SQLParsingEngine(DatabaseType.Oracle, "UPDATE TABLE_XXX SET field1=1 WHERE field1<1 AND (field1 >2 OR field2 =1)", shardingRule).parse();
