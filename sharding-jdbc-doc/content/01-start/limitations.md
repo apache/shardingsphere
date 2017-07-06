@@ -43,7 +43,7 @@ Sharding-JDBC暂时未支持不常用的JDBC方法。
 ###  不支持DDL语句
 ###  有限支持子查询
 ###  不支持HAVING
-###  不支持UNION 和 UNION ALL
+###  不支持OR，UNION 和 UNION ALL
 ###  不支持特殊INSERT
 每条INSERT语句只能插入一条数据，不支持VALUES后有多行数据的语句
 ###  不支持DISTINCT聚合

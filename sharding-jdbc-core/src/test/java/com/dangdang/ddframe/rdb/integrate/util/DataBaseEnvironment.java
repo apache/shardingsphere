@@ -71,7 +71,7 @@ public final class DataBaseEnvironment {
         SCHEMA.put(DatabaseType.Oracle, "JDBC");
         
         DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
-        URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=db_0");
+        URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(DatabaseType.SQLServer, "sa");
         PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");
         SCHEMA.put(DatabaseType.SQLServer, null);

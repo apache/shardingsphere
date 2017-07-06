@@ -23,13 +23,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * 代理结果集适配器.
@@ -41,25 +38,12 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Getter
     private final List<ResultSet> resultSets;
-    
-    @Getter
-    private final Map<String, Integer> columnLabelIndexMap;
 
     private boolean closed;
     
     public AbstractResultSetAdapter(final List<ResultSet> resultSets) throws SQLException {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
-        columnLabelIndexMap = generateColumnLabelIndexMap();
-    }
-    
-    private Map<String, Integer> generateColumnLabelIndexMap() throws SQLException {
-        ResultSetMetaData resultSetMetaData = resultSets.get(0).getMetaData();
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(resultSetMetaData.getColumnLabel(i), i);
-        }
-        return result;
     }
     
     @Override

@@ -17,19 +17,18 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
+import com.dangdang.ddframe.rdb.sharding.merger.memory.MemoryResultSetTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.GroupByResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.OrderByResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AccumulationAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AggregationUnitFactoryTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AverageAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.ComparableAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.AggregationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.NullableAggregationResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.OrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AccumulationAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactoryTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AverageAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.ComparableAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemoryOrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemoryResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.GroupByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRowTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -40,7 +39,6 @@ import org.junit.runners.Suite;
     ResultSetMergeContextTest.class, 
     IteratorResultSetTest.class, 
     OrderByResultSetTest.class, 
-    MemoryOrderByResultSetTest.class, 
     AggregationResultSetTest.class, 
     NullableAggregationResultSetTest.class, 
     ResultSetRowTest.class, 

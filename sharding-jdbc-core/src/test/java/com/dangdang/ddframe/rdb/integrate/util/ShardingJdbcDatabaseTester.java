@@ -39,18 +39,20 @@ public final class ShardingJdbcDatabaseTester extends JdbcDatabaseTester {
     @Override
     public IDatabaseConnection getConnection() throws Exception {
         IDatabaseConnection result = super.getConnection();
-        result.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
-        result.getConfig().setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
+        DatabaseConfig dbConfig = result.getConfig();
+        dbConfig.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
+        dbConfig.setProperty(DatabaseConfig.FEATURE_DATATYPE_WARNING, false);
         if ("org.h2.Driver".equals(driverClass)) {
-            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
         } else if ("com.mysql.jdbc.Driver".equals(driverClass)) {
-            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
         } else if ("org.postgresql.Driver".equals(driverClass)) {
-            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
+            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
         } else if ("oracle.jdbc.driver.OracleDriver".equals(driverClass)) {
-            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
+            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new Oracle10DataTypeFactory());
         } else if ("com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(driverClass)) {
-            result.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
+            dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MsSqlDataTypeFactory());
+            
         }
         return result;
     }

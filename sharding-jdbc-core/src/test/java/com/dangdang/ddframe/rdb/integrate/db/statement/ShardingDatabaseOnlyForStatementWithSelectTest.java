@@ -23,8 +23,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
-
 public final class ShardingDatabaseOnlyForStatementWithSelectTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     @Test
@@ -57,8 +55,7 @@ public final class ShardingDatabaseOnlyForStatementWithSelectTest extends Abstra
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectLimitWithBindingTable.xml"
-                : "integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml";
+        String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                 "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
@@ -67,8 +64,7 @@ public final class ShardingDatabaseOnlyForStatementWithSelectTest extends Abstra
     
     @Test
     public void assertSelectOrderByWithAlias() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectOrderByWithAlias.xml" 
-                : "integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml";
+        String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectOrderByWithAlias.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                 "t_order", String.format(getDatabaseTestSQL().getSelectOrderByWithAliasSql(), 10, 12, 1001, 1200));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
@@ -77,8 +73,7 @@ public final class ShardingDatabaseOnlyForStatementWithSelectTest extends Abstra
     
     @Test
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectLimitWithBindingTableWithoutOffset.xml"
-                : "integrate/dataset/db/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
+        String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item", 
                 String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql(), 10, 19, 1000, 1909, 2));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
@@ -95,8 +90,7 @@ public final class ShardingDatabaseOnlyForStatementWithSelectTest extends Abstra
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectGroupByWithoutGroupedColumn.xml" 
-                : "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
+        String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectGroupByWithoutGroupedColumn.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                 "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql(), 10, 19, 1000, 1909));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
@@ -105,8 +99,7 @@ public final class ShardingDatabaseOnlyForStatementWithSelectTest extends Abstra
     
     @Test
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = PostgreSQL.name().equalsIgnoreCase(currentDbType()) ? "integrate/dataset/db/expect/select/postgresql/SelectNoShardingTable.xml" 
-                : "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
+        String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectNoShardingTable.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item", getDatabaseTestSQL().getSelectWithNoShardingTableSql());
     }
 }

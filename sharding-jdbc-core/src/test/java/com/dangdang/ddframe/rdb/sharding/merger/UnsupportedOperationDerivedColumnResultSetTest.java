@@ -33,7 +33,7 @@ public class UnsupportedOperationDerivedColumnResultSetTest extends AbstractShar
     
     @Before
     public void init() throws SQLException {
-        actual = getShardingDataSource().getConnection().createStatement().executeQuery("SELECT user_id AS `uid` FROM `t_order` group by `uid`");
+        actual = getShardingDataSource().getConnection().createStatement().executeQuery(getDatabaseTestSQL().getSelectGroupByUserIdSql());
     }
     
     @After

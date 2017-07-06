@@ -63,3 +63,19 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 更多关于alias使用方法请参考[Proxool官网](http://proxool.sourceforge.net/configure.html)。
 
 PS:sourceforge网站需要翻墙访问。
+
+### 7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
+
+SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
+
+```sql
+SELECT SUM(num), SUM(num2) FROM table_xxx;
+```
+
+SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空sum和sum(2)。这将导致Sharding-JDBC在结果归并时无法找到相应的列而出错。
+
+正确的SQL写法应为：
+
+```sql
+SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
+```

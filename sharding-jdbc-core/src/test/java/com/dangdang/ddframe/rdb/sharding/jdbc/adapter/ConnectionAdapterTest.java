@@ -39,6 +39,8 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
     
     private ShardingDataSource shardingDataSource;
     
+    private String sql = getDatabaseTestSQL().getSelectUserIdByStatusSql();
+    
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
@@ -49,7 +51,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
             assertTrue(actual.getAutoCommit());
             actual.setAutoCommit(false);
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             assertAutoCommit(actual, false);
             actual.setAutoCommit(true);
             assertAutoCommit(actual, true);
@@ -69,7 +71,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
     public void assertCommit() throws SQLException {
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
             actual.setAutoCommit(false);
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             actual.commit();
         }
     }
@@ -79,7 +81,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
     public void assertRollback() throws SQLException {
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
             actual.setAutoCommit(false);
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             actual.rollback();
         }
     }
@@ -87,7 +89,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
     @Test
     public void assertClose() throws SQLException {
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             assertClose(actual, false);
             actual.close();
             assertClose(actual, true);
@@ -107,7 +109,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
             assertTrue(actual.isReadOnly());
             actual.setReadOnly(false);
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             assertReadOnly(actual, false);
             actual.setReadOnly(true);
             assertReadOnly(actual, true);
@@ -132,7 +134,7 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
         try (ShardingConnection actual = shardingDataSource.getConnection()) {
             assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
             actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            actual.createStatement().executeQuery("SELECT `user_id` FROM `t_order` WHERE `status` = 'init'");
+            actual.createStatement().executeQuery(sql);
             assertTransactionIsolation(actual, Connection.TRANSACTION_SERIALIZABLE);
             actual.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);

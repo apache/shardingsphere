@@ -74,7 +74,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     @Override
     public final SelectStatement parse() {
         query();
-        selectStatement.getOrderByList().addAll(parseOrderBy());
+        selectStatement.getOrderByItems().addAll(parseOrderBy());
         customizedSelect();
         appendDerivedColumns();
         return selectStatement;
@@ -256,7 +256,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         } else {
             return;
         }
-        selectStatement.getGroupByList().add(orderItem);
+        selectStatement.getGroupByItems().add(orderItem);
     }
     
     private Optional<String> getAlias(final String name) {
@@ -348,8 +348,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         appendDerivedColumnsFlag = true;
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken);
-        appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByList(), ORDER_BY_DERIVED_ALIAS);
-        appendDerivedOrderColumns(itemsToken, selectStatement.getGroupByList(), GROUP_BY_DERIVED_ALIAS);
+        appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), ORDER_BY_DERIVED_ALIAS);
+        appendDerivedOrderColumns(itemsToken, selectStatement.getGroupByItems(), GROUP_BY_DERIVED_ALIAS);
         if (!itemsToken.getItems().isEmpty()) {
             selectStatement.getSqlTokens().add(itemsToken);
         }

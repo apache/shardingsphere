@@ -39,8 +39,8 @@ public final class OrderByResultSetTest {
     
     @Test
     public void assertNextForAsc() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(
-                new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLStatement(OrderType.ASC));
+        ResultSet resultSet = ResultSetFactory.getResultSet(
+                Arrays.<ResultSet>asList(new MockResultSet<>(1, 4), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), createSQLStatement(OrderType.ASC));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
         assertTrue(resultSet.next());
@@ -69,7 +69,7 @@ public final class OrderByResultSetTest {
     
     private SQLStatement createSQLStatement(final OrderType orderType) {
         SQLStatement result = new SelectStatement();
-        result.getOrderByList().add(new OrderItem("name", orderType, Optional.<String>absent()));
+        result.getOrderByItems().add(new OrderItem("name", orderType, Optional.<String>absent()));
         return result;
     }
 }

@@ -99,19 +99,21 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     
     @Test
     public void assertUpdateWithAlias() throws SQLException, DatabaseUnitException {
-        for (int i = 10; i < 30; i++) {
-            for (int j = 0; j < 2; j++) {
-                try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
-                     Connection connection = shardingDataSource.getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getUpdateWithAliasSql())) {
-                    preparedStatement.setString(1, "updated");
-                    preparedStatement.setInt(2, i * 100 + j);
-                    preparedStatement.setInt(3, i);
-                    assertThat(preparedStatement.executeUpdate(), is(1));
+        if (isAliasSupport()) {
+            for (int i = 10; i < 30; i++) {
+                for (int j = 0; j < 2; j++) {
+                    try (DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(i);
+                         Connection connection = shardingDataSource.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getUpdateWithAliasSql())) {
+                        preparedStatement.setString(1, "updated");
+                        preparedStatement.setInt(2, i * 100 + j);
+                        preparedStatement.setInt(3, i);
+                        assertThat(preparedStatement.executeUpdate(), is(1));
+                    }
                 }
             }
+            assertDataSet("update", "updated"); 
         }
-        assertDataSet("update", "updated");
     }
     
     @Test
@@ -134,7 +136,8 @@ public class RoutingDatabaseOnlyWithHintForDMLTest extends AbstractRoutingDataba
     private void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             assertDataSet(String.format("integrate/dataset/db/expect/%s/db_%s.xml", expectedDataSetPattern, i),
-                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), "t_order", getDatabaseTestSQL().getAssertSelectWithStatusSql(), status);
+                    shardingDataSource.getConnection().getConnection(String.format("dataSource_db_%s", i), SQLType.SELECT), 
+                    "t_order", replacePreparedStatement(getDatabaseTestSQL().getAssertSelectWithStatusSql()), status);
         }
     }
 }

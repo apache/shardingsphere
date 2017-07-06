@@ -60,14 +60,14 @@ public interface SQLStatement {
      * 
      * @return 排序集合
      */
-    List<OrderItem> getOrderByList();
+    List<OrderItem> getOrderByItems();
     
     /**
      * 获取分组集合.
      * 
      * @return 分组集合
      */
-    List<OrderItem> getGroupByList();
+    List<OrderItem> getGroupByItems();
     
     /**
      * 获取聚合选择项集合.
@@ -96,4 +96,12 @@ public interface SQLStatement {
      * @return SQL标记集合
      */
     List<SQLToken> getSqlTokens();
+    
+    
+    /**
+     * 判断是否需要内存排序.
+     *
+     * @return 是否需要内存排序
+     */
+    boolean isGroupByAndOrderByDifferent();
 }

@@ -40,13 +40,8 @@ public abstract class AbstractSingleResultSetDBUnitTest extends AbstractDBUnitTe
     private static ShardingDataSource shardingDataSource;
     
     @Override
-    protected List<String> getSchemaFiles() {
-        return Collections.singletonList("integrate/schema/" + currentDbType() + "/tbl/db_single.sql");
-    }
-    
-    @Override
     protected List<String> getDataSetFiles() {
-        return Collections.singletonList("integrate/dataset/single/init/db_single.xml");
+        return Collections.singletonList("integrate/dataset/single/init/tbl.xml");
     }
     
     protected final ShardingDataSource getShardingDataSource() {
@@ -74,6 +69,8 @@ public abstract class AbstractSingleResultSetDBUnitTest extends AbstractDBUnitTe
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.close();
+        if (null != shardingDataSource) {
+            shardingDataSource.close();
+        }
     }
 }

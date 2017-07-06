@@ -50,7 +50,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
         statement = shardingConnection.createStatement();
-        actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init' ORDER BY `uid`");
+        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusOrderByUserIdSql());
         actual.next();
     }
     
@@ -63,12 +63,16 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetBooleanForColumnIndex() throws SQLException {
-        assertTrue(actual.getBoolean(1));
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertTrue(actual.getBoolean(1));
+        }
     }
     
     @Test
     public void assertGetBooleanForColumnLabel() throws SQLException {
-        assertTrue(actual.getBoolean("uid"));
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertTrue(actual.getBoolean("uid"));
+        }
     }
     
     @Test
@@ -215,53 +219,37 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetTimestampForColumnIndex() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getTimestamp(1);
-            } catch (final SQLException ex) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
-            }
-        } else {
-            assertTrue(actual.getTimestamp(1).getTime() > 0);
+        try {
+            actual.getTimestamp(1);
+        } catch (final SQLException ex) {
+            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
         }
     }
     
     @Test
     public void assertGetTimestampForColumnLabel() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getTimestamp("uid");
-            } catch (final SQLException ex) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
-            }
-        } else {
-            assertTrue(actual.getTimestamp("uid").getTime() > 0);
+        try {
+            actual.getTimestamp("uid");
+        } catch (final SQLException ex) {
+            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
         }
     }
     
     @Test
     public void assertGetTimestampColumnIndexWithCalendar() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getTimestamp(1, Calendar.getInstance());
-            } catch (final SQLException ex) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
-            }
-        } else {
-            assertTrue(actual.getTimestamp(1, Calendar.getInstance()).getTime() > 0);
+        try {
+            actual.getTimestamp(1, Calendar.getInstance());
+        } catch (final SQLException ex) {
+            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
         }
     }
     
     @Test
     public void assertGetTimestampColumnLabelWithCalendar() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getTimestamp("uid", Calendar.getInstance());
-            } catch (final SQLException ex) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
-            }
-        } else {
-            assertTrue(actual.getTimestamp("uid", Calendar.getInstance()).getTime() > 0);
+        try {
+            actual.getTimestamp("uid", Calendar.getInstance());
+        } catch (final SQLException ex) {
+            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
         }
     }
     
@@ -335,22 +323,30 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetBlobForColumnIndex() throws SQLException {
-        assertTrue(actual.getBlob(1).length() > 0);
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertTrue(actual.getBlob(1).length() > 0);
+        }
     }
     
     @Test
     public void assertGetBlobForColumnLabel() throws SQLException {
-        assertTrue(actual.getBlob("uid").length() > 0);
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertTrue(actual.getBlob("uid").length() > 0);
+        }
     }
     
     @Test
     public void assertGetClobForColumnIndex() throws SQLException {
-        assertThat(actual.getClob(1).getSubString(1, 2), is("10"));
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertThat(actual.getClob(1).getSubString(1, 2), is("10"));
+        }
     }
     
     @Test
     public void assertGetClobForColumnLabel() throws SQLException {
-        assertThat(actual.getClob("uid").getSubString(1, 2), is("10"));
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
+            assertThat(actual.getClob("uid").getSubString(1, 2), is("10"));
+        }
     }
     
     @Test(expected = SQLException.class)

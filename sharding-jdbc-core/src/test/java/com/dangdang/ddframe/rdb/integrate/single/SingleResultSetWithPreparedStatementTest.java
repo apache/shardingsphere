@@ -26,10 +26,12 @@ public final class SingleResultSetWithPreparedStatementTest extends AbstractSing
     
     @Test
     public void assertSelectWithRowCountAndOffset() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT o.* FROM t_order o WHERE o.user_id = ? ORDER BY o.order_id limit ?, ?";
-        String expectedDataSetFile = "integrate/dataset/single/expect/SelectWithLimit.xml";
-        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order", sql, 10, 2, 4);
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order",
-                sql, 10, 4, 4);
+        if ("mysql".equals(currentDbType())) {
+            String sql = "SELECT o.* FROM t_order o WHERE o.user_id = ? ORDER BY o.order_id limit ?, ?";
+            String expectedDataSetFile = "integrate/dataset/single/expect/SelectWithLimit.xml";
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order", sql, 10, 2, 4);
+            assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order",
+                    sql, 10, 4, 4);
+        }
     }
 }

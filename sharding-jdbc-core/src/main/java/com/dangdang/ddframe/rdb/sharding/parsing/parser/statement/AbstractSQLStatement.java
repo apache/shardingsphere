@@ -55,11 +55,11 @@ public abstract class AbstractSQLStatement implements SQLStatement {
         return type;
     }
     
-    public List<OrderItem> getOrderByList() {
+    public List<OrderItem> getOrderByItems() {
         return Collections.emptyList();
     }
     
-    public List<OrderItem> getGroupByList() {
+    public List<OrderItem> getGroupByItems() {
         return Collections.emptyList();
     }
     
@@ -73,5 +73,14 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     }
     
     public void setLimit(final Limit limit) {
+    }
+    
+    /**
+     * 判断是否需要内存排序.
+     *
+     * @return 是否需要内存排序
+     */
+    public boolean isGroupByAndOrderByDifferent() {
+        return !getGroupByItems().isEmpty() && !getOrderByItems().equals(getGroupByItems());
     }
 }

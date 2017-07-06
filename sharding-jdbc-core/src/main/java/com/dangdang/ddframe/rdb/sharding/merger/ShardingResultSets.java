@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.delegate.AbstractDelegateResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.AbstractStreamResultSet;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -50,7 +50,7 @@ public final class ShardingResultSets {
         return result;
     }
     
-    private static final class FilteredResultSet extends AbstractDelegateResultSet {
+    private static final class FilteredResultSet extends AbstractStreamResultSet {
         
         private FilteredResultSet(final ResultSet resultSetWhenNextOnce) throws SQLException {
             super(Collections.singletonList(resultSetWhenNextOnce));

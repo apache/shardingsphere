@@ -36,8 +36,7 @@ public final class IteratorResultSetTest {
     
     @Test
     public void assertNext() throws SQLException {
-        ResultSet resultSet = ResultSetFactory.getResultSet(
-                Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SelectStatement());
+        ResultSet resultSet = ResultSetFactory.getResultSet(Arrays.<ResultSet>asList(new MockResultSet<>(1), new MockResultSet<>(2, 4), new MockResultSet<Integer>()), new SelectStatement());
         int count = 0;
         while (resultSet.next()) {
             count++;

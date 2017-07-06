@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dangdang</groupId>
     <artifactId>sharding-jdbc</artifactId>
-    <version>1.5.0.M2</version>
+    <version>1.5.0.M3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -36,7 +36,7 @@
         <junit.version>4.12</junit.version>
         <system-rules.version>1.16.0</system-rules.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <dbunit.version>2.5.0</dbunit.version>
+        <dbunit.version>2.5.3</dbunit.version>
         <mockito.version>2.7.21</mockito.version>
         <elastic-job.version>1.0.6</elastic-job.version>
         

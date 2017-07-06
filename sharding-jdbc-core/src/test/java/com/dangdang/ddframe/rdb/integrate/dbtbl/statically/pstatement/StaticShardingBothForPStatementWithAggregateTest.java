@@ -23,6 +23,7 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import org.junit.AfterClass;
 
 public final class StaticShardingBothForPStatementWithAggregateTest extends AbstractShardingBothForPStatementWithAggregateTest {
+    
     private static ShardingDataSource shardingDataSource;
     
     @Override

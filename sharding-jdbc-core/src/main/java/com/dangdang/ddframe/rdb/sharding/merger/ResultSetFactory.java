@@ -17,12 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.GroupByCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.LimitCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.MemoryOrderByCouplingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.MemoryOrderByReducerResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.StreamingOrderByReducerResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.decorator.LimitResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.GroupByStreamResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.GroupByMemoryResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.IteratorStreamResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByStreamResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -60,31 +59,31 @@ public final class ResultSetFactory {
     
     private static ResultSet buildResultSet(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlStatement);
-        return buildCoupling(buildReducer(resultSetMergeContext), resultSetMergeContext);
+        ResultSet resultSet = resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent() ? buildMemoryResultSet(resultSetMergeContext) : buildStreamResultSet(resultSetMergeContext);
+        return decorateResultSet(resultSetMergeContext, resultSet);
     }
     
-    private static ResultSet buildReducer(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        if (resultSetMergeContext.isNeedMemorySortForGroupBy()) {
-            resultSetMergeContext.setGroupByKeysToCurrentOrderByKeys();
-            return new MemoryOrderByReducerResultSet(resultSetMergeContext);
-        }
-        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getOrderByList().isEmpty()) {
-            return new StreamingOrderByReducerResultSet(resultSetMergeContext);
-        }
-        return new IteratorReducerResultSet(resultSetMergeContext);
+    private static ResultSet buildMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        return new GroupByMemoryResultSet(resultSetMergeContext);
     }
     
-    private static ResultSet buildCoupling(final ResultSet resultSet, final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+    private static ResultSet buildStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
+        ResultSet result;
+        if (resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() && resultSetMergeContext.getSqlStatement().getOrderByItems().isEmpty()) {
+            result = new IteratorStreamResultSet(resultSetMergeContext);
+        } else {
+            result = new OrderByStreamResultSet(resultSetMergeContext);
+        }
+        if (!resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
+            result = new GroupByStreamResultSet(result, resultSetMergeContext);
+        }
+        return result;
+    }
+    
+    private static ResultSet decorateResultSet(final ResultSetMergeContext resultSetMergeContext, final ResultSet resultSet) throws SQLException {
         ResultSet result = resultSet;
-        if (!resultSetMergeContext.getSqlStatement().getGroupByList().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
-            result = new GroupByCouplingResultSet(result, resultSetMergeContext);
-        }
-        if (resultSetMergeContext.isNeedMemorySortForOrderBy()) {
-            resultSetMergeContext.setOrderByKeysToCurrentOrderByKeys();
-            result = new MemoryOrderByCouplingResultSet(result, resultSetMergeContext);
-        }
         if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
-            result = new LimitCouplingResultSet(result, resultSetMergeContext.getSqlStatement());
+            result = new LimitResultSet(result, resultSetMergeContext.getSqlStatement());
         }
         return result;
     }

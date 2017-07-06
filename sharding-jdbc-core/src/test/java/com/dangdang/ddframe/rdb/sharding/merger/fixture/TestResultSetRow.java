@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
 
 public final class TestResultSetRow implements ResultSetRow {
     
@@ -25,11 +25,6 @@ public final class TestResultSetRow implements ResultSetRow {
     
     public TestResultSetRow(final Object... dataRow) {
         this.dataRow = dataRow;
-    }
-    
-    @Override
-    public void setCell(final int columnIndex, final Object value) {
-        dataRow[columnIndex - 1] = value;
     }
     
     @Override
