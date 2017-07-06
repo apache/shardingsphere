@@ -81,6 +81,8 @@ public interface DatabaseTestSQL {
     
     String getSelectLimitWithBindingTableWithOffsetSql();
     
+    String getSelectLikeWithBindingTableSql();
+    
     String getSelectGroupWithBindingTableSql();
     
     String getSelectGroupWithBindingTableAndConfigSql();

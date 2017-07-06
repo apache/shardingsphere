@@ -25,9 +25,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
-
 public final class ShardingTablesOnlyForStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
@@ -66,13 +63,11 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        if (!Oracle.name().equalsIgnoreCase(currentDbType()) && !SQLServer.name().equalsIgnoreCase(currentDbType())) {
-            String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
-            assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                    "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
-            assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                    "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
-        }
+        String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
+        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
+        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
     }
     
     @Test

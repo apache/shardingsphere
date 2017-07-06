@@ -71,20 +71,22 @@ public abstract class AbstractDBUnitTest {
     }
     
     private static void createSchema() {
-        try {
-            Connection conn;
-            for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = createDataSource(database + "_" + i).getConnection();
-                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                    conn.close();
+        if (H2 == CURRENT_DB_TYPE) {
+            try {
+                Connection conn;
+                for (int i = 0; i < 10; i++) {
+                    for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
+                        conn = createDataSource(database + "_" + i).getConnection();
+                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        conn.close();
+                    }
                 }
+                conn = createDataSource("tbl").getConnection();
+                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                conn.close();
+            } catch (final SQLException ex) {
+                ex.printStackTrace();
             }
-            conn = createDataSource("tbl").getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
         }
     }
     
@@ -102,8 +104,8 @@ public abstract class AbstractDBUnitTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected final String currentDbType() {
-        return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
+    protected final DatabaseType currentDbType() {
+        return H2 == CURRENT_DB_TYPE ? DatabaseType.MySQL : CURRENT_DB_TYPE;
     }
     
     protected final boolean isAliasSupport() {

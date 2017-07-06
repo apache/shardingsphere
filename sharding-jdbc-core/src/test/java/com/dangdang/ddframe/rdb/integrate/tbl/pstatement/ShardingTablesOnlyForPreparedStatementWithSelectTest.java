@@ -72,7 +72,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        if (SQLServer.name().equalsIgnoreCase(currentDbType())) {
+        if (SQLServer == currentDbType()) {
             String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/sqlserver/SelectLimitWithBindingTable.xml";
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                     "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 2, 10, 19, 1000, 1909, 2);
@@ -80,11 +80,11 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
                      "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 2, 10, 19, 1000, 1909, 20);
             return;
         }
-        if (PostgreSQL.name().equalsIgnoreCase(currentDbType())) {
+        if (PostgreSQL == currentDbType()) {
             String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTable.xml";
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                     "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 1.5, 2.4);
-        } else if (Oracle.name().equalsIgnoreCase(currentDbType())) {
+        } else if (Oracle == currentDbType()) {
             String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/oracle/SelectLimitWithBindingTable.xml";
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
                     "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
@@ -99,24 +99,28 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectLimitWithBindingTableWithRowCount() throws SQLException, DatabaseUnitException {
-        if (!Oracle.name().equalsIgnoreCase(currentDbType()) && !SQLServer.name().equalsIgnoreCase(currentDbType())) {
-            String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
-            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item",
-                    replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 2);
-            assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
-                    replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 0);
-        }
+        String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item",
+                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 2);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
+                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 0);
     }
     
     @Test
     public void assertSelectLimitWithBindingTableWithOffset() throws SQLException, DatabaseUnitException {
-        if (PostgreSQL.name().equalsIgnoreCase(currentDbType())) {
+        if (PostgreSQL == currentDbType()) {
             String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/postgresql/SelectLimitWithBindingTableWithOffset.xml";
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item",
                     replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithOffsetSql()), 10, 19, 1000, 1909, 18);
             assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
                     replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithOffsetSql()), 10, 19, 1000, 1909, 1000);
         }
+    }
+    
+    @Test
+    public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
+        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectLikeWithBindingTable.xml", getShardingDataSource().getConnection(),
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithBindingTableSql()), 10, 11, 1000, 1109, "init");
     }
     
     @Test

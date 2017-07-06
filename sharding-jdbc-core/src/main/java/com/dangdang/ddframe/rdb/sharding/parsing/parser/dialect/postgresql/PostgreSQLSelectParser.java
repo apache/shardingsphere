@@ -82,7 +82,9 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
                 break;
             }
         }
-        setLimit(offset, rowCount);
+        if (offset.isPresent() || rowCount.isPresent()) {
+            setLimit(offset, rowCount);
+        }
     }
     
     private Optional<LimitValue> buildRowCount() {

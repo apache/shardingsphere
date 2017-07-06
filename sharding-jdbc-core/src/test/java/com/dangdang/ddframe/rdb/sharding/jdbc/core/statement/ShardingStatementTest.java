@@ -27,9 +27,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingStatementTest extends AbstractShardingDatabaseOnlyDBUnitTest {
@@ -111,10 +112,12 @@ public final class ShardingStatementTest extends AbstractShardingDatabaseOnlyDBU
     
     @Test
     public void assertExecuteUpdateWithColumnIndexes() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                Statement stmt = connection.createStatement()) {
-            assertThat(stmt.executeUpdate(sql2, new int[] {1}), is(40));
+        if (PostgreSQL != currentDbType()) {
+            try (
+                    Connection connection = shardingDataSource.getConnection();
+                    Statement stmt = connection.createStatement()) {
+                assertThat(stmt.executeUpdate(sql2, new int[]{1}), is(40));
+            }
         }
     }
     
@@ -142,23 +145,27 @@ public final class ShardingStatementTest extends AbstractShardingDatabaseOnlyDBU
     
     @Test
     public void assertExecuteWithColumnIndexes() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                Statement stmt = connection.createStatement()) {
-            assertTrue(stmt.execute(sql, new int[] {1}));
-            assertTrue(stmt.getResultSet().next());
-            assertThat(stmt.getResultSet().getLong(1), is(40L));
+        if (PostgreSQL != currentDbType()) {
+            try (
+                    Connection connection = shardingDataSource.getConnection();
+                    Statement stmt = connection.createStatement()) {
+                assertTrue(stmt.execute(sql, new int[]{1}));
+                assertTrue(stmt.getResultSet().next());
+                assertThat(stmt.getResultSet().getLong(1), is(40L));
+            }
         }
     }
     
     @Test
     public void assertExecuteWithColumnNames() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                Statement stmt = connection.createStatement()) {
-            assertTrue(stmt.execute(sql, new String[] {"orders_count"}));
-            assertTrue(stmt.getResultSet().next());
-            assertThat(stmt.getResultSet().getLong(1), is(40L));
+        if (PostgreSQL != currentDbType()) {
+            try (
+                    Connection connection = shardingDataSource.getConnection();
+                    Statement stmt = connection.createStatement()) {
+                assertTrue(stmt.execute(sql, new String[]{"orders_count"}));
+                assertTrue(stmt.getResultSet().next());
+                assertThat(stmt.getResultSet().getLong(1), is(40L));
+            }
         }
     }
     
@@ -173,33 +180,35 @@ public final class ShardingStatementTest extends AbstractShardingDatabaseOnlyDBU
     
     @Test
     public void assertGetGeneratedKeys() throws SQLException {
-        try (
-                Connection connection = shardingDataSource.getConnection();
-                Statement stmt = connection.createStatement()) {
-            assertFalse(stmt.execute(String.format(sql3, 1, "init")));
-            assertFalse(stmt.getGeneratedKeys().next());
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), Statement.NO_GENERATED_KEYS));
-            assertFalse(stmt.getGeneratedKeys().next());
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), Statement.RETURN_GENERATED_KEYS));
-            ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
-            assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(3L));
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), new int[]{1}));
-            generatedKeysResultSet = stmt.getGeneratedKeys();
-            assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(4L));
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), new String[]{"user_id"}));
-            generatedKeysResultSet = stmt.getGeneratedKeys();
-            assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(5L));
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), new int[]{2}));
-            generatedKeysResultSet = stmt.getGeneratedKeys();
-            assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(6L));
-            assertFalse(stmt.execute(String.format(sql3, 1, "init"), new String[]{"no"}));
-            generatedKeysResultSet = stmt.getGeneratedKeys();
-            assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(7L));
+        if (PostgreSQL != currentDbType()) {
+            try (
+                    Connection connection = shardingDataSource.getConnection();
+                    Statement stmt = connection.createStatement()) {
+                assertFalse(stmt.execute(String.format(sql3, 1, "init")));
+                assertFalse(stmt.getGeneratedKeys().next());
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), Statement.NO_GENERATED_KEYS));
+                assertFalse(stmt.getGeneratedKeys().next());
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), Statement.RETURN_GENERATED_KEYS));
+                ResultSet generatedKeysResultSet = stmt.getGeneratedKeys();
+                assertTrue(generatedKeysResultSet.next());
+                assertThat(generatedKeysResultSet.getLong(1), is(3L));
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), new int[]{1}));
+                generatedKeysResultSet = stmt.getGeneratedKeys();
+                assertTrue(generatedKeysResultSet.next());
+                assertThat(generatedKeysResultSet.getLong(1), is(4L));
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), new String[]{"user_id"}));
+                generatedKeysResultSet = stmt.getGeneratedKeys();
+                assertTrue(generatedKeysResultSet.next());
+                assertThat(generatedKeysResultSet.getLong(1), is(5L));
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), new int[]{2}));
+                generatedKeysResultSet = stmt.getGeneratedKeys();
+                assertTrue(generatedKeysResultSet.next());
+                assertThat(generatedKeysResultSet.getLong(1), is(6L));
+                assertFalse(stmt.execute(String.format(sql3, 1, "init"), new String[]{"no"}));
+                generatedKeysResultSet = stmt.getGeneratedKeys();
+                assertTrue(generatedKeysResultSet.next());
+                assertThat(generatedKeysResultSet.getLong(1), is(7L));
+            }
         }
     }
 }

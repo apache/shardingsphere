@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -307,9 +308,11 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertSetQueryTimeout() throws SQLException {
-        actual.executeQuery(sql);
-        actual.setQueryTimeout(10);
-        assertThat(actual.getQueryTimeout(), is(10));
+        if (PostgreSQL != currentDbType()) {
+            actual.executeQuery(sql);
+            actual.setQueryTimeout(10);
+            assertThat(actual.getQueryTimeout(), is(10));
+        }
     }
     
     @Test

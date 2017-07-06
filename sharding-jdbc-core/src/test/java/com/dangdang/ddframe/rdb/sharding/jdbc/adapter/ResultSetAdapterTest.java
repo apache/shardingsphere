@@ -91,10 +91,10 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection) throws SQLException {
         // H2数据库未实现getFetchDirection方法
-        assertThat(actual.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? ResultSet.FETCH_FORWARD : fetchDirection));
+        assertThat(actual.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || DatabaseType.PostgreSQL == currentDbType() ? ResultSet.FETCH_FORWARD : fetchDirection));
         assertThat(actual.getResultSets().size(), is(10));
         for (ResultSet each : actual.getResultSets()) {
-            assertThat(each.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? ResultSet.FETCH_FORWARD : fetchDirection));
+            assertThat(each.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || DatabaseType.PostgreSQL == currentDbType() ? ResultSet.FETCH_FORWARD : fetchDirection));
         }
     }
     
@@ -102,15 +102,15 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     public void assertSetFetchSize() throws SQLException {
         assertThat(actual.getFetchSize(), is(0));
         actual.setFetchSize(100);
-        assertFetchSize((AbstractResultSetAdapter) actual, 100);
+        assertFetchSize((AbstractResultSetAdapter) actual);
     }
     
-    private void assertFetchSize(final AbstractResultSetAdapter actual, final int fetchSize) throws SQLException {
+    private void assertFetchSize(final AbstractResultSetAdapter actual) throws SQLException {
         // H2数据库未实现getFetchSize方法
-        assertThat(actual.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : fetchSize));
+        assertThat(actual.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : 100));
         assertThat(actual.getResultSets().size(), is(10));
         for (ResultSet each : actual.getResultSets()) {
-            assertThat(each.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : fetchSize));
+            assertThat(each.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : 100));
         }
     }
     

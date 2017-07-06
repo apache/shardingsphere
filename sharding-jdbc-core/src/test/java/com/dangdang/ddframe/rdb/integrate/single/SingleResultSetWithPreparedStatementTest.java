@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.single;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ public final class SingleResultSetWithPreparedStatementTest extends AbstractSing
     
     @Test
     public void assertSelectWithRowCountAndOffset() throws SQLException, DatabaseUnitException {
-        if ("mysql".equals(currentDbType())) {
+        if (DatabaseType.MySQL == currentDbType()) {
             String sql = "SELECT o.* FROM t_order o WHERE o.user_id = ? ORDER BY o.order_id limit ?, ?";
             String expectedDataSetFile = "integrate/dataset/single/expect/SelectWithLimit.xml";
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order", sql, 10, 2, 4);
