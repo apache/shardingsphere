@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.decorator;
 
-import com.dangdang.ddframe.rdb.sharding.merger.stream.AbstractStreamResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.AbstractDelegateResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 
@@ -31,37 +31,34 @@ import java.util.Collections;
  * @author gaohongtao
  * @author zhangliang
  */
-public final class LimitResultSet extends AbstractStreamResultSet {
+public final class LimitResultSet extends AbstractDelegateResultSet {
     
     private final Limit limit;
+    
+    private final boolean skipAll;
     
     private int rowNumber;
     
     public LimitResultSet(final ResultSet resultSet, final SQLStatement sqlStatement) throws SQLException {
         super(Collections.singletonList(resultSet));
         limit = sqlStatement.getLimit();
-    }
-    
-    @Override
-    protected boolean firstNext() throws SQLException {
-        return skipOffset() && doNext();
+        skipAll = skipOffset();
     }
     
     private boolean skipOffset() throws SQLException {
         for (int i = 0; i < limit.getOffsetValue(); i++) {
             if (!getDelegate().next()) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
     
     @Override
-    protected boolean afterFirstNext() throws SQLException {
-        return doNext();
-    }
-    
-    private boolean doNext() throws SQLException {
+    public boolean next() throws SQLException {
+        if (skipAll) {
+            return false;
+        }
         if (limit.getRowCountValue() > 0) {
             return ++rowNumber <= limit.getRowCountValue() && getDelegate().next();
         }
