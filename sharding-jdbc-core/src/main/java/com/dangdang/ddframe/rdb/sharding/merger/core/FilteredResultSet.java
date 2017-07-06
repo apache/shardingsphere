@@ -15,27 +15,32 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.fixture;
+package com.dangdang.ddframe.rdb.sharding.merger.core;
 
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.AbstractStreamResultSet;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
 
-public final class TestResultSetRow implements ResultSetRow {
+/**
+ * 过滤掉空的结果集.
+ *
+ * @author zhangliang
+ */
+public final class FilteredResultSet extends AbstractStreamResultSet {
     
-    private final Object[] dataRow;
-    
-    public TestResultSetRow(final Object... dataRow) {
-        this.dataRow = dataRow;
+    public FilteredResultSet(final ResultSet resultSetWhenNextOnce) throws SQLException {
+        super(Collections.singletonList(resultSetWhenNextOnce));
     }
     
     @Override
-    public Object getCell(final int columnIndex) {
-        return dataRow[columnIndex - 1];
+    protected boolean firstNext() throws SQLException {
+        return true;
     }
     
     @Override
-    public ResultSet getResultSet() {
-        return null;
+    protected boolean afterFirstNext() throws SQLException {
+        return getDelegate().next();
     }
 }

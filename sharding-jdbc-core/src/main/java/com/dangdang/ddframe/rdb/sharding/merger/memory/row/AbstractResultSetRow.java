@@ -18,6 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.merger.memory.row;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,13 +33,18 @@ import java.sql.SQLException;
  */
 public abstract class AbstractResultSetRow implements ResultSetRow {
     
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private ResultSet resultSet;
+    
     private final Object[] data;
     
     public AbstractResultSetRow(final ResultSet resultSet) throws SQLException {
-        data = load(resultSet);
+        this.resultSet = resultSet;
+        data = load();
     }
     
-    private Object[] load(final ResultSet resultSet) throws SQLException {
+    private Object[] load() throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {

@@ -39,6 +39,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
+@Deprecated
 public final class ResultSetFactory {
     
     /**

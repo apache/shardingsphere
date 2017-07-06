@@ -108,6 +108,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
             entry.getValue().merge(getAggregationValues(resultSet, 
                     entry.getKey().getDerivedAggregationSelectItems().isEmpty() ? Collections.singletonList(entry.getKey()) : entry.getKey().getDerivedAggregationSelectItems()));
         }
+        setResultSet(resultSet);
     }
     
     private List<Comparable<?>> getAggregationValues(final ResultSet resultSet, final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {

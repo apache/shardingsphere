@@ -257,8 +257,6 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
         throw new SQLFeatureNotSupportedException();
     }
     
-
-    
     @Override
     public final int getType() throws SQLException {
         throw new SQLFeatureNotSupportedException();
@@ -268,8 +266,6 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
     public final int getConcurrency() throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
-    
-
     
     @Override
     public final Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {

@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.memory.row;
 
+import java.sql.ResultSet;
+
 /**
  * 结果集数据行接口.
  * 
@@ -33,4 +35,11 @@ public interface ResultSetRow {
      * @return 数据行数据
      */
     Object getCell(int columnIndex);
+    
+    /**
+     * 获取结果集.
+     * 
+     * @return 结果集
+     */
+    ResultSet getResultSet();
 }
