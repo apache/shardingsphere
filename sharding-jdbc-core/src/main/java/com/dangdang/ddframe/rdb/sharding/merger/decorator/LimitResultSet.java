@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.limit;
+package com.dangdang.ddframe.rdb.sharding.merger.decorator;
 
 import com.dangdang.ddframe.rdb.sharding.merger.stream.AbstractStreamResultSet;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;

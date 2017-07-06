@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.decorator.LimitResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.stream.GroupByStreamResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.GroupByMemoryResultSet;
 import com.dangdang.ddframe.rdb.sharding.merger.stream.IteratorStreamResultSet;
@@ -59,16 +59,8 @@ public final class ResultSetFactory {
     
     private static ResultSet buildResultSet(final ShardingResultSets shardingResultSets, final SQLStatement sqlStatement) throws SQLException {
         ResultSetMergeContext resultSetMergeContext = new ResultSetMergeContext(shardingResultSets, sqlStatement);
-        ResultSet result;
-        if (resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent()) {
-            result = buildMemoryResultSet(resultSetMergeContext);
-        } else {
-            result = buildStreamResultSet(resultSetMergeContext);
-        }
-        if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
-            result = new LimitResultSet(result, resultSetMergeContext.getSqlStatement());
-        }
-        return result;
+        ResultSet resultSet = resultSetMergeContext.getSqlStatement().isGroupByAndOrderByDifferent() ? buildMemoryResultSet(resultSetMergeContext) : buildStreamResultSet(resultSetMergeContext);
+        return decorateResultSet(resultSetMergeContext, resultSet);
     }
     
     private static ResultSet buildMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
@@ -84,6 +76,14 @@ public final class ResultSetFactory {
         }
         if (!resultSetMergeContext.getSqlStatement().getGroupByItems().isEmpty() || !resultSetMergeContext.getSqlStatement().getAggregationSelectItems().isEmpty()) {
             result = new GroupByStreamResultSet(result, resultSetMergeContext);
+        }
+        return result;
+    }
+    
+    private static ResultSet decorateResultSet(final ResultSetMergeContext resultSetMergeContext, final ResultSet resultSet) throws SQLException {
+        ResultSet result = resultSet;
+        if (null != resultSetMergeContext.getSqlStatement().getLimit()) {
+            result = new LimitResultSet(result, resultSetMergeContext.getSqlStatement());
         }
         return result;
     }
