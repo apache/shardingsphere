@@ -87,7 +87,6 @@ public class SQLParser extends AbstractParser {
      */
     // TODO 完善Expression解析的各种场景
     public final SQLExpression parseExpression() {
-      //start update by boddi
       SQLExpression expression;
         do {
             String literals = getLexer().getCurrentToken().getLiterals();
@@ -109,7 +108,6 @@ public class SQLParser extends AbstractParser {
 
             getLexer().nextToken();
         } while (skipIfEqual(Literals.IDENTIFIER));
-      //end update by boddi
       return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
     }
     
@@ -265,7 +263,7 @@ public class SQLParser extends AbstractParser {
     private void parseConditions(final SQLStatement sqlStatement) {
         do {
             parseComparisonCondition(sqlStatement);
-        } while (skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR)); //update by boddi
+        } while (skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR));
       if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
         }

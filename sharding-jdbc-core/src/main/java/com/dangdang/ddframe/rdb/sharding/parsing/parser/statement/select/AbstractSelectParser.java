@@ -317,12 +317,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             parseTable();
             if (sqlParser.skipIfEqual(DefaultKeyword.ON)) {
                 do {
-                    sqlParser.skipIfEqual(Symbol.LEFT_PAREN);//update by boddi
+                    sqlParser.skipIfEqual(Symbol.LEFT_PAREN);
                     parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition());
                     sqlParser.accept(Symbol.EQ);
                     parseTableCondition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
-                    sqlParser.skipIfEqual(Symbol.RIGHT_PAREN);//update by boddi
-                } while (sqlParser.skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR));//update by boddi
+                    sqlParser.skipIfEqual(Symbol.RIGHT_PAREN);
+                } while (sqlParser.skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR));
             } else if (sqlParser.skipIfEqual(DefaultKeyword.USING)) {
                 sqlParser.skipParentheses();
             }

@@ -37,7 +37,7 @@ import java.util.Set;
 public final class SelectStatementParserTest extends AbstractStatementParserTest {
 
     @Test
-    public void parseCondition() throws SQLException {
+    public void parseOrCondition() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         String sql = " select * from (SELECT"
             + "        t.*"
@@ -63,13 +63,12 @@ public final class SelectStatementParserTest extends AbstractStatementParserTest
     }
 
     @Test
-    public void parseCondition2() throws SQLException {
+    public void parseParentheses() throws SQLException {
         ShardingRule shardingRule = createShardingRule();
         String sql = " select * from (SELECT"
             + "        t.*"
             + "        FROM `TABLE_XXX` t, `ACCOUNT` acc"
-            + "        where t.`field1` is not null and ((t.type in ('1') and t.to_id = acc.id) "
-            + "     or (t.type in ('2') and t.from_id = acc.id))) d "
+            + "        where t.`field1` is not null and ((t.type in ('1') and t.to_id = acc.id))) d "
             + "        where d.id=1";
         SQLStatement sqlStatement = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule).parse();
         List<Object> params = new ArrayList();
@@ -89,7 +88,7 @@ public final class SelectStatementParserTest extends AbstractStatementParserTest
         String sql = " select * from (SELECT"
             + "        TX.*"
             + "        FROM `TABLE_XXX` TX ,  "
-            + "      LEFT OUTER JOIN ACCOUNT FROM_ACC ON (FROM_ACC.ID = TX.FROM_ID)"
+            + "      LEFT OUTER JOIN ACCOUNT FROM_ACC ON (FROM_ACC.ID = TX.FROM_ID or FROM_ACC.ID=TX.TO_ID)"
             + "      LEFT OUTER JOIN ACCOUNT TO_ACC ON (TO_ACC.ID = TX.TO_ID)"
             + "        where (TX.`field1` is not null or TX.`filed1`>'1')) d "
             + "        where d.id=1";
