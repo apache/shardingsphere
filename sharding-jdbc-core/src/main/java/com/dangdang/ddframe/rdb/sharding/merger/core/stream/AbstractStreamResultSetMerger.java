@@ -15,8 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.core;
+package com.dangdang.ddframe.rdb.sharding.merger.core.stream;
 
+import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,7 +42,7 @@ import java.util.Calendar;
  */
 @Getter
 @Setter
-public abstract class AbstractStreamMergeResultSet implements MergeResultSet {
+public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     
     private ResultSet currentResultSet;
     

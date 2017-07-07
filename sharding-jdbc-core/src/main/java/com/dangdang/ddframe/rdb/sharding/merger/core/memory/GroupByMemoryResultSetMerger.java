@@ -15,14 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.memory;
+package com.dangdang.ddframe.rdb.sharding.merger.core.memory;
 
-import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMergeContext;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.GroupByResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
-import com.google.common.base.Optional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,11 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 分组的内存结果集.
- * 
+ * 内存分组归并结果集接口.
+ *
  * @author zhangliang
  */
-public final class GroupByMemoryResultSet extends AbstractMemoryResultSet {
+public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetMerger {
     
     private final List<OrderItem> groupByItems;
     
@@ -50,16 +47,17 @@ public final class GroupByMemoryResultSet extends AbstractMemoryResultSet {
     
     private Iterator<GroupByResultSetRow> data;
     
-    public GroupByMemoryResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        super(resultSetMergeContext.getShardingResultSets().getResultSets());
-        groupByItems = resultSetMergeContext.getSqlStatement().getGroupByItems();
-        orderByItems = resultSetMergeContext.getSqlStatement().getOrderByItems();
-        aggregationColumns = resultSetMergeContext.getSqlStatement().getAggregationSelectItems();
+    public GroupByMemoryResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets,
+                                        final List<OrderItem> groupByItems, final List<OrderItem> orderByItems, final List<AggregationSelectItem> aggregationColumns) throws SQLException {
+        super(labelAndIndexMap);
+        this.groupByItems = groupByItems;
+        this.orderByItems = orderByItems;
+        this.aggregationColumns = aggregationColumns;
         dataMap = new HashMap<>(1024);
+        init(resultSets);
     }
     
-    @Override
-    protected void initRows(final List<ResultSet> resultSets) throws SQLException {
+    private void init(final List<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
             while (each.next()) {
                 GroupByResultSetRow groupByResultSetRow = new GroupByResultSetRow(each, groupByItems, orderByItems, aggregationColumns);
@@ -75,13 +73,15 @@ public final class GroupByMemoryResultSet extends AbstractMemoryResultSet {
         List<GroupByResultSetRow> data = new ArrayList<>(dataMap.values());
         Collections.sort(data);
         this.data = data.iterator();
+        setCurrentResultSetRow(data.get(0));
     }
     
     @Override
-    protected Optional<? extends ResultSetRow> nextRow() throws SQLException {
+    public boolean next() throws SQLException {
         if (data.hasNext()) {
-            return Optional.of(data.next());
+            setCurrentResultSetRow(data.next());
+            return true;
         }
-        return Optional.absent();
+        return false;
     }
 }

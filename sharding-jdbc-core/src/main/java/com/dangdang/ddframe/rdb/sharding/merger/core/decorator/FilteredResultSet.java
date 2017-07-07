@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.core;
+package com.dangdang.ddframe.rdb.sharding.merger.core.decorator;
 
 import com.dangdang.ddframe.rdb.sharding.merger.stream.AbstractStreamResultSet;
 

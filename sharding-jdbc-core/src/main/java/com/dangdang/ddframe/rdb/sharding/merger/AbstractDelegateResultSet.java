@@ -31,11 +31,8 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -336,46 +333,6 @@ public abstract class AbstractDelegateResultSet extends AbstractResultSetAdapter
     @Override
     public final boolean wasNull() throws SQLException {
         return delegate.wasNull();
-    }
-    
-    @Override
-    public final int getFetchDirection() throws SQLException {
-        return delegate.getFetchDirection();
-    }
-    
-    @Override
-    public final int getFetchSize() throws SQLException {
-        return delegate.getFetchSize();
-    }
-    
-    @Override
-    public final int getType() throws SQLException {
-        return delegate.getType();
-    }
-    
-    @Override
-    public final int getConcurrency() throws SQLException {
-        return delegate.getConcurrency();
-    }
-    
-    @Override
-    public final Statement getStatement() throws SQLException {
-        return delegate.getStatement();
-    }
-    
-    @Override
-    public final SQLWarning getWarnings() throws SQLException {
-        return delegate.getWarnings();
-    }
-    
-    @Override
-    public final void clearWarnings() throws SQLException {
-        delegate.clearWarnings();
-    }
-    
-    @Override
-    public final ResultSetMetaData getMetaData() throws SQLException {
-        return delegate.getMetaData();
     }
     
     @Override

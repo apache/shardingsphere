@@ -26,7 +26,7 @@ import java.util.Calendar;
  *
  * @author zhangliang
  */
-public interface MergeResultSet {
+public interface ResultSetMerger {
     
     /**
      * 遍历下一个结果数据.

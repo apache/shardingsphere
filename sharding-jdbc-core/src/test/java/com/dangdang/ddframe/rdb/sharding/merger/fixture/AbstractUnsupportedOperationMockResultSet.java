@@ -17,7 +17,7 @@
     
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -26,16 +26,23 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+
+public abstract class AbstractUnsupportedOperationMockResultSet extends AbstractResultSetAdapter {
     
-public abstract class AbstractUnsupportedOperationMockResultSet extends AbstractUnsupportedOperationResultSet {
+    public AbstractUnsupportedOperationMockResultSet() throws SQLException {
+        super(Collections.singletonList(mock(ResultSet.class)));
+    }
     
     @Override
     public final boolean wasNull() throws SQLException {
@@ -223,47 +230,12 @@ public abstract class AbstractUnsupportedOperationMockResultSet extends Abstract
     }
     
     @Override
-    public final SQLWarning getWarnings() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final void clearWarnings() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
     public final Reader getCharacterStream(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
     public final Reader getCharacterStream(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final void setFetchDirection(final int direction) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final int getFetchDirection() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final void setFetchSize(final int rows) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final int getType() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public final int getConcurrency() throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     

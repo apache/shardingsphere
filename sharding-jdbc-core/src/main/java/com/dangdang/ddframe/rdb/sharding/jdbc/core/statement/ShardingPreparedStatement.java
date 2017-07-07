@@ -24,8 +24,8 @@ import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatemen
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.core.MergeResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.core.MergeResultSetFactory;
+import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.core.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -82,12 +82,10 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet result;
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-//            result = ResultSetFactory.getResultSet(new PreparedStatementExecutor(getShardingConnection().getShardingContext().getExecutorEngine(), 
-//                    getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery(), getRouteResult().getSqlStatement());
-            
+            // TODO refactor
             List<ResultSet> resultSets = new PreparedStatementExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
-            Optional<MergeResultSet> mergeResultSet = MergeResultSetFactory.getResultSet(resultSets, getRouteResult().getSqlStatement());
+            Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, getRouteResult().getSqlStatement());
             if (mergeResultSet.isPresent()) {
                 result = new ShardingResultSet(resultSets, getRouteResult().getSqlStatement(), mergeResultSet.get());
             } else {

@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.memory.MemoryResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.GroupByResultSetRowTest;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.OrderByResultSetRowTest;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRowTest;
@@ -25,32 +24,21 @@ import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.Accumulat
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AggregationUnitFactoryTest;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AverageAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.ComparableAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.AggregationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.NullableAggregationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.OrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ShardingResultSetsTest.class, 
-    ResultSetMergeContextTest.class, 
-    IteratorResultSetTest.class, 
-    OrderByResultSetTest.class, 
-    AggregationResultSetTest.class, 
-    NullableAggregationResultSetTest.class, 
-    ResultSetRowTest.class, 
-    OrderByResultSetRowTest.class, 
-    GroupByResultSetRowTest.class, 
-    AggregationUnitFactoryTest.class, 
-    ComparableAggregationUnitTest.class, 
-    AccumulationAggregationUnitTest.class, 
-    AverageAggregationUnitTest.class, 
-    UnsupportedOperationDerivedColumnResultSetTest.class, 
-    MemoryResultSetTest.class, 
-    ResultSetUtilTest.class
+        ResultSetRowTest.class, 
+        OrderByResultSetRowTest.class, 
+        GroupByResultSetRowTest.class, 
+        AggregationUnitFactoryTest.class, 
+        ComparableAggregationUnitTest.class, 
+        AccumulationAggregationUnitTest.class, 
+        AverageAggregationUnitTest.class, 
+        UnsupportedOperationDerivedColumnResultSetTest.class, 
+        ResultSetUtilTest.class
     })
 public class AllMergerTests {
 }

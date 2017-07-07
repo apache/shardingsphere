@@ -15,66 +15,67 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.stream;
+package com.dangdang.ddframe.rdb.sharding.merger.core.stream;
 
-import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMergeContext;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * 流式排序的聚集结果集.
+ * 排序归并结果集接口.
  *
- * @author gaohongtao
  * @author zhangliang
  */
-@Slf4j
-public final class OrderByStreamResultSet extends AbstractStreamResultSet {
+public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
-    private final Queue<ComparableResultSet> priorityQueue;
+    private final Queue<ComparableResultSet> resultSets;
     
-    private final List<OrderItem> orderItems;
+    private final List<OrderItem> orderByItems;
     
-    public OrderByStreamResultSet(final ResultSetMergeContext resultSetMergeContext) throws SQLException {
-        super(resultSetMergeContext.getShardingResultSets().getResultSets());
-        priorityQueue = new PriorityQueue<>(getResultSets().size());
-        orderItems = resultSetMergeContext.getSqlStatement().getOrderByItems();
+    private boolean isFirstNext = true;
+    
+    public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
+        this.resultSets = new PriorityQueue<>(resultSets.size());
+        this.orderByItems = orderByItems;
+        initResultSet(resultSets);
     }
     
-    @Override
-    protected boolean firstNext() throws SQLException {
-        for (ResultSet each : getResultSets()) {
+    private void initResultSet(final Collection<ResultSet> resultSets) throws SQLException {
+        for (ResultSet each : resultSets) {
             ComparableResultSet comparableResultSet = new ComparableResultSet(each);
             if (comparableResultSet.next()) {
-                priorityQueue.offer(comparableResultSet);
+                this.resultSets.offer(comparableResultSet);
             }
         }
-        return hasNext();
+        setCurrentResultSet(this.resultSets.peek().resultSet);
     }
     
     @Override
-    protected boolean afterFirstNext() throws SQLException {
-        ComparableResultSet firstResultSet = priorityQueue.poll();
-        setDelegate(firstResultSet.resultSet);
+    public boolean next() throws SQLException {
+        if (isFirstNext) {
+            isFirstNext = false;
+            return hasNext();
+        }
+        ComparableResultSet firstResultSet = resultSets.poll();
+        setCurrentResultSet(firstResultSet.resultSet);
         if (firstResultSet.next()) {
-            priorityQueue.offer(firstResultSet);
+            resultSets.offer(firstResultSet);
         }
         return hasNext();
     }
     
     private boolean hasNext() {
-        if (priorityQueue.isEmpty()) {
+        if (resultSets.isEmpty()) {
             return false;
         }
-        setDelegate(priorityQueue.peek().resultSet);
-        log.trace("Chosen order by value: {}", priorityQueue.peek().row);
+        setCurrentResultSet(resultSets.peek().resultSet);
         return true;
     }
     
@@ -88,7 +89,7 @@ public final class OrderByStreamResultSet extends AbstractStreamResultSet {
         boolean next() throws SQLException {
             boolean result = resultSet.next();
             if (result) {
-                row = new OrderByResultSetRow(resultSet, orderItems);
+                row = new OrderByResultSetRow(resultSet, orderByItems);
             }
             return result;
         }

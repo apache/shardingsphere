@@ -17,6 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.core;
 
+import com.dangdang.ddframe.rdb.sharding.merger.core.decorator.FilteredResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.core.memory.GroupByMemoryResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.core.stream.IteratorStreamResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.core.stream.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -34,13 +38,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 分片结果集归并工厂.
+ * 分片结果集归并引擎.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class MergeResultSetFactory {
+public final class MergeEngine {
     
     /**
      * 获取结果集.
@@ -50,15 +54,18 @@ public final class MergeResultSetFactory {
      * @return 结果集包装
      * @throws SQLException SQL异常
      */
-    public static Optional<MergeResultSet> getResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+    public static Optional<ResultSetMerger> getResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
         return buildResultSet(resultSets, sqlStatement);
     }
     
-    private static Optional<MergeResultSet> buildResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+    private static Optional<ResultSetMerger> buildResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+        // TODO MOVE TO sqlStatement
         Map<String, Integer> columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(resultSets.get(0));
         setIndexForAggregationItem(sqlStatement, columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getOrderByItems());
         setIndexForOrderItem(columnLabelIndexMap, sqlStatement.getGroupByItems());
+        
+        
         List<ResultSet> filteredResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             if (each.next()) {
@@ -72,16 +79,16 @@ public final class MergeResultSetFactory {
                 ? buildMemoryResultSet(filteredResults, sqlStatement) : buildStreamResultSet(filteredResults, sqlStatement));
     }
     
-    private static MergeResultSet buildMemoryResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
-        return new GroupByMemoryMergeResultSet(
+    private static ResultSetMerger buildMemoryResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+        return new GroupByMemoryResultSetMerger(
                 ResultSetUtil.getColumnLabelIndexMap(resultSets.get(0)), resultSets, sqlStatement.getGroupByItems(), sqlStatement.getOrderByItems(), sqlStatement.getAggregationSelectItems());
     }
     
-    private static MergeResultSet buildStreamResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
+    private static ResultSetMerger buildStreamResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
         if (sqlStatement.getGroupByItems().isEmpty() && sqlStatement.getOrderByItems().isEmpty()) {
-            return new IteratorStreamMergeResultSet(resultSets);
+            return new IteratorStreamResultSetMerger(resultSets);
         }
-        return new OrderByStreamMergeResultSet(resultSets, sqlStatement.getOrderByItems());
+        return new OrderByStreamResultSetMerger(resultSets, sqlStatement.getOrderByItems());
     }
     
     private static void setIndexForAggregationItem(final SQLStatement sqlStatement, final Map<String, Integer> columnLabelIndexMap) {

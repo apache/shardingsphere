@@ -23,7 +23,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +50,22 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
+    // TODO should return sharding statement in future
+    public final Statement getStatement() throws SQLException {
+        return getResultSets().get(0).getStatement();
+    }
+    
+    @Override
+    public final ResultSetMetaData getMetaData() throws SQLException {
+        return getResultSets().get(0).getMetaData();
+    }
+    
+    @Override
+    public int findColumn(final String columnLabel) throws SQLException {
+        return getResultSets().get(0).findColumn(columnLabel);
+    }
+    
+    @Override
     public final void close() throws SQLException {
         closed = true;
         Collection<SQLException> exceptions = new LinkedList<>();
@@ -67,15 +86,69 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (ResultSet each : resultSets) {
-            each.setFetchDirection(direction);
+            try {
+                each.setFetchDirection(direction);
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    @Override
+    public final int getFetchDirection() throws SQLException {
+        return getResultSets().get(0).getFetchDirection();
     }
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (ResultSet each : resultSets) {
-            each.setFetchSize(rows);
+            try {
+                each.setFetchSize(rows);
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    @Override
+    public final int getFetchSize() throws SQLException {
+        int result = 0;
+        for (ResultSet each : resultSets) {
+            result += each.getFetchSize();
+        }
+        return result;
+    }
+    
+    @Override
+    public final int getType() throws SQLException {
+        return getResultSets().get(0).getType();
+    }
+    
+    @Override
+    public final int getConcurrency() throws SQLException {
+        return getResultSets().get(0).getConcurrency();
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() throws SQLException {
+        return getResultSets().get(0).getWarnings();
+    }
+    
+    @Override
+    public final void clearWarnings() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (ResultSet each : getResultSets()) {
+            try {
+                each.clearWarnings();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
 }

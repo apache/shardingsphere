@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MergerTestUtil {
     
-    
     public static ResultSet mockResult(final List<String> columnNames) throws SQLException {
         ResultSet result = getResultSet(columnNames);
         when(result.next()).thenReturn(true, false);

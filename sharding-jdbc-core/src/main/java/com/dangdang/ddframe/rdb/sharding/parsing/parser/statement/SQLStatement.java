@@ -97,7 +97,6 @@ public interface SQLStatement {
      */
     List<SQLToken> getSqlTokens();
     
-    
     /**
      * 判断是否需要内存排序.
      *

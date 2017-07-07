@@ -15,8 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.core;
+package com.dangdang.ddframe.rdb.sharding.merger.core.memory;
 
+import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,7 +38,7 @@ import java.util.Map;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractMemoryMergeResultSet implements MergeResultSet {
+public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     
     private final Map<String, Integer> labelAndIndexMap;
     

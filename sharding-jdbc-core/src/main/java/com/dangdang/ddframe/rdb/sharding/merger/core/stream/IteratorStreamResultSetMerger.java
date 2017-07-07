@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.core;
+package com.dangdang.ddframe.rdb.sharding.merger.core.stream;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,23 +27,22 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class IteratorStreamMergeResultSet extends AbstractStreamMergeResultSet {
+public final class IteratorStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
     private final Iterator<ResultSet> resultSets;
     
-    public IteratorStreamMergeResultSet(final List<ResultSet> resultSets) {
+    public IteratorStreamResultSetMerger(final List<ResultSet> resultSets) {
         this.resultSets = resultSets.iterator();
         setCurrentResultSet(this.resultSets.next());
     }
     
     @Override
     public boolean next() throws SQLException {
-        boolean currentNext = getCurrentResultSet().next();
-        if (!currentNext && !resultSets.hasNext()) {
-            return false;
-        }
-        if (currentNext) {
+        if (getCurrentResultSet().next()) {
             return true;
+        }
+        if (!resultSets.hasNext()) {
+            return false;
         }
         setCurrentResultSet(resultSets.next());
         return getCurrentResultSet().next();
