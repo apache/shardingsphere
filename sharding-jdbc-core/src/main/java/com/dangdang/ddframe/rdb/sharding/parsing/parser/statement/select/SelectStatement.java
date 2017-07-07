@@ -58,7 +58,11 @@ public final class SelectStatement extends AbstractSQLStatement {
         super(SQLType.SELECT);
     }
     
-    @Override
+    /**
+     * 获取聚合选择项集合.
+     *
+     * @return 聚合选择项
+     */
     public List<AggregationSelectItem> getAggregationSelectItems() {
         List<AggregationSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
@@ -73,7 +77,12 @@ public final class SelectStatement extends AbstractSQLStatement {
         return result;
     }
     
-    public Limit getLimit() {
-        return limit;
+    /**
+     * 判断是否需要内存排序.
+     *
+     * @return 是否需要内存排序
+     */
+    public boolean isGroupByAndOrderByDifferent() {
+        return !getGroupByItems().isEmpty() && !getOrderByItems().equals(getGroupByItems());
     }
 }

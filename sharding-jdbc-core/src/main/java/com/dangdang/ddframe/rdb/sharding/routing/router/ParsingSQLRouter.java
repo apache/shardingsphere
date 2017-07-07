@@ -26,6 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.SQLParsingEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLBuilder;
 import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
@@ -86,8 +87,8 @@ public final class ParsingSQLRouter implements SQLRouter {
         RoutingResult routingResult = route(parameters, sqlStatement);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, sqlStatement);
         boolean isSingleRouting = routingResult.isSingleRouting();
-        if (null != sqlStatement.getLimit()) {
-            sqlStatement.getLimit().processParameters(parameters, !isSingleRouting);
+        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
+            ((SelectStatement) sqlStatement).getLimit().processParameters(parameters, !isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         if (routingResult instanceof CartesianRoutingResult) {

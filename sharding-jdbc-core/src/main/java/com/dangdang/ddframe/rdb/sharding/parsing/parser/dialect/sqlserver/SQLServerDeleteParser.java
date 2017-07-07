@@ -17,9 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver;
 
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.AbstractDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.delete.AbstractDeleteParser;
 
 /**
  * SQLServer Delete语句解析器.
@@ -34,7 +36,9 @@ public final class SQLServerDeleteParser extends AbstractDeleteParser {
     
     @Override
     protected void skipBetweenDeleteAndTable() {
-        ((SQLServerParser) getSqlParser()).parseTop(getDeleteStatement());
+        if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
+            throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
+        }
         ((SQLServerParser) getSqlParser()).skipOutput();
         getSqlParser().skipIfEqual(DefaultKeyword.FROM);
     }

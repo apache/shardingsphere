@@ -22,6 +22,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
@@ -61,7 +62,11 @@ public final class SQLRewriteEngine {
         this.originalSQL = originalSQL;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
         tableNames = sqlStatement.getTables().getTableNames();
-        limit = sqlStatement.getLimit();
+        if (sqlStatement instanceof SelectStatement) {
+            limit = ((SelectStatement) sqlStatement).getLimit();
+        } else {
+            limit = null;
+        }
     }
     
     /**
