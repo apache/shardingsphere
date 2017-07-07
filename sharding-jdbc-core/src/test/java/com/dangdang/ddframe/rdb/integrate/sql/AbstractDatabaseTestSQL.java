@@ -77,12 +77,6 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_ORDER_BY_WITH_ALIAS_SQL = "SELECT order_id as order_id_alias,user_id, status FROM t_order" 
             + " WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id";
     
-    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
-    
-    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_WITH_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s";
-    
     private static final String SELECT_LIKE_WITH_BINDING_TABLE_SQL = "SELECT count(0) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id "
             + "AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND o.status LIKE CONCAT('%%', %s, '%%')";
     
@@ -116,7 +110,13 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL = "SELECT user_id AS uid FROM t_order WHERE order_id IN (%s, %s)";
     
     @Override
-    public abstract String getSelectLimitWithBindingTableSql();
+    public abstract String getSelectPagingWithOffsetAndRowCountSql();
+    
+    @Override
+    public abstract String getSelectPagingWithRowCountSql();
+    
+    @Override
+    public abstract String getSelectPagingWithOffsetSql();
     
     @Override
     public String getSelectCountAliasSql() {
@@ -256,16 +256,6 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectOrderByWithAliasSql() {
         return SELECT_ORDER_BY_WITH_ALIAS_SQL;
-    }
-    
-    @Override
-    public String getSelectLimitWithBindingTableWithoutOffsetSql() {
-        return SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL;
-    }
-    
-    @Override
-    public String getSelectLimitWithBindingTableWithOffsetSql() {
-        return SELECT_LIMIT_WITH_BINDING_TABLE_WITH_OFFSET_SQL;
     }
     
     @Override

@@ -27,7 +27,7 @@ public final class ShardingMasterSlaveForStatementWithSelectTest extends Abstrac
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = getDatabaseTestSQL().getSelectLimitWithBindingTableSql();
+        String sql = getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql();
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTable.xml", 
                 getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 2));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 10000, 2));

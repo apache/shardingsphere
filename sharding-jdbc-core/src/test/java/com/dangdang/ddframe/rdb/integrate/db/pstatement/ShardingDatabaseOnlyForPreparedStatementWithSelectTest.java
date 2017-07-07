@@ -61,13 +61,13 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
         String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectLimitWithBindingTable.xml";
         if (PostgreSQL == currentDbType()) {
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 1.5, 2.4);
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 1.5, 2.4);
         } else {
             assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 2, 2);
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 2, 2);
         }
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), 
-                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql()), 10, 19, 1000, 1909, 10000, 2);
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 10000, 2);
     }
     
     @Test
@@ -83,9 +83,9 @@ public class ShardingDatabaseOnlyForPreparedStatementWithSelectTest extends Abst
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
         String expectedDataSetFile = "integrate/dataset/db/expect/select/SelectLimitWithBindingTableWithoutOffset.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(), "t_order_item", 
-                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 2);
+                replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithRowCountSql()), 10, 19, 1000, 1909, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item",
-                replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql()), 10, 19, 1000, 1909, 0);
+                replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithRowCountSql()), 10, 19, 1000, 1909, 0);
     }
     
     @Test

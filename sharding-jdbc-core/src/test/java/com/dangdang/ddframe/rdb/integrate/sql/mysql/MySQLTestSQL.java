@@ -253,7 +253,7 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     }
     
     @Override
-    public String getSelectLimitWithBindingTableSql() {
+    public String getSelectPagingWithOffsetAndRowCountSql() {
         return SELECT_LIMIT_WITH_BINDING_TABLE_SQL;
     }
     
@@ -263,12 +263,12 @@ public final class MySQLTestSQL implements DatabaseTestSQL {
     }
     
     @Override
-    public String getSelectLimitWithBindingTableWithoutOffsetSql() {
+    public String getSelectPagingWithRowCountSql() {
         return SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL;
     }
     
     @Override
-    public String getSelectLimitWithBindingTableWithOffsetSql() {
+    public String getSelectPagingWithOffsetSql() {
         return SELECT_LIMIT_WITH_BINDING_TABLE_WITHOUT_OFFSET_SQL;
     }
     

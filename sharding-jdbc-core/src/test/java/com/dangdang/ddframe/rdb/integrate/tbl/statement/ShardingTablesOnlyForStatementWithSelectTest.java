@@ -65,9 +65,9 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
         String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 2, 2));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 2, 2));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectLimitWithBindingTableSql(), 10, 19, 1000, 1909, 10000, 2));
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 10000, 2));
     }
     
     @Test

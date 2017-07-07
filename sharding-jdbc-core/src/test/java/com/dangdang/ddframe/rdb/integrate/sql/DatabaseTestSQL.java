@@ -73,13 +73,13 @@ public interface DatabaseTestSQL {
     
     String getSelectInWithSingleTableSql();
     
-    String getSelectLimitWithBindingTableSql();
-    
     String getSelectOrderByWithAliasSql();
     
-    String getSelectLimitWithBindingTableWithoutOffsetSql();
+    String getSelectPagingWithOffsetAndRowCountSql();
     
-    String getSelectLimitWithBindingTableWithOffsetSql();
+    String getSelectPagingWithRowCountSql();
+    
+    String getSelectPagingWithOffsetSql();
     
     String getSelectLikeWithBindingTableSql();
     

@@ -47,7 +47,7 @@ public final class StaticShardingBothForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = getDatabaseTestSQL().getSelectLimitWithBindingTableSql();
+        String sql = getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql();
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 2));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 10000, 2));
     }
