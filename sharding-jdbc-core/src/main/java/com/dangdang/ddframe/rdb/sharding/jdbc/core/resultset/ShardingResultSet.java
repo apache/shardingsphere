@@ -338,8 +338,9 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     }
     
     @Override
+    // TODO should return sharding statement in future
     public Statement getStatement() throws SQLException {
-        return mergeResultSet.getCurrentResultSet().getStatement();
+        return getResultSets().get(0).getStatement();
     }
     
     @Override

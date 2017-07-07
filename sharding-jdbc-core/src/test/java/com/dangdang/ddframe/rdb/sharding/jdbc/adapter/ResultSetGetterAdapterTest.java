@@ -31,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -391,29 +390,5 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     @Test
     public void assertGetObjectForColumnLabel() throws SQLException {
         assertThat(actual.getObject("uid").toString(), is("10"));
-    }
-    
-    @Test
-    public void assertGetObjectForColumnIndexWithMap() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getObject(1, Collections.<String, Class<?>>emptyMap());
-            } catch (final SQLException ignore) {
-            }
-        } else {
-            assertThat(actual.getObject(1, Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
-        }
-    }
-    
-    @Test
-    public void assertGetObjectForColumnLabelWithMap() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            try {
-                actual.getObject("uid", Collections.<String, Class<?>>emptyMap());
-            } catch (final SQLException ignore) {
-            }
-        } else {
-            assertThat(actual.getObject("uid", Collections.<String, Class<?>>emptyMap()).toString(), is("10"));
-        }
     }
 }
