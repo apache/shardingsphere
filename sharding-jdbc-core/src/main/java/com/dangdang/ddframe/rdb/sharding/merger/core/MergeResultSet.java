@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.core;
 
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -36,13 +35,6 @@ public interface MergeResultSet {
      * @throws SQLException SQL异常
      */
     boolean next()throws SQLException;
-    
-    /**
-     * 获取当前结果集.
-     * 
-     * @return 当前结果集
-     */
-    ResultSet getCurrentResultSet();
     
     /**
      * 获取值.

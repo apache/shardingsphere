@@ -37,7 +37,7 @@ import java.util.Calendar;
 /**
  * 流式归并结果集.
  *
- * @author zhangliang
+ * @author thor zhangliang
  */
 @Getter
 @Setter

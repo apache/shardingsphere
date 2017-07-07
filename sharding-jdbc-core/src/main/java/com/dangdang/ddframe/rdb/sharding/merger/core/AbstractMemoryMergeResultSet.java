@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.core;
 
 import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -26,7 +25,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
@@ -43,14 +41,8 @@ public abstract class AbstractMemoryMergeResultSet implements MergeResultSet {
     
     private final Map<String, Integer> labelAndIndexMap;
     
-    @Getter
     @Setter
     private ResultSetRow currentResultSetRow;
-    
-    @Override
-    public ResultSet getCurrentResultSet() {
-        return currentResultSetRow.getResultSet();
-    }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
