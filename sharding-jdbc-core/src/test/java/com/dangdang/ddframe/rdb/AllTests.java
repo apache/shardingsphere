@@ -25,8 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllShardingTests.class,
-        AllIntegrateTests.class
+    AllShardingTests.class,
+    AllIntegrateTests.class
     })
 public class AllTests {
 }

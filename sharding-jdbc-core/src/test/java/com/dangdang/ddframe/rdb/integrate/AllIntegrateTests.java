@@ -37,6 +37,6 @@ import org.junit.runners.Suite.SuiteClasses;
     AllSingleResultSetTests.class,
     AllShardingMasterAndSlaveTests.class,
     ShardingForNullableWithAggregateTest.class 
-})
+    })
 public class AllIntegrateTests {
 }

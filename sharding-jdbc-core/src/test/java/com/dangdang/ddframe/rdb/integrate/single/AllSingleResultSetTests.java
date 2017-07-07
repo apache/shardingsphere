@@ -22,8 +22,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        SingleResultSetWithPreparedStatementTest.class,
-        SingleResultSetWithStatementTest.class
+    SingleResultSetWithPreparedStatementTest.class,
+    SingleResultSetWithStatementTest.class
     })
 public class AllSingleResultSetTests {
 }

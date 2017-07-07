@@ -22,7 +22,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
-        MetricsContextTest.class
+    MetricsContextTest.class
     )
 public class AllMetricsTests {
 }

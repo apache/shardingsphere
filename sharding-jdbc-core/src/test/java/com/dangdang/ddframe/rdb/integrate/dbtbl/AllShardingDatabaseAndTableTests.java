@@ -24,8 +24,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AllStaticShardingDatabaseAndTableTests.class,
-        AllDynamicShardingDatabaseAndTableTests.class
-})
+    AllStaticShardingDatabaseAndTableTests.class,
+    AllDynamicShardingDatabaseAndTableTests.class
+    })
 public class AllShardingDatabaseAndTableTests {
 }

@@ -26,10 +26,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ShardingMasterSlaveForPStatementWithDMLTest.class,
-        ShardingMasterSlaveForPStatementWithSelectTest.class,
-        ShardingMasterSlaveForStatementWithDMLTest.class,
-        ShardingMasterSlaveForStatementWithSelectTest.class
-})
+    ShardingMasterSlaveForPStatementWithDMLTest.class,
+    ShardingMasterSlaveForPStatementWithSelectTest.class,
+    ShardingMasterSlaveForStatementWithDMLTest.class,
+    ShardingMasterSlaveForStatementWithSelectTest.class
+    })
 public class AllShardingMasterAndSlaveTests {
 }
