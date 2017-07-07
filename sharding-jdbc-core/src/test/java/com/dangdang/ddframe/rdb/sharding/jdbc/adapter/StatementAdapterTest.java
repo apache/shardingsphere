@@ -48,13 +48,14 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     private Statement actual;
     
-    private String sql = getDatabaseTestSQL().getSelectGroupByUserIdSql();
+    private String sql;
     
     @Before
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
         shardingConnection.setReadOnly(false);
         actual = shardingConnection.createStatement();
+        sql = getDatabaseTestSQL().getSelectGroupByUserIdSql();
     }
     
     @After

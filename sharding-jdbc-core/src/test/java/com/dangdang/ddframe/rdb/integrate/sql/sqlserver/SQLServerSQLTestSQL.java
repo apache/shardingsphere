@@ -27,8 +27,16 @@ public final class SQLServerSQLTestSQL extends AbstractDatabaseTestSQL {
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) AS row_"
             + " WHERE row_.rownum > %s";
     
+    private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY user_id";
+    
     @Override
     public String getSelectLimitWithBindingTableSql() {
         return SELECT_LIMIT_WITH_BINDING_TABLE_SQL;
     }
+    
+    @Override
+    public String getSelectGroupByUserIdSql() {
+        return SELECT_GROUP_BY_USER_ID_SQL;
+    }
+    
 }
