@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.StatementRoutingEngine;
@@ -105,7 +106,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         try {
             // TODO refactor
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
-            Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, getRouteResult().getSqlStatement());
+            Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement());
             if (mergeResultSet.isPresent()) {
                 result = new ShardingResultSet(resultSets, mergeResultSet.get());
             } else {
@@ -255,7 +256,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
             resultSets.add(each.getResultSet());
         }
         // TODO refactor
-        Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, getRouteResult().getSqlStatement());
+        Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement());
         if (mergeResultSet.isPresent()) {
             currentResultSet = new ShardingResultSet(resultSets, mergeResultSet.get());
         } else {
