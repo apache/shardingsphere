@@ -40,14 +40,10 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.*;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
@@ -96,7 +92,7 @@ public abstract class AbstractDBUnitTest {
             InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
             IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
             IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(DB_ENV.getDriverClassName(), DB_ENV.getURL(getDatabaseName(each)), 
-                    DB_ENV.getUsername(), DB_ENV.getPassword(), DB_ENV.getSchema());
+                    DB_ENV.getUsername(), DB_ENV.getPassword(), DB_ENV.getSchema(getDatabaseName(each)));
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
         }
@@ -131,6 +127,9 @@ public abstract class AbstractDBUnitTest {
         result.setUsername(DB_ENV.getUsername());
         result.setPassword(DB_ENV.getPassword());
         result.setMaxActive(1000);
+        if (Oracle == DB_ENV.getDatabaseType()) {
+            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSource));
+        }
         DATA_SOURCES.put(dataSource, result);
         return result;
     }
