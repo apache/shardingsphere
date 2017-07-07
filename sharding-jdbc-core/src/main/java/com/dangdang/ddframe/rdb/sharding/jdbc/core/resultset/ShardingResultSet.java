@@ -20,7 +20,6 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
 import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -46,41 +45,14 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final ResultSetMerger mergeResultSet;
     
-    private final SQLStatement sqlStatement;
-    
-    private final boolean skipAll;
-    
-    private int rowNumber;
-    
-    public ShardingResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement, final ResultSetMerger mergeResultSet) throws SQLException {
+    public ShardingResultSet(final List<ResultSet> resultSets, final ResultSetMerger mergeResultSet) throws SQLException {
         super(resultSets);
         this.mergeResultSet = mergeResultSet;
-        this.sqlStatement = sqlStatement;
-        skipAll = skipOffset();
-    }
-    
-    private boolean skipOffset() throws SQLException {
-        if (null == sqlStatement.getLimit()) {
-            return false;
-        }
-        for (int i = 0; i < sqlStatement.getLimit().getOffsetValue(); i++) {
-            if (!mergeResultSet.next()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (skipAll) {
-            return false;
-        }
-        if (null != sqlStatement.getLimit() && sqlStatement.getLimit().getRowCountValue() > 0) {
-            return ++rowNumber <= sqlStatement.getLimit().getRowCountValue() && mergeResultSet.next();
-        }
         return mergeResultSet.next();
-        
     }
     
     @Override

@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.core;
 
 import com.dangdang.ddframe.rdb.sharding.merger.core.decorator.FilteredResultSet;
+import com.dangdang.ddframe.rdb.sharding.merger.core.decorator.LimitDecoratorResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.memory.GroupByMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.stream.IteratorStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.stream.OrderByStreamResultSetMerger;
@@ -75,8 +76,9 @@ public final class MergeEngine {
         if (filteredResults.isEmpty()) {
             return Optional.absent();
         }
-        return Optional.of(!sqlStatement.getGroupByItems().isEmpty() || !sqlStatement.getAggregationSelectItems().isEmpty()
-                ? buildMemoryResultSet(filteredResults, sqlStatement) : buildStreamResultSet(filteredResults, sqlStatement));
+        ResultSetMerger result = !sqlStatement.getGroupByItems().isEmpty() || !sqlStatement.getAggregationSelectItems().isEmpty()
+                ? buildMemoryResultSet(filteredResults, sqlStatement) : buildStreamResultSet(filteredResults, sqlStatement);
+        return Optional.of(buildDecorateResultSet(result, sqlStatement));
     }
     
     private static ResultSetMerger buildMemoryResultSet(final List<ResultSet> resultSets, final SQLStatement sqlStatement) throws SQLException {
@@ -89,6 +91,14 @@ public final class MergeEngine {
             return new IteratorStreamResultSetMerger(resultSets);
         }
         return new OrderByStreamResultSetMerger(resultSets, sqlStatement.getOrderByItems());
+    }
+    
+    private static ResultSetMerger buildDecorateResultSet(final ResultSetMerger resultSetMerger, final SQLStatement sqlStatement) throws SQLException {
+        ResultSetMerger result = resultSetMerger;
+        if (null != sqlStatement.getLimit()) {
+            result = new LimitDecoratorResultSetMerger(result, sqlStatement.getLimit());
+        }
+        return result;
     }
     
     private static void setIndexForAggregationItem(final SQLStatement sqlStatement, final Map<String, Integer> columnLabelIndexMap) {
