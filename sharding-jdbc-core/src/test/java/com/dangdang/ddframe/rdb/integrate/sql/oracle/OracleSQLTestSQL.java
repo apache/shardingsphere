@@ -26,11 +26,25 @@ public final class OracleSQLTestSQL extends AbstractDatabaseTestSQL {
             + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
             + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= ?) WHERE rownum > ?";
     
-    private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
+    private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT"
+            + " order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id"
+            + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
+            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= ?)";
     
-    private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s";
+    private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT"
+            + " order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id"
+            + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
+            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_) WHERE rownum > ?";
+    
+    private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS usrid FROM t_order GROUP BY user_id";
+    
+    private static final String SELECT_USER_ID_BY_STATUS_SQL = "SELECT user_id AS usrid FROM t_order WHERE status = 'init'";
+    
+    private static final String SELECT_USER_ID_BY_IN_STATUS_SQL = "SELECT user_id AS usrid FROM t_order WHERE status IN (? ,? ,? ,? ,?)";
+    
+    private static final String SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL = "SELECT user_id AS usrid FROM t_order WHERE status = 'init' ORDER BY user_id";
+    
+    private static final String SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL = "SELECT user_id AS usrid FROM t_order WHERE order_id IN (%s, %s)";
     
     @Override
     public String getSelectPagingWithOffsetAndRowCountSql() {
@@ -47,4 +61,28 @@ public final class OracleSQLTestSQL extends AbstractDatabaseTestSQL {
         return SELECT_PAGING_WITH_OFFSET_SQL;
     }
     
+    @Override
+    public String getSelectGroupByUserIdSql() {
+        return SELECT_GROUP_BY_USER_ID_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdByStatusSql() {
+        return SELECT_USER_ID_BY_STATUS_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdByInStatusSql() {
+        return SELECT_USER_ID_BY_IN_STATUS_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdByStatusOrderByUserIdSql() {
+        return SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL;
+    }
+    
+    @Override
+    public String getSelectUserIdWhereOrderIdInSql() {
+        return SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL;
+    }
 }

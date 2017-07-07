@@ -26,9 +26,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.*;
 
 public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
     
@@ -119,8 +117,10 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     
     @Test
     public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
-        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectLikeWithBindingTable.xml", getShardingDataSource().getConnection(),
-                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithBindingTableSql()), 10, 11, 1000, 1109, "init");
+        if (MySQL == currentDbType()) {
+            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectLikeWithBindingTable.xml", getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithBindingTableSql()), 10, 11, 1000, 1109, "init");
+        }
     }
     
     @Test

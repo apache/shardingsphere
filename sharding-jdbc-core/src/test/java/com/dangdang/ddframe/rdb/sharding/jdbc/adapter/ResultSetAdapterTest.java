@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -143,6 +144,10 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertFindColumn() throws SQLException {
-        assertThat(actual.findColumn("uid"), is(1));
+        if (currentDbType() == Oracle) {
+            assertThat(actual.findColumn("usrid"), is(1));
+        } else {
+            assertThat(actual.findColumn("uid"), is(1));
+        }
     }
 }

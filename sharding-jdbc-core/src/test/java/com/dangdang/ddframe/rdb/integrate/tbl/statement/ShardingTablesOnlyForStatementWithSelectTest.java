@@ -25,7 +25,14 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
+
 public final class ShardingTablesOnlyForStatementWithSelectTest extends AbstractShardingTablesOnlyDBUnitTest {
+    
+    private static final String TABLE_ONLY_PREFIX = "integrate/dataset/tbl";
     
     private ShardingDataSource shardingDataSource;
     
@@ -63,11 +70,33 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
-        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 2, 2));
-        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 10000, 2));
+//        String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectLimitWithBindingTable.xml";
+//        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
+//                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 2, 2));
+//        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
+//                "t_order_item", String.format(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 10000, 2));
+//        
+        if (SQLServer == currentDbType()) {
+            String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/sqlserver/SelectLimitWithBindingTable.xml";
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 2, 10, 19, 1000, 1909, 2);
+            assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 2, 10, 19, 1000, 1909, 20);
+            return;
+        }
+        if (PostgreSQL == currentDbType()) {
+            String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTable.xml";
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 1.5, 2.4);
+        } else if (Oracle == currentDbType()) {
+            String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/oracle/SelectLimitWithBindingTable.xml";
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 2, 2);
+        } else {
+            String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectLimitWithBindingTable.xml";
+            assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 2, 2);
+        }
     }
     
     @Test

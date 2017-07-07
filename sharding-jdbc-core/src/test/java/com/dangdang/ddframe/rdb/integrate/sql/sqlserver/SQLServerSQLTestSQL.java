@@ -21,16 +21,22 @@ import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 
 public final class SQLServerSQLTestSQL extends AbstractDatabaseTestSQL {
     
-    private static final String SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT"
-            + " order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id"
-            + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
-            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= ?) WHERE rownum > ?";
+    private static final String SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL = "SELECT * FROM"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_"
+            + " WHERE row_.rownum > %s";
     
-    private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
+    private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT * FROM"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_";
     
-    private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s";
+    private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT * FROM"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_"
+            + " WHERE row_.rownum > %s";
     
     private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY user_id";
     
@@ -53,5 +59,4 @@ public final class SQLServerSQLTestSQL extends AbstractDatabaseTestSQL {
     public String getSelectGroupByUserIdSql() {
         return SELECT_GROUP_BY_USER_ID_SQL;
     }
-    
 }
