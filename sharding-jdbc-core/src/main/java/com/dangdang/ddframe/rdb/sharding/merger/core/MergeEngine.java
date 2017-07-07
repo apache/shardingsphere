@@ -23,11 +23,8 @@ import com.dangdang.ddframe.rdb.sharding.merger.core.memory.GroupByMemoryResultS
 import com.dangdang.ddframe.rdb.sharding.merger.core.stream.IteratorStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.stream.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +33,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 分片结果集归并引擎.
@@ -56,17 +52,7 @@ public final class MergeEngine {
      * @throws SQLException SQL异常
      */
     public static Optional<ResultSetMerger> getResultSet(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
-        return buildResultSet(resultSets, selectStatement);
-    }
-    
-    private static Optional<ResultSetMerger> buildResultSet(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
-        // TODO MOVE TO sqlStatement
-        Map<String, Integer> columnLabelIndexMap = ResultSetUtil.getColumnLabelIndexMap(resultSets.get(0));
-        setIndexForAggregationItem(selectStatement, columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, selectStatement.getOrderByItems());
-        setIndexForOrderItem(columnLabelIndexMap, selectStatement.getGroupByItems());
-        
-        
+        selectStatement.setIndexForItems(ResultSetUtil.getColumnLabelIndexMap(resultSets.get(0)));
         List<ResultSet> filteredResults = new ArrayList<>(resultSets.size());
         for (ResultSet each : resultSets) {
             if (each.next()) {
@@ -99,28 +85,5 @@ public final class MergeEngine {
             result = new LimitDecoratorResultSetMerger(result, selectStatement.getLimit());
         }
         return result;
-    }
-    
-    private static void setIndexForAggregationItem(final SelectStatement selectStatement, final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
-            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("Can't find index: %s", derived));
-                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
-            }
-        }
-    }
-    
-    private static void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
-        for (OrderItem each : orderItems) {
-            if (-1 != each.getIndex()) {
-                continue;
-            }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s", each));
-            if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
-                each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
-            }
-        }
     }
 }

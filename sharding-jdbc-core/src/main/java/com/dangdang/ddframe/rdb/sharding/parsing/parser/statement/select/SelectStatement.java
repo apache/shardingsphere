@@ -23,12 +23,14 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.AbstractSQLStatement;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Select SQL语句对象.
@@ -84,5 +86,37 @@ public final class SelectStatement extends AbstractSQLStatement {
      */
     public boolean isGroupByAndOrderByDifferent() {
         return !getGroupByItems().isEmpty() && !getOrderByItems().equals(getGroupByItems());
+    }
+    
+    /**
+     * 为选择项设置索引.
+     */
+    public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
+        setIndexForAggregationItem(columnLabelIndexMap);
+        setIndexForOrderItem(columnLabelIndexMap, orderByItems);
+        setIndexForOrderItem(columnLabelIndexMap, groupByItems);
+    }
+    
+    private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
+        for (AggregationSelectItem each : getAggregationSelectItems()) {
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
+            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("Can't find index: %s", derived));
+                derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
+            }
+        }
+    }
+    
+    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
+        for (OrderItem each : orderItems) {
+            if (-1 != each.getIndex()) {
+                continue;
+            }
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s", each));
+            if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
+                each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+            }
+        }
     }
 }
