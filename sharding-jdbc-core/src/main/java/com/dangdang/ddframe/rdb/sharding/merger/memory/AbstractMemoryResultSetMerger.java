@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
-import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByResultSetRow;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -43,7 +43,7 @@ public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     private final Map<String, Integer> labelAndIndexMap;
     
     @Setter
-    private ResultSetRow currentResultSetRow;
+    private GroupByResultSetRow currentResultSetRow;
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {

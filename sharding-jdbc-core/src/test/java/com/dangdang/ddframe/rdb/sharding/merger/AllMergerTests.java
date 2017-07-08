@@ -17,9 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByResultSetRowTest;
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByValueTest;
-import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRowTest;
 import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AccumulationAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnitFactoryTest;
 import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AverageAggregationUnitTest;
@@ -30,9 +28,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ResultSetRowTest.class, 
         OrderByValueTest.class, 
-        GroupByResultSetRowTest.class, 
         AggregationUnitFactoryTest.class, 
         ComparableAggregationUnitTest.class, 
         AccumulationAggregationUnitTest.class, 

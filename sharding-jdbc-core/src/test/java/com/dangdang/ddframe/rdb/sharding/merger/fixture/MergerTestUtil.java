@@ -17,9 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -42,29 +41,13 @@ public final class MergerTestUtil {
         return result;
     }
     
-    public static ResultSet mockResult(final List<String> columnNames, final List<ResultSetRow> resultSetRows) throws SQLException {
+    public static ResultSet mockResult(final List<String> columnNames, final List<Object> values) throws SQLException {
         ResultSet result = getResultSet(columnNames);
-        expectNext(result, resultSetRows);
-        expectGetData(result, columnNames, resultSetRows);
-        return result;
-    }
-    
-    private static void expectNext(final ResultSet result, final List<ResultSetRow> resultSetRows) throws SQLException {
-        Boolean[] hasNext = new Boolean[resultSetRows.size()];
-        for (int i = 0; i < resultSetRows.size(); i++) {
-            hasNext[i] = i != resultSetRows.size() - 1;
-        }
-        when(result.next()).thenReturn(true, hasNext);
-    }
-    
-    private static void expectGetData(final ResultSet result, final List<String> columnNames, final List<ResultSetRow> resultSetRows) throws SQLException {
+        when(result.next()).thenReturn(true, false);
         for (int i = 0; i < columnNames.size(); i++) {
-            Object[] resultData = new Object[resultSetRows.size() - 1];
-            for (int j = 1; j < resultSetRows.size(); j++) {
-                resultData[j - 1] = resultSetRows.get(j).getCell(i + 1);
-            }
-            when(result.getObject(i + 1)).thenReturn(resultSetRows.get(0).getCell(i + 1), resultData);
+            when(result.getObject(i + 1)).thenReturn(values.get(i));
         }
+        return result;
     }
     
     private static ResultSet getResultSet(final List<String> columnNames) throws SQLException {

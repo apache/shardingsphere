@@ -61,7 +61,7 @@ public final class MergeEngine {
     }
     
     private ResultSetMerger buildMemoryResultSet() throws SQLException {
-        return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement.getGroupByItems(), selectStatement.getOrderByItems(), selectStatement.getAggregationSelectItems());
+        return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
     }
     
     private ResultSetMerger buildStreamResultSet() throws SQLException {

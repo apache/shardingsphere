@@ -18,8 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger.memory;
 
 import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByResultSetRow;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,22 +36,15 @@ import java.util.Map;
  */
 public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetMerger {
     
-    private final List<OrderItem> groupByItems;
-    
-    private final List<OrderItem> orderByItems;
-    
-    private final List<AggregationSelectItem> aggregationColumns;
+    private final SelectStatement selectStatement;
     
     private final Map<List<Comparable<?>>, GroupByResultSetRow> dataMap;
     
     private Iterator<GroupByResultSetRow> data;
     
-    public GroupByMemoryResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets,
-                                        final List<OrderItem> groupByItems, final List<OrderItem> orderByItems, final List<AggregationSelectItem> aggregationColumns) throws SQLException {
+    public GroupByMemoryResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         super(labelAndIndexMap);
-        this.groupByItems = groupByItems;
-        this.orderByItems = orderByItems;
-        this.aggregationColumns = aggregationColumns;
+        this.selectStatement = selectStatement;
         dataMap = new HashMap<>(1024);
         init(resultSets);
     }
@@ -60,7 +52,7 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
     private void init(final List<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
             while (each.next()) {
-                GroupByResultSetRow groupByResultSetRow = new GroupByResultSetRow(each, groupByItems, orderByItems, aggregationColumns);
+                GroupByResultSetRow groupByResultSetRow = new GroupByResultSetRow(each, selectStatement);
                 if (!dataMap.containsKey(groupByResultSetRow.getGroupItemValues())) {
                     dataMap.put(groupByResultSetRow.getGroupItemValues(), groupByResultSetRow);
                 }

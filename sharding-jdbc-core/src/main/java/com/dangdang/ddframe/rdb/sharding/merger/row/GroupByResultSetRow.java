@@ -22,9 +22,13 @@ import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnitFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,13 +44,13 @@ import java.util.Map.Entry;
  * @author gaohongtao
  * @author zhangliang
  */
-public final class GroupByResultSetRow extends AbstractResultSetRow implements Comparable<GroupByResultSetRow> {
+public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow> {
     
-    private final ResultSet resultSet;
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private ResultSet resultSet;
     
-    private final List<OrderItem> groupByItems;
-    
-    private final List<OrderItem> orderByItems;
+    private final SelectStatement selectStatement;
     
     private final List<Comparable<?>> groupItemValues;
     
@@ -54,21 +58,42 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
     
     private final Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap;
     
-    public GroupByResultSetRow(
-            final ResultSet resultSet, final List<OrderItem> groupByItems, final List<OrderItem> orderByItems, final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {
-        super(resultSet);
+    private final Object[] data;
+    
+    public GroupByResultSetRow(final ResultSet resultSet, final SelectStatement selectStatement) throws SQLException {
         this.resultSet = resultSet;
-        this.groupByItems = groupByItems;
-        this.orderByItems = orderByItems;
+        data = load();
+        this.resultSet = resultSet;
+        this.selectStatement = selectStatement;
         groupItemValues = getGroupItemValues();
         orderItemValues = getOrderItemValues();
-        aggregationUnitMap = Maps.toMap(aggregationSelectItems, new Function<AggregationSelectItem, AggregationUnit>() {
+        aggregationUnitMap = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
             
             @Override
             public AggregationUnit apply(final AggregationSelectItem input) {
                 return AggregationUnitFactory.create(input.getType());
             }
         });
+    }
+    
+    private Object[] load() throws SQLException {
+        int columnCount = resultSet.getMetaData().getColumnCount();
+        Object[] result = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            result[i] = resultSet.getObject(i + 1);
+        }
+        return result;
+    }
+    
+    /**
+     * 获取数据.
+     * 
+     * @param columnIndex 列索引
+     * @return 数据
+     */
+    public Object getCell(final int columnIndex) {
+        Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);
+        return data[columnIndex - 1];
     }
     
     /**
@@ -78,8 +103,8 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
      * @throws SQLException SQL异常
      */
     public List<Comparable<?>> getGroupItemValues() throws SQLException {
-        List<Comparable<?>> result = new ArrayList<>(groupByItems.size());
-        for (OrderItem each : groupByItems) {
+        List<Comparable<?>> result = new ArrayList<>(selectStatement.getGroupByItems().size());
+        for (OrderItem each : selectStatement.getGroupByItems()) {
             Object value = resultSet.getObject(each.getIndex());
             Preconditions.checkState(value instanceof Comparable, "Group by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -88,8 +113,8 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
     }
     
     private List<Comparable<?>> getOrderItemValues() {
-        List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
-        for (OrderItem each : orderByItems) {
+        List<Comparable<?>> result = new ArrayList<>(selectStatement.getOrderByItems().size());
+        for (OrderItem each : selectStatement.getOrderByItems()) {
             Object value = getCell(each.getIndex());
             Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
@@ -126,22 +151,22 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
      */
     public void generateResult() {
         for (AggregationSelectItem each : aggregationUnitMap.keySet()) {
-            setCell(each.getIndex(), aggregationUnitMap.get(each).getResult());
+            data[each.getIndex() - 1] = aggregationUnitMap.get(each).getResult();
         }
     }
     
     @Override
     public int compareTo(final GroupByResultSetRow o) {
-        if (!orderByItems.isEmpty()) {
-            for (int i = 0; i < orderByItems.size(); i++) {
-                int result = compareTo(orderItemValues.get(i), o.orderItemValues.get(i), orderByItems.get(i).getType());
+        if (!selectStatement.getOrderByItems().isEmpty()) {
+            for (int i = 0; i < selectStatement.getOrderByItems().size(); i++) {
+                int result = compareTo(orderItemValues.get(i), o.orderItemValues.get(i), selectStatement.getOrderByItems().get(i).getType());
                 if (0 != result) {
                     return result;
                 }
             }
         } else {
-            for (int i = 0; i < groupByItems.size(); i++) {
-                int result = compareTo(groupItemValues.get(i), o.groupItemValues.get(i), groupByItems.get(i).getType());
+            for (int i = 0; i < selectStatement.getGroupByItems().size(); i++) {
+                int result = compareTo(groupItemValues.get(i), o.groupItemValues.get(i), selectStatement.getGroupByItems().get(i).getType());
                 if (0 != result) {
                     return result;
                 }
@@ -151,7 +176,7 @@ public final class GroupByResultSetRow extends AbstractResultSetRow implements C
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+    private static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
         return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

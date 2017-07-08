@@ -19,7 +19,6 @@ package com.dangdang.ddframe.rdb.sharding.merger.row;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.junit.Test;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -66,6 +64,6 @@ public final class OrderByValueTest {
     }
     
     private ResultSet createResultSet(final Object... values) throws SQLException {
-        return MergerTestUtil.mockResult(Arrays.asList("order_col_1", "order_col_2", "other_col"), Collections.<ResultSetRow>singletonList(new TestResultSetRow(values)));
+        return MergerTestUtil.mockResult(Arrays.asList("order_col_1", "order_col_2", "other_col"), Arrays.asList(values));
     }
 }
