@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.stream;
 
 import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
@@ -33,10 +34,12 @@ import java.util.Queue;
  *
  * @author zhangliang
  */
-public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
+public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
+    @Getter
     private final Queue<ComparableResultSet> resultSets;
     
+    @Getter
     private final List<OrderItem> orderByItems;
     
     private boolean isFirstNext;
@@ -44,11 +47,11 @@ public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetM
     public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
         this.resultSets = new PriorityQueue<>(resultSets.size());
         this.orderByItems = orderByItems;
-        initResultSet(resultSets);
+        orderResultSets(resultSets);
         isFirstNext = true;
     }
     
-    private void initResultSet(final Collection<ResultSet> resultSets) throws SQLException {
+    private void orderResultSets(final Collection<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
             ComparableResultSet comparableResultSet = new ComparableResultSet(each);
             if (comparableResultSet.next()) {

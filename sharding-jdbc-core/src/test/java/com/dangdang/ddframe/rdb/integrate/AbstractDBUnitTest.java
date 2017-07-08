@@ -40,10 +40,16 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.*;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {

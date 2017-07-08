@@ -64,7 +64,7 @@ public final class ResultSetUtil {
             return value.toString();
         } else {
             return value;
-        }    
+        }
     }
     
     private static Object convertNullValue(final Class<?> convertType) {
