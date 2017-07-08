@@ -104,7 +104,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
-            result = new ShardingResultSet(resultSets, MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement()));
+            result = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) getRouteResult().getSqlStatement()).merge());
         } finally {
             setCurrentResultSet(null);
         }
@@ -248,7 +248,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
-        currentResultSet = new ShardingResultSet(resultSets, MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement()));
+        currentResultSet = new ShardingResultSet(resultSets, new MergeEngine(resultSets, (SelectStatement) getRouteResult().getSqlStatement()).merge());
         return currentResultSet;
     }
 }
