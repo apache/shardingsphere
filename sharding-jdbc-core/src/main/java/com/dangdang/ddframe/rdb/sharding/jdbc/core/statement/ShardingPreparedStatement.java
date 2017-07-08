@@ -24,7 +24,6 @@ import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatemen
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -83,15 +82,9 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
         ResultSet result;
         try {
             Collection<PreparedStatementUnit> preparedStatementUnits = route();
-            // TODO refactor
             List<ResultSet> resultSets = new PreparedStatementExecutor(
                     getShardingConnection().getShardingContext().getExecutorEngine(), getRouteResult().getSqlStatement().getType(), preparedStatementUnits, getParameters()).executeQuery();
-            Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement());
-            if (mergeResultSet.isPresent()) {
-                result = new ShardingResultSet(resultSets, mergeResultSet.get());
-            } else {
-                result = resultSets.get(0);
-            }
+            result = new ShardingResultSet(resultSets, MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement()));
         } finally {
             clearBatch();
         }

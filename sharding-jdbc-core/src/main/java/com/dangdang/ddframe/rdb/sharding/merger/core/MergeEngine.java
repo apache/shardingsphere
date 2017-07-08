@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.merger.core.stream.IteratorStreamResult
 import com.dangdang.ddframe.rdb.sharding.merger.core.stream.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,14 +48,11 @@ public final class MergeEngine {
      * @return 结果集包装
      * @throws SQLException SQL异常
      */
-    public static Optional<ResultSetMerger> getResultSet(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+    public static ResultSetMerger getResultSet(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         selectStatement.setIndexForItems(ResultSetUtil.getColumnLabelIndexMap(resultSets.get(0)));
-        if (resultSets.isEmpty()) {
-            return Optional.absent();
-        }
         ResultSetMerger result = !selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()
                 ? buildMemoryResultSet(resultSets, selectStatement) : buildStreamResultSet(resultSets, selectStatement);
-        return Optional.of(buildDecorateResultSet(result, selectStatement));
+        return buildDecorateResultSet(result, selectStatement);
     }
     
     private static ResultSetMerger buildMemoryResultSet(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {

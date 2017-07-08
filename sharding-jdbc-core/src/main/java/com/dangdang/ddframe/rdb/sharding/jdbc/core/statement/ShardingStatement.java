@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.core.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
@@ -104,14 +103,8 @@ public class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet executeQuery(final String sql) throws SQLException {
         ResultSet result;
         try {
-            // TODO refactor
             List<ResultSet> resultSets = generateExecutor(sql).executeQuery();
-            Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement());
-            if (mergeResultSet.isPresent()) {
-                result = new ShardingResultSet(resultSets, mergeResultSet.get());
-            } else {
-                result = resultSets.get(0);
-            }
+            result = new ShardingResultSet(resultSets, MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement()));
         } finally {
             setCurrentResultSet(null);
         }
@@ -255,13 +248,7 @@ public class ShardingStatement extends AbstractStatementAdapter {
         for (Statement each : routedStatements) {
             resultSets.add(each.getResultSet());
         }
-        // TODO refactor
-        Optional<ResultSetMerger> mergeResultSet = MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement());
-        if (mergeResultSet.isPresent()) {
-            currentResultSet = new ShardingResultSet(resultSets, mergeResultSet.get());
-        } else {
-            currentResultSet = resultSets.get(0);
-        }
+        currentResultSet = new ShardingResultSet(resultSets, MergeEngine.getResultSet(resultSets, (SelectStatement) getRouteResult().getSqlStatement()));
         return currentResultSet;
     }
 }
