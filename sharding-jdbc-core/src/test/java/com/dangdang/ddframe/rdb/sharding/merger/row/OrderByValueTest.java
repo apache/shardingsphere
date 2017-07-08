@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.merger.row;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.TestResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import org.junit.Test;
 
@@ -32,31 +33,31 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class OrderByResultSetRowTest {
+public final class OrderByValueTest {
     
     @Test
     public void assertCompareToForAsc() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(
+        OrderByValue orderByValue1 = new OrderByValue(
                 createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
-        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(
+        OrderByValue orderByValue2 = new OrderByValue(
                 createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
-        assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) < 0);
+        assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
     }
     
     @Test
     public void assertCompareToForDesc() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow1 = new OrderByResultSetRow(
+        OrderByValue orderByValue1 = new OrderByValue(
                 createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        OrderByResultSetRow orderByResultSetRow2 = new OrderByResultSetRow(
+        OrderByValue orderByValue2 = new OrderByValue(
                 createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        assertTrue(orderByResultSetRow1.compareTo(orderByResultSetRow2) > 0);
+        assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
     }
     
     @Test
     public void assertCompareToWhenEqual() throws SQLException {
-        OrderByResultSetRow orderByResultSetRow = new OrderByResultSetRow(
+        OrderByValue orderByValue = new OrderByValue(
                 createResultSet("order_1", "order_2", "other"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        assertThat(orderByResultSetRow.compareTo(orderByResultSetRow), is(0));
+        assertThat(orderByValue.compareTo(orderByValue), is(0));
     }
     
     private ResultSet createResultSet(final Object... values) throws SQLException {

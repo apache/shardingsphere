@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.stream;
 
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -90,19 +89,19 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
         
         private final ResultSet resultSet;
         
-        private OrderByResultSetRow row;
+        private OrderByValue orderByValue;
     
         boolean next() throws SQLException {
             boolean result = isFirstNext || resultSet.next();
             if (result) {
-                row = new OrderByResultSetRow(resultSet, orderByItems);
+                orderByValue = new OrderByValue(resultSet, orderByItems);
             }
             return result;
         }
         
         @Override
         public int compareTo(final ComparableResultSet o) {
-            return row.compareTo(o.row);
+            return orderByValue.compareTo(o.orderByValue);
         }
     }
 }

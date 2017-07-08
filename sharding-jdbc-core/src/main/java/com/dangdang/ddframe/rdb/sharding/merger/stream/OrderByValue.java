@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.row;
+package com.dangdang.ddframe.rdb.sharding.merger.stream;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
@@ -27,27 +27,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 具有排序功能的数据行对象.
+ * 排序值对象.
  * 
- * @author gaohongtao
  * @author zhangliang
  */
-public final class OrderByResultSetRow extends AbstractResultSetRow implements Comparable<OrderByResultSetRow> {
+public final class OrderByValue implements Comparable<OrderByValue> {
+    
+    private final ResultSet resultSet;
     
     private final List<OrderItem> orderByItems;
     
     private final List<Comparable<?>> orderValues;
     
-    public OrderByResultSetRow(final ResultSet resultSet, final List<OrderItem> orderByItems) throws SQLException {
-        super(resultSet);
+    public OrderByValue(final ResultSet resultSet, final List<OrderItem> orderByItems) throws SQLException {
+        this.resultSet = resultSet;
         this.orderByItems = orderByItems;
         orderValues = getOrderValues();
     }
     
-    private List<Comparable<?>> getOrderValues() {
+    private List<Comparable<?>> getOrderValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderItem each : orderByItems) {
-            Object value = getCell(each.getIndex());
+            Object value = resultSet.getObject(each.getIndex());
             Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
@@ -55,7 +56,7 @@ public final class OrderByResultSetRow extends AbstractResultSetRow implements C
     }
     
     @Override
-    public int compareTo(final OrderByResultSetRow o) {
+    public int compareTo(final OrderByValue o) {
         for (int i = 0; i < orderByItems.size(); i++) {
             OrderItem thisOrderBy = orderByItems.get(i);
             int result = compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType());
