@@ -20,10 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.merger.stream;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,18 +34,27 @@ import java.util.List;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class OrderByValue implements Comparable<OrderByValue> {
     
+    @Getter
     private final ResultSet resultSet;
     
     private final List<OrderItem> orderByItems;
     
-    private final List<Comparable<?>> orderValues;
+    private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final ResultSet resultSet, final List<OrderItem> orderByItems) throws SQLException {
-        this.resultSet = resultSet;
-        this.orderByItems = orderByItems;
-        orderValues = getOrderValues();
+    /**
+     * 遍历下一个结果集游标.
+     * 
+     * @param isFirstNext 是否第一次调用
+     * @return 是否有下一个结果集
+     * @throws SQLException SQL异常
+     */
+    public boolean next(final boolean isFirstNext) throws SQLException {
+        boolean result = isFirstNext || resultSet.next();
+        orderValues = result ? getOrderValues() : Collections.<Comparable<?>>emptyList();
+        return result;
     }
     
     private List<Comparable<?>> getOrderValues() throws SQLException {
@@ -68,7 +80,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+    private static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
         return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

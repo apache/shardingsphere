@@ -18,8 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.stream;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,73 +33,50 @@ import java.util.Queue;
  */
 public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger {
     
-    @Getter
-    private final Queue<ComparableResultSet> resultSets;
-    
-    @Getter
     private final List<OrderItem> orderByItems;
+    
+    private final Queue<OrderByValue> orderByValuesQueue;
     
     private boolean isFirstNext;
     
     public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
-        this.resultSets = new PriorityQueue<>(resultSets.size());
         this.orderByItems = orderByItems;
-        orderResultSets(resultSets);
+        this.orderByValuesQueue = new PriorityQueue<>(resultSets.size());
+        orderResultSetsToQueue(resultSets);
         isFirstNext = true;
     }
     
-    private void orderResultSets(final Collection<ResultSet> resultSets) throws SQLException {
+    private void orderResultSetsToQueue(final Collection<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
-            ComparableResultSet comparableResultSet = new ComparableResultSet(each);
-            if (comparableResultSet.next()) {
-                this.resultSets.offer(comparableResultSet);
+            OrderByValue orderByValue = new OrderByValue(each, orderByItems);
+            if (orderByValue.next(false)) {
+                orderByValuesQueue.offer(orderByValue);
             }
         }
-        if (!this.resultSets.isEmpty()) {
-            setCurrentResultSet(this.resultSets.peek().resultSet);
+        if (!orderByValuesQueue.isEmpty()) {
+            setCurrentResultSet(orderByValuesQueue.peek().getResultSet());
         }
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (resultSets.isEmpty()) {
+        if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        ComparableResultSet firstResultSet = resultSets.poll();
-        setCurrentResultSet(firstResultSet.resultSet);
-        if (firstResultSet.next()) {
-            resultSets.offer(firstResultSet);
+        OrderByValue firstResultSet = orderByValuesQueue.poll();
+        setCurrentResultSet(firstResultSet.getResultSet());
+        if (firstResultSet.next(isFirstNext)) {
+            orderByValuesQueue.offer(firstResultSet);
         }
         isFirstNext = false;
         return hasNext();
     }
     
     private boolean hasNext() {
-        if (resultSets.isEmpty()) {
+        if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        setCurrentResultSet(resultSets.peek().resultSet);
+        setCurrentResultSet(orderByValuesQueue.peek().getResultSet());
         return true;
-    }
-    
-    @RequiredArgsConstructor
-    private class ComparableResultSet implements Comparable<ComparableResultSet> {
-        
-        private final ResultSet resultSet;
-        
-        private OrderByValue orderByValue;
-    
-        boolean next() throws SQLException {
-            boolean result = isFirstNext || resultSet.next();
-            if (result) {
-                orderByValue = new OrderByValue(resultSet, orderByItems);
-            }
-            return result;
-        }
-        
-        @Override
-        public int compareTo(final ComparableResultSet o) {
-            return orderByValue.compareTo(o.orderByValue);
-        }
     }
 }
