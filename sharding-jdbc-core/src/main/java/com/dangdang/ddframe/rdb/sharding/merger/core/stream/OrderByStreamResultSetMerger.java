@@ -39,12 +39,13 @@ public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetM
     
     private final List<OrderItem> orderByItems;
     
-    private boolean isFirstNext = true;
+    private boolean isFirstNext;
     
     public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
         this.resultSets = new PriorityQueue<>(resultSets.size());
         this.orderByItems = orderByItems;
         initResultSet(resultSets);
+        isFirstNext = true;
     }
     
     private void initResultSet(final Collection<ResultSet> resultSets) throws SQLException {
@@ -54,20 +55,22 @@ public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetM
                 this.resultSets.offer(comparableResultSet);
             }
         }
-        setCurrentResultSet(this.resultSets.peek().resultSet);
+        if (!this.resultSets.isEmpty()) {
+            setCurrentResultSet(this.resultSets.peek().resultSet);
+        }
     }
     
     @Override
     public boolean next() throws SQLException {
-        if (isFirstNext) {
-            isFirstNext = false;
-            return hasNext();
+        if (resultSets.isEmpty()) {
+            return false;
         }
         ComparableResultSet firstResultSet = resultSets.poll();
         setCurrentResultSet(firstResultSet.resultSet);
         if (firstResultSet.next()) {
             resultSets.offer(firstResultSet);
         }
+        isFirstNext = false;
         return hasNext();
     }
     
@@ -85,9 +88,9 @@ public final class OrderByStreamResultSetMerger extends AbstractStreamResultSetM
         private final ResultSet resultSet;
         
         private OrderByResultSetRow row;
-        
+    
         boolean next() throws SQLException {
-            boolean result = resultSet.next();
+            boolean result = isFirstNext || resultSet.next();
             if (result) {
                 row = new OrderByResultSetRow(resultSet, orderByItems);
             }

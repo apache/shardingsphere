@@ -73,7 +73,9 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
         List<GroupByResultSetRow> data = new ArrayList<>(dataMap.values());
         Collections.sort(data);
         this.data = data.iterator();
-        setCurrentResultSetRow(data.get(0));
+        if (!data.isEmpty()) {
+            setCurrentResultSetRow(data.get(0));
+        }
     }
     
     @Override

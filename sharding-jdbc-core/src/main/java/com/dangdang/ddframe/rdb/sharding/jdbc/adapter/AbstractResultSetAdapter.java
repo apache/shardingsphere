@@ -117,11 +117,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final int getFetchSize() throws SQLException {
-        int result = 0;
-        for (ResultSet each : resultSets) {
-            result += each.getFetchSize();
-        }
-        return result;
+        return getResultSets().get(0).getFetchSize();
     }
     
     @Override
