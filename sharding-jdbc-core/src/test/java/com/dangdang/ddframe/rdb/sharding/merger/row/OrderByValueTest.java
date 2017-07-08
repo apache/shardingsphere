@@ -39,10 +39,10 @@ public final class OrderByValueTest {
     public void assertCompareToForAsc() throws SQLException {
         OrderByValue orderByValue1 = new OrderByValue(
                 createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
-        orderByValue1.next(false);
+        orderByValue1.next();
         OrderByValue orderByValue2 = new OrderByValue(
                 createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(2, OrderType.ASC)));
-        orderByValue2.next(false);
+        orderByValue2.next();
         assertTrue(orderByValue1.compareTo(orderByValue2) < 0);
     }
     
@@ -50,10 +50,10 @@ public final class OrderByValueTest {
     public void assertCompareToForDesc() throws SQLException {
         OrderByValue orderByValue1 = new OrderByValue(
                 createResultSet("order_1", "order_2", "other_1"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        orderByValue1.next(false);
+        orderByValue1.next();
         OrderByValue orderByValue2 = new OrderByValue(
                 createResultSet("order_3", "order_4", "other_2"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        orderByValue2.next(false);
+        orderByValue2.next();
         assertTrue(orderByValue1.compareTo(orderByValue2) > 0);
     }
     
@@ -61,7 +61,7 @@ public final class OrderByValueTest {
     public void assertCompareToWhenEqual() throws SQLException {
         OrderByValue orderByValue = new OrderByValue(
                 createResultSet("order_1", "order_2", "other"), Arrays.asList(new OrderItem(1, OrderType.DESC), new OrderItem(2, OrderType.DESC)));
-        orderByValue.next(false);
+        orderByValue.next();
         assertThat(orderByValue.compareTo(orderByValue), is(0));
     }
     

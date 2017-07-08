@@ -47,12 +47,11 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     /**
      * 遍历下一个结果集游标.
      * 
-     * @param isFirstNext 是否第一次调用
      * @return 是否有下一个结果集
      * @throws SQLException SQL异常
      */
-    public boolean next(final boolean isFirstNext) throws SQLException {
-        boolean result = isFirstNext || resultSet.next();
+    public boolean next() throws SQLException {
+        boolean result = resultSet.next();
         orderValues = result ? getOrderValues() : Collections.<Comparable<?>>emptyList();
         return result;
     }

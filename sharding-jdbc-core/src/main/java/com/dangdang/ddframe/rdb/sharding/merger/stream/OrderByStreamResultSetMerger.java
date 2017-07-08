@@ -49,7 +49,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     private void orderResultSetsToQueue(final Collection<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
             OrderByValue orderByValue = new OrderByValue(each, orderByItems);
-            if (orderByValue.next(false)) {
+            if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }
         }
@@ -63,16 +63,14 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
-        OrderByValue firstResultSet = orderByValuesQueue.poll();
-        setCurrentResultSet(firstResultSet.getResultSet());
-        if (firstResultSet.next(isFirstNext)) {
-            orderByValuesQueue.offer(firstResultSet);
+        if (isFirstNext) {
+            isFirstNext = false;
+            return true;
         }
-        isFirstNext = false;
-        return hasNext();
-    }
-    
-    private boolean hasNext() {
+        OrderByValue firstOrderByValue = orderByValuesQueue.poll();
+        if (firstOrderByValue.next()) {
+            orderByValuesQueue.offer(firstOrderByValue);
+        }
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
