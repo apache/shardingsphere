@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;

@@ -24,7 +24,7 @@ import com.dangdang.ddframe.rdb.sharding.executor.type.prepared.PreparedStatemen
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractPreparedStatementAdapter;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSet;
-import com.dangdang.ddframe.rdb.sharding.merger.core.MergeEngine;
+import com.dangdang.ddframe.rdb.sharding.merger.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.GeneratedKey;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.routing.PreparedStatementRoutingEngine;

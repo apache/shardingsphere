@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractResultSetAdapter;
-import com.dangdang.ddframe.rdb.sharding.merger.core.ResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 
 import java.io.InputStream;

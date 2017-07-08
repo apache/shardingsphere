@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.GroupByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.OrderByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.ResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AccumulationAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AggregationUnitFactoryTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.AverageAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.row.aggregation.ComparableAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AccumulationAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnitFactoryTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AverageAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.ComparableAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -15,27 +15,31 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.fixture;
-
-import com.dangdang.ddframe.rdb.sharding.merger.row.ResultSetRow;
+package com.dangdang.ddframe.rdb.sharding.merger.row;
 
 import java.sql.ResultSet;
 
-public final class TestResultSetRow implements ResultSetRow {
+/**
+ * 结果集数据行接口.
+ * 
+ * <p>每个数据行表示结果集的一行数据.</p>
+ * 
+ * @author zhangliang
+ */
+public interface ResultSetRow {
     
-    private final Object[] dataRow;
+    /**
+     * 通过列索引访问数据行数据.
+     * 
+     * @param columnIndex 列索引, 与JDBC保持一致, 从1开始计数
+     * @return 数据行数据
+     */
+    Object getCell(int columnIndex);
     
-    public TestResultSetRow(final Object... dataRow) {
-        this.dataRow = dataRow;
-    }
-    
-    @Override
-    public Object getCell(final int columnIndex) {
-        return dataRow[columnIndex - 1];
-    }
-    
-    @Override
-    public ResultSet getResultSet() {
-        return null;
-    }
+    /**
+     * 获取结果集.
+     * 
+     * @return 结果集
+     */
+    ResultSet getResultSet();
 }
