@@ -26,9 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectS
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,12 +44,9 @@ import java.util.Map.Entry;
  */
 public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow> {
     
-    @Getter
-    @Setter(AccessLevel.PROTECTED)
-    private ResultSet resultSet;
-    
     private final SelectStatement selectStatement;
     
+    @Getter
     private final List<Comparable<?>> groupItemValues;
     
     private final List<Comparable<?>> orderItemValues;
@@ -61,12 +56,10 @@ public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow
     private final Object[] data;
     
     public GroupByResultSetRow(final ResultSet resultSet, final SelectStatement selectStatement) throws SQLException {
-        this.resultSet = resultSet;
-        data = load();
-        this.resultSet = resultSet;
+        data = load(resultSet);
         this.selectStatement = selectStatement;
-        groupItemValues = getGroupItemValues();
-        orderItemValues = getOrderItemValues();
+        groupItemValues = getGroupByItemValues();
+        orderItemValues = getOrderByItemValues();
         aggregationUnitMap = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
             
             @Override
@@ -76,11 +69,31 @@ public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow
         });
     }
     
-    private Object[] load() throws SQLException {
+    private Object[] load(final ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         Object[] result = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {
             result[i] = resultSet.getObject(i + 1);
+        }
+        return result;
+    }
+    
+    private List<Comparable<?>> getGroupByItemValues() throws SQLException {
+        List<Comparable<?>> result = new ArrayList<>(selectStatement.getGroupByItems().size());
+        for (OrderItem each : selectStatement.getGroupByItems()) {
+            Object value = getCell(each.getIndex());
+            Preconditions.checkState(value instanceof Comparable, "Group by value must implements Comparable");
+            result.add((Comparable<?>) value);
+        }
+        return result;
+    }
+    
+    private List<Comparable<?>> getOrderByItemValues() {
+        List<Comparable<?>> result = new ArrayList<>(selectStatement.getOrderByItems().size());
+        for (OrderItem each : selectStatement.getOrderByItems()) {
+            Object value = getCell(each.getIndex());
+            Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
+            result.add((Comparable<?>) value);
         }
         return result;
     }
@@ -97,32 +110,6 @@ public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow
     }
     
     /**
-     * 获取分组值.
-     *
-     * @return 分组值集合
-     * @throws SQLException SQL异常
-     */
-    public List<Comparable<?>> getGroupItemValues() throws SQLException {
-        List<Comparable<?>> result = new ArrayList<>(selectStatement.getGroupByItems().size());
-        for (OrderItem each : selectStatement.getGroupByItems()) {
-            Object value = resultSet.getObject(each.getIndex());
-            Preconditions.checkState(value instanceof Comparable, "Group by value must implements Comparable");
-            result.add((Comparable<?>) value);
-        }
-        return result;
-    }
-    
-    private List<Comparable<?>> getOrderItemValues() {
-        List<Comparable<?>> result = new ArrayList<>(selectStatement.getOrderByItems().size());
-        for (OrderItem each : selectStatement.getOrderByItems()) {
-            Object value = getCell(each.getIndex());
-            Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
-            result.add((Comparable<?>) value);
-        }
-        return result;
-    }
-    
-    /**
      * 处理聚合函数结果集.
      * 
      * @param resultSet 结果集
@@ -133,7 +120,6 @@ public final class GroupByResultSetRow implements Comparable<GroupByResultSetRow
             entry.getValue().merge(getAggregationValues(resultSet, 
                     entry.getKey().getDerivedAggregationSelectItems().isEmpty() ? Collections.singletonList(entry.getKey()) : entry.getKey().getDerivedAggregationSelectItems()));
         }
-        setResultSet(resultSet);
     }
     
     private List<Comparable<?>> getAggregationValues(final ResultSet resultSet, final List<AggregationSelectItem> aggregationSelectItems) throws SQLException {
