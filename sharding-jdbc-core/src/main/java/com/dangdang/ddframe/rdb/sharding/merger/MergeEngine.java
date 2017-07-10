@@ -17,10 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.decorator.LimitDecoratorResultSetMerger;
-import com.dangdang.ddframe.rdb.sharding.merger.memory.GroupByMemoryResultSetMerger;
-import com.dangdang.ddframe.rdb.sharding.merger.stream.IteratorStreamResultSetMerger;
-import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByStreamResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitDecoratorResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 
@@ -56,22 +56,20 @@ public final class MergeEngine {
      */
     public ResultSetMerger merge() throws SQLException {
         selectStatement.setIndexForItems(columnLabelIndexMap);
-        ResultSetMerger result = !selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty() ? buildMemoryResultSet() : buildStreamResultSet();
-        return buildDecorateResultSet(result);
+        return decorate(build());
     }
     
-    private ResultSetMerger buildMemoryResultSet() throws SQLException {
-        return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
-    }
-    
-    private ResultSetMerger buildStreamResultSet() throws SQLException {
-        if (selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
-            return new IteratorStreamResultSetMerger(resultSets);
+    private ResultSetMerger build() throws SQLException {
+        if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
+            return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
         }
-        return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
+        if (!selectStatement.getOrderByItems().isEmpty()) {
+            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
+        }
+        return new IteratorStreamResultSetMerger(resultSets);
     }
     
-    private ResultSetMerger buildDecorateResultSet(final ResultSetMerger resultSetMerger) throws SQLException {
+    private ResultSetMerger decorate(final ResultSetMerger resultSetMerger) throws SQLException {
         ResultSetMerger result = resultSetMerger;
         if (null != selectStatement.getLimit()) {
             result = new LimitDecoratorResultSetMerger(result, selectStatement.getLimit());

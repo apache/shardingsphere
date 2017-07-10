@@ -17,11 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.row.OrderByValueTest;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AccumulationAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnitFactoryTest;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AverageAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.ComparableAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.row.OrderByValueTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AccumulationAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnitFactoryTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AverageAggregationUnitTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.ComparableAggregationUnitTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

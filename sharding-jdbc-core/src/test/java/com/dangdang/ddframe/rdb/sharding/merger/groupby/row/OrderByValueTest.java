@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.row;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby.row;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.fixture.MergerTestUtil;
-import com.dangdang.ddframe.rdb.sharding.merger.stream.OrderByValue;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import org.junit.Test;
 

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.row.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation;
 
 import org.junit.Test;
 

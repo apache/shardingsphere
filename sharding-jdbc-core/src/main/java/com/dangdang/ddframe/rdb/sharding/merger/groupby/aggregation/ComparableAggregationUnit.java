@@ -15,49 +15,46 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.row.aggregation;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 平均值聚合单元.
+ * 比较聚合单元.
  * 
  * @author gaohongtao
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class AverageAggregationUnit implements AggregationUnit {
+public final class ComparableAggregationUnit implements AggregationUnit {
     
-    private BigDecimal count;
+    private final boolean asc;
     
-    private BigDecimal sum;
+    private Comparable<?> result;
     
+    @SuppressWarnings("unchecked")
     @Override
     public void merge(final List<Comparable<?>> values) {
-        if (null == values || null == values.get(0) || null == values.get(1)) {
+        if (null == values || null == values.get(0)) {
             return;
         }
-        if (null == count) {
-            count = new BigDecimal("0");
+        if (null == result) {
+            result = values.get(0);
+            log.trace("Comparable result: {}", result);
+            return;
         }
-        if (null == sum) {
-            sum = new BigDecimal("0");
+        int comparedValue = ((Comparable) values.get(0)).compareTo(result);
+        if (asc && comparedValue < 0 || !asc && comparedValue > 0) {
+            result = values.get(0);
+            log.trace("Comparable result: {}", result);
         }
-        count = count.add(new BigDecimal(values.get(0).toString()));
-        sum = sum.add(new BigDecimal(values.get(1).toString()));
-        log.trace("AVG result COUNT: {} SUM: {}", count, sum);
     }
     
     @Override
     public Comparable<?> getResult() {
-        if (null == count || BigDecimal.ZERO.equals(count)) {
-            return count;
-        }
-        // TODO 通过metadata获取数据库的浮点数精度值
-        return sum.divide(count, 4, BigDecimal.ROUND_HALF_UP);
+        return result;
     }
 }

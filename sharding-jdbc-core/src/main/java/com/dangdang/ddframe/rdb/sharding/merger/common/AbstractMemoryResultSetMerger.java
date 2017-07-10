@@ -15,54 +15,71 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.decorator;
+package com.dangdang.ddframe.rdb.sharding.merger.common;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
-import lombok.Getter;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByResultSetRow;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.io.InputStream;
+import java.io.Reader;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLXML;
 import java.util.Calendar;
+import java.util.Map;
 
 /**
- * 装饰结果集归并.
+ * 内存归并结果集.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-public abstract class AbstractDecoratorResultSetMerger implements ResultSetMerger {
+public abstract class AbstractMemoryResultSetMerger implements ResultSetMerger {
     
-    private final ResultSetMerger resultSetMerger;
-        
+    private final Map<String, Integer> labelAndIndexMap;
+    
+    @Setter
+    private GroupByResultSetRow currentResultSetRow;
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return resultSetMerger.getValue(columnIndex, type);
+        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
+            throw new SQLFeatureNotSupportedException();
+        }
+        return currentResultSetRow.getCell(columnIndex);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return resultSetMerger.getValue(columnLabel, type);
+        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
+            throw new SQLFeatureNotSupportedException();
+        }
+        return currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return resultSetMerger.getCalendarValue(columnIndex, type, calendar);
+        // TODO 时间相关取值未实现calendar模式
+        return currentResultSetRow.getCell(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        return resultSetMerger.getCalendarValue(columnLabel, type, calendar);
+        // TODO 时间相关取值未实现calendar模式
+        return currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        return resultSetMerger.getInputStream(columnIndex, type);
+        throw new SQLFeatureNotSupportedException();
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        return resultSetMerger.getInputStream(columnLabel, type);
+        throw new SQLFeatureNotSupportedException();
     }
 }

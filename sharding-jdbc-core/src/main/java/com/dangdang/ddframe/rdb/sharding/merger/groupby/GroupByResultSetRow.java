@@ -15,11 +15,11 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.row;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnit;
-import com.dangdang.ddframe.rdb.sharding.merger.row.aggregation.AggregationUnitFactory;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnit;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnitFactory;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;

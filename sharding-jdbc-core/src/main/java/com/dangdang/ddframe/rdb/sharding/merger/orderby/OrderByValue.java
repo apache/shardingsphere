@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.stream;
+package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;

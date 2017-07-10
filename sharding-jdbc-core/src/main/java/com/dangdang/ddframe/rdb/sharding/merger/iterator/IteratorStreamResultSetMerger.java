@@ -15,7 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.stream;
+package com.dangdang.ddframe.rdb.sharding.merger.iterator;
+
+import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractStreamResultSetMerger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

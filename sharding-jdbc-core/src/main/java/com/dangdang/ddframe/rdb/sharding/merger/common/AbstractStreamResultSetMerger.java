@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.stream;
+package com.dangdang.ddframe.rdb.sharding.merger.common;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
 import lombok.Getter;

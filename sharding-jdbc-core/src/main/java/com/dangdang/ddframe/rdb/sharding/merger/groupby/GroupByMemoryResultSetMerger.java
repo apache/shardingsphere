@@ -15,9 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.memory;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.sharding.merger.row.GroupByResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 
 import java.sql.ResultSet;

@@ -15,9 +15,10 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.decorator;
+package com.dangdang.ddframe.rdb.sharding.merger.limit;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractDecoratorResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 
 import java.sql.SQLException;
