@@ -22,21 +22,21 @@ import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 public final class SQLServerSQLTestSQL extends AbstractDatabaseTestSQL {
     
     private static final String SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL = "SELECT * FROM"
-            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id"
             + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_"
-            + " WHERE row_.rownum > %s";
+            + " WHERE row_.rownum_ > %s";
     
     private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT * FROM"
-            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id"
             + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_";
     
     private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT * FROM"
-            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum, o.order_id as order_id, o.status as status, o.user_id as user_id"
+            + " (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id"
             + " FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_"
-            + " WHERE row_.rownum > %s";
+            + " WHERE row_.rownum_ > %s";
     
     private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY user_id";
     
