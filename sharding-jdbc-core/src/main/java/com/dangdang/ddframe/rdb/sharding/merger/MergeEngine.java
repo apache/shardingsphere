@@ -17,9 +17,10 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitDecoratorResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitDecoratorResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -61,7 +62,11 @@ public final class MergeEngine {
     
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
-            return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+            if (selectStatement.isGroupByAndOrderByDifferent()) {
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+            } else {
+                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+            }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
             return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
