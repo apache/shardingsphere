@@ -103,8 +103,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     @Test
     public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
         if (currentDbType() == MySQL) {
-            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectLikeWithBindingTable.xml", getShardingDataSource().getConnection(),
-                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithBindingTableSql()), 10, 11, 1000, 1109, "init");
+            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectLikeWithCount.xml", getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithCountSql()), "init", 10, 11, 1000, 1909);
         }
     }
     

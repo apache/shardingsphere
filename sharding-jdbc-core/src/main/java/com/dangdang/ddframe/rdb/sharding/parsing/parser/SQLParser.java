@@ -58,8 +58,6 @@ public class SQLParser extends AbstractParser {
     
     private final ShardingRule shardingRule;
     
-    private int parametersIndex;
-    
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {
         super(lexer);
         this.shardingRule = shardingRule;
@@ -108,8 +106,8 @@ public class SQLParser extends AbstractParser {
     
     private SQLExpression getExpression(final String literals) {
         if (equalAny(Symbol.QUESTION)) {
-            parametersIndex++;
-            return new SQLPlaceholderExpression(parametersIndex - 1);
+            increaseParametersIndex();
+            return new SQLPlaceholderExpression(getParametersIndex() - 1);
         }
         if (equalAny(Literals.CHARS)) {
             return new SQLTextExpression(literals);
@@ -143,7 +141,7 @@ public class SQLParser extends AbstractParser {
     private void skipRestCompositeExpression() {
         while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
             if (equalAny(Symbol.QUESTION)) {
-                parametersIndex++;
+                increaseParametersIndex();
             }
             getLexer().nextToken();
             skipParentheses();

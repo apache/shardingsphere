@@ -81,7 +81,7 @@ public interface DatabaseTestSQL {
     
     String getSelectPagingWithOffsetSql();
     
-    String getSelectLikeWithBindingTableSql();
+    String getSelectLikeWithCountSql();
     
     String getSelectGroupWithBindingTableSql();
     

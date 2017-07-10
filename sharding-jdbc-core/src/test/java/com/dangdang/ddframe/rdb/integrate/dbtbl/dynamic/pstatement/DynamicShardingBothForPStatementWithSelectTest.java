@@ -26,6 +26,9 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+
 public final class DynamicShardingBothForPStatementWithSelectTest extends AbstractShardingBothForPStatementWithSelectTest {
     
     private static ShardingDataSource shardingDataSource;
@@ -61,5 +64,13 @@ public final class DynamicShardingBothForPStatementWithSelectTest extends Abstra
     public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), 
                 "t_order", getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql(), 10, 1000);
+    }
+    
+    @Test
+    public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
+        if (currentDbType() == MySQL) {
+            assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLikeWithCount.xml", getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithCountSql()), "init", 10, 11, 1000, 1001);
+        }
     }
 }

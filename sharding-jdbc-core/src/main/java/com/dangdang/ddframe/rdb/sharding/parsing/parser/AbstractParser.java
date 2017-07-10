@@ -17,14 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser;
 
-import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.Lexer;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.TokenType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
@@ -38,6 +39,14 @@ public abstract class AbstractParser {
     
     @Getter
     private final Lexer lexer;
+    
+    @Getter
+    @Setter
+    private int parametersIndex;
+    
+    protected int increaseParametersIndex() {
+        return ++parametersIndex;
+    }
     
     /**
      * 跳过小括号内所有的词法标记.
@@ -53,6 +62,9 @@ public abstract class AbstractParser {
             result.append(Symbol.LEFT_PAREN.getLiterals());
             getLexer().nextToken();
             while (true) {
+                if (equalAny(Symbol.QUESTION)) {
+                    increaseParametersIndex();
+                }
                 if (Assist.END == getLexer().getCurrentToken().getType() || (Symbol.RIGHT_PAREN == getLexer().getCurrentToken().getType() && 0 == count)) {
                     break;
                 }
