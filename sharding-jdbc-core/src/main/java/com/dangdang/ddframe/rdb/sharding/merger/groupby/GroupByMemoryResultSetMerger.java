@@ -106,20 +106,20 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
             @Override
             public int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2) {
                 if (!selectStatement.getOrderByItems().isEmpty()) {
-                    for (OrderItem each : selectStatement.getOrderByItems()) {
-                        // TODO 不是Comparable报错
-                        int result = compareTo((Comparable) o1.getCell(each.getIndex()), (Comparable) o2.getCell(each.getIndex()), each.getType());
-                        if (0 != result) {
-                            return result;
-                        }
-                    }
-                } else {
-                    for (OrderItem each : selectStatement.getGroupByItems()) {
-                        // TODO 不是Comparable报错
-                        int result = compareTo((Comparable) o1.getCell(each.getIndex()), (Comparable) o2.getCell(each.getIndex()), each.getType());
-                        if (0 != result) {
-                            return result;
-                        }
+                    return compare(o1, o2, selectStatement.getOrderByItems());
+                }
+                return compare(o1, o2, selectStatement.getGroupByItems());
+            }
+            
+            private int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2, final List<OrderItem> orderItems) {
+                for (OrderItem each : orderItems) {
+                    Object orderValue1 = o1.getCell(each.getIndex());
+                    Preconditions.checkState(orderValue1 instanceof Comparable, "Order by value must implements Comparable");
+                    Object orderValue2 = o2.getCell(each.getIndex());
+                    Preconditions.checkState(orderValue2 instanceof Comparable, "Order by value must implements Comparable");
+                    int result = compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType());
+                    if (0 != result) {
+                        return result;
                     }
                 }
                 return 0;
