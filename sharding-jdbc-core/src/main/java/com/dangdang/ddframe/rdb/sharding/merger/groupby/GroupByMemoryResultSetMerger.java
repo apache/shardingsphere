@@ -17,17 +17,28 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractMemoryResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnit;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnitFactory;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 内存分组归并结果集接口.
@@ -38,36 +49,97 @@ public final class GroupByMemoryResultSetMerger extends AbstractMemoryResultSetM
     
     private final SelectStatement selectStatement;
     
-    private final Map<List<Comparable<?>>, GroupByResultSetRow> dataMap;
+    private final Map<GroupByValue, MemoryResultSetRow> dataMap;
     
-    private Iterator<GroupByResultSetRow> data;
+    private final Map<GroupByValue, Map<AggregationSelectItem, AggregationUnit>> aggregationUnitMap;
+    
+    private Iterator<MemoryResultSetRow> data;
     
     public GroupByMemoryResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         super(labelAndIndexMap);
         this.selectStatement = selectStatement;
         dataMap = new HashMap<>(1024);
+        aggregationUnitMap = new HashMap<>(1024);
         init(resultSets);
     }
     
     private void init(final List<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
             while (each.next()) {
-                GroupByResultSetRow groupByResultSetRow = new GroupByResultSetRow(each, selectStatement);
-                if (!dataMap.containsKey(groupByResultSetRow.getGroupItemValues())) {
-                    dataMap.put(groupByResultSetRow.getGroupItemValues(), groupByResultSetRow);
+                GroupByValue groupByValue = new GroupByValue(each, selectStatement.getGroupByItems());
+                MemoryResultSetRow memoryResultSetRow = new MemoryResultSetRow(each);
+                if (!dataMap.containsKey(groupByValue)) {
+                    dataMap.put(groupByValue, memoryResultSetRow);
                 }
-                dataMap.get(groupByResultSetRow.getGroupItemValues()).aggregate(each);
+                if (!aggregationUnitMap.containsKey(groupByValue)) {
+                    Map<AggregationSelectItem, AggregationUnit> map = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
+                        
+                        @Override
+                        public AggregationUnit apply(final AggregationSelectItem input) {
+                            return AggregationUnitFactory.create(input.getType());
+                        }
+                    });
+                    aggregationUnitMap.put(groupByValue, map);
+                }
+                for (AggregationSelectItem aggregationSelectItem : selectStatement.getAggregationSelectItems()) {
+                    List<Comparable<?>> values = new ArrayList<>(2);
+                    if (aggregationSelectItem.getDerivedAggregationSelectItems().isEmpty()) {
+                        values.add(getAggregationValue(each, aggregationSelectItem));
+                    } else {
+                        for (AggregationSelectItem derivedAggregationSelectItem : aggregationSelectItem.getDerivedAggregationSelectItems()) {
+                            values.add(getAggregationValue(each, derivedAggregationSelectItem));
+                        }
+                    }
+                    aggregationUnitMap.get(groupByValue).get(aggregationSelectItem).merge(values);
+                }
             }
         }
-        for (GroupByResultSetRow each : dataMap.values()) {
-            each.generateResult();
+        for (Entry<GroupByValue, MemoryResultSetRow> entry : dataMap.entrySet()) {
+            for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+                entry.getValue().setCell(each.getIndex(), aggregationUnitMap.get(entry.getKey()).get(each).getResult());
+            }
+            
         }
-        List<GroupByResultSetRow> data = new ArrayList<>(dataMap.values());
-        Collections.sort(data);
+        List<MemoryResultSetRow> data = new ArrayList<>(dataMap.values());
+        Collections.sort(data, new Comparator<MemoryResultSetRow>() {
+            
+            @Override
+            public int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2) {
+                if (!selectStatement.getOrderByItems().isEmpty()) {
+                    for (OrderItem each : selectStatement.getOrderByItems()) {
+                        // TODO 不是Comparable报错
+                        int result = compareTo((Comparable) o1.getCell(each.getIndex()), (Comparable) o2.getCell(each.getIndex()), each.getType());
+                        if (0 != result) {
+                            return result;
+                        }
+                    }
+                } else {
+                    for (OrderItem each : selectStatement.getGroupByItems()) {
+                        // TODO 不是Comparable报错
+                        int result = compareTo((Comparable) o1.getCell(each.getIndex()), (Comparable) o2.getCell(each.getIndex()), each.getType());
+                        if (0 != result) {
+                            return result;
+                        }
+                    }
+                }
+                return 0;
+            }
+            
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            private int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+                return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+            }
+        });
         this.data = data.iterator();
         if (!data.isEmpty()) {
             setCurrentResultSetRow(data.get(0));
         }
+    }
+    
+    private Comparable<?> getAggregationValue(final ResultSet resultSet, final AggregationSelectItem aggregationSelectItem) throws SQLException {
+        Object result = resultSet.getObject(aggregationSelectItem.getIndex());
+        Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
+        return (Comparable<?>) result;
     }
     
     @Override
