@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,9 +50,7 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
     
     private final SelectStatement selectStatement;
     
-    private final Map<Integer, Object> regularData;
-    
-    private final Map<Integer, Comparable<?>> aggregationData;
+    private final List<Object> currentRow;
     
     private final Queue<OrderByValue> orderByValuesQueue;
     
@@ -64,8 +61,7 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
     public GroupByStreamResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
-        regularData = new HashMap<>(labelAndIndexMap.size(), 1);
-        aggregationData = new HashMap<>(labelAndIndexMap.size(), 1);
+        currentRow = new ArrayList<>(labelAndIndexMap.size());
         this.orderByValuesQueue = new PriorityQueue<>(resultSets.size());
         orderResultSetsToQueue(resultSets);
         isFirstNext = true;
@@ -87,6 +83,7 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
     
     @Override
     public boolean next() throws SQLException {
+        currentRow.clear();
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
@@ -114,7 +111,7 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
                 entry.getValue().merge(values);
             }
             for (int i = 0; i < orderByValuesQueue.peek().getResultSet().getMetaData().getColumnCount(); i++) {
-                regularData.put(i + 1, orderByValuesQueue.peek().getResultSet().getObject(i + 1));
+                currentRow.add(orderByValuesQueue.peek().getResultSet().getObject(i + 1));
             }
             hasNext = nextInternal();
             if (!hasNext) {
@@ -122,7 +119,7 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
             }
         }
         for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
-            aggregationData.put(entry.getKey().getIndex(), entry.getValue().getResult());
+            currentRow.set(entry.getKey().getIndex() - 1, entry.getValue().getResult());
         }
         if (hasNext) {
             currentGroupByValues = new GroupByValue(orderByValuesQueue.peek().getResultSet(), selectStatement.getGroupByItems()).getGroupValues();
@@ -158,23 +155,23 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return aggregationData.containsKey(columnIndex) ? aggregationData.get(columnIndex) : regularData.get(columnIndex);
+        return currentRow.get(columnIndex - 1);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
-        return aggregationData.containsKey(labelAndIndexMap.get(columnLabel)) ? aggregationData.get(labelAndIndexMap.get(columnLabel)) : regularData.get(labelAndIndexMap.get(columnLabel));
+        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        return aggregationData.containsKey(columnIndex) ? aggregationData.get(columnIndex) : regularData.get(columnIndex);
+        return currentRow.get(columnIndex - 1);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
         Preconditions.checkState(labelAndIndexMap.containsKey(columnLabel), String.format("Can't find columnLabel: %s", columnLabel));
-        return aggregationData.containsKey(labelAndIndexMap.get(columnLabel)) ? aggregationData.get(labelAndIndexMap.get(columnLabel)) : regularData.get(labelAndIndexMap.get(columnLabel));
+        return currentRow.get(labelAndIndexMap.get(columnLabel) - 1);
     }
 }

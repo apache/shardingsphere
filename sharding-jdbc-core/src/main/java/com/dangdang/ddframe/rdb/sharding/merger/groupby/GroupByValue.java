@@ -38,6 +38,12 @@ public final class GroupByValue {
     
     private final List<OrderItem> groupByItems;
     
+    /**
+     * 获取分组值集合.
+     * 
+     * @return 分组值集合
+     * @throws SQLException SQL异常
+     */
     public List<Comparable<?>> getGroupValues() throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(groupByItems.size());
         for (OrderItem each : groupByItems) {
