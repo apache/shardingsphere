@@ -41,6 +41,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     @Getter(AccessLevel.PROTECTED)
     private final Queue<OrderByValue> orderByValuesQueue;
     
+    @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
     public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
