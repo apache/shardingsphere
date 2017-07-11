@@ -19,7 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,20 +32,17 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
 public final class GroupByValue {
     
-    private final ResultSet resultSet;
+    private final List<Comparable<?>> groupValues;
     
-    private final List<OrderItem> groupByItems;
+    public GroupByValue(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
+        groupValues = getGroupByValues(resultSet, groupByItems);
+    }
     
-    /**
-     * 获取分组值集合.
-     * 
-     * @return 分组值集合
-     * @throws SQLException SQL异常
-     */
-    public List<Comparable<?>> getGroupValues() throws SQLException {
+    private List<Comparable<?>> getGroupByValues(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(groupByItems.size());
         for (OrderItem each : groupByItems) {
             Object value = resultSet.getObject(each.getIndex());
