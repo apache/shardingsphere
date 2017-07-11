@@ -19,6 +19,8 @@ package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
 import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +38,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     
     private final List<OrderItem> orderByItems;
     
+    @Getter(AccessLevel.PROTECTED)
     private final Queue<OrderByValue> orderByValuesQueue;
     
     private boolean isFirstNext;

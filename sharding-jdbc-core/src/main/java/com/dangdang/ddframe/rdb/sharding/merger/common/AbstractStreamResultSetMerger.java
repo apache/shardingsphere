@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.common;
 
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.io.InputStream;
@@ -40,152 +39,158 @@ import java.util.Calendar;
  *
  * @author thor zhangliang
  */
-@Getter
 @Setter
 public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     
     private ResultSet currentResultSet;
     
+    protected ResultSet getCurrentResultSet() throws SQLException {
+        if (null == currentResultSet) {
+            throw new SQLException("Current ResultSet is null, ResultSet perhaps end of next.");
+        }
+        return currentResultSet;
+    }
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (Object.class == type) {
-            return currentResultSet.getObject(columnIndex);
+            return getCurrentResultSet().getObject(columnIndex);
         }
         if (boolean.class == type) {
-            return currentResultSet.getBoolean(columnIndex);
+            return getCurrentResultSet().getBoolean(columnIndex);
         }
         if (byte.class == type) {
-            return currentResultSet.getByte(columnIndex);
+            return getCurrentResultSet().getByte(columnIndex);
         }
         if (short.class == type) {
-            return currentResultSet.getShort(columnIndex);
+            return getCurrentResultSet().getShort(columnIndex);
         }
         if (int.class == type) {
-            return currentResultSet.getInt(columnIndex);
+            return getCurrentResultSet().getInt(columnIndex);
         }
         if (long.class == type) {
-            return currentResultSet.getLong(columnIndex);
+            return getCurrentResultSet().getLong(columnIndex);
         }
         if (float.class == type) {
-            return currentResultSet.getFloat(columnIndex);
+            return getCurrentResultSet().getFloat(columnIndex);
         }
         if (double.class == type) {
-            return currentResultSet.getDouble(columnIndex);
+            return getCurrentResultSet().getDouble(columnIndex);
         }
         if (String.class == type) {
-            return currentResultSet.getString(columnIndex);
+            return getCurrentResultSet().getString(columnIndex);
         }
         if (BigDecimal.class == type) {
-            return currentResultSet.getBigDecimal(columnIndex);
+            return getCurrentResultSet().getBigDecimal(columnIndex);
         }
         if (BigDecimal.class == type) {
-            return currentResultSet.getBigDecimal(columnIndex);
+            return getCurrentResultSet().getBigDecimal(columnIndex);
         }
         if (byte[].class == type) {
-            return currentResultSet.getBytes(columnIndex);
+            return getCurrentResultSet().getBytes(columnIndex);
         }
         if (Date.class == type) {
-            return currentResultSet.getDate(columnIndex);
+            return getCurrentResultSet().getDate(columnIndex);
         }
         if (Time.class == type) {
-            return currentResultSet.getTime(columnIndex);
+            return getCurrentResultSet().getTime(columnIndex);
         }
         if (Timestamp.class == type) {
-            return currentResultSet.getTimestamp(columnIndex);
+            return getCurrentResultSet().getTimestamp(columnIndex);
         }
         if (URL.class == type) {
-            return currentResultSet.getURL(columnIndex);
+            return getCurrentResultSet().getURL(columnIndex);
         }
         if (Blob.class == type) {
-            return currentResultSet.getBlob(columnIndex);
+            return getCurrentResultSet().getBlob(columnIndex);
         }
         if (Clob.class == type) {
-            return currentResultSet.getClob(columnIndex);
+            return getCurrentResultSet().getClob(columnIndex);
         }
         if (SQLXML.class == type) {
-            return currentResultSet.getSQLXML(columnIndex);
+            return getCurrentResultSet().getSQLXML(columnIndex);
         }
         if (Reader.class == type) {
-            return currentResultSet.getCharacterStream(columnIndex);
+            return getCurrentResultSet().getCharacterStream(columnIndex);
         }
-        return currentResultSet.getObject(columnIndex);
+        return getCurrentResultSet().getObject(columnIndex);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         if (Object.class == type) {
-            return currentResultSet.getObject(columnLabel);
+            return getCurrentResultSet().getObject(columnLabel);
         }
         if (boolean.class == type) {
-            return currentResultSet.getBoolean(columnLabel);
+            return getCurrentResultSet().getBoolean(columnLabel);
         }
         if (byte.class == type) {
-            return currentResultSet.getByte(columnLabel);
+            return getCurrentResultSet().getByte(columnLabel);
         }
         if (short.class == type) {
-            return currentResultSet.getShort(columnLabel);
+            return getCurrentResultSet().getShort(columnLabel);
         }
         if (int.class == type) {
-            return currentResultSet.getInt(columnLabel);
+            return getCurrentResultSet().getInt(columnLabel);
         }
         if (long.class == type) {
-            return currentResultSet.getLong(columnLabel);
+            return getCurrentResultSet().getLong(columnLabel);
         }
         if (float.class == type) {
-            return currentResultSet.getFloat(columnLabel);
+            return getCurrentResultSet().getFloat(columnLabel);
         }
         if (double.class == type) {
-            return currentResultSet.getDouble(columnLabel);
+            return getCurrentResultSet().getDouble(columnLabel);
         }
         if (String.class == type) {
-            return currentResultSet.getString(columnLabel);
+            return getCurrentResultSet().getString(columnLabel);
         }
         if (BigDecimal.class == type) {
-            return currentResultSet.getBigDecimal(columnLabel);
+            return getCurrentResultSet().getBigDecimal(columnLabel);
         }
         if (BigDecimal.class == type) {
-            return currentResultSet.getBigDecimal(columnLabel);
+            return getCurrentResultSet().getBigDecimal(columnLabel);
         }
         if (byte[].class == type) {
-            return currentResultSet.getBytes(columnLabel);
+            return getCurrentResultSet().getBytes(columnLabel);
         }
         if (Date.class == type) {
-            return currentResultSet.getDate(columnLabel);
+            return getCurrentResultSet().getDate(columnLabel);
         }
         if (Time.class == type) {
-            return currentResultSet.getTime(columnLabel);
+            return getCurrentResultSet().getTime(columnLabel);
         }
         if (Timestamp.class == type) {
-            return currentResultSet.getTimestamp(columnLabel);
+            return getCurrentResultSet().getTimestamp(columnLabel);
         }
         if (URL.class == type) {
-            return currentResultSet.getURL(columnLabel);
+            return getCurrentResultSet().getURL(columnLabel);
         }
         if (Blob.class == type) {
-            return currentResultSet.getBlob(columnLabel);
+            return getCurrentResultSet().getBlob(columnLabel);
         }
         if (Clob.class == type) {
-            return currentResultSet.getClob(columnLabel);
+            return getCurrentResultSet().getClob(columnLabel);
         }
         if (SQLXML.class == type) {
-            return currentResultSet.getSQLXML(columnLabel);
+            return getCurrentResultSet().getSQLXML(columnLabel);
         }
         if (Reader.class == type) {
-            return currentResultSet.getCharacterStream(columnLabel);
+            return getCurrentResultSet().getCharacterStream(columnLabel);
         }
-        return currentResultSet.getObject(columnLabel);
+        return getCurrentResultSet().getObject(columnLabel);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
         if (Date.class == type) {
-            return currentResultSet.getDate(columnIndex, calendar);
+            return getCurrentResultSet().getDate(columnIndex, calendar);
         }
         if (Time.class == type) {
-            return currentResultSet.getTime(columnIndex, calendar);
+            return getCurrentResultSet().getTime(columnIndex, calendar);
         }
         if (Timestamp.class == type) {
-            return currentResultSet.getTimestamp(columnIndex, calendar);
+            return getCurrentResultSet().getTimestamp(columnIndex, calendar);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -193,13 +198,13 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
         if (Date.class == type) {
-            return currentResultSet.getDate(columnLabel, calendar);
+            return getCurrentResultSet().getDate(columnLabel, calendar);
         }
         if (Time.class == type) {
-            return currentResultSet.getTime(columnLabel, calendar);
+            return getCurrentResultSet().getTime(columnLabel, calendar);
         }
         if (Timestamp.class == type) {
-            return currentResultSet.getTimestamp(columnLabel, calendar);
+            return getCurrentResultSet().getTimestamp(columnLabel, calendar);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -207,16 +212,16 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         if ("Ascii".equals(type)) {
-            return currentResultSet.getAsciiStream(columnIndex);
+            return getCurrentResultSet().getAsciiStream(columnIndex);
         }
         if ("Unicode".equals(type)) {
-            return currentResultSet.getUnicodeStream(columnIndex);
+            return getCurrentResultSet().getUnicodeStream(columnIndex);
         }
         if ("Binary".equals(type)) {
-            return currentResultSet.getBinaryStream(columnIndex);
+            return getCurrentResultSet().getBinaryStream(columnIndex);
         }
         if ("Binary".equals(type)) {
-            return currentResultSet.getBinaryStream(columnIndex);
+            return getCurrentResultSet().getBinaryStream(columnIndex);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }
@@ -224,16 +229,16 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         if ("Ascii".equals(type)) {
-            return currentResultSet.getAsciiStream(columnLabel);
+            return getCurrentResultSet().getAsciiStream(columnLabel);
         }
         if ("Unicode".equals(type)) {
-            return currentResultSet.getUnicodeStream(columnLabel);
+            return getCurrentResultSet().getUnicodeStream(columnLabel);
         }
         if ("Binary".equals(type)) {
-            return currentResultSet.getBinaryStream(columnLabel);
+            return getCurrentResultSet().getBinaryStream(columnLabel);
         }
         if ("Binary".equals(type)) {
-            return currentResultSet.getBinaryStream(columnLabel);
+            return getCurrentResultSet().getBinaryStream(columnLabel);
         }
         throw new SQLException(String.format("Unsupported type: %s", type));
     }

@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnit;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AggregationUnitFactory;
-import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Function;
@@ -31,20 +30,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 /**
  * 流式分组归并结果集接口.
  *
  * @author zhangliang
  */
-public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetMerger {
+public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMerger {
     
     private final Map<String, Integer> labelAndIndexMap;
     
@@ -52,39 +48,23 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
     
     private final List<Object> currentRow;
     
-    private final Queue<OrderByValue> orderByValuesQueue;
+    private List<Comparable<?>> currentGroupByValues;
     
     private boolean isFirstNext;
     
-    private List<Comparable<?>> currentGroupByValues;
-    
     public GroupByStreamResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+        super(resultSets, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
-        this.orderByValuesQueue = new PriorityQueue<>(resultSets.size());
-        orderResultSetsToQueue(resultSets);
+        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.<Comparable<?>>emptyList() : new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
         isFirstNext = true;
-        currentGroupByValues = orderByValuesQueue.isEmpty()
-                ? Collections.<Comparable<?>>emptyList() : new GroupByValue(orderByValuesQueue.peek().getResultSet(), selectStatement.getGroupByItems()).getGroupValues();
-    }
-    
-    private void orderResultSetsToQueue(final Collection<ResultSet> resultSets) throws SQLException {
-        for (ResultSet each : resultSets) {
-            OrderByValue orderByValue = new OrderByValue(each, selectStatement.getOrderByItems());
-            if (orderByValue.next()) {
-                orderByValuesQueue.offer(orderByValue);
-            }
-        }
-        if (!orderByValuesQueue.isEmpty()) {
-            setCurrentResultSet(orderByValuesQueue.peek().getResultSet());
-        }
     }
     
     @Override
     public boolean next() throws SQLException {
         currentRow.clear();
-        if (orderByValuesQueue.isEmpty()) {
+        if (getOrderByValuesQueue().isEmpty()) {
             return false;
         }
         Map<AggregationSelectItem, AggregationUnit> aggregationUnitMap = Maps.toMap(selectStatement.getAggregationSelectItems(), new Function<AggregationSelectItem, AggregationUnit>() {
@@ -95,10 +75,11 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
             }
         });
         if (isFirstNext) {
-            nextInternal();
+            super.next();
+            isFirstNext = false;
         }
         boolean hasNext = false;
-        while (!orderByValuesQueue.isEmpty() && currentGroupByValues.equals(new GroupByValue(orderByValuesQueue.peek().getResultSet(), selectStatement.getGroupByItems()).getGroupValues())) {
+        while (!getOrderByValuesQueue().isEmpty() && currentGroupByValues.equals(new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues())) {
             for (Entry<AggregationSelectItem, AggregationUnit> entry : aggregationUnitMap.entrySet()) {
                 List<Comparable<?>> values = new ArrayList<>(2);
                 if (entry.getKey().getDerivedAggregationSelectItems().isEmpty()) {
@@ -110,10 +91,10 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
                 }
                 entry.getValue().merge(values);
             }
-            for (int i = 0; i < orderByValuesQueue.peek().getResultSet().getMetaData().getColumnCount(); i++) {
-                currentRow.add(orderByValuesQueue.peek().getResultSet().getObject(i + 1));
+            for (int i = 0; i < getCurrentResultSet().getMetaData().getColumnCount(); i++) {
+                currentRow.add(getCurrentResultSet().getObject(i + 1));
             }
-            hasNext = nextInternal();
+            hasNext = super.next();
             if (!hasNext) {
                 break;
             }
@@ -122,36 +103,16 @@ public final class GroupByStreamResultSetMerger extends AbstractStreamResultSetM
             currentRow.set(entry.getKey().getIndex() - 1, entry.getValue().getResult());
         }
         if (hasNext) {
-            currentGroupByValues = new GroupByValue(orderByValuesQueue.peek().getResultSet(), selectStatement.getGroupByItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
         }
-        return true;
-    }
-    
-    private boolean nextInternal() throws SQLException {
-        if (orderByValuesQueue.isEmpty()) {
-            return false;
-        }
-        if (isFirstNext) {
-            isFirstNext = false;
-            return true;
-        }
-        OrderByValue firstOrderByValue = orderByValuesQueue.poll();
-        if (firstOrderByValue.next()) {
-            orderByValuesQueue.offer(firstOrderByValue);
-        }
-        if (orderByValuesQueue.isEmpty()) {
-            return false;
-        }
-        setCurrentResultSet(orderByValuesQueue.peek().getResultSet());
         return true;
     }
     
     private Comparable<?> getAggregationValue(final AggregationSelectItem aggregationSelectItem) throws SQLException {
-        Object result = orderByValuesQueue.peek().getResultSet().getObject(aggregationSelectItem.getIndex());
+        Object result = getCurrentResultSet().getObject(aggregationSelectItem.getIndex());
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }
-    
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
