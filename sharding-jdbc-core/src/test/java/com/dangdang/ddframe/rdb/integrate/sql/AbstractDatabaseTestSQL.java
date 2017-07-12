@@ -97,6 +97,9 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_WITH_BINDING_TABLE_SQL =
             "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?";
     
+    private static final String SELECT_WITH_PARENTHESES_SQL =
+            "SELECT o.* FROM (SELECT t.* FROM t_order t where t.order_id BETWEEN ? AND ?) o";
+    
     private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY uid";
     
     private static final String SELECT_USER_ID_BY_STATUS_SQL = "SELECT user_id AS uid FROM t_order WHERE status = 'init'";
@@ -291,6 +294,11 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectWithBindingTableSql() {
         return SELECT_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectWithParenthesesSql() {
+        return SELECT_WITH_PARENTHESES_SQL;
     }
     
     @Override

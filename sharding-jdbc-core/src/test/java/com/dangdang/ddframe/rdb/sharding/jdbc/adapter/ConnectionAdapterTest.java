@@ -111,8 +111,10 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
             actual.setReadOnly(false);
             actual.createStatement().executeQuery(sql);
             assertReadOnly(actual, false);
-            actual.setReadOnly(true);
-            assertReadOnly(actual, true);
+            if (currentDbType() != DatabaseType.SQLServer) {
+                actual.setReadOnly(true);
+                assertReadOnly(actual, true);
+            }
         }
     }
     

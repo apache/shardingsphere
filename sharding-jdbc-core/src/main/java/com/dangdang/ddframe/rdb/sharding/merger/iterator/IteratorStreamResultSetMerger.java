@@ -47,9 +47,14 @@ public final class IteratorStreamResultSetMerger extends AbstractStreamResultSet
             return false;
         }
         setCurrentResultSet(resultSets.next());
-        while (!getCurrentResultSet().next() && resultSets.hasNext()) {
-            setCurrentResultSet(resultSets.next());
+        boolean hasNext = getCurrentResultSet().next();
+        if (hasNext) {
+            return true;
         }
-        return getCurrentResultSet().next();
+        while (!hasNext && resultSets.hasNext()) {
+            setCurrentResultSet(resultSets.next());
+            hasNext = getCurrentResultSet().next();
+        }
+        return hasNext;
     }
 }

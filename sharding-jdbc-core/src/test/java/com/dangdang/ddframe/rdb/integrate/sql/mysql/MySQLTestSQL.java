@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.integrate.sql.mysql;
 
-import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 
-public final class MySQLTestSQL implements DatabaseTestSQL {
+public final class MySQLTestSQL extends AbstractDatabaseTestSQL {
     
     private static final String SELECT_COUNT_ALIAS_SQL = "SELECT COUNT(*) AS `orders_count` FROM `t_order`";
     

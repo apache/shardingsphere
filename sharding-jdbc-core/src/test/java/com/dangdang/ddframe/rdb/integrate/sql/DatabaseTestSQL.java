@@ -95,6 +95,8 @@ public interface DatabaseTestSQL {
     
     String getSelectWithBindingTableSql();
     
+    String getSelectWithParenthesesSql();
+    
     String getSelectGroupByUserIdSql();
     
     String getSelectUserIdByStatusSql();

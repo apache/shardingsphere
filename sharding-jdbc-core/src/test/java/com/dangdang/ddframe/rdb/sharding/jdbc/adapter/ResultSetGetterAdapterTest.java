@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -221,7 +222,9 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
         try {
             actual.getTimestamp(1);
         } catch (final SQLException ex) {
-            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            if (currentDbType() != SQLServer) {
+                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            }
         }
     }
     
@@ -230,7 +233,9 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
         try {
             actual.getTimestamp("uid");
         } catch (final SQLException ex) {
-            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            if (currentDbType() != SQLServer) {
+                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            }
         }
     }
     
@@ -239,7 +244,9 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
         try {
             actual.getTimestamp(1, Calendar.getInstance());
         } catch (final SQLException ex) {
-            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            if (currentDbType() != SQLServer) {
+                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            }
         }
     }
     
@@ -248,13 +255,15 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
         try {
             actual.getTimestamp("uid", Calendar.getInstance());
         } catch (final SQLException ex) {
-            assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            if (currentDbType() != SQLServer) {
+                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+            }
         }
     }
     
     @Test
     public void assertGetAsciiStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             byte[] b = new byte[1];
             actual.getAsciiStream(1).read(b);
             assertThat(new String(b), is("1"));
@@ -263,7 +272,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetAsciiStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             byte[] b = new byte[1];
             actual.getAsciiStream("uid").read(b);
             assertThat(new String(b), is("1"));
@@ -274,7 +283,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     @Test
     public void assertGetUnicodeStreamForColumnIndex() throws SQLException, IOException {
         byte[] b = new byte[1];
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == DatabaseType.SQLServer) {
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
             try {
                 actual.getUnicodeStream(1).read(b);
             } catch (final SQLException ignore) {
@@ -289,7 +298,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     @Test
     public void assertGetUnicodeStreamForColumnLabel() throws SQLException, IOException {
         byte[] b = new byte[1];
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == DatabaseType.SQLServer) {
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
             try {
                 actual.getUnicodeStream("uid").read(b);
             } catch (final SQLException ignore) {
@@ -302,21 +311,21 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetBinaryStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             assertTrue(actual.getBinaryStream(1).read() != -1);
         }
     }
     
     @Test
     public void assertGetBinaryStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             assertTrue(actual.getBinaryStream("uid").read() != -1);
         }
     }
     
     @Test
     public void assertGetCharacterStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             char[] c = new char[1];
             actual.getCharacterStream(1).read(c);
             assertThat(c[0], is('1'));
@@ -325,7 +334,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetCharacterStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() != DatabaseType.SQLServer) {
+        if (currentDbType() != SQLServer) {
             char[] c = new char[1];
             actual.getCharacterStream("uid").read(c);
             assertThat(c[0], is('1'));
@@ -372,7 +381,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetSQLXMLForColumnIndex() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == DatabaseType.SQLServer) {
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
             try {
                 actual.getSQLXML(1);
             } catch (final SQLException ignore) {
@@ -384,7 +393,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetSQLXMLForColumnLabel() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == DatabaseType.SQLServer) {
+        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
             try {
                 actual.getSQLXML("uid");
             } catch (final SQLException ignore) {
