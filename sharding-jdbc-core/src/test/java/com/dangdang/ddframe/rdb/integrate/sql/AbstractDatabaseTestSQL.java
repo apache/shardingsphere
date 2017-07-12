@@ -94,14 +94,17 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_FOR_FULL_TABLE_NAME_WITH_SINGLE_TABLE_SQL = 
             "SELECT t_order.order_id, t_order.user_id, t_order.status FROM t_order WHERE t_order.user_id = ? AND t_order.order_id = ?";
     
-    private static final String SELECT_WITH_BINDING_TABLE_SQL =
+    private static final String SELECT_WITH_BINDING_TABLE_SQL = 
             "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?";
     
-    private static final String SELECT_ITERATOR_SQL =
-            "SELECT t.* FROM t_order t where t.order_id IN (%s, %s)";
+    private static final String SELECT_ITERATOR_SQL = "SELECT t.* FROM t_order_item t WHERE t.item_id IN (%s, %s)";
     
-    private static final String SELECT_IN_WITH_PARENTHESES_SQL =
-            "SELECT o.* FROM (SELECT t.* FROM t_order t where t.order_id IN((%s, %s))) o";
+    private static final String SELECT_SINGLE_TABLE_WITH_PARENTHESES_SQL = "SELECT o.* FROM t_order o WHERE o.order_id IN ((%s, %s))";
+    
+    private static final String SELECT_SUBQUERY_SINGLE_TABLE_WITH_PARENTHESES_SQL = "SELECT t.* FROM ((SELECT o.* FROM t_order o WHERE o.order_id IN (%s, %s))) t ORDER BY t.order_id";
+    
+    private static final String SELECT_SUBQUERY_MULTI_TABLE_WITH_PARENTHESES_SQL = 
+            "SELECT t.* FROM ((SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.order_id IN (%s, %s))) t ORDER BY t.item_id";
     
     private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY uid";
     
@@ -305,8 +308,18 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     }
     
     @Override
-    public String getSelectInWithParenthesesSql() {
-        return SELECT_IN_WITH_PARENTHESES_SQL;
+    public String getSelectSingleTableWithParenthesesSql() {
+        return SELECT_SINGLE_TABLE_WITH_PARENTHESES_SQL;
+    }
+    
+    @Override
+    public String getSelectSubquerySingleTableWithParenthesesSql() {
+        return SELECT_SUBQUERY_SINGLE_TABLE_WITH_PARENTHESES_SQL;
+    }
+    
+    @Override
+    public String getSelectSubqueryMultiTableWithParenthesesSql() {
+        return SELECT_SUBQUERY_MULTI_TABLE_WITH_PARENTHESES_SQL;
     }
     
     @Override

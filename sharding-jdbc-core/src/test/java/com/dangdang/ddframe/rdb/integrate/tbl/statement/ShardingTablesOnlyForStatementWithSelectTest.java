@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
@@ -65,6 +66,33 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
                 "t_order", String.format(getDatabaseTestSQL().getSelectInWithSingleTableSql(), 10, 12, 15, 1009, 1108));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), 
                 "t_order", String.format(getDatabaseTestSQL().getSelectInWithSingleTableSql(), 10, 12, 15, 1309, 1408));
+    }
+    
+    @Test
+    public void assertSelectSingleTableWithParenthesesSql() throws SQLException, DatabaseUnitException {
+        if (CURRENT_DB_TYPE != H2) {
+            String sql = getDatabaseTestSQL().getSelectSingleTableWithParenthesesSql();
+            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectSingleTableWithParentheses.xml", shardingDataSource.getConnection(),
+                    "t_order", String.format(sql, 1000, 1001));
+        }
+    }
+    
+    @Test
+    public void assertSelectSubquerySingleTableWithParenthesesSql() throws SQLException, DatabaseUnitException {
+        if (CURRENT_DB_TYPE != H2) {
+            String sql = getDatabaseTestSQL().getSelectSubquerySingleTableWithParenthesesSql();
+            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectSubquerySingleTableWithParentheses.xml", shardingDataSource.getConnection(),
+                    "t_order", String.format(sql, 1000, 1001));
+        }
+    }
+    
+    @Test
+    public void assertSelectSubqueryMultiTableWithParenthesesSql() throws SQLException, DatabaseUnitException {
+        if (CURRENT_DB_TYPE != H2) {
+            String sql = getDatabaseTestSQL().getSelectSubqueryMultiTableWithParenthesesSql();
+            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectSubqueryMultiTableWithParentheses.xml", shardingDataSource.getConnection(),
+                    "t_order", String.format(sql, 1000, 1001));
+        }
     }
     
     @Test
