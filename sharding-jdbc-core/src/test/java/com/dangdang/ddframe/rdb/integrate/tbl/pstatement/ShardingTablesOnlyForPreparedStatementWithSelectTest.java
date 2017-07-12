@@ -102,16 +102,11 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     @Test
     public void assertSelectIteratorSql() throws SQLException, DatabaseUnitException {
         String sql = getDatabaseTestSQL().getSelectIteratorSql();
-        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_0.xml", shardingDataSource.getConnection(),
-                "t_order_item", replacePreparedStatement(sql), 100000, 100001);
-        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_1.xml", shardingDataSource.getConnection(),
-                "t_order_item", replacePreparedStatement(sql), 100900, 100901);
-        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_2.xml", shardingDataSource.getConnection(),
-                "t_order_item", replacePreparedStatement(sql), 100000, 100900);
-        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_3.xml", shardingDataSource.getConnection(),
-                "t_order_item", replacePreparedStatement(sql), 100000, 100200);
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
-                "t_order_item", replacePreparedStatement(sql), 10, 11);
+        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_0.xml", shardingDataSource.getConnection(), "t_order_item", replacePreparedStatement(sql), 100000, 100001);
+        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_1.xml", shardingDataSource.getConnection(), "t_order_item", replacePreparedStatement(sql), 100900, 100901);
+        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_2.xml", shardingDataSource.getConnection(), "t_order_item", replacePreparedStatement(sql), 100000, 100900);
+        assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectIteratorSql_3.xml", shardingDataSource.getConnection(), "t_order_item", replacePreparedStatement(sql), 100000, 100200);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql), 10, 11);
     }
     
     @Test
