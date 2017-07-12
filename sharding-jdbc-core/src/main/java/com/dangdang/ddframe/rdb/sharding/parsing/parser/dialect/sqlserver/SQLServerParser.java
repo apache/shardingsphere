@@ -103,7 +103,7 @@ public final class SQLServerParser extends SQLParser {
             offsetValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
         } else if (equalAny(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
-            setParametersIndex(offsetIndex + 1);
+            increaseParametersIndex();
         } else {
             throw new SQLParsingException(getLexer());
         }
@@ -118,7 +118,7 @@ public final class SQLServerParser extends SQLParser {
                 rowCountValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             } else if (equalAny(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
-                setParametersIndex(rowCountIndex + 1);
+                increaseParametersIndex();
             } else {
                 throw new SQLParsingException(getLexer());
             }

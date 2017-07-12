@@ -44,7 +44,12 @@ public abstract class AbstractParser {
     @Setter
     private int parametersIndex;
     
-    protected int increaseParametersIndex() {
+    /**
+     * 增加索引偏移量.
+     * 
+     * @return 增加后的索引偏移量
+     */
+    public int increaseParametersIndex() {
         return ++parametersIndex;
     }
     
@@ -53,7 +58,6 @@ public abstract class AbstractParser {
      *
      * @return 小括号内所有的词法标记
      */
-    // TODO 判断? 增加param index
     public final String skipParentheses() {
         StringBuilder result = new StringBuilder("");
         int count = 0;
