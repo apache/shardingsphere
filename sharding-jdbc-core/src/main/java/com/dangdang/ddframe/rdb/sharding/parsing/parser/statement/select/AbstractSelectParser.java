@@ -21,7 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Literals;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Symbol;
+import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Token;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -135,16 +137,19 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             return new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias());
         }
         StringBuilder expression = new StringBuilder();
-        // FIXME 无as的alias解析, 应该做成倒数第二个token不是运算符,倒数第一个token是Identifier或char,则为别名, 不过CommonSelectItem类型并不关注expression和alias
-        // FIXME 解析xxx.*
+        Token lastToken = null;
         while (!sqlParser.equalAny(DefaultKeyword.AS) && !sqlParser.equalAny(Symbol.COMMA) && !sqlParser.equalAny(DefaultKeyword.FROM) && !sqlParser.equalAny(Assist.END)) {
             String value = sqlParser.getLexer().getCurrentToken().getLiterals();
             int position = sqlParser.getLexer().getCurrentToken().getEndPosition() - value.length();
             expression.append(value);
+            lastToken = sqlParser.getLexer().getCurrentToken();
             sqlParser.getLexer().nextToken();
             if (sqlParser.equalAny(Symbol.DOT)) {
                 selectStatement.getSqlTokens().add(new TableToken(position, value));
             }
+        }
+        if (null != lastToken && Literals.IDENTIFIER == lastToken.getType() && !isSQLPropertyExpression(expression, lastToken) && !expression.toString().equals(lastToken.getLiterals())) {
+            return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()), false);
         }
         return new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
     }
@@ -155,6 +160,10 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
         throw new UnsupportedOperationException("Cannot support special select item.");
+    }
+    
+    private boolean isSQLPropertyExpression(final StringBuilder expression, final Token lastToken) {
+        return expression.toString().endsWith(Symbol.DOT.getLiterals() + lastToken.getLiterals());
     }
     
     protected void queryRest() {
@@ -395,7 +404,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             if (each.getAlias().isPresent() && orderItem.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(orderItem.getAlias().get())) {
                 return true;
             }
-            if (orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
+            if (!each.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && each.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get())) {
                 return true;
             }
         }
