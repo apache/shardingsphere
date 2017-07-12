@@ -98,10 +98,10 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
             "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?";
     
     private static final String SELECT_ITERATOR_SQL =
-            "SELECT t.* FROM t_order t where t.order_id IN (?, ?)";
+            "SELECT t.* FROM t_order t where t.order_id IN (%s, %s)";
     
-    private static final String SELECT_WITH_PARENTHESES_SQL =
-            "SELECT o.* FROM (SELECT t.* FROM t_order t where t.order_id BETWEEN ? AND ?) o";
+    private static final String SELECT_IN_WITH_PARENTHESES_SQL =
+            "SELECT o.* FROM (SELECT t.* FROM t_order t where t.order_id IN((%s, %s))) o";
     
     private static final String SELECT_GROUP_BY_USER_ID_SQL = "SELECT user_id AS uid FROM t_order GROUP BY uid";
     
@@ -305,8 +305,8 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     }
     
     @Override
-    public String getSelectWithParenthesesSql() {
-        return SELECT_WITH_PARENTHESES_SQL;
+    public String getSelectInWithParenthesesSql() {
+        return SELECT_IN_WITH_PARENTHESES_SQL;
     }
     
     @Override

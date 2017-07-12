@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 
@@ -69,7 +70,9 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     @Test
     public void assertSelectPagingWithOffsetAndRowCountSql() throws SQLException, DatabaseUnitException {
         if (currentDbType() == SQLServer) {
-            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 2, 10, 19, 1000, 1909, 2);
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 4, 10, 19, 1000, 1909, 2);
+        } else if (currentDbType() == Oracle) {
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 4, 2);
         } else {
             assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 2, 2);
         }

@@ -97,7 +97,7 @@ public interface DatabaseTestSQL {
     
     String getSelectIteratorSql();
     
-    String getSelectWithParenthesesSql();
+    String getSelectInWithParenthesesSql();
     
     String getSelectGroupByUserIdSql();
     

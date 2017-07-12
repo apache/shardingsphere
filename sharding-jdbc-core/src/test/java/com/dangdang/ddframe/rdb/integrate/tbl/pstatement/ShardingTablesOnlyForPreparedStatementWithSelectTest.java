@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 
@@ -74,6 +75,8 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     public void assertSelectPagingWithOffsetAndRowCountSql() throws SQLException, DatabaseUnitException {
         if (currentDbType() == SQLServer) {
             assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 4, 10, 19, 1000, 1909, 2);
+        } else if (currentDbType() == Oracle) {
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 4, 2);
         } else {
             assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 2, 2);
         }
@@ -112,7 +115,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     public void assertSelectWithParenthesesSql() throws SQLException, DatabaseUnitException {
         String expectedDataSetFile = TABLE_ONLY_PREFIX + "/expect/select/SelectParentheses.xml";
         assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
-                "t_order", getDatabaseTestSQL().getSelectWithParenthesesSql(), 1000, 1001);
+                "t_order", getDatabaseTestSQL().getSelectInWithParenthesesSql(), 1000, 1001);
     }
     
     @Test
