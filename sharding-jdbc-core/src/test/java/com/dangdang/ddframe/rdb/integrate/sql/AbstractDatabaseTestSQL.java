@@ -99,8 +99,6 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     
     private static final String SELECT_ITERATOR_SQL = "SELECT t.* FROM t_order_item t WHERE t.item_id IN (%s, %s)";
     
-    private static final String SELECT_SINGLE_TABLE_WITH_PARENTHESES_SQL = "SELECT o.* FROM t_order o WHERE o.order_id IN ((%s, %s))";
-    
     private static final String SELECT_SUBQUERY_SINGLE_TABLE_WITH_PARENTHESES_SQL = "SELECT t.* FROM ((SELECT o.* FROM t_order o WHERE o.order_id IN (%s, %s))) t ORDER BY t.order_id";
     
     private static final String SELECT_SUBQUERY_MULTI_TABLE_WITH_PARENTHESES_SQL = 
@@ -305,11 +303,6 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectIteratorSql() {
         return SELECT_ITERATOR_SQL;
-    }
-    
-    @Override
-    public String getSelectSingleTableWithParenthesesSql() {
-        return SELECT_SINGLE_TABLE_WITH_PARENTHESES_SQL;
     }
     
     @Override

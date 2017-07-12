@@ -97,8 +97,6 @@ public interface DatabaseTestSQL {
     
     String getSelectIteratorSql();
     
-    String getSelectSingleTableWithParenthesesSql();
-    
     String getSelectSubquerySingleTableWithParenthesesSql();
     
     String getSelectSubqueryMultiTableWithParenthesesSql();

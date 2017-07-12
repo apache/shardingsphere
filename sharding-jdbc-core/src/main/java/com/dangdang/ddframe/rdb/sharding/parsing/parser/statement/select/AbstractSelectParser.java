@@ -296,8 +296,9 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
             }
             selectStatement.setContainStar(false);
+            sqlParser.skipUselessParentheses();
             parse();
-            sqlParser.accept(Symbol.RIGHT_PAREN);
+            sqlParser.skipUselessParentheses();
             if (!selectStatement.getTables().isEmpty()) {
                 return;
             }

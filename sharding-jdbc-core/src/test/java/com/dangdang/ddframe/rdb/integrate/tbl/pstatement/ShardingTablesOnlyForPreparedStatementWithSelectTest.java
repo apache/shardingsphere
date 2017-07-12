@@ -73,15 +73,6 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     }
     
     @Test
-    public void assertSelectSingleTableWithParenthesesSql() throws SQLException, DatabaseUnitException {
-        if (CURRENT_DB_TYPE != H2) {
-            String sql = getDatabaseTestSQL().getSelectSingleTableWithParenthesesSql();
-            assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/SelectSingleTableWithParentheses.xml", shardingDataSource.getConnection(),
-                    "t_order", replacePreparedStatement(sql), 1000, 1001);
-        }
-    }
-    
-    @Test
     public void assertSelectSubquerySingleTableWithParenthesesSql() throws SQLException, DatabaseUnitException {
         if (CURRENT_DB_TYPE != H2) {
             String sql = getDatabaseTestSQL().getSelectSubquerySingleTableWithParenthesesSql();

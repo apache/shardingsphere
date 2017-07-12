@@ -86,6 +86,14 @@ public abstract class AbstractParser {
     }
     
     /**
+     * 跳过无用的嵌套小括号.
+     */
+    public final void skipUselessParentheses() {
+        while (skipIfEqual(Symbol.LEFT_PAREN)) { }
+        while (skipIfEqual(Symbol.RIGHT_PAREN)) { }
+    }
+    
+    /**
      * 断言当前词法标记类型与传入值相等并跳过.
      *
      * @param tokenType 待判断的词法标记类型
