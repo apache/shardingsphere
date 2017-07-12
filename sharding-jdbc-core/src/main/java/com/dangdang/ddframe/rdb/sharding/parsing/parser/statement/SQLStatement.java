@@ -18,10 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 
@@ -56,52 +53,9 @@ public interface SQLStatement {
     Conditions getConditions();
     
     /**
-     * 获取排序集合.
-     * 
-     * @return 排序集合
-     */
-    List<OrderItem> getOrderByItems();
-    
-    /**
-     * 获取分组集合.
-     * 
-     * @return 分组集合
-     */
-    List<OrderItem> getGroupByItems();
-    
-    /**
-     * 获取聚合选择项集合.
-     * 
-     * @return 聚合选择项
-     */
-    List<AggregationSelectItem> getAggregationSelectItems();
-    
-    /**
-     * 获取分页.
-     * 
-     * @return 分页
-     */
-    Limit getLimit();
-    
-    /**
-     * 设置分页.
-     *
-     * @param limit  分页
-     */
-    void setLimit(Limit limit);
-    
-    /**
      * 获取SQL标记集合.
      * 
      * @return SQL标记集合
      */
     List<SQLToken> getSqlTokens();
-    
-    
-    /**
-     * 判断是否需要内存排序.
-     *
-     * @return 是否需要内存排序
-     */
-    boolean isGroupByAndOrderByDifferent();
 }

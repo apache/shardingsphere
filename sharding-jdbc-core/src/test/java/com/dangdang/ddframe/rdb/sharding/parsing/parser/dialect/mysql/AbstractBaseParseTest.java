@@ -82,10 +82,17 @@ public abstract class AbstractBaseParseTest {
         this.sql = sql;
         this.expectedTables = expectedTables;
         this.expectedConditions = expectedConditions;
-        this.expectedOrderByColumns = expectedSQLStatement.getOrderByItems().iterator();
-        this.expectedGroupByColumns = expectedSQLStatement.getGroupByItems().iterator();
-        this.expectedAggregationSelectItems = expectedSQLStatement.getAggregationSelectItems().iterator();
-        this.expectedLimit = expectedSQLStatement.getLimit();
+        if (expectedSQLStatement instanceof SelectStatement) {
+            expectedOrderByColumns = ((SelectStatement) expectedSQLStatement).getOrderByItems().iterator();
+            expectedGroupByColumns = ((SelectStatement) expectedSQLStatement).getGroupByItems().iterator();
+            expectedAggregationSelectItems = ((SelectStatement) expectedSQLStatement).getAggregationSelectItems().iterator();
+            expectedLimit = ((SelectStatement) expectedSQLStatement).getLimit();
+        } else {
+            expectedOrderByColumns = null;
+            expectedGroupByColumns = null;
+            expectedAggregationSelectItems = null;
+            expectedLimit = null;
+        }
     }
     
     protected static Collection<Object[]> dataParameters(final String path) {
@@ -219,10 +226,12 @@ public abstract class AbstractBaseParseTest {
     protected final void assertSQLStatement(final SQLStatement actual) {
         assertExpectedTables(actual);
         assertExpectedConditions(actual);
-        assertOrderBy(actual);
-        assertGroupBy(actual);
-        assertAggregationSelectItem(actual);
-        assertLimit(actual);
+        if (actual instanceof SelectStatement) {
+            assertOrderBy((SelectStatement) actual);
+            assertGroupBy((SelectStatement) actual);
+            assertAggregationSelectItem((SelectStatement) actual);
+            assertLimit((SelectStatement) actual);
+        }
     }
     
     private void assertExpectedTables(final SQLStatement actual) {
@@ -233,21 +242,21 @@ public abstract class AbstractBaseParseTest {
         assertTrue(new ReflectionEquals(expectedConditions).matches(actual.getConditions()));
     }
     
-    private void assertOrderBy(final SQLStatement actual) {
+    private void assertOrderBy(final SelectStatement actual) {
         for (OrderItem each : actual.getOrderByItems()) {
             assertTrue(new ReflectionEquals(expectedOrderByColumns.next()).matches(each));
         }
         assertFalse(expectedOrderByColumns.hasNext());
     }
     
-    private void assertGroupBy(final SQLStatement actual) {
+    private void assertGroupBy(final SelectStatement actual) {
         for (OrderItem each : actual.getGroupByItems()) {
             assertTrue(new ReflectionEquals(expectedGroupByColumns.next()).matches(each));
         }
         assertFalse(expectedGroupByColumns.hasNext());
     }
     
-    private void assertAggregationSelectItem(final SQLStatement actual) {
+    private void assertAggregationSelectItem(final SelectStatement actual) {
         for (AggregationSelectItem each : actual.getAggregationSelectItems()) {
             AggregationSelectItem expected = expectedAggregationSelectItems.next();
             assertTrue(new ReflectionEquals(expected, "derivedAggregationSelectItems").matches(each));
@@ -258,7 +267,7 @@ public abstract class AbstractBaseParseTest {
         assertFalse(expectedAggregationSelectItems.hasNext());
     }
     
-    private void assertLimit(final SQLStatement actual) {
+    private void assertLimit(final SelectStatement actual) {
         if (null != actual.getLimit()) {
             if (null != actual.getLimit().getOffset()) {
                 assertTrue(new ReflectionEquals(expectedLimit.getOffset()).matches(actual.getLimit().getOffset()));

@@ -73,13 +73,15 @@ public interface DatabaseTestSQL {
     
     String getSelectInWithSingleTableSql();
     
-    String getSelectLimitWithBindingTableSql();
-    
     String getSelectOrderByWithAliasSql();
     
-    String getSelectLimitWithBindingTableWithoutOffsetSql();
+    String getSelectPagingWithOffsetAndRowCountSql();
     
-    String getSelectLimitWithBindingTableWithOffsetSql();
+    String getSelectPagingWithRowCountSql();
+    
+    String getSelectPagingWithOffsetSql();
+    
+    String getSelectLikeWithCountSql();
     
     String getSelectGroupWithBindingTableSql();
     
@@ -92,6 +94,8 @@ public interface DatabaseTestSQL {
     String getSelectForFullTableNameWithSingleTableSql();
     
     String getSelectWithBindingTableSql();
+    
+    String getSelectWithParenthesesSql();
     
     String getSelectGroupByUserIdSql();
     

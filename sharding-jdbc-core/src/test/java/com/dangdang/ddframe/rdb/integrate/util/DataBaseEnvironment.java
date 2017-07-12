@@ -64,17 +64,18 @@ public final class DataBaseEnvironment {
         PASSWORD.put(DatabaseType.PostgreSQL, "");
         SCHEMA.put(DatabaseType.PostgreSQL, null);
         
-        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
-        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:db_0");
-        USERNAME.put(DatabaseType.Oracle, "jdbc");
-        PASSWORD.put(DatabaseType.Oracle, "jdbc");
-        SCHEMA.put(DatabaseType.Oracle, "JDBC");
-        
         DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
         URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(DatabaseType.SQLServer, "sa");
         PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");
         SCHEMA.put(DatabaseType.SQLServer, null);
+        
+        DRIVER_CLASS_NAME.put(DatabaseType.Oracle, "oracle.jdbc.driver.OracleDriver");
+        URL.put(DatabaseType.Oracle, "jdbc:oracle:thin:@db.oracle:1521:db_1");
+        USERNAME.put(DatabaseType.Oracle, "jdbc");
+        PASSWORD.put(DatabaseType.Oracle, "jdbc");
+        SCHEMA.put(DatabaseType.Oracle, "%s");
+    
     }
     
     public String getDriverClassName() {
@@ -93,7 +94,7 @@ public final class DataBaseEnvironment {
         return PASSWORD.get(databaseType);
     }
     
-    public String getSchema() {
-        return SCHEMA.get(databaseType);
+    public String getSchema(final String dbName) {
+        return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);
     }
 }

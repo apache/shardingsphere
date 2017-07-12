@@ -69,14 +69,14 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableSql());
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 10000, 2);
     }
     
     @Test
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
-        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectLimitWithBindingTableWithoutOffsetSql());
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithRowCountSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTableWithoutOffset.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 0);
     }

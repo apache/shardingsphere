@@ -21,11 +21,28 @@ import com.dangdang.ddframe.rdb.integrate.sql.AbstractDatabaseTestSQL;
 
 public final class PostgreSQLTestSQL extends AbstractDatabaseTestSQL {
     
-    private static final String SELECT_LIMIT_WITH_BINDING_TABLE_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+    private static final String SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s LIMIT %s";
     
+    private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s";
+    
+    private static final String SELECT_PAGING_WITH_OFFSET_SQL = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
+            + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s";
+    
     @Override
-    public String getSelectLimitWithBindingTableSql() {
-        return SELECT_LIMIT_WITH_BINDING_TABLE_SQL;
+    public String getSelectPagingWithOffsetAndRowCountSql() {
+        return SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL;
     }
+    
+    @Override
+    public String getSelectPagingWithRowCountSql() {
+        return SELECT_PAGING_WITH_ROW_COUNT_SQL;
+    }
+    
+    @Override
+    public String getSelectPagingWithOffsetSql() {
+        return SELECT_PAGING_WITH_OFFSET_SQL;
+    }
+    
 }

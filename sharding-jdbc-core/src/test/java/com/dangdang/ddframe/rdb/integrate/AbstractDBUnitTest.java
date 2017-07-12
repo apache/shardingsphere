@@ -41,6 +41,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import java.util.Map;
 import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
@@ -71,20 +73,22 @@ public abstract class AbstractDBUnitTest {
     }
     
     private static void createSchema() {
-        try {
-            Connection conn;
-            for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = createDataSource(database + "_" + i).getConnection();
-                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                    conn.close();
+        if (H2 == CURRENT_DB_TYPE) {
+            try {
+                Connection conn;
+                for (int i = 0; i < 10; i++) {
+                    for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
+                        conn = createDataSource(database + "_" + i).getConnection();
+                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        conn.close();
+                    }
                 }
+                conn = createDataSource("tbl").getConnection();
+                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                conn.close();
+            } catch (final SQLException ex) {
+                ex.printStackTrace();
             }
-            conn = createDataSource("tbl").getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-            conn.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
         }
     }
     
@@ -94,7 +98,7 @@ public abstract class AbstractDBUnitTest {
             InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
             IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
             IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(DB_ENV.getDriverClassName(), DB_ENV.getURL(getDatabaseName(each)), 
-                    DB_ENV.getUsername(), DB_ENV.getPassword(), DB_ENV.getSchema());
+                    DB_ENV.getUsername(), DB_ENV.getPassword(), DB_ENV.getSchema(getDatabaseName(each)));
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
         }
@@ -102,8 +106,8 @@ public abstract class AbstractDBUnitTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected final String currentDbType() {
-        return H2 == CURRENT_DB_TYPE ? "mysql" : CURRENT_DB_TYPE.name().toLowerCase();
+    protected final DatabaseType currentDbType() {
+        return H2 == CURRENT_DB_TYPE ? DatabaseType.MySQL : CURRENT_DB_TYPE;
     }
     
     protected final boolean isAliasSupport() {
@@ -129,6 +133,9 @@ public abstract class AbstractDBUnitTest {
         result.setUsername(DB_ENV.getUsername());
         result.setPassword(DB_ENV.getPassword());
         result.setMaxActive(1000);
+        if (Oracle == DB_ENV.getDatabaseType()) {
+            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSource));
+        }
         DATA_SOURCES.put(dataSource, result);
         return result;
     }

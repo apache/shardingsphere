@@ -47,6 +47,6 @@ import org.junit.runners.Suite.SuiteClasses;
     AllKeygenTests.class,
     AllUtilTests.class,
     AllMetricsTests.class
-})
+    })
 public class AllShardingTests {
 }

@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 
@@ -45,10 +46,10 @@ public final class MySQLParser extends SQLParser {
     /**
      * 解析分页.
      * 
-     * @param sqlStatement SQL语句对象
+     * @param selectStatement SQL语句对象
      * @param parametersIndex 参数索引
      */
-    public void parseLimit(final SQLStatement sqlStatement, final int parametersIndex) {
+    public void parseLimit(final SelectStatement selectStatement, final int parametersIndex) {
         skipIfEqual(MySQLKeyword.LIMIT);
         int valueIndex = -1;
         int valueBeginPosition = getLexer().getCurrentToken().getEndPosition();
@@ -67,19 +68,19 @@ public final class MySQLParser extends SQLParser {
         }
         getLexer().nextToken();
         if (skipIfEqual(Symbol.COMMA)) {
-            sqlStatement.setLimit(getLimitWithComma(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
+            selectStatement.setLimit(getLimitWithComma(selectStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
             return;
         }
         if (skipIfEqual(MySQLKeyword.OFFSET)) {
-            sqlStatement.setLimit(getLimitWithOffset(sqlStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
+            selectStatement.setLimit(getLimitWithOffset(selectStatement, parametersIndex, valueIndex, valueBeginPosition, value, isParameterForValue));
             return;
         }
         if (!isParameterForValue) {
-            sqlStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
+            selectStatement.getSqlTokens().add(new RowCountToken(valueBeginPosition, value));
         }
         Limit limit = new Limit(true);
         limit.setRowCount(new LimitValue(value, valueIndex));
-        sqlStatement.setLimit(limit);
+        selectStatement.setLimit(limit);
     }
     
     private Limit getLimitWithComma(final SQLStatement sqlStatement, final int parametersIndex, final int index, final int valueBeginPosition, final int value, final boolean isParameterForValue) {

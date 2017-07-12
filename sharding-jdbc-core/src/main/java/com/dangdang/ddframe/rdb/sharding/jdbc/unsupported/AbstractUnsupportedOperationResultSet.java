@@ -24,6 +24,7 @@ import java.sql.Ref;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Map;
 
 /**
  * 声明不支持操作的数据结果集对象.
@@ -220,5 +221,15 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     @Override
     public final <T> T getObject(final String columnLabel, final Class<T> type) throws SQLException {
         throw new SQLFeatureNotSupportedException("getObject with type");
+    }
+    
+    @Override
+    public Object getObject(final String columnLabel, final Map<String, Class<?>> map) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getObject with map");
+    }
+    
+    @Override
+    public Object getObject(final int columnIndex, final Map<String, Class<?>> map) throws SQLException {
+        throw new SQLFeatureNotSupportedException("getObject with map");
     }
 }

@@ -29,13 +29,13 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ShardingDatabaseOnlyForPreparedStatementWithGroupByTest.class,
-        ShardingDatabaseOnlyForPreparedStatementWithSelectTest.class,
-        ShardingDatabaseOnlyForPreparedStatementWithAggregateTest.class,
-        ShardingDatabaseOnlyForPreparedStatementWithDMLTest.class,
-        ShardingDatabaseOnlyForStatementWithAggregateTest.class,
-        ShardingDatabaseOnlyForStatementWithDMLTest.class,
-        ShardingDatabaseOnlyForStatementWithSelectTest.class
+    ShardingDatabaseOnlyForPreparedStatementWithGroupByTest.class,
+    ShardingDatabaseOnlyForPreparedStatementWithSelectTest.class,
+    ShardingDatabaseOnlyForPreparedStatementWithAggregateTest.class,
+    ShardingDatabaseOnlyForPreparedStatementWithDMLTest.class,
+    ShardingDatabaseOnlyForStatementWithAggregateTest.class,
+    ShardingDatabaseOnlyForStatementWithDMLTest.class,
+    ShardingDatabaseOnlyForStatementWithSelectTest.class
     })
 public class AllShardingDatabaseOnlyTests {
 }

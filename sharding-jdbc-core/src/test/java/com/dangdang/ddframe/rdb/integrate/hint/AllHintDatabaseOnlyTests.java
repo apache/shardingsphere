@@ -22,10 +22,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ShardingDatabaseOnlyWithHintForDMLTest.class,
-        ShardingDatabaseOnlyWithHintForSelectTest.class,
-        RoutingDatabaseOnlyWithHintForDMLTest.class,
-        RoutingDatabaseOnlyWithHintForSelectTest.class
+    ShardingDatabaseOnlyWithHintForDMLTest.class,
+    ShardingDatabaseOnlyWithHintForSelectTest.class,
+    RoutingDatabaseOnlyWithHintForDMLTest.class,
+    RoutingDatabaseOnlyWithHintForSelectTest.class
     })
 public class AllHintDatabaseOnlyTests {
 }

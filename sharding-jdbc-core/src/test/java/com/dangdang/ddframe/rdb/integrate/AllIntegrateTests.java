@@ -30,13 +30,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    AllShardingDatabaseAndTableTests.class,
-    AllShardingDatabaseOnlyTests.class, 
-    AllShardingTablesOnlyTests.class, 
-    AllHintDatabaseOnlyTests.class, 
-    AllSingleResultSetTests.class,
-    AllShardingMasterAndSlaveTests.class,
-    ShardingForNullableWithAggregateTest.class 
-})
+        AllShardingDatabaseAndTableTests.class,
+        AllShardingDatabaseOnlyTests.class, 
+        AllShardingTablesOnlyTests.class, 
+        AllHintDatabaseOnlyTests.class, 
+        AllSingleResultSetTests.class,
+        AllShardingMasterAndSlaveTests.class,
+        ShardingForNullableWithAggregateTest.class
+    })
 public class AllIntegrateTests {
 }

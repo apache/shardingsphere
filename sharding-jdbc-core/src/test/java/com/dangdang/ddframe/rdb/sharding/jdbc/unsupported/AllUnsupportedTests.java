@@ -29,6 +29,6 @@ import org.junit.runners.Suite;
         UnsupportedOperationResultSetTest.class,
         UnsupportedUpdateOperationResultSetTest.class,
         UnsupportedGeneratedKeysResultSetTest.class
-})
+    })
 public class AllUnsupportedTests {
 }

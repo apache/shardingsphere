@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.Collections;
 
 public final class UnsupportedOperationResultSetTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
@@ -230,7 +231,6 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
         actual.getRowId("label");
     }
     
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithType() throws SQLException {
         actual.getObject(1, String.class);
@@ -239,5 +239,15 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithType() throws SQLException {
         actual.getObject("label", String.class);
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertObjectForColumnIndexWithMap() throws SQLException {
+        actual.getObject(1, Collections.<String, Class<?>>emptyMap());
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertObjectForColumnLabelWithMap() throws SQLException {
+        actual.getObject("label", Collections.<String, Class<?>>emptyMap());
     }
 }

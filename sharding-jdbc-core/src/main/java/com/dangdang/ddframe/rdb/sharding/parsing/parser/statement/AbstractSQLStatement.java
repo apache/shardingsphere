@@ -18,17 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement;
 
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Conditions;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Tables;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,34 +49,5 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     @Override
     public final SQLType getType() {
         return type;
-    }
-    
-    public List<OrderItem> getOrderByItems() {
-        return Collections.emptyList();
-    }
-    
-    public List<OrderItem> getGroupByItems() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public List<AggregationSelectItem> getAggregationSelectItems() {
-        return Collections.emptyList();
-    }
-    
-    public Limit getLimit() {
-        return null;
-    }
-    
-    public void setLimit(final Limit limit) {
-    }
-    
-    /**
-     * 判断是否需要内存排序.
-     *
-     * @return 是否需要内存排序
-     */
-    public boolean isGroupByAndOrderByDifferent() {
-        return !getGroupByItems().isEmpty() && !getOrderByItems().equals(getGroupByItems());
     }
 }

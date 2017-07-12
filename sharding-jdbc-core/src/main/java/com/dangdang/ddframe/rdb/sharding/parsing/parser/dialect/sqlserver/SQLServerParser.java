@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
 
@@ -59,7 +58,12 @@ public final class SQLServerParser extends SQLParser {
         return columnLabel.equalsIgnoreCase(rowNumberAlias.orNull());
     }
     
-    public void parseTop(final SQLStatement sqlStatement) {
+    /**
+     * 解析TOP.
+     * 
+     * @param selectStatement SQL语句对象
+     */
+    public void parseTop(final SelectStatement selectStatement) {
         if (skipIfEqual(SQLServerKeyword.TOP)) {
             skipIfEqual(Symbol.LEFT_PAREN);
             SQLExpression sqlExpression = parseExpression();
@@ -75,12 +79,12 @@ public final class SQLServerParser extends SQLParser {
             if (skipIfEqual(SQLServerKeyword.PERCENT)) {
                 return;
             }
-            if (null == sqlStatement.getLimit()) {
+            if (null == selectStatement.getLimit()) {
                 Limit limit = new Limit(false);
                 limit.setRowCount(rowCount);
-                sqlStatement.setLimit(limit);
+                selectStatement.setLimit(limit);
             } else {
-                sqlStatement.getLimit().setRowCount(rowCount);
+                selectStatement.getLimit().setRowCount(rowCount);
             }
         }
     }
@@ -99,7 +103,7 @@ public final class SQLServerParser extends SQLParser {
             offsetValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
         } else if (equalAny(Symbol.QUESTION)) {
             offsetIndex = getParametersIndex();
-            setParametersIndex(offsetIndex + 1);
+            increaseParametersIndex();
         } else {
             throw new SQLParsingException(getLexer());
         }
@@ -114,7 +118,7 @@ public final class SQLServerParser extends SQLParser {
                 rowCountValue = Integer.parseInt(getLexer().getCurrentToken().getLiterals());
             } else if (equalAny(Symbol.QUESTION)) {
                 rowCountIndex = getParametersIndex();
-                setParametersIndex(rowCountIndex + 1);
+                increaseParametersIndex();
             } else {
                 throw new SQLParsingException(getLexer());
             }
