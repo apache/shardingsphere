@@ -32,6 +32,9 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     private static final String SELECT_COUNT_WITH_BINDING_TABLE_SQL = "SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s";
     
+    private static final String SELECT_COUNT_WITH_BINDING_TABLE_AND_WITHOUT_JOIN_SQL = "SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i"
+            + " WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s";
+    
     private static final String INSERT_WITH_ALL_PLACEHOLDERS_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
     
     private static final String INSERT_WITH_PARTIAL_PLACEHOLDERS_SQL = "INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, ?)";
@@ -153,6 +156,11 @@ public abstract class AbstractDatabaseTestSQL implements DatabaseTestSQL {
     @Override
     public String getSelectCountWithBindingTableSql() {
         return SELECT_COUNT_WITH_BINDING_TABLE_SQL;
+    }
+    
+    @Override
+    public String getSelectCountWithBindingTableAndWithoutJoinSql() {
+        return SELECT_COUNT_WITH_BINDING_TABLE_AND_WITHOUT_JOIN_SQL;
     }
     
     @Override

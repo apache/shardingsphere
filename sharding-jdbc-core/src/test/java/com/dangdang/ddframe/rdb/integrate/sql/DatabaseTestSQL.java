@@ -31,6 +31,8 @@ public interface DatabaseTestSQL {
     
     String getSelectCountWithBindingTableSql();
     
+    String getSelectCountWithBindingTableAndWithoutJoinSql();
+    
     String getInsertWithAllPlaceholdersSql();
     
     String getInsertWithPartialPlaceholdersSql();

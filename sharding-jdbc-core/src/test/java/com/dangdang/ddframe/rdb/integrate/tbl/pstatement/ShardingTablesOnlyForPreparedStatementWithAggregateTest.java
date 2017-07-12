@@ -67,4 +67,11 @@ public final class ShardingTablesOnlyForPreparedStatementWithAggregateTest exten
         assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", selectSql, 10, 11, 1000, 1909);
         assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", selectSql, 1, 9, 1000, 1909);
     }
+    
+    @Test
+    public void assertSelectCountWithBindingTableAndWithoutJoinSql() throws SQLException, DatabaseUnitException {
+        String selectSql = SqlPlaceholderUtil.replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableAndWithoutJoinSql());
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", selectSql, 10, 11, 1000, 1909);
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", selectSql, 1, 9, 1000, 1909);
+    }
 }
