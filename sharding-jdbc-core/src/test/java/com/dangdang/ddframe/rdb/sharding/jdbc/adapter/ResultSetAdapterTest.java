@@ -30,8 +30,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -71,8 +72,10 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     private void assertClose(final AbstractResultSetAdapter actual) throws SQLException {
         assertTrue(actual.isClosed());
         assertThat(actual.getResultSets().size(), is(10));
-        for (ResultSet each : actual.getResultSets()) {
-            assertTrue(each.isClosed());
+        if (currentDbType() != Oracle) {
+            for (ResultSet each : actual.getResultSets()) {
+                assertTrue(each.isClosed());
+            }
         }
     }
     
@@ -88,7 +91,7 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
             actual.setFetchDirection(ResultSet.FETCH_REVERSE);
         } catch (final SQLException ignore) {
         }
-        if (currentDbType() != SQLServer) {
+        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
             assertFetchDirection((AbstractResultSetAdapter) actual, ResultSet.FETCH_REVERSE);
         }
     }
@@ -104,7 +107,7 @@ public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        if (currentDbType() != SQLServer) {
+        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
             assertThat(actual.getFetchSize(), is(0));
         }
         actual.setFetchSize(100);

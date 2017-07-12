@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -39,11 +40,12 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
     
     private ShardingDataSource shardingDataSource;
     
-    private String sql = getDatabaseTestSQL().getSelectUserIdByStatusSql();
+    private String sql;
     
     @Before
     public void init() throws SQLException {
         shardingDataSource = getShardingDataSource();
+        sql = getDatabaseTestSQL().getSelectUserIdByStatusSql();
     }
     
     @Test
@@ -138,8 +140,10 @@ public final class ConnectionAdapterTest extends AbstractShardingDatabaseOnlyDBU
             actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             actual.createStatement().executeQuery(sql);
             assertTransactionIsolation(actual, Connection.TRANSACTION_SERIALIZABLE);
-            actual.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);
+            if (currentDbType() != Oracle) {
+                actual.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+                assertTransactionIsolation(actual, Connection.TRANSACTION_READ_COMMITTED);
+            }
         }
     }
     

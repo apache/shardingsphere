@@ -25,6 +25,8 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+
 public final class ShardingTablesOnlyForPreparedStatementWithGroupByTest extends AbstractShardingTablesOnlyDBUnitTest {
     
     private ShardingDataSource shardingDataSource;
@@ -69,4 +71,22 @@ public final class ShardingTablesOnlyForPreparedStatementWithGroupByTest extends
         assertDataSet("integrate/dataset/tbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), 
                 "t_order", getDatabaseTestSQL().getSelectSumWithOrderByDescAndGroupBySql());
     }
+    
+    @Test
+    public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/tbl/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(),
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql()), 10, 11, 1000, 1109);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql()), 1, 9, 1000, 1909);
+    }
+    
+    @Test
+    public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
+        String expectedDataSetFile =  "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
+        assertDataSet(expectedDataSetFile, getShardingDataSource().getConnection(),
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql()), 10, 11, 1000, 1109);
+        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(),
+                "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql()), 1, 9, 1000, 1909);
+    }
+    
 }
