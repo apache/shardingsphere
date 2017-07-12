@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 
@@ -95,7 +94,7 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     
     private void assertSelectPaging(final String expectedDataSetFileName, final String sql, final Object... params) throws SQLException, DatabaseUnitException {
         assertDataSet(TABLE_ONLY_PREFIX + "/expect/select/" + currentDbType().name().toLowerCase() + "/" + expectedDataSetFileName,
-                getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql), params);
+                getShardingDataSource().getConnection(), "t_order_item", String.format(sql, params));
     }
     
     @Test

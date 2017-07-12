@@ -24,7 +24,7 @@ public final class OracleSQLTestSQL extends AbstractDatabaseTestSQL {
     private static final String SELECT_PAGING_WITH_OFFSET_AND_ROW_COUNT_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT" 
             + " order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id" 
             + " FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id"
-            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= ?) WHERE rownum > ?";
+            + " WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum <= %s) WHERE rownum > %s";
     
     private static final String SELECT_PAGING_WITH_ROW_COUNT_SQL = "SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT"
             + " order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id"
