@@ -123,7 +123,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     private SelectItem parseSelectItem() {
         if (isRowNumberSelectItem()) {
-            return parseRowNumberSelectItem();
+            return parseRowNumberSelectItem(selectStatement);
         }
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
@@ -153,7 +153,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         return false;
     }
     
-    protected SelectItem parseRowNumberSelectItem() {
+    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
         throw new UnsupportedOperationException("Cannot support special select item.");
     }
     

@@ -150,7 +150,7 @@ public class SQLParser extends AbstractParser {
     
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
-        if (sqlStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
+        if (!sqlStatement.getTables().isEmpty() && sqlStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }

@@ -73,7 +73,7 @@ public final class ShardingTablesOnlyForPreparedStatementWithSelectTest extends 
     @Test
     public void assertSelectPagingWithOffsetAndRowCountSql() throws SQLException, DatabaseUnitException {
         if (currentDbType() == SQLServer) {
-            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 2, 10, 19, 1000, 1909, 0);
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 4, 10, 19, 1000, 1909, 2);
         } else {
             assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql()), 10, 19, 1000, 1909, 2, 2);
         }

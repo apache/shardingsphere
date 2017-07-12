@@ -25,6 +25,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Commo
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Optional;
 
 public class SQLServerSelectParser extends AbstractSelectParser {
@@ -67,9 +68,14 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected SelectItem parseRowNumberSelectItem() {
+    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
         getSqlParser().getLexer().nextToken();
         if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
+            getSqlParser().skipUntil(DefaultKeyword.OVER);
+            getSqlParser().getLexer().nextToken();
+            getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
+            selectStatement.getOrderByItems().addAll(parseOrderBy());
+            getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
             getSqlParser().skipUntil(DefaultKeyword.AS);
             getSqlParser().getLexer().nextToken();
             SelectItem result = new CommonSelectItem("ROW_NUMBER", Optional.of(getSqlParser().getLexer().getCurrentToken().getLiterals()), false);
