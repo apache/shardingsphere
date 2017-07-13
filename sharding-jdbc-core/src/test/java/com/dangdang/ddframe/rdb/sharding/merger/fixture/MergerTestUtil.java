@@ -17,10 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.AggregationSelectItem;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,12 +31,6 @@ import static org.mockito.Mockito.when;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MergerTestUtil {
-    
-    public static ResultSet mockResult(final List<String> columnNames) throws SQLException {
-        ResultSet result = getResultSet(columnNames);
-        when(result.next()).thenReturn(true, false);
-        return result;
-    }
     
     public static ResultSet mockResult(final List<String> columnNames, final List<Object> values) throws SQLException {
         ResultSet result = getResultSet(columnNames);
@@ -60,21 +51,6 @@ public final class MergerTestUtil {
         for (String each : columnNames) {
             when(resultSetMetaData.getColumnLabel(count)).thenReturn(SQLUtil.getExactlyValue(each));
             count++;
-        }
-        return result;
-    }
-    
-    public static AggregationSelectItem createAggregationColumn(
-            final AggregationType aggregationType, final String innerExpression, final String alias, final int index, final int avgDerivedCountIndex, final int avgDerivedSumIndex) {
-        AggregationSelectItem result = new AggregationSelectItem(aggregationType, innerExpression, Optional.fromNullable(alias));
-        result.setIndex(index);
-        if (AggregationType.AVG == aggregationType) {
-            AggregationSelectItem derivedCount = new AggregationSelectItem(AggregationType.COUNT, AggregationType.COUNT.name(), Optional.of("sharding_gen_1"));
-            derivedCount.setIndex(avgDerivedCountIndex);
-            result.getDerivedAggregationSelectItems().add(derivedCount);
-            AggregationSelectItem derivedSum = new AggregationSelectItem(AggregationType.SUM, AggregationType.SUM.name(), Optional.of("sharding_gen_2"));
-            derivedSum.setIndex(avgDerivedSumIndex);
-            result.getDerivedAggregationSelectItems().add(derivedSum);
         }
         return result;
     }

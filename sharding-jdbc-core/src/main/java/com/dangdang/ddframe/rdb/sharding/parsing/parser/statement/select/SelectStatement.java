@@ -80,12 +80,12 @@ public final class SelectStatement extends AbstractSQLStatement {
     }
     
     /**
-     * 判断是否需要内存排序.
+     * 判断是否分组和排序项一致.
      *
-     * @return 是否需要内存排序
+     * @return 是否分组和排序项一致
      */
-    public boolean isGroupByAndOrderByDifferent() {
-        return !getGroupByItems().isEmpty() && !getOrderByItems().equals(getGroupByItems());
+    public boolean isSameGroupByAndOrderByItems() {
+        return !getGroupByItems().isEmpty() && getGroupByItems().equals(getOrderByItems());
     }
     
     /**

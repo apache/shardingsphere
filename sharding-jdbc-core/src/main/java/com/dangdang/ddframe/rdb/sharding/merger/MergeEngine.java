@@ -73,10 +73,10 @@ public final class MergeEngine {
     
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
-            if (selectStatement.isGroupByAndOrderByDifferent()) {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
-            } else {
+            if (selectStatement.isSameGroupByAndOrderByItems()) {
                 return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+            } else {
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {

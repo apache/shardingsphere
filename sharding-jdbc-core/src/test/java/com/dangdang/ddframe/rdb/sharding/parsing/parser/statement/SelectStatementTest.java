@@ -28,26 +28,26 @@ import java.sql.SQLException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class SQLStatementTest {
+public final class SelectStatementTest {
     
     @Test
-    public void assertIsNotNeedMemorySortForGroupByWithoutGroupBy() throws SQLException {
-        assertFalse(new SelectStatement().isGroupByAndOrderByDifferent());
+    public void assertIsSameGroupByAndOrderByItemsWhenGroupByAndOrderByAllEmpty() throws SQLException {
+        assertFalse(new SelectStatement().isSameGroupByAndOrderByItems());
     }
     
     @Test
-    public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderBySame() throws SQLException {
+    public void assertIsSameGroupByAndOrderByItemsWhenSame() throws SQLException {
         SelectStatement actual = new SelectStatement();
         actual.getOrderByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
         actual.getGroupByItems().add(new OrderItem("col", OrderType.ASC, Optional.<String>absent()));
-        assertFalse(actual.isGroupByAndOrderByDifferent());
+        assertTrue(actual.isSameGroupByAndOrderByItems());
     }
     
     @Test
-    public void assertIsNeedMemorySortForGroupByWithGroupByAndOrderByDifferent() throws SQLException {
+    public void assertIsSameGroupByAndOrderByItemsWhenDifferent() throws SQLException {
         SelectStatement actual = new SelectStatement();
         actual.getOrderByItems().add(new OrderItem("order_col", OrderType.ASC, Optional.<String>absent()));
         actual.getGroupByItems().add(new OrderItem("group_col", OrderType.ASC, Optional.<String>absent()));
-        assertTrue(actual.isGroupByAndOrderByDifferent());
+        assertFalse(actual.isSameGroupByAndOrderByItems());
     }
 }
