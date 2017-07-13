@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByRowComparatorTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMergerTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AllAggregationTests;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMergerTest;
@@ -34,7 +35,9 @@ import org.junit.runners.Suite;
         OrderByValueTest.class,
         OrderByStreamResultSetMergerTest.class,
         GroupByValueTest.class,
-        GroupByRowComparatorTest.class, 
+        GroupByRowComparatorTest.class,
+        GroupByStreamResultSetMergerTest.class,
+//        GroupByMemoryResultSetMergerTest.class, 
         AllAggregationTests.class, 
         UnsupportedOperationDerivedColumnResultSetTest.class, 
         ResultSetUtilTest.class

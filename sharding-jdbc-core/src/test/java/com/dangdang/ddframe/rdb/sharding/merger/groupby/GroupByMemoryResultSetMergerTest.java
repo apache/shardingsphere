@@ -15,18 +15,9 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
-import com.dangdang.ddframe.rdb.sharding.AllShardingTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllShardingTests.class,
-        AllIntegrateTests.class
-    })
-public class AllTests {
+public final class GroupByMemoryResultSetMergerTest {
+    
+    
 }
