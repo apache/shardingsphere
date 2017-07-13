@@ -15,10 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger.iterator;
+package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -29,12 +31,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class IteratorStreamResultSetMergerTest {
+public final class OrderByStreamResultSetMergerTest {
     
     private MergeEngine mergeEngine;
     
@@ -49,6 +53,7 @@ public final class IteratorStreamResultSetMergerTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class));
         selectStatement = new SelectStatement();
+        selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.ASC));
     }
     
     @Test
@@ -59,58 +64,44 @@ public final class IteratorStreamResultSetMergerTest {
     }
     
     @Test
-    public void assertNextForResultSetsAllNotEmpty() throws SQLException {
-        for (ResultSet each : resultSets) {
-            when(each.next()).thenReturn(true, false);
-        }
+    public void assertNextForSomeResultSetsEmpty() throws SQLException {
         mergeEngine = new MergeEngine(resultSets, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
-        assertTrue(actual.next());
-        assertTrue(actual.next());
-        assertTrue(actual.next());
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         when(resultSets.get(0).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        when(resultSets.get(0).getObject(1)).thenReturn("2");
+        when(resultSets.get(2).next()).thenReturn(true, true, false);
+        when(resultSets.get(2).getObject(1)).thenReturn("1", "1", "3", "3");
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
-        when(resultSets.get(1).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
-        assertFalse(actual.next());
-    }
-    
-    @Test
-    public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
-        when(resultSets.get(2).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
-        ResultSetMerger actual = mergeEngine.merge();
+        assertThat(actual.getValue(1, Object.class).toString(), is("2"));
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("3"));
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForMix() throws SQLException {
-        resultSets.add(mock(ResultSet.class));
-        resultSets.add(mock(ResultSet.class));
-        resultSets.add(mock(ResultSet.class));
-        when(resultSets.get(1).next()).thenReturn(true, false);
-        when(resultSets.get(3).next()).thenReturn(true, false);
-        when(resultSets.get(5).next()).thenReturn(true, false);
         mergeEngine = new MergeEngine(resultSets, selectStatement);
+        when(resultSets.get(0).next()).thenReturn(true, false);
+        when(resultSets.get(0).getObject(1)).thenReturn("2");
+        when(resultSets.get(1).next()).thenReturn(true, true, true, false);
+        when(resultSets.get(1).getObject(1)).thenReturn("2", "2", "3", "3", "4", "4");
+        when(resultSets.get(2).next()).thenReturn(true, true, false);
+        when(resultSets.get(2).getObject(1)).thenReturn("1", "1", "3", "3");
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("2"));
         assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("2"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("3"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("3"));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(1, Object.class).toString(), is("4"));
         assertFalse(actual.next());
     }
 }

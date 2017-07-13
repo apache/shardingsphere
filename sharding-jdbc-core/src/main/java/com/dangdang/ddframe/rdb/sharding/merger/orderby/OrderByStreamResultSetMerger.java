@@ -57,11 +57,7 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
                 orderByValuesQueue.offer(orderByValue);
             }
         }
-        if (!orderByValuesQueue.isEmpty()) {
-            setCurrentResultSet(orderByValuesQueue.peek().getResultSet());
-        } else {
-            setCurrentResultSet(resultSets.get(0));
-        }
+        setCurrentResultSet(orderByValuesQueue.isEmpty() ? resultSets.get(0) : orderByValuesQueue.peek().getResultSet());
     }
     
     @Override

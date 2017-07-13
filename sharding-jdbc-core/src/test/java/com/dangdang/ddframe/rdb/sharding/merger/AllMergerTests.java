@@ -18,8 +18,9 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AllAggregationTests;
-import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -29,6 +30,7 @@ import org.junit.runners.Suite;
         MergeEngineTest.class,
         IteratorStreamResultSetMergerTest.class, 
         OrderByValueTest.class,
+        OrderByStreamResultSetMergerTest.class,
         AllAggregationTests.class, 
         UnsupportedOperationDerivedColumnResultSetTest.class, 
         ResultSetUtilTest.class
