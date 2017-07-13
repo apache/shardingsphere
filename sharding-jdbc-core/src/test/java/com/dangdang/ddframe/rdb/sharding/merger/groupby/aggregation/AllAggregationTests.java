@@ -15,20 +15,17 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.merger;
+package com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation;
 
-import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AllAggregationTests;
-import com.dangdang.ddframe.rdb.sharding.merger.groupby.row.OrderByValueTest;
-import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        OrderByValueTest.class,
-        AllAggregationTests.class, 
-        UnsupportedOperationDerivedColumnResultSetTest.class, 
-        ResultSetUtilTest.class
+        AggregationUnitFactoryTest.class, 
+        ComparableAggregationUnitTest.class, 
+        AccumulationAggregationUnitTest.class, 
+        AverageAggregationUnitTest.class
     })
-public class AllMergerTests {
+public class AllAggregationTests {
 }
