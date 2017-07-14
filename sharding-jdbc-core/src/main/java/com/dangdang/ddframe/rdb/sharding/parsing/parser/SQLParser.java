@@ -39,6 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLTextExpres
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -350,7 +351,10 @@ public class SQLParser extends AbstractParser {
         }
         if (Symbol.LT == symbol || Symbol.LT_EQ == symbol) {
             if (sqlExpression instanceof SQLNumberExpression) {
-                selectStatement.getLimit().setRowCount(new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1));
+                int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
+                selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1));
+                selectStatement.getSqlTokens().add(
+                        new RowCountToken(getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - getLexer().getCurrentToken().getLiterals().length(), rowCount));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex()));
             }

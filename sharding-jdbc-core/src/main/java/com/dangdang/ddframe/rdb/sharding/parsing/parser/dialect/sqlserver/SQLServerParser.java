@@ -33,6 +33,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.google.common.base.Optional;
 
 /**
@@ -68,11 +69,14 @@ public final class SQLServerParser extends SQLParser {
             skipIfEqual(Symbol.LEFT_PAREN);
             SQLExpression sqlExpression = parseExpression();
             skipIfEqual(Symbol.RIGHT_PAREN);
-            LimitValue rowCount;
+            LimitValue rowCountValue;
             if (sqlExpression instanceof SQLNumberExpression) {
-                rowCount = new LimitValue(((SQLNumberExpression) sqlExpression).getNumber().intValue(), -1);
+                int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
+                rowCountValue = new LimitValue(rowCount, -1);
+                selectStatement.getSqlTokens().add(
+                        new RowCountToken(getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - getLexer().getCurrentToken().getLiterals().length(), rowCount));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
-                rowCount = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+                rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
             } else {
                 throw new SQLParsingException(getLexer());
             }
@@ -81,10 +85,10 @@ public final class SQLServerParser extends SQLParser {
             }
             if (null == selectStatement.getLimit()) {
                 Limit limit = new Limit(false);
-                limit.setRowCount(rowCount);
+                limit.setRowCount(rowCountValue);
                 selectStatement.setLimit(limit);
             } else {
-                selectStatement.getLimit().setRowCount(rowCount);
+                selectStatement.getLimit().setRowCount(rowCountValue);
             }
         }
     }

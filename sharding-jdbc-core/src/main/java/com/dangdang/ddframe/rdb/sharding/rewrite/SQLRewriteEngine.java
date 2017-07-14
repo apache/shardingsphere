@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
 import com.google.common.base.Optional;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -53,20 +52,13 @@ public final class SQLRewriteEngine {
     
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
-    private final Collection<String> tableNames;
-    
-    private final Limit limit;
+    private final SQLStatement sqlStatement;
     
     public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final SQLStatement sqlStatement) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
+        this.sqlStatement = sqlStatement;
         sqlTokens.addAll(sqlStatement.getSqlTokens());
-        tableNames = sqlStatement.getTables().getTableNames();
-        if (sqlStatement instanceof SelectStatement) {
-            limit = ((SelectStatement) sqlStatement).getLimit();
-        } else {
-            limit = null;
-        }
     }
     
     /**
@@ -112,7 +104,7 @@ public final class SQLRewriteEngine {
     }
     
     private void appendTableToken(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count, final List<SQLToken> sqlTokens) {
-        String tableName = tableNames.contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
+        String tableName = sqlStatement.getTables().getTableNames().contains(tableToken.getTableName()) ? tableToken.getTableName() : tableToken.getOriginalLiterals();
         sqlBuilder.appendTable(tableName);
         int beginPosition = tableToken.getBeginPosition() + tableToken.getOriginalLiterals().length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
@@ -130,7 +122,15 @@ public final class SQLRewriteEngine {
     }
     
     private void appendLimitRowCount(final SQLBuilder sqlBuilder, final RowCountToken rowCountToken, final int count, final List<SQLToken> sqlTokens, final boolean isRewrite) {
-        sqlBuilder.appendLiterals(isRewrite ? String.valueOf(rowCountToken.getRowCount() + limit.getOffsetValue()) : String.valueOf(rowCountToken.getRowCount()));
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        Limit limit = selectStatement.getLimit();
+        if (!isRewrite) {
+            sqlBuilder.appendLiterals(String.valueOf(rowCountToken.getRowCount()));
+        } else if ((!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems()) {
+            sqlBuilder.appendLiterals(String.valueOf(Integer.MAX_VALUE));
+        } else {
+            sqlBuilder.appendLiterals(String.valueOf(limit.isRowCountRewriteFlag() ? rowCountToken.getRowCount() + limit.getOffsetValue() : rowCountToken.getRowCount()));
+        }
         int beginPosition = rowCountToken.getBeginPosition() + String.valueOf(rowCountToken.getRowCount()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
@@ -189,7 +189,7 @@ public final class SQLRewriteEngine {
     
     private Map<String, String> getBindingTableTokens(final TableUnit tableUnit, final BindingTableRule bindingTableRule) {
         Map<String, String> result = new HashMap<>();
-        for (String eachTable : tableNames) {
+        for (String eachTable : sqlStatement.getTables().getTableNames()) {
             if (!eachTable.equalsIgnoreCase(tableUnit.getLogicTableName()) && bindingTableRule.hasLogicTable(eachTable)) {
                 result.put(eachTable, bindingTableRule.getBindingActualTable(tableUnit.getDataSourceName(), eachTable, tableUnit.getActualTableName()));
             }

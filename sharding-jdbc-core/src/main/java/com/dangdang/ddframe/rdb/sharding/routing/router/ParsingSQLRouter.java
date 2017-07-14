@@ -88,7 +88,9 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, sqlStatement);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            ((SelectStatement) sqlStatement).getLimit().processParameters(parameters, !isSingleRouting);
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+            selectStatement.getLimit().processParameters(parameters, !isSingleRouting, isNeedFetchAll);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         if (routingResult instanceof CartesianRoutingResult) {

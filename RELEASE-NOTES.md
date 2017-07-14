@@ -8,6 +8,12 @@ next = "/00-overview/contribution/"
 
 +++
 
+## 1.5.0.M3
+
+### 缺陷修正
+
+1. [ISSUE #292](https://github.com/dangdangdotcom/sharding-jdbc/issues/292) 内存方式处理GROUP BY语句如有分页信息则需改写
+
 ## 1.5.0.M2
 
 ### 功能提升

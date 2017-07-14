@@ -68,11 +68,12 @@ public final class Limit {
      *
      * @param parameters 参数
      * @param isRewrite 是否重写参数
+     * @param isFetchAll 是否获取所有数据
      */
-    public void processParameters(final List<Object> parameters, final boolean isRewrite) {
+    public void processParameters(final List<Object> parameters, final boolean isRewrite, final boolean isFetchAll) {
         fill(parameters);
         if (isRewrite) {
-            rewrite(parameters);
+            rewrite(parameters, isFetchAll);
         }
     }
     
@@ -92,10 +93,12 @@ public final class Limit {
         }
     }
     
-    private void rewrite(final List<Object> parameters) {
+    private void rewrite(final List<Object> parameters, final boolean isFetchAll) {
         int rewriteOffset = 0;
         int rewriteRowCount;
-        if (rowCountRewriteFlag) {
+        if (isFetchAll) {
+            rewriteRowCount = Integer.MAX_VALUE;
+        } else if (rowCountRewriteFlag) {
             rewriteRowCount = null == rowCount ? -1 : getOffsetValue() + rowCount.getValue();
         } else {
             rewriteRowCount = rowCount.getValue();
