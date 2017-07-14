@@ -56,6 +56,7 @@ public enum OracleKeyword implements Keyword {
     UNPIVOT,
     EXCEPTION,
     EXCEPTIONS,
+    LOG,
     ERRORS,
     DEFERRED,
     CONNECT,

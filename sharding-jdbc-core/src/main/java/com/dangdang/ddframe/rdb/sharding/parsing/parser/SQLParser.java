@@ -87,25 +87,30 @@ public class SQLParser extends AbstractParser {
      */
     // TODO 完善Expression解析的各种场景
     public final SQLExpression parseExpression() {
-        String literals = getLexer().getCurrentToken().getLiterals();
-        final SQLExpression expression = getExpression(literals);
-        if (skipIfEqual(Literals.IDENTIFIER)) {
-            if (skipIfEqual(Symbol.DOT)) {
-                String property = getLexer().getCurrentToken().getLiterals();
-                getLexer().nextToken();
-                return skipIfCompositeExpression() ? new SQLIgnoreExpression() : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
+      SQLExpression expression;
+        do {
+            String literals = getLexer().getCurrentToken().getLiterals();
+            expression = getExpression(literals);
+            if (skipIfEqual(Literals.IDENTIFIER)) {
+                if (skipIfEqual(Symbol.DOT)) {
+                    String property = getLexer().getCurrentToken().getLiterals();
+                    getLexer().nextToken();
+                    skipAll(DefaultKeyword.IS, DefaultKeyword.NOT, DefaultKeyword.NULL);
+                    return skipIfCompositeExpression() ? new SQLIgnoreExpression() : new SQLPropertyExpression(new SQLIdentifierExpression(literals), property);
+                }
+                if (equalAny(Symbol.LEFT_PAREN)) {
+                    skipParentheses();
+                    skipRestCompositeExpression();
+                    return new SQLIgnoreExpression();
+                }
+                return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
             }
-            if (equalAny(Symbol.LEFT_PAREN)) {
-                skipParentheses();
-                skipRestCompositeExpression();
-                return new SQLIgnoreExpression();
-            }
-            return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
-        }
-        getLexer().nextToken();
-        return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
+
+            getLexer().nextToken();
+        } while (skipIfEqual(Literals.IDENTIFIER));
+      return skipIfCompositeExpression() ? new SQLIgnoreExpression() : expression;
     }
-    
+
     private SQLExpression getExpression(final String literals) {
         if (equalAny(Symbol.QUESTION)) {
             increaseParametersIndex();
@@ -130,7 +135,7 @@ public class SQLParser extends AbstractParser {
         }
         return new SQLIgnoreExpression();
     }
-    
+
     private boolean skipIfCompositeExpression() {
         if (equalAny(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT, Symbol.LEFT_PAREN)) {
             skipParentheses();
@@ -139,7 +144,7 @@ public class SQLParser extends AbstractParser {
         }
         return false;
     }
-    
+
     private void skipRestCompositeExpression() {
         while (skipIfEqual(Symbol.PLUS, Symbol.SUB, Symbol.STAR, Symbol.SLASH, Symbol.PERCENT, Symbol.AMP, Symbol.BAR, Symbol.DOUBLE_AMP, Symbol.DOUBLE_BAR, Symbol.CARET, Symbol.DOT)) {
             if (equalAny(Symbol.QUESTION)) {
@@ -149,14 +154,14 @@ public class SQLParser extends AbstractParser {
             skipParentheses();
         }
     }
-    
+
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (!sqlStatement.getTables().isEmpty() && sqlStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(owner))) {
             sqlStatement.getSqlTokens().add(new TableToken(beginPosition - owner.length(), owner));
         }
     }
-    
+
     /**
      * 解析别名.
      *
@@ -179,7 +184,7 @@ public class SQLParser extends AbstractParser {
         }
         return Optional.absent();
     }
-    
+
     /**
      * 解析单表.
      *
@@ -215,7 +220,7 @@ public class SQLParser extends AbstractParser {
         sqlStatement.getSqlTokens().add(new TableToken(beginPosition, literals));
         sqlStatement.getTables().add(table);
     }
-    
+
     /**
      * 跳过表关联.
      *
@@ -242,7 +247,7 @@ public class SQLParser extends AbstractParser {
         }
         return false;
     }
-    
+
     /**
      * 解析查询条件.
      *
@@ -254,11 +259,11 @@ public class SQLParser extends AbstractParser {
             parseConditions(sqlStatement);
         }
     }
-    
+
     private void parseConditions(final SQLStatement sqlStatement) {
         do {
             parseComparisonCondition(sqlStatement);
-        } while (skipIfEqual(DefaultKeyword.AND));
+        } while (skipIfEqual(DefaultKeyword.AND, DefaultKeyword.OR));
         if (equalAny(DefaultKeyword.OR)) {
             throw new SQLParsingUnsupportedException(getLexer().getCurrentToken().getType());
         }
