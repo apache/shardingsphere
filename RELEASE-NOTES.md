@@ -10,6 +10,10 @@ next = "/00-overview/contribution/"
 
 ## 1.5.0.M3
 
+### 里程碑
+
+1. 全新的SQL归并模块，分为流式、内存以及装饰者3种归并引擎，用于分别处理流式迭代、流式排序、流式分组、内存分组、内存聚合以及装饰者分页
+
 ### 缺陷修正
 
 1. [ISSUE #292](https://github.com/dangdangdotcom/sharding-jdbc/issues/292) 内存方式处理GROUP BY语句如有分页信息则需改写
