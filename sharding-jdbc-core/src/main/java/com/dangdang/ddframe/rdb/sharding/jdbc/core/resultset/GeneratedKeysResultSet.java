@@ -50,7 +50,6 @@ public class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResu
         generatedKeys = Collections.<Number>emptyList().iterator();
         generatedKeyColumn = null;
         statement = null;
-        closed = true;
     }
     
     @Override

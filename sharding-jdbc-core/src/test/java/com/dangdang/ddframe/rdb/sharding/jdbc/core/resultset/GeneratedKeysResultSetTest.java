@@ -44,24 +44,28 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void next() throws Exception {
+    public void assertNext() throws Exception {
         assertTrue(actualResultSet.next());
         assertTrue(actualResultSet.next());
         assertFalse(actualResultSet.next());
     }
     
     @Test
+    public void assertNextForEmptyResultSet() throws Exception {
+        GeneratedKeysResultSet actual = new GeneratedKeysResultSet();
+        assertFalse(actual.next());
+    }
+    
+    @Test
     public void assertClose() throws Exception {
         actualResultSet.close();
         assertTrue(actualResultSet.isClosed());
-        GeneratedKeysResultSet actual = new GeneratedKeysResultSet();
-        assertTrue(actual.isClosed());
-        assertFalse(actual.next());
     }
     
     @Test(expected = IllegalStateException.class)
     public void throwExceptionWhenInvokeClosedResultSet() throws Exception {
-        new GeneratedKeysResultSet().getType();
+        actualResultSet.close();
+        actualResultSet.getType();
     }
     
     @Test
