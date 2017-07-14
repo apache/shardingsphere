@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ItemsToken implements SQLToken {
     
     private final int beginPosition;
