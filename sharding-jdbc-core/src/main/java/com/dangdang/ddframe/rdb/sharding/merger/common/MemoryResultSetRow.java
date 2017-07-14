@@ -50,7 +50,7 @@ public class MemoryResultSetRow {
      * @param columnIndex 列索引
      * @return 数据
      */
-    public final Object getCell(final int columnIndex) {
+    public Object getCell(final int columnIndex) {
         Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);
         return data[columnIndex - 1];
     }
@@ -61,7 +61,7 @@ public class MemoryResultSetRow {
      * @param columnIndex 列索引
      * @param value 值
      */
-    public final void setCell(final int columnIndex, final Object value) {
+    public void setCell(final int columnIndex, final Object value) {
         Preconditions.checkArgument(columnIndex > 0 && columnIndex < data.length + 1);
         data[columnIndex - 1] = value;
     }
