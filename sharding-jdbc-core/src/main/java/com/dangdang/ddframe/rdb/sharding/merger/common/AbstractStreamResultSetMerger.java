@@ -83,9 +83,6 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         if (BigDecimal.class == type) {
             return getCurrentResultSet().getBigDecimal(columnIndex);
         }
-        if (BigDecimal.class == type) {
-            return getCurrentResultSet().getBigDecimal(columnIndex);
-        }
         if (byte[].class == type) {
             return getCurrentResultSet().getBytes(columnIndex);
         }
@@ -144,9 +141,6 @@ public abstract class AbstractStreamResultSetMerger implements ResultSetMerger {
         }
         if (String.class == type) {
             return getCurrentResultSet().getString(columnLabel);
-        }
-        if (BigDecimal.class == type) {
-            return getCurrentResultSet().getBigDecimal(columnLabel);
         }
         if (BigDecimal.class == type) {
             return getCurrentResultSet().getBigDecimal(columnLabel);

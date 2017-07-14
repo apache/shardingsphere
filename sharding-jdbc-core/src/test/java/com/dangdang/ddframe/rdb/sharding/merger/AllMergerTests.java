@@ -18,6 +18,8 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.merger.common.DecoratorResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.StreamResultSetMergerTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMergerTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByRowComparatorTest;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMergerTest;
@@ -32,9 +34,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        MergeEngineTest.class,
-        DecoratorResultSetMergerTest.class, 
+@Suite.SuiteClasses({   MergeEngineTest.class,
+        StreamResultSetMergerTest.class, 
+        MemoryResultSetMergerTest.class, 
+        DecoratorResultSetMergerTest.class,
         IteratorStreamResultSetMergerTest.class, 
         OrderByValueTest.class,
         OrderByStreamResultSetMergerTest.class,
