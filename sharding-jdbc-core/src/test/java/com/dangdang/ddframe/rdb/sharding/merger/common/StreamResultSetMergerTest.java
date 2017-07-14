@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -36,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -312,40 +314,109 @@ public final class StreamResultSetMergerTest {
         assertThat((String) streamResultSetMerger.getValue("label", Collection.class), is("1"));
     }
     
+    @Test
+    public void assertGetCalendarValueWithColumnIndexWithDate() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getDate(1, calendar)).thenReturn(new Date(0L));
+        assertThat((Date) streamResultSetMerger.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+    }
     
+    @Test
+    public void assertGetCalendarValueWithColumnIndexWithTime() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getTime(1, calendar)).thenReturn(new Time(0L));
+        assertThat((Time) streamResultSetMerger.getCalendarValue(1, Time.class, calendar), is(new Time(0L)));
+    }
     
+    @Test
+    public void assertGetCalendarValueWithColumnIndexWithTimestamp() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getTimestamp(1, calendar)).thenReturn(new Timestamp(0L));
+        assertThat((Timestamp) streamResultSetMerger.getCalendarValue(1, Timestamp.class, calendar), is(new Timestamp(0L)));
+    }
     
+    @Test(expected = SQLException.class)
+    public void assertGetCalendarValueWithColumnIndexWithInvalidType() throws SQLException {
+        streamResultSetMerger.getCalendarValue(1, Object.class, Calendar.getInstance());
+    }
     
-//    
-//    @Test
-//    public void assertGetValueWithColumnLabel() throws SQLException {
-//        when(resultSet.getValue("label", Object.class)).thenReturn("1");
-//        assertThat(streamResultSetMerger.getValue("label", Object.class).toString(), is("1"));
-//    }
-//    
-//    @Test
-//    public void assertGetCalenderValueWithColumnIndex() throws SQLException {
-//        Calendar calendar = Calendar.getInstance();
-//        when(resultSet.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-//        assertThat((Date) streamResultSetMerger.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
-//    }
-//    
-//    @Test
-//    public void assertGetCalenderValueWithColumnLabel() throws SQLException {
-//        Calendar calendar = Calendar.getInstance();
-//        when(resultSet.getCalendarValue("label", Date.class, calendar)).thenReturn(new Date(0L));
-//        assertThat((Date) streamResultSetMerger.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
-//    }
-//    
-//    @Test
-//    public void assertGetInputStreamWithColumnIndex() throws SQLException {
-//        when(resultSet.getInputStream(1, "ascii")).thenReturn(null);
-//        assertNull(streamResultSetMerger.getInputStream(1, "ascii"));
-//    }
-//    
-//    @Test
-//    public void assertGetInputStreamWithColumnLabel() throws SQLException {
-//        when(resultSet.getInputStream("label", "ascii")).thenReturn(null);
-//        assertNull(streamResultSetMerger.getInputStream("label", "ascii"));
-//    }
+    @Test
+    public void assertGetCalendarValueWithColumnLabelWithDate() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getDate("label", calendar)).thenReturn(new Date(0L));
+        assertThat((Date) streamResultSetMerger.getCalendarValue("label", Date.class, calendar), is(new Date(0L)));
+    }
+    
+    @Test
+    public void assertGetCalendarValueWithColumnLabelWithTime() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getTime("label", calendar)).thenReturn(new Time(0L));
+        assertThat((Time) streamResultSetMerger.getCalendarValue("label", Time.class, calendar), is(new Time(0L)));
+    }
+    
+    @Test
+    public void assertGetCalendarValueWithColumnLabelWithTimestamp() throws SQLException {
+        Calendar calendar = Calendar.getInstance();
+        when(resultSet.getTimestamp("label", calendar)).thenReturn(new Timestamp(0L));
+        assertThat((Timestamp) streamResultSetMerger.getCalendarValue("label", Timestamp.class, calendar), is(new Timestamp(0L)));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertGetCalendarValueWithColumnLabelWithInvalidType() throws SQLException {
+        streamResultSetMerger.getCalendarValue("label", Object.class, Calendar.getInstance());
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnIndexWithAscii() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getAsciiStream(1)).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream(1, "Ascii"), is(inputStream));
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void assertGetInputStreamWithColumnIndexWithUnicode() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getUnicodeStream(1)).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream(1, "Unicode"), is(inputStream));
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnIndexWithBinary() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getBinaryStream(1)).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream(1, "Binary"), is(inputStream));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertGetInputStreamWithColumnIndexWithInvalidType() throws SQLException {
+        streamResultSetMerger.getInputStream(1, "Invalid");
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnLabelWithAscii() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getAsciiStream("label")).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream("label", "Ascii"), is(inputStream));
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void assertGetInputStreamWithColumnLabelWithUnicode() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getUnicodeStream("label")).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream("label", "Unicode"), is(inputStream));
+    }
+    
+    @Test
+    public void assertGetInputStreamWithColumnLabelWithBinary() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        when(resultSet.getBinaryStream("label")).thenReturn(inputStream);
+        assertThat(streamResultSetMerger.getInputStream("label", "Binary"), is(inputStream));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertGetInputStreamWithColumnLabelWithInvalidType() throws SQLException {
+        streamResultSetMerger.getInputStream("label", "Invalid");
+    }
 }

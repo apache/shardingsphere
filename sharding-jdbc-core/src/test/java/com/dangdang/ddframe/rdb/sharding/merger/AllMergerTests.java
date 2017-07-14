@@ -50,7 +50,6 @@ import org.junit.runners.Suite;
         GroupByMemoryResultSetMergerTest.class, 
         AllAggregationTests.class, 
         LimitDecoratorResultSetMergerTest.class, 
-        UnsupportedOperationDerivedColumnResultSetTest.class, 
         ResultSetUtilTest.class
     })
 public class AllMergerTests {
