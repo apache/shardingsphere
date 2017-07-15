@@ -17,44 +17,40 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class NumberUtilTest {
+public final class NumberUtilTest {
     
     @Test
-    public void assertRoundHalfUpWithDouble() throws Exception {
+    public void assertRoundHalfUpWithInteger() {
+        assertThat(NumberUtil.roundHalfUp(1), is(1));
+        assertThat(NumberUtil.roundHalfUp(2), is(2));
+    }
+    
+    @Test
+    public void assertRoundHalfUpWithDouble() {
         assertThat(NumberUtil.roundHalfUp(1.499d), is(1));
         assertThat(NumberUtil.roundHalfUp(1.5d), is(2));
     }
     
     @Test
-    public void assertRoundHalfUpWithFloat() throws Exception {
+    public void assertRoundHalfUpWithFloat() {
         assertThat(NumberUtil.roundHalfUp(1.499f), is(1));
         assertThat(NumberUtil.roundHalfUp(1.5f), is(2));
     }
     
     @Test
-    public void assertRoundHalfUpWithString() throws Exception {
+    public void assertRoundHalfUpWithString() {
         assertThat(NumberUtil.roundHalfUp("1.499"), is(1));
         assertThat(NumberUtil.roundHalfUp("1.5"), is(2));
     }
     
-    @Test
-    public void assertRoundHalfUpWithInteger() throws Exception {
-        assertThat(NumberUtil.roundHalfUp(1), is(1));
-        assertThat(NumberUtil.roundHalfUp(2), is(2));
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void assertRoundHalfUpWithNull() throws Exception {
-        NumberUtil.roundHalfUp(null);
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void assertRoundHalfUpWithWrongNumberType() throws Exception {
+    @Test(expected = ShardingJdbcException.class)
+    public void assertRoundHalfUpWithInvalidType() {
         NumberUtil.roundHalfUp(new Object());
     }
 }

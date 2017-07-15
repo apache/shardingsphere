@@ -18,14 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingException;
+import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
-
-import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
 
 /**
  * 分页对象.
@@ -80,12 +79,12 @@ public final class Limit {
     private void fill(final List<Object> parameters) {
         int offset = 0;
         if (null != this.offset) {
-            offset = -1 == this.offset.getIndex() ? getOffsetValue() : roundHalfUp(parameters.get(this.offset.getIndex()));
+            offset = -1 == this.offset.getIndex() ? getOffsetValue() : NumberUtil.roundHalfUp(parameters.get(this.offset.getIndex()));
             this.offset.setValue(offset);
         }
         int rowCount = 0;
         if (null != this.rowCount) {
-            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : roundHalfUp(parameters.get(this.rowCount.getIndex()));
+            rowCount = -1 == this.rowCount.getIndex() ? getRowCountValue() : NumberUtil.roundHalfUp(parameters.get(this.rowCount.getIndex()));
             this.rowCount.setValue(rowCount);
         }
         if (offset < 0 || rowCount < 0) {

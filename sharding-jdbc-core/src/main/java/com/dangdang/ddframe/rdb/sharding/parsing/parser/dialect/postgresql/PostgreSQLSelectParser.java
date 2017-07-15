@@ -29,9 +29,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsu
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
+import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.google.common.base.Optional;
-
-import static com.dangdang.ddframe.rdb.sharding.util.NumberUtil.roundHalfUp;
 
 public class PostgreSQLSelectParser extends AbstractSelectParser {
     
@@ -96,7 +95,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
             getSqlParser().getLexer().nextToken();
         } else {
             if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-                rowCountValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+                rowCountValue = NumberUtil.roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
                 valueBeginPosition = valueBeginPosition - (rowCountValue + "").length();
                 getSelectStatement().getSqlTokens().add(new RowCountToken(valueBeginPosition, rowCountValue));
             } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
@@ -117,7 +116,7 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         int offsetIndex = -1;
         int offsetBeginPosition = getSqlParser().getLexer().getCurrentToken().getEndPosition();
         if (getSqlParser().equalAny(Literals.INT, Literals.FLOAT)) {
-            offsetValue = roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
+            offsetValue = NumberUtil.roundHalfUp(getSqlParser().getLexer().getCurrentToken().getLiterals());
             offsetBeginPosition = offsetBeginPosition - (offsetValue + "").length();
             getSelectStatement().getSqlTokens().add(new OffsetToken(offsetBeginPosition, offsetValue));
         } else if (getSqlParser().equalAny(Symbol.QUESTION)) {
@@ -130,7 +129,6 @@ public class PostgreSQLSelectParser extends AbstractSelectParser {
         getSqlParser().skipIfEqual(PostgreSQLKeyword.ROW, PostgreSQLKeyword.ROWS);
         return Optional.of(new LimitValue(offsetValue, offsetIndex));
     }
-    
     
     private void setLimit(final Optional<LimitValue> offset, final Optional<LimitValue> rowCount) {
         Limit limit = new Limit(true);

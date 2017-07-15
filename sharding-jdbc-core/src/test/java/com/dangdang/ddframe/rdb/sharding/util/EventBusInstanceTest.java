@@ -17,36 +17,15 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
-/**
- * SQL打印对象.
- * 
- * @author zhangliang 
- */
-@Slf4j(topic = "Sharding-JDBC-SQL")
-public final class SQLPrinter {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+public final class EventBusInstanceTest {
     
-    private static boolean showSql;
-    
-    /**
-     * 初始化.
-     * 
-     * @param showSql 是否打印SQL
-     */
-    public static void init(final boolean showSql) {
-        SQLPrinter.showSql = showSql;
-    }
-    
-    /**
-     * 打印SQL.
-     * 
-     * @param title 日志标题
-     * @param arguments 参数列表
-     */
-    public static void print(final String title, final Object... arguments) {
-        if (showSql) {
-            log.info(title, arguments);
-        }
+    @Test
+    public void assertGetInstance() {
+        assertThat(EventBusInstance.getInstance(), is(EventBusInstance.getInstance()));
     }
 }

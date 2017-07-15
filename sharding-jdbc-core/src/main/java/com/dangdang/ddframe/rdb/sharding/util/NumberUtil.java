@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -37,19 +38,18 @@ public final class NumberUtil {
      * @return 四舍五入后的整形值
      */
     public static int roundHalfUp(final Object obj) {
-        if (null == obj) {
-            throw new RuntimeException("Can't transfer null to a number.");
+        if (obj instanceof Integer) {
+            return (int) obj;
         }
         if (obj instanceof Double) {
             return new BigDecimal((double) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-        } else if (obj instanceof Integer) {
-            return (int) obj;
-        } else if (obj instanceof Float) {
-            return new BigDecimal((float) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-        } else if (obj instanceof String) {
-            return new BigDecimal((String) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-        } else {
-            throw new RuntimeException("Wrong number type to transfer.");
         }
+        if (obj instanceof Float) {
+            return new BigDecimal((float) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        }
+        if (obj instanceof String) {
+            return new BigDecimal((String) obj).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        }
+        throw new ShardingJdbcException("Invalid value to transfer: %s", obj);
     }
 }
