@@ -25,9 +25,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    AllUnsupportedTests.class,
-    AllAdapterTests.class,
-    AllCoreTests.class
+        AllUnsupportedTests.class,
+        AllAdapterTests.class,
+        AllCoreTests.class
     })
 public class AllJDBCTests {
 }

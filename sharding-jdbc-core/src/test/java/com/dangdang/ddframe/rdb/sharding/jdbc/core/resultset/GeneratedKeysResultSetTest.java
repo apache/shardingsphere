@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
@@ -63,18 +64,18 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void throwExceptionWhenInvokeClosedResultSet() throws Exception {
+    public void assertThrowExceptionWhenInvokeClosedResultSet() throws Exception {
         actualResultSet.close();
         actualResultSet.getType();
     }
     
     @Test
-    public void wasNull() throws Exception {
+    public void assertWasNull() throws Exception {
         assertFalse(actualResultSet.wasNull());
     }
     
     @Test
-    public void getString() throws Exception {
+    public void assertGetString() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getString(1), is("1"));
         assertTrue(actualResultSet.next());
@@ -83,7 +84,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getByte() throws Exception {
+    public void assertGetByte() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getByte(1), is((byte) 1L));
         assertTrue(actualResultSet.next());
@@ -92,7 +93,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getShort() throws Exception {
+    public void assertGetShort() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getShort(1), is((short) 1L));
         assertTrue(actualResultSet.next());
@@ -101,7 +102,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getInt() throws Exception {
+    public void assertGetInt() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getInt(1), is(1));
         assertTrue(actualResultSet.next());
@@ -110,7 +111,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getLong() throws Exception {
+    public void assertGetLong() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getLong(1), is(1L));
         assertTrue(actualResultSet.next());
@@ -119,7 +120,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getFloat() throws Exception {
+    public void assertGetFloat() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getFloat(1), is(1F));
         assertTrue(actualResultSet.next());
@@ -128,7 +129,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getDouble() throws Exception {
+    public void assertGetDouble() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getDouble(1), is(1D));
         assertTrue(actualResultSet.next());
@@ -137,7 +138,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getBigDecimal() throws Exception {
+    public void assertGetBigDecimal() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal(1), is(new BigDecimal("1")));
         assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(BigDecimal.ROUND_CEILING, BigDecimal.ROUND_HALF_UP)));
@@ -148,7 +149,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getBytes() throws Exception {
+    public void assertGetBytes() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBytes(1), is("1".getBytes()));
         assertTrue(actualResultSet.next());
@@ -157,7 +158,7 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getObject() throws Exception {
+    public void assertGetObject() throws Exception {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getObject(1), is((Object) 1L));
         assertTrue(actualResultSet.next());
@@ -166,17 +167,22 @@ public class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void getType() throws Exception {
+    public void assertFindColumn() throws SQLException {
+        assertThat(actualResultSet.findColumn("any"), is(1));
+    }
+    
+    @Test
+    public void assertGetType() throws Exception {
         assertThat(actualResultSet.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
-    public void getConcurrency() throws Exception {
+    public void assertGetConcurrency() throws Exception {
         assertThat(actualResultSet.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
     }
     
     @Test
-    public void getStatement() throws Exception {
+    public void assertGetStatement() throws Exception {
         assertThat(actualResultSet.getStatement(), is(STATEMENT));
     }
 }
