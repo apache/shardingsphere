@@ -381,6 +381,7 @@
 <li><a href="#4-cloud-not-resolve-placeholder-in-string-value-异常的解决方法">4. Cloud not resolve placeholder &hellip; in string value &hellip;异常的解决方法?</a></li>
 <li><a href="#5-inline表达式返回结果为何出现浮点数">5. inline表达式返回结果为何出现浮点数？</a></li>
 <li><a href="#6-使用proxool时分库结果不正确">6. 使用Proxool时分库结果不正确？</a></li>
+<li><a href="#7-使用sqlsever和postgresql时-聚合列不加别名会抛异常">7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -451,6 +452,20 @@
 <p>更多关于alias使用方法请参考<a href="http://proxool.sourceforge.net/configure.html">Proxool官网</a>。</p>
 
 <p>PS:sourceforge网站需要翻墙访问。</p>
+
+<h3 id="7-使用sqlsever和postgresql时-聚合列不加别名会抛异常">7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？</h3>
+
+<p>SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：</p>
+
+<pre><code class="language-sql">SELECT SUM(num), SUM(num2) FROM table_xxx;
+</code></pre>
+
+<p>SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空sum和sum(2)。这将导致Sharding-JDBC在结果归并时无法找到相应的列而出错。</p>
+
+<p>正确的SQL写法应为：</p>
+
+<pre><code class="language-sql">SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
+</code></pre>
 
 
       
