@@ -37,4 +37,6 @@ public final class ShardingContext {
     private final DatabaseType databaseType;
     
     private final ExecutorEngine executorEngine;
+    
+    private final boolean showSQL;
 }

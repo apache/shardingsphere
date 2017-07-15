@@ -39,8 +39,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianRoutingRe
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
 import com.dangdang.ddframe.rdb.sharding.routing.type.complex.ComplexRoutingEngine;
 import com.dangdang.ddframe.rdb.sharding.routing.type.simple.SimpleRoutingEngine;
-import com.dangdang.ddframe.rdb.sharding.util.SQLPrinter;
-import lombok.extern.slf4j.Slf4j;
+import com.dangdang.ddframe.rdb.sharding.util.SQLLogger;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -51,18 +50,21 @@ import java.util.List;
  * 
  * @author zhangiang
  */
-@Slf4j
 public final class ParsingSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final boolean showSQL;
+    
+    private final List<Number> generatedKeys;
     
     public ParsingSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
         databaseType = shardingContext.getDatabaseType();
+        showSQL = shardingContext.isShowSQL();
+        generatedKeys = new LinkedList<>();
     }
     
     @Override
@@ -105,7 +107,9 @@ public final class ParsingSQLRouter implements SQLRouter {
             }
         }
         MetricsContext.stop(context);
-        logSQLRouteResult(result, logicSQL, sqlStatement, parameters);
+        if (showSQL) {
+            logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
+        }
         return result;
     }
     
@@ -121,14 +125,14 @@ public final class ParsingSQLRouter implements SQLRouter {
         return routingEngine.route();
     }
     
-    private void logSQLRouteResult(final SQLRouteResult routeResult, final String logicSQL, final SQLStatement sqlStatement, final List<Object> parameters) {
-        SQLPrinter.print("Logic SQL: {}", logicSQL);
-        SQLPrinter.print("SQLStatement: {}", sqlStatement);
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            if (parameters.size() > 0) {
-                SQLPrinter.print("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSql(), parameters);
+    private void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits, final List<Object> parameters) {
+        SQLLogger.log("Logic SQL: {}", logicSQL);
+        SQLLogger.log("SQLStatement: {}", sqlStatement);
+        for (SQLExecutionUnit each : sqlExecutionUnits) {
+            if (parameters.isEmpty()) {
+                SQLLogger.log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSql());
             } else {
-                SQLPrinter.print("Actual SQL: {} ::: {}", each.getDataSource(), each.getSql());
+                SQLLogger.log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSql(), parameters);
             }
         }
     }

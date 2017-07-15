@@ -63,7 +63,7 @@ public final class ShardingConnectionTest {
         DataSourceRule dataSourceRule = new DataSourceRule(dataSourceMap);
         ShardingRule rule = new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule)
                 .tableRules(Collections.singleton(new  TableRule.TableRuleBuilder("test").dataSourceRule(dataSourceRule).build())).build();
-        ShardingContext shardingContext = new ShardingContext(rule, null, null);
+        ShardingContext shardingContext = new ShardingContext(rule, null, null, false);
         connection = new ShardingConnection(shardingContext);
     }
     

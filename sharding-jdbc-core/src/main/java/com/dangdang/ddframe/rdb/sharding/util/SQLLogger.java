@@ -17,36 +17,26 @@
 
 package com.dangdang.ddframe.rdb.sharding.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SQL打印对象.
+ * SQL日志对象.
  * 
  * @author zhangliang 
  */
 @Slf4j(topic = "Sharding-JDBC-SQL")
-public final class SQLPrinter {
-    
-    private static boolean showSql;
-    
-    /**
-     * 初始化.
-     * 
-     * @param showSql 是否打印SQL
-     */
-    public static void init(final boolean showSql) {
-        SQLPrinter.showSql = showSql;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLLogger {
     
     /**
-     * 打印SQL.
+     * 记录日志.
      * 
-     * @param title 日志标题
+     * @param pattern 格式
      * @param arguments 参数列表
      */
-    public static void print(final String title, final Object... arguments) {
-        if (showSql) {
-            log.info(title, arguments);
-        }
+    public static void log(final String pattern, final Object... arguments) {
+        log.info(pattern, arguments);
     }
 }

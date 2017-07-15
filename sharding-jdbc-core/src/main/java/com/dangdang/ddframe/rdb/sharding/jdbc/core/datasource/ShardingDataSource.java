@@ -24,10 +24,9 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import com.dangdang.ddframe.rdb.sharding.executor.ExecutorEngine;
 import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.AbstractDataSourceAdapter;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.util.SQLPrinter;
 import com.google.common.base.Preconditions;
 
 import javax.sql.DataSource;
@@ -58,10 +57,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter implements Aut
         shardingProperties = new ShardingProperties(props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executorEngine = new ExecutorEngine(executorSize);
-        boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
-        SQLPrinter.init(showSql);
+        boolean showSQL = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         try {
-            shardingContext = new ShardingContext(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule)), executorEngine);
+            shardingContext = new ShardingContext(shardingRule, DatabaseType.valueFrom(getDatabaseProductName(shardingRule)), executorEngine, showSQL);
         } catch (final SQLException ex) {
             throw new ShardingJdbcException(ex);
         }
