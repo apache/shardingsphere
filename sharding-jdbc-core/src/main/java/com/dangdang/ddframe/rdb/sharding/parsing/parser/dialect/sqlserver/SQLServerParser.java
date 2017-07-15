@@ -66,15 +66,17 @@ public final class SQLServerParser extends SQLParser {
      */
     public void parseTop(final SelectStatement selectStatement) {
         if (skipIfEqual(SQLServerKeyword.TOP)) {
-            skipIfEqual(Symbol.LEFT_PAREN);
+            int beginPosition = getLexer().getCurrentToken().getEndPosition();
+            if (!skipIfEqual(Symbol.LEFT_PAREN)) {
+                beginPosition = getLexer().getCurrentToken().getEndPosition() - getLexer().getCurrentToken().getLiterals().length();
+            }
             SQLExpression sqlExpression = parseExpression();
             skipIfEqual(Symbol.RIGHT_PAREN);
             LimitValue rowCountValue;
             if (sqlExpression instanceof SQLNumberExpression) {
                 int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
                 rowCountValue = new LimitValue(rowCount, -1);
-                selectStatement.getSqlTokens().add(
-                        new RowCountToken(getLexer().getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - getLexer().getCurrentToken().getLiterals().length(), rowCount));
+                selectStatement.getSqlTokens().add(new RowCountToken(beginPosition, rowCount));
             } else if (sqlExpression instanceof SQLPlaceholderExpression) {
                 rowCountValue = new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex());
             } else {
