@@ -40,17 +40,17 @@ public final class BatchPreparedStatementUnit implements BaseStatementUnit {
     
     private final PreparedStatement statement;
     
-    private final Map<Integer, Integer> outerAndInnerAddBatchCountMap = new HashMap<>();
+    private final Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = new HashMap<>();
     
     @Getter(AccessLevel.NONE)
-    private int innerAddBatchCount;
+    private int actualCallAddBatchTimes;
     
     /**
-     * 映射外部addBatch与路由之后的每个PreparedStatement内部addBatch的调用次数.
+     * 映射通过JDBC API调用addBatch与路由之后的每个PreparedStatement内部真实调用addBatch的次数.
      * 
-     * @param outerAddBatchCount 外部addBatch的调用次数
+     * @param jdbcAddBatchTimes 通过JDBC API调用addBatch的次数
      */
-    public void mapAddBatchCount(final int outerAddBatchCount) {
-        outerAndInnerAddBatchCountMap.put(outerAddBatchCount, innerAddBatchCount++);
+    public void mapAddBatchCount(final int jdbcAddBatchTimes) {
+        jdbcAndActualAddBatchCallTimesMap.put(jdbcAddBatchTimes, actualCallAddBatchTimes++);
     }
 }

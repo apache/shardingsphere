@@ -69,7 +69,7 @@ public final class BatchPreparedStatementExecutor {
         int[] result = new int[parameterSets.size()];
         int count = 0;
         for (BatchPreparedStatementUnit each : batchPreparedStatementUnits) {
-            for (Map.Entry<Integer, Integer> entry : each.getOuterAndInnerAddBatchCountMap().entrySet()) {
+            for (Map.Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 result[entry.getKey()] += null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
             }
             count++;
