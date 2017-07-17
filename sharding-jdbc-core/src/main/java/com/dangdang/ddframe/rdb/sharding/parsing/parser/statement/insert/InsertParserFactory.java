@@ -27,13 +27,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerInsertParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Insert语句解析器工厂.
  *
  * @author zhangliang
  */
-public class InsertParserFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class InsertParserFactory {
     
     /**
      * 创建Insert语句解析器.

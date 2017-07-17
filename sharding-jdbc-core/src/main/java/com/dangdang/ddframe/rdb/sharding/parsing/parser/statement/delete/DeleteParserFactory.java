@@ -26,13 +26,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerDeleteParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Delete语句解析器工厂.
  *
  * @author zhangliang
  */
-public class DeleteParserFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DeleteParserFactory {
     
     /**
      * 创建Delete语句解析器.

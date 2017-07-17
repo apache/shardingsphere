@@ -26,13 +26,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLUpdateParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerUpdateParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Update语句解析器工厂.
  *
  * @author zhangliang
  */
-public class UpdateParserFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UpdateParserFactory {
     
     /**
      * 创建Update语句解析器.

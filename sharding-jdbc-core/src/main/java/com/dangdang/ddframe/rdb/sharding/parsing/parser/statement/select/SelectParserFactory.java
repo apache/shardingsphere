@@ -26,13 +26,16 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.Postg
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.postgresql.PostgreSQLSelectParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.sqlserver.SQLServerSelectParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Select语句解析器工厂.
  *
  * @author zhangliang
  */
-public class SelectParserFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SelectParserFactory {
     
     /**
      * 创建Select语句解析器.
