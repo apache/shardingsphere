@@ -20,6 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.keygen;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.FixedTimeService;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -65,5 +66,24 @@ public final class DefaultKeyGeneratorTest {
             result = keyGenerator.generateKey().longValue();
         }
         return result;
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSetWorkerIdFailureWhenNegative() {
+        DefaultKeyGenerator.setWorkerId(-1L);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertSetWorkerIdFailureWhenTooMuch() {
+        DefaultKeyGenerator.setWorkerId(-Long.MAX_VALUE);
+    }
+    
+    @Test
+    public void assertSetWorkerIdSuccess() throws NoSuchFieldException, IllegalAccessException {
+        DefaultKeyGenerator.setWorkerId(1L);
+        Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
+        workerIdField.setAccessible(true);
+        assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(1L));
+        DefaultKeyGenerator.setWorkerId(0L);
     }
 }

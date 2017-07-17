@@ -18,8 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.keygen;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,21 +40,15 @@ import java.util.Date;
  * </pre>
  * 
  * <p>
- * 工作进程Id获取优先级: 系统变量{@code sharding-jdbc.default.key.generator.worker.id} 大于 环境变量{@code SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID}
- * ,另外可以调用@{@code DefaultKeyGenerator.setWorkerId}进行设置
+ * 可以调用@{@code DefaultKeyGenerator.setWorkerId}进行设置
  * </p>
  * 
  * @author gaohongtao
  */
-@Getter
 @Slf4j
 public final class DefaultKeyGenerator implements KeyGenerator {
     
     public static final long EPOCH;
-    
-    public static final String WORKER_ID_PROPERTY_KEY = "sharding-jdbc.default.key.generator.worker.id";
-    
-    public static final String WORKER_ID_ENV_KEY = "SHARDING_JDBC_DEFAULT_KEY_GENERATOR_WORKER_ID";
     
     private static final long SEQUENCE_BITS = 12L;
     
@@ -73,7 +65,6 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     @Setter
     private static TimeService timeService = new TimeService();
     
-    @Getter
     private static long workerId;
     
     static {
@@ -84,25 +75,11 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         EPOCH = calendar.getTimeInMillis();
-        initWorkerId();
     }
     
     private long sequence;
     
     private long lastTime;
-    
-    public static void initWorkerId() {
-        String workerId = System.getProperty(WORKER_ID_PROPERTY_KEY);
-        if (!Strings.isNullOrEmpty(workerId)) {
-            setWorkerId(Long.valueOf(workerId));
-            return;
-        }
-        workerId = System.getenv(WORKER_ID_ENV_KEY);
-        if (Strings.isNullOrEmpty(workerId)) {
-            return;
-        }
-        setWorkerId(Long.valueOf(workerId));
-    }
     
     /**
      * 设置工作进程Id.

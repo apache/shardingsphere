@@ -14,6 +14,10 @@ next = "/00-overview/contribution/"
 
 1. [ISSUE #291](https://github.com/dangdangdotcom/sharding-jdbc/issues/291) 用流式方式处理仅包含GroupBy的SQL
 
+### 结构调整
+
+1. 为了维持Sharding-JDBC的纯粹性，因此不再支持通过环境变量设置默认自增主键的workerID。如有需求，可通过setWorkerId方法自行注入或封装
+
 ## 1.5.0.M3
 
 ### 里程碑

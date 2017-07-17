@@ -17,19 +17,13 @@
 
 package com.dangdang.ddframe.rdb.sharding.keygen;
 
-import com.dangdang.ddframe.rdb.sharding.keygen.workerid.ApiWorkerIdTest;
-import com.dangdang.ddframe.rdb.sharding.keygen.workerid.SystemEnvWorkerIdTest;
-import com.dangdang.ddframe.rdb.sharding.keygen.workerid.SystemPropertyWorkerIdTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    DefaultKeyGeneratorTest.class, 
-    KeyGeneratorFactoryTest.class, 
-    ApiWorkerIdTest.class, 
-    SystemPropertyWorkerIdTest.class, 
-    SystemEnvWorkerIdTest.class
+        DefaultKeyGeneratorTest.class, 
+        KeyGeneratorFactoryTest.class
     })
 public class AllKeygenTests {
 }
