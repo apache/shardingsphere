@@ -46,7 +46,7 @@ public final class BatchPreparedStatementUnit implements BaseStatementUnit {
     private int innerAddBatchCount;
     
     /**
-     * 映射外部addBatch与内部addBatch的调用次数.
+     * 映射外部addBatch与路由之后的每个PreparedStatement内部addBatch的调用次数.
      * 
      * @param outerAddBatchCount 外部addBatch的调用次数
      */
