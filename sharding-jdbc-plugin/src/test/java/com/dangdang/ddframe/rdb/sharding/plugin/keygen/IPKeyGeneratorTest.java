@@ -29,6 +29,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertThat;
 public class IPKeyGeneratorTest {
     
     private static InetAddress address;
-
+    
     @Rule
     public ExpectedException exception = ExpectedException.none();
     
@@ -63,15 +64,17 @@ public class IPKeyGeneratorTest {
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
         IPKeyGenerator.initWorkerId();
     }
-
+    
     @Test
-    public void testIP() throws UnknownHostException {
+    public void testIP() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(address);
         IPKeyGenerator.initWorkerId();
-        assertThat(DefaultKeyGenerator.getWorkerId(), is(364L));
+        Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
+        workerIdField.setAccessible(true);
+        assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(364L));
     }
-
+    
     @Test
     public void testUnknownHost() throws UnknownHostException {
         PowerMockito.mockStatic(InetAddress.class);
@@ -80,7 +83,7 @@ public class IPKeyGeneratorTest {
         exception.expectMessage("Cannot get LocalHost InetAddress, please check your network!");
         IPKeyGenerator.initWorkerId();
     }
-
+    
     @Test
     public void generateId() throws Exception {
         PowerMockito.mockStatic(InetAddress.class);
@@ -88,12 +91,12 @@ public class IPKeyGeneratorTest {
         IPKeyGenerator.initWorkerId();
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-
         final int taskNumber = threadNumber << 2;
         final IPKeyGenerator keyGenerator = new IPKeyGenerator();
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {
+                
                 @Override
                 public Long call() throws Exception {
                     return (Long) keyGenerator.generateKey();

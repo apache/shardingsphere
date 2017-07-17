@@ -29,6 +29,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
@@ -62,18 +63,19 @@ public class HostNameKeyGeneratorTest {
         }
         rightAddress = InetAddress.getByAddress("dangdang-db-sharding-dev-233", ipv4Byte);
         wrongAddress = InetAddress.getByAddress("dangdang-db-sharding-dev", ipv4Byte);
-        //static init HostNameKeyGenerator
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameKeyGenerator.initWorkerId();
     }
     
     @Test
-    public void assertRightHostName() throws UnknownHostException {
+    public void assertRightHostName() throws UnknownHostException, NoSuchFieldException, IllegalAccessException {
         PowerMockito.mockStatic(InetAddress.class);
         PowerMockito.when(InetAddress.getLocalHost()).thenReturn(rightAddress);
         HostNameKeyGenerator.initWorkerId();
-        assertThat(DefaultKeyGenerator.getWorkerId(), is(233L));
+        Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
+        workerIdField.setAccessible(true);
+        assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(233L));
     }
     
     @Test
@@ -106,6 +108,7 @@ public class HostNameKeyGeneratorTest {
         Set<Long> hashSet = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             hashSet.add(executor.submit(new Callable<Long>() {
+                
                 @Override
                 public Long call() throws Exception {
                     return (Long) keyGenerator.generateKey();
