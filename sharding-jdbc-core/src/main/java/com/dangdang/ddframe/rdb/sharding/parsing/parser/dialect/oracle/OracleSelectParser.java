@@ -197,8 +197,9 @@ public class OracleSelectParser extends AbstractSelectParser {
                 throw new UnsupportedOperationException("Cannot support subquery for nested tables.");
             }
             getSelectStatement().setContainStar(false);
+            getSqlParser().skipUselessParentheses();
             parse();
-            getSqlParser().accept(Symbol.RIGHT_PAREN);
+            getSqlParser().skipUselessParentheses();
             if (getSqlParser().equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
