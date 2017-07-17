@@ -8,6 +8,12 @@ next = "/00-overview/contribution/"
 
 +++
 
+## 1.5.0.M4
+
+### 功能提升
+
+1. [ISSUE #291](https://github.com/dangdangdotcom/sharding-jdbc/issues/291) 用流式方式处理仅包含GroupBy的SQL
+
 ## 1.5.0.M3
 
 ### 里程碑

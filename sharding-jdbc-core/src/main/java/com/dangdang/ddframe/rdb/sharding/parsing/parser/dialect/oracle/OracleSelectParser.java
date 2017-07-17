@@ -186,6 +186,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             if (getSqlParser().skipIfEqual(DefaultKeyword.HAVING)) {
                 throw new UnsupportedOperationException("Cannot support Having");
             }
+            getSelectStatement().setGroupByLastPosition(getSqlParser().getLexer().getCurrentToken().getEndPosition());
         }
     }
     

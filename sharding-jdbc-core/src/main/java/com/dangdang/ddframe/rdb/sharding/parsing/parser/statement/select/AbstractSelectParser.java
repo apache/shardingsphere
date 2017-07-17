@@ -37,6 +37,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpr
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPropertyExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatementParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
@@ -79,6 +80,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         selectStatement.getOrderByItems().addAll(parseOrderBy());
         customizedSelect();
         appendDerivedColumns();
+        appendDerivedOrderBy();
         return selectStatement;
     }
     
@@ -242,6 +244,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
                 throw new UnsupportedOperationException("Cannot support Having");
             }
+            selectStatement.setGroupByLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition());
         } else if (sqlParser.skipIfEqual(DefaultKeyword.HAVING)) {
             throw new UnsupportedOperationException("Cannot support Having");
         }
@@ -410,5 +413,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
         }
         return false;
+    }
+    
+    private void appendDerivedOrderBy() {
+        if (!getSelectStatement().getGroupByItems().isEmpty() && getSelectStatement().getOrderByItems().isEmpty()) {
+            getSelectStatement().getOrderByItems().addAll(getSelectStatement().getGroupByItems());
+            getSelectStatement().getSqlTokens().add(new OrderByToken(getSelectStatement().getGroupByLastPosition()));
+        }
     }
 }

@@ -20,11 +20,13 @@ package com.dangdang.ddframe.rdb.sharding.rewrite;
 
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.SQLToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
@@ -87,6 +89,8 @@ public final class SQLRewriteEngine {
                 appendLimitRowCount(result, (RowCountToken) each, count, sqlTokens, isRewriteLimit);
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetToken(result, (OffsetToken) each, count, sqlTokens, isRewriteLimit);
+            } else if (each instanceof OrderByToken) {
+                appendOrderByToken(result);
             }
             count++;
         }
@@ -141,6 +145,22 @@ public final class SQLRewriteEngine {
         int beginPosition = offsetToken.getBeginPosition() + String.valueOf(offsetToken.getOffset()).length();
         int endPosition = sqlTokens.size() - 1 == count ? originalSQL.length() : sqlTokens.get(count + 1).getBeginPosition();
         sqlBuilder.appendLiterals(originalSQL.substring(beginPosition, endPosition));
+    }
+    
+    private void appendOrderByToken(final SQLBuilder sqlBuilder) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        StringBuilder orderByLiterals = new StringBuilder(" ORDER BY ");
+        int i = 0;
+        for (OrderItem each : selectStatement.getOrderByItems()) {
+            if (0 == i) {
+                orderByLiterals.append(each.getColumnLabel()).append(" ").append(each.getType().name());
+            } else {
+                orderByLiterals.append(",").append(each.getColumnLabel()).append(" ").append(each.getType().name());
+            }
+            i++;
+        }
+        orderByLiterals.append(" ");
+        sqlBuilder.appendLiterals(orderByLiterals.toString());
     }
     
     /**

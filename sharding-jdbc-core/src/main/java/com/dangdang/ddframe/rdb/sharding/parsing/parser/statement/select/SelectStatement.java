@@ -48,6 +48,8 @@ public final class SelectStatement extends AbstractSQLStatement {
     
     private int selectListLastPosition;
     
+    private int groupByLastPosition;
+    
     private final List<SelectItem> items = new LinkedList<>();
     
     private final List<OrderItem> groupByItems = new LinkedList<>();

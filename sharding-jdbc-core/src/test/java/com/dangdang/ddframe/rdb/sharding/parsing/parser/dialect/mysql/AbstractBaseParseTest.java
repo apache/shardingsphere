@@ -174,8 +174,13 @@ public abstract class AbstractBaseParseTest {
                 
                 @Override
                 public OrderItem apply(final OrderByColumn input) {
-                    return Strings.isNullOrEmpty(input.getName()) ? new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()))
-                            : new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    if (Strings.isNullOrEmpty(input.getName())) {
+                        return new OrderItem(input.getIndex(), OrderType.valueOf(input.getOrderByType().toUpperCase()));
+                    }
+                    if (Strings.isNullOrEmpty(input.getOwner())) {
+                        return new OrderItem(input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
+                    }
+                    return new OrderItem(input.getOwner(), input.getName(), OrderType.valueOf(input.getOrderByType().toUpperCase()), Optional.fromNullable(input.getAlias()));
                 }
             });
             selectStatement.getOrderByItems().addAll(orderItems);

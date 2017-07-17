@@ -37,6 +37,9 @@
         <aggregation-select-items>
             <aggregation-select-item inner-expression="(date)" aggregation-type="MAX" index="2" />
         </aggregation-select-items>
+        <order-by-columns>
+            <order-by-column name="order_id" order-by-type="ASC" />
+        </order-by-columns>
     </assert>
     
     <assert id="assertSelectWithUnsupportedFunction" sql="SELECT id, BIT_OR(date) FROM order">

@@ -33,7 +33,7 @@ public final class SelectSingleTableTest extends AbstractDynamicRouteSqlTest {
     @Test
     public void assertGroupBy() {
         assertSingleTargetWithoutParameter("select sum(qty) from order where order_id = 1 group by tenant_id", "ds_1",
-                "select sum(qty) , tenant_id AS GROUP_BY_DERIVED_0 from order_1 where order_id = 1 group by tenant_id");
+                "select sum(qty) , tenant_id AS GROUP_BY_DERIVED_0 from order_1 where order_id = 1 group by tenant_id ORDER BY GROUP_BY_DERIVED_0 ASC ");
 //        assertMultipleTargetsWithoutParameters("select sum(qty) from order group by tenant_id", 4, Arrays.asList("ds_0", "ds_1"),
 //                Arrays.asList("select sum(qty) , tenant_id as sharding_gen_1 from order_0 group by tenant_id", "select sum(qty) , tenant_id as sharding_gen_1 from order_1 group by tenant_id"));
     }
