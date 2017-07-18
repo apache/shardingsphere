@@ -23,17 +23,21 @@ import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.LimitValue;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.ItemsToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OrderByToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
+import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
+import com.dangdang.ddframe.rdb.sharding.routing.type.complex.CartesianTableReference;
 import com.google.common.base.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +54,7 @@ public final class SQLRewriteEngineTest {
     
     @Before
     public void setUp() {
-        shardingRule = new ShardingRuleMockBuilder().addShardingColumns("sharding_value").addGenerateKeyColumn("table_x", "id").build();
+        shardingRule = new ShardingRuleMockBuilder().addGenerateKeyColumn("table_x", "id").addBindingTable("table_y").build();
         selectStatement = new SelectStatement();
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_1");
@@ -234,5 +238,28 @@ public final class SQLRewriteEngineTest {
         selectStatement.getSqlTokens().add(new OrderByToken(61));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT x.id, x.name FROM table_x x GROUP BY x.id, x.name DESC", selectStatement);
         assertThat(rewriteEngine.rewrite(true).toSQL(tableTokens), is("SELECT x.id, x.name FROM table_1 x GROUP BY x.id, x.name DESC ORDER BY id ASC,name DESC "));
+    }
+    
+    @Test
+    public void assertGenerateSQL() {
+        selectStatement.getSqlTokens().add(new TableToken(7, "table_x"));
+        selectStatement.getSqlTokens().add(new TableToken(31, "table_x"));
+        selectStatement.getSqlTokens().add(new TableToken(58, "table_x"));
+        selectStatement.getTables().add(new Table("table_x", Optional.of("x")));
+        selectStatement.getTables().add(new Table("table_y", Optional.of("y")));
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?", selectStatement);
+        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
+        assertThat(sqlRewriteEngine.generateSQL(new TableUnit("db0", "table_x", "table_x"), sqlBuilder), is("SELECT table_x.id, x.name FROM table_x x, table_y y WHERE table_x.id=? AND x.name=?"));
+    }
+    
+    @Test
+    public void assertGenerateSQLForCartesian() {
+        selectStatement.getSqlTokens().add(new TableToken(7, "table_x"));
+        selectStatement.getSqlTokens().add(new TableToken(31, "table_x"));
+        selectStatement.getSqlTokens().add(new TableToken(47, "table_x"));
+        SQLRewriteEngine sqlRewriteEngine = new SQLRewriteEngine(shardingRule, "SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?", selectStatement);
+        SQLBuilder sqlBuilder = sqlRewriteEngine.rewrite(true);
+        CartesianTableReference cartesianTableReference = new CartesianTableReference(Collections.singletonList(new TableUnit("db0", "table_x", "table_x")));
+        assertThat(sqlRewriteEngine.generateSQL(cartesianTableReference, sqlBuilder), is("SELECT table_x.id, x.name FROM table_x x WHERE table_x.id=? AND x.name=?"));
     }
 }

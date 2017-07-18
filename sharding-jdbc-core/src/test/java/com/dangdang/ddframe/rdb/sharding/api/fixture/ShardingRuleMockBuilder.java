@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.fixture;
 
+import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
@@ -43,8 +44,10 @@ public class ShardingRuleMockBuilder {
     
     private final Multimap<String, String> generateKeyColumnsMap = LinkedHashMultimap.create();
     
+    private final List<String> bindTables = new ArrayList<>();
+    
     public ShardingRuleMockBuilder addShardingColumns(final String shardingColumnName) {
-        this.shardingColumns.add(shardingColumnName);
+        shardingColumns.add(shardingColumnName);
         return this;
     }
     
@@ -53,9 +56,15 @@ public class ShardingRuleMockBuilder {
         return this;
     }
     
+    public ShardingRuleMockBuilder addBindingTable(final String bindingTableName) {
+        bindTables.add(bindingTableName);
+        return this;
+    }
+    
     public ShardingRule build() {
         final DataSourceRule dataSourceRule = new DataSourceRule(ImmutableMap.of("db0", Mockito.mock(DataSource.class), "db1", Mockito.mock(DataSource.class)));
         Collection<TableRule> tableRules = Lists.newArrayList(Iterators.transform(generateKeyColumnsMap.keySet().iterator(), new Function<String, TableRule>() {
+            
             @Override
             public TableRule apply(final String input) {
                 TableRule.TableRuleBuilder builder =  TableRule.builder(input).actualTables(Collections.singletonList(input)).dataSourceRule(dataSourceRule);
@@ -68,7 +77,15 @@ public class ShardingRuleMockBuilder {
         if (tableRules.isEmpty()) {
             tableRules.add(new TableRule.TableRuleBuilder("mock").actualTables(Collections.singletonList("mock")).dataSourceRule(dataSourceRule).build());
         }
+        List<TableRule> bindingTableRules = new ArrayList<>(bindTables.size());
+        for (String each : bindTables) {
+            bindingTableRules.add(new TableRule.TableRuleBuilder(each).actualTables(Collections.singletonList(each)).dataSourceRule(dataSourceRule).build());
+        }
+        for (TableRule each : tableRules) {
+            bindingTableRules.add(each);
+        }
         return new ShardingRule.ShardingRuleBuilder().dataSourceRule(dataSourceRule).keyGenerator(IncrementKeyGenerator.class)
-                .tableRules(tableRules).databaseShardingStrategy(new DatabaseShardingStrategy(shardingColumns, new NoneDatabaseShardingAlgorithm())).build();
+                .tableRules(tableRules).bindingTableRules(Collections.singletonList(new BindingTableRule(bindingTableRules)))
+                .databaseShardingStrategy(new DatabaseShardingStrategy(shardingColumns, new NoneDatabaseShardingAlgorithm())).build();
     }
 }
