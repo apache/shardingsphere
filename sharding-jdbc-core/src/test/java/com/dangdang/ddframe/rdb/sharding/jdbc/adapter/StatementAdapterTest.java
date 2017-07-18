@@ -139,13 +139,21 @@ public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUn
     @Test
     public void assertGetUpdateCount() throws SQLException {
         actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'"));
-        assertThat(actual.getUpdateCount(), is(40));
+        if (currentDbType() == Oracle) {
+            assertThat(actual.getUpdateCount(), is(-10));
+        } else {
+            assertThat(actual.getUpdateCount(), is(40));
+        }
     }
     
     @Test
     public void assertGetUpdateCountNoData() throws SQLException {
         actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'none'"));
-        assertThat(actual.getUpdateCount(), is(0));
+        if (currentDbType() == Oracle) {
+            assertThat(actual.getUpdateCount(), is(-10));
+        } else {
+            assertThat(actual.getUpdateCount(), is(0));
+        }
     }
     
     @Test
