@@ -30,7 +30,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Condition;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.insert.InsertStatement;
-import com.dangdang.ddframe.rdb.sharding.rewrite.SQLRewriteEngine;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -52,36 +51,26 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void assertParseWithoutParameter() throws SQLException {
-        String sql = "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)";
         ShardingRule shardingRule = createShardingRule();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`, `field2`) VALUES (10, 1)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithoutParameter(insertStatement);
-        // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, `field2`) VALUES (10, 1)"));
     }
     
     @Test
     public void assertParseWithParameter() {
-        String sql = "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)";
         ShardingRule shardingRule = createShardingRule();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1, field2) VALUES (?, ?)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithParameter(insertStatement);
-        // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (field1, field2) VALUES (?, ?)"));
     }
     
     @Test
     public void assertParseWithGenerateKeyColumnsWithoutParameter() throws SQLException {
-        String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)";
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
-        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, sql, shardingRule);
+        SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (10)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithoutParameter(insertStatement);
-        // TODO 放入rewrite模块断言
-        insertStatement.appendGenerateKeyToken(shardingRule, 0);
-        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (10, 1)"));
     }
     
     private void assertInsertStatementWithoutParameter(final InsertStatement insertStatement) {
@@ -93,14 +82,10 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void assertParseWithGenerateKeyColumnsWithParameter() throws SQLException {
-        String sql = "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)";
         ShardingRule shardingRule = createShardingRuleWithGenerateKeyColumns();
         SQLParsingEngine statementParser = new SQLParsingEngine(DatabaseType.MySQL, "INSERT INTO `TABLE_XXX` (`field1`) VALUES (?)", shardingRule);
         InsertStatement insertStatement = (InsertStatement) statementParser.parse();
         assertInsertStatementWithParameter(insertStatement);
-        // TODO 放入rewrite模块断言
-        insertStatement.appendGenerateKeyToken(shardingRule, 0);
-        assertThat(new SQLRewriteEngine(shardingRule, sql, insertStatement).rewrite(true).toString(), is("INSERT INTO [Token(TABLE_XXX)] (`field1`, field2) VALUES (?, 1)"));
     }
     
     private void assertInsertStatementWithParameter(final InsertStatement insertStatement) {
@@ -132,28 +117,22 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
     
     @Test
     public void parseWithSpecialSyntax() {
-//        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)", 
-//                "INSERT LOW_PRIORITY IGNORE INTO [Token(TABLE_XXX)] PARTITION (partition1,partition2) (`field1`) VALUE (1)");
-        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX SET field1=1", "INSERT INTO [Token(TABLE_XXX)] SET field1=1");
+//        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT LOW_PRIORITY IGNORE INTO `TABLE_XXX` PARTITION (partition1,partition2) (`field1`) VALUE (1)");
+        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX SET field1=1");
         // TODO
-//         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1", 
-//                 "INSERT INTO [Token(TABLE_XXX)] (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
-        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG",
-                "INSERT /*+ index(field1) */ INTO [Token(TABLE_XXX)] (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
+//         parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT INTO TABLE_XXX (field1) SELECT field1 FROM TABLE_XXX2 ON DUPLICATE KEY UPDATE field1=field1+1");
+        parseWithSpecialSyntax(DatabaseType.MySQL, "INSERT /*+ index(field1) */ INTO TABLE_XXX (`field1`) VALUES (1) RETURNING field1*2 LOG ERRORS INTO TABLE_LOG");
         /* // TODO 不支持
         parseWithSpecialSyntax(DatabaseType.SQLServer, 
-                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)", 
-                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT [Token(TABLE_XXX)] (`field1`) VALUES (1)");
+                "WITH field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx GROUP BY field1) INSERT TOP(10) INTO OUTPUT TABLE_XXX (`field1`) VALUES (1)");
         */
         parseWithSpecialSyntax(DatabaseType.PostgreSQL, 
-                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id",
-                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING id");
+                "WITH RECURSIVE field_query (field1, field2) AS (SELECT field1, field2 FROM TABLE_XXX AS xxx ORDER BY field1 DESC) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING id");
         parseWithSpecialSyntax(DatabaseType.PostgreSQL,
-                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING *",
-                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO [Token(TABLE_XXX)] (field1) VALUES (1) RETURNING *");
+                "WITH field1_query AS (SELECT field1 FROM TABLE_XXX), field2_query AS (SELECT field2 FROM TABLE_XXX) INSERT INTO TABLE_XXX (field1) VALUES (1) RETURNING *");
     }
     
-    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL, final String expectedSQL) {
+    private void parseWithSpecialSyntax(final DatabaseType dbType, final String actualSQL) {
         ShardingRule shardingRule = createShardingRule();
         InsertStatement insertStatement = (InsertStatement) new SQLParsingEngine(dbType, actualSQL, shardingRule).parse();
         assertThat(insertStatement.getTables().find("TABLE_XXX").get().getName(), is("TABLE_XXX"));
@@ -161,8 +140,6 @@ public final class InsertStatementParserTest extends AbstractStatementParserTest
         Condition condition = insertStatement.getConditions().find(new Column("field1", "TABLE_XXX")).get();
         assertThat(condition.getOperator(), is(ShardingOperator.EQUAL));
         assertThat(condition.getShardingValue(Collections.emptyList()).getValue(), is((Comparable) 1));
-        // TODO 放入rewrite模块断言
-        assertThat(new SQLRewriteEngine(shardingRule, actualSQL, insertStatement).rewrite(true).toString(), is(expectedSQL));
     }
     
     @Test(expected = UnsupportedOperationException.class)
