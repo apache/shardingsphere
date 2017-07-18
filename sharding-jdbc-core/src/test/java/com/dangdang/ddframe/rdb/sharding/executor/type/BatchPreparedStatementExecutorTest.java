@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecutorTest {
     
-    private static final String DELETE_FROM_DUAL = "DELETE FROM dual WHERE id=?";
+    private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
     @SuppressWarnings("unchecked")
     @Test
@@ -58,11 +58,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, 
-                createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
+                createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(4)).verifySQL(DELETE_FROM_DUAL);
+        verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
@@ -79,7 +79,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE, 
-                createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2), 
+                createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2), 
                 Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
@@ -88,7 +88,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
-        verify(getEventCaller(), times(8)).verifySQL(DELETE_FROM_DUAL);
+        verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
         verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
@@ -103,11 +103,11 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement.executeBatch()).thenThrow(exp);
         when(preparedStatement.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE,
-                createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
+                createPreparedStatementUnits(SQL, preparedStatement, "ds_0", 2), Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(4)).verifySQL(DELETE_FROM_DUAL);
+        verify(getEventCaller(), times(4)).verifySQL(SQL);
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(2)).verifyParameters(Collections.<Object>singletonList(2));
         verify(getEventCaller(), times(2)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
@@ -125,7 +125,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.getConnection()).thenReturn(mock(Connection.class));
         when(preparedStatement2.getConnection()).thenReturn(mock(Connection.class));
         BatchPreparedStatementExecutor actual = new BatchPreparedStatementExecutor(getExecutorEngine(), SQLType.DELETE,
-                createPreparedStatementUnits(DELETE_FROM_DUAL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2),
+                createPreparedStatementUnits(SQL, preparedStatement1, "ds_0", preparedStatement2, "ds_1", 2),
                 Arrays.asList(Collections.<Object>singletonList(1), Collections.<Object>singletonList(2)));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
@@ -134,7 +134,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).getConnection();
         verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
         verify(getEventCaller(), times(4)).verifyDataSource("ds_1");
-        verify(getEventCaller(), times(8)).verifySQL(DELETE_FROM_DUAL);
+        verify(getEventCaller(), times(8)).verifySQL(SQL);
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(1));
         verify(getEventCaller(), times(4)).verifyParameters(Collections.<Object>singletonList(2));
         verify(getEventCaller(), times(4)).verifyEventExecutionType(EventExecutionType.BEFORE_EXECUTE);
