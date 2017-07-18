@@ -22,11 +22,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    SelectSingleTableTest.class, 
-    SelectBindingTableTest.class, 
-    SelectMixedTablesTest.class, 
-    DMLTest.class, 
-    DatabaseTest.class
+        SelectSingleTableTest.class, 
+        SelectBindingTableTest.class, 
+        SelectMixedTablesTest.class, 
+        DMLTest.class, 
+        DatabaseTest.class
     })
 public class AllRoutingTests {
 }

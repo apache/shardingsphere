@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.sharding.routing.router;
 
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
  * 
  * @author zhangiang
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLRouterFactory {
     
     /**
