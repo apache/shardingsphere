@@ -59,7 +59,7 @@ public final class Limit {
      * @return 分页行数
      */
     public int getRowCountValue() {
-        return null != rowCount ? rowCount.getValue() : 0;
+        return null != rowCount ? rowCount.getValue() : -1;
     }
     
     /**
