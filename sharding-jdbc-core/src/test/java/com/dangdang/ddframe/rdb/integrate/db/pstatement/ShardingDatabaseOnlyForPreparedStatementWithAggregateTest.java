@@ -111,7 +111,6 @@ public class ShardingDatabaseOnlyForPreparedStatementWithAggregateTest extends A
     }
     
     @Test
-    // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
     public void assertSelectAvgAlias() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/db/expect/select_aggregate/SelectAvg.xml", getShardingDataSource().getConnection(), 
                 "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());

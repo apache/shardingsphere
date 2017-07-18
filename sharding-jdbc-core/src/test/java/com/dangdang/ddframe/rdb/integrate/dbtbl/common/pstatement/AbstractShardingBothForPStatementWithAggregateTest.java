@@ -57,7 +57,6 @@ public abstract class AbstractShardingBothForPStatementWithAggregateTest extends
     }
     
     @Test
-    // TODO 改名 avg SHARDING_GEN_2 SHARDING_GEN_3
     public void assertSelectAvgAliasSql() throws SQLException, DatabaseUnitException {
         assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());
     }

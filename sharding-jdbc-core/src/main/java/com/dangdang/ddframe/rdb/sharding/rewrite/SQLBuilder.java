@@ -81,20 +81,6 @@ public final class SQLBuilder {
         return result.toString();
     }
     
-    // TODO remove
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (Object each : segments) {
-            if (each instanceof TableToken) {
-                result.append(String.format("[Token(%s)]", ((TableToken) each).tableName));
-            } else {
-                result.append(each);
-            }
-        }
-        return result.toString();
-    }
-    
     @RequiredArgsConstructor
     private class TableToken {
         
