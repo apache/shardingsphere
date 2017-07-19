@@ -174,7 +174,6 @@ Sharding-JDBC的代码编译需要[Maven](http://maven.apache.org/)，请保证I
  - 任何人想要开发任何功能，请先回复该功能所关联的Issue，表明您当前正在这个Issue上工作。
    并在回复的时候为自己设置一个deadline，并添加的回复内容中。
  - 在核心贡献者找到一个导师(shepherd)，导师会在设计与功能实现上给予即时的反馈。
-   如果您没有熟悉的架构师，请向__sharding_jdbc@groups.163.com__发送邮件。
  - 您应该新建一个分支来开始您的工作，分支的名字为功能名称/issueId。
    例如，您想完成一个SQL解析(parser)功能中 __Issue 111__，那么您的branch名字应为 __parser/111__。
    功能名称与导师讨论后确定。
