@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +38,7 @@ public final class SQLRouteResult {
     
     private final SQLStatement sqlStatement;
     
-    private final Set<SQLExecutionUnit> executionUnits = new HashSet<>();
+    private final Set<SQLExecutionUnit> executionUnits = new LinkedHashSet<>();
     
     private final List<Number> generatedKeys = new LinkedList<>();
 }
