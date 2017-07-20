@@ -17,18 +17,19 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
+
 import java.io.Reader;
 import java.sql.Array;
 import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingStatement;
 
 /**
  * 声明不支持操作的预编译语句对象.
@@ -89,5 +90,10 @@ public abstract class AbstractUnsupportedOperationPreparedStatement extends Shar
     @Override
     public final void setRowId(final int parameterIndex, final RowId x) throws SQLException {
         throw new SQLFeatureNotSupportedException("setRowId");
+    }
+    
+    @Override
+    public final void setRef(final int parameterIndex, final Ref x) throws SQLException {
+        throw new SQLFeatureNotSupportedException("setRef");
     }
 }

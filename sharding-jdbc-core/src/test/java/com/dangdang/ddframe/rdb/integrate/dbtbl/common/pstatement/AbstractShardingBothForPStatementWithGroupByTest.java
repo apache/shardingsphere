@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,37 +36,32 @@ public abstract class AbstractShardingBothForPStatementWithGroupByTest extends A
     
     @Test
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumWithGroupBySql());
     }
     
     @Test
     public void assertSelectCount() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT COUNT(order_id) AS `orders_count`, `user_id` FROM `t_order` GROUP BY `user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectCount.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectCount.xml", shardingDataSource.getConnection(), "t_order",  getDatabaseTestSQL().getSelectCountWithGroupBySql());
     }
     
     @Test
     public void assertSelectMax() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT MAX(order_id) AS `max_order_id`, `user_id` FROM `t_order` GROUP BY `user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMax.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxWithGroupBySql());
     }
     
     @Test
     public void assertSelectMin() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT MIN(order_id) AS `min_order_id`, `user_id` FROM `t_order` GROUP BY `user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMin.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinWithGroupBySql());
     }
     
     @Test
     public void assertSelectAvg() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT AVG(order_id) AS `orders_avg`, `user_id` FROM `t_order` GROUP BY `user_id`";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgWithGroupBySql());
     }
     
     @Test
     public void assertSelectOrderByDesc() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT SUM(order_id) AS `orders_sum`, `user_id` FROM `t_order` GROUP BY `user_id` ORDER BY orders_sum DESC";
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), "t_order", sql);
+        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), 
+                "t_order", getDatabaseTestSQL().getSelectSumWithOrderByDescAndGroupBySql());
     }
 }

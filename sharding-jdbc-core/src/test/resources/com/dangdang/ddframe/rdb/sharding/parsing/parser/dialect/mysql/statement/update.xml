@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertUpdate" sql="update `order` set 'state'='STOPPED' where order_id in (1, 2, 3)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="java.lang.Integer" />
+                <value literal="2" type="java.lang.Integer" />
+                <value literal="3" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

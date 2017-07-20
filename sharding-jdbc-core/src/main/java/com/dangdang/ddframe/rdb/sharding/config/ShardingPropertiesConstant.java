@@ -24,14 +24,24 @@ import lombok.RequiredArgsConstructor;
  * 配置项常量.
  * 
  * @author gaohongtao
+ * @author caohao
  */
 @RequiredArgsConstructor
 @Getter
 public enum ShardingPropertiesConstant {
     
     /**
-     * 是否开启度量采集.
+     * 是否开启显示SQL.
      * 
+     * <p>
+     * 默认值: 关闭
+     * </p>
+     */
+    SQL_SHOW("sql.show", Boolean.TRUE.toString(), boolean.class),
+    
+    /**
+     * 是否开启SQL.
+     *
      * <p>
      * 默认值: 关闭
      * </p>
@@ -49,41 +59,13 @@ public enum ShardingPropertiesConstant {
     METRICS_MILLISECONDS_PERIOD("metrics.millisecond.period", "30000", long.class),
     
     /**
-     * 度量输出在日志中的标识名称.
-     * 
-     * <p>
-     * 默认值: com.dangdang.ddframe.rdb.sharding.metrics
-     * </p>
-     */
-    METRICS_LOGGER_NAME("metrics.logger.name", "com.dangdang.ddframe.rdb.sharding.metrics", String.class),
-    
-    /**
-     * 最小空闲工作线程数量.
-     * 
-     * <p>
-     * 默认值: 0
-     * </p>
-     */
-    EXECUTOR_MIN_IDLE_SIZE("executor.min.idle.size", "0", int.class),
-    
-    /**
-     * 最大工作线程数量.
+     * 工作线程数量.
      * 
      * <p>
      * 默认值: 100
      * </p>
      */
-    EXECUTOR_MAX_SIZE("executor.max.size", "100", int.class),
-    
-    /**
-     * 工作线程空闲时超时时间.
-     * 
-     * <p>
-     * 单位: 毫秒.
-     * 默认值: 60000毫秒.
-     * </p>
-     */
-    EXECUTOR_MAX_IDLE_TIMEOUT_MILLISECONDS("executor.max.idle.timeout.millisecond", "60000", long.class);
+    EXECUTOR_SIZE("executor.size", String.valueOf(Runtime.getRuntime().availableProcessors()), int.class);
     
     private final String key;
     

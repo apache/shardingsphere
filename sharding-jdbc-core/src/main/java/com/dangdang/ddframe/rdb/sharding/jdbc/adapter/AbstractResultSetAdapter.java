@@ -18,19 +18,18 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 代理结果集适配器.
@@ -40,38 +39,44 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
-    @Getter(AccessLevel.PROTECTED)
-    private final List<ResultSet> resultSets;
-    
     @Getter
-    private final Map<String, Integer> columnLabelIndexMap;
+    private final List<ResultSet> resultSets;
 
     private boolean closed;
     
     public AbstractResultSetAdapter(final List<ResultSet> resultSets) throws SQLException {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
-        columnLabelIndexMap = generateColumnLabelIndexMap();
     }
     
-    private Map<String, Integer> generateColumnLabelIndexMap() throws SQLException {
-        ResultSetMetaData resultSetMetaData = resultSets.get(0).getMetaData();
-        Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount());
-        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-            result.put(resultSetMetaData.getColumnLabel(i), i);
-        }
-        return result;
+    @Override
+    // TODO should return sharding statement in future
+    public final Statement getStatement() throws SQLException {
+        return getResultSets().get(0).getStatement();
+    }
+    
+    @Override
+    public final ResultSetMetaData getMetaData() throws SQLException {
+        return getResultSets().get(0).getMetaData();
+    }
+    
+    @Override
+    public int findColumn(final String columnLabel) throws SQLException {
+        return getResultSets().get(0).findColumn(columnLabel);
     }
     
     @Override
     public final void close() throws SQLException {
-        SQLUtil.safeInvoke(resultSets, new ThrowableSQLExceptionMethod<ResultSet>() {
-            @Override
-            public void apply(final ResultSet object) throws SQLException {
-                object.close();
-            }
-        });
         closed = true;
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (ResultSet each : resultSets) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
@@ -81,15 +86,65 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (ResultSet each : resultSets) {
-            each.setFetchDirection(direction);
+            try {
+                each.setFetchDirection(direction);
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    @Override
+    public final int getFetchDirection() throws SQLException {
+        return getResultSets().get(0).getFetchDirection();
     }
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
         for (ResultSet each : resultSets) {
-            each.setFetchSize(rows);
+            try {
+                each.setFetchSize(rows);
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
         }
+        throwSQLExceptionIfNecessary(exceptions);
+    }
+    
+    @Override
+    public final int getFetchSize() throws SQLException {
+        return getResultSets().get(0).getFetchSize();
+    }
+    
+    @Override
+    public final int getType() throws SQLException {
+        return getResultSets().get(0).getType();
+    }
+    
+    @Override
+    public final int getConcurrency() throws SQLException {
+        return getResultSets().get(0).getConcurrency();
+    }
+    
+    @Override
+    public final SQLWarning getWarnings() throws SQLException {
+        return getResultSets().get(0).getWarnings();
+    }
+    
+    @Override
+    public final void clearWarnings() throws SQLException {
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (ResultSet each : getResultSets()) {
+            try {
+                each.clearWarnings();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
 }

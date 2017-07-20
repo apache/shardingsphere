@@ -24,6 +24,8 @@ package com.dangdang.ddframe.rdb.transaction.soft.exception;
  */
 public class TransactionLogStorageException extends RuntimeException {
     
+    private static final long serialVersionUID = 3375637274979140802L;
+    
     public TransactionLogStorageException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }

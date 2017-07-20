@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithParameter" sql="select * from order where order_id in (?,2,3) and other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value index="0" />
+                <value literal="2" type="int" />
+                <value literal="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

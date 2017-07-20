@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    
+    <assert id="assertSelectWithOrderByForAliasAndSubQuery" sql="SELECT price FROM (SELECT o.user_id,o.price FROM order o WHERE o.order_id = 1 ORDER BY o.order_id)" expected-sql="SELECT price[sharding_auto_gen_0(, user_id AS sharding_gen_1)] FROM (SELECT [Token(o)].user_id, [Token(o)].price[sharding_auto_gen_1(, o.order_id AS sharding_gen_1)] FROM [Token(order)] o WHERE o.order_id = 1 ORDER BY o.order_id ) ORDER BY user_id">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="ORDER_BY_DERIVED_0" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+    <!--
+    <assert id="assertSelectWithGroupByAndSubQuery" sql="SELECT AVG(i.SUM_PRICE) avg FROM (SELECT o.order_id,SUM(o.price) AS SUM_PRICE FROM order o WHERE o.order_id = 1 GROUP BY o.order_id) i" expected-sql="SELECT AVG(i.SUM_PRICE) AS avg[sharding_auto_gen_0(, COUNT(i.SUM_PRICE) AS sharding_gen_1, SUM(i.SUM_PRICE) AS sharding_gen_2)] FROM (SELECT [Token(o)].order_id, SUM(o.price) AS SUM_PRICE FROM [Token(order)] o WHERE o.order_id = 1 GROUP BY o.order_id ) i">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value literal="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+        <aggregation-columns>
+            <aggregation-column expression="AVG(i.SUM_PRICE)" aggregation-type="AVG" alias="avg" index="1">
+                <derived-column expression="COUNT(i.SUM_PRICE)" aggregation-type="COUNT" alias="sharding_gen_1"/>
+                <derived-column expression="SUM(i.SUM_PRICE)" aggregation-type="SUM" alias="sharding_gen_2" />
+            </aggregation-column>
+            <aggregation-column expression="COUNT(i.SUM_PRICE)" aggregation-type="COUNT" alias="sharding_gen_1" />
+            <aggregation-column expression="SUM(i.SUM_PRICE)" aggregation-type="SUM" alias="sharding_gen_2" />
+        </aggregation-columns>
+    </assert>
+    <assert id="assertSelectWithWhereSubQuery" sql="SELECT * FROM order o WHERE o.order_id = 2 and exists (select 1 from t_user u where u.user_id = o.user_id and u.user_id = 1)" expected-sql="SELECT * FROM [Token(order)] o WHERE o.order_id = 2 AND EXISTS (SELECT 1 FROM [Token(t_user)] u WHERE u.user_id = [Token(o)].user_id AND u.user_id = 1)">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="order_id" table-name="order" operator="EQUAL">
+                    <value literal="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+    <assert id="assertJoinSubQuery" sql="SELECT detail_result.actual_goods_count as scan_goods_count,    detail_result.goods_id,    detail_result.goods_code,    IFNULL(result.goods_count, 0) as scaned_goods_count,    IFNULL(demege.demege_count, 0) as demege_count   FROM    (     select       t1.order_code, t1.goods_id, t1.goods_code, sum(t1.actual_goods_count) as actual_goods_count     from       wms_order_checktask_result_detail t1     group by       t1.order_code,       t1.goods_id,       t1.goods_code    ) detail_result   LEFT JOIN (    SELECT     t3.order_code, t2.goods_id, sum(t2.goods_count) as goods_count    FROM     wms_order_package_details t2,     wms_order_package t3    WHERE     t2.pkg_code = t3.pkg_code     AND t3.order_code = ?     AND (t2.goods_id = ? OR t2.goods_code = ?)    group by     t3.order_code, t2.goods_id   ) result   ON    detail_result.order_code = result.order_code and detail_result.goods_id = result.goods_id   LEFT JOIN (    SELECT     t4.order_code,     t4.goods_id,     t4.goods_code,     sum(t4.goods_count) AS demege_count    FROM     wms_excess_demaged_record t4    WHERE     t4.container_kind = '02'    GROUP BY     t4.order_code,     t4.goods_id,     t4.goods_code    ) demege   ON    detail_result.order_code = demege.order_code   WHERE    detail_result.order_code = ?    AND (detail_result.goods_id = ? or detail_result.goods_code = ?)"  expected-sql="SELECT [Token(detail_result)].actual_goods_count AS scan_goods_count, [Token(detail_result)].goods_id, [Token(detail_result)].goods_code, IFNULL(result.goods_count, 0) AS scaned_goods_count, IFNULL(demege.demege_count, 0) AS demege_count FROM (SELECT [Token(t1)].order_code, [Token(t1)].goods_id, [Token(t1)].goods_code, SUM(t1.actual_goods_count) AS actual_goods_count FROM [Token(wms_order_checktask_result_detail)] t1 GROUP BY t1.order_code, t1.goods_id, t1.goods_code ) detail_result LEFT JOIN (SELECT [Token(t3)].order_code, [Token(t2)].goods_id, SUM(t2.goods_count) AS goods_count FROM [Token(wms_order_package_details)] t2, [Token(wms_order_package)] t3 WHERE t2.pkg_code = t3.pkg_code AND t3.order_code = ? AND (t2.goods_id = ? OR t2.goods_code = ?) GROUP BY t3.order_code, t2.goods_id ) result ON [Token(detail_result)].order_code = [Token(result)].order_code AND [Token(detail_result)].goods_id = [Token(result)].goods_id LEFT JOIN (SELECT [Token(t4)].order_code, [Token(t4)].goods_id, [Token(t4)].goods_code, SUM(t4.goods_count) AS demege_count FROM [Token(wms_excess_demaged_record)] t4 WHERE t4.container_kind = '02' GROUP BY t4.order_code, t4.goods_id, t4.goods_code ) demege ON [Token(detail_result)].order_code = [Token(demege)].order_code WHERE [Token(detail_result)].order_code = ? AND ([Token(detail_result)].goods_id = ? OR [Token(detail_result)].goods_code = ?)">
+        <tables>
+            <table name="wms_order_checktask_result_detail" alias="t1" />
+        </tables>
+        <condition-contexts>
+            <condition-context/>
+        </condition-contexts>
+    </assert>
+    -->
+</asserts>

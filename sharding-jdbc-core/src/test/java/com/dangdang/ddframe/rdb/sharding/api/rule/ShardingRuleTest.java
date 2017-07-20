@@ -21,7 +21,7 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingS
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.google.common.collect.Sets;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.condition.Column;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -193,15 +193,34 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertGetAllShardingColumnsWithoutStrategy() {
-        assertThat(createShardingRule().getAllShardingColumns("logicTable"), is((Collection<String>) Collections.<String>emptySet()));
+    public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
+        assertTrue(ShardingRule.builder().databaseShardingStrategy(createDatabaseShardingStrategy()).dataSourceRule(createDataSourceRule())
+                .tableRules(Collections.singletonList(createTableRuleWithAllStrategies())).build().isShardingColumn(new Column("column", "")));
     }
     
     @Test
-    public void assertGetAllShardingColumnsWithStrategy() {
-        assertThat(createShardingRuleWithStrategy().getAllShardingColumns("logicTable"), is((Collection<String>) Sets.newHashSet("column")));
+    public void assertIsShardingColumnForDefaultTableShardingStrategy() {
+        assertTrue(ShardingRule.builder().tableShardingStrategy(createTableShardingStrategy()).dataSourceRule(createDataSourceRule())
+                .tableRules(Collections.singletonList(createTableRuleWithAllStrategies())).build().isShardingColumn(new Column("column", "")));
     }
     
+    @Test
+    public void assertIsShardingColumnForDatabaseShardingStrategy() {
+        assertTrue(ShardingRule.builder().dataSourceRule(createDataSourceRule())
+                .tableRules(Collections.singletonList(createTableRuleWithAllStrategies())).build().isShardingColumn(new Column("column", "logicTable")));
+    }
+    
+    @Test
+    public void assertIsShardingColumnForTableShardingStrategy() {
+        assertTrue(ShardingRule.builder().dataSourceRule(createDataSourceRule())
+                .tableRules(Collections.singletonList(createTableRuleWithTableStrategies())).build().isShardingColumn(new Column("column", "logicTable")));
+    }
+    
+    @Test
+    public void assertIsNotShardingColumn() {
+        assertFalse(ShardingRule.builder().dataSourceRule(createDataSourceRule())
+                .tableRules(Collections.singletonList(createTableRuleWithAllStrategies())).build().isShardingColumn(new Column("column", "otherTable")));
+    }
     
     private ShardingRule createShardingRule() {
         return ShardingRule.builder().dataSourceRule(createDataSourceRule())
@@ -243,13 +262,13 @@ public final class ShardingRuleTest {
         return new TableShardingStrategy(Collections.singletonList("column"), new NoneTableShardingAlgorithm());
     }
     
-    private ShardingRule createShardingRuleWithStrategy() {
-        return ShardingRule.builder().dataSourceRule(createDataSourceRule())
-                .tableRules(Collections.singletonList(createTableRuleWithAllStrategies())).bindingTableRules(Collections.singletonList(createBindingTableRule())).build();
-    }
-    
     private TableRule createTableRuleWithAllStrategies() {
         return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(createDataSourceRule())
                 .databaseShardingStrategy(createDatabaseShardingStrategy()).tableShardingStrategy(createTableShardingStrategy()).build();
+    }
+    
+    private TableRule createTableRuleWithTableStrategies() {
+        return TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2"))
+                .dataSourceRule(createDataSourceRule()).tableShardingStrategy(createTableShardingStrategy()).build();
     }
 }

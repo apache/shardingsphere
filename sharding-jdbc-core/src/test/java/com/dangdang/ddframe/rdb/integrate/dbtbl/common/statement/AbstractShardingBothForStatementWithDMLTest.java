@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.integrate.dbtbl.common.statement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
@@ -45,12 +45,11 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
     
     @Test
     public void assertInsert() throws SQLException, DatabaseUnitException {
-        String sql = "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (%s, %s, '%s')";
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection("", "")) {
                     Statement stmt = connection.createStatement();
-                    stmt.executeUpdate(String.format(sql, i, j, "insert"));
+                    stmt.executeUpdate(String.format(getDatabaseTestSQL().getInsertWithoutPlaceholderSql(), i, j));
                 }
             }
         }
@@ -59,12 +58,11 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
     
     @Test
     public void assertUpdate() throws SQLException, DatabaseUnitException {
-        String sql = "UPDATE `t_order` SET `status` = '%s' WHERE `order_id` = %s AND `user_id` = %s";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format(sql, "updated", i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
                 }
             }
         }
@@ -73,12 +71,11 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
     
     @Test
     public void assertDelete() throws SQLException, DatabaseUnitException {
-        String sql = "DELETE `t_order` WHERE `order_id` = %s AND `user_id` = %s";
         for (int i = 10; i < 20; i++) {
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection()) {
                     Statement stmt = connection.createStatement();
-                    assertThat(stmt.executeUpdate(String.format(sql, i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getDeleteWithoutAliasSql(), i * 100 + j, i, "'init'")), is(1));
                 }
             }
         }
@@ -89,8 +86,8 @@ public abstract class AbstractShardingBothForStatementWithDMLTest extends Abstra
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i), 
-                        shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i), SQLStatementType.SELECT), 
-                        String.format("t_order_%s", j), String.format("SELECT * FROM `t_order_%s` WHERE `status`=?", j), status);
+                        shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i), SQLType.SELECT), 
+                        String.format("t_order_%s", j), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), j), status);
             }
         }
     }

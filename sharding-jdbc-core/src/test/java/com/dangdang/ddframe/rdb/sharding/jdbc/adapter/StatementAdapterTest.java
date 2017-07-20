@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingStatement;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatement;
 import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -41,17 +43,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class StatementAdapterTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     
     private Statement actual;
+    
+    private String sql;
     
     @Before
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
         shardingConnection.setReadOnly(false);
         actual = shardingConnection.createStatement();
+        sql = getDatabaseTestSQL().getSelectGroupByUserIdSql();
     }
     
     @After
@@ -62,7 +67,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertClose() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         actual.close();
         assertTrue(actual.isClosed());
         assertTrue(((ShardingStatement) actual).getRoutedStatements().isEmpty());
@@ -70,11 +75,13 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertSetPoolable() throws SQLException {
-        actual.setPoolable(true);
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
-        assertPoolable((ShardingStatement) actual, true);
-        actual.setPoolable(false);
-        assertPoolable((ShardingStatement) actual, false);
+        if (currentDbType() != Oracle) {
+            actual.setPoolable(true);
+            actual.executeQuery(sql);
+            assertPoolable((ShardingStatement) actual, true);
+            actual.setPoolable(false);
+            assertPoolable((ShardingStatement) actual, false);
+        }
     }
     
     private void assertPoolable(final ShardingStatement actual, final boolean poolable) throws SQLException {
@@ -93,7 +100,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     @Test
     public void assertSetFetchSize() throws SQLException {
         actual.setFetchSize(10);
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         assertFetchSize((ShardingStatement) actual, 10);
         actual.setFetchSize(100);
         assertFetchSize((ShardingStatement) actual, 100);
@@ -110,38 +117,40 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     @Test
     public void assertSetEscapeProcessing() throws SQLException {
         actual.setEscapeProcessing(true);
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         actual.setEscapeProcessing(false);
     }
     
     @Test
     public void assertCancel() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         actual.cancel();
     }
     
     @Test
     public void assertSetCursorName() throws SQLException {
-        actual.setCursorName("cursorName");
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
-        actual.setCursorName("cursorName");
+        if (currentDbType() != Oracle) {
+            actual.setCursorName("cursorName");
+            actual.executeQuery(sql);
+            actual.setCursorName("cursorName");
+        }
     }
     
     @Test
     public void assertGetUpdateCount() throws SQLException {
-        actual.execute("DELETE FROM `t_order` WHERE `status` = 'init'");
+        actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'init'"));
         assertThat(actual.getUpdateCount(), is(40));
     }
     
     @Test
     public void assertGetUpdateCountNoData() throws SQLException {
-        actual.execute("DELETE FROM `t_order` WHERE `status` = 'none'");
+        actual.execute(String.format(getDatabaseTestSQL().getDeleteWithoutShardingValueSql(), "'none'"));
         assertThat(actual.getUpdateCount(), is(0));
     }
     
     @Test
     public void assertGetUpdateCountSelect() throws SQLException {
-        actual.execute("SELECT * FROM `t_order`");
+        actual.execute(getDatabaseTestSQL().getSelectAllOrderSql());
         assertThat(actual.getUpdateCount(), is(-1));
     }
     
@@ -151,18 +160,13 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
         when(st1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         final Statement st2 = Mockito.mock(Statement.class);
         when(st2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        
         AbstractStatementAdapter statement = new AbstractStatementAdapter(Statement.class) {
-            @Override
-            protected void clearRouteStatements() {
-        
-            }
-    
+            
             @Override
             protected Collection<? extends Statement> getRoutedStatements() {
                 return Lists.newArrayList(st1, st2);
             }
-    
+            
             @Override
             public ResultSet executeQuery(final String sql) throws SQLException {
                 return null;
@@ -177,57 +181,62 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
             public int getResultSetConcurrency() throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public int getResultSetType() throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public Connection getConnection() throws SQLException {
                 return null;
             }
-    
+            
+            @Override
+            public ResultSet getGeneratedKeys() throws SQLException {
+                return null;
+            }
+            
             @Override
             public int executeUpdate(final String sql) throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public int executeUpdate(final String sql, final int autoGeneratedKeys) throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public int executeUpdate(final String sql, final int[] columnIndexes) throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public int executeUpdate(final String sql, final String[] columnNames) throws SQLException {
                 return 0;
             }
-    
+            
             @Override
             public boolean execute(final String sql) throws SQLException {
                 return false;
             }
-    
+            
             @Override
             public boolean execute(final String sql, final int autoGeneratedKeys) throws SQLException {
                 return false;
             }
-    
+            
             @Override
             public boolean execute(final String sql, final int[] columnIndexes) throws SQLException {
                 return false;
             }
-    
+            
             @Override
             public boolean execute(final String sql, final String[] columnNames) throws SQLException {
                 return false;
             }
-    
+            
             @Override
             public int getResultSetHoldability() throws SQLException {
                 return 0;
@@ -263,13 +272,13 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertGetMaxFieldSizeWithRoutedStatements() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         assertTrue(actual.getMaxFieldSize() > -1);
     }
     
     @Test
     public void assertSetMaxFieldSize() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         actual.setMaxFieldSize(10);
         assertThat(actual.getMaxFieldSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : 10));
     }
@@ -281,13 +290,13 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertGetMaxRowsWithoutRoutedStatements() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         assertThat(actual.getMaxRows(), is(0));
     }
     
     @Test
     public void assertSetMaxRows() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         actual.setMaxRows(10);
         assertThat(actual.getMaxRows(), is(10));
     }
@@ -299,20 +308,22 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertGetQueryTimeoutWithRoutedStatements() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual.executeQuery(sql);
         assertThat(actual.getQueryTimeout(), is(0));
     }
     
     @Test
     public void assertSetQueryTimeout() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
-        actual.setQueryTimeout(10);
-        assertThat(actual.getQueryTimeout(), is(10));
+        if (PostgreSQL != currentDbType()) {
+            actual.executeQuery(sql);
+            actual.setQueryTimeout(10);
+            assertThat(actual.getQueryTimeout(), is(10));
+        }
     }
     
     @Test
     public void assertGetGeneratedKeysForSingleRoutedStatement() throws SQLException {
-        actual.executeUpdate("INSERT INTO `t_order` (`user_id`, `status`) VALUES (1, 'init')");
+        actual.executeUpdate(String.format(getDatabaseTestSQL().getInsertWithAutoIncrementColumnSql(), 1, "'init'"), Statement.RETURN_GENERATED_KEYS);
         ResultSet generatedKeysResult = actual.getGeneratedKeys();
         assertTrue(generatedKeysResult.next());
         assertTrue(generatedKeysResult.getInt(1) > 0);
@@ -320,7 +331,7 @@ public final class StatementAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertGetGeneratedKeysForMultipleRoutedStatement() throws SQLException {
-        actual.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `order_id` IN 1, 2");
-        assertThat(actual.getGeneratedKeys().next(), is(false));
+        actual.executeQuery(String.format(getDatabaseTestSQL().getSelectUserIdWhereOrderIdInSql(), 1, 2));
+        assertFalse(actual.getGeneratedKeys().next());
     }
 }

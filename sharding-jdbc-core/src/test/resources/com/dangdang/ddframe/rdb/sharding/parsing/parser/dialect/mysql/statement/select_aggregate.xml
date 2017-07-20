@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithCountAndMaxAndMin" sql="SELECT COUNT(MAX(*)) AS c, order_id , MAX(MIN(date)), MIN(time) Time FROM order WHERE order_id=max(order_id) ">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(MAX(*))" aggregation-type="COUNT" alias="c" index="1" />
+            <aggregation-select-item inner-expression="(MIN(date))" aggregation-type="MAX" index="3" />
+            <aggregation-select-item inner-expression="(time)" aggregation-type="MIN" alias="Time" index="4" />
+        </aggregation-select-items>
+    </assert>
+    
+    <assert id="assertSelectWithAvg" sql="SELECT AVG(MAX(date)) date, AVG(DISTINCT time), order_id FROM order">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(MAX(date))" aggregation-type="AVG" alias="date" index="1">
+                <derived-column inner-expression="(MAX(date))" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_0" index="4" />
+                <derived-column inner-expression="(MAX(date))" aggregation-type="SUM" alias="AVG_DERIVED_SUM_0" index="5" />
+            </aggregation-select-item>
+            <aggregation-select-item inner-expression="(DISTINCT time)" aggregation-type="AVG" index="2">
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="COUNT" alias="AVG_DERIVED_COUNT_1" index="6" />
+                <derived-column inner-expression="(DISTINCT time)" aggregation-type="SUM" alias="AVG_DERIVED_SUM_1" index="7" />
+            </aggregation-select-item>
+        </aggregation-select-items>
+    </assert>
+    
+    <assert id="assertSelectWithAggregateAndGroupBy" sql="SELECT order_id, MAX(date) FROM order GROUP BY order_id">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <group-by-columns>
+            <group-by-column name="order_id" order-by-type="ASC" />
+        </group-by-columns>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(date)" aggregation-type="MAX" index="2" />
+        </aggregation-select-items>
+    </assert>
+    
+    <assert id="assertSelectWithUnsupportedFunction" sql="SELECT id, BIT_OR(date) FROM order">
+        <tables>
+            <table name="order"/>
+        </tables>
+    </assert>
+    
+    <!-- // TODO 有*时，聚合的偏移量不准确 -->
+    <assert id="assertSelectWithStartWithAllAndAggregate" sql="SELECT *, COUNT(time) FROM order">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <aggregation-select-items>
+            <aggregation-select-item inner-expression="(time)" aggregation-type="COUNT" index="2" />
+        </aggregation-select-items>
+    </assert>
+</asserts>

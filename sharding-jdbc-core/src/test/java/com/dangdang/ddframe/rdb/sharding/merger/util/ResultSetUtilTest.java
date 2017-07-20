@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -27,9 +26,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ResultSetUtilTest {
     @Test
@@ -87,15 +84,5 @@ public final class ResultSetUtilTest {
     @Test(expected = ShardingJdbcException.class)
     public void assertConvertDateValueError() {
         ResultSetUtil.convertValue(new Date(), int.class);
-    }
-    
-    @Test
-    public void assertCompareToForAsc() {
-        assertTrue(ResultSetUtil.compareTo(1, 2, OrderByType.ASC) < 0);
-    }
-    
-    @Test
-    public void assertCompareToForDesc() {
-        assertFalse(ResultSetUtil.compareTo(1, 2, OrderByType.DESC) < 0);
     }
 }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -29,6 +30,6 @@ public final class DatabaseShardingStrategyTest {
     
     @Test
     public void assertDatabaseShardingStrategyWithSingleShardingColumn() {
-        assertThat(new DatabaseShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Collections.singletonList("shardingColumn")));
+        assertThat(new DatabaseShardingStrategy("shardingColumn", null).getShardingColumns(), is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
     }
 }

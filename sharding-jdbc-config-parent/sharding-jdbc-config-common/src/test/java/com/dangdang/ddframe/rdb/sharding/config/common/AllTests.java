@@ -27,11 +27,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ShardingRuleBuilderTest.class, 
-    ClosureDatabaseShardingAlgorithmTest.class, 
-    ClosureTableShardingAlgorithmTest.class, 
-    ShardingValueWrapperTest.class, 
-    InlineParserTest.class
+        ShardingRuleBuilderTest.class, 
+        ClosureDatabaseShardingAlgorithmTest.class, 
+        ClosureTableShardingAlgorithmTest.class, 
+        ShardingValueWrapperTest.class, 
+        InlineParserTest.class
     })
 public class AllTests {
 }

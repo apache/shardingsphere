@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.integrate;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.base.AbstractSoftTransactionIntegrationTest;
@@ -47,10 +47,10 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         transactionManager.end();
     }
     
-    private void insert() throws SQLException {
+    private void insert() {
         String dbSchema = "insert into transaction_test(id) values (1)";
         try (
-                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLStatementType.INSERT);
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.INSERT);
                 PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
@@ -58,12 +58,12 @@ public final class SoftTransactionTest extends AbstractSoftTransactionIntegratio
         }
     }
     
-    private int select() throws SQLException {
+    private int select() {
         String dbSchema = "select * from `transaction_test`;";
         int id = 0;
         try (
-            Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLStatementType.SELECT);
-            PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
+                Connection conn = getShardingDataSource().getConnection().getConnection("db_trans", SQLType.SELECT);
+                PreparedStatement preparedStatement = conn.prepareStatement(dbSchema)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 id = resultSet.getInt(1);

@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.api;
 
-import com.dangdang.ddframe.rdb.sharding.executor.ExecutorDataMap;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventBus;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorDataMap;
+import com.dangdang.ddframe.rdb.sharding.util.EventBusInstance;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.async.NestedBestEffortsDeliveryJobFactory;
@@ -55,7 +55,7 @@ public final class SoftTransactionManager {
      * 初始化事务管理器.
      */
     public void init() throws SQLException {
-        DMLExecutionEventBus.register(new BestEffortsDeliveryListener());
+        EventBusInstance.getInstance().register(new BestEffortsDeliveryListener());
         if (TransactionLogDataSourceType.RDB == transactionConfig.getStorageType()) {
             Preconditions.checkNotNull(transactionConfig.getTransactionLogDataSource());
             createTable();

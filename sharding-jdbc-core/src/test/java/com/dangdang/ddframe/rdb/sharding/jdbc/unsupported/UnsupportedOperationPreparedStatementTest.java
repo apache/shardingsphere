@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
-public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     
@@ -95,5 +95,10 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetRowId() throws SQLException {
         actual.setRowId(1, null);
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertSetRef() throws SQLException {
+        actual.setRef(1, null);
     }
 }

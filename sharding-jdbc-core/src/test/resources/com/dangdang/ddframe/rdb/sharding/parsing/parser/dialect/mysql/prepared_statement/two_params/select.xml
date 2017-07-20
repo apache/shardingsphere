@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithParameter" sql="SELECT * FROM order WHERE order_id BETWEEN ? AND ?">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                <value index="0" />
+                <value index="1" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

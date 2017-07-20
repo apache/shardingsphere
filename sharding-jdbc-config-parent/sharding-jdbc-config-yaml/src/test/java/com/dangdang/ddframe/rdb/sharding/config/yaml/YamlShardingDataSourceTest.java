@@ -21,8 +21,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.DynamicDataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.h2.Driver;
@@ -113,7 +113,7 @@ public class YamlShardingDataSourceTest {
         return getShardingRule(new YamlShardingDataSource(dataSourceMap, new File(getClass().getResource(fileName).toURI())));
     }
     
-    private ShardingRule getShardingRule(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+    private ShardingRule getShardingRule(final ShardingDataSource shardingDataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = ShardingDataSource.class.getDeclaredField("shardingContext");
         field.setAccessible(true);
         ShardingContext shardingContext = (ShardingContext) field.get(shardingDataSource);

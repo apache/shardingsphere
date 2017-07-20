@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.Collections;
 
-public final class UnsupportedOperationResultSetTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class UnsupportedOperationResultSetTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     
@@ -40,7 +41,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
         statement = shardingConnection.createStatement();
-        actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusSql());
     }
     
     @After
@@ -230,7 +231,6 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
         actual.getRowId("label");
     }
     
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithType() throws SQLException {
         actual.getObject(1, String.class);
@@ -239,5 +239,15 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingDat
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithType() throws SQLException {
         actual.getObject("label", String.class);
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertObjectForColumnIndexWithMap() throws SQLException {
+        actual.getObject(1, Collections.<String, Class<?>>emptyMap());
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertObjectForColumnLabelWithMap() throws SQLException {
+        actual.getObject("label", Collections.<String, Class<?>>emptyMap());
     }
 }

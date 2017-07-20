@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithGroupByAndDirectiveColumn" sql="SELECT o.order_id FROM order o GROUP BY o.state" expected-sql="SELECT o.order_id , o.state AS sharding_gen_1 FROM [Token(order)] o GROUP BY o.state">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <group-by-columns>
+            <group-by-column owner="o" name="state" alias="GROUP_BY_DERIVED_0" order-by-type="ASC" />
+        </group-by-columns>
+    </assert>
+    
+    <assert id="assertSelectWithGroupBy" sql="SELECT o.state FROM order o GROUP BY o.state">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <group-by-columns>
+            <group-by-column owner="o" name="state" order-by-type="ASC" />
+        </group-by-columns>
+    </assert>
+    
+    <assert id="assertSelectWithGroupByAndOrderByAndDirectiveColumn" sql="SELECT o.order_id orderId FROM order o GROUP BY o.state ASC, o.order_id DESC">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <group-by-columns>
+            <group-by-column owner="o" name="state" alias="GROUP_BY_DERIVED_0" order-by-type="ASC" />
+            <group-by-column owner="o" name="order_id" alias="GROUP_BY_DERIVED_1" order-by-type="DESC" />
+        </group-by-columns>
+    </assert>
+</asserts>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectForLimitWithRowCountOnlyWithParameter" sql="SELECT * FROM order o LIMIT ?">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <limit row-count="-1" offset-index="-1" row-count-index="0"/>
+    </assert>
+</asserts>

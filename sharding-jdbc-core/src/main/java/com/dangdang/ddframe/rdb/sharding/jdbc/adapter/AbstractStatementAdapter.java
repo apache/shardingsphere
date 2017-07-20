@@ -18,15 +18,13 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * 静态语句对象适配类.
@@ -44,19 +42,20 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private int fetchSize;
     
-    protected abstract void clearRouteStatements();
-    
     @Override
     @SuppressWarnings("unchecked")
     public final void close() throws SQLException {
-        SQLUtil.safeInvoke(getRoutedStatements(), new ThrowableSQLExceptionMethod() {
-            @Override
-            public void apply(final Object object) throws SQLException {
-                ((Statement) object).close();
-            }
-        });
         closed = true;
-        clearRouteStatements();
+        getRoutedStatements().clear();
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Statement each : getRoutedStatements()) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
@@ -212,14 +211,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         for (Statement each : getRoutedStatements()) {
             each.setQueryTimeout(seconds);
         }
-    }
-    
-    @Override
-    public ResultSet getGeneratedKeys() throws SQLException {
-        if (1 == getRoutedStatements().size()) {
-            return getRoutedStatements().iterator().next().getGeneratedKeys();
-        }
-        throw new IllegalStateException("Cannot call getGeneratedKeys if sharding statements more than 1.");
     }
     
     /**

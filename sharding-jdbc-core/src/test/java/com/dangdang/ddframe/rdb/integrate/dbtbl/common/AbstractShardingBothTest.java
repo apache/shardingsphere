@@ -18,27 +18,12 @@
 package com.dangdang.ddframe.rdb.integrate.dbtbl.common;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractShardingBothTest extends AbstractDBUnitTest {
-    
-    @Override
-    protected List<String> getSchemaFiles() {
-        return Arrays.asList(
-                "integrate/schema/dbtbl/dbtbl_0.sql", 
-                "integrate/schema/dbtbl/dbtbl_1.sql", 
-                "integrate/schema/dbtbl/dbtbl_2.sql", 
-                "integrate/schema/dbtbl/dbtbl_3.sql", 
-                "integrate/schema/dbtbl/dbtbl_4.sql", 
-                "integrate/schema/dbtbl/dbtbl_5.sql", 
-                "integrate/schema/dbtbl/dbtbl_6.sql", 
-                "integrate/schema/dbtbl/dbtbl_7.sql", 
-                "integrate/schema/dbtbl/dbtbl_8.sql", 
-                "integrate/schema/dbtbl/dbtbl_9.sql");
-    }
     
     @Override
     protected List<String> getDataSetFiles() {

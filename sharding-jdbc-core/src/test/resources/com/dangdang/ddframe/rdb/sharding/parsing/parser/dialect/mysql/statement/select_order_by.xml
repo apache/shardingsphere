@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertSelectWithOrderBy" sql="SELECT * FROM order o ORDER BY o.order_id, 2 DESC">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" order-by-type="ASC" />
+            <order-by-column index="2" order-by-type="DESC" />
+        </order-by-columns>
+    </assert>
+    
+    <assert id="assertSelectWithOrderByForUnion" sql="SELECT * FROM order o, order_item i WHERE o.order_id = i.order_id AND o.state = 'RUNNING' ORDER BY o.order_id DESC, 2">
+        <tables>
+            <table name="order" alias="o" />
+            <table name="order_item" alias="i" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value literal="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" order-by-type="DESC" />
+            <order-by-column index="2" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+    
+    <assert id="assertSelectWithOrderByForAlias" sql="SELECT o.order_id as `gen_order_id_` FROM order o ORDER BY o.order_id">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <order-by-columns>
+            <order-by-column owner="o" name="order_id" alias="gen_order_id_" order-by-type="ASC" />
+        </order-by-columns>
+    </assert>
+</asserts>

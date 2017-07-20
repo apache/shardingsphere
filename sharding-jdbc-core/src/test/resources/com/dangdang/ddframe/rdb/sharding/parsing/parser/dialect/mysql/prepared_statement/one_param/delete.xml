@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertDeleteWithParameter" sql="DELETE FROM `order` WHERE order_id IN (?)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value index="0" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

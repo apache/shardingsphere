@@ -17,13 +17,13 @@
 
 package com.dangdang.ddframe.rdb.integrate.tbl.statement;
 
-import java.sql.SQLException;
-
 import com.dangdang.ddframe.rdb.integrate.tbl.AbstractShardingTablesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 public final class ShardingTablesOnlyForStatementWithAggregateTest extends AbstractShardingTablesOnlyDBUnitTest {
     
@@ -36,9 +36,17 @@ public final class ShardingTablesOnlyForStatementWithAggregateTest extends Abstr
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT COUNT(*) AS `items_count` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s";
-        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 10, 11, 1000, 1909));
-        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), 
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectCountWithBindingTableSql(), 10, 11, 1000, 1909));
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), 
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectCountWithBindingTableSql(), 1, 9, 1000, 1909));
+    }
+    
+    @Test
+    public void assertSelectCountWithBindingTableAndWithoutJoinSql() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(),
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectCountWithBindingTableAndWithoutJoinSql(), 10, 11, 1000, 1909));
+        assertDataSet("integrate/dataset/tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(),
+                "t_order_item", String.format(getDatabaseTestSQL().getSelectCountWithBindingTableAndWithoutJoinSql(), 1, 9, 1000, 1909));
     }
 }

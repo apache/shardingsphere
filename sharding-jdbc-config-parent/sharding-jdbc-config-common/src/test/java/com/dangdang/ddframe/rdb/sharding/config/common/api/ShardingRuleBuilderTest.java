@@ -21,12 +21,13 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataNode;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
-import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementKeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementKeyGenerator;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.MultiAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.fixture.SingleAlgorithm;
 import com.google.common.base.Joiner;
@@ -73,12 +74,12 @@ public final class ShardingRuleBuilderTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertBuildFailureWhenAutoIncrementClassNotExisted() {
+    public void assertBuildFailureWhenKeyGeneratedClassNotExisted() {
         ShardingRuleConfig shardingRuleConfig = new ShardingRuleConfig();
         shardingRuleConfig.setDataSource(createDataSourceMap());
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         shardingRuleConfig.setTables(createTableRuleConfigMap());
-        shardingRuleConfig.setIdGeneratorClass("not.existed");
+        shardingRuleConfig.setKeyGeneratorClass("not.existed");
         shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
@@ -91,7 +92,7 @@ public final class ShardingRuleBuilderTest {
         shardingRuleConfig.setDataSource(createDataSourceMap());
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         shardingRuleConfig.setTables(createTableRuleConfigMap());
-        shardingRuleConfig.setIdGeneratorClass("com.dangdang.ddframe.rdb.sharding.config.common.fixture.IncrementIdGenerator");
+        shardingRuleConfig.setKeyGeneratorClass(IncrementKeyGenerator.class.getName());
         shardingRuleConfig.setBindingTables(Collections.singletonList(createBindingTableRule("t_order", "t_order_item")));
         shardingRuleConfig.setDefaultDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         shardingRuleConfig.setDefaultTableStrategy(getTableStrategyConfigForAlgorithmClass());
@@ -161,15 +162,15 @@ public final class ShardingRuleBuilderTest {
         result.setDataSourceNames("ds_${0..1}");
         result.setDatabaseStrategy(getDatabaseStrategyConfig(SingleAlgorithm.class.getName()));
         result.setTableStrategy(getTableStrategyConfigForExpression());
-        Map<String, String> autoIncrementColumnMap = new HashMap<>();
-        autoIncrementColumnMap.put("order_id", null);
-        AutoIncrementColumnConfig orderIdConfig = new AutoIncrementColumnConfig();
+        Map<String, String> generateKeyColumnsMap = new HashMap<>();
+        generateKeyColumnsMap.put("order_id", null);
+        GenerateKeyColumnConfig orderIdConfig = new GenerateKeyColumnConfig();
         orderIdConfig.setColumnName("order_id");
-        autoIncrementColumnMap.put("order_item_id", "com.dangdang.ddframe.rdb.sharding.config.common.fixture.DecrementIdGenerator");
-        AutoIncrementColumnConfig orderItemIdConfig = new AutoIncrementColumnConfig();
+        generateKeyColumnsMap.put("order_item_id", DecrementKeyGenerator.class.getName());
+        GenerateKeyColumnConfig orderItemIdConfig = new GenerateKeyColumnConfig();
         orderItemIdConfig.setColumnName("order_item_id");
-        orderItemIdConfig.setColumnIdGeneratorClass(DecrementIdGenerator.class.getName());
-        result.setAutoIncrementColumns(Arrays.asList(orderIdConfig, orderItemIdConfig));
+        orderItemIdConfig.setColumnKeyGeneratorClass(DecrementKeyGenerator.class.getName());
+        result.setGenerateKeyColumns(Arrays.asList(orderIdConfig, orderItemIdConfig));
         return result;
     }
     

@@ -19,12 +19,14 @@ package com.dangdang.ddframe.rdb.integrate.masterslave.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.masterslave.AbstractShardingMasterSlaveDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.api.HintManager;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 
 public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShardingMasterSlaveDBUnitTest {
     
@@ -38,13 +40,13 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
     
     @Test
     public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT `t_order`.order_id, `t_order`.user_id, `t_order`.status FROM `t_order` WHERE `t_order`.`user_id` = ? AND `t_order`.`order_id` = ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
     }
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE 1 = 1 AND `user_id` = ? AND `order_id` = ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 12, 1201);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 12, 1000);
@@ -52,14 +54,14 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN ? AND ? AND `order_id` BETWEEN ? AND ? ORDER BY user_id, order_id";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectBetweenWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1009, 1108);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` IN (?, ?, ?) AND `order_id` IN (?, ?) ORDER BY user_id, order_id";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectInWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1208);
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectInWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1108);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1309, 1408);
@@ -67,33 +69,29 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
     
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?, ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 10000, 2);
     }
     
     @Test
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? ORDER BY i.item_id DESC LIMIT ?";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithRowCountSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTableWithoutOffset.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 0);
     }
     
     @Test
     public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT count(*) as items_count, o.`user_id` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? GROUP BY o.`user_id`";
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql());
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
     }
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT count(*) as items_count FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ? GROUP BY o.`user_id`";
-        assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
+        String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql());
+        assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
     }
     
@@ -102,7 +100,7 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_order", "user_id", 10);
         hintManager.addTableShardingValue("t_order", "order_id", 1000);
-        String sql = "SELECT `t_order`.order_id, `t_order`.user_id, `t_order`.status FROM `t_order` WHERE `t_order`.`user_id` = ? AND `t_order`.`order_id` = ?";
+        String sql = getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql();
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
     }
     
@@ -112,7 +110,7 @@ public class ShardingMasterSlaveForPStatementWithSelectTest extends AbstractShar
         hintManager.setMasterRouteOnly();
         hintManager.addDatabaseShardingValue("t_order", "user_id", 10);
         hintManager.addTableShardingValue("t_order", "order_id", 1000);
-        String sql = "SELECT `t_order`.order_id, `t_order`.user_id, `t_order`.status FROM `t_order` WHERE `t_order`.`user_id` = ? AND `t_order`.`order_id` = ?";
+        String sql = getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql();
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectEqualsWithSingleMasterTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
     }
 }

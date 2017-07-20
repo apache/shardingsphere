@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.spring.namespace.parser;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import com.dangdang.ddframe.rdb.sharding.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
 import com.google.common.base.Splitter;
 import org.springframework.beans.factory.config.BeanDefinition;

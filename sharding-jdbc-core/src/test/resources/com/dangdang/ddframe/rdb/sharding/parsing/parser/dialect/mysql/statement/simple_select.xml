@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <!-- // FIXME
+    <assert id="assertSelectWithoutShardingKey" sql="select * from order FORCE INDEX (order_id)" expected-sql="SELECT * FROM [Token(order)] FORCE INDEX (order_id)">
+        <tables>
+            <table name="order" />
+        </tables>
+    </assert>
+    -->
+
+    <assert id="assertSelectWithDatabaseName" sql="select * from db.order">
+    </assert>
+    
+    <assert id="assertSelectWithTableNameAsAlias" sql="select * from order where order.order_id = 1">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectWithAlias" sql="select * from order o where o.order_id = 1">
+        <tables>
+            <table name="order" alias="o" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="java.lang.Integer" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectWithCondition" sql="select * from order where order_id = 1 and state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="int" />
+            </condition>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value literal="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectForShardingKeySelectCondition" sql="select * from order where order_id = 1 and other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectForBetween" sql="select * from order where order_id between 1 and 10 and other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                <value literal="1" type="int" />
+                <value literal="10" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectForIn" sql="select * from order where order_id in (1,2,3) and other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
+                <value literal="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+
+    <assert id="assertSelectForInWithTableName" sql="select * from order where order.order_id in (1,2,3) and order.other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
+                <value literal="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+
+    <assert id="assertSelectForBetweenWithTableName" sql="select * from order where order.order_id between 1 and 3 and order.other_state = 'RUNNING'">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="BETWEEN">
+                <value literal="1" type="int" />
+                <value literal="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectWithDateFunction" sql="select * from order where date = str_to_date('2013-01-01 01:21:01','%Y-%m-%d %H:%i:%s')">
+        <tables>
+            <table name="order" />
+        </tables>
+    </assert>
+    
+    <!-- // TODO 这里可优化，将两个字段AND = 替换为永false -->
+    <!-- // TODO 测试用例condition条件不对 -->
+    <!--
+    <assert id="assertSelectWithSameShardingColumnForAnd" sql="select * from order where order_id = 1 and order_id = 2" expected-sql="select * from [Token(order)] where order_id = 1 and order_id = 2">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value literal="1" type="int" />
+                <value literal="2" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    -->
+    
+    <!-- // TODO 目前对于IN多结果不同做到交集处理 仅仅是简单的加入 -->
+    <!-- // TODO 测试用例condition条件不对 -->
+    <!--
+    <assert id="assertSelectWithSameShardingColumnForIn" sql="select * from order where order_id in(1,3) and order_id in (2,4)" expected-sql="select * from [Token(order)] where order_id in(1,3) and order_id in (2,4)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="IN">
+                <value literal="1" type="int" />
+                <value literal="3" type="int" />
+                <value literal="2" type="int" />
+                <value literal="4" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    -->
+</asserts>

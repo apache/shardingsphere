@@ -18,10 +18,10 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +30,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class ResultSetAdapterTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     
@@ -50,7 +53,7 @@ public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBU
         ShardingDataSource shardingDataSource = getShardingDataSource();
         shardingConnection = shardingDataSource.getConnection();
         statement = shardingConnection.createStatement();
-        actual = statement.executeQuery("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusSql());
     }
     
     @After
@@ -69,8 +72,10 @@ public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBU
     private void assertClose(final AbstractResultSetAdapter actual) throws SQLException {
         assertTrue(actual.isClosed());
         assertThat(actual.getResultSets().size(), is(10));
-        for (ResultSet each : actual.getResultSets()) {
-            assertTrue(each.isClosed());
+        if (currentDbType() != Oracle) {
+            for (ResultSet each : actual.getResultSets()) {
+                assertTrue(each.isClosed());
+            }
         }
     }
     
@@ -86,31 +91,35 @@ public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBU
             actual.setFetchDirection(ResultSet.FETCH_REVERSE);
         } catch (final SQLException ignore) {
         }
-        assertFetchDirection((AbstractResultSetAdapter) actual, ResultSet.FETCH_REVERSE);
+        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
+            assertFetchDirection((AbstractResultSetAdapter) actual, ResultSet.FETCH_REVERSE);
+        }
     }
     
     private void assertFetchDirection(final AbstractResultSetAdapter actual, final int fetchDirection) throws SQLException {
         // H2数据库未实现getFetchDirection方法
-        assertThat(actual.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? ResultSet.FETCH_FORWARD : fetchDirection));
+        assertThat(actual.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || DatabaseType.PostgreSQL == currentDbType() ? ResultSet.FETCH_FORWARD : fetchDirection));
         assertThat(actual.getResultSets().size(), is(10));
         for (ResultSet each : actual.getResultSets()) {
-            assertThat(each.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? ResultSet.FETCH_FORWARD : fetchDirection));
+            assertThat(each.getFetchDirection(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || DatabaseType.PostgreSQL == currentDbType() ? ResultSet.FETCH_FORWARD : fetchDirection));
         }
     }
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        assertThat(actual.getFetchSize(), is(0));
+        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
+            assertThat(actual.getFetchSize(), is(0));
+        }
         actual.setFetchSize(100);
-        assertFetchSize((AbstractResultSetAdapter) actual, 100);
+        assertFetchSize((AbstractResultSetAdapter) actual);
     }
     
-    private void assertFetchSize(final AbstractResultSetAdapter actual, final int fetchSize) throws SQLException {
+    private void assertFetchSize(final AbstractResultSetAdapter actual) throws SQLException {
         // H2数据库未实现getFetchSize方法
-        assertThat(actual.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : fetchSize));
+        assertThat(actual.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : 100));
         assertThat(actual.getResultSets().size(), is(10));
         for (ResultSet each : actual.getResultSets()) {
-            assertThat(each.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : fetchSize));
+            assertThat(each.getFetchSize(), is(DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE ? 0 : 100));
         }
     }
     
@@ -143,6 +152,10 @@ public final class ResultSetAdapterTest extends AbstractShardingDataBasesOnlyDBU
     
     @Test
     public void assertFindColumn() throws SQLException {
-        assertThat(actual.findColumn("uid"), is(1));
+        if (currentDbType() == Oracle) {
+            assertThat(actual.findColumn("usrid"), is(1));
+        } else {
+            assertThat(actual.findColumn("uid"), is(1));
+        }
     }
 }

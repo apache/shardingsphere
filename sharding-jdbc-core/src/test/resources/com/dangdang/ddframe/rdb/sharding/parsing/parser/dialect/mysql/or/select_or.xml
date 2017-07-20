@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <!-- // TODO or
+    <assert id="assertSelectWithOrForOne" sql="select id from travel_record where fee in (3) or days = 5  or name = 'zhangsan'" expected-sql="SELECT id FROM [Token(travel_record)] WHERE fee IN (3) OR days = 5 OR name = 'zhangsan'">
+        <tables>
+            <table name="travel_record" />
+        </tables>
+        <conditions>
+            <condition column-name="name" table-name="travel_record" operator="EQUAL">
+                <value value="zhangsan" type="java.lang.String" />
+            </condition>
+            <condition column-name="days" table-name="travel_record" operator="EQUAL">
+                <value value="5" type="int" />
+            </condition>
+            <condition column-name="fee" table-name="travel_record" operator="IN">
+                <value value="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectWithOrAnd" sql="select id from travel_record where fee in (3) and ( days = 5  or name = 'zhangsan') and age = 3" expected-sql="SELECT id FROM [Token(travel_record)] WHERE fee IN (3) AND (days = 5 OR name = 'zhangsan') AND age = 3">
+        <tables>
+            <table name="travel_record" />
+        </tables>
+        <conditions>
+            <condition column-name="name" table-name="travel_record" operator="EQUAL">
+                <value value="zhangsan" type="java.lang.String" />
+            </condition>
+            <condition column-name="fee" table-name="travel_record" operator="IN">
+                <value value="3" type="int" />
+            </condition>
+            <condition column-name="age" table-name="travel_record" operator="EQUAL">
+                <value value="3" type="int" />
+            </condition>
+            <condition column-name="days" table-name="travel_record" operator="EQUAL">
+                <value value="5" type="int" />
+            </condition>
+            <condition column-name="fee" table-name="travel_record" operator="IN">
+                <value value="3" type="int" />
+            </condition>
+            <condition column-name="age" table-name="travel_record" operator="EQUAL">
+                <value value="3" type="int" />
+            </condition>
+        </conditions>
+    </assert>
+    
+    <assert id="assertSelectWithComplicatedOrExpression" sql="select id from travel_record where id = 1 and ( fee=3 or days=5 or (travel_date = '2015-05-04 00:00:07.375' and (user_id=2 or days=2 or fee = 0))) and id=2" expected-sql="SELECT id FROM [Token(travel_record)] WHERE id = 1 AND (fee = 3 OR days = 5 OR travel_date = '2015-05-04 00:00:07.375' AND (user_id = 2 OR days = 2 OR fee = 0)) AND id = 2">
+        <tables>
+            <table name="travel_record" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="days" table-name="travel_record" operator="EQUAL">
+                    <value value="5" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="fee" table-name="travel_record" operator="EQUAL">
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="fee" table-name="travel_record" operator="EQUAL">
+                    <value value="0" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="travel_date" table-name="travel_record" operator="EQUAL">
+                    <value value="2015-05-04 00:00:07.375" type="java.lang.String" />
+                </condition>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="days" table-name="travel_record" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="travel_date" table-name="travel_record" operator="EQUAL">
+                    <value value="2015-05-04 00:00:07.375" type="java.lang.String" />
+                </condition>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="user_id" table-name="travel_record" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="travel_date" table-name="travel_record" operator="EQUAL">
+                    <value value="2015-05-04 00:00:07.375" type="java.lang.String" />
+                </condition>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+    
+    <assert id="assertNullConditions" sql="select id from travel_record where 1=1 or id = 1"  expected-sql="SELECT id FROM [Token(travel_record)] WHERE 1 = 1 OR id = 1">
+        <tables>
+            <table name="travel_record" />
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="id" table-name="travel_record" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+
+    <assert id="assertOrJoin" sql="select u.id, i.name from user u, item i where u.id = i.id and (i.id = 1 or i.id = 2)"  expected-sql="SELECT [Token(u)].id, [Token(i)].name FROM [Token(user)] u, [Token(item)] i WHERE u.id = i.id AND (i.id = 1 OR i.id = 2)">
+        <tables>
+            <table name="user" alias="u"/>
+            <table name="item" alias="i"/>
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="id" table-name="item" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="item" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+
+    <assert id="assertOrAnd" sql="select * from order where (id=1 or user_id=2) and (name=3 or age=4)"  expected-sql="SELECT * FROM [Token(order)] WHERE (id = 1 OR user_id = 2) AND (name = 3 OR age = 4)">
+        <tables>
+            <table name="order"/>
+        </tables>
+        <condition-contexts>
+            <condition-context>
+                <condition column-name="user_id" table-name="order" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="age" table-name="order" operator="EQUAL">
+                    <value value="4" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="user_id" table-name="order" operator="EQUAL">
+                    <value value="2" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="name" table-name="order" operator="EQUAL">
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="age" table-name="order" operator="EQUAL">
+                    <value value="4" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+            <condition-context>
+                <condition column-name="id" table-name="order" operator="EQUAL">
+                    <value value="1" type="java.lang.Integer" />
+                </condition>
+                <condition column-name="name" table-name="order" operator="EQUAL">
+                    <value value="3" type="java.lang.Integer" />
+                </condition>
+            </condition-context>
+        </condition-contexts>
+    </assert>
+    -->
+</asserts>

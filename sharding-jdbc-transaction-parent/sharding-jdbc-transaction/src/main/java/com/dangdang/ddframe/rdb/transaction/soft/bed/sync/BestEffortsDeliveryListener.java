@@ -17,9 +17,8 @@
 
 package com.dangdang.ddframe.rdb.transaction.soft.bed.sync;
 
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.parser.result.router.SQLStatementType;
 import com.dangdang.ddframe.rdb.transaction.soft.api.SoftTransactionManager;
 import com.dangdang.ddframe.rdb.transaction.soft.api.config.SoftTransactionConfiguration;
 import com.dangdang.ddframe.rdb.transaction.soft.bed.BEDSoftTransaction;
@@ -43,7 +42,7 @@ import static com.dangdang.ddframe.rdb.transaction.soft.constants.SoftTransactio
  * @author zhangliang
  */
 @Slf4j
-public final class BestEffortsDeliveryListener implements DMLExecutionEventListener {
+public final class BestEffortsDeliveryListener {
     
     @Subscribe
     @AllowConcurrentEvents
@@ -73,10 +72,10 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                     Connection conn = null;
                     PreparedStatement preparedStatement = null;
                     try {
-                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLStatementType.UPDATE);
+                        conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
                         if (!isValidConnection(conn)) {
-                            bedSoftTransaction.getConnection().releaseBrokenConnection(conn);
-                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLStatementType.UPDATE);
+                            bedSoftTransaction.getConnection().release(conn);
+                            conn = bedSoftTransaction.getConnection().getConnection(event.getDataSource(), SQLType.UPDATE);
                             isNewConnection = true;
                         }
                         preparedStatement = conn.prepareStatement(event.getSql());
@@ -129,10 +128,5 @@ public final class BestEffortsDeliveryListener implements DMLExecutionEventListe
                 log.error("Connection closed error:", ex);
             }
         }
-    }
-    
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 }

@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
+
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -32,8 +34,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-
-import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.WrapperAdapter;
 
 /**
  * 声明不支持操作的数据库连接对象.

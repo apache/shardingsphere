@@ -17,42 +17,40 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.AggregationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.NullableAggregationResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.OrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AccumulationAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AggregationUnitFactoryTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.AverageAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.coupling.aggregation.ComparableAggregationUnitTest;
-import com.dangdang.ddframe.rdb.sharding.merger.pipeline.reducer.IteratorResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemoryOrderByResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.MemoryResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.GroupByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.OrderByResultSetRowTest;
-import com.dangdang.ddframe.rdb.sharding.merger.resultset.memory.row.ResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.DecoratorResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetRowTest;
+import com.dangdang.ddframe.rdb.sharding.merger.common.StreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByRowComparatorTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByValueTest;
+import com.dangdang.ddframe.rdb.sharding.merger.groupby.aggregation.AllAggregationTests;
+import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.limit.LimitDecoratorResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByStreamResultSetMergerTest;
+import com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValueTest;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtilTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    ShardingResultSetsTest.class, 
-    ResultSetMergeContextTest.class, 
-    IteratorResultSetTest.class, 
-    OrderByResultSetTest.class, 
-    MemoryOrderByResultSetTest.class, 
-    AggregationResultSetTest.class, 
-    NullableAggregationResultSetTest.class, 
-    ResultSetRowTest.class, 
-    OrderByResultSetRowTest.class, 
-    GroupByResultSetRowTest.class, 
-    AggregationUnitFactoryTest.class, 
-    ComparableAggregationUnitTest.class, 
-    AccumulationAggregationUnitTest.class, 
-    AverageAggregationUnitTest.class, 
-    UnsupportedOperationDerivedColumnResultSetTest.class, 
-    MemoryResultSetTest.class, 
-    ResultSetUtilTest.class
+        MergeEngineTest.class, 
+        StreamResultSetMergerTest.class, 
+        MemoryResultSetMergerTest.class, 
+        DecoratorResultSetMergerTest.class, 
+        MemoryResultSetRowTest.class, 
+        IteratorStreamResultSetMergerTest.class, 
+        OrderByValueTest.class, 
+        OrderByStreamResultSetMergerTest.class, 
+        GroupByValueTest.class, 
+        GroupByRowComparatorTest.class, 
+        GroupByStreamResultSetMergerTest.class, 
+        GroupByMemoryResultSetMergerTest.class, 
+        AllAggregationTests.class, 
+        LimitDecoratorResultSetMergerTest.class, 
+        ResultSetUtilTest.class
     })
 public class AllMergerTests {
 }

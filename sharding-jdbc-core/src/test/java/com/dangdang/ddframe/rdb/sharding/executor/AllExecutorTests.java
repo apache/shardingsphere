@@ -17,6 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor;
 
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandlerTest;
+import com.dangdang.ddframe.rdb.sharding.executor.type.PreparedStatementExecutorTest;
+import com.dangdang.ddframe.rdb.sharding.executor.type.StatementExecutorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

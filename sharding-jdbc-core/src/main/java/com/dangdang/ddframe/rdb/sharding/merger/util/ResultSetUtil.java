@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.parser.result.merger.OrderByColumn.OrderByType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -59,7 +58,7 @@ public final class ResultSetUtil {
             return value.toString();
         } else {
             return value;
-        }    
+        }
     }
     
     private static Object convertNullValue(final Class<?> convertType) {
@@ -119,18 +118,5 @@ public final class ResultSetUtil {
             default:
                 throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
         }
-    }
-    
-    /**
-     * 根据排序类型比较大小.
-     * 
-     * @param thisValue 待比较的值
-     * @param otherValue 待比较的值
-     * @param orderByType 排序类型
-     * @return 负数，零和正数分别表示小于，等于和大于
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderByType orderByType) {
-        return OrderByType.ASC == orderByType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

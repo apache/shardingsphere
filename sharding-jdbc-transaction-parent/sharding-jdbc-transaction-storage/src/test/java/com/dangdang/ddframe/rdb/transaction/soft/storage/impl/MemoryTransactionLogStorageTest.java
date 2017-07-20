@@ -23,6 +23,7 @@ import org.junit.Test;
 public final class MemoryTransactionLogStorageTest {
     
     @Test
+    // TODO
     public void assertMemoryTransactionLogStorageOperations() {
         TransactionLogStorage storage = new MemoryTransactionLogStorage();
     }

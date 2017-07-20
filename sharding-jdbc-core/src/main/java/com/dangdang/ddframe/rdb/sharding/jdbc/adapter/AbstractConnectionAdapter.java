@@ -19,14 +19,13 @@ package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
-import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
-import com.dangdang.ddframe.rdb.sharding.util.ThrowableSQLExceptionMethod;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * 数据库连接适配类.
@@ -71,24 +70,30 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void rollback() throws SQLException {
-        SQLUtil.safeInvoke(getConnections(), new ThrowableSQLExceptionMethod<Connection>() {
-            @Override
-            public void apply(final Connection object) throws SQLException {
-                object.rollback();
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Connection each : getConnections()) {
+            try {
+                each.rollback();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
             }
-        });
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override
     public void close() throws SQLException {
-        SQLUtil.safeInvoke(getConnections(), new ThrowableSQLExceptionMethod<Connection>() {
-            @Override
-            public void apply(final Connection object) throws SQLException {
-                object.close();
-            }
-        });
         closed = true;
         MetricsContext.clear();
+        Collection<SQLException> exceptions = new LinkedList<>();
+        for (Connection each : getConnections()) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     @Override

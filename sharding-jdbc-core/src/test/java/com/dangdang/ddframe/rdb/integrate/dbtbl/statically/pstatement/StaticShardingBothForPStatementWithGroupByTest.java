@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.statically.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement.AbstractShardingBothForPStatementWithGroupByTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.statically.StaticShardingBothHelper;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
 
 public final class StaticShardingBothForPStatementWithGroupByTest extends AbstractShardingBothForPStatementWithGroupByTest {
@@ -37,6 +37,6 @@ public final class StaticShardingBothForPStatementWithGroupByTest extends Abstra
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }

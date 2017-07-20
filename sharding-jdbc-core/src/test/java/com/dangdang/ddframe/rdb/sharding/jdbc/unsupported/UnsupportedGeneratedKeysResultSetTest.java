@@ -17,201 +17,202 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.sharding.jdbc.GeneratedKeysResultSet;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 
 public class UnsupportedGeneratedKeysResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBoolean() throws Exception {
+    public void getBoolean() throws SQLException {
         new GeneratedKeysResultSet().getBoolean(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBoolean1() throws Exception {
+    public void getBoolean1() throws SQLException {
         new GeneratedKeysResultSet().getBoolean("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getDate() throws Exception {
+    public void getDate() throws SQLException {
         new GeneratedKeysResultSet().getDate(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getDate1() throws Exception {
+    public void getDate1() throws SQLException {
         new GeneratedKeysResultSet().getDate(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getDate2() throws Exception {
+    public void getDate2() throws SQLException {
         new GeneratedKeysResultSet().getDate("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getDate3() throws Exception {
+    public void getDate3() throws SQLException {
         new GeneratedKeysResultSet().getDate("", null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTime() throws Exception {
+    public void getTime() throws SQLException {
         new GeneratedKeysResultSet().getTime(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTime1() throws Exception {
+    public void getTime1() throws SQLException {
         new GeneratedKeysResultSet().getTime(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTime2() throws Exception {
+    public void getTime2() throws SQLException {
         new GeneratedKeysResultSet().getTime("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTime3() throws Exception {
+    public void getTime3() throws SQLException {
         new GeneratedKeysResultSet().getTime("", null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTimestamp() throws Exception {
+    public void getTimestamp() throws SQLException {
         new GeneratedKeysResultSet().getTimestamp(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTimestamp1() throws Exception {
+    public void getTimestamp1() throws SQLException {
         new GeneratedKeysResultSet().getTimestamp(1, null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTimestamp2() throws Exception {
+    public void getTimestamp2() throws SQLException {
         new GeneratedKeysResultSet().getTimestamp("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getTimestamp3() throws Exception {
+    public void getTimestamp3() throws SQLException {
         new GeneratedKeysResultSet().getTimestamp("", null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getAsciiStream() throws Exception {
+    public void getAsciiStream() throws SQLException {
         new GeneratedKeysResultSet().getAsciiStream(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getAsciiStream1() throws Exception {
+    public void getAsciiStream1() throws SQLException {
         new GeneratedKeysResultSet().getAsciiStream("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getUnicodeStream() throws Exception {
+    public void getUnicodeStream() throws SQLException {
         new GeneratedKeysResultSet().getUnicodeStream(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getUnicodeStream1() throws Exception {
+    public void getUnicodeStream1() throws SQLException {
         new GeneratedKeysResultSet().getUnicodeStream("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBinaryStream() throws Exception {
+    public void getBinaryStream() throws SQLException {
         new GeneratedKeysResultSet().getBinaryStream(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBinaryStream1() throws Exception {
+    public void getBinaryStream1() throws SQLException {
         new GeneratedKeysResultSet().getBinaryStream("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getWarnings() throws Exception {
+    public void getWarnings() throws SQLException {
         new GeneratedKeysResultSet().getWarnings();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void clearWarnings() throws Exception {
+    public void clearWarnings() throws SQLException {
         new GeneratedKeysResultSet().clearWarnings();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getCharacterStream() throws Exception {
+    public void getCharacterStream() throws SQLException {
         new GeneratedKeysResultSet().getCharacterStream(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getCharacterStream1() throws Exception {
+    public void getCharacterStream1() throws SQLException {
         new GeneratedKeysResultSet().getCharacterStream("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void setFetchDirection() throws Exception {
+    public void setFetchDirection() throws SQLException {
         new GeneratedKeysResultSet().setFetchDirection(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getFetchDirection() throws Exception {
+    public void getFetchDirection() throws SQLException {
         new GeneratedKeysResultSet().getFetchDirection();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void setFetchSize() throws Exception {
+    public void setFetchSize() throws SQLException {
         new GeneratedKeysResultSet().setFetchSize(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getFetchSize() throws Exception {
+    public void getFetchSize() throws SQLException {
         new GeneratedKeysResultSet().getFetchSize();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getObject() throws Exception {
+    public void getObject() throws SQLException {
         new GeneratedKeysResultSet().getObject(1, new HashMap<String, Class<?>>());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getObject1() throws Exception {
+    public void getObject1() throws SQLException {
         new GeneratedKeysResultSet().getObject("", new HashMap<String, Class<?>>());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBlob() throws Exception {
+    public void getBlob() throws SQLException {
         new GeneratedKeysResultSet().getBlob(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getBlob1() throws Exception {
+    public void getBlob1() throws SQLException {
         new GeneratedKeysResultSet().getBlob("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getClob() throws Exception {
+    public void getClob() throws SQLException {
         new GeneratedKeysResultSet().getClob(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getClob1() throws Exception {
+    public void getClob1() throws SQLException {
         new GeneratedKeysResultSet().getClob("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getURL() throws Exception {
+    public void getURL() throws SQLException {
         new GeneratedKeysResultSet().getURL(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getURL1() throws Exception {
+    public void getURL1() throws SQLException {
         new GeneratedKeysResultSet().getURL("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getSQLXML() throws Exception {
+    public void getSQLXML() throws SQLException {
         new GeneratedKeysResultSet().getSQLXML(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getSQLXML1() throws Exception {
+    public void getSQLXML1() throws SQLException {
         new GeneratedKeysResultSet().getSQLXML("");
     }
     

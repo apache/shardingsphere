@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.NoneDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
 
 import java.util.Arrays;
@@ -40,13 +40,8 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
     private static ShardingDataSource shardingDataSource;
     
     @Override
-    protected List<String> getSchemaFiles() {
-        return Collections.singletonList("integrate/schema/tbl/db_single.sql");
-    }
-    
-    @Override
     protected List<String> getDataSetFiles() {
-        return Collections.singletonList("integrate/dataset/tbl/init/db_single.xml");
+        return Collections.singletonList("integrate/dataset/tbl/init/tbl.xml");
     }
     
     protected final ShardingDataSource getShardingDataSource() {
@@ -91,6 +86,8 @@ public abstract class AbstractShardingTablesOnlyDBUnitTest extends AbstractDBUni
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        if (null != shardingDataSource) {
+            shardingDataSource.close();
+        }
     }
 }

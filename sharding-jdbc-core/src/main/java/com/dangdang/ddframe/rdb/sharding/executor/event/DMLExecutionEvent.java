@@ -24,11 +24,7 @@ import java.util.List;
  * 
  * @author zhangliang
  */
-public final class DMLExecutionEvent extends ExecutionEvent {
-    
-    public DMLExecutionEvent(final String dataSource, final String sql) {
-        super(dataSource, sql);
-    }
+public final class DMLExecutionEvent extends AbstractExecutionEvent {
     
     public DMLExecutionEvent(final String dataSource, final String sql, final List<Object> parameters) {
         super(dataSource, sql, parameters);

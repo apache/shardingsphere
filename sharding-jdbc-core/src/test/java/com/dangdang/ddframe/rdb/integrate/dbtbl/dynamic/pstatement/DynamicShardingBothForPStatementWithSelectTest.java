@@ -19,12 +19,15 @@ package com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.pstatement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.pstatement.AbstractShardingBothForPStatementWithSelectTest;
 import com.dangdang.ddframe.rdb.integrate.dbtbl.dynamic.DynamicShardingBothHelper;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
+
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
 
 public final class DynamicShardingBothForPStatementWithSelectTest extends AbstractShardingBothForPStatementWithSelectTest {
     
@@ -41,18 +44,33 @@ public final class DynamicShardingBothForPStatementWithSelectTest extends Abstra
     
     @AfterClass
     public static void clear() {
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertSelectWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (?, ?) AND o.`order_id` BETWEEN ? AND ?";
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
+        String sql = getDatabaseTestSQL().getSelectWithBindingTableSql();
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), 
+                "t_order_item", sql, 10, 19, 1000, 1909);
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status ORDER BY i.item_id";
+        String sql = getDatabaseTestSQL().getSelectWithNoShardingTableSql();
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
+    }
+    
+    @Test
+    public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), 
+                "t_order", getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql(), 10, 1000);
+    }
+    
+    @Test
+    public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
+        if (currentDbType() == MySQL) {
+            assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLikeWithCount.xml", getShardingDataSource().getConnection(),
+                    "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithCountSql()), "init", 10, 11, 1000, 1001);
+        }
     }
 }

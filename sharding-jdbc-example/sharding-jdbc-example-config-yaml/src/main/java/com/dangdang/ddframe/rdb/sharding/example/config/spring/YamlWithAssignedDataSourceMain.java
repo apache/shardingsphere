@@ -17,14 +17,14 @@
 
 package com.dangdang.ddframe.rdb.sharding.example.config.spring;
 
+import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
+
+import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-
-import com.dangdang.ddframe.rdb.sharding.config.yaml.api.YamlShardingDataSource;
 
 public final class YamlWithAssignedDataSourceMain {
     
@@ -33,9 +33,40 @@ public final class YamlWithAssignedDataSourceMain {
     // CHECKSTYLE:ON
         YamlShardingDataSource dataSource =  new YamlShardingDataSource(
             new File(YamlWithAssignedDataSourceMain.class.getResource("/META-INF/withAssignedDataSource.yaml").getFile()));
+        insertByGeneratedKey(dataSource);
         printSimpleSelect(dataSource);
         printJoinSelect(dataSource);
         printGroupBy(dataSource);
+        delete(dataSource);
+    }
+    
+    private static void insertByGeneratedKey(final DataSource dataSource) throws SQLException {
+        String sql = "INSERT INTO t_order(user_id, status) values (1000, 'INSERT')";
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.execute();
+        }
+        sql = "SELECT * FROM t_order WHERE user_id = 1000";
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    System.out.print(rs.getLong(1) + "," + rs.getInt(2) + "," + rs.getString(3));
+                    System.out.println();
+                }
+            }
+        }
+    }
+    
+    private static void delete(final DataSource dataSource) throws SQLException {
+        String sql = "DELETE FROM t_order where user_id = 1000";
+        try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.execute();
+        }
     }
     
     private static void printSimpleSelect(final DataSource dataSource) throws SQLException {
@@ -62,7 +93,7 @@ public final class YamlWithAssignedDataSourceMain {
             preparedStatement.setInt(2, 1001);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
-                    System.out.println(rs.getInt(1));
+                    System.out.println(rs.getLong(1));
                     System.out.println(rs.getInt(2));
                     System.out.println(rs.getString(3));
                 }

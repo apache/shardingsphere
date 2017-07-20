@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
-import com.dangdang.ddframe.rdb.sharding.jdbc.util.JdbcMethodInvocation;
+import com.dangdang.ddframe.rdb.sharding.jdbc.adapter.invocation.JdbcMethodInvocation;
 
 import java.sql.SQLException;
 import java.sql.Wrapper;
@@ -56,7 +56,7 @@ public class WrapperAdapter implements Wrapper {
      * @param argumentTypes 参数类型
      * @param arguments 参数
      */
-    protected final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
+    public final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
         try {
             jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
         } catch (final NoSuchMethodException ex) {
@@ -69,9 +69,20 @@ public class WrapperAdapter implements Wrapper {
      * 
      * @param target 目标对象
      */
-    protected final void replayMethodsInvocation(final Object target) {
+    public final void replayMethodsInvocation(final Object target) {
         for (JdbcMethodInvocation each : jdbcMethodInvocations) {
             each.invoke(target);
         }
+    }
+    
+    protected void throwSQLExceptionIfNecessary(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        throw ex;
     }
 }

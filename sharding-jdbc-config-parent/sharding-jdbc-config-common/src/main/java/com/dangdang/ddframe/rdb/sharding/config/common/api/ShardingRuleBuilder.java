@@ -27,25 +27,23 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabase
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.MultipleKeysTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.config.common.api.config.AutoIncrementColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.BindingTableRuleConfig;
+import com.dangdang.ddframe.rdb.sharding.config.common.api.config.GenerateKeyColumnConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.ShardingRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.StrategyConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.api.config.TableRuleConfig;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.algorithm.ClosureTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.config.common.internal.parser.InlineParser;
-import com.dangdang.ddframe.rdb.sharding.id.generator.IdGenerator;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.MultipleKeysShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.router.strategy.SingleKeyShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.keygen.KeyGenerator;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.MultipleKeysShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.SingleKeyShardingAlgorithm;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
-import org.apache.commons.collections4.MapUtils;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -60,7 +58,6 @@ import java.util.Map.Entry;
  * 
  * @author gaohongtao
  */
-@AllArgsConstructor
 public final class ShardingRuleBuilder {
     
     private final String logRoot;
@@ -77,6 +74,12 @@ public final class ShardingRuleBuilder {
         this(logRoot, Collections.<String, DataSource>emptyMap(), shardingRuleConfig);
     }
     
+    public ShardingRuleBuilder(final String logRoot, final Map<String, DataSource> externalDataSourceMap, final ShardingRuleConfig shardingRuleConfig) {
+        this.logRoot = logRoot;
+        this.externalDataSourceMap = (null ==  externalDataSourceMap) ? Collections.<String, DataSource>emptyMap() : externalDataSourceMap;
+        this.shardingRuleConfig = shardingRuleConfig;
+    }
+    
     /**
      * 构建分片规则.
      * 
@@ -86,8 +89,8 @@ public final class ShardingRuleBuilder {
         DataSourceRule dataSourceRule = buildDataSourceRule();
         Collection<TableRule> tableRules = buildTableRules(dataSourceRule);
         com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule.ShardingRuleBuilder shardingRuleBuilder = ShardingRule.builder().dataSourceRule(dataSourceRule);
-        if (!Strings.isNullOrEmpty(shardingRuleConfig.getIdGeneratorClass())) {
-            shardingRuleBuilder.idGenerator(loadClass(shardingRuleConfig.getIdGeneratorClass(), IdGenerator.class));
+        if (!Strings.isNullOrEmpty(shardingRuleConfig.getKeyGeneratorClass())) {
+            shardingRuleBuilder.keyGenerator(loadClass(shardingRuleConfig.getKeyGeneratorClass(), KeyGenerator.class));
         }
         return shardingRuleBuilder.tableRules(tableRules).bindingTableRules(buildBindingTableRules(tableRules))
                 .databaseShardingStrategy(buildShardingStrategy(shardingRuleConfig.getDefaultDatabaseStrategy(), DatabaseShardingStrategy.class))
@@ -95,7 +98,7 @@ public final class ShardingRuleBuilder {
     }
     
     private DataSourceRule buildDataSourceRule() {
-        Preconditions.checkArgument(!shardingRuleConfig.getDataSource().isEmpty() || MapUtils.isNotEmpty(externalDataSourceMap), "Sharding JDBC: No data source config");
+        Preconditions.checkArgument(!shardingRuleConfig.getDataSource().isEmpty() || !externalDataSourceMap.isEmpty(), "Sharding JDBC: No data source config");
         return shardingRuleConfig.getDataSource().isEmpty() ? new DataSourceRule(externalDataSourceMap, shardingRuleConfig.getDefaultDataSourceName())
                 : new DataSourceRule(shardingRuleConfig.getDataSource(), shardingRuleConfig.getDefaultDataSourceName());
     }
@@ -115,18 +118,18 @@ public final class ShardingRuleBuilder {
             if (!Strings.isNullOrEmpty(tableRuleConfig.getDataSourceNames())) {
                 tableRuleBuilder.dataSourceNames(new InlineParser(tableRuleConfig.getDataSourceNames()).evaluate());
             }
-            buildAutoIncrementColumn(tableRuleBuilder, tableRuleConfig);
+            buildGenerateKeyColumn(tableRuleBuilder, tableRuleConfig);
             result.add(tableRuleBuilder.build());
         }
         return result;
     }
     
-    private void buildAutoIncrementColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
-        for (AutoIncrementColumnConfig each : tableRuleConfig.getAutoIncrementColumns()) {
-            if (Strings.isNullOrEmpty(each.getColumnIdGeneratorClass())) {
-                tableRuleBuilder.autoIncrementColumns(each.getColumnName());
+    private void buildGenerateKeyColumn(final TableRule.TableRuleBuilder tableRuleBuilder, final TableRuleConfig tableRuleConfig) {
+        for (GenerateKeyColumnConfig each : tableRuleConfig.getGenerateKeyColumns()) {
+            if (Strings.isNullOrEmpty(each.getColumnKeyGeneratorClass())) {
+                tableRuleBuilder.generateKeyColumn(each.getColumnName());
             } else {
-                tableRuleBuilder.autoIncrementColumns(each.getColumnName(), loadClass(each.getColumnIdGeneratorClass(), IdGenerator.class));
+                tableRuleBuilder.generateKeyColumn(each.getColumnName(), loadClass(each.getColumnKeyGeneratorClass(), KeyGenerator.class));
             }
         }
     }
@@ -147,7 +150,7 @@ public final class ShardingRuleBuilder {
     
     private TableRule findTableRuleByLogicTableName(final Collection<TableRule> tableRules, final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (logicTableName.equals(each.getLogicTable())) {
+            if (logicTableName.equalsIgnoreCase(each.getLogicTable())) {
                 return each;
             }
         }

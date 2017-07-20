@@ -27,8 +27,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.hint.HintManagerHolder;
-import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,31 +51,6 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     public void reset() throws NoSuchFieldException, IllegalAccessException {
         HintManagerHolder.clear();
         MasterSlaveDataSource.resetDMLFlag();
-    }
-    
-    @Override
-    protected List<String> getSchemaFiles() {
-        return Arrays.asList(
-                "integrate/schema/masterslave/master_0.sql",
-                "integrate/schema/masterslave/master_1.sql",
-                "integrate/schema/masterslave/master_2.sql",
-                "integrate/schema/masterslave/master_3.sql",
-                "integrate/schema/masterslave/master_4.sql",
-                "integrate/schema/masterslave/master_5.sql",
-                "integrate/schema/masterslave/master_6.sql",
-                "integrate/schema/masterslave/master_7.sql",
-                "integrate/schema/masterslave/master_8.sql",
-                "integrate/schema/masterslave/master_9.sql",
-                "integrate/schema/masterslave/slave_0.sql",
-                "integrate/schema/masterslave/slave_1.sql",
-                "integrate/schema/masterslave/slave_2.sql",
-                "integrate/schema/masterslave/slave_3.sql",
-                "integrate/schema/masterslave/slave_4.sql",
-                "integrate/schema/masterslave/slave_5.sql",
-                "integrate/schema/masterslave/slave_6.sql",
-                "integrate/schema/masterslave/slave_7.sql",
-                "integrate/schema/masterslave/slave_8.sql",
-                "integrate/schema/masterslave/slave_9.sql");
     }
     
     @Override
@@ -176,6 +151,6 @@ public abstract class AbstractShardingMasterSlaveDBUnitTest extends AbstractDBUn
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }

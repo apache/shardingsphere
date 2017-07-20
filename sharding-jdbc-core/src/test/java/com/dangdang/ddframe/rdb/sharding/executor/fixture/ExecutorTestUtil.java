@@ -17,25 +17,25 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
-import com.dangdang.ddframe.rdb.sharding.config.ShardingProperties;
-import com.dangdang.ddframe.rdb.sharding.config.ShardingPropertiesConstant;
-import com.dangdang.ddframe.rdb.sharding.executor.ExecutorExceptionHandler;
-import com.dangdang.ddframe.rdb.sharding.metrics.MetricsContext;
+import com.dangdang.ddframe.rdb.sharding.executor.event.AbstractExecutionEvent;
+import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
+import com.dangdang.ddframe.rdb.sharding.executor.threadlocal.ExecutorExceptionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
-import java.util.Properties;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutorTestUtil {
     
-    public static ShardingProperties createShardingProperties() {
-        Properties prop = new Properties();
-        prop.setProperty(ShardingPropertiesConstant.METRICS_ENABLE.getKey(), Boolean.TRUE.toString());
-        ShardingProperties result = new ShardingProperties(prop);
-        MetricsContext.init(result);
-        return result;
+    public static void listen(final EventCaller eventCaller, final AbstractExecutionEvent event) {
+        eventCaller.verifyDataSource(event.getDataSource());
+        eventCaller.verifySQL(event.getSql());
+        eventCaller.verifyParameters(event.getParameters());
+        eventCaller.verifyEventExecutionType(event.getEventExecutionType());
+        if (EventExecutionType.EXECUTE_FAILURE == event.getEventExecutionType() && event.getException().isPresent()) {
+            eventCaller.verifyException(event.getException().get());
+        }
     }
     
     public static void clear() throws NoSuchFieldException, IllegalAccessException {

@@ -1,0 +1,26 @@
+/* background behind the logo*/
+#header {
+    background: dodgerblue;
+    border-color: dodgerblue;
+}
+
+#header-wrapper {
+    background: dodgerblue;
+    border-color: dodgerblue;
+}
+
+#chapter p {
+    text-align: left;
+}
+
+.copy-to-clipboard {
+    background-image: none;
+    display: none;
+}
+
+#body img, #body .video-container {
+    margin: auto;
+    text-align: left;
+    display: inherit;
+}
+ 

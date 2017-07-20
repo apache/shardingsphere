@@ -24,7 +24,7 @@
     - [x] Cartesian Product
 - [ ] DDL
 - [ ] Complicated SQL
-    - [x] OR
+    - [ ] OR
     - [ ] UNION / UNION ALL
     - [ ] Subquery
 
@@ -50,7 +50,7 @@
 ## Configuration
 - [x] Java API
 - [x] Spring Namespace
-- [x] Yaml
+- [x] YAML
 
 ## Operation Tool
 - [ ] High Availability

@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.integrate.dbtbl.common.statement;
 
 import com.dangdang.ddframe.rdb.integrate.dbtbl.common.AbstractShardingBothTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
@@ -39,7 +39,7 @@ public abstract class AbstractShardingBothForStatementWithSelectTest extends Abs
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE 1 = 1 AND `user_id` = %s AND `order_id` = %s";
+        String sql = getDatabaseTestSQL().getSelectEqualsWithSingleTableSql();
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 1000));
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 12, 1201));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 12, 1000));
@@ -47,14 +47,14 @@ public abstract class AbstractShardingBothForStatementWithSelectTest extends Abs
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` BETWEEN %s AND %s AND `order_id` BETWEEN %s AND %s ORDER BY user_id, order_id";
+        String sql = getDatabaseTestSQL().getSelectBetweenWithSingleTableSql();
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectBetweenWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 12, 1009, 1108));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 12, 1309, 1408));
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT * FROM `t_order` WHERE `user_id` IN (%s, %s, %s) AND `order_id` IN (%s, %s) ORDER BY user_id, order_id";
+        String sql = getDatabaseTestSQL().getSelectInWithSingleTableSql();
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectInWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 12, 15, 1009, 1208));
         assertDataSet("integrate/dataset/dbtbl/expect/select/SelectInWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 12, 15, 1009, 1108));
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", String.format(sql, 10, 12, 15, 1309, 1408));

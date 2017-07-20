@@ -17,9 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.api.strategy.database;
 
-import java.util.Collection;
+import com.dangdang.ddframe.rdb.sharding.routing.strategy.ShardingStrategy;
 
-import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
+import java.util.Collection;
 
 /**
  * 分库策略.
@@ -27,6 +27,10 @@ import com.dangdang.ddframe.rdb.sharding.router.strategy.ShardingStrategy;
  * @author zhangliang
  */
 public final class DatabaseShardingStrategy extends ShardingStrategy {
+    
+    public DatabaseShardingStrategy(final NoneKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
+        super("", databaseShardingAlgorithm);
+    }
     
     public DatabaseShardingStrategy(final String shardingColumn, final SingleKeyDatabaseShardingAlgorithm<?> databaseShardingAlgorithm) {
         super(shardingColumn, databaseShardingAlgorithm);

@@ -17,14 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.executor.event;
 
-import lombok.Getter;
-
 /**
  * 事件触发类型.
  * 
  * @author zhangliang
  */
-@Getter
 public enum EventExecutionType {
     
     /**

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<asserts>
+    <assert id="assertInsertWithParameter" sql="insert into `order`('order_id','state') values(?,'RUNNING')">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="order_id" table-name="order" operator="EQUAL">
+                <value index="0"/>
+            </condition>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value literal="RUNNING" type="java.lang.String" />
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithParameterAndGenerateKeyColumnIsShardingColumn" sql="insert into `order`('state') values(?)" expected-sql="insert into [Token(order)]('state', order_id) values(?, ?)">
+        <tables>
+            <table name="order" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="order" operator="EQUAL">
+                <value index="0"/>
+            </condition>
+        </conditions>
+    </assert>
+    <assert id="assertInsertWithParameterAndGenerateKeyColumn" sql="insert into `payment`('state') values(?)" expected-sql="insert into [Token(payment)]('state', order_id, pay_no) values(?, ?, ?)">
+        <tables>
+            <table name="payment" />
+        </tables>
+        <conditions>
+            <condition column-name="state" table-name="payment" operator="EQUAL">
+                <value index="0" />
+            </condition>
+        </conditions>
+    </assert>
+</asserts>

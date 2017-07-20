@@ -17,10 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDataBasesOnlyDBUnitTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingConnection;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingPreparedStatement;
-import com.mysql.jdbc.Blob;
+import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -45,7 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PreparedStatementAdapterTest extends AbstractShardingDataBasesOnlyDBUnitTest {
+public final class PreparedStatementAdapterTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     private ShardingConnection shardingConnection;
     
@@ -54,7 +54,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
     @Before
     public void init() throws SQLException {
         shardingConnection = getShardingDataSource().getConnection();
-        actual = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` IN (? ,? ,? ,? ,?)");
+        actual = shardingConnection.prepareStatement(getDatabaseTestSQL().getSelectUserIdByInStatusSql());
     }
     
     @After
@@ -238,16 +238,12 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
     }
     
     @Test
-    public void assertSetRef() throws SQLException {
-        actual.setRef(1, null);
-        assertParameter(actual, 1, null);
-    }
-    
-    @Test
     public void assertSetObject() throws SQLException {
         Object obj = "value";
         actual.setObject(1, obj);
         actual.setObject(2, obj, 0);
+        actual.setObject(3, null);
+        actual.setObject(4, null);
         actual.setObject(5, obj, 0, 0);
         assertParameter(actual, 1, obj);
         assertParameter(actual, 2, obj);
@@ -261,6 +257,8 @@ public final class PreparedStatementAdapterTest extends AbstractShardingDataBase
         Object obj = new Object();
         actual.setObject(1, obj);
         actual.setObject(2, obj, 0);
+        actual.setObject(3, null);
+        actual.setObject(4, null);
         actual.setObject(5, obj, 0, 0);
         assertThat(((ShardingPreparedStatement) actual).getParameters().size(), is(5));
         actual.clearParameters();

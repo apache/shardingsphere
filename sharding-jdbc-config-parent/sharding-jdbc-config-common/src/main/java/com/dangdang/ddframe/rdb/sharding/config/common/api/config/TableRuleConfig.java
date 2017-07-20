@@ -42,5 +42,5 @@ public class TableRuleConfig {
     
     private StrategyConfig tableStrategy;
     
-    private List<AutoIncrementColumnConfig> autoIncrementColumns = new ArrayList<>();
+    private List<GenerateKeyColumnConfig> generateKeyColumns = new ArrayList<>();
 }

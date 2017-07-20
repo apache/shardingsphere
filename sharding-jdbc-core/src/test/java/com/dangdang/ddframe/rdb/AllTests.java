@@ -18,37 +18,15 @@
 package com.dangdang.ddframe.rdb;
 
 import com.dangdang.ddframe.rdb.integrate.AllIntegrateTests;
-import com.dangdang.ddframe.rdb.sharding.api.AllApiTests;
-import com.dangdang.ddframe.rdb.sharding.config.AllConfigTests;
-import com.dangdang.ddframe.rdb.sharding.constants.AllConstantsTests;
-import com.dangdang.ddframe.rdb.sharding.executor.AllExecutorTests;
-import com.dangdang.ddframe.rdb.sharding.hint.AllHintTests;
-import com.dangdang.ddframe.rdb.sharding.id.generator.AllIdGeneratorTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.AllJDBCTests;
-import com.dangdang.ddframe.rdb.sharding.merger.AllMergerTests;
-import com.dangdang.ddframe.rdb.sharding.metrics.AllMetricsTests;
-import com.dangdang.ddframe.rdb.sharding.parser.AllParserTests;
-import com.dangdang.ddframe.rdb.sharding.router.AllRouterTests;
-import com.dangdang.ddframe.rdb.sharding.util.AllUtilTests;
+import com.dangdang.ddframe.rdb.sharding.AllShardingTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    AllConstantsTests.class, 
-    AllApiTests.class,
-    AllConfigTests.class, 
-    AllParserTests.class, 
-    AllRouterTests.class, 
-    AllMergerTests.class,
-    AllExecutorTests.class, 
-    AllJDBCTests.class, 
-    AllHintTests.class, 
-    AllUtilTests.class, 
-    AllMetricsTests.class, 
-    AllIntegrateTests.class, 
-    AllIdGeneratorTest.class
+        AllShardingTests.class,
+        AllIntegrateTests.class
     })
 public class AllTests {
 }

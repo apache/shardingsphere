@@ -17,17 +17,19 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.sharding.constants.DatabaseType;
+import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
+import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
+import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
+import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.IDatabaseTester;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.ext.h2.H2Connection;
-import org.dbunit.ext.mysql.MySqlConnection;
-import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 
@@ -38,26 +40,55 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    protected static final DatabaseType CURRENT_DB_TYPE = DatabaseType.H2;
+    protected static final DatabaseType CURRENT_DB_TYPE = H2;
     
-    protected static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
+    @Getter(AccessLevel.PROTECTED)
+    private static DatabaseTestSQL databaseTestSQL;
     
-    private final DataBaseEnvironment dbEnv = new DataBaseEnvironment(CURRENT_DB_TYPE);
+    private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
+    
+    private static final DataBaseEnvironment DB_ENV = new DataBaseEnvironment(CURRENT_DB_TYPE);
     
     @Before
-    public void createSchema() throws SQLException {
-        for (String each : getSchemaFiles()) {
-            Connection conn = createDataSource(each).getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each)));
-            conn.close();
+    public void createSql() {
+        databaseTestSQL = currentDatabaseTestSQL(DB_ENV);
+    }
+    
+    static {
+        createSchema();
+    }
+    
+    private static void createSchema() {
+        if (H2 == CURRENT_DB_TYPE) {
+            try {
+                Connection conn;
+                for (int i = 0; i < 10; i++) {
+                    for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
+                        conn = createDataSource(database + "_" + i).getConnection();
+                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        conn.close();
+                    }
+                }
+                conn = createDataSource("tbl").getConnection();
+                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                conn.close();
+            } catch (final SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
     
@@ -66,40 +97,50 @@ public abstract class AbstractDBUnitTest {
         for (String each : getDataSetFiles()) {
             InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
             IDataSet dataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(is));
-            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(dbEnv.getDriverClassName(), dbEnv.getURL(getFileName(each)), dbEnv.getUsername(), dbEnv.getPassword());
-            databaseTester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
+            IDatabaseTester databaseTester = new ShardingJdbcDatabaseTester(DB_ENV.getDriverClassName(), DB_ENV.getURL(getDatabaseName(each)), 
+                    DB_ENV.getUsername(), DB_ENV.getPassword(), DB_ENV.getSchema(getDatabaseName(each)));
             databaseTester.setDataSet(dataSet);
             databaseTester.onSetup();
         }
     }
     
-    protected abstract List<String> getSchemaFiles();
-    
     protected abstract List<String> getDataSetFiles();
+    
+    protected final DatabaseType currentDbType() {
+        return H2 == CURRENT_DB_TYPE ? DatabaseType.MySQL : CURRENT_DB_TYPE;
+    }
+    
+    protected final boolean isAliasSupport() {
+        return H2 == DB_ENV.getDatabaseType() || MySQL == DB_ENV.getDatabaseType();
+    }
     
     protected final Map<String, DataSource> createDataSourceMap(final String dataSourceNamePattern) {
         Map<String, DataSource> result = new HashMap<>(getDataSetFiles().size());
         for (String each : getDataSetFiles()) {
-            result.put(String.format(dataSourceNamePattern, getFileName(each)), createDataSource(each));
+            String database = getDatabaseName(each);
+            result.put(String.format(dataSourceNamePattern, database), createDataSource(database));
         }
         return result;
     }
     
-    private DataSource createDataSource(final String dataSetFile) {
-        if (DATA_SOURCES.containsKey(dataSetFile)) {
-            return DATA_SOURCES.get(dataSetFile);
+    private static DataSource createDataSource(final String dataSource) {
+        if (DATA_SOURCES.containsKey(dataSource)) {
+            return DATA_SOURCES.get(dataSource);
         }
         BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(dbEnv.getDriverClassName());
-        result.setUrl(dbEnv.getURL(getFileName(dataSetFile)));
-        result.setUsername(dbEnv.getUsername());
-        result.setPassword(dbEnv.getPassword());
+        result.setDriverClassName(DB_ENV.getDriverClassName());
+        result.setUrl(DB_ENV.getURL(dataSource));
+        result.setUsername(DB_ENV.getUsername());
+        result.setPassword(DB_ENV.getPassword());
         result.setMaxActive(1000);
-        DATA_SOURCES.put(dataSetFile, result);
+        if (Oracle == DB_ENV.getDatabaseType()) {
+            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSource));
+        }
+        DATA_SOURCES.put(dataSource, result);
         return result;
     }
     
-    private String getFileName(final String dataSetFile) {
+    private String getDatabaseName(final String dataSetFile) {
         String fileName = new File(dataSetFile).getName();
         if (-1 == fileName.lastIndexOf(".")) {
             return fileName;
@@ -116,29 +157,17 @@ public abstract class AbstractDBUnitTest {
             for (Object each : params) {
                 ps.setObject(i++, each);
             }
-            ITable actualTable = getConnection(connection).createTable(actualTableName, ps);
+            ITable actualTable = DBUnitUtil.getConnection(DB_ENV, connection).createTable(actualTableName, ps); 
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
     }
     
-    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql)
-            throws SQLException, DatabaseUnitException {
+    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql) throws SQLException, DatabaseUnitException {
         try (Connection conn = connection) {
-            ITable actualTable = getConnection(conn).createQueryTable(actualTableName, sql);
+            ITable actualTable = DBUnitUtil.getConnection(DB_ENV, conn).createQueryTable(actualTableName, sql);
             IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
-        }
-    }
-    
-    private IDatabaseConnection getConnection(final Connection connection) throws DatabaseUnitException {
-        switch (dbEnv.getDatabaseType()) {
-            case H2: 
-                return new H2Connection(connection, "PUBLIC");
-            case MySQL: 
-                return new MySqlConnection(connection, "PUBLIC");
-            default: 
-                throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }
     }
 }

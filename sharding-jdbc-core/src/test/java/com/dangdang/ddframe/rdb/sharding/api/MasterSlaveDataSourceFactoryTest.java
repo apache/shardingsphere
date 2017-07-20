@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.api;
 
 import com.dangdang.ddframe.rdb.sharding.fixture.TestDataSource;
-import com.dangdang.ddframe.rdb.sharding.jdbc.MasterSlaveDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.Test;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;

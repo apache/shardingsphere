@@ -24,8 +24,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    YamlShardingDataSourceTest.class, 
-    YamlIntegratedTest.class
+        YamlShardingDataSourceTest.class, 
+        YamlIntegratedTest.class
     })
 public class AllYamlTests {
 }

@@ -23,30 +23,49 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
+
 public final class ShardingMasterSlaveForStatementWithSelectTest extends AbstractShardingMasterSlaveDBUnitTest {
     
     @Test
-    public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s";
-        assertDataSet("integrate/dataset/masterslave/expect/select/SelectLimitWithBindingTable.xml", 
-                getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 2, 2));
-        assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909, 10000, 2));
+    public void assertSelectPagingWithOffsetAndRowCountSql() throws SQLException, DatabaseUnitException {
+        if (currentDbType() == SQLServer) {
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 2, 10, 19, 1000, 1909, 1);
+        } else if (currentDbType() == Oracle) {
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 4, 2);
+        } else {
+            assertSelectPaging("SelectPagingWithOffsetAndRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql(), 10, 19, 1000, 1909, 2, 2);
+        }
+    }
+    
+    @Test
+    public void assertSelectPagingWithRowCountSql() throws SQLException, DatabaseUnitException {
+        if (currentDbType() == SQLServer) {
+            assertSelectPaging("SelectPagingWithRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithRowCountSql(), 2, 10, 19, 1000, 1909);
+        } else {
+            assertSelectPaging("SelectPagingWithRowCountSql.xml", getDatabaseTestSQL().getSelectPagingWithRowCountSql(), 10, 19, 1000, 1909, 2);
+        }
+    }
+    
+    private void assertSelectPaging(final String expectedDataSetFileName, final String sql, final Object... params) throws SQLException, DatabaseUnitException {
+        assertDataSet("integrate/dataset/masterslave/expect/select/" + currentDbType().name().toLowerCase() + "/" + expectedDataSetFileName,
+                getShardingDataSource().getConnection(), "t_order_item", replacePreparedStatement(sql), params);
     }
     
     @Test
     public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT count(*) as items_count, o.`user_id` FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
+        String sql = getDatabaseTestSQL().getSelectGroupWithBindingTableSql();
         assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
     }
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String sql = "SELECT count(*) as items_count FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id"
-                + " WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s GROUP BY o.`user_id`";
-        assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 10, 19, 1000, 1909));
+        String sql = getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql();
+        assertDataSet("integrate/dataset/masterslave/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), 
+                "t_order_item", String.format(sql, 10, 19, 1000, 1909));
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", String.format(sql, 1, 9, 1000, 1909));
     }
 }

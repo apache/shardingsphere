@@ -1,21 +1,21 @@
 dataSource:
   ds_0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_0
+    url: jdbc:mysql://localhost:3306/ds_yaml_0
     username: root
     password: 
   ds_1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds_yaml_1
     username: root
     password: 
   ds_config: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_config
+    url: jdbc:mysql://localhost:3306/ds_yaml_config
     username: root
     password:
 
-idGeneratorClass: com.dangdang.ddframe.rdb.sharding.id.generator.self.CommonSelfIdGenerator
+keyGeneratorClass: com.dangdang.ddframe.rdb.sharding.keygen.DefaultKeyGenerator
 
 tables:
   t_config:
@@ -23,7 +23,7 @@ tables:
 
   t_order: 
     actualTables: ds_${0..1}.t_order_${0..1}
-    autoIncrementColumns:
+    generateKeyColumns:
       - columnName: order_id
     tableStrategy:
       shardingColumns: order_id

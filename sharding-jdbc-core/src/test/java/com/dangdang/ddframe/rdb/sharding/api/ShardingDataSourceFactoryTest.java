@@ -20,7 +20,7 @@ package com.dangdang.ddframe.rdb.sharding.api;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingContext;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.ShardingContext;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -69,7 +69,7 @@ public final class ShardingDataSourceFactoryTest {
         TableRule tableRule = TableRule.builder("logicTable").actualTables(Arrays.asList("table_0", "table_1", "table_2")).dataSourceRule(dataSourceRule).build();
         return ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(tableRule)).build();
     }
-
+    
     private ShardingRule getShardingRule(final DataSource dataSource) throws NoSuchFieldException, IllegalAccessException {
         Field field = dataSource.getClass().getDeclaredField("shardingContext");
         field.setAccessible(true);

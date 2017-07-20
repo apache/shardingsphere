@@ -18,31 +18,18 @@
 package com.dangdang.ddframe.rdb.sharding.executor.fixture;
 
 import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEvent;
-import com.dangdang.ddframe.rdb.sharding.executor.event.DMLExecutionEventListener;
-import com.dangdang.ddframe.rdb.sharding.executor.event.EventExecutionType;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public final class TestDMLExecutionEventListener implements DMLExecutionEventListener {
+public final class TestDMLExecutionEventListener {
     
     private final EventCaller eventCaller;
-    
-    @Override
-    public String getName() {
-        return "test_listener" + System.nanoTime();
-    }
     
     @Subscribe
     @AllowConcurrentEvents
     public void listen(final DMLExecutionEvent event) {
-        eventCaller.verifyDataSource(event.getDataSource());
-        eventCaller.verifySQL(event.getSql());
-        eventCaller.verifyParameters(event.getParameters());
-        eventCaller.verifyEventExecutionType(event.getEventExecutionType());
-        if (EventExecutionType.EXECUTE_FAILURE.equals(event.getEventExecutionType()) && event.getExp().isPresent()) {
-            eventCaller.verifyException(event.getExp().get());
-        }
+        ExecutorTestUtil.listen(eventCaller, event);
     }
 }

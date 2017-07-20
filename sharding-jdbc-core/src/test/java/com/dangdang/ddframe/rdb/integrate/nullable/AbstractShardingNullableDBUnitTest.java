@@ -26,7 +26,7 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.jdbc.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
 
 import java.util.Arrays;
@@ -38,21 +38,6 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
     private static boolean isShutdown;
     
     private static ShardingDataSource shardingDataSource;
-    
-    @Override
-    protected List<String> getSchemaFiles() {
-        return Arrays.asList(
-                "integrate/schema/nullable/nullable_0.sql",
-                "integrate/schema/nullable/nullable_1.sql",
-                "integrate/schema/nullable/nullable_2.sql",
-                "integrate/schema/nullable/nullable_3.sql",
-                "integrate/schema/nullable/nullable_4.sql",
-                "integrate/schema/nullable/nullable_5.sql",
-                "integrate/schema/nullable/nullable_6.sql",
-                "integrate/schema/nullable/nullable_7.sql",
-                "integrate/schema/nullable/nullable_8.sql",
-                "integrate/schema/nullable/nullable_9.sql");
-    }
     
     @Override
     protected List<String> getDataSetFiles() {
@@ -89,6 +74,6 @@ public abstract class AbstractShardingNullableDBUnitTest extends AbstractDBUnitT
     @AfterClass
     public static void clear() {
         isShutdown = true;
-        shardingDataSource.shutdown();
+        shardingDataSource.close();
     }
 }
