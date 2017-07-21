@@ -57,20 +57,20 @@ public final class ShardingTablesOnlyForStatementWithDMLTest extends AbstractSha
             for (int j = 0; j < 10; j++) {
                 try (Connection connection = shardingDataSource.getConnection();
                      Statement stmt = connection.createStatement()) {
-                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutAliasSql(), "'updated'", i * 100 + j, i)), is(1));
+                    assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutAliasSql(), "'update'", i * 100 + j, i)), is(1));
                 }
             }
         }
-        assertDataSet("update", "updated");
+        assertDataSet("update", "update");
     }
     
     @Test
     public void assertUpdateWithoutShardingValue() throws SQLException, DatabaseUnitException {
         try (Connection connection = shardingDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'updated'", "'init'")), is(20));
+            assertThat(stmt.executeUpdate(String.format(getDatabaseTestSQL().getUpdateWithoutShardingValueSql(), "'update'", "'init'")), is(20));
         }
-        assertDataSet("update", "updated");
+        assertDataSet("update", "update");
     }
     
     @Test

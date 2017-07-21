@@ -84,14 +84,14 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutAliasSql()))) {
             for (int i = 10; i < 12; i++) {
                 for (int j = 0; j < 10; j++) {
-                    preparedStatement.setString(1, "updated");
+                    preparedStatement.setString(1, "update");
                     preparedStatement.setInt(2, i * 100 + j);
                     preparedStatement.setInt(3, i);
                     assertThat(preparedStatement.executeUpdate(), is(1));
                 }
             }
         }
-        assertDataSet("update", "updated");
+        assertDataSet("update", "update");
     }
     
     @Test
@@ -101,14 +101,14 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
                  PreparedStatement preparedStatement = connection.prepareStatement(getDatabaseTestSQL().getUpdateWithAliasSql())) {
                 for (int i = 10; i < 12; i++) {
                     for (int j = 0; j < 10; j++) {
-                        preparedStatement.setString(1, "updated");
+                        preparedStatement.setString(1, "update");
                         preparedStatement.setInt(2, i * 100 + j);
                         preparedStatement.setInt(3, i);
                         assertThat(preparedStatement.executeUpdate(), is(1));
                     }
                 }
             }
-            assertDataSet("update", "updated");
+            assertDataSet("update", "update");
         }
     }
     
@@ -117,11 +117,11 @@ public final class ShardingTablesOnlyForPreparedStatementWithDMLTest extends Abs
         ShardingDataSource shardingDataSource = getShardingDataSource();
         try (Connection connection = shardingDataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(getDatabaseTestSQL().getUpdateWithoutShardingValueSql()))) {
-            preparedStatement.setString(1, "updated");
+            preparedStatement.setString(1, "update");
             preparedStatement.setString(2, "init");
             assertThat(preparedStatement.executeUpdate(), is(20));
         }
-        assertDataSet("update", "updated");
+        assertDataSet("update", "update");
     }
     
     @Test

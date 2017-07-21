@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.common.jaxb;
 
-import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,8 +36,8 @@ public final class SqlAssert {
     @XmlAttribute(name = "value")
     private String sql;
     
-    @XmlAttribute
-    private DatabaseType type;
+    @XmlAttribute(name = "type")
+    private String types;
     
     @XmlElement
     private SqlParameters parameters;

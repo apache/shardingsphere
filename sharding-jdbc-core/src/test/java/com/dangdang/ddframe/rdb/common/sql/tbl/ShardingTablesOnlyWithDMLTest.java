@@ -19,23 +19,25 @@ package com.dangdang.ddframe.rdb.common.sql.tbl;
 
 import com.dangdang.ddframe.rdb.common.jaxb.ExpectedData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlParameters;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
+import java.util.List;
 
 @RunWith(Parameterized.class)
 @Ignore
 public final class ShardingTablesOnlyWithDMLTest extends AbstractShardingTablesOnlyTest {
     
-    public ShardingTablesOnlyWithDMLTest(final String testCaseName, final String sql, final ExpectedData expectedData, final SqlParameters params) {
-        super(testCaseName, sql, expectedData, params);
+    public ShardingTablesOnlyWithDMLTest(final String testCaseName, final String sql, final List<DatabaseType> types, final ExpectedData expectedData, final SqlParameters params) {
+        super(testCaseName, sql, types, expectedData, params);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/dml.xml");
+        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/tbl");
     }
 }

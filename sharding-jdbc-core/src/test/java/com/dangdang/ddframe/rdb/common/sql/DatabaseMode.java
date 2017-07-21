@@ -24,16 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
 
 public enum DatabaseMode {
     
-    All, Local;
+    All, Local, Test;
     
     public List<DatabaseType> databaseTypes() {
         List<DatabaseType> result = new ArrayList<>();
         if (All == this) {
             return Lists.newArrayList(DatabaseType.values());
         } else if (Local == this) {
+            result.add(MySQL);
+            result.add(PostgreSQL);
+        } else if (Test == this) {
             result.add(H2);
         }
         return result;
