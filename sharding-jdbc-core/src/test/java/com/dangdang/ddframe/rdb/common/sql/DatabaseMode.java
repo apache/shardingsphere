@@ -15,18 +15,27 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.util;
+package com.dangdang.ddframe.rdb.common.sql;
 
-public class SqlPlaceholderUtil {
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
+
+public enum DatabaseMode {
     
-    public static String replaceStatement(final String str, final Object[] args) {
-        if (args.length == 0) {
-            return str;
+    All, Local;
+    
+    public List<DatabaseType> databaseTypes() {
+        List<DatabaseType> result = new ArrayList<>();
+        if (All == this) {
+            return Lists.newArrayList(DatabaseType.values());
+        } else if (Local == this) {
+            result.add(H2);
         }
-        return String.format(str, args);
-    }
-    
-    public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", "?");
+        return result;
     }
 }

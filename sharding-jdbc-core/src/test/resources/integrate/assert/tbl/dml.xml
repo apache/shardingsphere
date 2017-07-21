@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
+        <parameters>
+            <parameter>
+                <value literal="1" type="int" />
+                <value literal="1" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="2" type="int" />
+                <value literal="2" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="3" type="int" />
+                <value literal="3" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="4" type="int" />
+                <value literal="4" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="5" type="int" />
+                <value literal="5" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="6" type="int" />
+                <value literal="6" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="7" type="int" />
+                <value literal="7" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="8" type="int" />
+                <value literal="8" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="9" type="int" />
+                <value literal="9" type="int" />
+                <value literal="insert"/>
+            </parameter>
+            <parameter>
+                <value literal="10" type="int" />
+                <value literal="10" type="int" />
+                <value literal="insert"/>
+            </parameter>
+        </parameters>
+        <expected file="integrate/dataset/tbl/expect/insert/tbl.xml" />
+    </sql>
+</sqls>
