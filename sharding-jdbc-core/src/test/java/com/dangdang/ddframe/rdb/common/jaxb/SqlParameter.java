@@ -15,18 +15,21 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.util;
+package com.dangdang.ddframe.rdb.common.jaxb;
 
-public class SqlPlaceholderUtil {
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class SqlParameter {
     
-    public static String replaceStatement(final String str, final Object[] args) {
-        if (args.length == 0) {
-            return str;
-        }
-        return String.format(str, args);
-    }
-    
-    public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", "?");
-    }
+    @XmlElement(name = "value")
+    private List<SqlParameterValue> values;
 }
