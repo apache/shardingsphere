@@ -34,8 +34,7 @@ public class RoutingResult {
      *
      * @return 是否为单库表路由
      */
-    public final boolean isSingleRouting() {
+    public boolean isSingleRouting() {
         return 1 == tableUnits.getTableUnits().size();
     }
-    
 }
