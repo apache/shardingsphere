@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s">
+        <parameters>
+            <parameter value="10,100" />
+        </parameters>
+        <expected file="integrate/dataset/tbl/expect/select/SelectEqualsWithSingleTable_1.xml" />
+    </sql>
+</sqls>

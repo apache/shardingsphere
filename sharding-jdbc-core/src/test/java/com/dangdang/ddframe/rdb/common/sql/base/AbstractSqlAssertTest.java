@@ -42,7 +42,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replaceStatement;
@@ -52,13 +56,13 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private final String sql;
     
-    private final List<DatabaseType> types;
+    private final Set<DatabaseType> types;
     
     private final String expectedDataSet;
     
     private final SqlParameters sqlParameters;
     
-    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final List<DatabaseType> types, final ExpectedData expectedData, final SqlParameters sqlParameters) {
+    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final ExpectedData expectedData, final SqlParameters sqlParameters) {
         this.sql = sql;
         this.types = types;
         this.expectedDataSet = expectedData.getFile();
@@ -67,7 +71,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected abstract List<ShardingDataSource> getShardingDataSources();
+    protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources();
     
     protected static Collection<Object[]> dataParameters(final String path) {
         Collection<Object[]> result = new ArrayList<>();
@@ -109,9 +113,9 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         result[0] = sqlAssert.getId();
         result[1] = sqlAssert.getSql(); 
         if (null == sqlAssert.getTypes()) {
-            result[2] = null;
+            result[2] = Collections.emptySet();
         } else {
-            List<DatabaseType> types = new ArrayList<>();
+            Set<DatabaseType> types = new HashSet<>();
             for (String each : sqlAssert.getTypes().split(",")) {
                 types.add(DatabaseType.valueOf(each));
             }
@@ -124,10 +128,26 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     @Test
     public void assertWithPreparedStatement() throws Exception {
-        for (ShardingDataSource each : getShardingDataSources()) {
-            executePreparedStatement(each);
-            for (Connection conn : each.getConnection().getConnections()) {
-                assertResult(conn);
+        executeAndAssertResult(true);
+    }
+    
+    @Test
+    public void assertWithStatement() throws Exception {
+        executeAndAssertResult(false);
+    }
+    
+    private void executeAndAssertResult(final boolean isPreparedStatement) throws Exception {
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+            if (types.size() == 0 || types.contains(each.getKey())) {
+                ShardingDataSource shardingDataSource = each.getValue();
+                if (isPreparedStatement) {
+                    executePreparedStatement(shardingDataSource);
+                } else {
+                    executeStatement(shardingDataSource);
+                }
+                for (Connection conn : shardingDataSource.getConnection().getConnections()) {
+                    assertResult(conn);
+                }
             }
         }
     }
@@ -145,16 +165,6 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
                     }
                 }
                 preparedStatement.execute();
-            }
-        }
-    }
-    
-    @Test
-    public void assertWithStatement() throws Exception {
-        for (ShardingDataSource each : getShardingDataSources()) {
-            executeStatement(each);
-            for (Connection conn : each.getConnection().getConnections()) {
-                assertResult(conn);
             }
         }
     }

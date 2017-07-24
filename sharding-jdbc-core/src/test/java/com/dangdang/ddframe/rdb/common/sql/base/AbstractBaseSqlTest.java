@@ -52,11 +52,10 @@ public abstract class AbstractBaseSqlTest {
     
     private static final Map<String, Map<DatabaseType, DataSource>> DATA_SOURCES = new HashMap<>();
     
-    //TODO add back after finished refactor
     static {
         createSchema();
     }
-
+    
     private static void createSchema() {
         for (DatabaseType each : CURRENT_DB_TYPE.databaseTypes()) {
             if (H2 == each) {
@@ -64,7 +63,7 @@ public abstract class AbstractBaseSqlTest {
             }
         }
     }
-
+    
     private static void createSchema(final DatabaseType dbType) {
         try {
             Connection conn;

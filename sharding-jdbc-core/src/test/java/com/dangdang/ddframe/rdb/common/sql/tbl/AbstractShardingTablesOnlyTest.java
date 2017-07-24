@@ -33,20 +33,20 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import org.junit.AfterClass;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractShardingTablesOnlyTest extends AbstractSqlAssertTest {
     
     private static boolean isShutdown;
     
-    private static List<ShardingDataSource> shardingDataSources = new ArrayList<>();
+    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    protected AbstractShardingTablesOnlyTest(final String testCaseName, final String sql, final List<DatabaseType> types, final ExpectedData expectedData, final SqlParameters params) {
+    protected AbstractShardingTablesOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final ExpectedData expectedData, final SqlParameters params) {
         super(testCaseName, sql, types, expectedData, params);
     }
     
@@ -56,7 +56,7 @@ public abstract class AbstractShardingTablesOnlyTest extends AbstractSqlAssertTe
     }
     
     @Override
-    protected final List<ShardingDataSource> getShardingDataSources() {
+    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }
@@ -95,7 +95,7 @@ public abstract class AbstractShardingTablesOnlyTest extends AbstractSqlAssertTe
                         .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
                         .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
                         .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
-                shardingDataSources.add(new ShardingDataSource(shardingRule));
+                shardingDataSources.put(dataSources.getKey(), new ShardingDataSource(shardingRule));
             }
         }
         return shardingDataSources;
@@ -105,7 +105,7 @@ public abstract class AbstractShardingTablesOnlyTest extends AbstractSqlAssertTe
     public static void clear() {
         isShutdown = true;
         if (!shardingDataSources.isEmpty()) {
-            for (ShardingDataSource each : shardingDataSources) {
+            for (ShardingDataSource each : shardingDataSources.values()) {
                 each.close();
             }
         }
