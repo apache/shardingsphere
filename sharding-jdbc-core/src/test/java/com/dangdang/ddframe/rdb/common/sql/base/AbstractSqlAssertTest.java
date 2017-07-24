@@ -17,15 +17,15 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.ExpectedData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlParameter;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlParameters;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -58,15 +58,12 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private final Set<DatabaseType> types;
     
-    private final String expectedDataSet;
+    private final List<SqlAssertData> data;
     
-    private final SqlParameters sqlParameters;
-    
-    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final ExpectedData expectedData, final SqlParameters sqlParameters) {
+    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
         this.sql = sql;
         this.types = types;
-        this.expectedDataSet = expectedData.getFile();
-        this.sqlParameters = sqlParameters;
+        this.data = data;
     }
     
     protected abstract List<String> getDataSetFiles();
@@ -109,7 +106,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     }
     
     private static Object[] getDataParameter(final SqlAssert sqlAssert) {
-        final Object[] result = new Object[5];
+        final Object[] result = new Object[4];
         result[0] = sqlAssert.getId();
         result[1] = sqlAssert.getSql(); 
         if (null == sqlAssert.getTypes()) {
@@ -121,8 +118,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             }
             result[2] = types;
         }
-        result[3] = sqlAssert.getExpectedData();
-        result[4] = sqlAssert.getParameters();
+        result[3] = sqlAssert.getData();
         return result;
     }
     
@@ -139,46 +135,51 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     private void executeAndAssertResult(final boolean isPreparedStatement) throws Exception {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
             if (types.size() == 0 || types.contains(each.getKey())) {
-                ShardingDataSource shardingDataSource = each.getValue();
-                if (isPreparedStatement) {
-                    executePreparedStatement(shardingDataSource);
-                } else {
-                    executeStatement(shardingDataSource);
-                }
-                for (Connection conn : shardingDataSource.getConnection().getConnections()) {
-                    assertResult(conn);
-                }
+                assertSql(isPreparedStatement, each.getValue());
             }
         }
     }
     
-    private void executePreparedStatement(final ShardingDataSource dataSource) throws SQLException {
+    private void assertSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws Exception {
+        for (SqlAssertData each : data) {
+            if (isPreparedStatement) {
+                executePreparedStatement(shardingDataSource, getParameters(each));
+            } else {
+                executeStatement(shardingDataSource, getParameters(each));
+            }
+            for (Connection conn : shardingDataSource.getConnection().getConnections()) {
+                assertResult(conn, each.getExpected());
+            }
+        }
+    }
+    
+    private List<String> getParameters(final SqlAssertData data) {
+        return Strings.isNullOrEmpty(data.getParameter()) ? Collections.<String>emptyList() : Lists.newArrayList(data.getParameter().split(","));
+    }
+    
+    private void executePreparedStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
-            for (SqlParameter each : sqlParameters.getParameter()) {
-                int index = 1;
-                for (String value : each.getValue().split(",")) {
-                    if (value.contains("'")) {
-                        preparedStatement.setString(index++, value.replace("'", ""));
-                    } else {
-                        preparedStatement.setInt(index++, Integer.valueOf(value));
-                    }
+            int index = 1;
+            for (String each : parameters) {
+                if (each.contains("'")) {
+                    preparedStatement.setString(index++, each.replace("'", ""));
+                } else {
+                    preparedStatement.setInt(index++, Integer.valueOf(each));
                 }
-                preparedStatement.execute();
             }
+            preparedStatement.execute();
         }
     }
     
-    private void executeStatement(final ShardingDataSource dataSource) throws SQLException {
+    private void executeStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            for (SqlParameter each : sqlParameters.getParameter()) {
-                statement.execute(replaceStatement(sql, each.getValue().split(",")));
-            }
+            statement.execute(replaceStatement(sql, parameters.toArray()));
         }
     }
     
-    private void assertResult(final Connection connection) throws Exception {
+    private void assertResult(final Connection connection, final String expectedDataSet) throws Exception {
         File file = new File(AbstractSqlAssertTest.class.getClassLoader().getResource(expectedDataSet).getPath());
         ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
         try (Connection conn = connection) {

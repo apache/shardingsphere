@@ -32,5 +32,5 @@ import java.util.List;
 public final class SqlParameters {
     
     @XmlElement
-    private List<SqlParameter> parameter = new ArrayList<>();
+    private List<SqlAssertData> parameter = new ArrayList<>();
 }

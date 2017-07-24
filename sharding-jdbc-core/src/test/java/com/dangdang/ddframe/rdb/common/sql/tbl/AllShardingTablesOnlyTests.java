@@ -15,20 +15,15 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.jaxb;
+package com.dangdang.ddframe.rdb.common.sql.tbl;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class SqlParameter {
-    
-    @XmlAttribute
-    private String value;
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+        ShardingTablesOnlyWithDMLTest.class,
+        ShardingTablesOnlyWithSelectTest.class
+    })
+public class AllShardingTablesOnlyTests {
 }

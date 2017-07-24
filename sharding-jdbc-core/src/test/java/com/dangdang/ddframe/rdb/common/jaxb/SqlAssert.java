@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,8 +41,5 @@ public final class SqlAssert {
     private String types;
     
     @XmlElement
-    private SqlParameters parameters;
-    
-    @XmlElement(name = "expected")
-    private ExpectedData expectedData;
+    private List<SqlAssertData> data;
 }

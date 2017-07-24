@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.sql.tbl;
 
-import com.dangdang.ddframe.rdb.common.jaxb.ExpectedData;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlParameters;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -26,14 +25,15 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
 @Ignore
 public final class ShardingTablesOnlyWithSelectTest extends AbstractShardingTablesOnlyTest {
     
-    public ShardingTablesOnlyWithSelectTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final ExpectedData expectedData, final SqlParameters params) {
-        super(testCaseName, sql, types, expectedData, params);
+    public ShardingTablesOnlyWithSelectTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
+        super(testCaseName, sql, types, data);
     }
     
     @Parameters(name = "{0}")

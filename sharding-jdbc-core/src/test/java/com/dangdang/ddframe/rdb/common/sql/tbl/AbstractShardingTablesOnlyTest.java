@@ -17,8 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.sql.tbl;
 
-import com.dangdang.ddframe.rdb.common.jaxb.ExpectedData;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlParameters;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractSqlAssertTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -46,8 +45,8 @@ public abstract class AbstractShardingTablesOnlyTest extends AbstractSqlAssertTe
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    protected AbstractShardingTablesOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final ExpectedData expectedData, final SqlParameters params) {
-        super(testCaseName, sql, types, expectedData, params);
+    protected AbstractShardingTablesOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
+        super(testCaseName, sql, types, data);
     }
     
     @Override
