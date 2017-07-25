@@ -129,6 +129,7 @@ public final class ResultSetUtil {
      * @param type 排序类型
      * @return 比较结果
      */
+    // TODO mysql和oracle, null作为最小是正确的, pg和sqlserver, null作为最大,因此此处是错误的.需要配置数据库的排序方式并分别实现
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
         if (null == thisValue && null == otherValue) {

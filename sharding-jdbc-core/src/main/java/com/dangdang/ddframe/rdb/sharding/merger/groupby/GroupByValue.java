@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
-import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -36,18 +35,16 @@ import java.util.List;
 @EqualsAndHashCode
 public final class GroupByValue {
     
-    private final List<Comparable<?>> groupValues;
+    private final List<?> groupValues;
     
     public GroupByValue(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
         groupValues = getGroupByValues(resultSet, groupByItems);
     }
     
-    private List<Comparable<?>> getGroupByValues(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
-        List<Comparable<?>> result = new ArrayList<>(groupByItems.size());
+    private List<?> getGroupByValues(final ResultSet resultSet, final List<OrderItem> groupByItems) throws SQLException {
+        List<Object> result = new ArrayList<>(groupByItems.size());
         for (OrderItem each : groupByItems) {
-            Object value = resultSet.getObject(each.getIndex());
-            Preconditions.checkState(null == value || value instanceof Comparable, "Group by value must implements Comparable");
-            result.add((Comparable<?>) value);
+            result.add(resultSet.getObject(each.getIndex()));
         }
         return result;
     }

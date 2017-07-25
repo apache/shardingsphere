@@ -48,14 +48,14 @@ public final class GroupByStreamResultSetMerger extends OrderByStreamResultSetMe
     
     private final List<Object> currentRow;
     
-    private List<Comparable<?>> currentGroupByValues;
+    private List<?> currentGroupByValues;
     
     public GroupByStreamResultSetMerger(final Map<String, Integer> labelAndIndexMap, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
         super(resultSets, selectStatement.getOrderByItems());
         this.labelAndIndexMap = labelAndIndexMap;
         this.selectStatement = selectStatement;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
-        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.<Comparable<?>>emptyList() : new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
+        currentGroupByValues = getOrderByValuesQueue().isEmpty() ? Collections.emptyList() : new GroupByValue(getCurrentResultSet(), selectStatement.getGroupByItems()).getGroupValues();
     }
     
     @Override

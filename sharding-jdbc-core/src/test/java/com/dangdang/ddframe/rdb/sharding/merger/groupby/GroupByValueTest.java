@@ -30,8 +30,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,8 +47,8 @@ public final class GroupByValueTest {
     
     @Test
     public void assertGetGroupByValues() throws SQLException {
-        List<Comparable<?>> actual =  new GroupByValue(resultSet, Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(3, OrderType.DESC))).getGroupValues();
-        List<Comparable<?>> expected =  Arrays.<Comparable<?>>asList("1", "3");
-        assertThat(actual, is(expected));
+        List<?> actual =  new GroupByValue(resultSet, Arrays.asList(new OrderItem(1, OrderType.ASC), new OrderItem(3, OrderType.DESC))).getGroupValues();
+        List<?> expected =  Arrays.asList("1", "3");
+        assertTrue(actual.equals(expected));
     }
 }
