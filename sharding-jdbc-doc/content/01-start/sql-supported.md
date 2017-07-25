@@ -24,6 +24,8 @@ Sharding-JDBC定位于CRUD操作，目前仅针对DQL和DML语句进行支持。
 ### 有限支持子查询
 子查询支持详情请参考[分页及子查询](/02-guide/subquery/)。
 
+### 不支持包含冗余括号的SQL
+
 ## 支持的SQL
 
 ### DQL
@@ -95,3 +97,4 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > val1       |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                         |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                     |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                           |
