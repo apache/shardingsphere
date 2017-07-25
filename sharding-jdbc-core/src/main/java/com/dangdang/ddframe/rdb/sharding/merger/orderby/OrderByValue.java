@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
+import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderItem each : orderByItems) {
             Object value = resultSet.getObject(each.getIndex());
-            Preconditions.checkState(value instanceof Comparable, "Order by value must implements Comparable");
+            Preconditions.checkState(null == value || value instanceof Comparable, "Order by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
         return result;
@@ -70,16 +70,11 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     public int compareTo(final OrderByValue o) {
         for (int i = 0; i < orderByItems.size(); i++) {
             OrderItem thisOrderBy = orderByItems.get(i);
-            int result = compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType());
+            int result = ResultSetUtil.compareTo(orderValues.get(i), o.orderValues.get(i), thisOrderBy.getType());
             if (0 != result) {
                 return result;
             }
         }
         return 0;
-    }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
-        return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

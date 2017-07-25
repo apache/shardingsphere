@@ -17,8 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetRow;
+import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.google.common.base.Preconditions;
@@ -48,19 +48,14 @@ public final class GroupByRowComparator implements Comparator<MemoryResultSetRow
     private int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2, final List<OrderItem> orderItems) {
         for (OrderItem each : orderItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
-            Preconditions.checkState(orderValue1 instanceof Comparable, "Order by value must implements Comparable");
+            Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());
-            Preconditions.checkState(orderValue2 instanceof Comparable, "Order by value must implements Comparable");
-            int result = compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType());
+            Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
+            int result = ResultSetUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType());
             if (0 != result) {
                 return result;
             }
         }
         return 0;
-    }
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
-        return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }

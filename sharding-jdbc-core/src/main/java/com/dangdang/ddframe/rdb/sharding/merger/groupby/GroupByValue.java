@@ -46,7 +46,7 @@ public final class GroupByValue {
         List<Comparable<?>> result = new ArrayList<>(groupByItems.size());
         for (OrderItem each : groupByItems) {
             Object value = resultSet.getObject(each.getIndex());
-            Preconditions.checkState(value instanceof Comparable, "Group by value must implements Comparable");
+            Preconditions.checkState(null == value || value instanceof Comparable, "Group by value must implements Comparable");
             result.add((Comparable<?>) value);
         }
         return result;

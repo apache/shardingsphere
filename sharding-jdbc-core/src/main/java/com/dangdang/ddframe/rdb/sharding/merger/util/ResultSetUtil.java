@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -118,5 +119,27 @@ public final class ResultSetUtil {
             default:
                 throw new ShardingJdbcException("Unsupported Date type:%s", convertType);
         }
+    }
+    
+    /**
+     * 比较大小.
+     * 
+     * @param thisValue 当前值
+     * @param otherValue 待比较的值
+     * @param type 排序类型
+     * @return 比较结果
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+        if (null == thisValue && null == otherValue) {
+            return 0;
+        }
+        if (null == thisValue) {
+            return OrderType.ASC == type ? -1 : 1;
+        }
+        if (null == otherValue) {
+            return OrderType.ASC == type ? 1 : -1;
+        }
+        return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }
