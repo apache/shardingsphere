@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.util;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.exception.ShardingJdbcException;
 import org.junit.Test;
 
@@ -84,5 +85,40 @@ public final class ResultSetUtilTest {
     @Test(expected = ShardingJdbcException.class)
     public void assertConvertDateValueError() {
         ResultSetUtil.convertValue(new Date(), int.class);
+    }
+    
+    @Test
+    public void assertCompareToWhenBothNull() {
+        assertThat(ResultSetUtil.compareTo(null, null, OrderType.DESC), is(0)); 
+    }
+    
+    @Test
+    public void assertCompareToWhenThisValueIsNullAndAsc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.ASC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenThisValueIsNullAndDesc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.DESC), is(1));
+    }
+    
+    @Test
+    public void assertCompareToWhenOtherValueIsNullAndAsc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.ASC), is(1));
+    }
+    
+    @Test
+    public void assertCompareToWhenOtherValueIsNullAndDesc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.DESC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenAsc() {
+        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.ASC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenDesc() {
+        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.DESC), is(1));
     }
 }
