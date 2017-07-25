@@ -74,7 +74,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             getSqlParser().skipUntil(DefaultKeyword.OVER);
             getSqlParser().getLexer().nextToken();
             getSqlParser().skipIfEqual(Symbol.LEFT_PAREN);
-            selectStatement.getOrderByItems().addAll(parseOrderBy());
+            parseOrderBy();
             getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
             getSqlParser().skipUntil(DefaultKeyword.AS);
             getSqlParser().getLexer().nextToken();

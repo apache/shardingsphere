@@ -39,7 +39,7 @@ public class OracleSelectParser extends AbstractSelectParser {
             skipForUpdate();
         }
         if (getSelectStatement().getOrderByItems().isEmpty()) {
-            getSelectStatement().getOrderByItems().addAll(parseOrderBy());
+            parseOrderBy();
         }
     }
     
