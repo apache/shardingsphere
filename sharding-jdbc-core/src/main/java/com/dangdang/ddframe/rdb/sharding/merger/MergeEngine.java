@@ -80,7 +80,7 @@ public final class MergeEngine {
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems());
+            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems(), selectStatement.getNullOrderType());
         }
         return new IteratorStreamResultSetMerger(resultSets);
     }

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.orderby;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.common.AbstractStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import lombok.AccessLevel;
@@ -41,18 +42,21 @@ public class OrderByStreamResultSetMerger extends AbstractStreamResultSetMerger 
     
     private final Queue<OrderByValue> orderByValuesQueue;
     
+    private final OrderType nullOrderType;
+    
     private boolean isFirstNext;
     
-    public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems) throws SQLException {
+    public OrderByStreamResultSetMerger(final List<ResultSet> resultSets, final List<OrderItem> orderByItems, final OrderType nullOrderType) throws SQLException {
         this.orderByItems = orderByItems;
         this.orderByValuesQueue = new PriorityQueue<>(resultSets.size());
+        this.nullOrderType = nullOrderType;
         orderResultSetsToQueue(resultSets);
         isFirstNext = true;
     }
     
     private void orderResultSetsToQueue(final List<ResultSet> resultSets) throws SQLException {
         for (ResultSet each : resultSets) {
-            OrderByValue orderByValue = new OrderByValue(each, orderByItems);
+            OrderByValue orderByValue = new OrderByValue(each, orderByItems, nullOrderType);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }

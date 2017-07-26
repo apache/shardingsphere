@@ -89,36 +89,56 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertCompareToWhenBothNull() {
-        assertThat(ResultSetUtil.compareTo(null, null, OrderType.DESC), is(0)); 
+        assertThat(ResultSetUtil.compareTo(null, null, OrderType.DESC, OrderType.ASC), is(0)); 
     }
     
     @Test
-    public void assertCompareToWhenThisValueIsNullAndAsc() {
-        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.ASC), is(-1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByAsc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.ASC, OrderType.ASC), is(-1));
     }
     
     @Test
-    public void assertCompareToWhenThisValueIsNullAndDesc() {
-        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.DESC), is(1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByDesc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.ASC, OrderType.DESC), is(1));
     }
     
     @Test
-    public void assertCompareToWhenOtherValueIsNullAndAsc() {
-        assertThat(ResultSetUtil.compareTo(1, null, OrderType.ASC), is(1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByAsc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.DESC, OrderType.ASC), is(1));
     }
     
     @Test
-    public void assertCompareToWhenOtherValueIsNullAndDesc() {
-        assertThat(ResultSetUtil.compareTo(1, null, OrderType.DESC), is(-1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByDesc() {
+        assertThat(ResultSetUtil.compareTo(null, 1, OrderType.DESC, OrderType.DESC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByAsc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.ASC, OrderType.ASC), is(1));
+    }
+    
+    @Test
+    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByDesc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.ASC, OrderType.DESC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByAsc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.DESC, OrderType.ASC), is(-1));
+    }
+    
+    @Test
+    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByDesc() {
+        assertThat(ResultSetUtil.compareTo(1, null, OrderType.DESC, OrderType.DESC), is(1));
     }
     
     @Test
     public void assertCompareToWhenAsc() {
-        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.ASC), is(-1));
+        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.ASC, OrderType.ASC), is(-1));
     }
     
     @Test
     public void assertCompareToWhenDesc() {
-        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.DESC), is(1));
+        assertThat(ResultSetUtil.compareTo(1, 2, OrderType.DESC, OrderType.ASC), is(1));
     }
 }

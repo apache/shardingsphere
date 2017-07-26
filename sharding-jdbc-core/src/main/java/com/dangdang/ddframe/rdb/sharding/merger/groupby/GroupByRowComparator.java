@@ -51,7 +51,7 @@ public final class GroupByRowComparator implements Comparator<MemoryResultSetRow
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
-            int result = ResultSetUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType());
+            int result = ResultSetUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType(), selectStatement.getNullOrderType());
             if (0 != result) {
                 return result;
             }

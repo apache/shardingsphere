@@ -30,6 +30,8 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.Aggre
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.CommonSelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.selectitem.SelectItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.table.Table;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.mysql.MySQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.dialect.oracle.OracleParser;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLIdentifierExpression;
@@ -80,6 +82,7 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         customizedSelect();
         appendDerivedColumns();
         appendDerivedOrderBy();
+        setNullOrderType();
         return selectStatement;
     }
     
@@ -413,6 +416,14 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         if (!getSelectStatement().getGroupByItems().isEmpty() && getSelectStatement().getOrderByItems().isEmpty()) {
             getSelectStatement().getOrderByItems().addAll(getSelectStatement().getGroupByItems());
             getSelectStatement().getSqlTokens().add(new OrderByToken(getSelectStatement().getGroupByLastPosition()));
+        }
+    }
+    
+    private void setNullOrderType() {
+        if (sqlParser instanceof MySQLParser || sqlParser instanceof OracleParser) {
+            selectStatement.setNullOrderType(OrderType.ASC);
+        } else {
+            selectStatement.setNullOrderType(OrderType.DESC);
         }
     }
 }

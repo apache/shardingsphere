@@ -21,9 +21,9 @@ import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.mysql.MySQLKeywor
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.dialect.oracle.OracleKeyword;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.Assist;
 import com.dangdang.ddframe.rdb.sharding.parsing.lexer.token.DefaultKeyword;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.SQLParser;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.exception.SQLParsingUnsupportedException;
+import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
 
 public class MySQLSelectParser extends AbstractSelectParser {
     

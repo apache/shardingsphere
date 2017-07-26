@@ -126,21 +126,21 @@ public final class ResultSetUtil {
      * 
      * @param thisValue 当前值
      * @param otherValue 待比较的值
-     * @param type 排序类型
+     * @param orderType 排序类型
+     * @param nullOrderType 空值排序类型
      * @return 比较结果
      */
-    // TODO mysql和oracle, null作为最小是正确的, pg和sqlserver, null作为最大,因此此处是错误的.需要配置数据库的排序方式并分别实现
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType type) {
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderType orderType, final OrderType nullOrderType) {
         if (null == thisValue && null == otherValue) {
             return 0;
         }
         if (null == thisValue) {
-            return OrderType.ASC == type ? -1 : 1;
+            return orderType == nullOrderType ? -1 : 1;
         }
         if (null == otherValue) {
-            return OrderType.ASC == type ? 1 : -1;
+            return orderType == nullOrderType ? 1 : -1;
         }
-        return OrderType.ASC == type ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
+        return OrderType.ASC == orderType ? thisValue.compareTo(otherValue) : -thisValue.compareTo(otherValue);
     }
 }
