@@ -28,6 +28,7 @@ import java.math.BigInteger;
  * 数字工具类.
  *
  * @author caohao
+ * @author zhangliang
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NumberUtil {
@@ -63,10 +64,10 @@ public final class NumberUtil {
      */
     public static Number getExactlyNumber(final String value, final int radix) {
         BigInteger result = new BigInteger(value, radix);
-        if (result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
+        if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
             return result.intValue();
         }
-        if (result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
+        if (result.compareTo(new BigInteger(String.valueOf(Long.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Long.MAX_VALUE))) <= 0) {
             return result.longValue();
         }
         return result;
