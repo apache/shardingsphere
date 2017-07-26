@@ -120,23 +120,6 @@ public final class ShardingTablesOnlyForStatementWithSelectTest extends Abstract
     }
     
     @Test
-    public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/tbl/expect/select/SelectGroupByWithBindingTable.xml", shardingDataSource.getConnection(), 
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableSql(), 10, 11, 1000, 1109));
-        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), 
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithBindingTableSql(), 1, 9, 1000, 1909));
-    }
-    
-    @Test
-    public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
-        String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml";
-        assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql(), 10, 11, 1000, 1109));
-        assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(),
-                "t_order_item", String.format(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql(), 1, 9, 1000, 1909));
-    }
-    
-    @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
         String expectedDataSetFile = "integrate/dataset/tbl/expect/select/SelectWithBindingTableAndConfigTable.xml";
         assertDataSet(expectedDataSetFile, shardingDataSource.getConnection(),

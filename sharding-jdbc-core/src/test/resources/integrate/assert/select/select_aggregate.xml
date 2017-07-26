@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectSum" value="SELECT SUM(user_id) AS user_id_sum FROM t_order">
+        <data expected="select_aggregate/SelectSum.xml" />
+    </sql>
+    <sql id="assertSelectCount" value="SELECT COUNT(*) AS orders_count FROM t_order">
+        <data expected="select_aggregate/SelectCount.xml" />
+    </sql>
+    <sql id="assertSelectMax" value="SELECT MAX(user_id) AS max_user_id FROM t_order">
+        <data expected="select_aggregate/SelectMax.xml" />
+    </sql>
+    <sql id="assertSelectMin" value="SELECT MIN(user_id) AS min_user_id FROM t_order">
+        <data expected="select_aggregate/SelectMin.xml" />
+    </sql>
+    <sql id="assertSelectAvg" value="SELECT AVG(user_id) AS user_id_avg FROM t_order">
+        <data expected="select_aggregate/SelectAVG.xml" />
+    </sql>
+    <sql id="assertSelectCountWithBindingTable" value="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s">
+        <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
+        <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
+    </sql>
+    <sql id="assertSelectCountWithBindingTableWithJoin" value="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s">
+        <data parameter="10,11,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_0.xml" />
+        <data parameter="1,9,1000,1909" expected="select_aggregate/SelectCountWithBindingTable_1.xml" />
+    </sql>
+</sqls>

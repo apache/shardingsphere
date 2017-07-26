@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
+import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
 import com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
@@ -31,18 +33,25 @@ import org.h2.tools.RunScript;
 import org.junit.Before;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode.Test;
+import static com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode.Local;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 
@@ -50,7 +59,7 @@ public abstract class AbstractBaseSqlTest {
     
     protected static final Map<String, Map<DatabaseType, DataSource>> DATA_SOURCES = new HashMap<>();
     
-    private static final DatabaseTestMode CURRENT_DB_TYPE = Test;
+    private static final DatabaseTestMode CURRENT_DB_TYPE = Local;
     
     static {
         createSchema();
@@ -59,7 +68,7 @@ public abstract class AbstractBaseSqlTest {
     private static void createSchema() {
         for (DatabaseType each : CURRENT_DB_TYPE.databaseTypes()) {
             if (H2 == each) {
-                createSchema(each);
+//                createSchema(each);
             }
         }
     }
@@ -142,4 +151,52 @@ public abstract class AbstractBaseSqlTest {
         }
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
+    
+    protected static Collection<Object[]> dataParameters(final String path) {
+        Collection<Object[]> result = new ArrayList<>();
+        URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(path);
+        if (null == url) {
+            return result;
+        }
+        File filePath = new File(url.getPath());
+        if (filePath.exists()) {
+            result.addAll(dataParameters(filePath));
+        }
+        return result;
+    }
+    
+    private static Collection<Object[]> dataParameters(final File file) {
+        SqlAsserts asserts = loadSqlAsserts(file);
+        Object[][] result = new Object[asserts.getSqlAsserts().size()][1];
+        for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
+            result[i] = getDataParameter(asserts.getSqlAsserts().get(i));
+        }
+        return Arrays.asList(result);
+    }
+    
+    private static SqlAsserts loadSqlAsserts(final File file) {
+        try {
+            return (SqlAsserts) JAXBContext.newInstance(SqlAsserts.class).createUnmarshaller().unmarshal(file);
+        } catch (final JAXBException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    private static Object[] getDataParameter(final SqlAssert sqlAssert) {
+        final Object[] result = new Object[4];
+        result[0] = sqlAssert.getId();
+        result[1] = sqlAssert.getSql();
+        if (null == sqlAssert.getTypes()) {
+            result[2] = Collections.emptySet();
+        } else {
+            Set<DatabaseType> types = new HashSet<>();
+            for (String each : sqlAssert.getTypes().split(",")) {
+                types.add(DatabaseType.valueOf(each));
+            }
+            result[2] = types;
+        }
+        result[3] = sqlAssert.getData();
+        return result;
+    }
+    
 }

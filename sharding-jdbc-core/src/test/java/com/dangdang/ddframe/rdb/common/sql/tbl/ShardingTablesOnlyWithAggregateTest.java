@@ -30,14 +30,14 @@ import java.util.Set;
 
 @RunWith(Parameterized.class)
 @Ignore
-public final class ShardingTablesOnlyWithSelectTest extends AbstractShardingTablesOnlyTest {
+public final class ShardingTablesOnlyWithAggregateTest extends AbstractShardingTablesOnlyTest {
     
-    public ShardingTablesOnlyWithSelectTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
+    public ShardingTablesOnlyWithAggregateTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
         super(testCaseName, sql, types, data);
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/select/select.xml");
+        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/select/select_aggregate.xml");
     }
 }

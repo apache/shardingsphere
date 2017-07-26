@@ -23,7 +23,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         ShardingTablesOnlyWithDMLTest.class,
-        ShardingTablesOnlyWithSelectTest.class
+        ShardingTablesOnlyWithSelectTest.class,
+        ShardingTablesOnlyWithAggregateTest.class,
+        ShardingTablesOnlyWithGroupByTest.class
     })
 public class AllShardingTablesOnlyTests {
 }
