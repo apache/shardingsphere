@@ -20,9 +20,11 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
+import com.dangdang.ddframe.rdb.common.sql.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -65,6 +67,8 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         this.types = types;
         this.data = data;
     }
+    
+    protected abstract ShardingTestStrategy getShardingStrategy();
     
     protected abstract List<String> getDataSetFiles();
     
@@ -147,8 +151,10 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             } else {
                 executeStatement(shardingDataSource, getParameters(each));
             }
-            for (Connection conn : shardingDataSource.getConnection().getConnections()) {
-                assertResult(conn, each.getExpected());
+            for (String dataSource : DATA_SOURCES.keySet()) {
+                try (Connection conn = shardingDataSource.getConnection().getConnection(dataSource, SQLType.SELECT)) {
+                    assertResult(conn, String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name()));
+                }
             }
         }
     }
