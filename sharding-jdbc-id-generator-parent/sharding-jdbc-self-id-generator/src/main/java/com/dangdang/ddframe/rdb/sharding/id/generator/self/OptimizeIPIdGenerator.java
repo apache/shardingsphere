@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
  * 有以下优化思路：
  * 因为workerId最大限制是2^10，我们生成的workerId只要满足小于最大workerId即可。
  * 1.针对IPV4:
- * ....IP最大 255:255:255:255。而（255+255+255+255) < 1024。
+ * ....IP最大 255.255.255.255。而（255+255+255+255) < 1024。
  * ....因此采用IP段数值相加即可生成唯一的workerId，不受IP位限制。
  * 2.针对IPV6:
  * ....IP最大ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
