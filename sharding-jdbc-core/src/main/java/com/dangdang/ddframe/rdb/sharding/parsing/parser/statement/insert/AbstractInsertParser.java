@@ -60,6 +60,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
     
     private final InsertStatement insertStatement;
     
+    @Getter(AccessLevel.NONE)
     private int generateKeyColumnIndex = -1;
     
     public AbstractInsertParser(final ShardingRule shardingRule, final SQLParser sqlParser) {
@@ -154,7 +155,7 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
             int count = 0;
             for (Column each : insertStatement.getColumns()) {
                 SQLExpression sqlExpression = sqlExpressions.get(count);
-                insertStatement.getConditions().add(new Condition(each, sqlExpression), getShardingRule());
+                insertStatement.getConditions().add(new Condition(each, sqlExpression), shardingRule);
                 if (generateKeyColumnIndex == count) {
                     insertStatement.setGeneratedKey(createGeneratedKey(each, sqlExpression));
                 }

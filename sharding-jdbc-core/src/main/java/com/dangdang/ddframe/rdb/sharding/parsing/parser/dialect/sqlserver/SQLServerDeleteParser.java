@@ -39,7 +39,13 @@ public final class SQLServerDeleteParser extends AbstractDeleteParser {
         if (getSqlParser().equalAny(SQLServerKeyword.TOP)) {
             throw new SQLParsingUnsupportedException(getSqlParser().getLexer().getCurrentToken().getType());
         }
-        ((SQLServerParser) getSqlParser()).skipOutput();
+        skipOutput();
         getSqlParser().skipIfEqual(DefaultKeyword.FROM);
+    }
+    
+    private void skipOutput() {
+        if (getSqlParser().equalAny(SQLServerKeyword.OUTPUT)) {
+            throw new SQLParsingUnsupportedException(SQLServerKeyword.OUTPUT);
+        }
     }
 }

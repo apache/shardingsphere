@@ -38,6 +38,7 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     
     private final UpdateStatement updateStatement;
     
+    @Getter(AccessLevel.NONE)
     private int parametersIndex;
     
     public AbstractUpdateParser(final SQLParser sqlParser) {
