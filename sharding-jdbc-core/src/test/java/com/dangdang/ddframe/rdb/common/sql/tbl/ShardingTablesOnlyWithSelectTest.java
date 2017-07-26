@@ -38,6 +38,6 @@ public final class ShardingTablesOnlyWithSelectTest extends AbstractShardingTabl
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/tbl/select");
+        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/select");
     }
 }

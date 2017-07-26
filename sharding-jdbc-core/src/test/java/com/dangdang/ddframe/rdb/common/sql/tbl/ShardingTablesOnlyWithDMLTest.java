@@ -38,6 +38,6 @@ public final class ShardingTablesOnlyWithDMLTest extends AbstractShardingTablesO
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/tbl/dml");
+        return AbstractShardingTablesOnlyTest.dataParameters("integrate/assert/dml");
     }
 }

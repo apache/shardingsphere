@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
-import com.dangdang.ddframe.rdb.common.sql.DatabaseMode;
+import com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
@@ -42,15 +42,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.common.sql.DatabaseMode.Local;
+import static com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode.Test;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 
 public abstract class AbstractBaseSqlTest {
     
-    private static final DatabaseMode CURRENT_DB_TYPE = Local;
+    protected static final Map<String, Map<DatabaseType, DataSource>> DATA_SOURCES = new HashMap<>();
     
-    private static final Map<String, Map<DatabaseType, DataSource>> DATA_SOURCES = new HashMap<>();
+    private static final DatabaseTestMode CURRENT_DB_TYPE = Test;
     
     static {
         createSchema();
