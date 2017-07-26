@@ -61,6 +61,7 @@ public class SQLParser extends AbstractParser {
     public SQLParser(final Lexer lexer, final ShardingRule shardingRule) {
         super(lexer);
         this.shardingRule = shardingRule;
+        getLexer().nextToken();
     }
     
     /**

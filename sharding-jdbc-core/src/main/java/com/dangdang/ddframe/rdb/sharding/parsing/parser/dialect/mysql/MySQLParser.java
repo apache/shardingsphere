@@ -30,6 +30,5 @@ public final class MySQLParser extends SQLParser {
     
     public MySQLParser(final String sql, final ShardingRule shardingRule) {
         super(new MySQLLexer(sql), shardingRule);
-        getLexer().nextToken();
     }
 }

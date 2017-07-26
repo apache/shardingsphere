@@ -30,6 +30,5 @@ public final class PostgreSQLParser extends SQLParser {
     
     public PostgreSQLParser(final String sql, final ShardingRule shardingRule) {
         super(new PostgreSQLLexer(sql), shardingRule);
-        getLexer().nextToken();
     }
 }

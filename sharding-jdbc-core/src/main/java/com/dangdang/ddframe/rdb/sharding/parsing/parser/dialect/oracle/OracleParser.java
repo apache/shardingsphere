@@ -34,7 +34,6 @@ public final class OracleParser extends SQLParser {
     
     public OracleParser(final String sql, final ShardingRule shardingRule) {
         super(new OracleLexer(sql), shardingRule);
-        getLexer().nextToken();
     }
     
     @Override

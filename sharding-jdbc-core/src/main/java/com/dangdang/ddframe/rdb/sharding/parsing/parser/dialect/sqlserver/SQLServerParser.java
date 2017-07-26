@@ -33,7 +33,6 @@ public final class SQLServerParser extends SQLParser {
     
     public SQLServerParser(final String sql, final ShardingRule shardingRule) {
         super(new SQLServerLexer(sql), shardingRule);
-        getLexer().nextToken();
     }
     
     @Override
