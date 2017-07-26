@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.iterator;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.merger.MergeEngine;
 import com.dangdang.ddframe.rdb.sharding.merger.ResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
@@ -53,7 +54,7 @@ public final class IteratorStreamResultSetMergerTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
@@ -63,7 +64,7 @@ public final class IteratorStreamResultSetMergerTest {
         for (ResultSet each : resultSets) {
             when(each.next()).thenReturn(true, false);
         }
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -74,7 +75,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         when(resultSets.get(0).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -83,7 +84,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         when(resultSets.get(1).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -92,7 +93,7 @@ public final class IteratorStreamResultSetMergerTest {
     @Test
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         when(resultSets.get(2).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -106,7 +107,7 @@ public final class IteratorStreamResultSetMergerTest {
         when(resultSets.get(1).next()).thenReturn(true, false);
         when(resultSets.get(3).next()).thenReturn(true, false);
         when(resultSets.get(5).next()).thenReturn(true, false);
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

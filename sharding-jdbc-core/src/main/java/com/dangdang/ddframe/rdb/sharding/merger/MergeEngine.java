@@ -17,6 +17,8 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger;
 
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.iterator.IteratorStreamResultSetMerger;
@@ -39,13 +41,16 @@ import java.util.TreeMap;
  */
 public final class MergeEngine {
     
+    private final DatabaseType databaseType;
+    
     private final List<ResultSet> resultSets;
     
     private final SelectStatement selectStatement;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public MergeEngine(final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+    public MergeEngine(final DatabaseType databaseType, final List<ResultSet> resultSets, final SelectStatement selectStatement) throws SQLException {
+        this.databaseType = databaseType;
         this.resultSets = resultSets;
         this.selectStatement = selectStatement;
         columnLabelIndexMap = getColumnLabelIndexMap(resultSets.get(0));
@@ -74,13 +79,13 @@ public final class MergeEngine {
     private ResultSetMerger build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+                return new GroupByStreamResultSetMerger(columnLabelIndexMap, resultSets, selectStatement, getNullOrderType());
             } else {
-                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement);
+                return new GroupByMemoryResultSetMerger(columnLabelIndexMap, resultSets, selectStatement, getNullOrderType());
             }
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
-            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems(), selectStatement.getNullOrderType());
+            return new OrderByStreamResultSetMerger(resultSets, selectStatement.getOrderByItems(), getNullOrderType());
         }
         return new IteratorStreamResultSetMerger(resultSets);
     }
@@ -91,5 +96,12 @@ public final class MergeEngine {
             result = new LimitDecoratorResultSetMerger(result, selectStatement.getLimit());
         }
         return result;
+    }
+    
+    private OrderType getNullOrderType() {
+        if (DatabaseType.MySQL == databaseType || DatabaseType.Oracle == databaseType || DatabaseType.H2 == databaseType) {
+            return OrderType.ASC;
+        }
+        return OrderType.DESC;
     }
 }

@@ -17,7 +17,6 @@
 
 package com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select;
 
-import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.limit.Limit;
@@ -50,8 +49,6 @@ public final class SelectStatement extends AbstractSQLStatement {
     private int selectListLastPosition;
     
     private int groupByLastPosition;
-    
-    private OrderType nullOrderType;
     
     private final List<SelectItem> items = new LinkedList<>();
     

@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.sharding.merger.groupby;
 
+import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.common.MemoryResultSetRow;
 import com.dangdang.ddframe.rdb.sharding.merger.util.ResultSetUtil;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.context.OrderItem;
@@ -37,6 +38,8 @@ public final class GroupByRowComparator implements Comparator<MemoryResultSetRow
     
     private final SelectStatement selectStatement;
     
+    private final OrderType nullOrderType;
+    
     @Override
     public int compare(final MemoryResultSetRow o1, final MemoryResultSetRow o2) {
         if (!selectStatement.getOrderByItems().isEmpty()) {
@@ -51,7 +54,7 @@ public final class GroupByRowComparator implements Comparator<MemoryResultSetRow
             Preconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, "Order by value must implements Comparable");
             Object orderValue2 = o2.getCell(each.getIndex());
             Preconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, "Order by value must implements Comparable");
-            int result = ResultSetUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType(), selectStatement.getNullOrderType());
+            int result = ResultSetUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getType(), nullOrderType);
             if (0 != result) {
                 return result;
             }

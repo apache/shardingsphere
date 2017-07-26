@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.sharding.merger;
 
 import com.dangdang.ddframe.rdb.sharding.constant.AggregationType;
+import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.constant.OrderType;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByMemoryResultSetMerger;
 import com.dangdang.ddframe.rdb.sharding.merger.groupby.GroupByStreamResultSetMerger;
@@ -65,14 +66,14 @@ public final class MergeEngineTest {
     
     @Test
     public void assertBuildIteratorStreamResultSetMerger() throws SQLException {
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(IteratorStreamResultSetMerger.class));
     }
     
     @Test
     public void assertBuildIteratorStreamResultSetMergerWithLimit() throws SQLException {
         selectStatement.setLimit(new Limit(true));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
         assertThat(((LimitDecoratorResultSetMerger) actual).getResultSetMerger(), instanceOf(IteratorStreamResultSetMerger.class));
@@ -81,7 +82,7 @@ public final class MergeEngineTest {
     @Test
     public void assertBuildOrderByStreamResultSetMerger() throws SQLException {
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(OrderByStreamResultSetMerger.class));
     }
     
@@ -89,7 +90,7 @@ public final class MergeEngineTest {
     public void assertBuildOrderByStreamResultSetMergerWithLimit() throws SQLException {
         selectStatement.setLimit(new Limit(true));
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
         assertThat(((LimitDecoratorResultSetMerger) actual).getResultSetMerger(), instanceOf(OrderByStreamResultSetMerger.class));
@@ -99,7 +100,7 @@ public final class MergeEngineTest {
     public void assertBuildGroupByStreamResultSetMerger() throws SQLException {
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC));
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(GroupByStreamResultSetMerger.class));
     }
     
@@ -108,7 +109,7 @@ public final class MergeEngineTest {
         selectStatement.setLimit(new Limit(true));
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC));
         selectStatement.getOrderByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
         assertThat(((LimitDecoratorResultSetMerger) actual).getResultSetMerger(), instanceOf(GroupByStreamResultSetMerger.class));
@@ -117,7 +118,7 @@ public final class MergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryResultSetMerger() throws SQLException {
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryResultSetMerger.class));
     }
     
@@ -125,7 +126,7 @@ public final class MergeEngineTest {
     public void assertBuildGroupByMemoryResultSetMergerWithLimit() throws SQLException {
         selectStatement.setLimit(new Limit(true));
         selectStatement.getGroupByItems().add(new OrderItem(1, OrderType.DESC));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
         assertThat(((LimitDecoratorResultSetMerger) actual).getResultSetMerger(), instanceOf(GroupByMemoryResultSetMerger.class));
@@ -134,7 +135,7 @@ public final class MergeEngineTest {
     @Test
     public void assertBuildGroupByMemoryResultSetMergerWithAggregationOnly() throws SQLException {
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(GroupByMemoryResultSetMerger.class));
     }
     
@@ -142,7 +143,7 @@ public final class MergeEngineTest {
     public void assertBuildGroupByMemoryResultSetMergerWithAggregationOnlyWithLimit() throws SQLException {
         selectStatement.setLimit(new Limit(true));
         selectStatement.getItems().add(new AggregationSelectItem(AggregationType.COUNT, "(*)", Optional.<String>absent()));
-        mergeEngine = new MergeEngine(resultSets, selectStatement);
+        mergeEngine = new MergeEngine(DatabaseType.MySQL, resultSets, selectStatement);
         ResultSetMerger actual = mergeEngine.merge();
         assertThat(actual, instanceOf(LimitDecoratorResultSetMerger.class));
         assertThat(((LimitDecoratorResultSetMerger) actual).getResultSetMerger(), instanceOf(GroupByMemoryResultSetMerger.class));
