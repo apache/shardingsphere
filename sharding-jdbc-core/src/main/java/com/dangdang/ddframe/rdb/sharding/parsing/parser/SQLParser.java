@@ -41,6 +41,7 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectS
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.OffsetToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.TableToken;
+import com.dangdang.ddframe.rdb.sharding.util.NumberUtil;
 import com.dangdang.ddframe.rdb.sharding.util.SQLUtil;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -113,16 +114,14 @@ public class SQLParser extends AbstractParser {
         if (equalAny(Literals.CHARS)) {
             return new SQLTextExpression(literals);
         }
-        // TODO 考虑long的情况
         if (equalAny(Literals.INT)) {
-            return new SQLNumberExpression(Integer.parseInt(literals));
+            return new SQLNumberExpression(NumberUtil.getExactlyNumber(literals, 10));
         }
         if (equalAny(Literals.FLOAT)) {
             return new SQLNumberExpression(Double.parseDouble(literals));
         }
-        // TODO 考虑long的情况
         if (equalAny(Literals.HEX)) {
-            return new SQLNumberExpression(Integer.parseInt(literals, 16));
+            return new SQLNumberExpression(NumberUtil.getExactlyNumber(literals, 16));
         }
         if (equalAny(Literals.IDENTIFIER)) {
             return new SQLIdentifierExpression(SQLUtil.getExactlyValue(literals));
