@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLExpression
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLNumberExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.expression.SQLPlaceholderExpression;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.AbstractSelectParser;
-import com.dangdang.ddframe.rdb.sharding.parsing.parser.statement.select.SelectStatement;
 import com.dangdang.ddframe.rdb.sharding.parsing.parser.token.RowCountToken;
 import com.google.common.base.Optional;
 
@@ -96,7 +95,7 @@ public class SQLServerSelectParser extends AbstractSelectParser {
     }
     
     @Override
-    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
+    protected SelectItem parseRowNumberSelectItem() {
         getSqlParser().getLexer().nextToken();
         if (getSqlParser().equalAny(Symbol.LEFT_PAREN)) {
             getSqlParser().skipUntil(DefaultKeyword.OVER);
@@ -106,11 +105,11 @@ public class SQLServerSelectParser extends AbstractSelectParser {
             getSqlParser().skipIfEqual(Symbol.RIGHT_PAREN);
             getSqlParser().skipUntil(DefaultKeyword.AS);
             getSqlParser().getLexer().nextToken();
-            SelectItem result = new CommonSelectItem("ROW_NUMBER", Optional.of(getSqlParser().getLexer().getCurrentToken().getLiterals()), false);
+            SelectItem result = new CommonSelectItem("ROW_NUMBER", Optional.of(getSqlParser().getLexer().getCurrentToken().getLiterals()));
             getSqlParser().getLexer().nextToken();
             return result;
         }
-        return new CommonSelectItem("ROW_NUMBER", getSqlParser().parseAlias(), false);
+        return new CommonSelectItem("ROW_NUMBER", getSqlParser().parseAlias());
     }
     
     @Override

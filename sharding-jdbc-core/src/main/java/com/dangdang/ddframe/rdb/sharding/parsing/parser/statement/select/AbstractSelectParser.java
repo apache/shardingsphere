@@ -115,27 +115,27 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
     
     protected final void parseSelectList() {
         do {
-            SelectItem selectItem = parseSelectItem();
-            selectStatement.getItems().add(selectItem);
-            if (selectItem instanceof CommonSelectItem && ((CommonSelectItem) selectItem).isStar()) {
-                selectStatement.setContainStar(true);
-            }
+            parseSelectItem();
         } while (sqlParser.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(sqlParser.getLexer().getCurrentToken().getEndPosition() - sqlParser.getLexer().getCurrentToken().getLiterals().length());
     }
     
-    private SelectItem parseSelectItem() {
+    private void parseSelectItem() {
         if (isRowNumberSelectItem()) {
-            return parseRowNumberSelectItem(selectStatement);
+            selectStatement.getItems().add(parseRowNumberSelectItem());
+            return;
         }
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
         if (sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
             sqlParser.getLexer().nextToken();
-            return new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias(), true);
+            selectStatement.getItems().add(new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias()));
+            selectStatement.setContainStar(true);
+            return;
         }
         if (sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            return new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias());
+            selectStatement.getItems().add(new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias()));
+            return;
         }
         StringBuilder expression = new StringBuilder();
         Token lastToken = null;
@@ -150,16 +150,18 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
             }
         }
         if (null != lastToken && Literals.IDENTIFIER == lastToken.getType() && !isSQLPropertyExpression(expression, lastToken) && !expression.toString().equals(lastToken.getLiterals())) {
-            return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()), false);
+            selectStatement.getItems().add(
+                    new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals())));
+            return;
         }
-        return new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias(), false);
+        selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias()));
     }
     
     protected boolean isRowNumberSelectItem() {
         return false;
     }
     
-    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
+    protected SelectItem parseRowNumberSelectItem() {
         throw new UnsupportedOperationException("Cannot support special select item.");
     }
     

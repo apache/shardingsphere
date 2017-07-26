@@ -35,6 +35,4 @@ public final class CommonSelectItem implements SelectItem {
     private final String expression;
     
     private final Optional<String> alias;
-    
-    private final boolean star;
 }
