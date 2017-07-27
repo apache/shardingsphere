@@ -35,11 +35,9 @@ import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +58,7 @@ public class ShardingDatabaseOnlyTest extends AbstractSqlAssertTest {
     
     @Override
     protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.tbl;
+        return ShardingTestStrategy.db;
     }
     
     @Override
@@ -84,20 +82,16 @@ public class ShardingDatabaseOnlyTest extends AbstractSqlAssertTest {
             return shardingDataSources;
         }
         isShutdown = false;
-        Map<String, Map<DatabaseType, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<String, Map<DatabaseType, DataSource>> each : dataSourceMap.entrySet()) {
-            for (Map.Entry<DatabaseType, DataSource> dataSources : each.getValue().entrySet()) {
-                Map<String, DataSource> dataSource = new HashMap<>();
-                dataSource.put(each.getKey(), dataSources.getValue());
-                DataSourceRule dataSourceRule = new DataSourceRule(dataSource);
-                TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", IncrementKeyGenerator.class).build();
-                TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
-                ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-                        .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                        .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
-                        .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
-                shardingDataSources.put(dataSources.getKey(), new ShardingDataSource(shardingRule));
-            }
+        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
+        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
+            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
+            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).generateKeyColumn("order_id", IncrementKeyGenerator.class).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+                    .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;
     }
@@ -110,10 +104,5 @@ public class ShardingDatabaseOnlyTest extends AbstractSqlAssertTest {
                 each.close();
             }
         }
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> dataParameters() {
-        return ShardingDatabaseOnlyTest.dataParameters("integrate/assert");
     }
 }

@@ -31,6 +31,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -57,7 +58,7 @@ import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 
 public abstract class AbstractBaseSqlTest {
     
-    protected static final Map<String, Map<DatabaseType, DataSource>> DATA_SOURCES = new HashMap<>();
+    private static final Map<DatabaseType, Map<String, DataSource>> DATA_SOURCES = new HashMap<>();
     
     private static final DatabaseTestMode CURRENT_DB_TYPE = Local;
     
@@ -110,7 +111,7 @@ public abstract class AbstractBaseSqlTest {
     
     protected abstract List<String> getDataSetFiles();
     
-    protected final Map<String, Map<DatabaseType, DataSource>> createDataSourceMap() {
+    protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getDataSetFiles()) {
             String dbName = getDatabaseName(each);
             for (DatabaseType type : CURRENT_DB_TYPE.databaseTypes()) {
@@ -122,13 +123,13 @@ public abstract class AbstractBaseSqlTest {
     
     private static DataSource createDataSource(final String dbName, final DatabaseType type) {
         String dataSource = "dataSource_" + dbName;
-        if (DATA_SOURCES.containsKey(dataSource) && DATA_SOURCES.get(dataSource).containsKey(type.name())) {
-            return DATA_SOURCES.get(dataSource).get(type);
+        if (DATA_SOURCES.containsKey(type) && DATA_SOURCES.get(type).containsKey(dataSource)) {
+            return DATA_SOURCES.get(type).get(dataSource);
         }
-        Map<DatabaseType, DataSource> dbTypeMap = DATA_SOURCES.get(dataSource);
-        if (null == dbTypeMap) {
-            dbTypeMap = new HashMap<>();
-            DATA_SOURCES.put(dataSource, dbTypeMap);
+        Map<String, DataSource> dataSourceMap = DATA_SOURCES.get(type);
+        if (null == dataSourceMap) {
+            dataSourceMap = new HashMap<>();
+            DATA_SOURCES.put(type, dataSourceMap);
         }
         DataBaseEnvironment dbEnv = new DataBaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
@@ -140,7 +141,7 @@ public abstract class AbstractBaseSqlTest {
         if (Oracle == dbEnv.getDatabaseType()) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
-        dbTypeMap.put(type, result);
+        dataSourceMap.put(dataSource, result);
         return result;
     }
     
@@ -152,9 +153,10 @@ public abstract class AbstractBaseSqlTest {
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
     
-    protected static Collection<Object[]> dataParameters(final String path) {
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
-        URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(path);
+        URL url = AbstractSqlAssertTest.class.getClassLoader().getResource("integrate/assert");
         if (null != url) {
             File filePath = new File(url.getPath());
             if (filePath.exists()) {
