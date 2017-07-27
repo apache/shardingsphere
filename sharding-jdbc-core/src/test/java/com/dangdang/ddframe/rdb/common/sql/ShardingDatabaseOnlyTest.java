@@ -17,7 +17,7 @@
 
 package com.dangdang.ddframe.rdb.common.sql;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractSqlAssertTest;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
@@ -52,8 +52,8 @@ public class ShardingDatabaseOnlyTest extends AbstractSqlAssertTest {
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
-        super(testCaseName, sql, types, data);
+    public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
+        super(testCaseName, sql, types, sqlShardingRules);
     }
     
     @Override
