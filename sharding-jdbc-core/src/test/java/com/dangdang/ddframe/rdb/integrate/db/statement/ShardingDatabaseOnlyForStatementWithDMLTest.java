@@ -21,6 +21,7 @@ import com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil;
 import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import org.dbunit.DatabaseUnitException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -30,6 +31,7 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class ShardingDatabaseOnlyForStatementWithDMLTest extends AbstractShardingDatabaseOnlyDBUnitTest {
     
     @Test

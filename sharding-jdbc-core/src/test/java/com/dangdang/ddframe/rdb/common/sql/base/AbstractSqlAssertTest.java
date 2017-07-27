@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
+import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
@@ -53,12 +54,12 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private final Set<DatabaseType> types;
     
-    private final List<SqlAssertData> data;
+    private final List<SqlShardingRule> shardingRules;
     
-    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlAssertData> data) {
+    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> shardingRules) {
         this.sql = sql;
         this.types = types;
-        this.data = data;
+        this.shardingRules = shardingRules;
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();
@@ -84,20 +85,37 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     }
     
     private void executeAndAssertSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws Exception {
-        for (SqlAssertData each : data) {
-            String expected = each.getExpected() == null ? "integrate/dataset/EmptyTable.xml" 
-                    : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
-            URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
-            if (null == url) {
-                throw new Exception("Wrong expected file:" + expected);
-            }
-            File expectedDataSetFile = new File(url.getPath());
-            if (sql.toUpperCase().startsWith("SELECT")) {
-                assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
-            } else {
-                assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+        for (SqlShardingRule sqlShardingRule : shardingRules) {
+            if (needAssert(sqlShardingRule)) {
+                for (SqlAssertData each : sqlShardingRule.getData()) {
+                    String expected = each.getExpected() == null ? "integrate/dataset/EmptyTable.xml"
+                            : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
+                    URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
+                    if (null == url) {
+                        throw new Exception("Wrong expected file:" + expected);
+                    }
+                    File expectedDataSetFile = new File(url.getPath());
+                    if (sql.toUpperCase().startsWith("SELECT")) {
+                        assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                    } else {
+                        assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                    }
+                }
             }
         }
+    }
+    
+    private boolean needAssert(final SqlShardingRule sqlShardingRule) {
+        String shardingRules = sqlShardingRule.getValue();
+        if (null == shardingRules) {
+            return true;
+        }
+        for (String each : shardingRules.split(",")) {
+            if (getShardingStrategy().name().equals(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) throws Exception {

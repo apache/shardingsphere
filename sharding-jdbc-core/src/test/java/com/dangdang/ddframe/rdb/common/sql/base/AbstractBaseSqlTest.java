@@ -69,7 +69,7 @@ public abstract class AbstractBaseSqlTest {
     private static void createSchema() {
         for (DatabaseType each : CURRENT_DB_TYPE.databaseTypes()) {
             if (H2 == each) {
-//                createSchema(each);
+                createSchema(each);
             }
         }
     }
@@ -79,14 +79,14 @@ public abstract class AbstractBaseSqlTest {
             Connection conn;
             for (int i = 0; i < 10; i++) {
                 for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = createDataSource(database + "_" + i, dbType).getConnection();
+                    conn = initialConnection(database + "_" + i, dbType);
                     RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
                     conn.close();
                 }
             }
             String database = "tbl";
-            conn = createDataSource(database, dbType).getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+            conn = initialConnection(database, dbType);
+            //RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -115,22 +115,17 @@ public abstract class AbstractBaseSqlTest {
         for (String each : getDataSetFiles()) {
             String dbName = getDatabaseName(each);
             for (DatabaseType type : CURRENT_DB_TYPE.databaseTypes()) {
-                createDataSource(dbName, type);
+                createDataSources(dbName, type);
             }
         }
         return DATA_SOURCES;
     }
     
-    private static DataSource createDataSource(final String dbName, final DatabaseType type) {
-        String dataSource = "dataSource_" + dbName;
-        if (DATA_SOURCES.containsKey(type) && DATA_SOURCES.get(type).containsKey(dataSource)) {
-            return DATA_SOURCES.get(type).get(dataSource);
-        }
-        Map<String, DataSource> dataSourceMap = DATA_SOURCES.get(type);
-        if (null == dataSourceMap) {
-            dataSourceMap = new HashMap<>();
-            DATA_SOURCES.put(type, dataSourceMap);
-        }
+    private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
+        return buildDataSource(dbName, type).getConnection();
+    }
+    
+    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType type) {
         DataBaseEnvironment dbEnv = new DataBaseEnvironment(type);
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(dbEnv.getDriverClassName());
@@ -141,8 +136,18 @@ public abstract class AbstractBaseSqlTest {
         if (Oracle == dbEnv.getDatabaseType()) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
-        dataSourceMap.put(dataSource, result);
         return result;
+    }
+    
+    private static void createDataSources(final String dbName, final DatabaseType type) {
+        String dataSource = "dataSource_" + dbName;
+        Map<String, DataSource> dataSourceMap = DATA_SOURCES.get(type);
+        if (null == dataSourceMap) {
+            dataSourceMap = new HashMap<>();
+            DATA_SOURCES.put(type, dataSourceMap);
+        }
+        BasicDataSource result = buildDataSource(dbName, type);
+        dataSourceMap.put(dataSource, result);
     }
     
     private String getDatabaseName(final String dataSetFile) {
@@ -199,7 +204,7 @@ public abstract class AbstractBaseSqlTest {
             }
             result[2] = types;
         }
-        result[3] = sqlAssert.getData();
+        result[3] = sqlAssert.getSqlShardingRules();
         return result;
     }
     

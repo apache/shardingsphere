@@ -29,17 +29,11 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class SqlAssert {
-    
-    @XmlAttribute
-    private String id;
+public final class SqlShardingRule {
     
     @XmlAttribute(name = "value")
-    private String sql;
+    private String value;
     
-    @XmlAttribute(name = "type")
-    private String types;
-    
-    @XmlElement(name = "sharding-rule")
-    private List<SqlShardingRule> sqlShardingRules;
+    @XmlElement
+    private List<SqlAssertData> data;
 }
