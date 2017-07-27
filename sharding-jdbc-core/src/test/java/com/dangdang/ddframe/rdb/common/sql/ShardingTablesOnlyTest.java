@@ -18,8 +18,8 @@
 package com.dangdang.ddframe.rdb.common.sql;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
-import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.common.sql.base.AbstractSqlAssertTest;
+import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -34,11 +34,9 @@ import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -73,42 +71,38 @@ public class ShardingTablesOnlyTest extends AbstractSqlAssertTest {
             return shardingDataSources;
         }
         isShutdown = false;
-        Map<String, Map<DatabaseType, DataSource>> dataSourceMap = createDataSourceMap();
-        for (Map.Entry<String, Map<DatabaseType, DataSource>> each : dataSourceMap.entrySet()) {
-            for (Map.Entry<DatabaseType, DataSource> dataSources : each.getValue().entrySet()) {
-                Map<String, DataSource> dataSource = new HashMap<>();
-                dataSource.put(each.getKey(), dataSources.getValue());
-                DataSourceRule dataSourceRule = new DataSourceRule(dataSource);
-                TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
-                        "t_order_0",
-                        "t_order_1",
-                        "t_order_2",
-                        "t_order_3",
-                        "t_order_4",
-                        "t_order_5",
-                        "t_order_6",
-                        "t_order_7",
-                        "t_order_8",
-                        "t_order_9")).dataSourceRule(dataSourceRule).build();
-                TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
-                        "t_order_item_0",
-                        "t_order_item_1",
-                        "t_order_item_2",
-                        "t_order_item_3",
-                        "t_order_item_4",
-                        "t_order_item_5",
-                        "t_order_item_6",
-                        "t_order_item_7",
-                        "t_order_item_8",
-                        "t_order_item_9")).dataSourceRule(dataSourceRule).build();
-                ShardingRule shardingRule = ShardingRule.builder()
-                        .dataSourceRule(dataSourceRule)
-                        .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
-                        .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
-                        .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
-                        .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
-                shardingDataSources.put(dataSources.getKey(), new ShardingDataSource(shardingRule));
-            }
+        Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
+        for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
+            DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
+            TableRule orderTableRule = TableRule.builder("t_order").actualTables(Arrays.asList(
+                    "t_order_0",
+                    "t_order_1",
+                    "t_order_2",
+                    "t_order_3",
+                    "t_order_4",
+                    "t_order_5",
+                    "t_order_6",
+                    "t_order_7",
+                    "t_order_8",
+                    "t_order_9")).dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").actualTables(Arrays.asList(
+                    "t_order_item_0",
+                    "t_order_item_1",
+                    "t_order_item_2",
+                    "t_order_item_3",
+                    "t_order_item_4",
+                    "t_order_item_5",
+                    "t_order_item_6",
+                    "t_order_item_7",
+                    "t_order_item_8",
+                    "t_order_item_9")).dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder()
+                    .dataSourceRule(dataSourceRule)
+                    .tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new NoneDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyModuloTableShardingAlgorithm())).build();
+            shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;
     }
@@ -121,10 +115,5 @@ public class ShardingTablesOnlyTest extends AbstractSqlAssertTest {
                 each.close();
             }
         }
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> dataParameters() {
-        return ShardingTablesOnlyTest.dataParameters("integrate/assert");
     }
 }

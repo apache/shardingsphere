@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
+        <data parameter="10,10,'insert'" expected="insert/%s_0.xml" />
         <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
         <data parameter="2,2,'insert'" expected="insert/%s_2.xml" />
         <data parameter="3,3,'insert'" expected="insert/%s_3.xml" />
@@ -10,7 +11,6 @@
         <data parameter="7,7,'insert'" expected="insert/%s_7.xml" />
         <data parameter="8,8,'insert'" expected="insert/%s_8.xml" />
         <data parameter="9,9,'insert'" expected="insert/%s_9.xml" />
-        <data parameter="10,10,'insert'" expected="insert/%s_0.xml" />
     </sql>
     <sql id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')">
         <data parameter="1,1" expected="insert/%s_1.xml" />
@@ -61,6 +61,6 @@
         <data parameter="1109,11,'init'" expected="delete/%s_9.xml" />
     </sql>
     <sql id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s">
-        <data parameter="'init'" expected="delete/tbl.xml" />
+        <data parameter="'init'" expected="delete/%s.xml" />
     </sql>
 </sqls>

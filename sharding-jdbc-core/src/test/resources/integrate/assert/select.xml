@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertSelectEqualsWithSingleTable" value="SELECT * FROM t_order WHERE user_id = %s AND order_id = %s">
+        <!--<parameters>-->
+            <!--<parameter value="10,1000" type="db" /> -->
+        <!--</parameters>-->
         <data parameter="10,1000" expected="select/SelectEqualsWithSingleTable_0.xml" />
         <data parameter="11,1109" expected="select/SelectEqualsWithSingleTable_1.xml" />
         <data parameter="12,1000" />
@@ -15,6 +18,10 @@
         <data parameter="10,12,15,1309,1408" />
     </sql>
     <sql id="assertSelectIterator" value="SELECT t.* FROM t_order_item t WHERE t.item_id IN (%s, %s)">
+        <!--<data parameter="100001,100002" expected="select/SelectIteratorSql_0.xml" />-->
+        <!--<data parameter="200101,200102" expected="select/SelectIteratorSql_1.xml" />-->
+        <!--<data parameter="100001,200102" expected="select/SelectIteratorSql_2.xml" />-->
+        <!--<data parameter="100001,100101" expected="select/SelectIteratorSql_3.xml" />-->
         <data parameter="100000,100001" expected="select/SelectIteratorSql_0.xml" />
         <data parameter="100900,100901" expected="select/SelectIteratorSql_1.xml" />
         <data parameter="100000,100900" expected="select/SelectIteratorSql_2.xml" />

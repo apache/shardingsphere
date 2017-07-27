@@ -93,24 +93,43 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             }
             File expectedDataSetFile = new File(url.getPath());
             if (sql.toUpperCase().startsWith("SELECT")) {
-                if (isPreparedStatement) {
-                    executeQueryWithPreparedStatement(shardingDataSource, getParameters(each), expectedDataSetFile);
-                } else {
-                    executeQueryWithStatement(shardingDataSource, getParameters(each), expectedDataSetFile);
-                }
+                assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
             } else {
-                if (isPreparedStatement) {
-                    executeWithPreparedStatement(shardingDataSource, getParameters(each));
-                } else {
-                    executeWithStatement(shardingDataSource, getParameters(each));
-                }
-                for (String dataSource : DATA_SOURCES.keySet()) {
-                    try (Connection conn = shardingDataSource.getConnection().getConnection(dataSource, SQLType.SELECT)) {
-                        assertResult(conn, expectedDataSetFile);
-                    }
-                }
+                assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
             }
         }
+    }
+    
+    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) throws Exception {
+        if (isPreparedStatement) {
+            executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
+        } else {
+            executeQueryWithStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
+        }
+    }
+    
+    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) throws Exception {
+        if (isPreparedStatement) {
+            executeWithPreparedStatement(shardingDataSource, getParameters(data));
+        } else {
+            executeWithStatement(shardingDataSource, getParameters(data));
+        }
+        String dataSourceName = getDataSourceName(data.getExpected());
+        try (Connection conn = shardingDataSource.getConnection().getConnection(dataSourceName, SQLType.SELECT)) {
+            assertResult(conn, expectedDataSetFile);
+        }
+    }
+    
+    private String getDataSourceName(final String expected) {
+        String result = String.format(expected.split("/")[1].split(".xml")[0], getShardingStrategy().name());
+        if (!result.contains("_")) {
+            result = result + "_0";
+        }
+        if (result.contains("tbl")) {
+            result = "tbl";
+        }
+        result = "dataSource_" + result;
+        return result;
     }
     
     private List<String> getParameters(final SqlAssertData data) {
@@ -138,49 +157,45 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             statement.execute(replaceStatement(sql, parameters.toArray()));
         }
     }
-    
+
     private void executeQueryWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws Exception {
-        for (String each : DATA_SOURCES.keySet()) {
-            try (Connection conn = dataSource.getConnection();
-                 PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
-                int index = 1;
-                for (String param : parameters) {
-                    if (param.contains("'")) {
-                        preparedStatement.setString(index++, param.replace("'", ""));
-                    } else {
-                        preparedStatement.setInt(index++, Integer.valueOf(param));
-                    }
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
+            int index = 1;
+            for (String param : parameters) {
+                if (param.contains("'")) {
+                    preparedStatement.setString(index++, param.replace("'", ""));
+                } else {
+                    preparedStatement.setInt(index++, Integer.valueOf(param));
                 }
-                ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
-                while (expectedTableIterator.next()) {
-                    ITable expectedTable = expectedTableIterator.getTable();
-                    String actualTableName = expectedTable.getTableMetaData().getTableName();
-                    ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                            .createTable(actualTableName, preparedStatement);
-                    IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
-                    assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
-                }
+            }
+            ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
+            while (expectedTableIterator.next()) {
+                ITable expectedTable = expectedTableIterator.getTable();
+                String actualTableName = expectedTable.getTableMetaData().getTableName();
+                ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
+                        .createTable(actualTableName, preparedStatement);
+                IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
+                assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
             }
         }
     }
-    
+
     private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws Exception {
-        for (String each : DATA_SOURCES.keySet()) {
-            try (Connection conn = dataSource.getConnection()) {
-                String querySql = replaceStatement(sql, parameters.toArray());
-                ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
-                while (expectedTableIterator.next()) {
-                    ITable expectedTable = expectedTableIterator.getTable();
-                    String actualTableName = expectedTable.getTableMetaData().getTableName();
-                    ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                            .createQueryTable(actualTableName, querySql);
-                    IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
-                    assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
-                }
+        try (Connection conn = dataSource.getConnection()) {
+            String querySql = replaceStatement(sql, parameters.toArray());
+            ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
+            while (expectedTableIterator.next()) {
+                ITable expectedTable = expectedTableIterator.getTable();
+                String actualTableName = expectedTable.getTableMetaData().getTableName();
+                ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
+                        .createQueryTable(actualTableName, querySql);
+                IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
+                assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
             }
         }
     }
-    
+
     private void assertResult(final Connection connection, final File file) throws Exception {
         ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
         try (Connection conn = connection) {
