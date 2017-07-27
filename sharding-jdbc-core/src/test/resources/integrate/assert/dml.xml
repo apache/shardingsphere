@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
+        <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
+        <data parameter="2,2,'insert'" expected="insert/%s_2.xml" />
+        <data parameter="3,3,'insert'" expected="insert/%s_3.xml" />
+        <data parameter="4,4,'insert'" expected="insert/%s_4.xml" />
+        <data parameter="5,5,'insert'" expected="insert/%s_5.xml" />
+        <data parameter="6,6,'insert'" expected="insert/%s_6.xml" />
+        <data parameter="7,7,'insert'" expected="insert/%s_7.xml" />
+        <data parameter="8,8,'insert'" expected="insert/%s_8.xml" />
+        <data parameter="9,9,'insert'" expected="insert/%s_9.xml" />
+        <data parameter="10,10,'insert'" expected="insert/%s_0.xml" />
+    </sql>
+    <sql id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')">
+        <data parameter="1,1" expected="insert/%s_1.xml" />
+        <data parameter="2,2" expected="insert/%s_2.xml" />
+        <data parameter="3,3" expected="insert/%s_3.xml" />
+        <data parameter="4,4" expected="insert/%s_4.xml" />
+        <data parameter="5,5" expected="insert/%s_5.xml" />
+        <data parameter="6,6" expected="insert/%s_6.xml" />
+        <data parameter="7,7" expected="insert/%s_7.xml" />
+        <data parameter="8,8" expected="insert/%s_8.xml" />
+        <data parameter="9,9" expected="insert/%s_9.xml" />
+        <data parameter="10,10" expected="insert/%s_0.xml" />
+    </sql>
+    <sql id="assertUpdateWithAlias" value="UPDATE t_order AS o SET o.status = %s WHERE o.order_id = %s AND o.user_id = %s" type="MySQL">
+        <data parameter="'update',1000,10" expected="update/%s_0.xml" />
+        <data parameter="'update',1001,10" expected="update/%s_1.xml" />
+        <data parameter="'update',1002,10" expected="update/%s_2.xml" />
+        <data parameter="'update',1003,10" expected="update/%s_3.xml" />
+        <data parameter="'update',1004,10" expected="update/%s_4.xml" />
+        <data parameter="'update',1105,11" expected="update/%s_5.xml" />
+        <data parameter="'update',1106,11" expected="update/%s_6.xml" />
+        <data parameter="'update',1107,11" expected="update/%s_7.xml" />
+        <data parameter="'update',1108,11" expected="update/%s_8.xml" />
+        <data parameter="'update',1109,11" expected="update/%s_9.xml" />
+    </sql>
+    <sql id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s">
+        <data parameter="'update',1000,10" expected="update/%s_0.xml" />
+        <data parameter="'update',1001,10" expected="update/%s_1.xml" />
+        <data parameter="'update',1002,10" expected="update/%s_2.xml" />
+        <data parameter="'update',1003,10" expected="update/%s_3.xml" />
+        <data parameter="'update',1004,10" expected="update/%s_4.xml" />
+        <data parameter="'update',1105,11" expected="update/%s_5.xml" />
+        <data parameter="'update',1106,11" expected="update/%s_6.xml" />
+        <data parameter="'update',1107,11" expected="update/%s_7.xml" />
+        <data parameter="'update',1108,11" expected="update/%s_8.xml" />
+        <data parameter="'update',1109,11" expected="update/%s_9.xml" />
+    </sql>
+    <sql id="assertDeleteWithoutAlias" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s">
+        <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
+        <data parameter="1001,10,'init'" expected="delete/%s_1.xml" />
+        <data parameter="1002,10,'init'" expected="delete/%s_2.xml" />
+        <data parameter="1003,10,'init'" expected="delete/%s_3.xml" />
+        <data parameter="1004,10,'init'" expected="delete/%s_4.xml" />
+        <data parameter="1105,11,'init'" expected="delete/%s_5.xml" />
+        <data parameter="1106,11,'init'" expected="delete/%s_6.xml" />
+        <data parameter="1107,11,'init'" expected="delete/%s_7.xml" />
+        <data parameter="1108,11,'init'" expected="delete/%s_8.xml" />
+        <data parameter="1109,11,'init'" expected="delete/%s_9.xml" />
+    </sql>
+    <sql id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s">
+        <data parameter="'init'" expected="delete/tbl.xml" />
+    </sql>
+</sqls>

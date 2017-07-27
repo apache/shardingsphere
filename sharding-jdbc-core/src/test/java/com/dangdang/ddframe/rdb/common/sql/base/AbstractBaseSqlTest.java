@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
-import com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode;
+import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.dangdang.ddframe.rdb.common.sql.DatabaseTestMode.Local;
+import static com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode.Local;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 
@@ -155,12 +155,14 @@ public abstract class AbstractBaseSqlTest {
     protected static Collection<Object[]> dataParameters(final String path) {
         Collection<Object[]> result = new ArrayList<>();
         URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(path);
-        if (null == url) {
-            return result;
-        }
-        File filePath = new File(url.getPath());
-        if (filePath.exists()) {
-            result.addAll(dataParameters(filePath));
+        if (null != url) {
+            File filePath = new File(url.getPath());
+            if (filePath.exists()) {
+                File[] files = filePath.listFiles();
+                for (File each : files) {
+                    result.addAll(dataParameters(each));
+                }
+            }
         }
         return result;
     }

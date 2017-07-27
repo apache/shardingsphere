@@ -15,17 +15,8 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql.tbl;
+package com.dangdang.ddframe.rdb.common.sql.common;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ShardingTablesOnlyWithDMLTest.class,
-        ShardingTablesOnlyWithSelectTest.class,
-        ShardingTablesOnlyWithAggregateTest.class,
-        ShardingTablesOnlyWithGroupByTest.class
-    })
-public class AllShardingTablesOnlyTests {
+public enum ShardingTestStrategy {
+    tbl, db, dbtbl, masterslave
 }

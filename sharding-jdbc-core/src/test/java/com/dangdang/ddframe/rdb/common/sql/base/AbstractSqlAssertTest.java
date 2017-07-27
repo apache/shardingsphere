@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
-import com.dangdang.ddframe.rdb.common.sql.ShardingTestStrategy;
+import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -85,7 +85,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private void executeAndAssertSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws Exception {
         for (SqlAssertData each : data) {
-            String expected = each.getExpected() == null ? "integrate/dataset/Empty.xml" 
+            String expected = each.getExpected() == null ? "integrate/dataset/EmptyTable.xml" 
                     : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
             URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
             if (null == url) {
