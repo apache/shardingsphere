@@ -86,10 +86,6 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         return insertStatement;
     }
     
-    protected Set<TokenType> getUnsupportedKeywords() {
-        return Collections.emptySet();
-    }
-    
     private void parseInto() {
         if (getUnsupportedKeywords().contains(sqlParser.getLexer().getCurrentToken().getType())) {
             throw new SQLParsingUnsupportedException(sqlParser.getLexer().getCurrentToken().getType());
@@ -98,6 +94,10 @@ public abstract class AbstractInsertParser implements SQLStatementParser {
         sqlParser.getLexer().nextToken();
         sqlParser.parseSingleTable(insertStatement);
         skipBetweenTableAndValues();
+    }
+    
+    protected Set<TokenType> getUnsupportedKeywords() {
+        return Collections.emptySet();
     }
     
     private void skipBetweenTableAndValues() {
