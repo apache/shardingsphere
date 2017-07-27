@@ -68,20 +68,28 @@ public abstract class AbstractUpdateParser implements SQLStatementParser {
     }
     
     private void parseSetItem() {
+        parseSetColumn();
+        sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
+        parseSetValue();
+    }
+    
+    private void parseSetColumn() {
         if (sqlParser.equalAny(Symbol.LEFT_PAREN)) {
             sqlParser.skipParentheses();
-        } else {
-            int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
-            String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-            sqlParser.getLexer().nextToken();
-            if (sqlParser.skipIfEqual(Symbol.DOT)) {
-                if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                    updateStatement.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
-                }
-                sqlParser.getLexer().nextToken();
-            }
+            return;
         }
-        sqlParser.skipIfEqual(Symbol.EQ, Symbol.COLON_EQ);
+        int beginPosition = sqlParser.getLexer().getCurrentToken().getEndPosition();
+        String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
+        sqlParser.getLexer().nextToken();
+        if (sqlParser.skipIfEqual(Symbol.DOT)) {
+            if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
+                updateStatement.getSqlTokens().add(new TableToken(beginPosition - literals.length(), literals));
+            }
+            sqlParser.getLexer().nextToken();
+        }
+    }
+    
+    private void parseSetValue() {
         sqlParser.parseExpression(updateStatement);
         parametersIndex = sqlParser.getParametersIndex();
     }
