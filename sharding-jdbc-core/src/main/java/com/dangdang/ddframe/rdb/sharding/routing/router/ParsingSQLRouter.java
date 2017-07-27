@@ -90,9 +90,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, sqlStatement);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            SelectStatement selectStatement = (SelectStatement) sqlStatement;
-            boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-            selectStatement.getLimit().processParameters(parameters, !isSingleRouting, isNeedFetchAll);
+            processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!isSingleRouting);
         if (routingResult instanceof CartesianRoutingResult) {
@@ -154,5 +152,10 @@ public final class ParsingSQLRouter implements SQLRouter {
         generatedKeys.add(generatedKey);
         sqlRouteResult.getGeneratedKeys().clear();
         sqlRouteResult.getGeneratedKeys().addAll(generatedKeys);
+    }
+    
+    private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {
+        boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
+        selectStatement.getLimit().processParameters(parameters, !isSingleRouting, isNeedFetchAll);
     }
 }
