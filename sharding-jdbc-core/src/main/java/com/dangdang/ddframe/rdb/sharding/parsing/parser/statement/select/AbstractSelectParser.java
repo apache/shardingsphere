@@ -127,14 +127,12 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         }
         sqlParser.skipIfEqual(DefaultKeyword.CONNECT_BY_ROOT);
         String literals = sqlParser.getLexer().getCurrentToken().getLiterals();
-        if (sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals))) {
-            sqlParser.getLexer().nextToken();
-            selectStatement.getItems().add(new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias()));
-            selectStatement.setContainStar(true);
+        if (isStarSelectItem(literals)) {
+            selectStatement.getItems().add(parseStarSelectItem());
             return;
         }
-        if (sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT)) {
-            selectStatement.getItems().add(new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias()));
+        if (isAggregationSelectItem()) {
+            selectStatement.getItems().add(parseAggregationSelectItem(literals));
             return;
         }
         StringBuilder expression = new StringBuilder();
@@ -149,9 +147,8 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
                 selectStatement.getSqlTokens().add(new TableToken(position, value));
             }
         }
-        if (null != lastToken && Literals.IDENTIFIER == lastToken.getType() && !isSQLPropertyExpression(expression, lastToken) && !expression.toString().equals(lastToken.getLiterals())) {
-            selectStatement.getItems().add(
-                    new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals())));
+        if (hasAlias(expression, lastToken)) {
+            selectStatement.getItems().add(parseSelectItemWithAlias(expression, lastToken));
             return;
         }
         selectStatement.getItems().add(new CommonSelectItem(SQLUtil.getExactlyValue(expression.toString()), sqlParser.parseAlias()));
@@ -165,8 +162,34 @@ public abstract class AbstractSelectParser implements SQLStatementParser {
         throw new UnsupportedOperationException("Cannot support special select item.");
     }
     
+    private boolean isStarSelectItem(final String literals) {
+        return sqlParser.equalAny(Symbol.STAR) || Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(literals));
+    }
+    
+    private SelectItem parseStarSelectItem() {
+        sqlParser.getLexer().nextToken();
+        selectStatement.setContainStar(true);
+        return new CommonSelectItem(Symbol.STAR.getLiterals(), sqlParser.parseAlias());
+    }
+    
+    private boolean isAggregationSelectItem() {
+        return sqlParser.skipIfEqual(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    }
+    
+    private SelectItem parseAggregationSelectItem(final String literals) {
+        return new AggregationSelectItem(AggregationType.valueOf(literals.toUpperCase()), sqlParser.skipParentheses(), sqlParser.parseAlias());
+    }
+    
+    private boolean hasAlias(final StringBuilder expression, final Token lastToken) {
+        return null != lastToken && Literals.IDENTIFIER == lastToken.getType() && !isSQLPropertyExpression(expression, lastToken) && !expression.toString().equals(lastToken.getLiterals());
+    }
+    
     private boolean isSQLPropertyExpression(final StringBuilder expression, final Token lastToken) {
         return expression.toString().endsWith(Symbol.DOT.getLiterals() + lastToken.getLiterals());
+    }
+    
+    private CommonSelectItem parseSelectItemWithAlias(final StringBuilder expression, final Token lastToken) {
+        return new CommonSelectItem(SQLUtil.getExactlyValue(expression.substring(0, expression.lastIndexOf(lastToken.getLiterals()))), Optional.of(lastToken.getLiterals()));
     }
     
     protected void queryRest() {
