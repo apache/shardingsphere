@@ -262,15 +262,18 @@ public class OracleSelectParser extends AbstractSelectParser {
     }
     
     private void skipFlashbackQueryClause() {
-        if (getSqlParser().equalAny(OracleKeyword.VERSIONS)) {
+        if (isFlashbackQueryClauseForVersions() || isFlashbackQueryClauseForAs()) {
             throw new UnsupportedOperationException("Cannot support Flashback Query");
-        } else if (getSqlParser().skipIfEqual(DefaultKeyword.AS)) {
-            if (getSqlParser().skipIfEqual(OracleKeyword.OF)) {
-                if (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP)) {
-                    throw new UnsupportedOperationException("Cannot support Flashback Query");
-                }
-            }
         }
+    }
+    
+    private boolean isFlashbackQueryClauseForVersions() {
+        return getSqlParser().skipIfEqual(OracleKeyword.VERSIONS) && getSqlParser().skipIfEqual(DefaultKeyword.BETWEEN);
+    }
+    
+    private boolean isFlashbackQueryClauseForAs() {
+        return getSqlParser().skipIfEqual(DefaultKeyword.AS) && getSqlParser().skipIfEqual(OracleKeyword.OF)
+                && (getSqlParser().skipIfEqual(OracleKeyword.SCN) || getSqlParser().skipIfEqual(OracleKeyword.TIMESTAMP));
     }
     
     private void skipForUpdate() {
