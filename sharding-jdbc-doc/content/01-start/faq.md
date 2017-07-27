@@ -66,6 +66,8 @@ PS:sourceforge网站需要翻墙访问。
 
 ### 7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
 
+回答：
+
 SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
 
 ```sql
@@ -79,3 +81,37 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 ```sql
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;
 ```
+
+### 8. 1.5.x之前支持OR，1.5.x之后不再支持，是什么原因？
+
+回答：
+
+1.5.x之前对OR支持并不完善，在复杂场景会有问题。OR的复杂度不仅在于解析，更在于路由。而且非常不适合在分布式数据库中使用，会极大的影响性能。OR是需要将OR和AND的组合拆解成全AND，才可以真正的执行SQL。
+举例说明：
+
+```sql
+WHERE (a=? OR b=?) AND c=?
+```
+
+必须拆解为
+
+```sql
+WHERE a=? AND c=?
+WHERE b=? AND c=?
+```
+
+两条语句才能执行。
+
+再举一个具体的例子：
+
+```sql
+WHERE id=1 OR status=‘OK’
+```
+
+这样的SQL，如果id是分片键，应该如何处理呢？
+首先，需要路由到id=1的库或表，单表获取即可。
+其次，因为有OR，需要在所有的数据库和表中全路由，取出所有的status=‘OK’的数据。
+最后，将两种数据归并。
+因此，SQL必须拆为两条，一条为WHERE id=1，另一条为status=‘OK’，而且他们的分片路由方式截然不同。
+
+如果考虑到很多OR和AND的组合就更加复杂，必须组成一个多维递归的树结构。这种性能对于分布式数据库无法接受，也不可控，因此Sharding-JDBC选择不对OR进行支持。
