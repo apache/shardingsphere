@@ -28,7 +28,7 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.type.hint.DatabaseHintRoutingEngine;
-import lombok.extern.slf4j.Slf4j;
+import com.dangdang.ddframe.rdb.sharding.util.SQLLogger;
 
 import java.util.List;
 
@@ -37,13 +37,15 @@ import java.util.List;
  * 
  * @author zhangiang
  */
-@Slf4j
 public final class DatabaseHintSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
+    private final boolean showSQL;
+    
     public DatabaseHintSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
+        showSQL = shardingContext.isShowSQL();
     }
     
     @Override
@@ -61,14 +63,9 @@ public final class DatabaseHintSQLRouter implements SQLRouter {
             result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
         }
         MetricsContext.stop(context);
-        logSQLRouteResult(result, parameters);
-        return result;
-    }
-    
-    private void logSQLRouteResult(final SQLRouteResult routeResult, final List<Object> parameters) {
-        log.debug("final route result is {} target", routeResult.getExecutionUnits().size());
-        for (SQLExecutionUnit each : routeResult.getExecutionUnits()) {
-            log.debug("{}:{} {}", each.getDataSource(), each.getSql(), parameters);
+        if (showSQL) {
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
         }
+        return result;
     }
 }

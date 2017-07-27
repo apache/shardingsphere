@@ -106,7 +106,7 @@ public final class ParsingSQLRouter implements SQLRouter {
         }
         MetricsContext.stop(context);
         if (showSQL) {
-            logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits(), parameters);
         }
         return result;
     }
@@ -121,18 +121,6 @@ public final class ParsingSQLRouter implements SQLRouter {
             routingEngine = new ComplexRoutingEngine(shardingRule, parameters, tableNames, sqlStatement);
         }
         return routingEngine.route();
-    }
-    
-    private void logSQL(final String logicSQL, final SQLStatement sqlStatement, final Collection<SQLExecutionUnit> sqlExecutionUnits, final List<Object> parameters) {
-        SQLLogger.log("Logic SQL: {}", logicSQL);
-        SQLLogger.log("SQLStatement: {}", sqlStatement);
-        for (SQLExecutionUnit each : sqlExecutionUnits) {
-            if (parameters.isEmpty()) {
-                SQLLogger.log("Actual SQL: {} ::: {}", each.getDataSource(), each.getSql());
-            } else {
-                SQLLogger.log("Actual SQL: {} ::: {} ::: {}", each.getDataSource(), each.getSql(), parameters);
-            }
-        }
     }
     
     private void processGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement, final SQLRouteResult sqlRouteResult) {
