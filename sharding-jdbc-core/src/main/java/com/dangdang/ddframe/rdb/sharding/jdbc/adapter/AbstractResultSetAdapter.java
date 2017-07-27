@@ -44,7 +44,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
 
     private boolean closed;
     
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets) throws SQLException {
+    public AbstractResultSetAdapter(final List<ResultSet> resultSets) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
     }

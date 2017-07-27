@@ -56,7 +56,7 @@ public final class ShardingResultSetTest {
     private ShardingResultSet shardingResultSet;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet);
     }
     

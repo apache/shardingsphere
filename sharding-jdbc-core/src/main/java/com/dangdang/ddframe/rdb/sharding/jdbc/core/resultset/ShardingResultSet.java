@@ -45,7 +45,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final ResultSetMerger mergeResultSet;
     
-    public ShardingResultSet(final List<ResultSet> resultSets, final ResultSetMerger mergeResultSet) throws SQLException {
+    public ShardingResultSet(final List<ResultSet> resultSets, final ResultSetMerger mergeResultSet) {
         super(resultSets);
         this.mergeResultSet = mergeResultSet;
     }
