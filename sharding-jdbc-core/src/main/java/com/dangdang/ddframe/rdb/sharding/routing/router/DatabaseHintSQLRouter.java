@@ -27,22 +27,22 @@ import com.dangdang.ddframe.rdb.sharding.routing.SQLExecutionUnit;
 import com.dangdang.ddframe.rdb.sharding.routing.SQLRouteResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.RoutingResult;
 import com.dangdang.ddframe.rdb.sharding.routing.type.TableUnit;
-import com.dangdang.ddframe.rdb.sharding.routing.type.direct.DirectRoutingEngine;
+import com.dangdang.ddframe.rdb.sharding.routing.type.hint.DatabaseHintRoutingEngine;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
- * 无需解析的SQL路由器.
+ * 通过提示且仅路由至数据库的SQL路由器.
  * 
  * @author zhangiang
  */
 @Slf4j
-public final class UnparsingSQLRouter implements SQLRouter {
+public final class DatabaseHintSQLRouter implements SQLRouter {
     
     private final ShardingRule shardingRule;
     
-    public UnparsingSQLRouter(final ShardingContext shardingContext) {
+    public DatabaseHintSQLRouter(final ShardingContext shardingContext) {
         shardingRule = shardingContext.getShardingRule();
     }
     
@@ -56,7 +56,7 @@ public final class UnparsingSQLRouter implements SQLRouter {
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
         Context context = MetricsContext.start("Route SQL");
         SQLRouteResult result = new SQLRouteResult(sqlStatement);
-        RoutingResult routingResult = new DirectRoutingEngine(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
+        RoutingResult routingResult = new DatabaseHintRoutingEngine(shardingRule.getDataSourceRule(), shardingRule.getDatabaseShardingStrategy(), sqlStatement.getType()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), logicSQL));
         }

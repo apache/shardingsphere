@@ -1,7 +1,7 @@
 package com.dangdang.ddframe.rdb.sharding.routing.type;
 
 /**
- * 路由接口.
+ * 路由引擎接口.
  *
  * @author zhangliang
  */

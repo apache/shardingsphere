@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * 混合多库表路由类.
+ * 混合多库表路由引擎.
  * 
  * @author gaohongtao
  * @author zhangliang

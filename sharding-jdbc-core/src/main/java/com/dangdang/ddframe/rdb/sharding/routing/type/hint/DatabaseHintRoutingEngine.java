@@ -15,7 +15,7 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.sharding.routing.type.direct;
+package com.dangdang.ddframe.rdb.sharding.routing.type.hint;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
@@ -35,13 +35,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * 直接路由.
+ * 基于数据库提示的路由引擎.
  * 
  * @author gaohongtao
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DirectRoutingEngine implements RoutingEngine {
+public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     private final DataSourceRule dataSourceRule;
     
