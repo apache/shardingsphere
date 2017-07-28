@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy.masterslave;
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
@@ -79,7 +80,16 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     private void execute(final boolean isPreparedStatement) throws Exception {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
             if (types.size() == 0 || types.contains(each.getKey())) {
-                executeAndAssertSql(isPreparedStatement, each.getValue());
+                try {
+                    executeAndAssertSql(isPreparedStatement, each.getValue());
+                    //CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    //CHECKSTYLE:ON
+                    if (ex.getMessage().startsWith("Dynamic table")) {
+                        continue;
+                    }
+                    throw new RuntimeException(ex);
+                }
             }
         }
     }
@@ -140,7 +150,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     }
     
     private SQLType getSqlType() {
-        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
+        return masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
     }
     
     private String getDataSourceName(final String expected) {
@@ -148,7 +158,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         if (!result.contains("_")) {
             result = result + "_0";
         }
-        if (result.contains("tbl")) {
+        if (result.startsWith("tbl")) {
             result = "tbl";
         }
         if (result.contains("masterslave")) {
@@ -229,12 +239,18 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             while (expectedTableIterator.next()) {
                 ITable expectedTable = expectedTableIterator.getTable();
                 String actualTableName = expectedTable.getTableMetaData().getTableName();
-                String status = sql.toUpperCase().startsWith("DELETE") ? "init" : file.getParentFile().getName();
-                String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + status + "'";
+                String verifySql = "SELECT * FROM " + actualTableName + " WHERE status = '" + getStatus(file) + "'";
                 ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
                         .createQueryTable(actualTableName, verifySql);
                 assertEquals(expectedTable, actualTable);
             }
         }
+    }
+    
+    private String getStatus(final File file) {
+        if (sql.toUpperCase().startsWith("DELETE")) {
+            return masterslave == getShardingStrategy() ? "init_master" : "init";
+        }
+        return file.getParentFile().getName();
     }
 }

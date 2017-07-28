@@ -36,32 +36,32 @@ public abstract class AbstractShardingBothForPStatementWithGroupByTest extends A
     
     @Test
     public void assertSelectSum() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumWithGroupBySql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumWithGroupBySql());
     }
     
     @Test
     public void assertSelectCount() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectCount.xml", shardingDataSource.getConnection(), "t_order",  getDatabaseTestSQL().getSelectCountWithGroupBySql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectCount.xml", shardingDataSource.getConnection(), "t_order",  getDatabaseTestSQL().getSelectCountWithGroupBySql());
     }
     
     @Test
     public void assertSelectMax() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxWithGroupBySql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxWithGroupBySql());
     }
     
     @Test
     public void assertSelectMin() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinWithGroupBySql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinWithGroupBySql());
     }
     
     @Test
     public void assertSelectAvg() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgWithGroupBySql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgWithGroupBySql());
     }
     
     @Test
     public void assertSelectOrderByDesc() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), 
+        assertDataSet("integrate/dataset/db_tbl/expect/select_group_by/SelectOrderByDesc.xml", shardingDataSource.getConnection(), 
                 "t_order", getDatabaseTestSQL().getSelectSumWithOrderByDescAndGroupBySql());
     }
 }

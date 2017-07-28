@@ -29,7 +29,6 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.junit.runners.Parameterized;
 
@@ -80,7 +79,7 @@ public abstract class AbstractBaseSqlTest {
             for (int i = 0; i < 10; i++) {
                 for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
                     conn = initialConnection(database + "_" + i, dbType);
-                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+//                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
                     conn.close();
                 }
             }

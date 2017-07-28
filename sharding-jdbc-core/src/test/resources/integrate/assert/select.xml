@@ -6,14 +6,14 @@
             <data parameter="11,1109" expected="select/SelectEqualsWithSingleTable_1.xml" />
             <data parameter="12,1000" />
         </sharding-rule>
-        <sharding-rule value="db,masterslave">
+        <sharding-rule value="db,masterslave,dbtbl">
             <data parameter="10,1000" expected="select/SelectEqualsWithSingleTable_0.xml" />
             <data parameter="12,1201" expected="select/SelectEqualsWithSingleTable_1.xml" />
             <data parameter="12,1000" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectBetweenWithSingleTable" value="SELECT * FROM t_order WHERE user_id BETWEEN %s AND %s AND order_id BETWEEN %s AND %s ORDER BY user_id, order_id">
-        <sharding-rule value="tbl,masterslave">
+        <sharding-rule value="tbl,masterslave,dbtbl">
             <data parameter="10,12,1009,1108" expected="select/SelectBetweenWithSingleTable.xml" />
         </sharding-rule>
         <sharding-rule value="db">
@@ -32,7 +32,7 @@
             <data parameter="10,12,15,1000,1101" expected="select/SelectInWithSingleTable_1.xml" />
             <data parameter="10,12,15,1309,1408" />
         </sharding-rule>
-        <sharding-rule value="masterslave">
+        <sharding-rule value="masterslave,dbtbl">
             <data parameter="10,12,15,1009,1208" expected="select/SelectInWithSingleTable_0.xml" />
             <data parameter="10,12,15,1009,1108" expected="select/SelectInWithSingleTable_1.xml" />
             <data parameter="10,12,15,1309,1408" />
@@ -51,7 +51,7 @@
             <data parameter="100001,200102" expected="select/SelectIteratorSql_2.xml" />
             <data parameter="100001,100101" expected="select/SelectIteratorSql_3.xml" />
         </sharding-rule>
-        <sharding-rule value="masterslave">
+        <sharding-rule value="masterslave,dbtbl">
             <data parameter="100000,100001" expected="select/SelectIteratorSql_0.xml" />
             <data parameter="190900,190901" expected="select/SelectIteratorSql_1.xml" />
             <data parameter="100000,100900" expected="select/SelectIteratorSql_2.xml" />
@@ -62,7 +62,7 @@
         </sharding-rule>
     </sql>
     <sql id="assertSelectNoShardingTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id">
-        <sharding-rule value="tbl,db">
+        <sharding-rule value="tbl,db,dbtbl">
             <data expected="select/SelectNoShardingTable.xml" />
         </sharding-rule>
     </sql>
@@ -70,7 +70,7 @@
         <sharding-rule value="tbl">
             <data parameter="'init',10,11,1000,1909" expected="select/SelectLikeWithCount.xml" />
         </sharding-rule>
-        <sharding-rule value="db,masterslave">
+        <sharding-rule value="db,masterslave,dbtbl">
             <data parameter="'init',10,11,1000,2901" expected="select/SelectLikeWithCount.xml" />
         </sharding-rule>
     </sql>
@@ -81,17 +81,22 @@
         <sharding-rule value="db">
             <data parameter="10,11,1000,1909" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
-        <sharding-rule value="masterslave">
+        <sharding-rule value="masterslave,dbtbl">
             <data parameter="10,11,1009,1108" expected="select/SelectWithBindingTable.xml" />
         </sharding-rule>
     </sql>
     <sql id="assertSelectWithBindingTableAndConfigTable" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_config c ON o.status = c.status WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s AND c.status = %s ORDER BY i.item_id">
         <sharding-rule value="tbl">
             <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
-            <data parameter="10,11,1009,1108,'none"/>
+            
         </sharding-rule>
         <sharding-rule value="masterslave">
             <data parameter="10,11,1009,1108,'init_slave'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
+        </sharding-rule>
+        <sharding-rule value="dbtbl">
+            <data parameter="10,11,1009,1108,'init'" expected="select/SelectWithBindingTableAndConfigTable.xml" />
+        </sharding-rule>
+        <sharding-rule>
             <data parameter="10,11,1009,1108,'none"/>
         </sharding-rule>
     </sql>
@@ -109,7 +114,7 @@
         <sharding-rule value="tbl,db">
             <data parameter="10,19,1000,1909,18" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
         </sharding-rule>
-        <sharding-rule value="masterslave">
+        <sharding-rule value="masterslave,dbtbl">
             <data parameter="10,19,1000,1909,38" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
         </sharding-rule>
     </sql>

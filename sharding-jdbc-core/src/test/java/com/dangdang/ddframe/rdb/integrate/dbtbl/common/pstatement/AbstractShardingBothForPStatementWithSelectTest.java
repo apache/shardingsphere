@@ -42,29 +42,29 @@ public abstract class AbstractShardingBothForPStatementWithSelectTest extends Ab
     @Test
     public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
     }
     
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 12, 1201);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 1000);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectEqualsWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 12, 1201);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 12, 1000);
     }
     
     @Test
     public void assertSelectBetweenWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectBetweenWithSingleTableSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectBetweenWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1009, 1108);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectBetweenWithSingleTable.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1009, 1108);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 1309, 1408);
     }
     
     @Test
     public void assertSelectInWithSingleTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectInWithSingleTableSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectInWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1208);
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectInWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1108);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectInWithSingleTable_0.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1208);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectInWithSingleTable_1.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1009, 1108);
         assertDataSet("integrate/dataset/Empty.xml", shardingDataSource.getConnection(), "t_order", sql, 10, 12, 15, 1309, 1408);
     }
 }

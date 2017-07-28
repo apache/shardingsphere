@@ -49,41 +49,41 @@ public final class StaticShardingBothForPStatementWithSelectTest extends Abstrac
     @Test
     public void assertSelectLimitWithBindingTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithOffsetAndRowCountSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2, 2);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 10000, 2);
     }
     
     @Test
     public void assertSelectLimitWithBindingTableWithoutOffset() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectPagingWithRowCountSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTableWithoutOffset.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectLimitWithBindingTableWithoutOffset.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 2);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909, 0);
     }
     
     @Test
     public void assertSelectGroupByWithBindingTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectGroupByWithBindingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
     }
     
     @Test
     public void assertSelectGroupByWithoutGroupedColumn() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithoutGroupedColumnSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectGroupByWithoutGroupedColumn.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 19, 1000, 1909);
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 1, 9, 1000, 1909);
     }
     
     @Test
     public void assertSelectWithBindingTableAndConfigTable() throws SQLException, DatabaseUnitException {
         String sql = replacePreparedStatement(getDatabaseTestSQL().getSelectGroupWithBindingTableAndConfigSql());
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectWithBindingTableAndConfigTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 11, 1009, 1108, "init");
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectWithBindingTableAndConfigTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 11, 1009, 1108, "init");
         assertDataSet("integrate/dataset/Empty.xml", getShardingDataSource().getConnection(), "t_order_item", sql, 10, 11, 1009, 1108, "none");
     }
     
     @Test
     public void assertSelectWithNoShardingTable() throws SQLException, DatabaseUnitException {
         String sql = getDatabaseTestSQL().getSelectWithNoShardingTableSql();
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
     }
 }

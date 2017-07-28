@@ -38,42 +38,42 @@ public abstract class AbstractShardingBothForPStatementWithAggregateTest extends
     
     @Test
     public void assertSelectCountAliasSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectCountAliasSql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectCount.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectCountAliasSql());
     }
     
     @Test
     public void assertSelectSumAliasSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumAliasSql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectSum.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectSumAliasSql());
     }
     
     @Test
     public void assertSelectMaxAliasSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxAliasSql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectMax.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMaxAliasSql());
     }
     
     @Test
     public void assertSelectMinAliasSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinAliasSql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectMin.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectMinAliasSql());
     }
     
     @Test
     public void assertSelectAvgAliasSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectAvg.xml", shardingDataSource.getConnection(), "t_order", getDatabaseTestSQL().getSelectAvgAliasSql());
     }
     
     @Test
     public void assertSelectCountWithBindingTable() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), 
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(), 
                 "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableSql()), 10, 19, 1000, 1909);
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), 
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(), 
                 "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableSql()), 1, 9, 1000, 1909);
     }
     
     @Test
     public void assertSelectCountWithBindingTableAndWithoutJoinSql() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(),
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectCountWithBindingTable_0.xml", shardingDataSource.getConnection(),
                 "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableAndWithoutJoinSql()), 10, 19, 1000, 1909);
-        assertDataSet("integrate/dataset/dbtbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(),
+        assertDataSet("integrate/dataset/db_tbl/expect/select_aggregate/SelectCountWithBindingTable_1.xml", shardingDataSource.getConnection(),
                 "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectCountWithBindingTableAndWithoutJoinSql()), 1, 9, 1000, 1909);
     }
 }

@@ -50,26 +50,26 @@ public final class DynamicShardingBothForPStatementWithSelectTest extends Abstra
     @Test(expected = UnsupportedOperationException.class)
     public void assertSelectWithBindingTable() throws SQLException, DatabaseUnitException {
         String sql = getDatabaseTestSQL().getSelectWithBindingTableSql();
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), 
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectLimitWithBindingTable.xml", getShardingDataSource().getConnection(), 
                 "t_order_item", sql, 10, 19, 1000, 1909);
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertSelectNoShardingTable() throws SQLException, DatabaseUnitException {
         String sql = getDatabaseTestSQL().getSelectWithNoShardingTableSql();
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectNoShardingTable.xml", getShardingDataSource().getConnection(), "t_order_item", sql);
     }
     
     @Test
     public void assertSelectForFullTableNameWithSingleTable() throws SQLException, DatabaseUnitException {
-        assertDataSet("integrate/dataset/dbtbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), 
+        assertDataSet("integrate/dataset/db_tbl/expect/select/SelectEqualsWithSingleTable_0.xml", shardingDataSource.getConnection(), 
                 "t_order", getDatabaseTestSQL().getSelectForFullTableNameWithSingleTableSql(), 10, 1000);
     }
     
     @Test
     public void assertSelectLikeWithBindingTable() throws SQLException, DatabaseUnitException {
         if (currentDbType() == MySQL) {
-            assertDataSet("integrate/dataset/dbtbl/expect/select/SelectLikeWithCount.xml", getShardingDataSource().getConnection(),
+            assertDataSet("integrate/dataset/db_tbl/expect/select/SelectLikeWithCount.xml", getShardingDataSource().getConnection(),
                     "t_order_item", replacePreparedStatement(getDatabaseTestSQL().getSelectLikeWithCountSql()), "init", 10, 11, 1000, 1001);
         }
     }

@@ -140,7 +140,7 @@ public abstract class AbstractShardingBothForPStatementWithDMLTest extends Abstr
     protected void assertDataSet(final String expectedDataSetPattern, final String status) throws SQLException, DatabaseUnitException {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                assertDataSet(String.format("integrate/dataset/dbtbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i),
+                assertDataSet(String.format("integrate/dataset/db_tbl/expect/%s/dbtbl_%s.xml", expectedDataSetPattern, i),
                         shardingDataSource.getConnection().getConnection(String.format("dataSource_dbtbl_%s", i), SQLType.SELECT), 
                         String.format("t_order_%s", j), String.format(getDatabaseTestSQL().getAssertSelectShardingTablesWithStatusSql(), j), status);
             }
