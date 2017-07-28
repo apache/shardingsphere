@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls>
     <sql id="assertInsertWithAllPlaceholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, %s)">
-        <sharding-rule value="tbl,db">
+        <sharding-rule>
             <data parameter="1,1,'insert'" expected="insert/%s_1.xml" />
             <data parameter="2,2,'insert'" expected="insert/%s_2.xml" />
             <data parameter="3,3,'insert'" expected="insert/%s_3.xml" />
@@ -15,7 +15,7 @@
         </sharding-rule>
     </sql>
     <sql id="assertInsertWithPartialPlaceholder" value="INSERT INTO t_order (order_id, user_id, status) VALUES (%s, %s, 'insert')">
-        <sharding-rule value="tbl,db">
+        <sharding-rule>
             <data parameter="1,1" expected="insert/%s_1.xml" />
             <data parameter="2,2" expected="insert/%s_2.xml" />
             <data parameter="3,3" expected="insert/%s_3.xml" />
@@ -53,6 +53,18 @@
             <data parameter="'update',1800,18" expected="update/%s_8.xml" />
             <data parameter="'update',1900,19" expected="update/%s_9.xml" />
         </sharding-rule>
+        <sharding-rule value="masterslave">
+            <data parameter="'update',1000,10" expected="update/%s_0.xml" />
+            <data parameter="'update',1101,11" expected="update/%s_1.xml" />
+            <data parameter="'update',1202,12" expected="update/%s_2.xml" />
+            <data parameter="'update',1303,13" expected="update/%s_3.xml" />
+            <data parameter="'update',1404,14" expected="update/%s_4.xml" />
+            <data parameter="'update',1505,15" expected="update/%s_5.xml" />
+            <data parameter="'update',1606,16" expected="update/%s_6.xml" />
+            <data parameter="'update',1707,17" expected="update/%s_7.xml" />
+            <data parameter="'update',1808,18" expected="update/%s_8.xml" />
+            <data parameter="'update',1909,19" expected="update/%s_9.xml" />
+        </sharding-rule>
     </sql>
     <sql id="assertUpdateWithoutAlias" value="UPDATE t_order SET status = %s WHERE order_id = %s AND user_id = %s">
         <sharding-rule value="tbl">
@@ -79,6 +91,18 @@
             <data parameter="'update',1800,18" expected="update/%s_8.xml" />
             <data parameter="'update',1900,19" expected="update/%s_9.xml" />
         </sharding-rule>
+        <sharding-rule value="masterslave">
+            <data parameter="'update',1000,10" expected="update/%s_0.xml" />
+            <data parameter="'update',1101,11" expected="update/%s_1.xml" />
+            <data parameter="'update',1202,12" expected="update/%s_2.xml" />
+            <data parameter="'update',1303,13" expected="update/%s_3.xml" />
+            <data parameter="'update',1404,14" expected="update/%s_4.xml" />
+            <data parameter="'update',1505,15" expected="update/%s_5.xml" />
+            <data parameter="'update',1606,16" expected="update/%s_6.xml" />
+            <data parameter="'update',1707,17" expected="update/%s_7.xml" />
+            <data parameter="'update',1808,18" expected="update/%s_8.xml" />
+            <data parameter="'update',1909,19" expected="update/%s_9.xml" />
+        </sharding-rule>
     </sql>
     <sql id="assertDeleteWithoutAlias" value="DELETE FROM t_order WHERE order_id = %s AND user_id = %s AND status=%s">
         <sharding-rule value="tbl">
@@ -93,7 +117,7 @@
             <data parameter="1108,11,'init'" expected="delete/%s_8.xml" />
             <data parameter="1109,11,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db">
+        <sharding-rule>
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1100,11,'init'" expected="delete/%s_1.xml" />
             <data parameter="1200,12,'init'" expected="delete/%s_2.xml" />
@@ -107,7 +131,7 @@
         </sharding-rule>
     </sql>
     <sql id="assertDeleteWithoutShardingValue" value="DELETE FROM t_order WHERE status=%s">
-        <sharding-rule value="tbl,db">
+        <sharding-rule>
             <data parameter="'init'" expected="delete/%s.xml" />
         </sharding-rule>
     </sql>
