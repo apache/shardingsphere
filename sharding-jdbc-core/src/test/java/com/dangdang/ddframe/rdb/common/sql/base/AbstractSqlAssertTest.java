@@ -133,9 +133,14 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             executeWithStatement(shardingDataSource, getParameters(data));
         }
         String dataSourceName = getDataSourceName(data.getExpected());
-        try (Connection conn = shardingDataSource.getConnection().getConnection(dataSourceName, SQLType.SELECT)) {
+        SQLType sqlType = getSqlType();
+        try (Connection conn = shardingDataSource.getConnection().getConnection(dataSourceName, sqlType)) {
             assertResult(conn, expectedDataSetFile);
         }
+    }
+    
+    private SQLType getSqlType() {
+        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
     }
     
     private String getDataSourceName(final String expected) {
@@ -146,7 +151,11 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         if (result.contains("tbl")) {
             result = "tbl";
         }
-        result = "dataSource_" + result;
+        if (result.contains("masterslave")) {
+            result = result.replace("masterslave", "ms");
+        } else {
+            result = "dataSource_" + result;
+        }
         return result;
     }
     

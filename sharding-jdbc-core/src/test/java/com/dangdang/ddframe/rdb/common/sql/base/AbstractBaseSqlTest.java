@@ -86,7 +86,7 @@ public abstract class AbstractBaseSqlTest {
             }
             String database = "tbl";
             conn = initialConnection(database, dbType);
-            //RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+            // RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -162,14 +162,19 @@ public abstract class AbstractBaseSqlTest {
     public static Collection<Object[]> dataParameters() {
         Collection<Object[]> result = new ArrayList<>();
         URL url = AbstractSqlAssertTest.class.getClassLoader().getResource("integrate/assert");
-        if (null != url) {
-            File filePath = new File(url.getPath());
-            if (filePath.exists()) {
-                File[] files = filePath.listFiles();
-                for (File each : files) {
-                    result.addAll(dataParameters(each));
-                }
-            }
+        if (null == url) {
+            return Collections.emptyList();
+        }
+        File filePath = new File(url.getPath());
+        if (!filePath.exists()) {
+            return Collections.emptyList();
+        }
+        File[] files = filePath.listFiles();
+        if (null == files) {
+            return Collections.emptyList();
+        }
+        for (File each : files) {
+            result.addAll(dataParameters(each));
         }
         return result;
     }
