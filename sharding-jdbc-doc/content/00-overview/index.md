@@ -56,6 +56,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 * 统一的分布式基于时间序列的ID生成器
 
 # 第三方文档
+* 2017-07 [轻量级数据库中间件利器Sharding-JDBC深度解析](http://mp.weixin.qq.com/s/W-pBQInQKu99NLn2rHMI-Q)
 * 2017-03 [开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析](https://www.oschina.net/question/2720166_2233456)
 * 2016-06 [InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离](http://www.infoq.com/cn/news/2016/06/sharding-jdbc-130)
 * 2016-02 [CSDN文章：解读分库分表中间件Sharding-JDBC](http://geek.csdn.net/news/detail/55513)
