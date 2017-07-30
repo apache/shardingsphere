@@ -27,6 +27,7 @@ import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
@@ -34,6 +35,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy.masterslave;
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replacePreparedStatement;
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
@@ -68,20 +69,20 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     protected abstract Map<DatabaseType, ShardingDataSource> getShardingDataSources();
     
     @Test
-    public void assertWithPreparedStatement() throws Exception {
+    public void assertWithPreparedStatement() {
         execute(true);
     }
     
     @Test
-    public void assertWithStatement() throws Exception {
+    public void assertWithStatement() {
         execute(false);
     }
     
-    private void execute(final boolean isPreparedStatement) throws Exception {
+    private void execute(final boolean isPreparedStatement) {
         for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
-            if (types.size() == 0 || types.contains(each.getKey())) {
+            if (types.isEmpty() || types.contains(each.getKey())) {
                 try {
-                    executeAndAssertSql(isPreparedStatement, each.getValue());
+                    executeAndAssertSQL(isPreparedStatement, each.getValue());
                     //CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     //CHECKSTYLE:ON
@@ -94,22 +95,24 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         }
     }
     
-    private void executeAndAssertSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws Exception {
+    private void executeAndAssertSQL(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource) throws MalformedURLException, SQLException, DatabaseUnitException {
         for (SqlShardingRule sqlShardingRule : shardingRules) {
-            if (needAssert(sqlShardingRule)) {
-                for (SqlAssertData each : sqlShardingRule.getData()) {
-                    String expected = each.getExpected() == null ? "integrate/dataset/EmptyTable.xml"
-                            : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
-                    URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
-                    if (null == url) {
-                        throw new Exception("Wrong expected file:" + expected);
-                    }
-                    File expectedDataSetFile = new File(url.getPath());
-                    if (sql.toUpperCase().startsWith("SELECT")) {
-                        assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
-                    } else {
-                        assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
-                    }
+            if (!needAssert(sqlShardingRule)) {
+                continue;
+            }
+            for (SqlAssertData each : sqlShardingRule.getData()) {
+                // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
+                String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
+                        : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
+                URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
+                if (null == url) {
+                    throw new RuntimeException("Wrong expected file:" + expected);
+                }
+                File expectedDataSetFile = new File(url.getPath());
+                if (sql.toUpperCase().startsWith("SELECT")) {
+                    assertSelectSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
+                } else {
+                    assertDmlSql(isPreparedStatement, shardingDataSource, each, expectedDataSetFile);
                 }
             }
         }
@@ -128,7 +131,8 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         return false;
     }
     
-    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) throws Exception {
+    private void assertSelectSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeQueryWithPreparedStatement(shardingDataSource, getParameters(data), expectedDataSetFile);
         } else {
@@ -136,23 +140,23 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         }
     }
     
-    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) throws Exception {
+    private void assertDmlSql(final boolean isPreparedStatement, final ShardingDataSource shardingDataSource, final SqlAssertData data, final File expectedDataSetFile) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         if (isPreparedStatement) {
             executeWithPreparedStatement(shardingDataSource, getParameters(data));
         } else {
             executeWithStatement(shardingDataSource, getParameters(data));
         }
-        String dataSourceName = getDataSourceName(data.getExpected());
-        SQLType sqlType = getSqlType();
-        try (Connection conn = shardingDataSource.getConnection().getConnection(dataSourceName, sqlType)) {
+        try (Connection conn = shardingDataSource.getConnection().getConnection(getDataSourceName(data.getExpected()), getSqlType())) {
             assertResult(conn, expectedDataSetFile);
         }
     }
     
     private SQLType getSqlType() {
-        return masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
+        return ShardingTestStrategy.masterslave == getShardingStrategy() ? SQLType.INSERT : SQLType.SELECT;
     }
     
+    // TODO 标准化文件名
     private String getDataSourceName(final String expected) {
         String result = String.format(expected.split("/")[1].split(".xml")[0], getShardingStrategy().name());
         if (!result.contains("_")) {
@@ -176,14 +180,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     private void executeWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
-            int index = 1;
-            for (String each : parameters) {
-                if (each.contains("'")) {
-                    preparedStatement.setString(index++, each.replace("'", ""));
-                } else {
-                    preparedStatement.setInt(index++, Integer.valueOf(each));
-                }
-            }
+            setParameters(preparedStatement, parameters);
             preparedStatement.execute();
         }
     }
@@ -194,18 +191,12 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             statement.execute(replaceStatement(sql, parameters.toArray()));
         }
     }
-
-    private void executeQueryWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws Exception {
+    
+    private void executeQueryWithPreparedStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) 
+            throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
-            int index = 1;
-            for (String param : parameters) {
-                if (param.contains("'")) {
-                    preparedStatement.setString(index++, param.replace("'", ""));
-                } else {
-                    preparedStatement.setInt(index++, Integer.valueOf(param));
-                }
-            }
+            setParameters(preparedStatement, parameters);
             ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
             while (expectedTableIterator.next()) {
                 ITable expectedTable = expectedTableIterator.getTable();
@@ -217,8 +208,19 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
             }
         }
     }
-
-    private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws Exception {
+    
+    private void setParameters(final PreparedStatement preparedStatement, final List<String> parameters) throws SQLException {
+        int index = 1;
+        for (String each : parameters) {
+            if (each.contains("'")) {
+                preparedStatement.setString(index++, each.replace("'", ""));
+            } else {
+                preparedStatement.setInt(index++, Integer.valueOf(each));
+            }
+        }
+    }
+    
+    private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = dataSource.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
             ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
@@ -233,7 +235,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         }
     }
 
-    private void assertResult(final Connection connection, final File file) throws Exception {
+    private void assertResult(final Connection connection, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
         ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
         try (Connection conn = connection) {
             while (expectedTableIterator.next()) {
@@ -249,7 +251,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private String getStatus(final File file) {
         if (sql.toUpperCase().startsWith("DELETE")) {
-            return masterslave == getShardingStrategy() ? "init_master" : "init";
+            return ShardingTestStrategy.masterslave == getShardingStrategy() ? "init_master" : "init";
         }
         return file.getParentFile().getName();
     }

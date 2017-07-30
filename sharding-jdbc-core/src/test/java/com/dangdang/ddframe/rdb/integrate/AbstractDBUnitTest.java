@@ -54,7 +54,7 @@ import static org.dbunit.Assertion.assertEquals;
 
 public abstract class AbstractDBUnitTest {
     
-    protected static final DatabaseType CURRENT_DB_TYPE = H2;
+    protected static final DatabaseType CURRENT_DB_TYPE = MySQL;
     
     @Getter(AccessLevel.PROTECTED)
     private static DatabaseTestSQL databaseTestSQL;
@@ -84,7 +84,7 @@ public abstract class AbstractDBUnitTest {
                     }
                 }
                 conn = createDataSource("tbl").getConnection();
-                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+//                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
                 conn.close();
             } catch (final SQLException ex) {
                 ex.printStackTrace();

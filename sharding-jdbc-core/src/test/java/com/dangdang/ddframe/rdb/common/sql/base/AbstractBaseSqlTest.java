@@ -17,9 +17,8 @@
 
 package com.dangdang.ddframe.rdb.common.sql.base;
 
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
-import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
 import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
+import com.dangdang.ddframe.rdb.common.sql.common.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
@@ -29,45 +28,36 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode.Local;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
 
 public abstract class AbstractBaseSqlTest {
     
-    private static final Map<DatabaseType, Map<String, DataSource>> DATA_SOURCES = new HashMap<>();
+    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
     
-    private static final DatabaseTestMode CURRENT_DB_TYPE = Local;
+    private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
     static {
         createSchema();
     }
     
     private static void createSchema() {
-        for (DatabaseType each : CURRENT_DB_TYPE.databaseTypes()) {
-            if (H2 == each) {
+        for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
+            if (DatabaseType.H2 == each) {
                 createSchema(each);
             }
         }
@@ -79,13 +69,13 @@ public abstract class AbstractBaseSqlTest {
             for (int i = 0; i < 10; i++) {
                 for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
                     conn = initialConnection(database + "_" + i, dbType);
-//                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
                     conn.close();
                 }
             }
             String database = "tbl";
             conn = initialConnection(database, dbType);
-            // RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+           // RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -94,7 +84,7 @@ public abstract class AbstractBaseSqlTest {
     
     @Before
     public final void importDataSet() throws Exception {
-        for (DatabaseType databaseType : CURRENT_DB_TYPE.databaseTypes()) {
+        for (DatabaseType databaseType : CURRENT_TEST_MODE.databaseTypes()) {
             DataBaseEnvironment dbEnv = new DataBaseEnvironment(databaseType);
             for (String each : getDataSetFiles()) {
                 InputStream is = AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(each);
@@ -113,11 +103,11 @@ public abstract class AbstractBaseSqlTest {
     protected final Map<DatabaseType, Map<String, DataSource>> createDataSourceMap() {
         for (String each : getDataSetFiles()) {
             String dbName = getDatabaseName(each);
-            for (DatabaseType type : CURRENT_DB_TYPE.databaseTypes()) {
+            for (DatabaseType type : CURRENT_TEST_MODE.databaseTypes()) {
                 createDataSources(dbName, type);
             }
         }
-        return DATA_SOURCES;
+        return databaseTypeMap;
     }
     
     private static Connection initialConnection(final String dbName, final DatabaseType type) throws SQLException {
@@ -132,18 +122,18 @@ public abstract class AbstractBaseSqlTest {
         result.setUsername(dbEnv.getUsername());
         result.setPassword(dbEnv.getPassword());
         result.setMaxActive(1000);
-        if (Oracle == dbEnv.getDatabaseType()) {
+        if (DatabaseType.Oracle == dbEnv.getDatabaseType()) {
             result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dbName));
         }
         return result;
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType type) {
+    private void createDataSources(final String dbName, final DatabaseType type) {
         String dataSource = "dataSource_" + dbName;
-        Map<String, DataSource> dataSourceMap = DATA_SOURCES.get(type);
+        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(type);
         if (null == dataSourceMap) {
             dataSourceMap = new HashMap<>();
-            DATA_SOURCES.put(type, dataSourceMap);
+            databaseTypeMap.put(type, dataSourceMap);
         }
         BasicDataSource result = buildDataSource(dbName, type);
         dataSourceMap.put(dataSource, result);
@@ -159,57 +149,8 @@ public abstract class AbstractBaseSqlTest {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> dataParameters() {
-        Collection<Object[]> result = new ArrayList<>();
-        URL url = AbstractSqlAssertTest.class.getClassLoader().getResource("integrate/assert");
-        if (null == url) {
-            return Collections.emptyList();
-        }
-        File filePath = new File(url.getPath());
-        if (!filePath.exists()) {
-            return Collections.emptyList();
-        }
-        File[] files = filePath.listFiles();
-        if (null == files) {
-            return Collections.emptyList();
-        }
-        for (File each : files) {
-            result.addAll(dataParameters(each));
-        }
-        return result;
+        return SQLAssertUtil.getDataParameters("integrate/assert");
     }
     
-    private static Collection<Object[]> dataParameters(final File file) {
-        SqlAsserts asserts = loadSqlAsserts(file);
-        Object[][] result = new Object[asserts.getSqlAsserts().size()][1];
-        for (int i = 0; i < asserts.getSqlAsserts().size(); i++) {
-            result[i] = getDataParameter(asserts.getSqlAsserts().get(i));
-        }
-        return Arrays.asList(result);
-    }
-    
-    private static SqlAsserts loadSqlAsserts(final File file) {
-        try {
-            return (SqlAsserts) JAXBContext.newInstance(SqlAsserts.class).createUnmarshaller().unmarshal(file);
-        } catch (final JAXBException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    private static Object[] getDataParameter(final SqlAssert sqlAssert) {
-        final Object[] result = new Object[4];
-        result[0] = sqlAssert.getId();
-        result[1] = sqlAssert.getSql();
-        if (null == sqlAssert.getTypes()) {
-            result[2] = Collections.emptySet();
-        } else {
-            Set<DatabaseType> types = new HashSet<>();
-            for (String each : sqlAssert.getTypes().split(",")) {
-                types.add(DatabaseType.valueOf(each));
-            }
-            result[2] = types;
-        }
-        result[3] = sqlAssert.getSqlShardingRules();
-        return result;
-    }
     
 }
