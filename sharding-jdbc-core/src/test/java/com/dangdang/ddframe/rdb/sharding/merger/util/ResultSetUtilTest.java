@@ -61,6 +61,7 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertConvertNullValue() {
+        assertThat(ResultSetUtil.convertValue(null, boolean.class), is((Object) false));
         assertThat(ResultSetUtil.convertValue(null, byte.class), is((Object) (byte) 0));
         assertThat(ResultSetUtil.convertValue(null, short.class), is((Object) (short) 0));
         assertThat(ResultSetUtil.convertValue(null, int.class), is((Object) 0));

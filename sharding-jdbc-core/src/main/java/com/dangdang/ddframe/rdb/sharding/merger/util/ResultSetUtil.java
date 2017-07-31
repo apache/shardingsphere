@@ -64,6 +64,8 @@ public final class ResultSetUtil {
     
     private static Object convertNullValue(final Class<?> convertType) {
         switch (convertType.getName()) {
+            case "boolean":
+                return false;
             case "byte":
                 return (byte) 0;
             case "short":
@@ -72,10 +74,10 @@ public final class ResultSetUtil {
                 return 0;
             case "long":
                 return 0L;
-            case "double":
-                return 0D;
             case "float":
                 return 0F;
+            case "double":
+                return 0D;
             default:
                 return null;
         }
