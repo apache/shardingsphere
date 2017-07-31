@@ -163,142 +163,142 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
+        Object result = mergeResultSet.getValue(columnIndex, String.class);
         wasNull = null == result;
-        return (String) result;
+        return (String) ResultSetUtil.convertValue(result, String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, String.class), String.class);
+        Object result = mergeResultSet.getValue(columnLabel, String.class);
         wasNull = null == result;
-        return (String) result;
+        return (String) ResultSetUtil.convertValue(result, String.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        Object result = mergeResultSet.getValue(columnIndex, BigDecimal.class);
         wasNull = null == result;
-        return (BigDecimal) result;
+        return (BigDecimal) ResultSetUtil.convertValue(result, BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
+        Object result = mergeResultSet.getValue(columnLabel, BigDecimal.class);
         wasNull = null == result;
-        return (BigDecimal) result;
+        return (BigDecimal) ResultSetUtil.convertValue(result, BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        Object result = mergeResultSet.getValue(columnIndex, BigDecimal.class);
         wasNull = null == result;
-        return (BigDecimal) result;
+        return (BigDecimal) ResultSetUtil.convertValue(result, BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
+        Object result = mergeResultSet.getValue(columnLabel, BigDecimal.class);
         wasNull = null == result;
-        return (BigDecimal) result;
+        return (BigDecimal) ResultSetUtil.convertValue(result, BigDecimal.class);
     }
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
         Object result = mergeResultSet.getValue(columnIndex, byte[].class);
         wasNull = null == result;
-        return (byte[]) result;
+        return (byte[]) ResultSetUtil.convertValue(result, byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
         Object result = mergeResultSet.getValue(columnLabel, byte[].class);
         wasNull = null == result;
-        return (byte[]) result;
+        return (byte[]) ResultSetUtil.convertValue(result, byte[].class);
     }
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
+        Object result = mergeResultSet.getValue(columnIndex, Date.class);
         wasNull = null == result;
-        return (Date) result;
+        return (Date) ResultSetUtil.convertValue(result, Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Date.class), Date.class);
+        Object result = mergeResultSet.getValue(columnLabel, Date.class);
         wasNull = null == result;
-        return (Date) result;
+        return (Date) ResultSetUtil.convertValue(result, Date.class);
     }
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        Object result = mergeResultSet.getCalendarValue(columnIndex, Date.class, cal);
         wasNull = null == result;
-        return (Date) result;
+        return (Date) ResultSetUtil.convertValue(result, Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Date.class, cal), Date.class);
+        Object result = mergeResultSet.getCalendarValue(columnLabel, Date.class, cal);
         wasNull = null == result;
-        return (Date) result;
+        return (Date) ResultSetUtil.convertValue(result, Date.class);
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
+        Object result = mergeResultSet.getValue(columnIndex, Time.class);
         wasNull = null == result;
-        return (Time) result;
+        return (Time) ResultSetUtil.convertValue(result, Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Time.class), Time.class);
+        Object result = mergeResultSet.getValue(columnLabel, Time.class);
         wasNull = null == result;
-        return (Time) result;
+        return (Time) ResultSetUtil.convertValue(result, Time.class);
     }
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        Object result = mergeResultSet.getCalendarValue(columnIndex, Time.class, cal);
         wasNull = null == result;
-        return (Time) result;
+        return (Time) ResultSetUtil.convertValue(result, Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Time.class, cal), Time.class);
+        Object result = mergeResultSet.getCalendarValue(columnLabel, Time.class, cal);
         wasNull = null == result;
-        return (Time) result;
+        return (Time) ResultSetUtil.convertValue(result, Time.class);
     }
             
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        Object result = mergeResultSet.getValue(columnIndex, Timestamp.class);
         wasNull = null == result;
-        return (Timestamp) result;
+        return (Timestamp) ResultSetUtil.convertValue(result, Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Timestamp.class), Timestamp.class);
+        Object result = mergeResultSet.getValue(columnLabel, Timestamp.class);
         wasNull = null == result;
-        return (Timestamp) result;
+        return (Timestamp) ResultSetUtil.convertValue(result, Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        Object result = mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal);
         wasNull = null == result;
-        return (Timestamp) result;
+        return (Timestamp) ResultSetUtil.convertValue(result, Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        Object result = ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal), Timestamp.class);
+        Object result = mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal);
         wasNull = null == result;
-        return (Timestamp) result;
+        return (Timestamp) ResultSetUtil.convertValue(result, Timestamp.class);
     }
     
     @Override
