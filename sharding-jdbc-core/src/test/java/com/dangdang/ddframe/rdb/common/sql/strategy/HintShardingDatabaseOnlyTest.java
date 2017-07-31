@@ -20,21 +20,16 @@ package com.dangdang.ddframe.rdb.common.sql.strategy;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
 @Ignore
 public class HintShardingDatabaseOnlyTest extends ShardingDatabaseOnlyTest {
-    
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     public HintShardingDatabaseOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
