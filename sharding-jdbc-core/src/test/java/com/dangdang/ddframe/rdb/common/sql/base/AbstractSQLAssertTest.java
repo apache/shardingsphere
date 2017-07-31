@@ -20,8 +20,6 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicDatabaseShardingValueHelper;
-import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -105,13 +103,11 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
             }
             for (SqlAssertData each : sqlShardingRule.getData()) {
                 String strategyName = getShardingStrategy().name();
-                if (ShardingTestStrategy.hint.name().equals(strategyName)) {
-                    strategyName = ShardingTestStrategy.db.name();
-                }
                 // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
                 String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
                         : String.format("integrate/dataset/%s/expect/" + each.getExpected(), strategyName, strategyName);
                 URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expected);
+                System.out.println("url--------" + url);
                 if (null == url) {
                     throw new RuntimeException("Wrong expected file:" + expected);
                 }
@@ -190,13 +186,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
-            if (getShardingStrategy() == ShardingTestStrategy.hint) {
-                DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(Integer.valueOf(parameters.get(0)));
-                preparedStatement.executeUpdate();
-                helper.close();
-            } else {
-                preparedStatement.execute();
-            }
+            preparedStatement.execute();
         }
     }
     

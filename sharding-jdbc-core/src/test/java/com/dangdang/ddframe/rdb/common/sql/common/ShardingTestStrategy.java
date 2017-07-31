@@ -19,5 +19,5 @@ package com.dangdang.ddframe.rdb.common.sql.common;
 
 public enum ShardingTestStrategy {
     
-    tbl, db, dbtbl, masterslave, nullable, hint
+    tbl, db, dbtbl, masterslave, nullable
 }

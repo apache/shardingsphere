@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectSum" value="SELECT SUM(user_id) AS user_id_sum FROM t_order">
+        <sharding-rule>
+            <data expected="select_aggregate/SelectSum.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectCount" value="SELECT COUNT(*) AS orders_count FROM t_order">
+        <sharding-rule>
+            <data expected="select_aggregate/SelectCount.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectMax" value="SELECT MAX(user_id) AS max_user_id FROM t_order">
+        <sharding-rule>
+            <data expected="select_aggregate/SelectMax.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectMin" value="SELECT MIN(user_id) AS min_user_id FROM t_order">
+        <sharding-rule>
+            <data expected="select_aggregate/SelectMin.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectAvg" value="SELECT AVG(user_id) AS user_id_avg FROM t_order">
+        <sharding-rule>
+            <data expected="select_aggregate/SelectAVG.xml" />
+        </sharding-rule>
+    </sql>
+</sqls>
