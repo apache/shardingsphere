@@ -1,71 +1,32 @@
-+++
-toc = true
-date = "2016-12-06T22:38:50+08:00"
-title = "Release Notes"
-weight = 2
-prev = "/00-overview/intro/"
-next = "/00-overview/contribution/"
-
-+++
-
-## 1.5.0.M4
-
-### 功能提升
-
-1. [ISSUE #291](https://github.com/dangdangdotcom/sharding-jdbc/issues/291) 用流式方式处理仅包含GroupBy的SQL
-
-### 缺陷修正
-
-1. [ISSUE #295](https://github.com/dangdangdotcom/sharding-jdbc/issues/295) limit 0的情况并未按照分页限制条件过滤结果集
-
-### 结构调整
-
-1. 为了维持Sharding-JDBC的纯粹性，因此不再支持通过环境变量设置默认自增主键的workerID。如有需求，可通过setWorkerId方法自行注入或封装
-
-## 1.5.0.M3
+## 1.5.0
 
 ### 里程碑
 
-1. 全新的SQL归并模块，分为流式、内存以及装饰者3种归并引擎，用于分别处理流式迭代、流式排序、流式分组、内存分组、内存聚合以及装饰者分页
+1. 全新的SQL解析模块，去掉对Druid的依赖。仅解析分片上下文，对于SQL采用"半理解"理念，进一步提升性能和兼容性，并降低代码复杂度
+1. 全新的SQL改写模块，增加优化性改写模块
+1. 全新的SQL归并模块，重构为流式、内存以及装饰者3种归并引擎
 
-### 缺陷修正
+### 新功能
 
-1. [ISSUE #292](https://github.com/dangdangdotcom/sharding-jdbc/issues/292) 内存方式处理GROUP BY语句如有分页信息则需改写
-
-## 1.5.0.M2
+1. 增加对Oracle，SQLServer和PostgreSQL的支持
+1. 非功能型子查询支持
 
 ### 功能提升
 
-1. 非功能型子查询支持
-1. Oracle与SQLServer分页支持
-1. 数据库执行SQL显示支持
+1. [ISSUE #256](https://github.com/dangdangdotcom/sharding-jdbc/issues/256) 可配置显示分片执行SQL日志
+1. [ISSUE #291](https://github.com/dangdangdotcom/sharding-jdbc/issues/291) 用流式方式处理仅包含GroupBy的SQL
+
+### 功能调整
+
+1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列，并不再支持通过环境变量设置workerID。
+1. 去掉对OR的支持
 
 ### 缺陷修正
 
 1. [ISSUE #239](https://github.com/dangdangdotcom/sharding-jdbc/issues/239) LIMIT路由至多查询结果集，若只有一个不为空的结果集，分页结果不正确
 1. [ISSUE #263](https://github.com/dangdangdotcom/sharding-jdbc/issues/263) 分片列和逻辑表配置可忽略大小写
-
-## 1.5.0.M1
-
-### 里程碑
-
-1. 全新的SQL解析模块，去掉对Druid的依赖。仅解析分片上下文，对于SQL采用"半理解"理念，极大提升性能和兼容性，并降低代码复杂度
-1. 提供对MySQL的全方位支持的同时，增加了对Oracle，SQLServer和PostgreSQL的基本支持
-1. 简化分布式自增序列。将每个表支持多自增序列简化为单表仅支持单一的分布式自增序列
-
-### 不支持项
-
-1. 当前仍然不支持子查询，因此对Oracle以及SQLServer的分页并不支持
-2. 暂时去掉对OR的支持
-
-### 开发中
-
-1. ShardingRule简化，每个ShardingRule仅支持单TableRule
-1. BindingTableRule增强，每个TableRule可以支持多个不同分片策略的BindingTableRule
-1. 子查询支持
-1. OR支持
-1. 包括分页的Oracle和SQLServer全语法支持
-1. 内置分片策略支持
+1. [ISSUE #292](https://github.com/dangdangdotcom/sharding-jdbc/issues/292) 内存方式处理GROUP BY语句如有分页信息则需改写
+1. [ISSUE #295](https://github.com/dangdangdotcom/sharding-jdbc/issues/295) LIMIT 0的情况并未按照分页限制条件过滤结果集
 
 ## 1.4.2
 
