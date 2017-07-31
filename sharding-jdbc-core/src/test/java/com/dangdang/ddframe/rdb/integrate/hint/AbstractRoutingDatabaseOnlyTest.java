@@ -33,12 +33,4 @@ abstract class AbstractRoutingDatabaseOnlyTest extends AbstractShardingDatabaseO
                 .build();
         return new ShardingDataSource(shardingRule);
     }
-    
-    class DynamicDatabaseShardingValueHelper extends DynamicShardingValueHelper {
-        
-        DynamicDatabaseShardingValueHelper(final int userId) {
-            super(userId, 0);
-            getHintManager().setDatabaseShardingValue(userId);
-        }
-    }
 }

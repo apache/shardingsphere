@@ -55,7 +55,7 @@ public abstract class AbstractSQLTest {
     private static void createSchema() {
         for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
             if (DatabaseType.H2 == each) {
-//                createSchema(each);
+                createSchema(each);
             }
         }
     }

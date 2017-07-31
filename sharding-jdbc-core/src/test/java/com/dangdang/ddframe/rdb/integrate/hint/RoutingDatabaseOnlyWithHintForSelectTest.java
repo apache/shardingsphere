@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.hint;
 
+import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicDatabaseShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;
 import org.junit.Before;
@@ -38,10 +39,8 @@ public class RoutingDatabaseOnlyWithHintForSelectTest extends AbstractRoutingDat
     @Test
     public void assertSelectEqualsWithSingleTable() throws SQLException, DatabaseUnitException {
         String statement = replacePreparedStatement(getDatabaseTestSQL().getSelectEqualsWithSingleTableSql());
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new AbstractRoutingDatabaseOnlyTest
-                .DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
-        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new AbstractRoutingDatabaseOnlyTest
-                .DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1201);
-        assertDataSet("integrate/dataset/Empty.xml", new AbstractRoutingDatabaseOnlyTest.DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1000);
+        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_0.xml", new DynamicDatabaseShardingValueHelper(10), shardingDataSource.getConnection(), "t_order", statement, 10, 1000);
+        assertDataSet("integrate/dataset/db/expect/select/SelectEqualsWithSingleTable_1.xml", new DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1201);
+        assertDataSet("integrate/dataset/Empty.xml", new DynamicDatabaseShardingValueHelper(12), shardingDataSource.getConnection(), "t_order", statement, 12, 1000);
     }
 }

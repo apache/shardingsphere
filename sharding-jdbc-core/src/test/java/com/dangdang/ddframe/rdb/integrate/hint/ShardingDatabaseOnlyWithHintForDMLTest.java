@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate.hint;
 
+import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.constant.SQLType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.dbunit.DatabaseUnitException;

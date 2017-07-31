@@ -19,7 +19,7 @@ package com.dangdang.ddframe.rdb.integrate.hint;
 
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
-import com.dangdang.ddframe.rdb.sharding.api.HintManager;
+import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
@@ -27,11 +27,8 @@ import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.constant.ShardingOperator;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.google.common.collect.Lists;
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.dbunit.DatabaseUnitException;
 import org.junit.AfterClass;
 
@@ -91,29 +88,6 @@ public abstract class AbstractShardingDatabaseOnlyHintDBUnitTest extends Abstrac
                                  final Connection connection, final String actualTableName, final String sql, final Object... params) throws SQLException, DatabaseUnitException {
         try (DynamicShardingValueHelper anotherHelper = helper) {
             assertDataSet(expectedDataSetFile, connection, actualTableName, sql, params);
-        }
-    }
-    
-    class DynamicShardingValueHelper implements AutoCloseable {
-        
-        @Getter(AccessLevel.PROTECTED)
-        private final HintManager hintManager;
-        
-        DynamicShardingValueHelper(final int userId, final int orderId) {
-            hintManager = HintManager.getInstance();
-            hintManager.addDatabaseShardingValue("t_order", "user_id", userId);
-            hintManager.addTableShardingValue("t_order", "order_id", orderId);
-        }
-        
-        DynamicShardingValueHelper(final List<Integer> userId, final ShardingOperator userIdOperator, final List<Integer> orderId, final ShardingOperator orderIdOperator) {
-            hintManager = HintManager.getInstance();
-            hintManager.addDatabaseShardingValue("t_order", "user_id", userIdOperator, userId.toArray(new Comparable[userId.size()]));
-            hintManager.addTableShardingValue("t_order", "order_id", orderIdOperator, orderId.toArray(new Comparable[orderId.size()]));
-        }
-        
-        @Override
-        public void close() {
-            hintManager.close();
         }
     }
 }
