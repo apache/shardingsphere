@@ -20,6 +20,8 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
+import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicDatabaseShardingValueHelper;
+import com.dangdang.ddframe.rdb.integrate.hint.helper.DynamicShardingValueHelper;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
@@ -173,7 +175,7 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         if (result.contains("masterslave")) {
             result = result.replace("masterslave", "ms");
         } else if (result.contains("hint")) {
-            result = result.replace("hint", "db");
+            result = "dataSource_" + result.replace("hint", "db");
         } else {
             result = "dataSource_" + result;
         }
@@ -188,7 +190,13 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
-            preparedStatement.execute();
+            if (getShardingStrategy() == ShardingTestStrategy.hint) {
+                DynamicShardingValueHelper helper = new DynamicDatabaseShardingValueHelper(Integer.valueOf(parameters.get(0)));
+                preparedStatement.executeUpdate();
+                helper.close();
+            } else {
+                preparedStatement.execute();
+            }
         }
     }
     

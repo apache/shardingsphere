@@ -32,7 +32,6 @@ import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.keygen.fixture.IncrementKeyGenerator;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -45,12 +44,11 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class ShardingDatabaseOnlyTest extends AbstractShardingSQLTest {
     
-    private static boolean isShutdown;
+    protected static boolean isShutdown;
     
-    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    protected static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
@@ -77,7 +75,7 @@ public class ShardingDatabaseOnlyTest extends AbstractShardingSQLTest {
     }
     
     @Override
-    protected final Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
+    protected Map<DatabaseType, ShardingDataSource> getShardingDataSources() {
         if (!shardingDataSources.isEmpty() && !isShutdown) {
             return shardingDataSources;
         }

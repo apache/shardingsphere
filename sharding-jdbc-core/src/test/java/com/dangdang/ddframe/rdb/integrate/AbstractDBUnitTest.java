@@ -17,6 +17,7 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLTest;
 import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
@@ -30,7 +31,6 @@ import org.dbunit.IDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.h2.tools.RunScript;
 import org.junit.Before;
 
 import javax.sql.DataSource;
@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -69,27 +68,7 @@ public abstract class AbstractDBUnitTest {
     }
     
     static {
-        createSchema();
-    }
-    
-    private static void createSchema() {
-        if (H2 == CURRENT_DB_TYPE) {
-            try {
-                Connection conn;
-                for (int i = 0; i < 10; i++) {
-                    for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                        conn = createDataSource(database + "_" + i).getConnection();
-                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                        conn.close();
-                    }
-                }
-                conn = createDataSource("tbl").getConnection();
-                RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-                conn.close();
-            } catch (final SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
+        AbstractSQLTest.createSchema();
     }
     
     @Before

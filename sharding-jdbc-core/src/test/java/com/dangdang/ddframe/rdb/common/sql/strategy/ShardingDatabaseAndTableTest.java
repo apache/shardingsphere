@@ -31,7 +31,6 @@ import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrateg
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -44,7 +43,6 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class ShardingDatabaseAndTableTest extends AbstractShardingSQLTest {
     
     private static boolean isShutdown;

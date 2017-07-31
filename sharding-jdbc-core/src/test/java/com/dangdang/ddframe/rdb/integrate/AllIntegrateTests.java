@@ -17,26 +17,16 @@
 
 package com.dangdang.ddframe.rdb.integrate;
 
-import com.dangdang.ddframe.rdb.integrate.db.AllShardingDatabaseOnlyTests;
-import com.dangdang.ddframe.rdb.integrate.dbtbl.AllShardingDatabaseAndTableTests;
 import com.dangdang.ddframe.rdb.integrate.hint.AllHintDatabaseOnlyTests;
-import com.dangdang.ddframe.rdb.integrate.masterslave.AllShardingMasterAndSlaveTests;
-import com.dangdang.ddframe.rdb.integrate.nullable.ShardingForNullableWithAggregateTest;
 import com.dangdang.ddframe.rdb.integrate.single.AllSingleResultSetTests;
-import com.dangdang.ddframe.rdb.integrate.tbl.AllShardingTablesOnlyTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllShardingDatabaseAndTableTests.class,
-        AllShardingDatabaseOnlyTests.class, 
-        AllShardingTablesOnlyTests.class, 
         AllHintDatabaseOnlyTests.class, 
-        AllSingleResultSetTests.class,
-        AllShardingMasterAndSlaveTests.class,
-        ShardingForNullableWithAggregateTest.class
+        AllSingleResultSetTests.class
     })
 public class AllIntegrateTests {
 }
