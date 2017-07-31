@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.dangdang</groupId>
         <artifactId>sharding-jdbc-example</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-example-config-spring</artifactId>
 </project>
