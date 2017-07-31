@@ -18,15 +18,13 @@
 package com.dangdang.ddframe.rdb.integrate;
 
 import com.dangdang.ddframe.rdb.integrate.hint.AllHintDatabaseOnlyTests;
-import com.dangdang.ddframe.rdb.integrate.single.AllSingleResultSetTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllHintDatabaseOnlyTests.class, 
-        AllSingleResultSetTests.class
+        AllHintDatabaseOnlyTests.class
     })
 public class AllIntegrateTests {
 }

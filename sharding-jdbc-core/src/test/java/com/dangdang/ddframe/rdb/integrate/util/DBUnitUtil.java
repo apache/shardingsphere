@@ -17,11 +17,6 @@
 
 package com.dangdang.ddframe.rdb.integrate.util;
 
-import com.dangdang.ddframe.rdb.integrate.sql.DatabaseTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.mysql.MySQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.oracle.OracleSQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.postgresql.PostgreSQLTestSQL;
-import com.dangdang.ddframe.rdb.integrate.sql.sqlserver.SQLServerSQLTestSQL;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -53,21 +48,4 @@ public class DBUnitUtil {
                 throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
         }
     }
-    
-    public static DatabaseTestSQL currentDatabaseTestSQL(final DataBaseEnvironment dbEnv) {
-        switch (dbEnv.getDatabaseType()) {
-            case H2:
-            case MySQL:
-                return new MySQLTestSQL();
-            case PostgreSQL:
-                return new PostgreSQLTestSQL();
-            case Oracle:
-                return new OracleSQLTestSQL();
-            case SQLServer:
-                return new SQLServerSQLTestSQL();
-            default:
-                throw new UnsupportedOperationException(dbEnv.getDatabaseType().name());
-        }
-    }
-    
 }

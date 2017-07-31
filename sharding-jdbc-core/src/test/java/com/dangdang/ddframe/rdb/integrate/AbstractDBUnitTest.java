@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil.currentDatabaseTestSQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
@@ -56,16 +55,11 @@ public abstract class AbstractDBUnitTest {
     protected static final DatabaseType CURRENT_DB_TYPE = H2;
     
     @Getter(AccessLevel.PROTECTED)
-    private static DatabaseTestSQL databaseTestSQL;
+    private static DatabaseTestSQL databaseTestSQL = new DatabaseTestSQL();
     
     private static final Map<String, DataSource> DATA_SOURCES = new HashMap<>();
     
     private static final DataBaseEnvironment DB_ENV = new DataBaseEnvironment(CURRENT_DB_TYPE);
-    
-    @Before
-    public void createSql() {
-        databaseTestSQL = currentDatabaseTestSQL(DB_ENV);
-    }
     
     static {
         AbstractSQLTest.createSchema();
