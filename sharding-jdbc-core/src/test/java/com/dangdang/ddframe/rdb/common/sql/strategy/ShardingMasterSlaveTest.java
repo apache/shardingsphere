@@ -34,7 +34,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.MasterSlaveDataSou
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -47,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class ShardingMasterSlaveTest extends AbstractShardingSQLTest {
     
     private static boolean isShutdown;
