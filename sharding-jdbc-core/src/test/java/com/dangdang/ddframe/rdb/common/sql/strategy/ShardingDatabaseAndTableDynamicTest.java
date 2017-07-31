@@ -15,18 +15,18 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.common.sql;
+package com.dangdang.ddframe.rdb.common.sql.strategy;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractSqlAssertTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingSQLTest;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
-import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyDynamicModuloTableShardingAlgorithm;
+import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.DataSourceRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.ShardingRule;
 import com.dangdang.ddframe.rdb.sharding.api.rule.TableRule;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.database.DatabaseShardingStrategy;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.table.NoneTableShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.strategy.table.TableShardingStrategy;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
@@ -45,34 +45,34 @@ import java.util.Set;
 
 @RunWith(Parameterized.class)
 @Ignore
-public class NullableShardingTableOnlyTest extends AbstractSqlAssertTest {
+public class ShardingDatabaseAndTableDynamicTest extends AbstractShardingSQLTest {
     
     private static boolean isShutdown;
     
     private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
-    public NullableShardingTableOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
+    public ShardingDatabaseAndTableDynamicTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
     }
     
     @Override
     protected ShardingTestStrategy getShardingStrategy() {
-        return ShardingTestStrategy.nullable;
+        return ShardingTestStrategy.dbtbl;
     }
     
     @Override
     protected List<String> getDataSetFiles() {
         return Arrays.asList(
-                "integrate/dataset/nullable/init/nullable_0.xml",
-                "integrate/dataset/nullable/init/nullable_1.xml",
-                "integrate/dataset/nullable/init/nullable_2.xml",
-                "integrate/dataset/nullable/init/nullable_3.xml",
-                "integrate/dataset/nullable/init/nullable_4.xml",
-                "integrate/dataset/nullable/init/nullable_5.xml",
-                "integrate/dataset/nullable/init/nullable_6.xml",
-                "integrate/dataset/nullable/init/nullable_7.xml",
-                "integrate/dataset/nullable/init/nullable_8.xml",
-                "integrate/dataset/nullable/init/nullable_9.xml");
+                "integrate/dataset/dbtbl/init/dbtbl_0.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_1.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_2.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_3.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_4.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_5.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_6.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_7.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_8.xml",
+                "integrate/dataset/dbtbl/init/dbtbl_9.xml");
     }
     
     @Override
@@ -84,11 +84,12 @@ public class NullableShardingTableOnlyTest extends AbstractSqlAssertTest {
         Map<DatabaseType, Map<String, DataSource>> dataSourceMap = createDataSourceMap();
         for (Map.Entry<DatabaseType, Map<String, DataSource>> each : dataSourceMap.entrySet()) {
             DataSourceRule dataSourceRule = new DataSourceRule(each.getValue());
-            TableRule orderTableRule = TableRule.builder("t_order").dataSourceRule(dataSourceRule).build();
-            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Collections.singletonList(orderTableRule))
-                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Collections.singletonList(orderTableRule))))
-                    .databaseShardingStrategy(new DatabaseShardingStrategy(Collections.singletonList("user_id"), new MultipleKeysModuloDatabaseShardingAlgorithm()))
-                    .tableShardingStrategy(new TableShardingStrategy(Collections.singletonList("order_id"), new NoneTableShardingAlgorithm())).build();
+            TableRule orderTableRule = TableRule.builder("t_order").dynamic(true).dataSourceRule(dataSourceRule).build();
+            TableRule orderItemTableRule = TableRule.builder("t_order_item").dynamic(true).dataSourceRule(dataSourceRule).build();
+            ShardingRule shardingRule = ShardingRule.builder().dataSourceRule(dataSourceRule).tableRules(Arrays.asList(orderTableRule, orderItemTableRule))
+                    .bindingTableRules(Collections.singletonList(new BindingTableRule(Arrays.asList(orderTableRule, orderItemTableRule))))
+                    .databaseShardingStrategy(new DatabaseShardingStrategy("user_id", new SingleKeyModuloDatabaseShardingAlgorithm()))
+                    .tableShardingStrategy(new TableShardingStrategy("order_id", new SingleKeyDynamicModuloTableShardingAlgorithm("t_order_"))).build();
             shardingDataSources.put(each.getKey(), new ShardingDataSource(shardingRule));
         }
         return shardingDataSources;

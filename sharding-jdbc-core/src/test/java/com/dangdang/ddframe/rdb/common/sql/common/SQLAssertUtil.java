@@ -2,7 +2,7 @@ package com.dangdang.ddframe.rdb.common.sql.common;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractSqlAssertTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingSQLTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
 import javax.xml.bind.JAXBContext;
@@ -18,23 +18,32 @@ import java.util.Set;
 
 public class SQLAssertUtil {
     
-    public static Collection<Object[]> getDataParameters(final String assertFilePath) {
+    public static Collection<Object[]> getDataParameters(final String filePath) {
         Collection<Object[]> result = new ArrayList<>();
-        URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(assertFilePath);
+        URL url = AbstractShardingSQLTest.class.getClassLoader().getResource(filePath);
         if (null == url) {
             return Collections.emptyList();
         }
-        File filePath = new File(url.getPath());
-        if (!filePath.exists()) {
+        File assertFilePath = new File(url.getPath());
+        if (!assertFilePath.exists()) {
             return Collections.emptyList();
         }
-        File[] files = filePath.listFiles();
-        if (null == files) {
-            return Collections.emptyList();
+        
+        if (assertFilePath.isDirectory()) {
+            File[] files = assertFilePath.listFiles();
+            if (null == files) {
+                return Collections.emptyList();
+            }
+            for (File each : files) {
+                if (each.isDirectory()) {
+                    continue;
+                }
+                result.addAll(dataParameters(each));
+            }
+        } else {
+            result.addAll(dataParameters(assertFilePath));
         }
-        for (File each : files) {
-            result.addAll(dataParameters(each));
-        }
+        
         return result;
     }
     

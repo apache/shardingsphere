@@ -28,9 +28,9 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.dbunit.DatabaseUnitException;
-import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replace
 import static com.dangdang.ddframe.rdb.integrate.util.SqlPlaceholderUtil.replaceStatement;
 import static org.dbunit.Assertion.assertEquals;
 
-public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
+public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
     
     private final String sql;
     
@@ -58,7 +58,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     
     private final List<SqlShardingRule> shardingRules;
     
-    protected AbstractSqlAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> shardingRules) {
+    protected AbstractSQLAssertTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> shardingRules) {
         this.sql = sql;
         this.types = types;
         this.shardingRules = shardingRules;
@@ -89,6 +89,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
                     if (ex.getMessage().startsWith("Dynamic table")) {
                         continue;
                     }
+                    ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
             }
@@ -104,7 +105,7 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
                 // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
                 String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
                         : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
-                URL url = AbstractSqlAssertTest.class.getClassLoader().getResource(expected);
+                URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expected);
                 if (null == url) {
                     throw new RuntimeException("Wrong expected file:" + expected);
                 }
@@ -197,14 +198,13 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement preparedStatement = conn.prepareStatement(replacePreparedStatement(sql))) {
             setParameters(preparedStatement, parameters);
-            ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
-            while (expectedTableIterator.next()) {
-                ITable expectedTable = expectedTableIterator.getTable();
-                String actualTableName = expectedTable.getTableMetaData().getTableName();
+            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
+            expectedDataSet.addReplacementObject("[null]", null);
+            for (ITable each : expectedDataSet.getTables()) {
+                String tableName = each.getTableMetaData().getTableName();
                 ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createTable(actualTableName, preparedStatement);
-                IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
-                assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
+                        .createTable(tableName, preparedStatement);
+                assertEquals(expectedDataSet.getTable(tableName), actualTable); 
             }
         }
     }
@@ -223,14 +223,13 @@ public abstract class AbstractSqlAssertTest extends AbstractBaseSqlTest {
     private void executeQueryWithStatement(final ShardingDataSource dataSource, final List<String> parameters, final File file) throws MalformedURLException, SQLException, DatabaseUnitException {
         try (Connection conn = dataSource.getConnection()) {
             String querySql = replaceStatement(sql, parameters.toArray());
-            ITableIterator expectedTableIterator = new FlatXmlDataSetBuilder().build(file).iterator();
-            while (expectedTableIterator.next()) {
-                ITable expectedTable = expectedTableIterator.getTable();
-                String actualTableName = expectedTable.getTableMetaData().getTableName();
+            ReplacementDataSet expectedDataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(file));
+            expectedDataSet.addReplacementObject("[null]", null);
+            for (ITable each : expectedDataSet.getTables()) {
+                String tableName = each.getTableMetaData().getTableName();
                 ITable actualTable = DBUnitUtil.getConnection(new DataBaseEnvironment(DatabaseType.valueFrom(conn.getMetaData().getDatabaseProductName())), conn)
-                        .createQueryTable(actualTableName, querySql);
-                IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(file);
-                assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
+                        .createQueryTable(tableName, querySql);
+                assertEquals(expectedDataSet.getTable(tableName), actualTable);
             }
         }
     }

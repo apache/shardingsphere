@@ -18,7 +18,6 @@
 package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.sql.common.DatabaseTestMode;
-import com.dangdang.ddframe.rdb.common.sql.common.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
 import com.dangdang.ddframe.rdb.integrate.util.ShardingJdbcDatabaseTester;
@@ -30,7 +29,6 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.h2.tools.RunScript;
 import org.junit.Before;
-import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -39,13 +37,12 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractBaseSqlTest {
+public abstract class AbstractSQLTest {
     
     private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
     
@@ -58,7 +55,7 @@ public abstract class AbstractBaseSqlTest {
     private static void createSchema() {
         for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
             if (DatabaseType.H2 == each) {
-                createSchema(each);
+//                createSchema(each);
             }
         }
     }
@@ -75,7 +72,7 @@ public abstract class AbstractBaseSqlTest {
             }
             String database = "tbl";
             conn = initialConnection(database, dbType);
-           // RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
@@ -146,11 +143,4 @@ public abstract class AbstractBaseSqlTest {
         }
         return fileName.substring(0, fileName.lastIndexOf("."));
     }
-    
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> dataParameters() {
-        return SQLAssertUtil.getDataParameters("integrate/assert");
-    }
-    
-    
 }
