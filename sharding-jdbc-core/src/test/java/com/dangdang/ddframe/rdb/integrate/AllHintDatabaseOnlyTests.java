@@ -15,8 +15,12 @@
  * </p>
  */
 
-package com.dangdang.ddframe.rdb.integrate.hint;
+package com.dangdang.ddframe.rdb.integrate;
 
+import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForDMLTest;
+import com.dangdang.ddframe.rdb.integrate.hint.RoutingDatabaseOnlyWithHintForSelectTest;
+import com.dangdang.ddframe.rdb.integrate.hint.ShardingDatabaseOnlyWithHintForDMLTest;
+import com.dangdang.ddframe.rdb.integrate.hint.ShardingDatabaseOnlyWithHintForSelectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
