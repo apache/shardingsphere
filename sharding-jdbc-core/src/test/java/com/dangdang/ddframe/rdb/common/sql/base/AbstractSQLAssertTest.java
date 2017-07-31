@@ -107,7 +107,6 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
                         : String.format("integrate/dataset/%s/expect/" + each.getExpected(), strategyName, strategyName);
                 URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expected);
-                System.out.println("url--------" + url);
                 if (null == url) {
                     throw new RuntimeException("Wrong expected file:" + expected);
                 }
