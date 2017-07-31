@@ -44,7 +44,7 @@ import java.util.Map;
 
 public abstract class AbstractSQLTest {
     
-    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.TEST;
+    private static final DatabaseTestMode CURRENT_TEST_MODE = DatabaseTestMode.LOCAL;
     
     private final Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
     
@@ -55,7 +55,7 @@ public abstract class AbstractSQLTest {
     private static void createSchema() {
         for (DatabaseType each : CURRENT_TEST_MODE.databaseTypes()) {
             if (DatabaseType.H2 == each) {
-                createSchema(each);
+               // createSchema(each);
             }
         }
     }

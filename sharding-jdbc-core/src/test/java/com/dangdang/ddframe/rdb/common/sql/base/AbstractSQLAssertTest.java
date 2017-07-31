@@ -102,9 +102,13 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
                 continue;
             }
             for (SqlAssertData each : sqlShardingRule.getData()) {
+                String strategyName = getShardingStrategy().name();
+                if (ShardingTestStrategy.hint.name().equals(strategyName)) {
+                    strategyName = ShardingTestStrategy.db.name();
+                }
                 // TODO DML和DQL保持一直，去掉DML中XML名称里面的placeholder
                 String expected = null == each.getExpected() ? "integrate/dataset/EmptyTable.xml"
-                        : String.format("integrate/dataset/%s/expect/" + each.getExpected(), getShardingStrategy().name(), getShardingStrategy().name());
+                        : String.format("integrate/dataset/%s/expect/" + each.getExpected(), strategyName, strategyName);
                 URL url = AbstractSQLAssertTest.class.getClassLoader().getResource(expected);
                 if (null == url) {
                     throw new RuntimeException("Wrong expected file:" + expected);
@@ -168,6 +172,8 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         }
         if (result.contains("masterslave")) {
             result = result.replace("masterslave", "ms");
+        } else if (result.contains("hint")) {
+            result = result.replace("hint", "db");
         } else {
             result = "dataSource_" + result;
         }

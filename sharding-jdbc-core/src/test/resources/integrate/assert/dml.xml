@@ -41,7 +41,7 @@
             <data parameter="'update',1108,11" expected="update/%s_8.xml" />
             <data parameter="'update',1109,11" expected="update/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db">
+        <sharding-rule value="db,hint">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1100,11" expected="update/%s_1.xml" />
             <data parameter="'update',1200,12" expected="update/%s_2.xml" />
@@ -79,7 +79,7 @@
             <data parameter="'update',1108,11" expected="update/%s_8.xml" />
             <data parameter="'update',1109,11" expected="update/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db">
+        <sharding-rule value="db,hint">
             <data parameter="'update',1000,10" expected="update/%s_0.xml" />
             <data parameter="'update',1100,11" expected="update/%s_1.xml" />
             <data parameter="'update',1200,12" expected="update/%s_2.xml" />
@@ -117,7 +117,7 @@
             <data parameter="1108,11,'init'" expected="delete/%s_8.xml" />
             <data parameter="1109,11,'init'" expected="delete/%s_9.xml" />
         </sharding-rule>
-        <sharding-rule value="db">
+        <sharding-rule value="db,hint">
             <data parameter="1000,10,'init'" expected="delete/%s_0.xml" />
             <data parameter="1100,11,'init'" expected="delete/%s_1.xml" />
             <data parameter="1200,12,'init'" expected="delete/%s_2.xml" />
@@ -158,8 +158,8 @@
         <sharding-rule value="masterslave">
             <data parameter="'init_master'" expected="delete/%s.xml" />
         </sharding-rule>
-        <!--<sharding-rule value="tbl,db,dbtbl">-->
-            <!--<data parameter="'init'" expected="delete/%s.xml" />-->
-        <!--</sharding-rule>-->
+        <sharding-rule value="tbl,db,dbtbl,hint">
+            <data parameter="'init'" expected="delete/%s.xml" />
+        </sharding-rule>
     </sql>
 </sqls>
