@@ -38,7 +38,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule)
       <pubDate>Tue, 06 Dec 2016 22:38:50 +0800</pubDate>
       
       <guid>http://dangdangdotcom.github.io/sharding-jdbc/01-start/faq/</guid>
-      <description> 1. 阅读源码时为什么会出现编译错误? 回答：
+      <description>1. 阅读源码时为什么会出现编译错误? 回答：
 Sharding-JDBC使用lombok实现极简代码。关于更多使用和安装细节，请参考lombok官网。
 2. java.lang.NoSuchMethodError:com.alibaba.druid.sql.ast.expr.SQLAggregateExpr.getOption()&amp;hellip;..异常的解决方法？ 回答：
 目前Sharding-JDBC使用Druid作为SQL解析的基础库，请确保业务代码中使用的Druid与Sharding-JDBC使用的版本一致，目前Sharding-JDBC使用的是1.0.12版本。
@@ -54,10 +54,11 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 以下是Proxool源码中ProxoolDataSource类getConnection方法的关键代码：
 if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) { this.registerPool(); }  更多关于alias使用方法请参考Proxool官网。
 PS:sourceforge网站需要翻墙访问。
-7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？ SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
+7. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？ 回答：
+SQLServer和PostgreSQL获取不加别名的聚合列会改名。例如，如下SQL：
 SELECT SUM(num), SUM(num2) FROM table_xxx;  SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空sum和sum(2)。这将导致Sharding-JDBC在结果归并时无法找到相应的列而出错。
 正确的SQL写法应为：
-SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;  </description>
+SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM table_xxx;  8. 1.</description>
     </item>
     
     <item>
@@ -100,7 +101,7 @@ SQL语句限制 不支持DDL语句 有限支持子查询 不支持HAVING 不支�
 全局不支持项 动态表 未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。 原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。
 除DQL和DML以外的语句 Sharding-JDBC定位于CRUD操作，目前仅针对DQL和DML语句进行支持。
 有限支持子查询 子查询支持详情请参考分页及子查询。
-支持的SQL DQL SELECT主语句 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...] [WHERE where_condition] [GROUP BY {col_name | position} [ASC | DESC]] [ORDER BY {col_name | position} [ASC | DESC], ...] [LIMIT {[offset,] row_count | row_count OFFSET offset}]  select_expr * | COLUMN_NAME [AS] [alias] | (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | COUNT(* | COLUMN_NAME | alias) [AS] [alias]  table_reference tbl_name [AS] alias] [index_hint_list] | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] |  示例    SQL 无条件支持 必要条件     SELECT * FROM tbl_name 是    SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit 是    SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1 是    SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit 是     DML INSERT    SQL 无条件支持 必要条件     INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.</description>
+不支持包含冗余括号的SQL 支持的SQL DQL SELECT主语句 SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...] [WHERE where_condition] [GROUP BY {col_name | position} [ASC | DESC]] [ORDER BY {col_name | position} [ASC | DESC], ...] [LIMIT {[offset,] row_count | row_count OFFSET offset}]  select_expr * | COLUMN_NAME [AS] [alias] | (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | COUNT(* | COLUMN_NAME | alias) [AS] [alias]  table_reference tbl_name [AS] alias] [index_hint_list] | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] |  示例    SQL 无条件支持 必要条件     SELECT * FROM tbl_name 是    SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit 是    SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1 是    SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit 是     DML INSERT    SQL 无条件支持 必要条件     INSERT INTO tbl_name (col1, col2,&amp;hellip;) VALUES (val1, val2,&amp;hellip;.</description>
     </item>
     
     <item>
