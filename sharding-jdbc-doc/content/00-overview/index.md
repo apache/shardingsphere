@@ -44,7 +44,7 @@ Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以
 ## 4. 兼容性
 * 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC
 * 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等
-* 理论上可支持任意实现JDBC规范的数据库。虽然目前仅支持MySQL，但已有支持Oracle，SQLServer，DB2等数据库的计划
+* 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL
 
 ## 5. 灵活多样的配置
 * Java
