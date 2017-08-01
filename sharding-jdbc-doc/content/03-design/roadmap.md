@@ -75,11 +75,11 @@ next = "/00-overview"
 
 ### SQL支持
 1. 判断不支持SQL并直接报错 (部分完成)
-1. 支持DISTINCT
-1. 支持GROUP BY聚合之后进行HAVING
-1. 支持计算表达式，如：SUM(pv) / COUNT(uv)
-1. 支持通过SQL注释指定SQL Hint
-1. 支持DDL
+1. DISTINCT
+1. GROUP BY聚合之后进行HAVING
+1. 计算表达式，如：SUM(pv) / COUNT(uv)
+1. 通过SQL注释指定SQL Hint
+1. DDL
 
 ### 柔性事务
 1. TCC
