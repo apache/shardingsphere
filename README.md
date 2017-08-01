@@ -32,7 +32,7 @@ Sharding-JDBC is a JDBC extension, provides distributed features such as shardin
 ## 4. Compatibility
 * ORM self-adapting. JPA, Hibernate, Mybatis, Spring JDBC Template or JDBC supported.
 * Connection-pool self-adapting. DBCP, C3P0, BoneCP, Druid supported.
-* Any Database supported theoretically. MySQL support only, will support Oracle, SQLServer, DB2 and PostgreSQL in future.
+* Any Database supported theoretically. Support MySQL, Oracle, SQLServer and PostgreSQL.
 
 ## 5. Configuration
 * Java config
