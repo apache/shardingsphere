@@ -15,9 +15,21 @@ next = "/00-overview"
 1. SQLServer
 1. PostgreSQL
 
-### SQL兼容
-1. DQL
-1. DML
+### DQL
+1. JOIN
+1. BETWEEN
+1. IN
+1. ORDER BY
+1. GROUP BY
+1. COUNT, SUM, MAX, MIN, AVG
+1. LIMIT, rownum, TOP
+1. 非功能型子查询
+
+### DML
+1. INSERT INTO
+1. INSERT SET
+1. UPDATE
+1. DELETE
 
 ### 配置
 1. Java API
@@ -54,6 +66,7 @@ next = "/00-overview"
 1. Hint强制主库路由
 
 ### 分布式主键
+1. JDBC集成
 1. 分布式主键策略接口
 1. 基于snowflake的分布式主键算法实现
 
@@ -73,18 +86,37 @@ next = "/00-overview"
 1. 数据源动态切换
 1. 流量控制
 
-### SQL支持
-1. 判断不支持SQL并直接报错 (部分完成)
+## 待定
+
+### DQL
 1. DISTINCT
-1. GROUP BY聚合之后进行HAVING
+1. HAVING
+1. OR
+1. UNION, UNION ALL
+1. 全子查询
 1. 计算表达式，如：SUM(pv) / COUNT(uv)
 1. 通过SQL注释指定SQL Hint
-1. DDL
 
-### 柔性事务
+### DML
+1. INSERT INTO VALUES (xxx), (xxx)
+1. 多表UPDATE
+1. 多表DELETE
+
+### DDL
+1. CREATE
+1. ALTER
+1. DROP
+1. TRUNCATE
+
+### SQL解析提升
+1. 批量解析
+1. 冗余括号
+1. 通过SQL注释指定SQL Hint
+
+### 柔性事务提升
 1. TCC
 
-## 待定
+### 运维工具
 1. 字典表复制广播
 1. 建表工具
 1. 动态扩容
