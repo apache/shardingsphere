@@ -294,9 +294,9 @@ ${[unit1, unit2, unitX]} 表示枚举值
 
 inline表达式中连续多个${...}表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：
 ```groovy
-dbtbl_${[online, offline]}_${1..3}
+dbtbl_${['online', 'offline']}_${1..3}
 ```
-最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_ offline_3这6张表。
+最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_offline_3这6张表。
 
 ### 字符串内嵌groovy代码
 表达式本质上是一段字符串，字符串中使用${}来嵌入groovy代码。
