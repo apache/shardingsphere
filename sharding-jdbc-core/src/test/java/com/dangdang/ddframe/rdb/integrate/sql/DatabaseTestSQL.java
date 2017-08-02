@@ -57,8 +57,6 @@ public class DatabaseTestSQL {
     
     private static final String SELECT_ALL_ORDER_SQL = "SELECT * FROM t_order";
     
-    private static final String SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL = "SELECT user_id AS uid FROM t_order WHERE order_id IN (%s, %s)";
-    
     public String getSelectCountAliasSql() {
         return SELECT_COUNT_ALIAS_SQL;
     }
@@ -115,27 +113,7 @@ public class DatabaseTestSQL {
         return SELECT_IN_WITH_SINGLE_TABLE_SQL;
     }
     
-    public String getSelectGroupByUserIdSql() {
-        return SELECT_GROUP_BY_USER_ID_SQL;
-    }
-    
     public String getSelectUserIdByStatusSql() {
         return SELECT_USER_ID_BY_STATUS_SQL;
-    }
-    
-    public String getSelectUserIdByInStatusSql() {
-        return SELECT_USER_ID_BY_IN_STATUS_SQL;
-    }
-    
-    public String getSelectUserIdByStatusOrderByUserIdSql() {
-        return SELECT_USER_ID_BY_STATUS_ORDER_BY_USER_ID_SQL;
-    }
-    
-    public String getSelectAllOrderSql() {
-        return SELECT_ALL_ORDER_SQL;
-    }
-    
-    public String getSelectUserIdWhereOrderIdInSql() {
-        return SELECT_USER_ID_WHERE_ORDER_ID_IN_SQL;
     }
 }

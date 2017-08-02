@@ -17,10 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.integrate.AbstractDBUnitTest;
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,275 +31,407 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.Oracle;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.PostgreSQL;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOnlyDBUnitTest {
+public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private ShardingConnection shardingConnection;
+    private List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private Statement statement;
+    private List<Statement> statements = new ArrayList<>();
     
-    private ResultSet actual;
+    private Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
     
-    private String columnName = "uid";
+    private final String columnName = "user_id";
     
     @Before
     public void init() throws SQLException {
-        shardingConnection = getShardingDataSource().getConnection();
-        statement = shardingConnection.createStatement();
-        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusOrderByUserIdSql());
-        actual.next();
-        if (currentDbType() == Oracle) {
-            columnName = "usrid";
+        for (Map.Entry<DatabaseType, ShardingDataSource> each : getShardingDataSources().entrySet()) {
+            ShardingConnection shardingConnection = each.getValue().getConnection();
+            shardingConnections.add(shardingConnection);
+            Statement statement = shardingConnection.createStatement();
+            statements.add(statement);
+            ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
+            resultSet.next();
+            resultSets.put(each.getKey(), resultSet);
         }
     }
     
     @After
     public void close() throws SQLException {
-        actual.close();
-        statement.close();
-        shardingConnection.close();
+        for (ResultSet each : resultSets.values()) {
+            each.close();
+        }
+        for (Statement each : statements) {
+            each.close();
+        }
+        for (ShardingConnection each : shardingConnections) {
+            each.close();
+        }
     }
     
     @Test
     public void assertGetBooleanForColumnIndex() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertTrue(actual.getBoolean(1));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertTrue(each.getValue().getBoolean(1));
+            }
         }
     }
     
     @Test
     public void assertGetBooleanForColumnLabel() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertTrue(actual.getBoolean("uid"));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertTrue(each.getValue().getBoolean(columnName));
+            }
         }
     }
     
     @Test
     public void assertGetByteForColumnIndex() throws SQLException {
-        assertThat(actual.getByte(1), is((byte) 10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getByte(1), is((byte) 10));
+        }
     }
     
     @Test
     public void assertGetByteForColumnLabel() throws SQLException {
-        assertThat(actual.getByte(columnName), is((byte) 10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getByte(columnName), is((byte) 10));
+        }
     }
     
     @Test
     public void assertGetShortForColumnIndex() throws SQLException {
-        assertThat(actual.getShort(1), is((short) 10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getShort(1), is((short) 10));
+        }
     }
     
     @Test
     public void assertGetShortForColumnLabel() throws SQLException {
-        assertThat(actual.getShort(columnName), is((short) 10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getShort(columnName), is((short) 10));
+        }
     }
     
     @Test
     public void assertGetIntForColumnIndex() throws SQLException {
-        assertThat(actual.getInt(1), is(10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getInt(1), is(10));
+        }
     }
     
     @Test
     public void assertGetIntForColumnLabel() throws SQLException {
-        assertThat(actual.getInt(columnName), is(10));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getInt(columnName), is(10));
+        }
     }
     
     @Test
     public void assertGetLongForColumnIndex() throws SQLException {
-        assertThat(actual.getLong(1), is(10L));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getLong(1), is(10L));
+        }
     }
     
     @Test
     public void assertGetLongForColumnLabel() throws SQLException {
-        assertThat(actual.getLong(columnName), is(10L));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getLong(columnName), is(10L));
+        }
     }
     
     @Test
     public void assertGetFloatForColumnIndex() throws SQLException {
-        assertThat(actual.getFloat(1), is(10F));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getFloat(1), is(10F));
+        }
     }
     
     @Test
     public void assertGetFloatForColumnLabel() throws SQLException {
-        assertThat(actual.getFloat(columnName), is(10F));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getFloat(columnName), is(10F));
+        }
     }
     
     @Test
     public void assertGetDoubleForColumnIndex() throws SQLException {
-        assertThat(actual.getDouble(1), is(10D));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getDouble(1), is(10D));
+        }
     }
     
     @Test
     public void assertGetDoubleForColumnLabel() throws SQLException {
-        assertThat(actual.getDouble(columnName), is(10D));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getDouble(columnName), is(10D));
+        }
     }
     
     @Test
     public void assertGetStringForColumnIndex() throws SQLException {
-        assertThat(actual.getString(1), is("10"));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getString(1), is("10"));
+        }
     }
     
     @Test
     public void assertGetStringForColumnLabel() throws SQLException {
-        assertThat(actual.getString(columnName), is("10"));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getString(columnName), is("10"));
+        }
     }
     
     @Test
     public void assertGetBigDecimalForColumnIndex() throws SQLException {
-        assertThat(actual.getBigDecimal(1), is(new BigDecimal("10")));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBigDecimal(1), is(new BigDecimal("10")));
+        }
     }
     
     @Test
     public void assertGetBigDecimalForColumnLabel() throws SQLException {
-        assertThat(actual.getBigDecimal(columnName), is(new BigDecimal("10")));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBigDecimal(columnName), is(new BigDecimal("10")));
+        }
     }
     
     @SuppressWarnings("deprecation")
     @Test
     public void assertGetBigDecimalColumnIndexWithScale() throws SQLException {
-        assertThat(actual.getBigDecimal(1, 2), is(new BigDecimal("10")));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBigDecimal(1, 2), is(new BigDecimal("10")));
+        }
     }
     
     @SuppressWarnings("deprecation")
     @Test
     public void assertGetBigDecimalColumnLabelWithScale() throws SQLException {
-        assertThat(actual.getBigDecimal(columnName, 2), is(new BigDecimal("10")));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getBigDecimal(columnName, 2), is(new BigDecimal("10")));
+        }
     }
     
     @Test
     public void assertGetBytesForColumnIndex() throws SQLException {
-        assertTrue(actual.getBytes(1).length > 0);
+        for (ResultSet each : resultSets.values()) {
+            assertTrue(each.getBytes(1).length > 0);
+        }
     }
     
     @Test
     public void assertGetBytesForColumnLabel() throws SQLException {
-        assertTrue(actual.getBytes(columnName).length > 0);
+        for (ResultSet each : resultSets.values()) {
+            assertTrue(each.getBytes(columnName).length > 0);
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetDateForColumnIndex() throws SQLException {
-        actual.getDate(1);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getDate(1);
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetDateForColumnLabel() throws SQLException {
-        actual.getDate(columnName);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getDate(columnName);
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetDateColumnIndexWithCalendar() throws SQLException {
-        actual.getDate(1, Calendar.getInstance());
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getDate(1, Calendar.getInstance());
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetDateColumnLabelWithCalendar() throws SQLException {
-        actual.getDate(columnName, Calendar.getInstance());
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getDate(columnName, Calendar.getInstance());
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetTimeForColumnIndex() throws SQLException {
-        actual.getTime(1);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getTime(1);
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetTimeForColumnLabel() throws SQLException {
-        actual.getTime(columnName);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getTime(columnName);
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetTimeColumnIndexWithCalendar() throws SQLException {
-        actual.getTime(1, Calendar.getInstance());
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getTime(1, Calendar.getInstance());
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetTimeColumnLabelWithCalendar() throws SQLException {
-        actual.getTime(columnName, Calendar.getInstance());
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getTime(columnName, Calendar.getInstance());
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
     @Test
     public void assertGetTimestampForColumnIndex() throws SQLException {
-        try {
-            actual.getTimestamp(1);
-        } catch (final SQLException ex) {
-            if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            try {
+                each.getValue().getTimestamp(1);
+                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                    continue;
+                }
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
             }
         }
     }
     
     @Test
     public void assertGetTimestampForColumnLabel() throws SQLException {
-        try {
-            actual.getTimestamp(columnName);
-        } catch (final SQLException ex) {
-            if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            try {
+                each.getValue().getTimestamp(columnName);
+                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                    continue;
+                }
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
             }
         }
     }
     
     @Test
     public void assertGetTimestampColumnIndexWithCalendar() throws SQLException {
-        try {
-            actual.getTimestamp(1, Calendar.getInstance());
-        } catch (final SQLException ex) {
-            if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            try {
+                each.getValue().getTimestamp(1, Calendar.getInstance());
+                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                    continue;
+                }
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
             }
         }
     }
     
     @Test
     public void assertGetTimestampColumnLabelWithCalendar() throws SQLException {
-        try {
-            actual.getTimestamp(columnName, Calendar.getInstance());
-        } catch (final SQLException ex) {
-            if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-                assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            try {
+                each.getValue().getTimestamp(columnName, Calendar.getInstance());
+                if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                    continue;
+                }
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
             }
         }
     }
     
     @Test
     public void assertGetAsciiStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            byte[] b = new byte[1];
-            actual.getAsciiStream(1).read(b);
-            assertThat(new String(b), is("1"));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                byte[] b = new byte[1];
+                each.getValue().getAsciiStream(1).read(b);
+                assertThat(new String(b), is("1"));
+            }
         }
     }
     
     @Test
     public void assertGetAsciiStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            byte[] b = new byte[1];
-            actual.getAsciiStream(columnName).read(b);
-            assertThat(new String(b), is("1"));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                byte[] b = new byte[1];
+                each.getValue().getAsciiStream(columnName).read(b);
+                assertThat(new String(b), is("1"));
+            }
         }
     }
     
     @SuppressWarnings("deprecation")
     @Test
     public void assertGetUnicodeStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() != Oracle) {
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.Oracle == each.getKey()) {
+                continue;
+            }
             byte[] b = new byte[1];
-            if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
+            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
-                    actual.getUnicodeStream(1).read(b);
+                    each.getValue().getUnicodeStream(1).read(b);
                 } catch (final SQLException ignore) {
                 }
             } else {
-                actual.getUnicodeStream(1).read(b);
+                each.getValue().getUnicodeStream(1).read(b);
                 assertThat(new String(b), is("1"));
             }
         }
@@ -307,15 +440,18 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     @SuppressWarnings("deprecation")
     @Test
     public void assertGetUnicodeStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() != Oracle) {
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.Oracle == each.getKey()) {
+                continue;
+            }
             byte[] b = new byte[1];
-            if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
+            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
-                    actual.getUnicodeStream(columnName).read(b);
+                    each.getValue().getUnicodeStream(columnName).read(b);
                 } catch (final SQLException ignore) {
                 }
             } else {
-                actual.getUnicodeStream(columnName).read(b);
+                each.getValue().getUnicodeStream(columnName).read(b);
                 assertThat(new String(b), is("1"));
             }
         }
@@ -323,109 +459,154 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingDatabaseOn
     
     @Test
     public void assertGetBinaryStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            assertTrue(actual.getBinaryStream(1).read() != -1);
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                assertTrue(each.getValue().getBinaryStream(1).read() != -1);
+            }
         }
     }
     
     @Test
     public void assertGetBinaryStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            assertTrue(actual.getBinaryStream(columnName).read() != -1);
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                assertTrue(each.getValue().getBinaryStream(columnName).read() != -1);
+            }
         }
     }
     
     @Test
     public void assertGetCharacterStreamForColumnIndex() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            char[] c = new char[1];
-            actual.getCharacterStream(1).read(c);
-            assertThat(c[0], is('1'));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                char[] c = new char[1];
+                each.getValue().getCharacterStream(1).read(c);
+                assertThat(c[0], is('1'));
+            }
         }
     }
     
     @Test
     public void assertGetCharacterStreamForColumnLabel() throws SQLException, IOException {
-        if (currentDbType() == MySQL || currentDbType() == PostgreSQL) {
-            char[] c = new char[1];
-            actual.getCharacterStream(columnName).read(c);
-            assertThat(c[0], is('1'));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.MySQL == each.getKey() || DatabaseType.PostgreSQL == each.getKey()) {
+                char[] c = new char[1];
+                each.getValue().getCharacterStream(columnName).read(c);
+                assertThat(c[0], is('1'));
+            }
         }
     }
     
     @Test
     public void assertGetBlobForColumnIndex() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertTrue(actual.getBlob(1).length() > 0);
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertTrue(each.getValue().getBlob(1).length() > 0);
+            }
         }
     }
     
     @Test
     public void assertGetBlobForColumnLabel() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertTrue(actual.getBlob(columnName).length() > 0);
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertTrue(each.getValue().getBlob(columnName).length() > 0);
+            }
         }
     }
     
     @Test
     public void assertGetClobForColumnIndex() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertThat(actual.getClob(1).getSubString(1, 2), is("10"));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertThat(each.getValue().getClob(1).getSubString(1, 2), is("10"));
+            }
         }
     }
     
     @Test
     public void assertGetClobForColumnLabel() throws SQLException {
-        if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE) {
-            assertThat(actual.getClob(columnName).getSubString(1, 2), is("10"));
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.H2 == each.getKey()) {
+                assertThat(each.getValue().getClob(columnName).getSubString(1, 2), is("10"));
+            }
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetURLForColumnIndex() throws SQLException {
-        actual.getURL(1);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getURL(1);
+    
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetURLForColumnLabel() throws SQLException {
-        actual.getURL(columnName);
+        for (ResultSet each : resultSets.values()) {
+            try {
+                each.getURL(columnName);
+                fail("Expected an SQLException to be thrown");
+            } catch (final SQLException exception) {
+                assertFalse(exception.getMessage().isEmpty());
+            }
+        }
     }
     
     @Test
     public void assertGetSQLXMLForColumnIndex() throws SQLException {
-        if (currentDbType() != Oracle) {
-            if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.Oracle == each.getKey()) {
+                continue;
+            }
+            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
-                    actual.getSQLXML(1);
-                } catch (final SQLException ignore) {
+                    each.getValue().getSQLXML(1);
+                    fail("Expected an SQLException to be thrown");
+                } catch (final SQLException exception) {
+                    assertFalse(exception.getMessage().isEmpty());
                 }
             } else {
-                assertThat(actual.getSQLXML(1).getString(), is("10"));
+                assertThat(each.getValue().getSQLXML(1).getString(), is("10"));
             }
         }
     }
     
     @Test
     public void assertGetSQLXMLForColumnLabel() throws SQLException {
-        if (currentDbType() != Oracle) {
-            if (DatabaseType.H2 == AbstractDBUnitTest.CURRENT_DB_TYPE || currentDbType() == SQLServer) {
+        for (Map.Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
+            if (DatabaseType.Oracle == each.getKey()) {
+                continue;
+            }
+            if (DatabaseType.H2 == each.getKey() || DatabaseType.SQLServer == each.getKey()) {
                 try {
-                    actual.getSQLXML(columnName);
-                } catch (final SQLException ignore) {
+                    each.getValue().getSQLXML(columnName);
+                    fail("Expected an SQLException to be thrown");
+                } catch (final SQLException exception) {
+                    assertFalse(exception.getMessage().isEmpty());
                 }
             } else {
-                assertThat(actual.getSQLXML(columnName).getString(), is("10"));
+                assertThat(each.getValue().getSQLXML(columnName).getString(), is("10"));
             }
         }
     }
     
     @Test
     public void assertGetObjectForColumnIndex() throws SQLException {
-        assertThat(actual.getObject(1).toString(), is("10"));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getObject(1).toString(), is("10"));
+        }
     }
     
     @Test
     public void assertGetObjectForColumnLabel() throws SQLException {
-        assertThat(actual.getObject(columnName).toString(), is("10"));
+        for (ResultSet each : resultSets.values()) {
+            assertThat(each.getObject(columnName).toString(), is("10"));
+        }
     }
 }
