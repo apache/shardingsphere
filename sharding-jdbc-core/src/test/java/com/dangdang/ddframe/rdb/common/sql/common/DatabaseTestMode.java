@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.H2;
-import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.MySQL;
+import static com.dangdang.ddframe.rdb.sharding.constant.DatabaseType.SQLServer;
 
 public enum DatabaseTestMode {
     
@@ -35,7 +35,9 @@ public enum DatabaseTestMode {
         if (ALL == this) {
             return Lists.newArrayList(DatabaseType.values());
         } else if (LOCAL == this) {
-            result.add(MySQL);
+//            result.add(MySQL);
+//            result.add(PostgreSQL);
+            result.add(SQLServer);
         } else if (TEST == this) {
             result.add(H2);
         }

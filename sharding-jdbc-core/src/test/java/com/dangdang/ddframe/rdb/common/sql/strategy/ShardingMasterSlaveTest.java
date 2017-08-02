@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.common.sql.strategy;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingSQLTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.integrate.fixture.SingleKeyModuloTableShardingAlgorithm;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public class ShardingMasterSlaveTest extends AbstractShardingSQLTest {
+public class ShardingMasterSlaveTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     

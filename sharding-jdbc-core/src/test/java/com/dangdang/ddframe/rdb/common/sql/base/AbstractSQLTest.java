@@ -69,16 +69,23 @@ public abstract class AbstractSQLTest {
         try {
             Connection conn;
             for (int i = 0; i < 10; i++) {
-                for (String database : Arrays.asList("db", "dbtbl", "nullable", "master", "slave")) {
-                    conn = initialConnection(database + "_" + i, dbType);
-                    RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
-                    conn.close();
+                for (String database : Arrays.asList("tbl", "db", "dbtbl", "nullable", "master", "slave", "jdbc")) {
+                    if ("tbl".equals(database)) {
+                        if (i == 0) {
+                            conn = initialConnection(database, dbType);
+                            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
+                            conn.close();
+                        }
+                    } else {
+                        if ("jdbc".equals(database) && i >= 2) {
+                            continue;
+                        }
+                        conn = initialConnection(database + "_" + i, dbType);
+                        RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/" + database + ".sql")));
+                        conn.close();
+                    }
                 }
             }
-            String database = "tbl";
-            conn = initialConnection(database, dbType);
-            RunScript.execute(conn, new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream("integrate/schema/table/tbl.sql")));
-            conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }

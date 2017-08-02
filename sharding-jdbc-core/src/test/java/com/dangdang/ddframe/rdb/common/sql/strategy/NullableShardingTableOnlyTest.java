@@ -18,7 +18,8 @@
 package com.dangdang.ddframe.rdb.common.sql.strategy;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractNullableShardingSQLTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
+import com.dangdang.ddframe.rdb.common.sql.common.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -36,6 +37,7 @@ import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public class NullableShardingTableOnlyTest extends AbstractNullableShardingSQLTest {
+public class NullableShardingTableOnlyTest extends AbstractSQLAssertTest {
     
     private static boolean isShutdown;
     
@@ -51,6 +53,11 @@ public class NullableShardingTableOnlyTest extends AbstractNullableShardingSQLTe
     
     public NullableShardingTableOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> dataParameters() {
+        return SQLAssertUtil.getDataParameters("integrate/assert/select_aggregate.xml");
     }
     
     @Override

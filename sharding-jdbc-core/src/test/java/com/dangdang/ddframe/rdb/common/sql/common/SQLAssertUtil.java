@@ -2,7 +2,6 @@ package com.dangdang.ddframe.rdb.common.sql.common;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssert;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAsserts;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingSQLTest;
 import com.dangdang.ddframe.rdb.sharding.constant.DatabaseType;
 
 import javax.xml.bind.JAXBContext;
@@ -20,7 +19,7 @@ public class SQLAssertUtil {
     
     public static Collection<Object[]> getDataParameters(final String filePath) {
         Collection<Object[]> result = new ArrayList<>();
-        URL url = AbstractShardingSQLTest.class.getClassLoader().getResource(filePath);
+        URL url = SQLAssertUtil.class.getClassLoader().getResource(filePath);
         if (null == url) {
             return Collections.emptyList();
         }

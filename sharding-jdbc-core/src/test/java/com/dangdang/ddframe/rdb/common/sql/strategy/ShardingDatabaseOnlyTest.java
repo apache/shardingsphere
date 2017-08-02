@@ -18,7 +18,7 @@
 package com.dangdang.ddframe.rdb.common.sql.strategy;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
-import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingSQLTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractSQLAssertTest;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.fixture.MultipleKeysModuloDatabaseShardingAlgorithm;
 import com.dangdang.ddframe.rdb.sharding.api.rule.BindingTableRule;
@@ -44,11 +44,11 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(Parameterized.class)
-public class ShardingDatabaseOnlyTest extends AbstractShardingSQLTest {
+public class ShardingDatabaseOnlyTest extends AbstractSQLAssertTest {
     
-    protected static boolean isShutdown;
+    private static boolean isShutdown;
     
-    protected static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
+    private static Map<DatabaseType, ShardingDataSource> shardingDataSources = new HashMap<>();
     
     public ShardingDatabaseOnlyTest(final String testCaseName, final String sql, final Set<DatabaseType> types, final List<SqlShardingRule> sqlShardingRules) {
         super(testCaseName, sql, types, sqlShardingRules);

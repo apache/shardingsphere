@@ -17,8 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,227 +28,321 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-public final class UnsupportedOperationResultSetTest extends AbstractShardingDatabaseOnlyDBUnitTest {
+public final class UnsupportedOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private ShardingConnection shardingConnection;
+    private final String sql = "SELECT user_id AS uid FROM t_order WHERE status = 'init'";
     
-    private Statement statement;
+    private List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private ResultSet actual;
+    private List<Statement> statements = new ArrayList<>();
+    
+    private List<ResultSet> resultSets = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {
-        shardingConnection = getShardingDataSource().getConnection();
-        statement = shardingConnection.createStatement();
-        actual = statement.executeQuery(getDatabaseTestSQL().getSelectUserIdByStatusSql());
+        for (ShardingDataSource each : getShardingDataSources().values()) {
+            ShardingConnection connection = each.getConnection();
+            shardingConnections.add(connection);
+            Statement statement = connection.createStatement();
+            statements.add(statement);
+            resultSets.add(statement.executeQuery(sql));
+        }
     }
     
     @After
     public void close() throws SQLException {
-        actual.close();
-        statement.close();
-        shardingConnection.close();
+        for (ShardingConnection each : shardingConnections) {
+            each.close();
+        }
+        for (Statement each : statements) {
+            each.close();
+        }
+        for (ResultSet each : resultSets) {
+            each.close();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertPrevious() throws SQLException {
-        actual.previous();
+        for (ResultSet each : resultSets) {
+            each.previous();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsBeforeFirst() throws SQLException {
-        actual.isBeforeFirst();
+        for (ResultSet each : resultSets) {
+            each.isBeforeFirst();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsAfterLast() throws SQLException {
-        actual.isAfterLast();
+        for (ResultSet each : resultSets) {
+            each.isAfterLast();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsFirst() throws SQLException {
-        actual.isFirst();
+        for (ResultSet each : resultSets) {
+            each.isFirst();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsLast() throws SQLException {
-        actual.isLast();
+        for (ResultSet each : resultSets) {
+            each.isLast();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertBeforeFirst() throws SQLException {
-        actual.beforeFirst();
+        for (ResultSet each : resultSets) {
+            each.beforeFirst();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAfterLast() throws SQLException {
-        actual.afterLast();
+        for (ResultSet each : resultSets) {
+            each.afterLast();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertFirst() throws SQLException {
-        actual.first();
+        for (ResultSet each : resultSets) {
+            each.first();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertLast() throws SQLException {
-        actual.last();
+        for (ResultSet each : resultSets) {
+            each.last();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAbsolute() throws SQLException {
-        actual.absolute(1);
+        for (ResultSet each : resultSets) {
+            each.absolute(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertRelative() throws SQLException {
-        actual.relative(1);
+        for (ResultSet each : resultSets) {
+            each.relative(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRow() throws SQLException {
-        actual.getRow();
+        for (ResultSet each : resultSets) {
+            each.getRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertInsertRow() throws SQLException {
-        actual.insertRow();
+        for (ResultSet each : resultSets) {
+            each.insertRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertUpdateRow() throws SQLException {
-        actual.updateRow();
+        for (ResultSet each : resultSets) {
+            each.updateRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertDeleteRow() throws SQLException {
-        actual.deleteRow();
+        for (ResultSet each : resultSets) {
+            each.deleteRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertRefreshRow() throws SQLException {
-        actual.refreshRow();
+        for (ResultSet each : resultSets) {
+            each.refreshRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertCancelRowUpdates() throws SQLException {
-        actual.cancelRowUpdates();
+        for (ResultSet each : resultSets) {
+            each.cancelRowUpdates();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertMoveToInsertRow() throws SQLException {
-        actual.moveToInsertRow();
+        for (ResultSet each : resultSets) {
+            each.moveToInsertRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertMoveToCurrentRow() throws SQLException {
-        actual.moveToCurrentRow();
+        for (ResultSet each : resultSets) {
+            each.moveToCurrentRow();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertRowInserted() throws SQLException {
-        actual.rowInserted();
+        for (ResultSet each : resultSets) {
+            each.rowInserted();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertRowUpdated() throws SQLException {
-        actual.rowUpdated();
+        for (ResultSet each : resultSets) {
+            each.rowUpdated();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertRowDeleted() throws SQLException {
-        actual.rowDeleted();
+        for (ResultSet each : resultSets) {
+            each.rowDeleted();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetCursorName() throws SQLException {
-        actual.getCursorName();
+        for (ResultSet each : resultSets) {
+            each.getCursorName();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetHoldability() throws SQLException {
-        actual.getHoldability();
+        for (ResultSet each : resultSets) {
+            each.getHoldability();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getNStringForColumnIndex() throws SQLException {
-        actual.getNString(1);
+        for (ResultSet each : resultSets) {
+            each.getNString(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getNStringForColumnLabel() throws SQLException {
-        actual.getNString("label");
+        for (ResultSet each : resultSets) {
+            each.getNString("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetNClobForColumnIndex() throws SQLException {
-        actual.getNClob(1);
+        for (ResultSet each : resultSets) {
+            each.getNClob(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetNClobForColumnLabel() throws SQLException {
-        actual.getNClob("label");
+        for (ResultSet each : resultSets) {
+            each.getNClob("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getNCharacterStreamForColumnIndex() throws SQLException {
-        actual.getNCharacterStream(1);
+        for (ResultSet each : resultSets) {
+            each.getNCharacterStream(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getNCharacterStreamForColumnLabel() throws SQLException {
-        actual.getNCharacterStream("label");
+        for (ResultSet each : resultSets) {
+            each.getNCharacterStream("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRefForColumnIndex() throws SQLException {
-        actual.getRef(1);
+        for (ResultSet each : resultSets) {
+            each.getRef(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRefForColumnLabel() throws SQLException {
-        actual.getRef("label");
+        for (ResultSet each : resultSets) {
+            each.getRef("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetArrayForColumnIndex() throws SQLException {
-        actual.getArray(1);
+        for (ResultSet each : resultSets) {
+            each.getArray(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetArrayForColumnLabel() throws SQLException {
-        actual.getArray("label");
+        for (ResultSet each : resultSets) {
+            each.getArray("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRowIdForColumnIndex() throws SQLException {
-        actual.getRowId(1);
+        for (ResultSet each : resultSets) {
+            each.getRowId(1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetRowIdForColumnLabel() throws SQLException {
-        actual.getRowId("label");
+        for (ResultSet each : resultSets) {
+            each.getRowId("label");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithType() throws SQLException {
-        actual.getObject(1, String.class);
+        for (ResultSet each : resultSets) {
+            each.getObject(1, String.class);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithType() throws SQLException {
-        actual.getObject("label", String.class);
+        for (ResultSet each : resultSets) {
+            each.getObject("label", String.class);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithMap() throws SQLException {
-        actual.getObject(1, Collections.<String, Class<?>>emptyMap());
+        for (ResultSet each : resultSets) {
+            each.getObject(1, Collections.<String, Class<?>>emptyMap());
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithMap() throws SQLException {
-        actual.getObject("label", Collections.<String, Class<?>>emptyMap());
+        for (ResultSet each : resultSets) {
+            each.getObject("label", Collections.<String, Class<?>>emptyMap());
+        }
     }
 }

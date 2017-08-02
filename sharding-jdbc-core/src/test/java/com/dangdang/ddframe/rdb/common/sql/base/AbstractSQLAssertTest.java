@@ -19,6 +19,7 @@ package com.dangdang.ddframe.rdb.common.sql.base;
 
 import com.dangdang.ddframe.rdb.common.jaxb.SqlAssertData;
 import com.dangdang.ddframe.rdb.common.jaxb.SqlShardingRule;
+import com.dangdang.ddframe.rdb.common.sql.common.SQLAssertUtil;
 import com.dangdang.ddframe.rdb.common.sql.common.ShardingTestStrategy;
 import com.dangdang.ddframe.rdb.integrate.util.DBUnitUtil;
 import com.dangdang.ddframe.rdb.integrate.util.DataBaseEnvironment;
@@ -33,6 +34,7 @@ import org.dbunit.dataset.ITableIterator;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -41,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +65,11 @@ public abstract class AbstractSQLAssertTest extends AbstractSQLTest {
         this.sql = sql;
         this.types = types;
         this.shardingRules = shardingRules;
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> dataParameters() {
+        return SQLAssertUtil.getDataParameters("integrate/assert");
     }
     
     protected abstract ShardingTestStrategy getShardingStrategy();
