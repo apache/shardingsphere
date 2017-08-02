@@ -17,8 +17,9 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.unsupported;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,77 +29,109 @@ import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingDatabaseOnlyDBUnitTest {
+public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private ShardingConnection shardingConnection;
+    private List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private PreparedStatement actual;
+    private List<PreparedStatement> statements = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {
-        shardingConnection = getShardingDataSource().getConnection();
-        actual = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+        for (ShardingDataSource each : getShardingDataSources().values()) {
+            ShardingConnection shardingConnection = each.getConnection();
+            shardingConnections.add(shardingConnection);
+            PreparedStatement preparedStatement = shardingConnection.prepareStatement("SELECT user_id AS `uid` FROM `t_order` WHERE `status` = 'init'");
+            statements.add(preparedStatement);
+        }
     }
     
     @After
     public void close() throws SQLException {
-        actual.close();
-        shardingConnection.close();
+        for (PreparedStatement each : statements) {
+            each.close();
+        }
+        for (ShardingConnection each : shardingConnections) {
+            each.close();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetMetaData() throws SQLException {
-        actual.getMetaData();
+        for (PreparedStatement each : statements) {
+            each.getMetaData();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParameterMetaData() throws SQLException {
-        actual.getParameterMetaData();
+        for (PreparedStatement each : statements) {
+            each.getParameterMetaData();
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNString() throws SQLException {
-        actual.setNString(1, "");
+        for (PreparedStatement each : statements) {
+            each.setNString(1, "");
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNClob() throws SQLException {
-        actual.setNClob(1, (NClob) null);
+        for (PreparedStatement each : statements) {
+            each.setNClob(1, (NClob) null);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNClobForReader() throws SQLException {
-        actual.setNClob(1, new StringReader(""));
+        for (PreparedStatement each : statements) {
+            each.setNClob(1, new StringReader(""));
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNClobForReaderAndLength() throws SQLException {
-        actual.setNClob(1, new StringReader(""), 1);
+        for (PreparedStatement each : statements) {
+            each.setNClob(1, new StringReader(""), 1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNCharacterStream() throws SQLException {
-        actual.setNCharacterStream(1, new StringReader(""));
+        for (PreparedStatement each : statements) {
+            each.setNCharacterStream(1, new StringReader(""));
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNCharacterStreamWithLength() throws SQLException {
-        actual.setNCharacterStream(1, new StringReader(""), 1);
+        for (PreparedStatement each : statements) {
+            each.setNCharacterStream(1, new StringReader(""), 1);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetArray() throws SQLException {
-        actual.setArray(1, null);
+        for (PreparedStatement each : statements) {
+            each.setArray(1, null);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetRowId() throws SQLException {
-        actual.setRowId(1, null);
+        for (PreparedStatement each : statements) {
+            each.setRowId(1, null);
+        }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetRef() throws SQLException {
-        actual.setRef(1, null);
+        for (PreparedStatement each : statements) {
+            each.setRef(1, null);
+        }
     }
 }
