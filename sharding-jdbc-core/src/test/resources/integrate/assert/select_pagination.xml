@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="assertSelectPaginationWithOffset" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s" type="PostgreSQL">
+        <sharding-rule value="tbl">
+            <data parameter="10,19,1000,1909,18" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
+        </sharding-rule>
+        <sharding-rule value="masterslave,dbtbl">
+            <data parameter="10,19,1000,1909,38" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
+        </sharding-rule>
+        <sharding-rule value="db">
+            <data parameter="10,19,1000,1909,6" expected="select/postgresql/SelectPagingWithOffsetSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithRowCount" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s" type="MySQL,H2,PostgreSQL">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2" expected="select/SelectPagingWithRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithRowCountInSQLServer" value="SELECT * FROM (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_" type="SQLServer">
+        <sharding-rule>
+            <data parameter="2,10,19,1000,1909" expected="select/sqlserver/SelectPagingWithRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithRowCountInOracle" value="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum &lt;= %s)" type="Oracle">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2" expected="select/oracle/SelectPagingWithRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithOffsetAndRowCount" value="SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (%s, %s) AND o.`order_id` BETWEEN %s AND %s ORDER BY i.item_id DESC LIMIT %s, %s" type="MySQL,H2">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2,2" expected="select/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithOffsetAndRowCountInPostgreSQL" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC OFFSET %s LIMIT %s" type="PostgreSQL">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2,2" expected="select/postgresql/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithOffsetAndRowCountInSQLServer" value="SELECT * FROM (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_ WHERE row_.rownum_ &gt; %s" type="SQLServer">
+        <sharding-rule>
+            <data parameter="4,10,19,1000,1909,2" expected="select/sqlserver/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithOffsetAndRowCountInOracle" value="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum &lt;= %s) t WHERE t.rownum_ &gt; %s" type="Oracle">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,4,2" expected="select/oracle/SelectPagingWithOffsetAndRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    
+    <sql id="assertSelectPaginationWithRowCountInSQLServer" value="SELECT * FROM (SELECT TOP (%s) row_number() OVER (ORDER BY i.item_id DESC) AS rownum_, i.item_id, o.order_id as order_id, o.status as status, o.user_id as user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (%s, %s) AND o.order_id BETWEEN %s AND %s) AS row_" type="SQLServer">
+        <sharding-rule>
+            <data parameter="2,10,19,1000,1909" expected="select/sqlserver/SelectPagingWithRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+    <sql id="assertSelectPaginationWithRowCountInOracle" value="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT order0_.order_id as order_id, order0_.status as status, order0_.user_id as user_id FROM t_order order0_ JOIN t_order_item i ON order0_.user_id = i.user_id AND order0_.order_id = i.order_id WHERE order0_.user_id IN (%s, %s) AND order0_.order_id BETWEEN %s AND %s ORDER BY i.item_id DESC) row_ WHERE rownum &lt;= %s)" type="Oracle">
+        <sharding-rule>
+            <data parameter="10,19,1000,1909,2" expected="select/oracle/SelectPagingWithRowCountSql.xml" />
+        </sharding-rule>
+    </sql>
+</sqls>

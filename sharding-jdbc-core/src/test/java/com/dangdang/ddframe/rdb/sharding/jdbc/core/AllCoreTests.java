@@ -23,7 +23,6 @@ import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.GeneratedKeysResultSetTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.resultset.ShardingResultSetTest;
-import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTableOnlyTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatementTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingStatementTest;
 import org.junit.runner.RunWith;
@@ -36,7 +35,6 @@ import org.junit.runners.Suite;
         ShardingConnectionTest.class, 
         ShardingStatementTest.class, 
         ShardingPreparedStatementTest.class, 
-        ShardingPreparedStatementTableOnlyTest.class,
         ShardingResultSetTest.class, 
         GeneratedKeysResultSetTest.class, 
         GeneratedKeysResultSetMetaDataTest.class 

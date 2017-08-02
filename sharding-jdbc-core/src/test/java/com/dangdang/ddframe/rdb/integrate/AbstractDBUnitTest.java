@@ -135,12 +135,4 @@ public abstract class AbstractDBUnitTest {
             assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
         }
     }
-    
-    protected void assertDataSet(final String expectedDataSetFile, final Connection connection, final String actualTableName, final String sql) throws SQLException, DatabaseUnitException {
-        try (Connection conn = connection) {
-            ITable actualTable = DBUnitUtil.getConnection(DB_ENV, conn).createQueryTable(actualTableName, sql);
-            IDataSet expectedDataSet = new FlatXmlDataSetBuilder().build(new InputStreamReader(AbstractDBUnitTest.class.getClassLoader().getResourceAsStream(expectedDataSetFile)));
-            assertEquals(expectedDataSet.getTable(actualTableName), actualTable);
-        }
-    }
 }
