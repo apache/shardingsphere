@@ -17,9 +17,11 @@
 
 package com.dangdang.ddframe.rdb.sharding.jdbc.adapter;
 
-import com.dangdang.ddframe.rdb.integrate.db.AbstractShardingDatabaseOnlyDBUnitTest;
+import com.dangdang.ddframe.rdb.common.sql.base.AbstractShardingJDBCDatabaseAndTableTest;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.connection.ShardingConnection;
+import com.dangdang.ddframe.rdb.sharding.jdbc.core.datasource.ShardingDataSource;
 import com.dangdang.ddframe.rdb.sharding.jdbc.core.statement.ShardingPreparedStatement;
+import com.dangdang.ddframe.rdb.sharding.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,230 +41,287 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PreparedStatementAdapterTest extends AbstractShardingDatabaseOnlyDBUnitTest {
+public final class PreparedStatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private ShardingConnection shardingConnection;
+    private List<ShardingConnection> shardingConnections = new ArrayList<>();
     
-    private PreparedStatement actual;
+    private List<PreparedStatement> preparedStatements = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {
-        shardingConnection = getShardingDataSource().getConnection();
-        actual = shardingConnection.prepareStatement(getDatabaseTestSQL().getSelectUserIdByInStatusSql());
+        for (ShardingDataSource each : getShardingDataSources().values()) {
+            ShardingConnection shardingConnection = each.getConnection();
+            shardingConnections.add(shardingConnection);
+            preparedStatements.add(shardingConnection.prepareStatement(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+        }
     }
     
     @After
     public void close() throws SQLException {
-        actual.close();
-        shardingConnection.close();
+        for (PreparedStatement each : preparedStatements) {
+            each.close();
+        }
+        for (ShardingConnection each : shardingConnections) {
+            each.close();
+        }
     }
     
     @Test
     public void assertSetNull() throws SQLException {
-        actual.setNull(1, Types.VARCHAR);
-        actual.setNull(2, Types.VARCHAR, "");
-        assertParameter(actual, 1, null);
-        assertParameter(actual, 2, null);
+        for (PreparedStatement each : preparedStatements) {
+            each.setNull(1, Types.VARCHAR);
+            each.setNull(2, Types.VARCHAR, "");
+            assertParameter(each, 1, null);
+            assertParameter(each, 2, null);
+        }
     }
     
     @Test
     public void assertSetBoolean() throws SQLException {
-        actual.setBoolean(1, true);
-        assertParameter(actual, 1, true);
+        for (PreparedStatement each : preparedStatements) {
+            each.setBoolean(1, true);
+            assertParameter(each, 1, true);
+        }
     }
     
     @Test
     public void assertSetByte() throws SQLException {
-        actual.setByte(1, (byte) 0);
-        assertParameter(actual, 1, (byte) 0);
+        for (PreparedStatement each : preparedStatements) {
+            each.setByte(1, (byte) 0);
+            assertParameter(each, 1, (byte) 0);
+        }
     }
     
     @Test
     public void assertSetShort() throws SQLException {
-        actual.setShort(1, (short) 0);
-        assertParameter(actual, 1, (short) 0);
+        for (PreparedStatement each : preparedStatements) {
+            each.setShort(1, (short) 0);
+            assertParameter(each, 1, (short) 0);
+        }
     }
     
     @Test
     public void assertSetInt() throws SQLException {
-        actual.setInt(1, 0);
-        assertParameter(actual, 1, 0);
+        for (PreparedStatement each : preparedStatements) {
+            each.setInt(1, 0);
+            assertParameter(each, 1, 0);
+        }
     }
     
     @Test
     public void assertSetLong() throws SQLException {
-        actual.setLong(1, 0L);
-        assertParameter(actual, 1, 0L);
+        for (PreparedStatement each : preparedStatements) {
+            each.setLong(1, 0L);
+            assertParameter(each, 1, 0L);
+        }
     }
     
     @Test
     public void assertSetFloat() throws SQLException {
-        actual.setFloat(1, 0F);
-        assertParameter(actual, 1, 0F);
+        for (PreparedStatement each : preparedStatements) {
+            each.setFloat(1, 0F);
+            assertParameter(each, 1, 0F);
+        }
     }
     
     @Test
     public void assertSetDouble() throws SQLException {
-        actual.setDouble(1, 0D);
-        assertParameter(actual, 1, 0D);
+        for (PreparedStatement each : preparedStatements) {
+            each.setDouble(1, 0D);
+            assertParameter(each, 1, 0D);
+        }
     }
     
     @Test
     public void assertSetString() throws SQLException {
-        actual.setString(1, "0");
-        assertParameter(actual, 1, "0");
+        for (PreparedStatement each : preparedStatements) {
+            each.setString(1, "0");
+            assertParameter(each, 1, "0");
+        }
     }
     
     @Test
     public void assertSetBigDecimal() throws SQLException {
-        actual.setBigDecimal(1, BigDecimal.ZERO);
-        assertParameter(actual, 1, BigDecimal.ZERO);
+        for (PreparedStatement each : preparedStatements) {
+            each.setBigDecimal(1, BigDecimal.ZERO);
+            assertParameter(each, 1, BigDecimal.ZERO);
+        }
     }
     
     @Test
     public void assertSetDate() throws SQLException {
-        Date now = new Date(0L);
-        actual.setDate(1, now);
-        actual.setDate(2, now, Calendar.getInstance());
-        assertParameter(actual, 1, now);
-        assertParameter(actual, 2, now);
+        for (PreparedStatement each : preparedStatements) {
+            Date now = new Date(0L);
+            each.setDate(1, now);
+            each.setDate(2, now, Calendar.getInstance());
+            assertParameter(each, 1, now);
+            assertParameter(each, 2, now);
+        }
     }
     
     @Test
     public void assertSetTime() throws SQLException {
-        Time now = new Time(0L);
-        actual.setTime(1, now);
-        actual.setTime(2, now, Calendar.getInstance());
-        assertParameter(actual, 1, now);
-        assertParameter(actual, 2, now);
+        for (PreparedStatement each : preparedStatements) {
+            Time now = new Time(0L);
+            each.setTime(1, now);
+            each.setTime(2, now, Calendar.getInstance());
+            assertParameter(each, 1, now);
+            assertParameter(each, 2, now);
+        }
     }
     
     @Test
     public void assertSetTimestamp() throws SQLException {
-        Timestamp now = new Timestamp(0L);
-        actual.setTimestamp(1, now);
-        actual.setTimestamp(2, now, Calendar.getInstance());
-        assertParameter(actual, 1, now);
-        assertParameter(actual, 2, now);
+        for (PreparedStatement each : preparedStatements) {
+            Timestamp now = new Timestamp(0L);
+            each.setTimestamp(1, now);
+            each.setTimestamp(2, now, Calendar.getInstance());
+            assertParameter(each, 1, now);
+            assertParameter(each, 2, now);
+        }
     }
     
     @Test
     public void assertSetBytes() throws SQLException {
-        actual.setBytes(1, new byte[] {});
-        assertParameter(actual, 1, new byte[] {});
+        for (PreparedStatement each : preparedStatements) {
+            each.setBytes(1, new byte[]{});
+            assertParameter(each, 1, new byte[]{});
+        }
     }
     
     @Test
     public void assertSetBlob() throws SQLException, IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
-            actual.setBlob(1, (Blob) null);
-            actual.setBlob(2, inputStream);
-            actual.setBlob(3, inputStream, 100L);
-            assertParameter(actual, 1, null);
-            assertParameter(actual, 2, inputStream);
-            assertParameter(actual, 3, inputStream);
+        for (PreparedStatement each : preparedStatements) {
+            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+                each.setBlob(1, (Blob) null);
+                each.setBlob(2, inputStream);
+                each.setBlob(3, inputStream, 100L);
+                assertParameter(each, 1, null);
+                assertParameter(each, 2, inputStream);
+                assertParameter(each, 3, inputStream);
+            }
         }
     }
     
     @Test
     public void assertSetClob() throws SQLException {
-        Reader reader = new SerializableStringReader();
-        actual.setClob(1, (Clob) null);
-        actual.setClob(2, reader);
-        actual.setClob(3, reader, 100L);
-        assertParameter(actual, 1, null);
-        assertParameter(actual, 2, reader);
-        assertParameter(actual, 3, reader);
+        for (PreparedStatement each : preparedStatements) {
+            Reader reader = new SerializableStringReader();
+            each.setClob(1, (Clob) null);
+            each.setClob(2, reader);
+            each.setClob(3, reader, 100L);
+            assertParameter(each, 1, null);
+            assertParameter(each, 2, reader);
+            assertParameter(each, 3, reader);
+        }
     }
     
     @Test
     public void assertSetAsciiStream() throws SQLException, IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
-            actual.setAsciiStream(1, inputStream);
-            actual.setAsciiStream(2, inputStream, 100);
-            actual.setAsciiStream(3, inputStream, 100L);
-            assertParameter(actual, 1, inputStream);
-            assertParameter(actual, 2, inputStream);
-            assertParameter(actual, 3, inputStream);
+        for (PreparedStatement each : preparedStatements) {
+            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+                each.setAsciiStream(1, inputStream);
+                each.setAsciiStream(2, inputStream, 100);
+                each.setAsciiStream(3, inputStream, 100L);
+                assertParameter(each, 1, inputStream);
+                assertParameter(each, 2, inputStream);
+                assertParameter(each, 3, inputStream);
+            }
         }
     }
     
     @SuppressWarnings("deprecation")
     @Test
     public void assertSetUnicodeStream() throws SQLException, IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
-            actual.setUnicodeStream(1, inputStream, 100);
-            assertParameter(actual, 1, inputStream);
+        for (PreparedStatement each : preparedStatements) {
+            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+                each.setUnicodeStream(1, inputStream, 100);
+                assertParameter(each, 1, inputStream);
+            }
         }
     }
     
     @Test
     public void assertSetBinaryStream() throws SQLException, IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
-            actual.setBinaryStream(1, inputStream);
-            actual.setBinaryStream(2, inputStream, 100);
-            actual.setBinaryStream(3, inputStream, 100L);
-            assertParameter(actual, 1, inputStream);
-            assertParameter(actual, 2, inputStream);
-            assertParameter(actual, 3, inputStream);
+        for (PreparedStatement each : preparedStatements) {
+            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+                each.setBinaryStream(1, inputStream);
+                each.setBinaryStream(2, inputStream, 100);
+                each.setBinaryStream(3, inputStream, 100L);
+                assertParameter(each, 1, inputStream);
+                assertParameter(each, 2, inputStream);
+                assertParameter(each, 3, inputStream);
+            }
         }
     }
     
     @Test
     public void assertSetCharacterStream() throws SQLException {
-        Reader reader = new SerializableStringReader();
-        actual.setCharacterStream(1, reader);
-        actual.setCharacterStream(2, reader, 100);
-        actual.setCharacterStream(3, reader, 100L);
-        assertParameter(actual, 1, reader);
-        assertParameter(actual, 2, reader);
-        assertParameter(actual, 3, reader);
+        for (PreparedStatement each : preparedStatements) {
+            Reader reader = new SerializableStringReader();
+            each.setCharacterStream(1, reader);
+            each.setCharacterStream(2, reader, 100);
+            each.setCharacterStream(3, reader, 100L);
+            assertParameter(each, 1, reader);
+            assertParameter(each, 2, reader);
+            assertParameter(each, 3, reader);
+        }
     }
     
     @Test
     public void assertSetURL() throws SQLException {
-        actual.setURL(1, null);
-        assertParameter(actual, 1, null);
+        for (PreparedStatement each : preparedStatements) {
+            each.setURL(1, null);
+            assertParameter(each, 1, null);
+        }
     }
     
     @Test
     public void assertSetSQLXML() throws SQLException {
-        actual.setSQLXML(1, null);
-        assertParameter(actual, 1, null);
+        for (PreparedStatement each : preparedStatements) {
+            each.setSQLXML(1, null);
+            assertParameter(each, 1, null);
+        }
     }
     
     @Test
     public void assertSetObject() throws SQLException {
-        Object obj = "value";
-        actual.setObject(1, obj);
-        actual.setObject(2, obj, 0);
-        actual.setObject(3, null);
-        actual.setObject(4, null);
-        actual.setObject(5, obj, 0, 0);
-        assertParameter(actual, 1, obj);
-        assertParameter(actual, 2, obj);
-        assertParameter(actual, 3, null);
-        assertParameter(actual, 4, null);
-        assertParameter(actual, 5, obj);
+        for (PreparedStatement each : preparedStatements) {
+            Object obj = "value";
+            each.setObject(1, obj);
+            each.setObject(2, obj, 0);
+            each.setObject(3, null);
+            each.setObject(4, null);
+            each.setObject(5, obj, 0, 0);
+            assertParameter(each, 1, obj);
+            assertParameter(each, 2, obj);
+            assertParameter(each, 3, null);
+            assertParameter(each, 4, null);
+            assertParameter(each, 5, obj);
+        }
     }
     
     @Test
     public void assertClearParameters() throws SQLException {
-        Object obj = new Object();
-        actual.setObject(1, obj);
-        actual.setObject(2, obj, 0);
-        actual.setObject(3, null);
-        actual.setObject(4, null);
-        actual.setObject(5, obj, 0, 0);
-        assertThat(((ShardingPreparedStatement) actual).getParameters().size(), is(5));
-        actual.clearParameters();
-        assertTrue(((ShardingPreparedStatement) actual).getParameters().isEmpty());
+        for (PreparedStatement each : preparedStatements) {
+            Object obj = new Object();
+            each.setObject(1, obj);
+            each.setObject(2, obj, 0);
+            each.setObject(3, null);
+            each.setObject(4, null);
+            each.setObject(5, obj, 0, 0);
+            assertThat(((ShardingPreparedStatement) each).getParameters().size(), is(5));
+            each.clearParameters();
+            assertTrue(((ShardingPreparedStatement) each).getParameters().isEmpty());
+        }
     }
     
     private void assertParameter(final PreparedStatement actual, final int index, final Object parameter) {
