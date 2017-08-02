@@ -1,3 +1,9 @@
+## 1.5.1
+
+### 缺陷修正
+
+1. [ISSUE #308](https://github.com/dangdangdotcom/sharding-jdbc/issues/308) 数据库原生的自增GeneratedKey的返回无效
+
 ## 1.5.0
 
 ### 里程碑

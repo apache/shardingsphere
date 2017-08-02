@@ -226,6 +226,9 @@ public class ShardingStatement extends AbstractStatementAdapter {
         if (generatedKey.isPresent() && returnGeneratedKeys) {
             return new GeneratedKeysResultSet(routeResult.getGeneratedKeys().iterator(), generatedKey.get().getColumn(), this);
         }
+        if (1 == getRoutedStatements().size()) {
+            return getRoutedStatements().iterator().next().getGeneratedKeys();
+        }
         return new GeneratedKeysResultSet();
     }
     
