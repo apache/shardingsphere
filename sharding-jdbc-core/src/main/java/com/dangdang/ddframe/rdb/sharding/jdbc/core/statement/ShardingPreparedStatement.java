@@ -130,7 +130,7 @@ public final class ShardingPreparedStatement extends AbstractPreparedStatementAd
     private PreparedStatement generatePreparedStatement(final SQLExecutionUnit sqlExecutionUnit) throws SQLException {
         Optional<GeneratedKey> generatedKey = getGeneratedKey();
         Connection connection = getShardingConnection().getConnection(sqlExecutionUnit.getDataSource(), getRouteResult().getSqlStatement().getType());
-        if (isReturnGeneratedKeys() && generatedKey.isPresent()) {
+        if (isReturnGeneratedKeys() || isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return connection.prepareStatement(sqlExecutionUnit.getSql(), RETURN_GENERATED_KEYS);
         }
         return connection.prepareStatement(sqlExecutionUnit.getSql(), getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
